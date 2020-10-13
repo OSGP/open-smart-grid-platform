@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,8 +19,6 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.opensmartgridplatform.adapter.domain.core.application.mapping.DomainCoreMapper;
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceResponseMessageSender;
@@ -39,179 +38,194 @@ import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 
+/**
+ * Copyright 2020 Alliander N.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
+
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 public class DeviceManagementServiceTest {
-	
-	@Mock
-	private TransactionalDeviceService transactionalDeviceService;
-	
-	@Mock
-	private DeviceDomainService deviceDomainService;
-	
-	@Mock
-	private DomainCoreMapper domainCoreMapper;
-	
-	@Mock
-	private OsgpCoreRequestMessageSender osgpCoreRequestManager;
-	
-	@Mock
-	private WebServiceResponseMessageSender webServiceResponseMessageSender;
 
-	@Mock
-	private OrganisationDomainService organisationDomainService;
-	
-	@InjectMocks
-	private DeviceManagementService deviceManagementService;
+    private static final String TEST_ORGANISATION = "testOrganisation";
+    private static final String TEST_DEVICE = "testDevice";
+    private static final String TEST_IP = "testIp";
+    private static final String TEST_UID = "testUid";
+    private static final String TEST_MESSAGE_TYPE = "testMessageType";
 
-	@Captor
-	private ArgumentCaptor<RequestMessage> argumentReqM;
+    @Mock
+    private TransactionalDeviceService transactionalDeviceService;
 
-	@Captor
-	private ArgumentCaptor<ResponseMessage> argumentResM;
+    @Mock
+    private DeviceDomainService deviceDomainService;
 
-	@Captor
-	private ArgumentCaptor<String> argumentStringOne;
+    @Mock
+    private DomainCoreMapper domainCoreMapper;
 
-	@Captor
-	private ArgumentCaptor<String> argumentStringTwo;
+    @Mock
+    private OsgpCoreRequestMessageSender osgpCoreRequestManager;
 
-	@Captor
-	private ArgumentCaptor<Integer> argumentInt;
+    @Mock
+    private WebServiceResponseMessageSender webServiceResponseMessageSender;
 
-	@BeforeEach
-	public void init() throws UnknownEntityException {
-		when(this.organisationDomainService.searchOrganisation(any())).thenReturn(new Organisation());
-	}
-	
-	@Test
-	public void testSetEventNotifications() throws FunctionalException {
-		final List<EventNotificationType> eventNotifications = Arrays.asList(
-				EventNotificationType.COMM_EVENTS,
-				EventNotificationType.DIAG_EVENTS);
-		final Device device = mock(Device.class);
-		when(device.getIpAddress()).thenReturn("testIp");
-		when(this.deviceDomainService.searchActiveDevice("testDevice", ComponentType.DOMAIN_CORE)).thenReturn(device);
-		
-		this.deviceManagementService.setEventNotifications("testOrganisation", "testDevice", "testUid",
-				eventNotifications, "testMessageType", 1);
+    @Mock
+    private OrganisationDomainService organisationDomainService;
 
-		verify(this.osgpCoreRequestManager).send(this.argumentReqM.capture(), this.argumentStringOne.capture(),
-				this.argumentInt.capture(), this.argumentStringTwo.capture());
+    @InjectMocks
+    private DeviceManagementService deviceManagementService;
 
-		final RequestMessage expectedRM = new RequestMessage("testUid", "testOrganisation", "testDevice",
-				new EventNotificationMessageDataContainerDto(this.domainCoreMapper.mapAsList(eventNotifications,
-						org.opensmartgridplatform.dto.valueobjects.EventNotificationTypeDto.class)));
+    @Captor
+    private ArgumentCaptor<RequestMessage> argumentRequestMessage;
 
-		assertThat(this.argumentReqM.getValue()).usingRecursiveComparison().isEqualTo(expectedRM);
-		assertThat(this.argumentStringOne.getValue()).isEqualTo("testMessageType");
-		assertThat(this.argumentInt.getValue()).isEqualTo(1);
-		assertThat(this.argumentStringTwo.getValue()).isEqualTo("testIp");
-	}
-	
-	@Test
-	public void testUpdateDeviceSslCertificationIsNull() throws FunctionalException {
-		this.deviceManagementService.updateDeviceSslCertification("testOrganisation", "testDevice", "testUid",
-				null, "testMessageType", 1);
+    @Captor
+    private ArgumentCaptor<ResponseMessage> argumentResponseMessage;
 
-		//This method is not called since it comes after the check of the certificate
-		verifyNoInteractions(this.domainCoreMapper);
-	}
-	
-	@Test
-	public void testUpdateDeviceSslCertification() throws FunctionalException {
-		final Device device = mock(Device.class);
-		when(device.getIpAddress()).thenReturn("testIp");
-		when(this.deviceDomainService.searchActiveDevice("testDevice", ComponentType.DOMAIN_CORE)).thenReturn(device);
-		final Certification certification = new Certification("testUrl", "testDomain");
-		
-		this.deviceManagementService.updateDeviceSslCertification("testOrganisation", "testDevice", "testUid",
-				certification, "testMessageType", 1);
+    @Captor
+    private ArgumentCaptor<String> argumentMessageType;
 
-		verify(this.osgpCoreRequestManager).send(this.argumentReqM.capture(), this.argumentStringOne.capture(),
-				this.argumentInt.capture(), this.argumentStringTwo.capture());
+    @Captor
+    private ArgumentCaptor<String> argumentIpAddress;
 
-		final RequestMessage expectedRM = new RequestMessage("testUid", "testOrganisation", "testDevice",
-				this.domainCoreMapper.map(certification,
-						org.opensmartgridplatform.dto.valueobjects.CertificationDto.class));
+    @Captor
+    private ArgumentCaptor<String> argumentDeviceIdentification;
 
-		assertThat(this.argumentReqM.getValue()).usingRecursiveComparison().isEqualTo(expectedRM);
-		assertThat(this.argumentStringOne.getValue()).isEqualTo("testMessageType");
-		assertThat(this.argumentInt.getValue()).isEqualTo(1);
-		assertThat(this.argumentStringTwo.getValue()).isEqualTo("testIp");
-	}
-	
-	@Test
-	public void testSetDeviceVerificationKeyIsNull() throws FunctionalException {
-		this.deviceManagementService.setDeviceVerificationKey("testOrganisation", "testDevice", "testUid",
-				null, "testMessageType", 1);
+    @Captor
+    private ArgumentCaptor<Integer> argumentPriority;
 
-		//This method is not called since it comes after the check of the verification
-		verifyNoInteractions(this.osgpCoreRequestManager);
-	}
-	
-	@Test
-	public void testSetDeviceVerificationKey() throws FunctionalException {
-		final Device device = mock(Device.class);
-		when(device.getIpAddress()).thenReturn("testIp");
-		when(this.deviceDomainService.searchActiveDevice("testDevice", ComponentType.DOMAIN_CORE)).thenReturn(device);
-		this.deviceManagementService.setDeviceVerificationKey("testOrganisation", "testDevice", "testUid",
-				"testKey", "testMessageType", 1);
+    @BeforeEach
+    public void init() throws UnknownEntityException {
+        when(this.organisationDomainService.searchOrganisation(any())).thenReturn(new Organisation());
+    }
 
-		verify(this.osgpCoreRequestManager).send(this.argumentReqM.capture(), this.argumentStringOne.capture(),
-				this.argumentInt.capture(), this.argumentStringTwo.capture());
+    @Test
+    public void testSetEventNotifications() throws FunctionalException {
+        final List<EventNotificationType> eventNotifications = Arrays.asList(EventNotificationType.COMM_EVENTS,
+                EventNotificationType.DIAG_EVENTS);
+        final Device device = mock(Device.class);
+        when(device.getIpAddress()).thenReturn(TEST_IP);
+        when(this.deviceDomainService.searchActiveDevice(TEST_DEVICE, ComponentType.DOMAIN_CORE)).thenReturn(device);
 
-		final RequestMessage expectedRM = new RequestMessage("testUid", "testOrganisation", "testDevice", "testKey");
+        this.deviceManagementService.setEventNotifications(TEST_ORGANISATION, TEST_DEVICE, TEST_UID,
+                eventNotifications, TEST_MESSAGE_TYPE, 1);
 
-		assertThat(this.argumentReqM.getValue()).usingRecursiveComparison().isEqualTo(expectedRM);
-		assertThat(this.argumentStringOne.getValue()).isEqualTo("testMessageType");
-		assertThat(this.argumentInt.getValue()).isEqualTo(1);
-		assertThat(this.argumentStringTwo.getValue()).isEqualTo("testIp");
-	}
-	
-	@Test
-	public void testSetDeviceLifeCycleStatus() throws FunctionalException {
-		this.deviceManagementService.setDeviceLifecycleStatus("testOrganisation", "testDevice", "testUid", DeviceLifecycleStatus.UNDER_TEST);
+        verify(this.osgpCoreRequestManager).send(this.argumentRequestMessage.capture(),
+                this.argumentMessageType.capture(), this.argumentPriority.capture(), this.argumentIpAddress.capture());
 
-		final ArgumentCaptor<DeviceLifecycleStatus> argumentDeviceLifecycleStatus =
-				ArgumentCaptor.forClass(DeviceLifecycleStatus.class);
+        final RequestMessage expectedRequestMessage = this.createNewRequestMessage(
+                new EventNotificationMessageDataContainerDto(this.domainCoreMapper.mapAsList(eventNotifications,
+                        org.opensmartgridplatform.dto.valueobjects.EventNotificationTypeDto.class)));
 
-		verify(this.transactionalDeviceService).updateDeviceLifecycleStatus(this.argumentStringOne.capture(),
-				argumentDeviceLifecycleStatus.capture());
-		verify(this.webServiceResponseMessageSender).send(this.argumentResM.capture());
+        assertThat(this.argumentRequestMessage.getValue()).usingRecursiveComparison().isEqualTo(expectedRequestMessage);
+        assertThat(this.argumentMessageType.getValue()).isEqualTo(TEST_MESSAGE_TYPE);
+        assertThat(this.argumentPriority.getValue()).isEqualTo(1);
+        assertThat(this.argumentIpAddress.getValue()).isEqualTo(TEST_IP);
+    }
 
-		final ResponseMessage expectedRM = ResponseMessage.newResponseMessageBuilder()
-				.withCorrelationUid("testUid")
-				.withOrganisationIdentification("testOrganisation")
-				.withDeviceIdentification("testDevice")
-				.withResult(ResponseMessageResultType.OK)
-				.build();
+    @Test
+    public void testUpdateDeviceSslCertificationIsNull() throws FunctionalException {
+        this.deviceManagementService.updateDeviceSslCertification(TEST_ORGANISATION, TEST_DEVICE, TEST_UID, null,
+                TEST_MESSAGE_TYPE, 1);
 
-		assertThat(this.argumentStringOne.getValue()).isEqualTo("testDevice");
-		assertThat(argumentDeviceLifecycleStatus.getValue()).isEqualTo(DeviceLifecycleStatus.UNDER_TEST);
-		assertThat(this.argumentResM.getValue()).usingRecursiveComparison().isEqualTo(expectedRM);
-	}
-	
-	@Test
-	public void testUpdateDeviceCdmaSettings() throws FunctionalException {
-		final CdmaSettings cdmaSettings =  new CdmaSettings("testSettings", (short)1);
-		this.deviceManagementService.updateDeviceCdmaSettings("testOrganisation", "testDevice", "testUid", cdmaSettings);
+        //This method is not called since it comes after the check of the certificate
+        verifyNoInteractions(this.domainCoreMapper);
+    }
 
-		final ArgumentCaptor<CdmaSettings> argumentCdmaSettings = ArgumentCaptor.forClass(CdmaSettings.class);
+    @Test
+    public void testUpdateDeviceSslCertification() throws FunctionalException {
+        final Device device = mock(Device.class);
+        when(device.getIpAddress()).thenReturn(TEST_IP);
+        when(this.deviceDomainService.searchActiveDevice(TEST_DEVICE, ComponentType.DOMAIN_CORE)).thenReturn(device);
+        final Certification certification = new Certification("testUrl", "testDomain");
 
-		verify(this.transactionalDeviceService).updateDeviceCdmaSettings(this.argumentStringOne.capture(),
-				argumentCdmaSettings.capture());
-		verify(this.webServiceResponseMessageSender).send(this.argumentResM.capture());
+        this.deviceManagementService.updateDeviceSslCertification(TEST_ORGANISATION, TEST_DEVICE, TEST_UID,
+                certification, TEST_MESSAGE_TYPE, 1);
 
-		final ResponseMessage expectedRM = ResponseMessage.newResponseMessageBuilder()
-				.withCorrelationUid("testUid")
-				.withOrganisationIdentification("testOrganisation")
-				.withDeviceIdentification("testDevice")
-				.withResult(ResponseMessageResultType.OK)
-				.build();
+        verify(this.osgpCoreRequestManager).send(this.argumentRequestMessage.capture(),
+                this.argumentMessageType.capture(), this.argumentPriority.capture(), this.argumentIpAddress.capture());
 
-		assertThat(this.argumentStringOne.getValue()).isEqualTo("testDevice");
-		assertThat(argumentCdmaSettings.getValue()).isEqualTo(cdmaSettings);
-		assertThat(this.argumentResM.getValue()).usingRecursiveComparison().isEqualTo(expectedRM);
-	}
+        final RequestMessage expectedRequestMessage = this.createNewRequestMessage(this.domainCoreMapper.map(certification,
+                org.opensmartgridplatform.dto.valueobjects.CertificationDto.class));
+
+        assertThat(this.argumentRequestMessage.getValue()).usingRecursiveComparison().isEqualTo(expectedRequestMessage);
+        assertThat(this.argumentMessageType.getValue()).isEqualTo(TEST_MESSAGE_TYPE);
+        assertThat(this.argumentPriority.getValue()).isEqualTo(1);
+        assertThat(this.argumentIpAddress.getValue()).isEqualTo(TEST_IP);
+    }
+
+    @Test
+    public void testSetDeviceVerificationKeyIsNull() throws FunctionalException {
+        this.deviceManagementService.setDeviceVerificationKey(TEST_ORGANISATION, TEST_DEVICE, TEST_UID, null,
+                TEST_MESSAGE_TYPE, 1);
+
+        //This method is not called since it comes after the check of the verification
+        verifyNoInteractions(this.osgpCoreRequestManager);
+    }
+
+    @Test
+    public void testSetDeviceVerificationKey() throws FunctionalException {
+        final Device device = mock(Device.class);
+        when(device.getIpAddress()).thenReturn(TEST_IP);
+        when(this.deviceDomainService.searchActiveDevice(TEST_DEVICE, ComponentType.DOMAIN_CORE)).thenReturn(device);
+        this.deviceManagementService.setDeviceVerificationKey(TEST_ORGANISATION, TEST_DEVICE, TEST_UID, "testKey",
+                TEST_MESSAGE_TYPE, 1);
+
+        verify(this.osgpCoreRequestManager).send(this.argumentRequestMessage.capture(),
+                this.argumentMessageType.capture(), this.argumentPriority.capture(), this.argumentIpAddress.capture());
+
+        final RequestMessage expectedRequestMessage = this.createNewRequestMessage("testKey");
+
+        assertThat(this.argumentRequestMessage.getValue()).usingRecursiveComparison().isEqualTo(expectedRequestMessage);
+        assertThat(this.argumentMessageType.getValue()).isEqualTo(TEST_MESSAGE_TYPE);
+        assertThat(this.argumentPriority.getValue()).isEqualTo(1);
+        assertThat(this.argumentIpAddress.getValue()).isEqualTo(TEST_IP);
+    }
+
+    @Test
+    public void testSetDeviceLifeCycleStatus() throws FunctionalException {
+        this.deviceManagementService.setDeviceLifecycleStatus(TEST_ORGANISATION, TEST_DEVICE, TEST_UID,
+                DeviceLifecycleStatus.UNDER_TEST);
+
+        final ArgumentCaptor<DeviceLifecycleStatus> argumentDeviceLifecycleStatus = ArgumentCaptor.forClass(
+                DeviceLifecycleStatus.class);
+
+        verify(this.transactionalDeviceService).updateDeviceLifecycleStatus(this.argumentDeviceIdentification.capture(),
+                argumentDeviceLifecycleStatus.capture());
+        verify(this.webServiceResponseMessageSender).send(this.argumentResponseMessage.capture());
+
+        final ResponseMessage expectedResponseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
+                TEST_UID).withOrganisationIdentification(TEST_ORGANISATION).withDeviceIdentification(TEST_DEVICE).withResult(ResponseMessageResultType.OK).build();
+
+        assertThat(this.argumentDeviceIdentification.getValue()).isEqualTo(TEST_DEVICE);
+        assertThat(argumentDeviceLifecycleStatus.getValue()).isEqualTo(DeviceLifecycleStatus.UNDER_TEST);
+        assertThat(this.argumentResponseMessage.getValue()).usingRecursiveComparison().isEqualTo(
+                expectedResponseMessage);
+    }
+
+    @Test
+    public void testUpdateDeviceCdmaSettings() throws FunctionalException {
+        final CdmaSettings cdmaSettings = new CdmaSettings("testSettings", (short) 1);
+        this.deviceManagementService.updateDeviceCdmaSettings(TEST_ORGANISATION, TEST_DEVICE, TEST_UID,
+                cdmaSettings);
+
+        final ArgumentCaptor<CdmaSettings> argumentCdmaSettings = ArgumentCaptor.forClass(CdmaSettings.class);
+
+        verify(this.transactionalDeviceService).updateDeviceCdmaSettings(this.argumentDeviceIdentification.capture(),
+                argumentCdmaSettings.capture());
+        verify(this.webServiceResponseMessageSender).send(this.argumentResponseMessage.capture());
+
+        final ResponseMessage expectedResponseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
+                TEST_UID).withOrganisationIdentification(TEST_ORGANISATION).withDeviceIdentification(TEST_DEVICE).withResult(ResponseMessageResultType.OK).build();
+
+        assertThat(this.argumentDeviceIdentification.getValue()).isEqualTo(TEST_DEVICE);
+        assertThat(argumentCdmaSettings.getValue()).isEqualTo(cdmaSettings);
+        assertThat(this.argumentResponseMessage.getValue()).usingRecursiveComparison().isEqualTo(
+                expectedResponseMessage);
+    }
+
+    private RequestMessage createNewRequestMessage(final Serializable request) {
+        return new RequestMessage(TEST_UID, TEST_ORGANISATION, TEST_DEVICE, request);
+    }
 }
