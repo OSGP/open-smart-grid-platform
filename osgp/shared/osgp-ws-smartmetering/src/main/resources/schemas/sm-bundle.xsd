@@ -463,7 +463,7 @@
   <xsd:element name="GetPowerQualityProfileResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="smmon:GetPowerQualityProfileResponseData"></xsd:extension>
+        <xsd:extension base="smmon:PowerQualityProfileResponseData"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>

@@ -515,12 +515,12 @@
   <xsd:element name="GetPowerQualityProfileResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="tns:GetPowerQualityProfileResponseData"></xsd:extension>
+        <xsd:extension base="tns:PowerQualityProfileResponseData"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:complexType name="GetPowerQualityProfileResponseData">
+  <xsd:complexType name="PowerQualityProfileResponseData">
     <xsd:complexContent>
       <xsd:extension base="common:Response">
         <xsd:sequence>
