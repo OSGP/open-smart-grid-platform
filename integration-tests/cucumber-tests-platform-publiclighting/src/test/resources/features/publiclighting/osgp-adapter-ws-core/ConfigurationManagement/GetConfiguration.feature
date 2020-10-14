@@ -16,10 +16,6 @@ Feature: CoreConfigurationManagement GetConfiguration
       | DcMap             | <DcMap>             |
       | RelayConf         | <RelayConf>         |
       | PreferredLinkType | <PreferredLinkType> |
-      | MeterType         | <MeterType>         |
-      | ShortInterval     | <ShortInterval>     |
-      | LongInterval      | <LongInterval>      |
-      | IntervalType      | <IntervalType>      |
       | OsgpIpAddress     | <OsgpIpAddress>     |
       | OsgpPort          | <OsgpPort>          |
     When receiving a get configuration request
@@ -35,29 +31,23 @@ Feature: CoreConfigurationManagement GetConfiguration
       | DcMap             | <DcMap>             |
       | RelayConf         | <RelayConf>         |
       | PreferredLinkType | <PreferredLinkType> |
-      | MeterType         | <MeterType>         |
-      | ShortInterval     | <ShortInterval>     |
-      | LongInterval      | <LongInterval>      |
-      | IntervalType      | <IntervalType>      |
       | OsgpIpAddress     | <OsgpIpAddress>     |
       | OsgpPort          | <OsgpPort>          |
 
-    Examples: 
-      | Protocol    | LightType               | DcLights | DcMap   | RelayConf  | PreferredLinkType | MeterType | ShortInterval | LongInterval | IntervalType | OsgpIpAddress | OsgpPort |
-      | OSLP ELSTER | RELAY                   |          |         |            |                   | AUX       |               |              |              | 10.20.30.40   |    12122 |
-      | OSLP ELSTER | RELAY                   |          |         | 1,1,LIGHT  |                   |           |               |              |              | 10.20.30.40   |    12122 |
-      | OSLP ELSTER | ONE_TO_TEN_VOLT         |          |         |            |                   |           |               |              |              | 10.20.30.40   |    12122 |
-      | OSLP ELSTER | ONE_TO_TEN_VOLT_REVERSE |          |         |            |                   |           |               |              |              | 10.20.30.40   |    12123 |
-      | OSLP ELSTER | DALI                    |        2 | 1,2;2,1 |            |                   |           |               |              |              | 10.20.30.40   |    12123 |
-      | OSLP ELSTER |                         |          |         |            |                   |           |            30 |              |              | 10.20.30.40   |    12123 |
-      | OSLP ELSTER |                         |          |         |            | GPRS              |           |               |              |              | 10.20.30.50   |    12122 |
-      | OSLP ELSTER | DALI                    |          |         |            |                   |           |               |              |              | 10.20.30.50   |    12122 |
-      | OSLP ELSTER |                         |          |         |            |                   |           |               |              |              | 10.20.30.50   |    12122 |
-      | OSLP ELSTER |                         |          |         |            |                   | P1        |               |              |              | 10.20.30.50   |    12122 |
-      | OSLP ELSTER |                         |          |         |            |                   |           |               |           10 | DAYS         | 10.20.30.50   |    12123 |
-      | OSLP ELSTER |                         |          |         |            |                   |           |               |           10 | MONTHS       | 10.20.30.50   |    12123 |
-      | OSLP ELSTER | RELAY                   |          |         | 1,1,LIGHT  | CDMA              | PULSE     |            15 |           30 | DAYS         | 10.20.30.50   |    12123 |
-      | OSLP ELSTER | RELAY                   |          |         | 1,1,LIGHT  | ETHERNET          | P1        |            15 |            1 | DAYS         | 10.20.30.50   |    12123 |
+    Examples:
+      | Protocol    | LightType               | DcLights | DcMap   | RelayConf  | PreferredLinkType | OsgpIpAddress | OsgpPort |
+      | OSLP ELSTER | RELAY                   |          |         |            |                   | 10.20.30.40   |    12122 |
+      | OSLP ELSTER | RELAY                   |          |         | 1,1,LIGHT  |                   | 10.20.30.40   |    12122 |
+      | OSLP ELSTER | ONE_TO_TEN_VOLT         |          |         |            |                   | 10.20.30.40   |    12122 |
+      | OSLP ELSTER | ONE_TO_TEN_VOLT_REVERSE |          |         |            |                   | 10.20.30.40   |    12123 |
+      | OSLP ELSTER | DALI                    |        2 | 1,2;2,1 |            |                   | 10.20.30.40   |    12123 |
+      | OSLP ELSTER |                         |          |         |            |                   | 10.20.30.40   |    12123 |
+      | OSLP ELSTER |                         |          |         |            | GPRS              | 10.20.30.50   |    12122 |
+      | OSLP ELSTER | DALI                    |          |         |            |                   | 10.20.30.50   |    12122 |
+      | OSLP ELSTER |                         |          |         |            |                   | 10.20.30.50   |    12122 |
+      | OSLP ELSTER |                         |          |         |            |                   | 10.20.30.50   |    12123 |
+      | OSLP ELSTER | RELAY                   |          |         | 1,1,LIGHT  | CDMA              | 10.20.30.50   |    12123 |
+      | OSLP ELSTER | RELAY                   |          |         | 1,1,LIGHT  | ETHERNET          | 10.20.30.50   |    12123 |
 
   Scenario: Get configuration data with unknown device
     When receiving a get configuration request
@@ -77,10 +67,6 @@ Feature: CoreConfigurationManagement GetConfiguration
       | DcMap             |           |
       | RelayConf         | 1,1,LIGHT |
       | PreferredLinkType | ETHERNET  |
-      | MeterType         | P1        |
-      | ShortInterval     |        15 |
-      | LongInterval      |        30 |
-      | IntervalType      | DAYS      |
     When receiving a get configuration request
       | DeviceIdentification | TEST1024000000001 |
     Then the get configuration async response contains
@@ -89,7 +75,7 @@ Feature: CoreConfigurationManagement GetConfiguration
     And the platform buffers a get configuration response message for device "TEST1024000000001" contains soap fault
       | Message | Device reports failure |
 
-    Examples: 
+    Examples:
       | Protocol    |
       | OSLP ELSTER |
 
@@ -105,10 +91,6 @@ Feature: CoreConfigurationManagement GetConfiguration
       | DcMap             |           |
       | RelayConf         | 1,1,LIGHT |
       | PreferredLinkType | ETHERNET  |
-      | MeterType         | P1        |
-      | ShortInterval     |        15 |
-      | LongInterval      |        30 |
-      | IntervalType      | DAYS      |
     When receiving a get configuration request
       | DeviceIdentification | TEST1024000000001 |
     Then the get configuration async response contains
@@ -117,6 +99,6 @@ Feature: CoreConfigurationManagement GetConfiguration
     And the platform buffers a get configuration response message for device "TEST1024000000001" contains soap fault
       | Message | Device reports rejected |
 
-    Examples: 
+    Examples:
       | Protocol    |
       | OSLP ELSTER |
