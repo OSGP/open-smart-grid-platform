@@ -297,7 +297,7 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
-  
+
     <xsd:element name="SetDeviceLifecycleStatusRequest">
     <xsd:complexType>
       <xsd:sequence>
@@ -448,7 +448,7 @@
       <xsd:element name="DeviceLifecycleStatus" type="tns:DeviceLifecycleStatus" minOccurs="0" />
     </xsd:sequence>
   </xsd:complexType>
-  
+
   <xsd:complexType name="LightMeasurementDevice">
     <xsd:complexContent>
       <xsd:extension base="tns:Device">
@@ -741,8 +741,6 @@
           </xsd:restriction>
         </xsd:simpleType>
       </xsd:element>
-      <xsd:element name="Metered" type="xsd:boolean"
-        minOccurs="1" maxOccurs="1" />
     </xsd:sequence>
   </xsd:complexType>
 
@@ -831,7 +829,7 @@
       <xsd:maxLength value="138" />
     </xsd:restriction>
   </xsd:simpleType>
-  
+
     <xsd:simpleType name="DeviceLifecycleStatus">
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="NEW_IN_INVENTORY" />

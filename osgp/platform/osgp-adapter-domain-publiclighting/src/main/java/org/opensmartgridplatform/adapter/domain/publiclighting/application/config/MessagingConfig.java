@@ -32,16 +32,8 @@ import org.springframework.context.annotation.PropertySource;
         OutboundOsgpCoreResponsesMessagingConfig.class, OutboundWebServiceResponsesMessagingConfig.class })
 public class MessagingConfig extends AbstractConfig {
 
-    private static final String PROPERTY_NAME_JMS_GET_POWER_USAGE_HISTORY_RESPONSE_TIME_TO_LIVE = "jms.get.power.usage.history.response.time.to.live";
-
     @Bean
     public DefaultJmsConfiguration defaultJmsConfiguration() {
         return new DefaultJmsConfiguration();
-    }
-
-    @Bean
-    public Long getPowerUsageHistoryResponseTimeToLive() {
-        return Long.parseLong(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_GET_POWER_USAGE_HISTORY_RESPONSE_TIME_TO_LIVE));
     }
 }

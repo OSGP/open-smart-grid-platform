@@ -37,32 +37,34 @@ public class DeviceModel extends AbstractEntity implements Comparable<DeviceMode
     @Column
     private boolean fileStorage;
 
-    @Column
-    private boolean metered;
-
     public DeviceModel() {
         // Default constructor
     }
 
-    public DeviceModel(final Manufacturer manufacturer, final String modelCode, final String description,
-            final boolean metered) {
-        this(manufacturer, modelCode);
-        this.description = description;
-        this.metered = metered;
+    public DeviceModel(final Manufacturer manufacturer, final String modelCode, final String description) {
+        this(manufacturer, modelCode, description, true);
     }
 
     public DeviceModel(final Manufacturer manufacturer, final String modelCode, final String description,
-            final boolean fileStorage, final boolean metered) {
-        this(manufacturer, modelCode, description, metered);
+            final boolean fileStorage) {
+        this.manufacturer = manufacturer;
+        this.modelCode = modelCode;
+        this.description = description;
         this.fileStorage = fileStorage;
     }
 
-    public DeviceModel(final Manufacturer manufacturer, final String modelCode) {
-        this.manufacturer = manufacturer;
-        this.modelCode = modelCode;
-        // default behavior is true
-        this.fileStorage = true;
-    }
+//    public DeviceModel(final Manufacturer manufacturer, final String modelCode, final String description,
+//            final boolean fileStorage, final boolean metered) {
+//        this(manufacturer, modelCode, description, metered);
+//        this.fileStorage = fileStorage;
+//    }
+
+//    public DeviceModel(final Manufacturer manufacturer, final String modelCode) {
+//        this.manufacturer = manufacturer;
+//        this.modelCode = modelCode;
+//        // default behavior is true
+//        this.fileStorage = true;
+//    }
 
     @Override
     public boolean equals(final Object obj) {
@@ -95,11 +97,6 @@ public class DeviceModel extends AbstractEntity implements Comparable<DeviceMode
         return String.format("DeviceModel[manufacturer=%s, code=%s]", this.manufacturer.getCode(), this.modelCode);
     }
 
-    public void updateData(final String description, final boolean metered) {
-        this.description = description;
-        this.metered = metered;
-    }
-
     public Manufacturer getManufacturer() {
         return this.manufacturer;
     }
@@ -108,15 +105,15 @@ public class DeviceModel extends AbstractEntity implements Comparable<DeviceMode
         return this.description;
     }
 
+    public void setDescription(final String description) {
+        this.description = description;
+    }
+
     public String getModelCode() {
         return this.modelCode;
     }
 
     public boolean isFileStorage() {
         return this.fileStorage;
-    }
-
-    public boolean isMetered() {
-        return this.metered;
     }
 }

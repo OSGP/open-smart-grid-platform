@@ -11,8 +11,8 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.opensmartgridplatform.adapter.kafka.da.avro.UnitMultiplier;
-import org.opensmartgridplatform.adapter.kafka.da.avro.UnitSymbol;
+import com.alliander.data.scadameasurementpublishedevent.UnitMultiplier;
+import com.alliander.data.scadameasurementpublishedevent.UnitSymbol;
 
 public enum LsPeakShavingMeasurementType {
     VOLTAGE_L1(1, "U-L1-E", UnitSymbol.V),

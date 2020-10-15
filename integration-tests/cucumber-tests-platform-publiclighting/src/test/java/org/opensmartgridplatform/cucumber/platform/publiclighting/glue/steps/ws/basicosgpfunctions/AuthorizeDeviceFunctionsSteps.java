@@ -17,7 +17,6 @@ import java.util.Map;
 
 import javax.naming.OperationNotSupportedException;
 import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
 
 import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusRequest;
@@ -26,9 +25,6 @@ import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagemen
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.SetLightRequest;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.SetTransitionRequest;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.TransitionType;
-import org.opensmartgridplatform.adapter.ws.schema.publiclighting.devicemonitoring.GetPowerUsageHistoryRequest;
-import org.opensmartgridplatform.adapter.ws.schema.publiclighting.devicemonitoring.HistoryTermType;
-import org.opensmartgridplatform.adapter.ws.schema.publiclighting.devicemonitoring.TimePeriod;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.schedulemanagement.ActionTimeType;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.schedulemanagement.Schedule;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.schedulemanagement.TriggerType;
@@ -42,7 +38,6 @@ import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonKeys;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.PlatformPubliclightingDefaults;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.PlatformPubliclightingKeys;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.support.ws.publiclighting.PublicLightingAdHocManagementClient;
-import org.opensmartgridplatform.cucumber.platform.publiclighting.support.ws.publiclighting.PublicLightingDeviceMonitoringClient;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.support.ws.publiclighting.PublicLightingScheduleManagementClient;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.support.ws.tariffswitching.TariffSwitchingAdHocManagementClient;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.support.ws.tariffswitching.TariffSwitchingScheduleManagementClient;
@@ -60,9 +55,6 @@ import io.cucumber.java.en.When;
  * Class with all the AuthorizeDeviceFunctions steps
  */
 public class AuthorizeDeviceFunctionsSteps {
-
-    @Autowired
-    private PublicLightingDeviceMonitoringClient publicLightingDeviceMonitoringClient;
 
     @Autowired
     private PublicLightingAdHocManagementClient publicLightingAdHocManagementClient;
@@ -103,9 +95,6 @@ public class AuthorizeDeviceFunctionsSteps {
                 break;
             case SET_TARIFF_SCHEDULE:
                 this.setTariffSchedule(requestParameters);
-                break;
-            case GET_POWER_USAGE_HISTORY:
-                this.getPowerUsageHistory(requestParameters);
                 break;
             case RESUME_SCHEDULE:
                 this.resumeSchedule(requestParameters);
@@ -210,25 +199,6 @@ public class AuthorizeDeviceFunctionsSteps {
         ScenarioContext.current()
                 .put(PlatformPubliclightingKeys.RESPONSE,
                         this.tariffSwitchingScheduleManagementClient.setSchedule(request));
-    }
-
-    private void getPowerUsageHistory(final Map<String, String> requestParameters)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException, DatatypeConfigurationException {
-        final GetPowerUsageHistoryRequest request = new GetPowerUsageHistoryRequest();
-        request.setDeviceIdentification(
-                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
-                        PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        final TimePeriod timePeriod = new TimePeriod();
-        timePeriod.setEndTime(
-                DatatypeFactory.newInstance().newXMLGregorianCalendar(DateTime.now().toGregorianCalendar()));
-        timePeriod.setStartTime(
-                DatatypeFactory.newInstance().newXMLGregorianCalendar(DateTime.now().toGregorianCalendar()));
-        request.setTimePeriod(timePeriod);
-        request.setHistoryTermType(HistoryTermType.LONG);
-
-        ScenarioContext.current()
-                .put(PlatformPubliclightingKeys.RESPONSE,
-                        this.publicLightingDeviceMonitoringClient.getPowerUsageHistory(request));
     }
 
     private void resumeSchedule(final Map<String, String> requestParameters)

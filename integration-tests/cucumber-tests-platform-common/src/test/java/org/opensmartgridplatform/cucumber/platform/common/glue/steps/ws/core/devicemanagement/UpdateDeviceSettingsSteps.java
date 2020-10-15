@@ -76,7 +76,7 @@ public class UpdateDeviceSettingsSteps {
 
     @Then("^the device management update device response is successful$")
     public void theUpdateDeviceResponseIsSuccessful() {
-        assertThat(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof UpdateDeviceResponse).isTrue();
+        assertThat(ScenarioContext.current().get(PlatformKeys.RESPONSE)).isInstanceOf(UpdateDeviceResponse.class);
     }
 
     @Then("^the device management update device response contains soap fault$")
