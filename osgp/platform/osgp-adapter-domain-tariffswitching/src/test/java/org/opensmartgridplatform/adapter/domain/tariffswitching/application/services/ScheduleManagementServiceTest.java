@@ -20,8 +20,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.opensmartgridplatform.adapter.domain.tariffswitching.application.mapping.DomainTariffSwitchingMapper;
 import org.opensmartgridplatform.adapter.domain.tariffswitching.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -39,7 +37,6 @@ import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 public class ScheduleManagementServiceTest{
 	@Mock
 	private DeviceDomainService deviceDomainService;
@@ -52,9 +49,9 @@ public class ScheduleManagementServiceTest{
 	
 	@Mock
 	private OrganisationDomainService organisationDomainService;
-	
+
 	@Mock
-    private OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
+	private OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
 
 	@Mock
 	private Device device;
@@ -71,6 +68,9 @@ public class ScheduleManagementServiceTest{
 	private List<ScheduleEntry> scheduleEntries;
 	private List<DeviceOutputSetting> deviceOutputSettings;
 	private List<LightValue> lightValues;
+	private final long scheduleTime = (long) 0.0f;
+	private final String messageType = "testType";
+	private final int priority = 1;
 	
 	
 	@BeforeEach
@@ -105,10 +105,6 @@ public class ScheduleManagementServiceTest{
 	public void testSetTariffSchedule() throws FunctionalException {
 		when(this.device.getDeviceType()).thenReturn(Ssld.SSLD_TYPE);
 
-		final long scheduleTime = (long) 0.0f;
-		final String messageType = "testType";
-		final int priority = 1;
-
 		final ArgumentCaptor<RequestMessage> requestMessageArgumentCaptor =
 				ArgumentCaptor.forClass(RequestMessage.class);
 		final ArgumentCaptor<Long> scheduleTimeCaptor = ArgumentCaptor.forClass(long.class);
@@ -116,13 +112,14 @@ public class ScheduleManagementServiceTest{
 		final ArgumentCaptor<String> messageTypeCaptor = ArgumentCaptor.forClass(String.class);
 		final ArgumentCaptor<Integer> priorityCapture = ArgumentCaptor.forClass(int.class);
 
-		this.scheduleManagementService.setTariffSchedule(this.correlationIds, this.scheduleEntries, scheduleTime, messageType,priority);
+		this.scheduleManagementService.setTariffSchedule(this.correlationIds, this.scheduleEntries, this.scheduleTime,
+				this.messageType, this.priority);
 
 		verify(this.osgpCoreRequestMessageSender).send(requestMessageArgumentCaptor.capture(), messageTypeCaptor.capture(),priorityCapture.capture(),ipCaptor.capture(), scheduleTimeCaptor.capture());
 
-		assertThat(messageType).isEqualTo(messageTypeCaptor.getValue());
-		assertThat(scheduleTime).isEqualTo(scheduleTimeCaptor.getValue());
-		assertThat(priority).isEqualTo(priorityCapture.getValue());
+		assertThat(this.messageType).isEqualTo(messageTypeCaptor.getValue());
+		assertThat(this.scheduleTime).isEqualTo(scheduleTimeCaptor.getValue());
+		assertThat(this.priority).isEqualTo(priorityCapture.getValue());
 	}
 	
 	@Test
@@ -130,8 +127,8 @@ public class ScheduleManagementServiceTest{
 		//incorrect type should return an exception
 		when(this.device.getDeviceType()).thenReturn(Ssld.PSLD_TYPE);
 		
-		assertThatThrownBy(()->{
-			this.scheduleManagementService.setTariffSchedule(this.correlationIds, this.scheduleEntries, (long) 0.0f, "messageType", 1);});
+		assertThatThrownBy(()-> this.scheduleManagementService.setTariffSchedule(this.correlationIds, this.scheduleEntries,
+				this.scheduleTime, this.messageType, this.priority));
 		verify(this.osgpCoreRequestMessageSender, never()).send(any(RequestMessage.class), eq("messageType"), eq(1), eq(null));
 	}
 }
