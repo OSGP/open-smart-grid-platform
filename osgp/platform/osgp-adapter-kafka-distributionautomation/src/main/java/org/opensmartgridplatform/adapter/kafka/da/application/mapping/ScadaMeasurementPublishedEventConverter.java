@@ -75,7 +75,7 @@ public class ScadaMeasurementPublishedEventConverter extends CustomConverter<Str
             final ConductingEquipment powerSystemResource = new ConductingEquipment(new BaseVoltage(eanCode, null),
                     new ArrayList<Name>());
             return new ScadaMeasurementPublishedEvent(stringArrayToAnalogList.convertToAnalogList(measurementValues),
-                    powerSystemResource, payload.createdUtcSeconds, eanCode, UUID.randomUUID().toString());
+                    powerSystemResource, payload.createdUtcSeconds * 1000l, eanCode, UUID.randomUUID().toString());
         } catch (final JsonMappingException e) {
             LOGGER.error("Caught an error mapping a JSON string to Payload. {}", source, e);
             return null;

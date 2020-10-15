@@ -28,7 +28,7 @@ class ScadaMeasurementPublishedEventConverterTest {
         final ScadaMeasurementPublishedEvent event = this.mapper.map(measurement, ScadaMeasurementPublishedEvent.class);
         final List<Analog> measurements = event.getMeasurements();
 
-        assertThat(event.getCreatedDateTime()).isEqualTo(1598684400l);
+        assertThat(event.getCreatedDateTime()).isEqualTo(1598684400l * 1000l);
         assertThat(measurements).usingElementComparatorIgnoringFields("mRID")
                 .isEqualTo(LsPeakShavingMessageFactory.expectedMeasurements());
     }
