@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.kafka.da.application.mapping;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -64,7 +65,8 @@ public class ScadaMeasurementPublishedEventConverter extends CustomConverter<Str
             final Payload payload = payloads[0];
 
             final String[] measurementValues = (payload.gisnr + ", " + String.join(", ", payload.data)).split(", ");
-            LOGGER.debug("Values length: {} and values: {}", measurementValues.length, measurementValues);
+            LOGGER.debug("Values length: {} and values: {}", measurementValues.length,
+                    Arrays.toString(measurementValues));
 
             if (measurementValues.length == LsPeakShavingMeasurementType.getNumberOfElements() + 1) {
                 stringArrayToAnalogList = new LsMeasurementMessageToAnalogList();
