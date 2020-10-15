@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -71,14 +70,12 @@ public class ScheduleManagementServiceTest{
 	private final long scheduleTime = (long) 0.0f;
 	private final String messageType = "testType";
 	private final int priority = 1;
-	
-	
-	@BeforeEach
+
 	public void setup() throws FunctionalException {
 		this.scheduleEntries = new ArrayList<>();
 		this.deviceOutputSettings = new ArrayList<>();
 		this.lightValues = new ArrayList<>();
-		
+
 		final DeviceOutputSetting dos = Mockito.mock(DeviceOutputSetting.class);
 		when(dos.getOutputType()).thenReturn(RelayType.TARIFF_REVERSED);
 		
@@ -103,6 +100,7 @@ public class ScheduleManagementServiceTest{
 	
 	@Test
 	public void testSetTariffSchedule() throws FunctionalException {
+		this.setup();
 		when(this.device.getDeviceType()).thenReturn(Ssld.SSLD_TYPE);
 
 		final ArgumentCaptor<RequestMessage> requestMessageArgumentCaptor =
@@ -125,8 +123,6 @@ public class ScheduleManagementServiceTest{
 	@Test
 	public void testSetTariffScheduleFunctionalExceptionThrown() throws FunctionalException {
 		//incorrect type should return an exception
-		when(this.device.getDeviceType()).thenReturn(Ssld.PSLD_TYPE);
-		
 		assertThatThrownBy(()-> this.scheduleManagementService.setTariffSchedule(this.correlationIds, this.scheduleEntries,
 				this.scheduleTime, this.messageType, this.priority));
 		verify(this.osgpCoreRequestMessageSender, never()).send(any(RequestMessage.class), eq("messageType"), eq(1), eq(null));
