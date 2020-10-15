@@ -182,13 +182,4 @@ class SsldConverter extends BidirectionalConverter<Ssld, Device> {
                 && Objects.equals(this.ssldRepository, ((SsldConverter) obj).ssldRepository);
     }
 
-    @Override
-    public boolean canConvert(final Type<?> sourceType, final Type<?> destinationType) {
-
-        return super.canConvert(sourceType, destinationType)
-                || super.canConvert(sourceType, destinationType.getSuperType())
-                || super.canConvert(sourceType.getSuperType(), destinationType);
-
-    }
-
 }

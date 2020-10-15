@@ -372,22 +372,22 @@ public class DeviceManagementEndpoint {
     public UpdateDeviceResponse updateDevice(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final UpdateDeviceRequest request) throws OsgpException {
 
-        final String deviceIdentification = request.getUpdatedDevice().getDeviceIdentification();
+        final String deviceToUpdateIdentification = request.getDeviceIdentification();
 
-        LOGGER.info("UpdateDeviceRequest received for device: {} for organisation: {}.", deviceIdentification,
+        LOGGER.info("UpdateDeviceRequest received for device: {} for organisation: {}.", deviceToUpdateIdentification,
                 organisationIdentification);
 
         try {
             final org.opensmartgridplatform.domain.core.entities.Ssld ssld = this.deviceManagementMapper
                     .map(request.getUpdatedDevice(), org.opensmartgridplatform.domain.core.entities.Ssld.class);
 
-            this.deviceManagementService.updateDevice(organisationIdentification, ssld);
+            this.deviceManagementService.updateDevice(organisationIdentification, deviceToUpdateIdentification, ssld);
         } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception update Device: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
-            LOGGER.error(EXCEPTION_WHILE_UPDATING_DEVICE, e.getMessage(), deviceIdentification,
+            LOGGER.error(EXCEPTION_WHILE_UPDATING_DEVICE, e.getMessage(), deviceToUpdateIdentification,
                     organisationIdentification, e);
             this.handleException(e);
         }
@@ -395,17 +395,17 @@ public class DeviceManagementEndpoint {
         final UpdateDeviceResponse updateDeviceResponse = new UpdateDeviceResponse();
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
+                deviceToUpdateIdentification);
 
         final AsyncResponse asyncResponse = new AsyncResponse();
         asyncResponse.setCorrelationUid(correlationUid);
-        asyncResponse.setDeviceId(deviceIdentification);
+        asyncResponse.setDeviceId(deviceToUpdateIdentification);
 
         updateDeviceResponse.setAsyncResponse(asyncResponse);
 
         try {
-            this.notificationService.sendNotification(organisationIdentification, deviceIdentification, null, null,
-                    null, NotificationType.DEVICE_UPDATED);
+            this.notificationService.sendNotification(organisationIdentification, deviceToUpdateIdentification, null,
+                    null, null, NotificationType.DEVICE_UPDATED);
         } catch (final Exception e) {
             LOGGER.error(e.getMessage(), e);
         }

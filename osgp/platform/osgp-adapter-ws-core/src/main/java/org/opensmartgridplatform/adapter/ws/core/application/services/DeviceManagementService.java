@@ -619,16 +619,16 @@ public class DeviceManagementService {
     }
 
     @Transactional(value = "writableTransactionManager")
-    public void updateDevice(@Identification final String organisationIdentification, @Valid final Ssld updateDevice)
-            throws FunctionalException {
+    public void updateDevice(@Identification final String organisationIdentification,
+            final String deviceToUpdateIdentification, @Valid final Ssld updateDevice) throws FunctionalException {
 
         final Device existingDevice = this.writableDeviceRepository
-                .findByDeviceIdentification(updateDevice.getDeviceIdentification());
+                .findByDeviceIdentification(deviceToUpdateIdentification);
         if (existingDevice == null) {
             // device does not exist
             LOGGER.info("Device does not exist, nothing to update.");
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.WS_CORE,
-                    new UnknownEntityException(Device.class, updateDevice.getDeviceIdentification()));
+                    new UnknownEntityException(Device.class, deviceToUpdateIdentification));
         }
 
         final List<DeviceAuthorization> owners = this.writableAuthorizationRepository

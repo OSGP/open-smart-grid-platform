@@ -49,6 +49,7 @@ public class UpdateDeviceSettingsSteps {
             deviceIdentification = deviceIdentification.replaceAll("\"", " ");
         }
         final UpdatedDevice device = this.createUpdatedDevice(settings);
+        request.setDeviceIdentification(deviceIdentification);
         request.setUpdatedDevice(device);
 
         try {
@@ -63,8 +64,6 @@ public class UpdateDeviceSettingsSteps {
         final UpdatedDevice device = new UpdatedDevice();
         device.setAlias(getString(settings, PlatformKeys.ALIAS, PlatformCommonDefaults.DEFAULT_ALIAS));
         device.setContainerAddress(new AddressBuilder().withSettings(settings).build());
-        device.setDeviceIdentification(getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
         device.setGpsLatitude(
                 getString(settings, PlatformKeys.KEY_LATITUDE, PlatformCommonDefaults.DEFAULT_LATITUDE_STRING));
         device.setGpsLongitude(
