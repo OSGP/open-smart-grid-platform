@@ -35,14 +35,14 @@ public class GetPowerQualityProfileRequestMappingTest {
         final org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileRequest source = this.makeRequest();
         final Object result = this.mapper.map(source, GetPowerQualityProfileRequest.class);
 
-        assertThat(result).as("mapping GetPowerQualityProfileRequestData should not return null").isNotNull();
-        assertThat(result).as("mapping GetPowerQualityProfileRequestData should return correct type")
-                          .isInstanceOf(GetPowerQualityProfileRequest.class);
+        assertThat(result).as("mapping GetPowerQualityProfileRequest should not return null").isNotNull();
+        assertThat(result).as("mapping GetPowerQualityProfileRequest  should return correct type").isInstanceOf(
+                GetPowerQualityProfileRequest.class);
 
         final GetPowerQualityProfileRequest target = (GetPowerQualityProfileRequest) result;
 
         assertThat(target.getDeviceIdentification()).isEqualTo(source.getDeviceIdentification());
-        assertThat(target.getProfileType()).isEqualTo( source.getProfileType());
+        assertThat(target.getProfileType()).isEqualTo(source.getProfileType());
         final DateTime targetEndDate = new DateTime(target.getEndDate());
         assertThat(targetEndDate.getYear()).isEqualTo(source.getBeginDate().getYear());
     }
