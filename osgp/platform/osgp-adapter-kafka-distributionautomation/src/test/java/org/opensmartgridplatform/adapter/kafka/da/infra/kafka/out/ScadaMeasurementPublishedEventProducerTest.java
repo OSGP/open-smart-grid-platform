@@ -26,13 +26,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.opensmartgridplatform.adapter.kafka.da.application.config.GridMeasurementKafkaProducerConfig;
+import org.opensmartgridplatform.adapter.kafka.da.application.config.ScadaMeasurementKafkaProducerConfig;
 import org.opensmartgridplatform.adapter.kafka.da.application.mapping.DistributionAutomationMapper;
-import org.opensmartgridplatform.adapter.kafka.da.avro.Analog;
-import org.opensmartgridplatform.adapter.kafka.da.avro.GridMeasurementPublishedEvent;
-import org.opensmartgridplatform.adapter.kafka.da.avro.Name;
-import org.opensmartgridplatform.adapter.kafka.da.avro.PowerSystemResource;
-import org.opensmartgridplatform.adapter.kafka.da.serialization.GridMeasurementPublishedEventDeserializer;
+import org.opensmartgridplatform.adapter.kafka.da.serialization.ScadaMeasurementPublishedEventDeserializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.ConsumerFactory;
@@ -44,14 +40,20 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-@SpringJUnitConfig(GridMeasurementKafkaProducerConfig.class)
+import com.alliander.data.scadameasurementpublishedevent.Analog;
+import com.alliander.data.scadameasurementpublishedevent.BaseVoltage;
+import com.alliander.data.scadameasurementpublishedevent.ConductingEquipment;
+import com.alliander.data.scadameasurementpublishedevent.Name;
+import com.alliander.data.scadameasurementpublishedevent.ScadaMeasurementPublishedEvent;
+
+@SpringJUnitConfig(ScadaMeasurementKafkaProducerConfig.class)
 @TestPropertySource("classpath:osgp-adapter-kafka-distributionautomation-test.properties")
 @ExtendWith(MockitoExtension.class)
 @EmbeddedKafka(partitions = 1,
         topics = { "${distributionautomation.kafka.topic}" },
         brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "log.dirs=../kafka-logs/",
                 "auto.create.topics.enable=true" })
-class GridMeasurementPublishedEventProducerTest {
+class ScadaMeasurementPublishedEventProducerTest {
 
     @Value("${distributionautomation.kafka.topic}")
     private String topic;
@@ -63,17 +65,17 @@ class GridMeasurementPublishedEventProducerTest {
     private DistributionAutomationMapper mapper;
 
     @Autowired
-    private KafkaTemplate<String, GridMeasurementPublishedEvent> template;
+    private KafkaTemplate<String, ScadaMeasurementPublishedEvent> template;
 
-    private GridMeasurementPublishedEventProducer producer;
-    private GridMeasurementPublishedEvent message;
+    private ScadaMeasurementPublishedEventProducer producer;
+    private ScadaMeasurementPublishedEvent message;
 
     @BeforeEach
     @SuppressWarnings("unchecked")
     public void setup() {
         this.message = this.createMessage();
         when(this.mapper.map(anyString(), any(Class.class))).thenReturn(this.message);
-        this.producer = new GridMeasurementPublishedEventProducer(this.template, this.mapper);
+        this.producer = new ScadaMeasurementPublishedEventProducer(this.template, this.mapper);
     }
 
     @Test
@@ -85,26 +87,25 @@ class GridMeasurementPublishedEventProducerTest {
         // consume the message with embeddedKafka
         final Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "true", this.embeddedKafka);
         consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        final ConsumerFactory<String, GridMeasurementPublishedEvent> consumerFactory = new DefaultKafkaConsumerFactory<>(
-                consumerProps, new StringDeserializer(), new GridMeasurementPublishedEventDeserializer());
-        final Consumer<String, GridMeasurementPublishedEvent> consumer = consumerFactory.createConsumer();
+        final ConsumerFactory<String, ScadaMeasurementPublishedEvent> consumerFactory = new DefaultKafkaConsumerFactory<>(
+                consumerProps, new StringDeserializer(), new ScadaMeasurementPublishedEventDeserializer());
+        final Consumer<String, ScadaMeasurementPublishedEvent> consumer = consumerFactory.createConsumer();
         this.embeddedKafka.consumeFromAnEmbeddedTopic(consumer, this.topic);
-        final ConsumerRecord<String, GridMeasurementPublishedEvent> received = KafkaTestUtils.getSingleRecord(consumer,
+        final ConsumerRecord<String, ScadaMeasurementPublishedEvent> received = KafkaTestUtils.getSingleRecord(consumer,
                 this.topic);
 
         // check the consumed message
         assertThat(received).has(value(this.message));
     }
 
-    private GridMeasurementPublishedEvent createMessage() {
+    private ScadaMeasurementPublishedEvent createMessage() {
         final long createdDateTime = System.currentTimeMillis();
         final String description = "description";
         final String mRid = "mRid";
-        final String kind = "GridMeasurementPublishedEvent";
         final List<Analog> measurements = new ArrayList<>();
-        final List<Name> names = new ArrayList<>();
-        final PowerSystemResource powerSystemResource = new PowerSystemResource(description, mRid, names);
-        return new GridMeasurementPublishedEvent(createdDateTime, description, mRid, kind, names, powerSystemResource,
-                measurements);
+        final ConductingEquipment powerSystemResource = new ConductingEquipment(new BaseVoltage(description, null),
+                new ArrayList<Name>());
+        return new ScadaMeasurementPublishedEvent(measurements, powerSystemResource, createdDateTime, description,
+                mRid);
     }
 }

@@ -11,12 +11,12 @@ import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
-public class GridMeasurementPublishedEventLoggingEnabled implements Condition {
+public class ScadaMeasurementPublishedEventLoggingEnabled implements Condition {
 
     @Override
     public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
         return "true".equalsIgnoreCase(
-                context.getEnvironment().getProperty("grid.measurement.published.event.kafka.logging.enabled"));
+                context.getEnvironment().getProperty("scada.measurement.published.event.kafka.logging.enabled"));
     }
 
 }

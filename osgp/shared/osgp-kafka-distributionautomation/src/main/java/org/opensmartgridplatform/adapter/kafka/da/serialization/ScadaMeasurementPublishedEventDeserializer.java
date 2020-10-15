@@ -12,14 +12,15 @@ import java.nio.ByteBuffer;
 
 import org.apache.avro.AvroRuntimeException;
 import org.apache.kafka.common.serialization.Deserializer;
-import org.opensmartgridplatform.adapter.kafka.da.avro.GridMeasurementPublishedEvent;
 
-public class GridMeasurementPublishedEventDeserializer implements Deserializer<GridMeasurementPublishedEvent> {
+import com.alliander.data.scadameasurementpublishedevent.ScadaMeasurementPublishedEvent;
+
+public class ScadaMeasurementPublishedEventDeserializer implements Deserializer<ScadaMeasurementPublishedEvent> {
 
     @Override
-    public GridMeasurementPublishedEvent deserialize(final String topic, final byte[] data) {
+    public ScadaMeasurementPublishedEvent deserialize(final String topic, final byte[] data) {
         try {
-            return GridMeasurementPublishedEvent.fromByteBuffer(ByteBuffer.wrap(data));
+            return ScadaMeasurementPublishedEvent.fromByteBuffer(ByteBuffer.wrap(data));
         } catch (final IOException e) {
             throw new AvroRuntimeException(e);
         }

@@ -7,7 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.kafka.da.application.config;
 
-import org.opensmartgridplatform.adapter.kafka.da.avro.GridMeasurementPublishedEvent;
 import org.opensmartgridplatform.shared.application.config.kafka.AbstractKafkaProducerConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,11 +15,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.kafka.core.KafkaTemplate;
 
+import com.alliander.data.scadameasurementpublishedevent.ScadaMeasurementPublishedEvent;
+
 @Configuration
-public class GridMeasurementKafkaProducerConfig extends AbstractKafkaProducerConfig<String, GridMeasurementPublishedEvent> {
+public class ScadaMeasurementKafkaProducerConfig
+        extends AbstractKafkaProducerConfig<String, ScadaMeasurementPublishedEvent> {
 
     @Autowired
-    public GridMeasurementKafkaProducerConfig(final Environment environment,
+    public ScadaMeasurementKafkaProducerConfig(final Environment environment,
             @Value("${distributionautomation.kafka.common.properties.prefix}") final String propertiesPrefix,
             @Value("${distributionautomation.kafka.topic}") final String topic) {
         super(environment, propertiesPrefix, topic);
@@ -28,7 +30,7 @@ public class GridMeasurementKafkaProducerConfig extends AbstractKafkaProducerCon
 
     @Bean("distributionAutomationKafkaTemplate")
     @Override
-    public KafkaTemplate<String, GridMeasurementPublishedEvent> kafkaTemplate() {
+    public KafkaTemplate<String, ScadaMeasurementPublishedEvent> kafkaTemplate() {
         return this.getKafkaTemplate();
     }
 }

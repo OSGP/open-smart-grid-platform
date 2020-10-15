@@ -11,33 +11,34 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import org.apache.kafka.common.serialization.Serializer;
-import org.opensmartgridplatform.adapter.kafka.da.avro.GridMeasurementPublishedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GridMeasurementPublishedEventSerializer implements Serializer<GridMeasurementPublishedEvent> {
+import com.alliander.data.scadameasurementpublishedevent.ScadaMeasurementPublishedEvent;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GridMeasurementPublishedEventSerializer.class);
+public class ScadaMeasurementPublishedEventSerializer implements Serializer<ScadaMeasurementPublishedEvent> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScadaMeasurementPublishedEventSerializer.class);
 
     @Override
-    public byte[] serialize(final String topic, final GridMeasurementPublishedEvent data) {
+    public byte[] serialize(final String topic, final ScadaMeasurementPublishedEvent data) {
         try {
             final ByteBuffer byteBuffer = data.toByteBuffer();
             final byte[] byteArray = new byte[byteBuffer.remaining()];
             byteBuffer.get(byteArray);
             return byteArray;
         } catch (final IOException e) {
-            LOGGER.error("Error during serializing GridMeasurementPublishedEvent {} for topic {}.", this.getName(data),
-                    topic, e);
+            LOGGER.error("Error during serializing ScadaMeasurementPublishedEvent {} for topic {}.",
+                    this.getDescription(data), topic, e);
             return new byte[0];
         }
     }
 
-    private CharSequence getName(final GridMeasurementPublishedEvent data) {
-        if (data == null || data.getNames() == null || data.getNames().isEmpty()) {
+    private CharSequence getDescription(final ScadaMeasurementPublishedEvent data) {
+        if (data == null || data.getDescription() == null) {
             return "unknown";
         }
-        return data.getNames().get(0).getName();
+        return data.getDescription();
     }
 
 }

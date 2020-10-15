@@ -16,12 +16,13 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.UUID;
 
-import org.opensmartgridplatform.adapter.kafka.da.avro.GridMeasurementPublishedEvent;
-import org.opensmartgridplatform.adapter.kafka.da.avro.Name;
-import org.opensmartgridplatform.adapter.kafka.da.avro.PowerSystemResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.data.scadameasurementpublishedevent.BaseVoltage;
+import com.alliander.data.scadameasurementpublishedevent.ConductingEquipment;
+import com.alliander.data.scadameasurementpublishedevent.Name;
+import com.alliander.data.scadameasurementpublishedevent.ScadaMeasurementPublishedEvent;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -33,7 +34,7 @@ import ma.glasnost.orika.metadata.Type;
 
 /**
  * Class for mapping String containing a simple measurement or ls peak shaving
- * measurement to GridMeasurementPublishedEvent
+ * measurement to ScadaMeasurementPublishedEvent
  * <p>
  * simple measurement: ean_code; voltage_L1; voltage_L2; voltage_L3;
  * current_in_L1; current_in_L2; current_in_L3; current_returned_L1;
@@ -42,15 +43,15 @@ import ma.glasnost.orika.metadata.Type;
  * ls peak shaving measurement: ean_code + the values of
  * LsPeakShavingMeasurementType seperated by semicolons.
  */
-public class GridMeasurementPublishedEventConverter extends CustomConverter<String, GridMeasurementPublishedEvent> {
+public class ScadaMeasurementPublishedEventConverter extends CustomConverter<String, ScadaMeasurementPublishedEvent> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GridMeasurementPublishedEventConverter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScadaMeasurementPublishedEventConverter.class);
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public GridMeasurementPublishedEvent convert(final String source,
-            final Type<? extends GridMeasurementPublishedEvent> destinationType, final MappingContext mappingContext) {
+    public ScadaMeasurementPublishedEvent convert(final String source,
+            final Type<? extends ScadaMeasurementPublishedEvent> destinationType, final MappingContext mappingContext) {
 
         LsMeasurementMessageToAnalogList stringArrayToAnalogList = null;
         LOGGER.debug("Source string: {}", source);
@@ -77,16 +78,15 @@ public class GridMeasurementPublishedEventConverter extends CustomConverter<Stri
             }
 
             final String eanCode = measurementValues[0];
-            final PowerSystemResource powerSystemResource = new PowerSystemResource(eanCode,
-                    UUID.randomUUID().toString(), new ArrayList<Name>());
+            final ConductingEquipment powerSystemResource = new ConductingEquipment(new BaseVoltage(eanCode, null),
+                    new ArrayList<Name>());
             final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
             dateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Amsterdam"));
             final Date date = dateFormat.parse(payload.date);
             final long createdDateTime = date.getTime();
             LOGGER.debug("CreatedDateTime: {}", createdDateTime);
-            return new GridMeasurementPublishedEvent(createdDateTime, eanCode, UUID.randomUUID().toString(),
-                    "GridMeasurementPublishedEvent", new ArrayList<Name>(), powerSystemResource,
-                    stringArrayToAnalogList.convertToAnalogList(measurementValues));
+            return new ScadaMeasurementPublishedEvent(stringArrayToAnalogList.convertToAnalogList(measurementValues),
+                    powerSystemResource, createdDateTime, eanCode, UUID.randomUUID().toString());
         } catch (final JsonMappingException e) {
             LOGGER.error("Caught an error mapping a JSON string to Payload. {}", source, e);
             return null;
@@ -110,6 +110,7 @@ public class GridMeasurementPublishedEventConverter extends CustomConverter<Stri
 
         // Super is needed to map the String to the Payload object by the
         // objectmapper.
+        @SuppressWarnings("unused")
         public Payload() {
             super();
         }
