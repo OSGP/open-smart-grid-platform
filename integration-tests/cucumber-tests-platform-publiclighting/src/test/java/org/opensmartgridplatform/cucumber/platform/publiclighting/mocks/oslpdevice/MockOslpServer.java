@@ -105,8 +105,6 @@ public class MockOslpServer {
 
     private final String keytype;
 
-    private final Integer sequenceNumberWindow;
-
     private final Integer sequenceNumberMaximum;
 
     private final Long responseDelayTime;
@@ -129,7 +127,7 @@ public class MockOslpServer {
     public MockOslpServer(final CoreDeviceConfiguration configuration, final int oslpPortServer,
             final int oslpElsterPortServer, final String oslpSignature, final String oslpSignatureProvider,
             final int connectionTimeout, final String signKeyPath, final String verifyKeyPath, final String keytype,
-            final Integer sequenceNumberWindow, final Integer sequenceNumberMaximum, final Long responseDelayTime,
+            final Integer sequenceNumberMaximum, final Long responseDelayTime,
             final Long reponseDelayRandomRange) {
         this.configuration = configuration;
         this.oslpPortServer = oslpPortServer;
@@ -140,18 +138,17 @@ public class MockOslpServer {
         this.signKeyPath = signKeyPath;
         this.verifyKeyPath = verifyKeyPath;
         this.keytype = keytype;
-        this.sequenceNumberWindow = sequenceNumberWindow;
         this.sequenceNumberMaximum = sequenceNumberMaximum;
         this.responseDelayTime = responseDelayTime;
         this.responseDelayRandomRange = reponseDelayRandomRange;
     }
 
-    public Integer getSequenceNumber(final String deviceUID) {
-        return this.devicesContext.getDeviceState(deviceUID).getSequenceNumber();
+    public Integer getSequenceNumber(final String deviceUid) {
+        return this.devicesContext.getDeviceState(deviceUid).getSequenceNumber();
     }
 
-    public void incrementSequenceNumber(final String deviceUID) {
-        this.devicesContext.getDeviceState(deviceUID).incrementSequenceNumber();
+    public void incrementSequenceNumber(final String deviceUid) {
+        this.devicesContext.getDeviceState(deviceUid).incrementSequenceNumber();
     }
 
     public void start() {
@@ -185,31 +182,32 @@ public class MockOslpServer {
         this.channelHandler.reset();
     }
 
-    public Message waitForRequest(final String deviceUID, final MessageType messageType)
+    public Message waitForRequest(final String deviceUid, final MessageType messageType)
             throws DeviceSimulatorException {
         LOGGER.info(
                 "Device {} is waiting for request of message type: {}, receivedResponses: {}",
-                deviceUID, messageType.name(), this.receivedResponses.size());
+                deviceUid, messageType.name(), this.receivedResponses.size());
 
-        final DeviceState deviceState = this.devicesContext.getDeviceState(deviceUID);
+        final DeviceState deviceState = this.devicesContext.getDeviceState(deviceUid);
+
         int count = 0;
         while (!deviceState.hasReceivedRequests(messageType)) {
             try {
                 count++;
-                LOGGER.info("Sleeping 1s {} - Device {} is waiting for a request of message type: {}", count, deviceUID, messageType.name());
+                LOGGER.info("Sleeping 1s {} - Device {} is waiting for a request of message type: {}", count, deviceUid, messageType.name());
                 Thread.sleep(1000);
             } catch (final InterruptedException e) {
-                Assertions.fail("Polling for response interrupted");
+                Assertions.fail("Polling for a requests interrupted");
             }
 
             if (count > this.configuration.getTimeout()) {
-                Assertions.fail("Polling for response failed, no reponse found");
+                Assertions.fail("Polling for requests failed, no reponse found");
             }
         }
 
-        LOGGER.info("Device {} received a request of message type: {}", deviceUID, messageType.name());
+        LOGGER.info("Device {} received a request of message type: {}", deviceUid, messageType.name());
 
-        return deviceState.getReceivedRequest(messageType);
+        return deviceState.pollReceivedRequest(messageType);
     }
 
     public OslpEnvelope send(final InetSocketAddress address, final OslpEnvelope request,
@@ -217,12 +215,12 @@ public class MockOslpServer {
         return this.channelHandler.send(address, request, deviceIdentification);
     }
 
-    public Message sendRequest(final String deviceUID, final Message message) throws DeviceSimulatorException, IOException, ParseException {
+    public Message sendRequest(final String deviceUid, final Message message) throws DeviceSimulatorException, IOException, ParseException {
 
         final OslpEnvelope envelope = new OslpEnvelope();
         envelope.setPayloadMessage(message);
 
-        return this.channelHandler.handleRequest(envelope, this.getSequenceNumber(deviceUID));
+        return this.channelHandler.handleRequest(envelope, this.getSequenceNumber(deviceUid));
     }
 
     private ServerBootstrap serverBootstrap() {
@@ -294,7 +292,7 @@ public class MockOslpServer {
         return privateKey;
     }
 
-    public void mockGetConfigurationResponse(final String deviceUID, final Oslp.Status oslpStatus, final LightType lightType,
+    public void mockGetConfigurationResponse(final String deviceUid, final Oslp.Status oslpStatus, final LightType lightType,
             final String dcLights, final String dcMap, final String rcMap, final LinkType preferredLinkType,
             final MeterType meterType, final Integer shortInterval, final Integer longInterval,
             final LongTermIntervalType intervalType, final String osgpIpAddress, final Integer osgpPort)
@@ -383,59 +381,59 @@ public class MockOslpServer {
             builder.setOsgpPortNumber(osgpPort);
         }
 
-        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUID, MessageType.GET_CONFIGURATION);
-        this.devicesContext.getDeviceState(deviceUID).addMockedResponse(MessageType.GET_CONFIGURATION,
+        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.GET_CONFIGURATION);
+        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(MessageType.GET_CONFIGURATION,
                 Oslp.Message.newBuilder().setGetConfigurationResponse(builder).build());
     }
 
-    public void mockSetConfigurationResponse(final String deviceUID, final Oslp.Status oslpStatus) {
-        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUID, MessageType.SET_CONFIGURATION);
-        this.devicesContext.getDeviceState(deviceUID).addMockedResponse(MessageType.SET_CONFIGURATION, Oslp.Message.newBuilder()
+    public void mockSetConfigurationResponse(final String deviceUid, final Oslp.Status oslpStatus) {
+        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.SET_CONFIGURATION);
+        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(MessageType.SET_CONFIGURATION, Oslp.Message.newBuilder()
                 .setSetConfigurationResponse(SetConfigurationResponse.newBuilder().setStatus(oslpStatus).build())
                 .build());
     }
 
-    public void mockGetFirmwareVersionResponse(final String deviceUID, final String firmwareVersion) {
-        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUID, MessageType.GET_FIRMWARE_VERSION);
-        this.devicesContext.getDeviceState(deviceUID).addMockedResponse(MessageType.GET_FIRMWARE_VERSION, Oslp.Message.newBuilder()
+    public void mockGetFirmwareVersionResponse(final String deviceUid, final String firmwareVersion) {
+        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.GET_FIRMWARE_VERSION);
+        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(MessageType.GET_FIRMWARE_VERSION, Oslp.Message.newBuilder()
                 .setGetFirmwareVersionResponse(GetFirmwareVersionResponse.newBuilder().setFirmwareVersion(firmwareVersion))
                 .build());
     }
 
-    public void mockUpdateFirmwareResponse(final String deviceUID, final Oslp.Status status) {
-        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUID, MessageType.UPDATE_FIRMWARE);
-        this.devicesContext.getDeviceState(deviceUID).addMockedResponse(MessageType.UPDATE_FIRMWARE, Oslp.Message.newBuilder()
+    public void mockUpdateFirmwareResponse(final String deviceUid, final Oslp.Status status) {
+        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.UPDATE_FIRMWARE);
+        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(MessageType.UPDATE_FIRMWARE, Oslp.Message.newBuilder()
                 .setUpdateFirmwareResponse(UpdateFirmwareResponse.newBuilder().setStatus(status)).build());
     }
 
-    public void mockSetLightResponse(final String deviceUID, final Oslp.Status status) {
-        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUID, MessageType.SET_LIGHT);
-        this.devicesContext.getDeviceState(deviceUID).addMockedResponse(MessageType.SET_LIGHT,
+    public void mockSetLightResponse(final String deviceUid, final Oslp.Status status) {
+        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.SET_LIGHT);
+        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(MessageType.SET_LIGHT,
                 Oslp.Message.newBuilder().setSetLightResponse(SetLightResponse.newBuilder().setStatus(status)).build());
     }
 
-    public void mockSetEventNotificationResponse(final String deviceUID, final Oslp.Status status) {
-        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUID, MessageType.SET_EVENT_NOTIFICATIONS);
-        this.devicesContext.getDeviceState(deviceUID).addMockedResponse(MessageType.SET_EVENT_NOTIFICATIONS,
+    public void mockSetEventNotificationResponse(final String deviceUid, final Oslp.Status status) {
+        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.SET_EVENT_NOTIFICATIONS);
+        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(MessageType.SET_EVENT_NOTIFICATIONS,
                 Oslp.Message.newBuilder()
                         .setSetEventNotificationsResponse(SetEventNotificationsResponse.newBuilder().setStatus(status))
                         .build());
     }
 
-    public void mockStartDeviceResponse(final String deviceUID, final Oslp.Status status) {
-        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUID, MessageType.START_SELF_TEST);
-        this.devicesContext.getDeviceState(deviceUID).addMockedResponse(MessageType.START_SELF_TEST, Oslp.Message.newBuilder()
+    public void mockStartDeviceResponse(final String deviceUid, final Oslp.Status status) {
+        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.START_SELF_TEST);
+        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(MessageType.START_SELF_TEST, Oslp.Message.newBuilder()
                 .setStartSelfTestResponse(StartSelfTestResponse.newBuilder().setStatus(status)).build());
     }
 
-    public void mockStopDeviceResponse(final String deviceUID, final com.google.protobuf.ByteString value, final Oslp.Status status) {
-        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUID, MessageType.STOP_SELF_TEST);
-        this.devicesContext.getDeviceState(deviceUID).addMockedResponse(MessageType.STOP_SELF_TEST, Oslp.Message.newBuilder()
+    public void mockStopDeviceResponse(final String deviceUid, final com.google.protobuf.ByteString value, final Oslp.Status status) {
+        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.STOP_SELF_TEST);
+        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(MessageType.STOP_SELF_TEST, Oslp.Message.newBuilder()
                 .setStopSelfTestResponse(StopSelfTestResponse.newBuilder().setSelfTestResult(value).setStatus(status))
                 .build());
     }
 
-    public void mockGetStatusResponse(final String deviceUID, final LinkType preferred, final LinkType actual, final LightType lightType,
+    public void mockGetStatusResponse(final String deviceUid, final LinkType preferred, final LinkType actual, final LightType lightType,
             final int eventNotificationMask, final Oslp.Status status, final List<LightValue> lightValues,
             final List<LightValue> tariffValues) {
 
@@ -450,37 +448,37 @@ public class MockOslpServer {
             response.addValue(tariffValue);
         }
 
-        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUID, MessageType.GET_STATUS);
-        this.devicesContext.getDeviceState(deviceUID).addMockedResponse(MessageType.GET_STATUS,
+        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.GET_STATUS);
+        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(MessageType.GET_STATUS,
                 Oslp.Message.newBuilder().setGetStatusResponse(response).build());
     }
 
-    public void mockResumeScheduleResponse(final String deviceUID, final Oslp.Status status) {
-        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUID, MessageType.RESUME_SCHEDULE);
-        this.devicesContext.getDeviceState(deviceUID).addMockedResponse(MessageType.RESUME_SCHEDULE, Oslp.Message.newBuilder()
+    public void mockResumeScheduleResponse(final String deviceUid, final Oslp.Status status) {
+        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.RESUME_SCHEDULE);
+        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(MessageType.RESUME_SCHEDULE, Oslp.Message.newBuilder()
                 .setResumeScheduleResponse(ResumeScheduleResponse.newBuilder().setStatus(status)).build());
     }
 
-    public void mockSetRebootResponse(final String deviceUID, final Oslp.Status status) {
-        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUID, MessageType.SET_REBOOT);
-        this.devicesContext.getDeviceState(deviceUID).addMockedResponse(MessageType.SET_REBOOT, Oslp.Message.newBuilder()
+    public void mockSetRebootResponse(final String deviceUid, final Oslp.Status status) {
+        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.SET_REBOOT);
+        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(MessageType.SET_REBOOT, Oslp.Message.newBuilder()
                 .setSetRebootResponse(SetRebootResponse.newBuilder().setStatus(status)).build());
     }
 
-    public void mockSetTransitionResponse(final String deviceUID, final Oslp.Status status) {
-        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUID, MessageType.SET_TRANSITION);
-        this.devicesContext.getDeviceState(deviceUID).addMockedResponse(MessageType.SET_TRANSITION, Oslp.Message.newBuilder()
+    public void mockSetTransitionResponse(final String deviceUid, final Oslp.Status status) {
+        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.SET_TRANSITION);
+        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(MessageType.SET_TRANSITION, Oslp.Message.newBuilder()
                 .setSetTransitionResponse(SetTransitionResponse.newBuilder().setStatus(status)).build());
     }
 
-    public void mockUpdateKeyResponse(final String deviceUID, final Oslp.Status status) {
-        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUID, MessageType.UPDATE_KEY);
-        this.devicesContext.getDeviceState(deviceUID).addMockedResponse(MessageType.UPDATE_KEY, Oslp.Message.newBuilder()
+    public void mockUpdateKeyResponse(final String deviceUid, final Oslp.Status status) {
+        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.UPDATE_KEY);
+        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(MessageType.UPDATE_KEY, Oslp.Message.newBuilder()
                 .setSetDeviceVerificationKeyResponse(SetDeviceVerificationKeyResponse.newBuilder().setStatus(status))
                 .build());
     }
 
-    public void mockGetLightStatusResponse(final String deviceUID, final LinkType preferred, final LinkType actual, final LightType lightType,
+    public void mockGetLightStatusResponse(final String deviceUid, final LinkType preferred, final LinkType actual, final LightType lightType,
             final int eventNotificationMask, final Oslp.Status status, final List<LightValue> lightValues) {
         final Builder response = GetStatusResponse.newBuilder().setPreferredLinktype(preferred)
                 .setActualLinktype(actual).setLightType(lightType).setEventNotificationMask(eventNotificationMask)
@@ -490,18 +488,18 @@ public class MockOslpServer {
             response.addValue(lightValue);
         }
 
-        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUID, MessageType.GET_LIGHT_STATUS);
-        this.devicesContext.getDeviceState(deviceUID).addMockedResponse(MessageType.GET_LIGHT_STATUS,
+        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.GET_LIGHT_STATUS);
+        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(MessageType.GET_LIGHT_STATUS,
                 Oslp.Message.newBuilder().setGetStatusResponse(response).build());
     }
 
-    public void mockSetScheduleResponse(final String deviceUID, final MessageType type, final Oslp.Status status) {
-        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUID, type.name());
-        this.devicesContext.getDeviceState(deviceUID).addMockedResponse(type, Oslp.Message.newBuilder()
+    public void mockSetScheduleResponse(final String deviceUid, final MessageType type, final Oslp.Status status) {
+        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, type.name());
+        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(type, Oslp.Message.newBuilder()
                 .setSetScheduleResponse(SetScheduleResponse.newBuilder().setStatus(status)).build());
     }
 
-    public void mockGetPowerUsageHistoryResponse(final String deviceUID, final Oslp.Status status, final Map<String, String[]> requestMap) {
+    public void mockGetPowerUsageHistoryResponse(final String deviceUid, final Oslp.Status status, final Map<String, String[]> requestMap) {
 
         final org.opensmartgridplatform.oslp.Oslp.GetPowerUsageHistoryResponse response;
 
@@ -517,8 +515,8 @@ public class MockOslpServer {
             response = builder.setStatus(status).build();
         }
 
-        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUID, MessageType.GET_POWER_USAGE_HISTORY);
-        this.devicesContext.getDeviceState(deviceUID).addMockedResponse(MessageType.GET_POWER_USAGE_HISTORY,
+        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.GET_POWER_USAGE_HISTORY);
+        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(MessageType.GET_POWER_USAGE_HISTORY,
                 Oslp.Message.newBuilder().setGetPowerUsageHistoryResponse(response).build());
     }
 

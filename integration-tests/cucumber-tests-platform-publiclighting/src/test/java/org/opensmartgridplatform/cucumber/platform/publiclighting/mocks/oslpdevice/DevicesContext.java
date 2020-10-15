@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Smart Society Services B.V.
+ * Copyright 2020 Alliander N.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -14,14 +14,8 @@ public class DevicesContext {
 
     private final ConcurrentMap<String, DeviceState> mockedDevicesMap = new ConcurrentHashMap<>();
 
-    public DeviceState getDeviceState(final String deviceIdentification) {
-        DeviceState deviceState = this.mockedDevicesMap.get(deviceIdentification);
-        if (deviceState == null) {
-            deviceState = new DeviceState(deviceIdentification);
-            this.mockedDevicesMap.put(deviceIdentification, deviceState);
-        }
-
-        return deviceState;
+    public DeviceState getDeviceState(final String deviceUid) {
+        return this.mockedDevicesMap.computeIfAbsent(deviceUid, DeviceState::new);
     }
 
     public void clear() {

@@ -152,7 +152,7 @@ Feature: CoreConfigurationManagement SetConfiguration
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
     And the device returns a set configuration status over "<Protocol>"
-      | Status            | FAILURE  |
+      | Status            | FAILURE   |
       | LightType         | RELAY     |
       | DcLights          |           |
       | DcMap             |           |
@@ -189,7 +189,7 @@ Feature: CoreConfigurationManagement SetConfiguration
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
     And the device returns a set configuration status over "<Protocol>"
-      | Status            | REJECTED   |
+      | Status            | REJECTED  |
       | LightType         | RELAY     |
       | DcLights          |           |
       | DcMap             |           |

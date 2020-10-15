@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Smart Society Services B.V.
+ * Copyright 2020 Alliander N.V..
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -23,7 +23,7 @@ import lombok.Setter;
 public class DeviceState {
 
     @Getter
-    private final String deviceUID;
+    private final String deviceUid;
     @Getter @Setter
     private Integer sequenceNumber = 0;
 
@@ -32,16 +32,16 @@ public class DeviceState {
     private final ConcurrentMap<MessageType, ConcurrentLinkedQueue<Oslp.Message>> mockedResponsesMap = new ConcurrentHashMap<>();
     private final ConcurrentMap<MessageType, ConcurrentLinkedQueue<Oslp.Message>> receivedRequestsMap = new ConcurrentHashMap<>();
 
-    public DeviceState(final String deviceUID) {
-        this.deviceUID = deviceUID;
+    public DeviceState(final String deviceUid) {
+        this.deviceUid = deviceUid;
     }
 
-    public Oslp.Message getMockedResponse(final MessageType messageType) throws DeviceSimulatorException {
-        return this.getFromMap(this.mockedResponsesMap, messageType);
+    public Oslp.Message pollMockedResponse(final MessageType messageType) throws DeviceSimulatorException {
+        return this.pollMessage(this.mockedResponsesMap, messageType);
     }
 
-    public Oslp.Message getReceivedRequest(final MessageType messageType) throws DeviceSimulatorException {
-        return this.getFromMap(this.receivedRequestsMap, messageType);
+    public Oslp.Message pollReceivedRequest(final MessageType messageType) throws DeviceSimulatorException {
+        return this.pollMessage(this.receivedRequestsMap, messageType);
     }
 
     public void addMockedResponse(final MessageType messageType, final Oslp.Message message) {
@@ -61,42 +61,33 @@ public class DeviceState {
     }
 
     public void incrementSequenceNumber() {
-        int numberToAddToSequenceNumberValue = 1;
+        int increment = 1;
 
-        if (ScenarioContext.current().get(PlatformKeys.NUMBER_TO_ADD_TO_SEQUENCE_NUMBER) != null) {
-            final String numberToAddAsNextSequenceNumber = ScenarioContext.current()
-                    .get(PlatformKeys.NUMBER_TO_ADD_TO_SEQUENCE_NUMBER)
-                    .toString();
-            if (!numberToAddAsNextSequenceNumber.isEmpty()) {
-                numberToAddToSequenceNumberValue = Integer.parseInt(numberToAddAsNextSequenceNumber);
-            }
+        final Object incrementObject = ScenarioContext.current().get(PlatformKeys.NUMBER_TO_ADD_TO_SEQUENCE_NUMBER);
+        if (incrementObject != null) {
+            final String numberToAddAsNextSequenceNumber = incrementObject.toString();
+            increment = Integer.parseInt(numberToAddAsNextSequenceNumber);
         }
-        int next = this.sequenceNumber + numberToAddToSequenceNumberValue;
+
+        int next = this.sequenceNumber + increment;
         if (next > SEQUENCE_NUMBER_MAXIMUM) {
-            final int sequenceNumberMaximumCross = next - SEQUENCE_NUMBER_MAXIMUM;
-            if (sequenceNumberMaximumCross >= 1) {
-                next = sequenceNumberMaximumCross - 1;
-            }
+            next -= SEQUENCE_NUMBER_MAXIMUM - 1;
         } else if (next < 0) {
-            final int sequenceNumberMaximumCross = next * -1;
-            if (sequenceNumberMaximumCross >= 1) {
-                next = SEQUENCE_NUMBER_MAXIMUM - sequenceNumberMaximumCross + 1;
-            }
+            next = SEQUENCE_NUMBER_MAXIMUM - next * -1 + 1;
         }
 
-        this.sequenceNumber = next;
+        this.setSequenceNumber(next);
     }
 
     private ConcurrentLinkedQueue<Oslp.Message> getQueue(final Map<MessageType, ConcurrentLinkedQueue<Oslp.Message>> messageMap, final MessageType messageType) {
-        messageMap.computeIfAbsent(messageType, k -> new ConcurrentLinkedQueue<>());
-        return messageMap.get(messageType);
+        return messageMap.computeIfAbsent(messageType, k -> new ConcurrentLinkedQueue<>());
     }
 
-    private Oslp.Message getFromMap(final Map<MessageType, ConcurrentLinkedQueue<Oslp.Message>> messageMap, final MessageType messageType)
+    private Oslp.Message pollMessage(final Map<MessageType, ConcurrentLinkedQueue<Oslp.Message>> messageMap, final MessageType messageType)
             throws DeviceSimulatorException {
         final Oslp.Message message = this.getQueue(messageMap, messageType).poll();
         if (message == null) {
-            throw new DeviceSimulatorException(String.format("No message of type %s found for device %s", messageType, this.deviceUID));
+            throw new DeviceSimulatorException(String.format("No message of type %s found for device %s", messageType, this.deviceUid));
         }
 
         return message;
