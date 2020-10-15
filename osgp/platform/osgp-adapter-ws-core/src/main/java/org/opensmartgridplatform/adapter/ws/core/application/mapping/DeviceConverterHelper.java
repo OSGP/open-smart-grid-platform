@@ -146,7 +146,6 @@ class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.enti
                 deviceModel.setManufacturer(manufacturer);
             }
             deviceModel.setModelCode(source.getDeviceModel().getModelCode());
-            deviceModel.setMetered(source.getDeviceModel().isMetered());
             destination.setDeviceModel(deviceModel);
         }
 

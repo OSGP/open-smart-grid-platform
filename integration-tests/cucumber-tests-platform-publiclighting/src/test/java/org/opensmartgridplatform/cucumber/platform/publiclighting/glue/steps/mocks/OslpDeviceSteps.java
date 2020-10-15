@@ -32,7 +32,6 @@ import org.junit.Assert;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.repositories.OslpDeviceRepository;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
-import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.config.CoreDeviceConfiguration;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.PlatformPubliclightingDefaults;
@@ -49,15 +48,11 @@ import org.opensmartgridplatform.oslp.Oslp.Event;
 import org.opensmartgridplatform.oslp.Oslp.EventNotification;
 import org.opensmartgridplatform.oslp.Oslp.EventNotificationRequest;
 import org.opensmartgridplatform.oslp.Oslp.EventNotificationResponse;
-import org.opensmartgridplatform.oslp.Oslp.GetPowerUsageHistoryRequest;
-import org.opensmartgridplatform.oslp.Oslp.HistoryTermType;
 import org.opensmartgridplatform.oslp.Oslp.IndexAddressMap;
 import org.opensmartgridplatform.oslp.Oslp.LightType;
 import org.opensmartgridplatform.oslp.Oslp.LightValue;
 import org.opensmartgridplatform.oslp.Oslp.LinkType;
-import org.opensmartgridplatform.oslp.Oslp.LongTermIntervalType;
 import org.opensmartgridplatform.oslp.Oslp.Message;
-import org.opensmartgridplatform.oslp.Oslp.MeterType;
 import org.opensmartgridplatform.oslp.Oslp.RegisterDeviceResponse;
 import org.opensmartgridplatform.oslp.Oslp.RelayConfiguration;
 import org.opensmartgridplatform.oslp.Oslp.ResumeScheduleRequest;
@@ -126,44 +121,6 @@ public class OslpDeviceSteps {
         assertThat(message.hasGetFirmwareVersionRequest()).isTrue();
 
         message.getGetFirmwareVersionRequest();
-    }
-
-    /**
-     * Verify that a get power usage history OSLP message is sent to the device.
-     *
-     * @param expectedParameters
-     *            The parameters expected in the message of the device.
-     */
-    @Then("^a get power usage history \"([^\"]*)\" message is sent to the device$")
-    public void aGetPowerUsageHistoryOslpMessageIsSentToTheDevice(final String protocol,
-            final Map<String, String> expectedParameters) {
-        final Message message = this.oslpMockServer.waitForRequest(MessageType.GET_POWER_USAGE_HISTORY);
-        assertThat(message).isNotNull();
-        assertThat(message.hasGetPowerUsageHistoryRequest()).isTrue();
-
-        final GetPowerUsageHistoryRequest request = message.getGetPowerUsageHistoryRequest();
-        assertThat(request.getTermType())
-                .isEqualTo(getEnum(expectedParameters, PlatformPubliclightingKeys.HISTORY_TERM_TYPE,
-                        HistoryTermType.class, PlatformPubliclightingDefaults.DEFAULT_OSLP_HISTORY_TERM_TYPE));
-
-        if (expectedParameters.containsKey(PlatformPubliclightingKeys.KEY_PAGE)
-                && !expectedParameters.get(PlatformPubliclightingKeys.KEY_PAGE).isEmpty()) {
-            assertThat(request.getPage())
-                    .isEqualTo((int) getInteger(expectedParameters, PlatformPubliclightingKeys.KEY_PAGE));
-
-        }
-        if (expectedParameters.containsKey(PlatformPubliclightingKeys.START_TIME)
-                && !expectedParameters.get(PlatformPubliclightingKeys.START_TIME).isEmpty()
-                && expectedParameters.get(PlatformPubliclightingKeys.START_TIME) != null) {
-            assertThat(request.getTimePeriod().getStartTime())
-                    .isEqualTo(getString(expectedParameters, PlatformPubliclightingKeys.START_TIME));
-        }
-        if (expectedParameters.containsKey(PlatformPubliclightingKeys.END_TIME)
-                && !expectedParameters.get(PlatformPubliclightingKeys.END_TIME).isEmpty()
-                && expectedParameters.get(PlatformPubliclightingKeys.END_TIME) != null) {
-            assertThat(request.getTimePeriod().getEndTime())
-                    .isEqualTo(getString(expectedParameters, PlatformPubliclightingKeys.END_TIME));
-        }
     }
 
     /**
@@ -333,32 +290,6 @@ public class OslpDeviceSteps {
                 && receivedConfiguration.getPreferredLinkType() != null) {
             assertThat(receivedConfiguration.getPreferredLinkType())
                     .isEqualTo(getEnum(expectedResponseData, PlatformKeys.KEY_PREFERRED_LINKTYPE, LinkType.class));
-        }
-
-        if (!StringUtils.isEmpty(expectedResponseData.get(PlatformKeys.METER_TYPE))
-                && receivedConfiguration.getMeterType() != null) {
-            final MeterType meterType = getEnum(expectedResponseData, PlatformKeys.METER_TYPE, MeterType.class);
-            assertThat(receivedConfiguration.getMeterType()).isEqualTo(meterType);
-        }
-
-        if (!StringUtils.isEmpty(expectedResponseData.get(PlatformKeys.SHORT_INTERVAL))
-                && receivedConfiguration.getShortTermHistoryIntervalMinutes() != 0) {
-            assertThat(receivedConfiguration.getShortTermHistoryIntervalMinutes())
-                    .isEqualTo((int) getInteger(expectedResponseData, PlatformKeys.SHORT_INTERVAL,
-                            PlatformDefaults.DEFAULT_SHORT_INTERVAL));
-        }
-
-        if (!StringUtils.isEmpty(expectedResponseData.get(PlatformKeys.LONG_INTERVAL))
-                && receivedConfiguration.getLongTermHistoryInterval() != 0) {
-            assertThat(receivedConfiguration.getLongTermHistoryInterval())
-                    .isEqualTo((int) getInteger(expectedResponseData, PlatformKeys.LONG_INTERVAL,
-                            PlatformDefaults.DEFAULT_LONG_INTERVAL));
-        }
-
-        if (!StringUtils.isEmpty(expectedResponseData.get(PlatformKeys.INTERVAL_TYPE))
-                && receivedConfiguration.getLongTermHistoryIntervalType() != null) {
-            assertThat(receivedConfiguration.getLongTermHistoryIntervalType())
-                    .isEqualTo(getEnum(expectedResponseData, PlatformKeys.INTERVAL_TYPE, LongTermIntervalType.class));
         }
 
         if (!StringUtils.isEmpty(expectedResponseData.get(PlatformKeys.OSGP_IP_ADDRESS))) {
@@ -687,18 +618,6 @@ public class OslpDeviceSteps {
     @Given("^the device returns a get configuration status \"([^\"]*)\" over \"([^\"]*)\"$")
     public void theDeviceReturnsAGetConfigurationStatusWithResultOverOSLP(final String result, final String protocol,
             final Map<String, String> requestParameters) throws UnknownHostException {
-        // Note: This piece of code has been made because there are multiple
-        // enumerations with the name MeterType, but not all of them has all
-        // values the same. Some with underscore and some without.
-        final MeterType meterType;
-        final String sMeterType = getString(requestParameters, PlatformPubliclightingKeys.METER_TYPE, "");
-        if (!sMeterType.contains("_") && sMeterType.equals(String.valueOf(MeterType.P1_VALUE))) {
-            final String[] sMeterTypeArray = sMeterType.split("");
-            meterType = MeterType.valueOf(sMeterTypeArray[0] + "_" + sMeterTypeArray[1]);
-        } else {
-            meterType = getEnum(requestParameters, PlatformPubliclightingKeys.METER_TYPE, MeterType.class,
-                    PlatformPubliclightingDefaults.DEFAULT_OSLP_METER_TYPE);
-        }
 
         final String osgpIpAddress = getString(requestParameters, PlatformPubliclightingKeys.OSGP_IP_ADDRESS);
         final String osgpIpAddressMock;
@@ -719,40 +638,8 @@ public class OslpDeviceSteps {
                         PlatformPubliclightingDefaults.DEFAULT_RELAY_CONFIGURATION),
                 getEnum(requestParameters, PlatformPubliclightingKeys.KEY_PREFERRED_LINKTYPE, LinkType.class,
                         PlatformPubliclightingDefaults.DEFAULT_PREFERRED_LINKTYPE),
-                meterType,
-                getInteger(requestParameters, PlatformPubliclightingKeys.SHORT_INTERVAL,
-                        PlatformPubliclightingDefaults.SHORT_INTERVAL),
-                getInteger(requestParameters, PlatformPubliclightingKeys.LONG_INTERVAL,
-                        PlatformPubliclightingDefaults.LONG_INTERVAL),
-                requestParameters.containsKey(PlatformPubliclightingKeys.INTERVAL_TYPE)
-                        ? getEnum(requestParameters, PlatformPubliclightingKeys.INTERVAL_TYPE,
-                                LongTermIntervalType.class)
-                        : PlatformPubliclightingDefaults.DEFAULT_INTERVAL_TYPE,
                 osgpIpAddressMock, getInteger(requestParameters, PlatformPubliclightingKeys.OSGP_PORT,
                         PlatformPubliclightingDefaults.DEFAULT_OSLP_PORT));
-    }
-
-    /**
-     * Setup method to get the power usage history which should be returned by
-     * the mock.
-     */
-    @Given("^the device returns a get power usage history response \"([^\"]*)\" over \"([^\"]*)\"$")
-    public void theDeviceReturnsAGetPowerUsageHistoryOverOSLP(final String result, final String protocol,
-            final Map<String, String> requestParameters) {
-
-        final Map<String, String[]> requestMap = new HashMap<>();
-
-        for (final String key : requestParameters.keySet()) {
-            final String[] values;
-            if (requestParameters.get(key) == null) {
-                values = new String[] { "" };
-            } else {
-                values = requestParameters.get(key).split(PlatformPubliclightingKeys.SEPARATOR_SPACE_COLON_SPACE);
-            }
-            requestMap.put(key, values);
-        }
-
-        this.oslpMockServer.mockGetPowerUsageHistoryResponse(Enum.valueOf(Status.class, result), requestMap);
     }
 
     /**

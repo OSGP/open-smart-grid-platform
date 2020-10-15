@@ -9,7 +9,6 @@ package org.opensmartgridplatform.cucumber.platform;
 
 import org.joda.time.DateTime;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
-import org.opensmartgridplatform.domain.core.valueobjects.LongTermIntervalType;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayType;
 
 /**
@@ -55,7 +54,6 @@ public class PlatformDefaults {
     public static final String DEFAULT_DEVICE_IDENTIFICATION = "TD01";
     public static final String DEFAULT_DEVICE_MODEL_DESCRIPTION = "Test Model";
     public static final String DEFAULT_DEVICE_MODEL_MANUFACTURER = "Test";
-    public static final Boolean DEFAULT_DEVICE_MODEL_METERED = true;
     public static final String DEFAULT_DEVICE_MODEL_MODEL_CODE = "Test";
     public static final String DEFAULT_DEVICE_MODEL_NAME = "Test Model";
     public static final String DEFAULT_DEVICE_OUTPUT_SETTING_ALIAS = "Continues burner";
@@ -92,7 +90,6 @@ public class PlatformDefaults {
     public static final String DEFAULT_LIGHTVALUES = "";
     public static final String DEFAULT_TARIFFVALUES = "";
 
-    public static final Integer DEFAULT_LONG_INTERVAL = 1;
     public static final Float DEFAULT_LONGITUDE = null;
     public static final String DEFAULT_LONGITUDE_STRING = null;
     public static final String DEFAULT_MANUFACTURER_CODE = "Test";
@@ -124,7 +121,6 @@ public class PlatformDefaults {
     public static final String DEFAULT_RECORD_TIME = "";
 
     public static final String DEFAULT_SCHEDULED_TIME = "tomorrow at noon";
-    public static final Integer DEFAULT_SHORT_INTERVAL = 15;
     public static final String DEFAULT_SMART_METER_DEVICE_IDENTIFICATION = "TEST1024000000001";
     public static final String DEFAULT_SMART_METER_GAS_DEVICE_IDENTIFICATION = "TESTG102400000001";
     public static final String DEFAULT_SUPPLIER = "Kaifa";
@@ -151,12 +147,9 @@ public class PlatformDefaults {
     public static final Boolean EVENTS_NODELIST_EXPECTED = false;
     public static final String EXPECTED_RESULT_OK = "OK";
     public static final DateTime EXPIRYDATECONTRACT = DateTime.now().plusWeeks(1);
-    public static final LongTermIntervalType INTERVAL_TYPE = LongTermIntervalType.DAYS;
-    public static final Integer LONG_INTERVAL = 1;
     public static final String PHONENUMBER = "+31 43 1234567";
     public static final org.opensmartgridplatform.domain.core.valueobjects.PlatformFunctionGroup PLATFORM_FUNCTION_GROUP = org.opensmartgridplatform.domain.core.valueobjects.PlatformFunctionGroup.ADMIN;
     public static final org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup DEVICE_FUNCTION_GROUP = org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup.OWNER;
-    public static final Integer SHORT_INTERVAL = 15;
     public static final String SMART_METER_E = "SMART_METER_E";
     public static final String SMART_METER_G = "SMART_METER_G";
 
@@ -220,9 +213,8 @@ public class PlatformDefaults {
     public static final Short DEFAULT_ASTRONOMICAL_SUNRISE_OFFSET = 0;
     public static final Short DEFAULT_ASTRONOMICAL_SUNSET_OFFSET = 0;
     public static final Long NON_EXISTENT_PROTOCOL_INFO_ID = -1L;
-    
+
     public static final String DOMAIN = "DISTRIBUTION_AUTOMATION";
     public static final String DOMAIN_VERSION = "1.0";
-    
-    
+
 }

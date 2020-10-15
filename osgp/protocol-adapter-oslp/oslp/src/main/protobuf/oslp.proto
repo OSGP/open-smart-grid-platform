@@ -308,22 +308,27 @@ message ConfirmRegisterDeviceResponse {
 }
 
 // ========= Monitoring
+
+// Deprecated, no longer supported by the platform.
 message GetPowerUsageHistoryRequest {
     required TimePeriod timePeriod = 1;
     optional uint32 page = 2;
     required HistoryTermType termType = 3;
 }
 
+// Deprecated, no longer supported by the platform.
 message GetPowerUsageHistoryResponse {
     required Status status = 1;
     repeated PowerUsageData powerUsageData = 2; // [(nanopb).max_count = 20]; 
     optional PageInfo pageInfo = 3;
 }
 
+// Deprecated, no longer supported by the platform.
 message GetActualPowerUsageRequest {
     optional bool present = 1 [default = true];
 }
 
+// Deprecated, no longer supported by the platform.
 message GetActualPowerUsageResponse {
     required Status status = 1;
     required PowerUsageData powerUsageData = 2;
@@ -415,11 +420,13 @@ message PageInfo {
     required uint32 totalPages = 3;
 }
 
+// Deprecated, no longer supported by the platform.
 message TimePeriod {
     required string startTime = 1; // [(nanopb).max_size = 15]; // - Format YYYYMMDDhhmmss UTC.
     required string endTime = 2; // [(nanopb).max_size = 15];   // - format YYYYMMDDhhmmss UTC.
 }
 
+// Deprecated, no longer supported by the platform.
 message PowerUsageData {
     required string recordTime = 1; // [(nanopb).max_size = 15];    // Record time - format YYYYMMDDhhmmss UTC.
     required MeterType meterType = 2;                               // Meter type (P1, Pulse, Aux).
@@ -433,6 +440,7 @@ message PsldData {
     required uint32 totalLightingHours = 1; // Total lighting hours
 }
 
+// Deprecated, no longer supported by the platform.
 message SsldData {
     required uint32 actualCurrent1 = 1;             // Instantaneous current L1 in mA.
     required uint32 actualCurrent2 = 2;             // Instantaneous current L2 in mA.
@@ -584,6 +592,7 @@ enum RelayType {
     TARIFF = 2;
 }
 
+// Deprecated, no longer supported by the platform.
 enum MeterType {
     MT_NOT_SET = 0;
     P1 = 1;
@@ -598,12 +607,14 @@ enum LinkType {
     ETHERNET = 3;
 }
 
+// Deprecated, no longer supported by the platform.
 enum LongTermIntervalType {
     LT_INT_NOT_SET = 0;
     DAYS = 1;
     MONTHS = 2;
 }
 
+// Deprecated, no longer supported by the platform.
 enum HistoryTermType {
     Short = 0;
     Long = 1;

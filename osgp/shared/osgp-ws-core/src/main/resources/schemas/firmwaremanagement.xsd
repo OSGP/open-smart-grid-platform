@@ -489,8 +489,6 @@
           </xsd:restriction>
         </xsd:simpleType>
       </xsd:element>
-      <xsd:element name="Metered" type="xsd:boolean"
-        minOccurs="1" maxOccurs="1" />
     </xsd:sequence>
   </xsd:complexType>
 
