@@ -53,19 +53,6 @@ public class DeviceModel extends AbstractEntity implements Comparable<DeviceMode
         this.fileStorage = fileStorage;
     }
 
-//    public DeviceModel(final Manufacturer manufacturer, final String modelCode, final String description,
-//            final boolean fileStorage, final boolean metered) {
-//        this(manufacturer, modelCode, description, metered);
-//        this.fileStorage = fileStorage;
-//    }
-
-//    public DeviceModel(final Manufacturer manufacturer, final String modelCode) {
-//        this.manufacturer = manufacturer;
-//        this.modelCode = modelCode;
-//        // default behavior is true
-//        this.fileStorage = true;
-//    }
-
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) {
