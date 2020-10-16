@@ -27,14 +27,14 @@ import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
  */
 public class AttributeDirectory {
 
+    private static final Map<InterfaceClass, Class<? extends AttributeClass>> classes = new EnumMap<>(
+            InterfaceClass.class);
+
     private AttributeDirectory() {
         throw new AssertionError("Utility class");
     }
 
-    private static final Map<InterfaceClass, Class<? extends AttributeClass>> classes;
-
     static {
-        classes = new EnumMap<>(InterfaceClass.class);
         classes.put(DataAttribute.INTERFACE_CLASS, DataAttribute.class);
         classes.put(RegisterAttribute.INTERFACE_CLASS, RegisterAttribute.class);
         classes.put(ExtendedRegisterAttribute.INTERFACE_CLASS, ExtendedRegisterAttribute.class);

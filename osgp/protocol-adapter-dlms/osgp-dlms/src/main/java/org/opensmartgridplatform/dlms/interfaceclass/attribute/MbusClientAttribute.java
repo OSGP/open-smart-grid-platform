@@ -41,15 +41,15 @@ public enum MbusClientAttribute implements AttributeClass {
 
     static final InterfaceClass INTERFACE_CLASS = InterfaceClass.MBUS_CLIENT;
 
-    private MbusClientAttribute(final int id) {
-        this.id = id;
-    }
+    private final int attributeId;
 
-    private int id;
+    private MbusClientAttribute(final int attributeId) {
+        this.attributeId = attributeId;
+    }
 
     @Override
     public int attributeId() {
-        return this.id;
+        return this.attributeId;
     }
 
     @Override

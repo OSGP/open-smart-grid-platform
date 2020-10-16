@@ -34,10 +34,10 @@ public enum ImageTransferAttribute implements AttributeClass {
 
     static final InterfaceClass INTERFACE_CLASS = InterfaceClass.IMAGE_TRANSFER;
 
-    private final int id;
+    private final int attributeId;
 
-    private ImageTransferAttribute(final int id) {
-        this.id = id;
+    private ImageTransferAttribute(final int attributeId) {
+        this.attributeId = attributeId;
     }
 
     @Override
@@ -47,7 +47,7 @@ public enum ImageTransferAttribute implements AttributeClass {
 
     @Override
     public int attributeId() {
-        return this.id;
+        return this.attributeId;
     }
 
     @Override

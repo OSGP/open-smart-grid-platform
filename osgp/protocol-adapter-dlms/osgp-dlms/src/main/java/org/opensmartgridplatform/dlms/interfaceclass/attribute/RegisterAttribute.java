@@ -30,15 +30,15 @@ public enum RegisterAttribute implements AttributeClass {
 
     static final InterfaceClass INTERFACE_CLASS = InterfaceClass.REGISTER;
 
-    private int id;
+    private final int attributeId;
 
-    private RegisterAttribute(final int id) {
-        this.id = id;
+    private RegisterAttribute(final int attributeId) {
+        this.attributeId = attributeId;
     }
 
     @Override
     public int attributeId() {
-        return this.id;
+        return this.attributeId;
     }
 
     @Override

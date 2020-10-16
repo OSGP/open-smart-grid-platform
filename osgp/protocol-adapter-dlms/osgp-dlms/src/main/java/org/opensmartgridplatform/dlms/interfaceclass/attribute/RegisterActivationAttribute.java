@@ -31,15 +31,15 @@ public enum RegisterActivationAttribute implements AttributeClass {
 
     static final InterfaceClass INTERFACE_CLASS = InterfaceClass.REGISTER_ACTIVATION;
 
-    private int id;
+    private final int attributeId;
 
-    private RegisterActivationAttribute(final int id) {
-        this.id = id;
+    private RegisterActivationAttribute(final int attributeId) {
+        this.attributeId = attributeId;
     }
 
     @Override
     public int attributeId() {
-        return this.id;
+        return this.attributeId;
     }
 
     @Override

@@ -29,15 +29,15 @@ public enum ScheduleAttribute implements AttributeClass {
 
     static final InterfaceClass INTERFACE_CLASS = InterfaceClass.SCRIPT_TABLE;
 
-    private int id;
+    private final int attributeId;
 
-    private ScheduleAttribute(final int id) {
-        this.id = id;
+    private ScheduleAttribute(final int attributeId) {
+        this.attributeId = attributeId;
     }
 
     @Override
     public int attributeId() {
-        return this.id;
+        return this.attributeId;
     }
 
     @Override

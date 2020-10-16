@@ -29,15 +29,15 @@ public enum SpecialDaysTableAttribute implements AttributeClass {
 
     static final InterfaceClass INTERFACE_CLASS = InterfaceClass.SPECIAL_DAYS_TABLE;
 
-    private int id;
+    private final int attributeId;
 
-    private SpecialDaysTableAttribute(final int id) {
-        this.id = id;
+    private SpecialDaysTableAttribute(final int attributeId) {
+        this.attributeId = attributeId;
     }
 
     @Override
     public int attributeId() {
-        return this.id;
+        return this.attributeId;
     }
 
     @Override

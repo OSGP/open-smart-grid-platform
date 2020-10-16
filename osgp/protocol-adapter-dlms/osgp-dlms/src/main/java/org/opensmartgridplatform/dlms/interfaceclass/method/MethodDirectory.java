@@ -31,10 +31,10 @@ public class MethodDirectory {
         throw new AssertionError("Utility class");
     }
 
-    private static final Map<InterfaceClass, Class<? extends MethodClass>> classes;
+    private static final Map<InterfaceClass, Class<? extends MethodClass>> classes = new EnumMap<>(
+            InterfaceClass.class);
 
     static {
-        classes = new EnumMap<>(InterfaceClass.class);
         classes.put(RegisterMethod.INTERFACE_CLASS, RegisterMethod.class);
         classes.put(ExtendedRegisterMethod.INTERFACE_CLASS, ExtendedRegisterMethod.class);
         classes.put(DemandRegisterMethod.INTERFACE_CLASS, DemandRegisterMethod.class);

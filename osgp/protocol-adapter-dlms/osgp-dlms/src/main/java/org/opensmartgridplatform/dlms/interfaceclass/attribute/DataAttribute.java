@@ -29,15 +29,15 @@ public enum DataAttribute implements AttributeClass {
 
     static final InterfaceClass INTERFACE_CLASS = InterfaceClass.DATA;
 
-    private int id;
+    private final int attributeId;
 
-    private DataAttribute(final int id) {
-        this.id = id;
+    private DataAttribute(final int attributeId) {
+        this.attributeId = attributeId;
     }
 
     @Override
     public int attributeId() {
-        return this.id;
+        return this.attributeId;
     }
 
     @Override

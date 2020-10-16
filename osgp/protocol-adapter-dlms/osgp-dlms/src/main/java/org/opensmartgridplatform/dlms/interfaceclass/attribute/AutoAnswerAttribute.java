@@ -33,15 +33,15 @@ public enum AutoAnswerAttribute implements AttributeClass {
 
     static final InterfaceClass INTERFACE_CLASS = InterfaceClass.AUTO_ANSWER;
 
-    private int id;
+    private final int attributeId;
 
     private AutoAnswerAttribute(final int attributeId) {
-        this.id = attributeId;
+        this.attributeId = attributeId;
     }
 
     @Override
     public int attributeId() {
-        return this.id;
+        return this.attributeId;
     }
 
     @Override

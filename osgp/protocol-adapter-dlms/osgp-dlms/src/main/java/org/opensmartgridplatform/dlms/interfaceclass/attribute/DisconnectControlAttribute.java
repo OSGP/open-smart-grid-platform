@@ -31,10 +31,10 @@ public enum DisconnectControlAttribute implements AttributeClass {
 
     static final InterfaceClass INTERFACE_CLASS = InterfaceClass.DISCONNECT_CONTROL;
 
-    private final int id;
+    private final int attributeId;
 
-    private DisconnectControlAttribute(final int id) {
-        this.id = id;
+    private DisconnectControlAttribute(final int attributeId) {
+        this.attributeId = attributeId;
     }
 
     @Override
@@ -44,7 +44,7 @@ public enum DisconnectControlAttribute implements AttributeClass {
 
     @Override
     public int attributeId() {
-        return this.id;
+        return this.attributeId;
     }
 
     @Override
