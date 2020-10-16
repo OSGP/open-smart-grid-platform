@@ -19,16 +19,11 @@ import java.security.spec.InvalidKeySpecException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.cucumber.core.Wait;
-import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.config.CoreDeviceConfiguration;
-import org.opensmartgridplatform.cucumber.platform.publiclighting.PlatformPubliclightingKeys;
 import org.opensmartgridplatform.oslp.Oslp;
 import org.opensmartgridplatform.oslp.Oslp.DaliConfiguration;
 import org.opensmartgridplatform.oslp.Oslp.GetConfigurationResponse;
@@ -39,13 +34,8 @@ import org.opensmartgridplatform.oslp.Oslp.IndexAddressMap;
 import org.opensmartgridplatform.oslp.Oslp.LightType;
 import org.opensmartgridplatform.oslp.Oslp.LightValue;
 import org.opensmartgridplatform.oslp.Oslp.LinkType;
-import org.opensmartgridplatform.oslp.Oslp.LongTermIntervalType;
 import org.opensmartgridplatform.oslp.Oslp.Message;
-import org.opensmartgridplatform.oslp.Oslp.MeterType;
-import org.opensmartgridplatform.oslp.Oslp.PowerUsageData;
-import org.opensmartgridplatform.oslp.Oslp.PsldData;
 import org.opensmartgridplatform.oslp.Oslp.RelayConfiguration;
-import org.opensmartgridplatform.oslp.Oslp.RelayData;
 import org.opensmartgridplatform.oslp.Oslp.RelayType;
 import org.opensmartgridplatform.oslp.Oslp.ResumeScheduleResponse;
 import org.opensmartgridplatform.oslp.Oslp.SetConfigurationResponse;
@@ -55,7 +45,6 @@ import org.opensmartgridplatform.oslp.Oslp.SetLightResponse;
 import org.opensmartgridplatform.oslp.Oslp.SetRebootResponse;
 import org.opensmartgridplatform.oslp.Oslp.SetScheduleResponse;
 import org.opensmartgridplatform.oslp.Oslp.SetTransitionResponse;
-import org.opensmartgridplatform.oslp.Oslp.SsldData;
 import org.opensmartgridplatform.oslp.Oslp.StartSelfTestResponse;
 import org.opensmartgridplatform.oslp.Oslp.StopSelfTestResponse;
 import org.opensmartgridplatform.oslp.Oslp.UpdateFirmwareResponse;
@@ -69,7 +58,6 @@ import org.opensmartgridplatform.shared.security.CertificateHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
 import com.google.protobuf.ByteString;
 
 import io.netty.bootstrap.Bootstrap;
@@ -127,8 +115,7 @@ public class MockOslpServer {
     public MockOslpServer(final CoreDeviceConfiguration configuration, final int oslpPortServer,
             final int oslpElsterPortServer, final String oslpSignature, final String oslpSignatureProvider,
             final int connectionTimeout, final String signKeyPath, final String verifyKeyPath, final String keytype,
-            final Integer sequenceNumberMaximum, final Long responseDelayTime,
-            final Long reponseDelayRandomRange) {
+            final Integer sequenceNumberMaximum, final Long responseDelayTime, final Long reponseDelayRandomRange) {
         this.configuration = configuration;
         this.oslpPortServer = oslpPortServer;
         this.oslpElsterPortServer = oslpElsterPortServer;
@@ -154,7 +141,8 @@ public class MockOslpServer {
     public void start() {
         this.channelHandler = new MockOslpChannelHandler(this.oslpSignature, this.oslpSignatureProvider,
                 this.connectionTimeout, this.sequenceNumberMaximum, this.responseDelayTime,
-                this.responseDelayRandomRange, this.privateKey(), this.clientBootstrap(), this.devicesContext, this.receivedResponses);
+                this.responseDelayRandomRange, this.privateKey(), this.clientBootstrap(), this.devicesContext,
+                this.receivedResponses);
 
         this.serverBossGroup = new DisposableNioEventLoopGroup();
         this.serverWorkerGroup = new DisposableNioEventLoopGroup();
@@ -184,9 +172,8 @@ public class MockOslpServer {
 
     public Message waitForRequest(final String deviceUid, final MessageType messageType)
             throws DeviceSimulatorException {
-        LOGGER.info(
-                "Device {} is waiting for request of message type: {}, receivedResponses: {}",
-                deviceUid, messageType.name(), this.receivedResponses.size());
+        LOGGER.info("Device {} is waiting for request of message type: {}, receivedResponses: {}", deviceUid,
+                messageType.name(), this.receivedResponses.size());
 
         final DeviceState deviceState = this.devicesContext.getDeviceState(deviceUid);
 
@@ -194,14 +181,15 @@ public class MockOslpServer {
         while (!deviceState.hasReceivedRequests(messageType)) {
             try {
                 count++;
-                LOGGER.info("Sleeping 1s {} - Device {} is waiting for a request of message type: {}", count, deviceUid, messageType.name());
+                LOGGER.info("Sleeping 1s {} - Device {} is waiting for a request of message type: {}", count, deviceUid,
+                        messageType.name());
                 Thread.sleep(1000);
             } catch (final InterruptedException e) {
-                Assertions.fail("Polling for a requests interrupted");
+                Assertions.fail("Polling for a request interrupted");
             }
 
             if (count > this.configuration.getTimeout()) {
-                Assertions.fail("Polling for requests failed, no reponse found");
+                Assertions.fail("Polling for a request failed, no request found");
             }
         }
 
@@ -215,7 +203,8 @@ public class MockOslpServer {
         return this.channelHandler.send(address, request, deviceIdentification);
     }
 
-    public Message sendRequest(final String deviceUid, final Message message) throws DeviceSimulatorException, IOException, ParseException {
+    public Message sendRequest(final String deviceUid, final Message message)
+            throws DeviceSimulatorException, IOException, ParseException {
 
         final OslpEnvelope envelope = new OslpEnvelope();
         envelope.setPayloadMessage(message);
@@ -292,10 +281,9 @@ public class MockOslpServer {
         return privateKey;
     }
 
-    public void mockGetConfigurationResponse(final String deviceUid, final Oslp.Status oslpStatus, final LightType lightType,
-            final String dcLights, final String dcMap, final String rcMap, final LinkType preferredLinkType,
-            final MeterType meterType, final Integer shortInterval, final Integer longInterval,
-            final LongTermIntervalType intervalType, final String osgpIpAddress, final Integer osgpPort)
+    public void mockGetConfigurationResponse(final String deviceUid, final Oslp.Status oslpStatus,
+            final LightType lightType, final String dcLights, final String dcMap, final String rcMap,
+            final LinkType preferredLinkType, final String osgpIpAddress, final Integer osgpPort)
             throws UnknownHostException {
 
         final String[] dcMapArray;
@@ -362,16 +350,15 @@ public class MockOslpServer {
             builder.setPreferredLinkType(preferredLinkType);
         }
 
-        if (meterType != null && meterType != MeterType.MT_NOT_SET) {
-            builder.setMeterType(meterType);
-        }
-
-        builder.setShortTermHistoryIntervalMinutes(shortInterval);
-        builder.setLongTermHistoryInterval(longInterval);
-
-        if (intervalType != null && intervalType != LongTermIntervalType.LT_INT_NOT_SET) {
-            builder.setLongTermHistoryIntervalType(intervalType);
-        }
+        /*
+         * MeterType, ShortTermHistoryIntervalMinutes, LongTermHistoryInterval
+         * and LongTermHistoryIntervalType were part of the platform and the
+         * protocol adapter, but they have been removed. Mock some values here
+         * for OSLP, since they are still part of the OSLP protocol as installed
+         * on the actual devices.
+         */
+        builder.setShortTermHistoryIntervalMinutes(0);
+        builder.setLongTermHistoryInterval(0);
 
         if (StringUtils.isNotEmpty(osgpIpAddress)) {
             builder.setOspgIpAddress(ByteString.copyFrom(InetAddress.getByName(osgpIpAddress).getAddress()));
@@ -382,63 +369,88 @@ public class MockOslpServer {
         }
 
         LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.GET_CONFIGURATION);
-        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(MessageType.GET_CONFIGURATION,
-                Oslp.Message.newBuilder().setGetConfigurationResponse(builder).build());
+        this.devicesContext.getDeviceState(deviceUid)
+                .addMockedResponse(MessageType.GET_CONFIGURATION,
+                        Oslp.Message.newBuilder().setGetConfigurationResponse(builder).build());
     }
 
     public void mockSetConfigurationResponse(final String deviceUid, final Oslp.Status oslpStatus) {
         LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.SET_CONFIGURATION);
-        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(MessageType.SET_CONFIGURATION, Oslp.Message.newBuilder()
-                .setSetConfigurationResponse(SetConfigurationResponse.newBuilder().setStatus(oslpStatus).build())
-                .build());
+        this.devicesContext.getDeviceState(deviceUid)
+                .addMockedResponse(MessageType.SET_CONFIGURATION,
+                        Oslp.Message.newBuilder()
+                                .setSetConfigurationResponse(
+                                        SetConfigurationResponse.newBuilder().setStatus(oslpStatus).build())
+                                .build());
     }
 
     public void mockGetFirmwareVersionResponse(final String deviceUid, final String firmwareVersion) {
         LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.GET_FIRMWARE_VERSION);
-        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(MessageType.GET_FIRMWARE_VERSION, Oslp.Message.newBuilder()
-                .setGetFirmwareVersionResponse(GetFirmwareVersionResponse.newBuilder().setFirmwareVersion(firmwareVersion))
-                .build());
+        this.devicesContext.getDeviceState(deviceUid)
+                .addMockedResponse(MessageType.GET_FIRMWARE_VERSION,
+                        Oslp.Message.newBuilder()
+                                .setGetFirmwareVersionResponse(
+                                        GetFirmwareVersionResponse.newBuilder().setFirmwareVersion(firmwareVersion))
+                                .build());
     }
 
     public void mockUpdateFirmwareResponse(final String deviceUid, final Oslp.Status status) {
         LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.UPDATE_FIRMWARE);
-        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(MessageType.UPDATE_FIRMWARE, Oslp.Message.newBuilder()
-                .setUpdateFirmwareResponse(UpdateFirmwareResponse.newBuilder().setStatus(status)).build());
+        this.devicesContext.getDeviceState(deviceUid)
+                .addMockedResponse(MessageType.UPDATE_FIRMWARE,
+                        Oslp.Message.newBuilder()
+                                .setUpdateFirmwareResponse(UpdateFirmwareResponse.newBuilder().setStatus(status))
+                                .build());
     }
 
     public void mockSetLightResponse(final String deviceUid, final Oslp.Status status) {
         LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.SET_LIGHT);
-        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(MessageType.SET_LIGHT,
-                Oslp.Message.newBuilder().setSetLightResponse(SetLightResponse.newBuilder().setStatus(status)).build());
+        this.devicesContext.getDeviceState(deviceUid)
+                .addMockedResponse(MessageType.SET_LIGHT,
+                        Oslp.Message.newBuilder()
+                                .setSetLightResponse(SetLightResponse.newBuilder().setStatus(status))
+                                .build());
     }
 
     public void mockSetEventNotificationResponse(final String deviceUid, final Oslp.Status status) {
         LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.SET_EVENT_NOTIFICATIONS);
-        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(MessageType.SET_EVENT_NOTIFICATIONS,
-                Oslp.Message.newBuilder()
-                        .setSetEventNotificationsResponse(SetEventNotificationsResponse.newBuilder().setStatus(status))
-                        .build());
+        this.devicesContext.getDeviceState(deviceUid)
+                .addMockedResponse(MessageType.SET_EVENT_NOTIFICATIONS,
+                        Oslp.Message.newBuilder()
+                                .setSetEventNotificationsResponse(
+                                        SetEventNotificationsResponse.newBuilder().setStatus(status))
+                                .build());
     }
 
     public void mockStartDeviceResponse(final String deviceUid, final Oslp.Status status) {
         LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.START_SELF_TEST);
-        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(MessageType.START_SELF_TEST, Oslp.Message.newBuilder()
-                .setStartSelfTestResponse(StartSelfTestResponse.newBuilder().setStatus(status)).build());
+        this.devicesContext.getDeviceState(deviceUid)
+                .addMockedResponse(MessageType.START_SELF_TEST,
+                        Oslp.Message.newBuilder()
+                                .setStartSelfTestResponse(StartSelfTestResponse.newBuilder().setStatus(status))
+                                .build());
     }
 
-    public void mockStopDeviceResponse(final String deviceUid, final com.google.protobuf.ByteString value, final Oslp.Status status) {
+    public void mockStopDeviceResponse(final String deviceUid, final com.google.protobuf.ByteString value,
+            final Oslp.Status status) {
         LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.STOP_SELF_TEST);
-        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(MessageType.STOP_SELF_TEST, Oslp.Message.newBuilder()
-                .setStopSelfTestResponse(StopSelfTestResponse.newBuilder().setSelfTestResult(value).setStatus(status))
-                .build());
+        this.devicesContext.getDeviceState(deviceUid)
+                .addMockedResponse(MessageType.STOP_SELF_TEST,
+                        Oslp.Message.newBuilder()
+                                .setStopSelfTestResponse(
+                                        StopSelfTestResponse.newBuilder().setSelfTestResult(value).setStatus(status))
+                                .build());
     }
 
-    public void mockGetStatusResponse(final String deviceUid, final LinkType preferred, final LinkType actual, final LightType lightType,
-            final int eventNotificationMask, final Oslp.Status status, final List<LightValue> lightValues,
-            final List<LightValue> tariffValues) {
+    public void mockGetStatusResponse(final String deviceUid, final LinkType preferred, final LinkType actual,
+            final LightType lightType, final int eventNotificationMask, final Oslp.Status status,
+            final List<LightValue> lightValues, final List<LightValue> tariffValues) {
 
-        final Builder response = GetStatusResponse.newBuilder().setPreferredLinktype(preferred)
-                .setActualLinktype(actual).setLightType(lightType).setEventNotificationMask(eventNotificationMask)
+        final Builder response = GetStatusResponse.newBuilder()
+                .setPreferredLinktype(preferred)
+                .setActualLinktype(actual)
+                .setLightType(lightType)
+                .setEventNotificationMask(eventNotificationMask)
                 .setStatus(status);
 
         for (final LightValue lightValue : lightValues) {
@@ -449,39 +461,56 @@ public class MockOslpServer {
         }
 
         LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.GET_STATUS);
-        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(MessageType.GET_STATUS,
-                Oslp.Message.newBuilder().setGetStatusResponse(response).build());
+        this.devicesContext.getDeviceState(deviceUid)
+                .addMockedResponse(MessageType.GET_STATUS,
+                        Oslp.Message.newBuilder().setGetStatusResponse(response).build());
     }
 
     public void mockResumeScheduleResponse(final String deviceUid, final Oslp.Status status) {
         LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.RESUME_SCHEDULE);
-        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(MessageType.RESUME_SCHEDULE, Oslp.Message.newBuilder()
-                .setResumeScheduleResponse(ResumeScheduleResponse.newBuilder().setStatus(status)).build());
+        this.devicesContext.getDeviceState(deviceUid)
+                .addMockedResponse(MessageType.RESUME_SCHEDULE,
+                        Oslp.Message.newBuilder()
+                                .setResumeScheduleResponse(ResumeScheduleResponse.newBuilder().setStatus(status))
+                                .build());
     }
 
     public void mockSetRebootResponse(final String deviceUid, final Oslp.Status status) {
         LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.SET_REBOOT);
-        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(MessageType.SET_REBOOT, Oslp.Message.newBuilder()
-                .setSetRebootResponse(SetRebootResponse.newBuilder().setStatus(status)).build());
+        this.devicesContext.getDeviceState(deviceUid)
+                .addMockedResponse(MessageType.SET_REBOOT,
+                        Oslp.Message.newBuilder()
+                                .setSetRebootResponse(SetRebootResponse.newBuilder().setStatus(status))
+                                .build());
     }
 
     public void mockSetTransitionResponse(final String deviceUid, final Oslp.Status status) {
         LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.SET_TRANSITION);
-        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(MessageType.SET_TRANSITION, Oslp.Message.newBuilder()
-                .setSetTransitionResponse(SetTransitionResponse.newBuilder().setStatus(status)).build());
+        this.devicesContext.getDeviceState(deviceUid)
+                .addMockedResponse(MessageType.SET_TRANSITION,
+                        Oslp.Message.newBuilder()
+                                .setSetTransitionResponse(SetTransitionResponse.newBuilder().setStatus(status))
+                                .build());
     }
 
     public void mockUpdateKeyResponse(final String deviceUid, final Oslp.Status status) {
         LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.UPDATE_KEY);
-        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(MessageType.UPDATE_KEY, Oslp.Message.newBuilder()
-                .setSetDeviceVerificationKeyResponse(SetDeviceVerificationKeyResponse.newBuilder().setStatus(status))
-                .build());
+        this.devicesContext.getDeviceState(deviceUid)
+                .addMockedResponse(MessageType.UPDATE_KEY,
+                        Oslp.Message.newBuilder()
+                                .setSetDeviceVerificationKeyResponse(
+                                        SetDeviceVerificationKeyResponse.newBuilder().setStatus(status))
+                                .build());
     }
 
-    public void mockGetLightStatusResponse(final String deviceUid, final LinkType preferred, final LinkType actual, final LightType lightType,
-            final int eventNotificationMask, final Oslp.Status status, final List<LightValue> lightValues) {
-        final Builder response = GetStatusResponse.newBuilder().setPreferredLinktype(preferred)
-                .setActualLinktype(actual).setLightType(lightType).setEventNotificationMask(eventNotificationMask)
+    public void mockGetLightStatusResponse(final String deviceUid, final LinkType preferred, final LinkType actual,
+            final LightType lightType, final int eventNotificationMask, final Oslp.Status status,
+            final List<LightValue> lightValues) {
+        final Builder response = GetStatusResponse.newBuilder()
+                .setPreferredLinktype(preferred)
+                .setActualLinktype(actual)
+                .setLightType(lightType)
+                .setEventNotificationMask(eventNotificationMask)
                 .setStatus(status);
 
         for (final LightValue lightValue : lightValues) {
@@ -489,126 +518,18 @@ public class MockOslpServer {
         }
 
         LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.GET_LIGHT_STATUS);
-        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(MessageType.GET_LIGHT_STATUS,
-                Oslp.Message.newBuilder().setGetStatusResponse(response).build());
+        this.devicesContext.getDeviceState(deviceUid)
+                .addMockedResponse(MessageType.GET_LIGHT_STATUS,
+                        Oslp.Message.newBuilder().setGetStatusResponse(response).build());
     }
 
     public void mockSetScheduleResponse(final String deviceUid, final MessageType type, final Oslp.Status status) {
         LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, type.name());
-        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(type, Oslp.Message.newBuilder()
-                .setSetScheduleResponse(SetScheduleResponse.newBuilder().setStatus(status)).build());
-    }
-
-    public void mockGetPowerUsageHistoryResponse(final String deviceUid, final Oslp.Status status, final Map<String, String[]> requestMap) {
-
-        final org.opensmartgridplatform.oslp.Oslp.GetPowerUsageHistoryResponse response;
-
-        final org.opensmartgridplatform.oslp.Oslp.GetPowerUsageHistoryResponse.Builder builder = org.opensmartgridplatform.oslp.Oslp.GetPowerUsageHistoryResponse
-                .newBuilder();
-
-        if (requestMap.containsKey(PlatformPubliclightingKeys.RECORD_TIME)) {
-
-            this.creatingPowerUsageDataAndAddingToBuilder(builder, requestMap);
-
-            response = builder.setStatus(status).build();
-        } else {
-            response = builder.setStatus(status).build();
-        }
-
-        LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.GET_POWER_USAGE_HISTORY);
-        this.devicesContext.getDeviceState(deviceUid).addMockedResponse(MessageType.GET_POWER_USAGE_HISTORY,
-                Oslp.Message.newBuilder().setGetPowerUsageHistoryResponse(response).build());
-    }
-
-    private void creatingPowerUsageDataAndAddingToBuilder(
-            final org.opensmartgridplatform.oslp.Oslp.GetPowerUsageHistoryResponse.Builder builder,
-            final Map<String, String[]> requestMap) {
-
-        for (int i = 0; i < requestMap.get(PlatformPubliclightingKeys.RECORD_TIME).length; i++) {
-
-            final org.opensmartgridplatform.oslp.Oslp.SsldData.Builder ssldData = SsldData.newBuilder();
-
-            this.addRelayDataToSsldData(ssldData, requestMap, i);
-
-            final org.opensmartgridplatform.oslp.Oslp.PowerUsageData.Builder powerUsageData = PowerUsageData
-                    .newBuilder();
-
-            this.addDataToPowerUsageData(powerUsageData, requestMap, i);
-
-            final Integer actualConsumedPower = Integer
-                    .parseInt(requestMap.get(PlatformPubliclightingKeys.ACTUAL_CONSUMED_POWER)[i]),
-                    totalConsumedEnergy = Integer
-                            .parseInt(requestMap.get(PlatformPubliclightingKeys.TOTAL_CONSUMED_ENERGY)[i]),
-                    actualCurrent1 = Integer.parseInt(requestMap.get(PlatformPubliclightingKeys.ACTUAL_CURRENT1)[i]),
-                    actualCurrent2 = Integer.parseInt(requestMap.get(PlatformPubliclightingKeys.ACTUAL_CURRENT2)[i]),
-                    actualCurrent3 = Integer.parseInt(requestMap.get(PlatformPubliclightingKeys.ACTUAL_CURRENT3)[i]),
-                    actualPower1 = Integer.parseInt(requestMap.get(PlatformPubliclightingKeys.ACTUAL_POWER1)[i]),
-                    actualPower2 = Integer.parseInt(requestMap.get(PlatformPubliclightingKeys.ACTUAL_POWER2)[i]),
-                    actualPower3 = Integer.parseInt(requestMap.get(PlatformPubliclightingKeys.ACTUAL_POWER3)[i]),
-                    averagePowerFactor1 = Integer
-                            .parseInt(requestMap.get(PlatformPubliclightingKeys.AVERAGE_POWER_FACTOR1)[i]),
-                    averagePowerFactor2 = Integer
-                            .parseInt(requestMap.get(PlatformPubliclightingKeys.AVERAGE_POWER_FACTOR2)[i]),
-                    averagePowerFactor3 = Integer
-                            .parseInt(requestMap.get(PlatformPubliclightingKeys.AVERAGE_POWER_FACTOR3)[i]);
-
-            if (powerUsageData.hasMeterType() && powerUsageData.getMeterType() != null
-                    && Strings.isNullOrEmpty(powerUsageData.getMeterType().toString())) {
-                return;
-            }
-
-            builder.addPowerUsageData(powerUsageData.setActualConsumedPower(actualConsumedPower)
-                    .setTotalConsumedEnergy(totalConsumedEnergy)
-                    .setSsldData(ssldData.setActualCurrent1(actualCurrent1).setActualCurrent2(actualCurrent2)
-                            .setActualCurrent3(actualCurrent3).setActualPower1(actualPower1)
-                            .setActualPower2(actualPower2).setActualPower3(actualPower3)
-                            .setAveragePowerFactor1(averagePowerFactor1).setAveragePowerFactor2(averagePowerFactor2)
-                            .setAveragePowerFactor3(averagePowerFactor3).build())
-                    .build());
-        }
-    }
-
-    private void addDataToPowerUsageData(
-            final org.opensmartgridplatform.oslp.Oslp.PowerUsageData.Builder powerUsageData,
-            final Map<String, String[]> requestMap, final Integer currentItem) {
-        final String[] meterTypeArray = requestMap.get(PlatformPubliclightingKeys.METER_TYPE);
-        if (meterTypeArray != null && meterTypeArray.length > 0
-                && !Strings.isNullOrEmpty(meterTypeArray[currentItem])) {
-            final MeterType meterType = MeterType.valueOf(meterTypeArray[currentItem]);
-            powerUsageData.setMeterType(meterType);
-        }
-
-        final String[] totalLightingHoursArray = requestMap.get(PlatformPubliclightingKeys.TOTAL_LIGHTING_HOURS);
-        if (totalLightingHoursArray != null && totalLightingHoursArray.length > 0
-                && !Strings.isNullOrEmpty(totalLightingHoursArray[currentItem])) {
-            final Integer totalLightingHours = Integer.parseInt(totalLightingHoursArray[currentItem]);
-            powerUsageData.setPsldData(PsldData.newBuilder().setTotalLightingHours(totalLightingHours).build());
-        }
-
-        final String[] recordTimeArray = requestMap.get(PlatformPubliclightingKeys.RECORD_TIME);
-        if (recordTimeArray != null && recordTimeArray.length > 0
-                && !Strings.isNullOrEmpty(recordTimeArray[currentItem])) {
-            final String recordTime = DateTime.parse(recordTimeArray[currentItem]).toDateTime(DateTimeZone.UTC)
-                    .toString("yyyyMMddHHmmss");
-            if ((!recordTime.isEmpty())) {
-                powerUsageData.setRecordTime(recordTime);
-            }
-        }
-    }
-
-    private void addRelayDataToSsldData(final org.opensmartgridplatform.oslp.Oslp.SsldData.Builder ssldData,
-            final Map<String, String[]> requestMap, final Integer currentItem) {
-        final String relayData = requestMap.get(PlatformPubliclightingKeys.RELAY_DATA)[currentItem];
-        if (relayData != null && !relayData.isEmpty()) {
-            for (final String data : relayData.split(PlatformKeys.SEPARATOR_SEMICOLON)) {
-                final String[] dataParts = data.split(PlatformKeys.SEPARATOR_COMMA);
-
-                final RelayData r = RelayData.newBuilder()
-                        .setIndex(OslpUtils.integerToByteString(Integer.parseInt(dataParts[0])))
-                        .setTotalLightingMinutes(Integer.parseInt(dataParts[1])).build();
-                ssldData.addRelayData(r);
-            }
-        }
+        this.devicesContext.getDeviceState(deviceUid)
+                .addMockedResponse(type,
+                        Oslp.Message.newBuilder()
+                                .setSetScheduleResponse(SetScheduleResponse.newBuilder().setStatus(status))
+                                .build());
     }
 
     public String getOslpSignature() {
@@ -628,6 +549,5 @@ public class MockOslpServer {
             return this.receivedResponses.get(0);
         });
     }
-
 
 }

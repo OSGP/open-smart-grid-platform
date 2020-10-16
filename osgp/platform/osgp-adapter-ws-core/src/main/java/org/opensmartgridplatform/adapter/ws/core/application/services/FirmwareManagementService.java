@@ -342,7 +342,7 @@ public class FirmwareManagementService {
      */
     @Transactional(value = "writableTransactionManager")
     public void addDeviceModel(@Identification final String organisationIdentification, final String manufacturerCode,
-            final String modelCode, final String description, final boolean metered) throws FunctionalException {
+            final String modelCode, final String description) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.CREATE_DEVICE_MODEL);
@@ -364,7 +364,7 @@ public class FirmwareManagementService {
                     new ExistingEntityException(DeviceModel.class, manufacturerCode));
         } else {
             final DeviceModel deviceModel = new DeviceModel(manufacturer, modelCode, description,
-                    this.firmwareFileStorage, metered);
+                    this.firmwareFileStorage);
             this.deviceModelRepository.save(deviceModel);
         }
     }
@@ -413,7 +413,7 @@ public class FirmwareManagementService {
      */
     @Transactional(value = "writableTransactionManager")
     public void changeDeviceModel(@Identification final String organisationIdentification, final String manufacturer,
-            final String modelCode, final String description, final boolean metered) throws FunctionalException {
+            final String modelCode, final String description) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.CHANGE_DEVICE_MODEL);
@@ -428,7 +428,7 @@ public class FirmwareManagementService {
                     new ExistingEntityException(Manufacturer.class, modelCode));
         } else {
 
-            changedDeviceModel.updateData(description, metered);
+            changedDeviceModel.setDescription(description);
             this.deviceModelRepository.save(changedDeviceModel);
         }
     }

@@ -24,7 +24,6 @@ public class DomainCoreMapper extends ConfigurableMapper {
         factory.getConverterFactory().registerConverter(new DaliConfigurationConverter());
         factory.getConverterFactory().registerConverter(new LightTypeConverter());
         factory.getConverterFactory().registerConverter(new LinkTypeConverter());
-        factory.getConverterFactory().registerConverter(new MeterTypeConverter());
         factory.classMap(FirmwareModuleType.class, org.opensmartgridplatform.dto.valueobjects.FirmwareModuleType.class)
                 .byDefault()
                 .register();

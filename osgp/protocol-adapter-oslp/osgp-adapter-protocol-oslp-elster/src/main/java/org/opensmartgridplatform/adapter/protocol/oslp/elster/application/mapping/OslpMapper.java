@@ -32,13 +32,10 @@ public class OslpMapper extends ConfigurableMapper {
         factory.getConverterFactory().registerConverter(new RelayConfigurationToOslpRelayConfigurationConverter());
         factory.getConverterFactory().registerConverter(new LightTypeConverter());
         factory.getConverterFactory().registerConverter(new LinkTypeConverter());
-        factory.getConverterFactory().registerConverter(new MeterTypeConverter());
         factory.getConverterFactory().registerConverter(new RelayTypeConverter());
         factory.getConverterFactory().registerConverter(new RelayDataConverter());
-        factory.getConverterFactory().registerConverter(new PowerUsageDataConverter());
-        factory.getConverterFactory().registerConverter(new HistoryTermTypeConverter());
 
-        // Converter from String to DateTime using the Oslp time format.
+        // Converter from String to DateTime using the OSLP time format.
         factory.getConverterFactory().registerConverter(new CustomConverter<String, DateTime>() {
 
             @Override
@@ -48,7 +45,7 @@ public class OslpMapper extends ConfigurableMapper {
             }
         });
 
-        // Converter from DateTime to String using the Oslp time format.
+        // Converter from DateTime to String using the OSLP time format.
         factory.getConverterFactory().registerConverter(new CustomConverter<DateTime, String>() {
 
             @Override

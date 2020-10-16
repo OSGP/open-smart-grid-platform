@@ -20,8 +20,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ObisCodeValues;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileRequest;
 
 public class GetPowerQualityProfileRequestMappingTest {
@@ -32,18 +30,18 @@ public class GetPowerQualityProfileRequestMappingTest {
     private final MonitoringMapper mapper = new MonitoringMapper();
 
     @Test
-    public void convertGetPowerQualityProfileRequestData() {
-        final GetPowerQualityProfileRequestData source = this.makeRequest();
+    public void convertGetPowerQualityProfileRequest() {
+        final org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileRequest source = this.makeRequest();
         final Object result = this.mapper.map(source, GetPowerQualityProfileRequest.class);
 
-        assertThat(result).as("mapping GetPowerQualityProfileRequestData should not return null").isNotNull();
-        assertThat(result).as("mapping GetPowerQualityProfileRequestData should return correct type")
-                          .isInstanceOf(GetPowerQualityProfileRequest.class);
+        assertThat(result).as("mapping GetPowerQualityProfileRequest should not return null").isNotNull();
+        assertThat(result).as("mapping GetPowerQualityProfileRequest  should return correct type").isInstanceOf(
+                GetPowerQualityProfileRequest.class);
 
         final GetPowerQualityProfileRequest target = (GetPowerQualityProfileRequest) result;
 
         assertThat(target.getDeviceIdentification()).isEqualTo(source.getDeviceIdentification());
-        assertThat(target.getProfileType()).isEqualTo( source.getProfileType());
+        assertThat(target.getProfileType()).isEqualTo(source.getProfileType());
         final DateTime targetEndDate = new DateTime(target.getEndDate());
         assertThat(targetEndDate.getYear()).isEqualTo(source.getBeginDate().getYear());
     }
@@ -58,19 +56,8 @@ public class GetPowerQualityProfileRequestMappingTest {
         }
     }
 
-    private ObisCodeValues makeObisCodeValues() {
-        final ObisCodeValues result = new ObisCodeValues();
-        result.setA((short) 1);
-        result.setB((short) 1);
-        result.setC((short) 1);
-        result.setD((short) 1);
-        result.setE((short) 1);
-        result.setF((short) 1);
-        return result;
-    }
-
-    private GetPowerQualityProfileRequestData makeRequest() {
-        final GetPowerQualityProfileRequestData result = new GetPowerQualityProfileRequestData();
+    private org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileRequest makeRequest() {
+        final org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileRequest result = new org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileRequest();
         result.setProfileType("PRIVATE");
         result.setDeviceIdentification(DEVICE_NAME);
         result.setBeginDate(this.makeGregorianCalendar());
