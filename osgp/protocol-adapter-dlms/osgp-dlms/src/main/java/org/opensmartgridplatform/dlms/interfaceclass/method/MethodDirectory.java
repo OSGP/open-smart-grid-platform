@@ -27,12 +27,12 @@ import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
  */
 public class MethodDirectory {
 
+    private static final Map<InterfaceClass, Class<? extends MethodClass>> classes = new EnumMap<>(
+            InterfaceClass.class);
+
     private MethodDirectory() {
         throw new AssertionError("Utility class");
     }
-
-    private static final Map<InterfaceClass, Class<? extends MethodClass>> classes = new EnumMap<>(
-            InterfaceClass.class);
 
     static {
         classes.put(RegisterMethod.INTERFACE_CLASS, RegisterMethod.class);
