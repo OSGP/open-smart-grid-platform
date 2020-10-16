@@ -76,8 +76,6 @@ public class UpdateDeviceSettingsSteps {
 
         deviceModel.setManufacturer(this.createManufacturer(settings));
 
-        deviceModel.setMetered(getBoolean(settings, PlatformKeys.KEY_DEVICE_MODEL_METERED,
-                PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_METERED));
         deviceModel.setModelCode(getString(settings, PlatformKeys.KEY_DEVICE_MODEL_MODELCODE,
                 PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
         device.setDeviceModel(deviceModel);
@@ -109,7 +107,7 @@ public class UpdateDeviceSettingsSteps {
 
     @Then("^the device management update device response is successful$")
     public void theUpdateDeviceResponseIsSuccessful() {
-        assertThat(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof UpdateDeviceResponse).isTrue();
+        assertThat(ScenarioContext.current().get(PlatformKeys.RESPONSE)).isInstanceOf(UpdateDeviceResponse.class);
     }
 
     @Then("^the device management update device response contains soap fault$")

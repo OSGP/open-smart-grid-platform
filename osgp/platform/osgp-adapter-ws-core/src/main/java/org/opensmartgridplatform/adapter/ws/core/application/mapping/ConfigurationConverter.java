@@ -13,8 +13,6 @@ import org.opensmartgridplatform.domain.core.valueobjects.DaliConfiguration;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFixedIp;
 import org.opensmartgridplatform.domain.core.valueobjects.LightType;
 import org.opensmartgridplatform.domain.core.valueobjects.LinkType;
-import org.opensmartgridplatform.domain.core.valueobjects.LongTermIntervalType;
-import org.opensmartgridplatform.domain.core.valueobjects.MeterType;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayConfiguration;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayMatrix;
 
@@ -32,21 +30,20 @@ public class ConfigurationConverter
                 .withLightType(this.mapperFacade.map(source.getLightType(), LightType.class))
                 .withDaliConfiguration(this.mapperFacade.map(source.getDaliConfiguration(), DaliConfiguration.class))
                 .withRelayConfiguration(this.mapperFacade.map(source.getRelayConfiguration(), RelayConfiguration.class))
-                .withShortTemHistoryIntervalMinutes(source.getShortTermHistoryIntervalMinutes())
                 .withPreferredLinkType(this.mapperFacade.map(source.getPreferredLinkType(), LinkType.class))
-                .withMeterType(this.mapperFacade.map(source.getMeterType(), MeterType.class))
-                .withLongTermHistoryInterval(source.getLongTermHistoryInterval())
-                .withLongTermHistoryIntervalType(
-                        this.mapperFacade.map(source.getLongTermHistoryIntervalType(), LongTermIntervalType.class))
                 .withTimeSyncFrequency(source.getTimeSyncFrequency())
                 .withDeviceFixedIp(this.mapperFacade.map(source.getDeviceFixedIp(), DeviceFixedIp.class))
-                .withDhcpEnabled(source.isDhcpEnabled()).withCommunicationTimeout(source.getCommunicationTimeout())
+                .withDhcpEnabled(source.isDhcpEnabled())
+                .withCommunicationTimeout(source.getCommunicationTimeout())
                 .withCommunicationNumberOfRetries(source.getCommunicationNumberOfRetries())
                 .withCommunicationPauseTimeBetweenConnectionTrials(
                         source.getCommunicationPauseTimeBetweenConnectionTrials())
-                .withOsgpIpAddress(source.getOsgpIpAddress()).withOsgpPortNumber(source.getOsgpPortNumber())
-                .withNtpHost(source.getNtpHost()).withNtpEnabled(source.isNtpEnabled())
-                .withNtpSyncInterval(source.getNtpSyncInterval()).withTestButtonEnabled(source.isTestButtonEnabled())
+                .withOsgpIpAddress(source.getOsgpIpAddress())
+                .withOsgpPortNumber(source.getOsgpPortNumber())
+                .withNtpHost(source.getNtpHost())
+                .withNtpEnabled(source.isNtpEnabled())
+                .withNtpSyncInterval(source.getNtpSyncInterval())
+                .withTestButtonEnabled(source.isTestButtonEnabled())
                 .withAutomaticSummerTimingEnabled(source.isAutomaticSummerTimingEnabled())
                 .withAstroGateSunRiseOffset(source.getAstroGateSunRiseOffset())
                 .withAstroGateSunSetOffset(source.getAstroGateSunSetOffset())
@@ -54,6 +51,7 @@ public class ConfigurationConverter
                 .withRelayLinking(this.mapperFacade.mapAsList(source.getRelayLinking(), RelayMatrix.class))
                 .withRelayRefreshing(source.isRelayRefreshing())
                 .withSummerTimeDetails(this.mapperFacade.map(source.getSummerTimeDetails(), DateTime.class))
-                .withWinterTimeDetails(this.mapperFacade.map(source.getWinterTimeDetails(), DateTime.class)).build();
+                .withWinterTimeDetails(this.mapperFacade.map(source.getWinterTimeDetails(), DateTime.class))
+                .build();
     }
 }

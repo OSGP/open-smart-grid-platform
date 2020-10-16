@@ -102,11 +102,6 @@ public abstract class BaseDeviceSteps {
                 getString(settings, PlatformKeys.KEY_DEVICE_MODEL, PlatformDefaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
         final DeviceModel deviceModel = deviceModels.get(0);
 
-        if (settings.containsKey(PlatformKeys.DEVICEMODEL_METERED)) {
-            deviceModel.updateData(PlatformDefaults.DEFAULT_DEVICE_MODEL_DESCRIPTION, getBoolean(settings,
-                    PlatformKeys.DEVICEMODEL_METERED, PlatformDefaults.DEFAULT_DEVICE_MODEL_METERED));
-        }
-
         device.setDeviceModel(deviceModel);
 
         device.updateProtocol(this.protocolInfoRepository.findByProtocolAndProtocolVersion(

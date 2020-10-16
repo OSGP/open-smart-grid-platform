@@ -157,7 +157,7 @@ public class AuthorizeDeviceFunctionsSteps {
         if (allowed) {
             final Object response = ScenarioContext.current().get(PlatformCommonKeys.RESPONSE);
             assertThat(response).as("Response is null, which indicates an exception occurred").isNotNull();
-            assertThat(response instanceof SoapFaultClientException).isFalse();
+            assertThat(response).isNotInstanceOf(SoapFaultClientException.class);
         } else {
             assertThat(this.exception).isNotNull();
 
@@ -302,8 +302,6 @@ public class AuthorizeDeviceFunctionsSteps {
 
         config.setLightType(PlatformCommonDefaults.CONFIGURATION_LIGHTTYPE);
         config.setPreferredLinkType(PlatformCommonDefaults.CONFIGURATION_PREFERRED_LINKTYPE);
-        config.setMeterType(PlatformCommonDefaults.CONFIGURATION_METER_TYPE);
-        config.setShortTermHistoryIntervalMinutes(PlatformCommonDefaults.SHORT_INTERVAL);
 
         request.setConfiguration(config);
 

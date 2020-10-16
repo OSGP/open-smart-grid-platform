@@ -16,7 +16,7 @@ import java.util.Map;
 import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.CaptureObjectDefinitions;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileAsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileRequestData;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileRequest;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.helpers.DateConverter;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.RequestFactoryHelper;
@@ -27,8 +27,8 @@ public class GetPowerQualityProfileRequestFactory {
         // Private constructor for utility class
     }
 
-    public static GetPowerQualityProfileRequestData fromParameterMap(final Map<String, String> requestParameters) {
-        final GetPowerQualityProfileRequestData getPowerQualityProfileRequestData = new GetPowerQualityProfileRequestData();
+    public static GetPowerQualityProfileRequest fromParameterMap(final Map<String, String> requestParameters) {
+        final GetPowerQualityProfileRequest getPowerQualityProfileRequestData = new GetPowerQualityProfileRequest();
         final DateTime beginDate = dateFromParameterMap(requestParameters, PlatformKeys.KEY_BEGIN_DATE);
         final DateTime endDate = dateFromParameterMap(requestParameters, PlatformKeys.KEY_END_DATE);
         final String profileType = getString(requestParameters, PlatformKeys.KEY_POWER_QUALITY_PROFILE_TYPE);
