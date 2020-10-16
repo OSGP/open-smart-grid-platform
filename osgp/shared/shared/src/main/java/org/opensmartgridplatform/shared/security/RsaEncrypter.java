@@ -31,7 +31,6 @@ public class RsaEncrypter {
     private static final String ALG = "RSA";
     private static final String ALGORITHM = "RSA/ECB/PKCS1Padding";
 
-    //protected File keyFile;
     private Key publicKey;
     private Key privateKey;
 
@@ -43,14 +42,9 @@ public class RsaEncrypter {
         } catch (NoSuchAlgorithmException | IOException | InvalidKeySpecException e) {
             throw new EncrypterException("Could not get cipher", e);
         }
-        //this.setKeyFile(privateKeyStoreFile);
     }
 
-    //protected void setKeyFile(final File keyFile) {
-    //    this.keyFile = keyFile;
-    //}
-
-    public void setPublicKeyStore(File publicKeyStoreFile) throws EncrypterException {
+    public void setPublicKeyStore(File publicKeyStoreFile) {
         try {
             byte[] keyData = Files.readAllBytes(publicKeyStoreFile.toPath());
             X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(keyData);
@@ -60,7 +54,7 @@ public class RsaEncrypter {
         }
     }
 
-    protected Cipher getCipher() throws EncrypterException {
+    protected Cipher getCipher() {
         try {
             return Cipher.getInstance(ALGORITHM);
         } catch (NoSuchPaddingException | NoSuchAlgorithmException e) {
@@ -72,7 +66,7 @@ public class RsaEncrypter {
         return cipherMode == Cipher.ENCRYPT_MODE ? this.publicKey : this.privateKey;
     }
 
-    public byte[] encrypt(final byte[] secret) throws EncrypterException {
+    public byte[] encrypt(final byte[] secret) {
         try {
             final Cipher cipher = this.getCipher();
             cipher.init(Cipher.ENCRYPT_MODE, this.getSecretEncryptionKey(Cipher.ENCRYPT_MODE));
@@ -83,7 +77,7 @@ public class RsaEncrypter {
         }
     }
 
-    public byte[] decrypt(final byte[] rsaEncrypted) throws EncrypterException {
+    public byte[] decrypt(final byte[] rsaEncrypted) {
         try {
             final Cipher cipher = this.getCipher();
             cipher.init(Cipher.DECRYPT_MODE, this.getSecretEncryptionKey(Cipher.DECRYPT_MODE));

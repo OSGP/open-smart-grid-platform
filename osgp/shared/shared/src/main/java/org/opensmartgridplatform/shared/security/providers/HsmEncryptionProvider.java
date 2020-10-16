@@ -58,33 +58,24 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
 
     @Override
     public byte[] decrypt(final EncryptedSecret secret, final String keyReference) throws EncrypterException {
-
         byte[] decryptedSecret = super.decrypt(secret, keyReference);
-
         if (decryptedSecret.length > KEY_LENGTH) {
-
             final byte[] truncatedDecryptedSecretBytes = Arrays.copyOfRange(decryptedSecret, 0,
                     decryptedSecret.length-16);
-
             LOGGER.trace("Truncating decrypted key from " + Hex.encodeHexString(decryptedSecret) + " to " +
                             Hex.encodeHexString(truncatedDecryptedSecretBytes));
-
             return truncatedDecryptedSecretBytes;
         }
-
         return decryptedSecret;
     }
 
     @Override
     public byte[] generateAes128BitsSecret(String keyReference) throws EncrypterException {
-        //byte[] newSecret = new byte[128/8];
         try {
-            //SecureRandom.getInstance("SHA1PRNG",PROVIDER).nextBytes(newSecret);
             return this.encrypt(KeyGenerator.getInstance("AES").generateKey().getEncoded(),keyReference).getSecret();
         } catch (NoSuchAlgorithmException exc) {
             throw new EncrypterException("Could not generate secret", exc);
         }
-        //return newSecret;
     }
 
     @Override

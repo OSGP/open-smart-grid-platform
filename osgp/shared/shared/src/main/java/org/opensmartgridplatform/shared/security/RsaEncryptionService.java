@@ -102,7 +102,7 @@ public class RsaEncryptionService {
      * @param keyPair
      *            a key pair for algorithm {@value #ALGORITHM}.
      */
-    protected RsaEncryptionService(final KeyPair keyPair) throws EncrypterException {
+    protected RsaEncryptionService(final KeyPair keyPair) {
         /*
          * Call createKeyPair to check if the private and public key belong with
          * each other.
@@ -120,13 +120,12 @@ public class RsaEncryptionService {
      *            the path to a PKCS#8 encoded private key file, decryption will
      *            be disabled if this is blank.
      */
-    public RsaEncryptionService(final String rsaPublicKeyPath, final String rsaPrivateKeyPath)
-            throws EncrypterException {
+    public RsaEncryptionService(final String rsaPublicKeyPath, final String rsaPrivateKeyPath) {
         this.keyPair = this.createKeyPair(rsaPublicKeyPath, rsaPrivateKeyPath);
     }
 
     @PostConstruct
-    private void initEncryption() throws EncrypterException {
+    private void initEncryption() {
         this.keyPair = this.createKeyPair(this.rsaPublicKeyPath, this.rsaPrivateKeyPath);
     }
 
@@ -142,7 +141,7 @@ public class RsaEncryptionService {
      *             if the public key is not configured or if anything goes wrong
      *             while encrypting the given {@code input}.
      */
-    public byte[] encrypt(final byte[] input) throws EncrypterException {
+    public byte[] encrypt(final byte[] input) {
         try {
             final Cipher cipher = this.getCipherForEncryption();
             return cipher.doFinal(input);
@@ -166,7 +165,7 @@ public class RsaEncryptionService {
      *             if the private key is not configured or if anything goes
      *             wrong while decrypting the given {@code input}.
      */
-    public byte[] decrypt(final byte[] input) throws EncrypterException {
+    public byte[] decrypt(final byte[] input) {
         try {
             final Cipher cipher = this.getCipherForDecryption();
             return cipher.doFinal(input);
@@ -178,7 +177,7 @@ public class RsaEncryptionService {
     }
 
     private Cipher getCipherForEncryption()
-            throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, EncrypterException {
+            throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
         final PublicKey publicKey = this.keyPair.getPublic();
         if (publicKey == null) {
             LOGGER.error(PUBLIC_KEY_MUST_BE_CONFIGURED_FOR_ENCRYPTION);
@@ -190,7 +189,7 @@ public class RsaEncryptionService {
     }
 
     private Cipher getCipherForDecryption()
-            throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, EncrypterException {
+            throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
         final PrivateKey privateKey = this.keyPair.getPrivate();
         if (privateKey == null) {
             LOGGER.error(PRIVATE_KEY_MUST_BE_CONFIGURED_FOR_DECRYPTION);
@@ -201,14 +200,13 @@ public class RsaEncryptionService {
         return cipher;
     }
 
-    private KeyPair createKeyPair(final String rsaPublicKeyPath, final String rsaPrivateKeyPath)
-            throws EncrypterException {
+    private KeyPair createKeyPair(final String rsaPublicKeyPath, final String rsaPrivateKeyPath) {
         final PrivateKey privateKey = readPrivateKeyFromFile(rsaPrivateKeyPath);
         final PublicKey publicKey = readPublicKeyFromFile(rsaPublicKeyPath);
         return this.createKeyPair(publicKey, privateKey);
     }
 
-    private KeyPair createKeyPair(final PublicKey publicKey, final PrivateKey privateKey) throws EncrypterException {
+    private KeyPair createKeyPair(final PublicKey publicKey, final PrivateKey privateKey) {
         if (publicKey == null || privateKey == null) {
             /*
              * Public and private key are not both available, no need to check
@@ -235,7 +233,7 @@ public class RsaEncryptionService {
         throw new EncrypterException(PUBLIC_KEY_DOES_NOT_BELONG_WITH_PRIVATE_KEY);
     }
 
-    private RSAPublicKey getRsaPublicKey(final PublicKey publicKey) throws EncrypterException {
+    private RSAPublicKey getRsaPublicKey(final PublicKey publicKey) {
         try {
             return (RSAPublicKey) publicKey;
         } catch (final ClassCastException e) {
@@ -244,7 +242,7 @@ public class RsaEncryptionService {
         }
     }
 
-    private RSAPrivateKey getRsaPrivateKey(final PrivateKey privateKey) throws EncrypterException {
+    private RSAPrivateKey getRsaPrivateKey(final PrivateKey privateKey) {
         try {
             return (RSAPrivateKey) privateKey;
         } catch (final ClassCastException e) {
@@ -268,7 +266,7 @@ public class RsaEncryptionService {
      * @return a public key for algorithm {@value #ALGORITHM}, or {@code null}
      *         if the given {@code filename} is blank.
      */
-    public static PublicKey readPublicKeyFromFile(final String filename) throws EncrypterException {
+    public static PublicKey readPublicKeyFromFile(final String filename) {
         if (StringUtils.isBlank(filename)) {
             return null;
         }
@@ -297,7 +295,7 @@ public class RsaEncryptionService {
      * @return a public key for algorithm {@value #ALGORITHM}, or {@code null}
      *         if the given {@code filename} is blank.
      */
-    public static PrivateKey readPrivateKeyFromFile(final String filename) throws EncrypterException {
+    public static PrivateKey readPrivateKeyFromFile(final String filename) {
         if (StringUtils.isBlank(filename)) {
             return null;
         }
@@ -311,7 +309,7 @@ public class RsaEncryptionService {
         }
     }
 
-    private static KeyFactory getKeyFactory() throws EncrypterException {
+    private static KeyFactory getKeyFactory() {
         try {
             return KeyFactory.getInstance(ALGORITHM);
         } catch (final NoSuchAlgorithmException e) {
@@ -330,7 +328,7 @@ public class RsaEncryptionService {
      * @return a randomly initialized {@value #ALGORITHM} key pair for the given
      *         {@code keysize}.
      */
-    public static KeyPair createKeyPair(final int keysize) throws EncrypterException {
+    public static KeyPair createKeyPair(final int keysize) {
         try {
             final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(ALGORITHM);
             keyPairGenerator.initialize(keysize);
