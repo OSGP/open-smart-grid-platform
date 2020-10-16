@@ -1,11 +1,15 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
+
+import java.util.List;
+import java.util.Map;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -13,16 +17,8 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 
 public interface SecurityKeyService {
 
-    //get multiple keys in one call to secret management
-    byte[][] getKeys(String deviceIdentification, SecurityKeyType[] keyTypes);
-
-    //get one specific decrypted key in a call to secret management
-    byte[] getDlmsMasterKey(final String deviceIdentification);
-    byte[] getDlmsAuthenticationKey(final String deviceIdentification);
-    byte[] getDlmsGlobalUnicastEncryptionKey(final String deviceIdentification);
-    byte[] getMbusDefaultKey(final String mbusDeviceIdentification); //G_MASTER key
-    byte[] getDlmsPassword(final String deviceIdentification); //PPP_PASSWORD
-    byte[] getMbusUserKey(final String mbusDeviceIdentification); //G_METER_ENCRYPTION_KEY, currently not used
+    byte[] getKey(String deviceIdentification, SecurityKeyType type);
+    Map<SecurityKeyType, byte[]> getKeys(String deviceIdentification, List<SecurityKeyType> keyTypes);
 
     /**
      * Store new key
@@ -42,32 +38,30 @@ public interface SecurityKeyService {
      *
      * @param deviceIdentification
      *         DLMS device id
-     * @param plainKey
-     *        keys to store, not encrypted
+     * @param aesKey
+     *        key to store, AES-encrypted
      * @param keyType
      *         type of key
      *
      *
      * @see #activateNewKey(String, SecurityKeyType)
      */
-    void storeNewKey(final String deviceIdentification, final SecurityKeyType keyType, final byte[] plainKey);
-
-    //store multiple keys in one call
-    void storeNewKeys(final String deviceIdentification, final SecurityKeyType[] keyTypes, final byte[][] plainKeys);
+    void storeNewKey(final String deviceIdentification, final SecurityKeyType keyType, final byte[] aesKey);
+    void storeNewKeys(final String deviceIdentification, final Map<SecurityKeyType, byte[]> aesKeysByType);
 
     /**
      * @see #storeNewKey(String, SecurityKeyType, byte[])
      */
-    void aesDecryptAndStoreNewKey(final String deviceIdentification, final SecurityKeyType keyTypes,
-            final byte[] aesEncryptedKeys) throws FunctionalException;
+    //void aesDecryptAndStoreNewKey(final String deviceIdentification, final SecurityKeyType keyTypes,
+    //        final byte[] aesEncryptedKeys) throws FunctionalException;
 
-    boolean isActivated(final String deviceIdentification, final SecurityKeyType keyType);
+    boolean hasNewSecretOfType(String deviceIdentification, SecurityKeyType keyType);
 
     /**
      * Updates the state of a new key from 'new' to 'active'
      * <p>
      * This method should be called to activate a new key stored with
-     * {@link #storeNewKeys(String, SecurityKeyType[], byte[][])} after it has
+     * {@link #storeNewKeys(String, Map)} after it has
      * been confirmed to be set on the device.
      *
      * @param deviceIdentification
@@ -77,22 +71,26 @@ public interface SecurityKeyService {
      *
      * @throws ProtocolAdapterException
      *         if no new key is stored with the given device
-     * @see #storeNewKeys(String, SecurityKeyType[], byte[][])
+     * @see #storeNewKeys(String, Map)
      */
-    void activateNewKey(final String deviceIdentification, final SecurityKeyType keyType) throws ProtocolAdapterException;
+    void activateNewKey(final String deviceIdentification, final SecurityKeyType keyType)
+            throws ProtocolAdapterException;
 
-    byte[][] generateAES128BitsKeysAndStoreAsNewKeys(final String deviceIdentification,
-            final SecurityKeyType[] keyTypes);
+    byte[] generate128BitsKeyAndStoreAsNewKey(final String deviceIdentification, final SecurityKeyType keyType);
+    Map<SecurityKeyType, byte[]> generate128BitsKeysAndStoreAsNewKeys(final String deviceIdentification,
+            final List<SecurityKeyType> keyTypes);
 
     //RSA decrypt key (from incoming requests) and encrypt with AES (for in memory storage)
-    byte[] reEncryptKey(final byte[] externallyEncryptedKey, final SecurityKeyType keyType) throws FunctionalException;
+    byte[] reEncryptKey(final byte[] externallyEncryptedKey) throws
+            FunctionalException;
 
-    byte[] rsaDecrypt(final byte[] externallyEncryptedKey, final SecurityKeyType keyType) throws FunctionalException;
+    //decrypt OSGP provided RSA key
+    byte[] rsaDecrypt(final byte[] externallyEncryptedKey) throws FunctionalException;
 
     //AES decrypt (decrypt memory storage for actual use of key)
-    byte[] aesDecryptKey(final byte[] encryptedKey, final SecurityKeyType keyType) throws FunctionalException;
+    byte[] aesDecryptKey(final byte[] encryptedKey) throws FunctionalException;
 
     //AES encrypt (encrypt for safe memory storage)
-    byte[] aesEncryptKey(final byte[] plainKey, final SecurityKeyType keyType) throws FunctionalException;
+    //byte[] aesEncryptKey(final byte[] plainKey/*, final SecurityKeyType keyType*/) throws FunctionalException;
 
 }

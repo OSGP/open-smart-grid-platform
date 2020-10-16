@@ -8,6 +8,13 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.security;
 
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_AUTHENTICATION;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_ENCRYPTION;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecurityKeyService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -61,22 +68,11 @@ public class GenerateAndReplaceKeyCommandExecutor extends AbstractCommandExecuto
 
     private SetKeysRequestDto generateSetKeysRequest(String deviceIdentification) throws FunctionalException {
         try {
-            final byte[][] generatedKeys =
-                    this.securityKeyService.generateAES128BitsKeysAndStoreAsNewKeys(deviceIdentification,
-                            new SecurityKeyType[]{SecurityKeyType.E_METER_AUTHENTICATION,
-                                    SecurityKeyType.E_METER_ENCRYPTION});
-
-            final byte[] authenticationKey = generatedKeys[0];
-            final byte[] encryptionKey = generatedKeys[1];
-
-            final byte[] encryptedAuthenticationKey = this.securityKeyService.aesEncryptKey(authenticationKey,
-                    SecurityKeyType.E_METER_AUTHENTICATION);
-
-            final byte[] encryptedEncryptionKey = this.securityKeyService.aesEncryptKey(encryptionKey,
-                    SecurityKeyType.E_METER_ENCRYPTION);
-
-            final SetKeysRequestDto setKeysRequest = new SetKeysRequestDto(encryptedAuthenticationKey,
-                    encryptedEncryptionKey);
+            final List<SecurityKeyType> keyTypes = Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION);
+            final Map<SecurityKeyType, byte[]> generatedKeys = this.securityKeyService
+                    .generate128BitsKeysAndStoreAsNewKeys(deviceIdentification, keyTypes);
+            final SetKeysRequestDto setKeysRequest = new SetKeysRequestDto(generatedKeys.get(E_METER_AUTHENTICATION),
+                    generatedKeys.get(E_METER_ENCRYPTION));
             setKeysRequest.setGeneratedKeys(true);
             return setKeysRequest;
         } catch (final EncrypterException e) {

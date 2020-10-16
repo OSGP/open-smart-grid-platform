@@ -8,8 +8,13 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_AUTHENTICATION;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_ENCRYPTION;
+
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.Map;
 
 import com.google.common.primitives.UnsignedInteger;
 import org.apache.commons.lang3.StringUtils;
@@ -65,15 +70,12 @@ public class Hls5Connector extends SecureDlmsConnector {
 
         try {
             return this.createConnection(device, dlmsMessageListener);
-        } catch (final UnknownHostException e) {
+        } catch (final UnknownHostException e) { // Unknown IP, unrecoverable.
             LOGGER.error("The IP address is not found: {}", device.getIpAddress(), e);
-            // Unknown IP, unrecoverable.
             throw new TechnicalException(ComponentType.PROTOCOL_DLMS,
                     "The IP address is not found: " + device.getIpAddress());
-        } catch (final IOException e) {
-
-            //TODO: use isNew instead of isActivated (because secrets can be expired also)
-            if (!securityKeyService.isActivated(device.getDeviceIdentification(), SecurityKeyType.E_METER_ENCRYPTION)) {
+        } catch (final IOException e) { //Queue key recovery process
+            if(this.securityKeyService.hasNewSecretOfType(device.getDeviceIdentification(), E_METER_ENCRYPTION)) {
                this.recoverKeyProcessInitiator.initiate(device.getDeviceIdentification(), device.getIpAddress());
             }
 
@@ -98,8 +100,12 @@ public class Hls5Connector extends SecureDlmsConnector {
         final byte[] dlmsAuthenticationKey;
         final byte[] dlmsEncryptionKey;
         try {
-            dlmsAuthenticationKey = this.securityKeyService.getDlmsAuthenticationKey(deviceIdentification);
-            dlmsEncryptionKey = this.securityKeyService.getDlmsGlobalUnicastEncryptionKey(deviceIdentification);
+            Map<SecurityKeyType,byte[]> encryptedKeys = this.securityKeyService.getKeys(deviceIdentification,
+                    Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION));
+            dlmsAuthenticationKey = encryptedKeys.get(E_METER_AUTHENTICATION);
+            dlmsEncryptionKey = encryptedKeys.get(E_METER_ENCRYPTION);
+            //this.securityKeyService.getDlmsAuthenticationKey(deviceIdentification);
+            //this.securityKeyService.getDlmsGlobalUnicastEncryptionKey(deviceIdentification);
         } catch (final EncrypterException e) {
             LOGGER.error("Error determining DLMS communication key setting up HLS5 connection", e);
             throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION,

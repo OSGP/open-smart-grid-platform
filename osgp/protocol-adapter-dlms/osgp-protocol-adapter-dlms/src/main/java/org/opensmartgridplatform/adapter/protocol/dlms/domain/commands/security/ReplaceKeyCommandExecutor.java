@@ -113,8 +113,8 @@ public class ReplaceKeyCommandExecutor
             //decrypt using RSA and encrypt using AES
             setKeysRequestDto = this.reEncryptKeys((SetKeysRequestDto) actionRequestDto);
         } //else
-          //if isGeneratedKeys() == true, then:
-          // generated keys are encrypted using AES by the GenerateAndReplaceKeyCommandExecutor
+        //if isGeneratedKeys() == true, then:
+        // generated keys are encrypted using AES by the GenerateAndReplaceKeyCommandExecutor
 
         final DlmsDevice devicePostSave = this.execute(conn, device, ReplaceKeyCommandExecutor
                 .wrap(setKeysRequestDto.getAuthenticationKey(), KeyId.AUTHENTICATION_KEY,
@@ -129,9 +129,9 @@ public class ReplaceKeyCommandExecutor
 
     private SetKeysRequestDto reEncryptKeys(final SetKeysRequestDto setKeysRequestDto) throws FunctionalException {
         final byte[] reEncryptedAuthenticationKey = this.securityKeyService
-                .reEncryptKey(setKeysRequestDto.getAuthenticationKey(), SecurityKeyType.E_METER_AUTHENTICATION);
+                .reEncryptKey(setKeysRequestDto.getAuthenticationKey()); //, SecurityKeyType.E_METER_AUTHENTICATION);
         final byte[] reEncryptedEncryptionKey = this.securityKeyService
-                .reEncryptKey(setKeysRequestDto.getEncryptionKey(), SecurityKeyType.E_METER_ENCRYPTION);
+                .reEncryptKey(setKeysRequestDto.getEncryptionKey()); //, SecurityKeyType.E_METER_ENCRYPTION);
 
         return new SetKeysRequestDto(reEncryptedAuthenticationKey, reEncryptedEncryptionKey);
     }
@@ -141,13 +141,12 @@ public class ReplaceKeyCommandExecutor
             final ReplaceKeyCommandExecutor.ReplaceKeyInput keyWrapper) throws OsgpException {
 
         if (!keyWrapper.isGenerated()) {
-            this.securityKeyService.aesDecryptAndStoreNewKey(device.getDeviceIdentification(), keyWrapper.getSecurityKeyType(),
+            this.securityKeyService.storeNewKey(device.getDeviceIdentification(), keyWrapper.getSecurityKeyType(),
                     keyWrapper.getBytes());
         }
 
         this.sendToDevice(conn, device.getDeviceIdentification(), keyWrapper);
-        this.securityKeyService.activateNewKey(device.getDeviceIdentification(),
-                keyWrapper.getSecurityKeyType());
+        this.securityKeyService.activateNewKey(device.getDeviceIdentification(), keyWrapper.getSecurityKeyType());
         return device;
     }
 
@@ -165,10 +164,9 @@ public class ReplaceKeyCommandExecutor
             final ReplaceKeyCommandExecutor.ReplaceKeyInput keyWrapper) throws ProtocolAdapterException {
 
         try {
-            final byte[] decryptedKey = this.securityKeyService
-                    .aesDecryptKey(keyWrapper.getBytes(), keyWrapper.securityKeyType);
+            final byte[] decryptedKey = this.securityKeyService.aesDecryptKey(keyWrapper.getBytes());
             final byte[] decryptedMasterKey = this.securityKeyService
-                    .getDlmsMasterKey(deviceIdentification) ;
+                    .getKey(deviceIdentification, SecurityKeyType.E_METER_MASTER);
 
             final MethodParameter methodParameterAuth = SecurityUtils
                     .keyChangeMethodParamFor(decryptedMasterKey, decryptedKey, keyWrapper.getKeyId());

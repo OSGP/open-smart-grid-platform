@@ -15,20 +15,11 @@ import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.openmuc.jdlms.settings.client.ReferencingMethod;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKey;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.InvocationCountingDlmsMessageListener;
-import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
-import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class SecureDlmsConnector extends Lls0Connector {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SecureDlmsConnector.class);
 
     public SecureDlmsConnector(final int responseTimeout, final int logicalDeviceAddress,
             final DlmsDeviceAssociation deviceAssociation) {

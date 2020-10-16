@@ -153,8 +153,8 @@ public class SecretManagementService {
     private List<EncryptedTypedSecret> retrieveAesSecrets(final String deviceIdentification,
             final List<SecretType> secretTypes) {
         try {
-            return secretTypes.stream().map(secretType -> this.retrieveActiveSecret(deviceIdentification,
-                    secretType))
+            return secretTypes.stream()
+                              .map(secretType -> this.retrieveActiveSecret(deviceIdentification, secretType))
                               .collect(Collectors.toList());
         } catch (final Exception exc) {
             throw new IllegalStateException(

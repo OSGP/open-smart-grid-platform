@@ -22,15 +22,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SoapEndpointDataTypeConverter {
-    //TODO Refactor this to directly use RsaEncryptionProvider (removing key_reference, delegate, etc.)
-    private static final String KEY_REFERENCE = "1"; //only one key in use
-    //private final EncryptionDelegate encryptionDelegate;
-
-    public SoapEndpointDataTypeConverter() {
-      /*      @Qualifier("DefaultEncryptionDelegate") final EncryptionDelegate defaultEncryptionDelegate) {
-        this.encryptionDelegate = defaultEncryptionDelegate;*/
-    }
-
     public List<SecretType> convertToSecretTypes(final SecretTypes soapSecretTypes) {
 
         final List<org.opensmartgridplatform.ws.schema.core.secret.management.SecretType> soapSecretTypeList = soapSecretTypes.getSecretType();
@@ -82,10 +73,7 @@ public class SoapEndpointDataTypeConverter {
         final org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecret soapTypedSecret =
                 new org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecret();
 
-        //final String encodedSecret = typedSecret.getSecret();
-        final byte[] rsaSecret = typedSecret.getSecret(); //HexUtils.fromHexString(encodedSecret);
-        //final EncryptedSecret encryptedSecret = this.encryptionDelegate.encrypt(EncryptionProviderType.RSA,
-        //        rawSecret, KEY_REFERENCE);
+        final byte[] rsaSecret = typedSecret.getSecret();
         soapTypedSecret.setSecret(HexUtils.toHexString(rsaSecret));
 
         final SecretType secretType = typedSecret.getSecretType();
@@ -96,15 +84,9 @@ public class SoapEndpointDataTypeConverter {
 
     public TypedSecret decryptAndConvertSoapTypedSecret(
             final org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecret soapTypedSecret) {
-
         final byte[] rsaEncryptedSecret = HexUtils.fromHexString(soapTypedSecret.getSecret());
-        //final EncryptedSecret encryptedSecret = new EncryptedSecret(EncryptionProviderType.RSA, rawEncryptedSecret);
-        //final byte[] decryptedSecret = this.encryptionDelegate.decrypt(encryptedSecret, KEY_REFERENCE);
-
-        final TypedSecret typedSecret = new TypedSecret(rsaEncryptedSecret,
+        return new TypedSecret(rsaEncryptedSecret,
                 this.convertToSecretType(soapTypedSecret.getType()));
-
-        return typedSecret;
     }
 
 }

@@ -1,14 +1,20 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.threads;
 
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_AUTHENTICATION;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_ENCRYPTION;
+
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Arrays;
+import java.util.Map;
 
 import org.bouncycastle.util.encoders.Hex;
 import org.openmuc.jdlms.AuthenticationMechanism;
@@ -54,10 +60,8 @@ public class RecoverKeyProcess implements Runnable {
     @Qualifier("secretManagementService")
     private SecurityKeyService securityKeyService;
 
-
-    public RecoverKeyProcess(final DomainHelperService domainHelperService,
-            final int responseTimeout, final int logicalDeviceAddress,
-            final DlmsDeviceAssociation deviceAssociation) {
+    public RecoverKeyProcess(final DomainHelperService domainHelperService, final int responseTimeout,
+            final int logicalDeviceAddress, final DlmsDeviceAssociation deviceAssociation) {
         this.domainHelperService = domainHelperService;
         this.responseTimeout = responseTimeout;
         this.logicalDeviceAddress = logicalDeviceAddress;
@@ -78,40 +82,37 @@ public class RecoverKeyProcess implements Runnable {
 
         LOGGER.info("Attempting key recovery for device {}", this.deviceIdentification);
 
+        //FIXME why try and connect to device if you don't do anything with the result?!?
         try {
             this.findDevice();
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception", e);
         }
 
-        //TODO: if hasNewKeys(...)
-        if (securityKeyService.isActivated(this.deviceIdentification, SecurityKeyType.E_METER_AUTHENTICATION)) {
+        if (!this.securityKeyService.hasNewSecretOfType(this.deviceIdentification, E_METER_AUTHENTICATION)) {
+            //TODO: log something or throw error/exception?
             return;
         }
 
-       if (this.canConnectUsingNewKeys()) {
-           try {
-               this.securityKeyService.activateNewKey(this.deviceIdentification,
-                       SecurityKeyType.E_METER_ENCRYPTION);
-           }
-           catch(ProtocolAdapterException e) {
-               throw new RecoverKeyException(e.getMessage(), e);
-           }
-           try {
-               this.securityKeyService.activateNewKey(this.deviceIdentification,
-                       SecurityKeyType.E_METER_AUTHENTICATION);
-           }
-           catch(ProtocolAdapterException e) {
-               throw new RecoverKeyException(e.getMessage(), e);
-           }
-       }
+        if (this.canConnectUsingNewKeys()) {
+            try {
+                this.securityKeyService.activateNewKey(this.deviceIdentification, E_METER_ENCRYPTION);
+            } catch (ProtocolAdapterException e) {
+                throw new RecoverKeyException(e.getMessage(), e);
+            }
+            try {
+                this.securityKeyService.activateNewKey(this.deviceIdentification, E_METER_AUTHENTICATION);
+            } catch (ProtocolAdapterException e) {
+                throw new RecoverKeyException(e.getMessage(), e);
+            }
+        }
+        //FIXME else: throw recovery error?
     }
 
     private void findDevice() throws OsgpException {
         try {
             this.device = this.domainHelperService.findDlmsDevice(this.deviceIdentification, this.ipAddress);
-        } catch (final ProtocolAdapterException e) {
-            // Thread can not recover from these exceptions.
+        } catch (final ProtocolAdapterException e) { // Thread can not recover from these exceptions.
             throw new RecoverKeyException(e.getMessage(), e);
         }
     }
@@ -148,28 +149,30 @@ public class RecoverKeyProcess implements Runnable {
      * Create a connection with the device.
      *
      * @return The connection.
+     *
      * @throws IOException
-     *             When there are problems in connecting to or communicating
-     *             with the device.
+     *         When there are problems in connecting to or communicating
+     *         with the device.
      */
     private DlmsConnection createConnectionUsingNewKeys() throws IOException, FunctionalException {
 
         //TODO: specify that the NEW keys should be retrieved
-        byte[][] keys = this.securityKeyService.getKeys(this.deviceIdentification,
-                new SecurityKeyType[]{ SecurityKeyType.E_METER_AUTHENTICATION, SecurityKeyType.E_METER_ENCRYPTION });
-
-        final byte[] authenticationKey = Hex.decode(keys[0]);
-        final byte[] encryptionKey = Hex.decode(keys[1]);
+        Map<SecurityKeyType, byte[]> keys = this.securityKeyService
+                .getKeys(this.deviceIdentification, Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION));
+        final byte[] authenticationKey = Hex.decode(keys.get(E_METER_AUTHENTICATION));
+        final byte[] encryptionKey = Hex.decode(keys.get(E_METER_ENCRYPTION));
 
         final SecuritySuite securitySuite = SecuritySuite.builder().setAuthenticationKey(authenticationKey)
-                .setAuthenticationMechanism(AuthenticationMechanism.HLS5_GMAC)
-                .setGlobalUnicastEncryptionKey(encryptionKey).setEncryptionMechanism(EncryptionMechanism.AES_GCM_128)
-                .build();
+                                                         .setAuthenticationMechanism(AuthenticationMechanism.HLS5_GMAC)
+                                                         .setGlobalUnicastEncryptionKey(encryptionKey)
+                                                         .setEncryptionMechanism(EncryptionMechanism.AES_GCM_128)
+                                                         .build();
 
         final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(
                 InetAddress.getByName(this.device.getIpAddress())).setSecuritySuite(securitySuite)
-                        .setResponseTimeout(this.responseTimeout).setLogicalDeviceId(this.logicalDeviceAddress)
-                        .setClientId(this.clientId);
+                                                                  .setResponseTimeout(this.responseTimeout)
+                                                                  .setLogicalDeviceId(this.logicalDeviceAddress)
+                                                                  .setClientId(this.clientId);
 
         final Integer challengeLength = this.device.getChallengeLength();
 

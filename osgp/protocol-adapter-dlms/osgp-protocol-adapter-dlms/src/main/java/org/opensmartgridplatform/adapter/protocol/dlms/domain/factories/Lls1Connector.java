@@ -17,6 +17,7 @@ import org.openmuc.jdlms.SecuritySuite;
 import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecurityKeyService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -73,7 +74,7 @@ public class Lls1Connector extends SecureDlmsConnector {
 
         final byte[] password;
         try {
-            password = this.securityKeyService.getDlmsPassword(device.getDeviceIdentification());
+            password = this.securityKeyService.getKey(device.getDeviceIdentification(), SecurityKeyType.PASSWORD);
         } catch (final EncrypterException e) {
             LOGGER.error("Error determining DLMS password setting up LLS1 connection", e);
             throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION,
@@ -86,7 +87,8 @@ public class Lls1Connector extends SecureDlmsConnector {
         }
 
         final SecuritySuite securitySuite = SecuritySuite.builder()
-                .setAuthenticationMechanism(AuthenticationMechanism.LOW).setPassword(password).build();
+                                                         .setAuthenticationMechanism(AuthenticationMechanism.LOW)
+                                                         .setPassword(password).build();
 
         tcpConnectionBuilder.setSecuritySuite(securitySuite).setClientId(this.clientId);
     }

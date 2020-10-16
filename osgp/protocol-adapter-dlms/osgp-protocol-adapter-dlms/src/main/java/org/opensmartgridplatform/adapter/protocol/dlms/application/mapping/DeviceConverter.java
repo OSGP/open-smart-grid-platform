@@ -11,10 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.mapping;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
-import org.apache.commons.codec.binary.Hex;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKey;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 
 public class DeviceConverter extends BidirectionalConverter<SmartMeteringDeviceDto, DlmsDevice> {

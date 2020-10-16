@@ -8,6 +8,14 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_AUTHENTICATION;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_MASTER;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.G_METER_ENCRYPTION;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.G_METER_MASTER;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.InstallationMapper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.CoupleMBusDeviceCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.CoupleMbusDeviceByChannelCommandExecutor;
@@ -58,23 +66,13 @@ public class InstallationService {
         this.dlmsDeviceRepository.save(dlmsDevice);
     }
 
-    private void storeNewKeys(final SmartMeteringDeviceDto smartMeteringDeviceDto) throws FunctionalException {
-        byte[][] securityKeys = new byte[4][];
-
-            SecurityKeyType[] securityKeyTypes = { SecurityKeyType.E_METER_MASTER, SecurityKeyType.E_METER_AUTHENTICATION,
-                    SecurityKeyType.E_METER_ENCRYPTION, SecurityKeyType.G_METER_MASTER };
-
-            securityKeys[0] = this.securityKeyService.rsaDecrypt(smartMeteringDeviceDto.getMasterKey(),
-                    SecurityKeyType.E_METER_MASTER);
-            securityKeys[1] = this.securityKeyService.rsaDecrypt(smartMeteringDeviceDto.getAuthenticationKey(),
-                    SecurityKeyType.E_METER_AUTHENTICATION);
-            securityKeys[2] = this.securityKeyService.rsaDecrypt(smartMeteringDeviceDto.getGlobalEncryptionUnicastKey(),
-                    SecurityKeyType.G_METER_ENCRYPTION);
-            securityKeys[3] = this.securityKeyService.rsaDecrypt(smartMeteringDeviceDto.getMbusDefaultKey(),
-                    SecurityKeyType.G_METER_MASTER);
-
-            securityKeyService.storeNewKeys(smartMeteringDeviceDto.getDeviceIdentification(), securityKeyTypes,
-                    securityKeys);
+    private void storeNewKeys(final SmartMeteringDeviceDto deviceDto) throws FunctionalException {
+        Map<SecurityKeyType,byte[]> keysByType = new HashMap<>();
+        keysByType.put(E_METER_MASTER,this.securityKeyService.rsaDecrypt(deviceDto.getMasterKey()));
+        keysByType.put(E_METER_AUTHENTICATION,this.securityKeyService.rsaDecrypt(deviceDto.getAuthenticationKey()));
+        keysByType.put(G_METER_ENCRYPTION,this.securityKeyService.rsaDecrypt(deviceDto.getGlobalEncryptionUnicastKey()));
+        keysByType.put(G_METER_MASTER,this.securityKeyService.rsaDecrypt(deviceDto.getMbusDefaultKey()));
+        this.securityKeyService.storeNewKeys(deviceDto.getDeviceIdentification(), keysByType);
     }
 
     public MbusChannelElementsResponseDto coupleMbusDevice(final DlmsConnectionManager conn, final DlmsDevice device,
