@@ -31,17 +31,17 @@ public enum ImageTransferMethod implements MethodClass {
 
     static final InterfaceClass INTERFACE_CLASS = InterfaceClass.IMAGE_TRANSFER;
 
-    private final int id;
+    private final int methodId;
     private final boolean mandatory;
 
-    private ImageTransferMethod(final int id, final boolean mandatory) {
-        this.id = id;
+    private ImageTransferMethod(final int methodId, final boolean mandatory) {
+        this.methodId = methodId;
         this.mandatory = mandatory;
     }
 
     @Override
     public int getMethodId() {
-        return this.id;
+        return this.methodId;
     }
 
     @Override

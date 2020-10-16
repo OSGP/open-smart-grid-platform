@@ -29,17 +29,17 @@ public enum DisconnectControlMethod implements MethodClass {
 
     static final InterfaceClass INTERFACE_CLASS = InterfaceClass.DISCONNECT_CONTROL;
 
-    private final int id;
+    private final int methodId;
     private final boolean mandatory;
 
-    private DisconnectControlMethod(final int id, final boolean mandatory) {
-        this.id = id;
+    private DisconnectControlMethod(final int methodId, final boolean mandatory) {
+        this.methodId = methodId;
         this.mandatory = mandatory;
     }
 
     @Override
     public int getMethodId() {
-        return this.id;
+        return this.methodId;
     }
 
     @Override

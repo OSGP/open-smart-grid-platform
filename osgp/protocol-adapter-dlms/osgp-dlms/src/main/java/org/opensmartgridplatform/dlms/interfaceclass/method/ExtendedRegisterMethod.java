@@ -27,6 +27,7 @@ public enum ExtendedRegisterMethod implements MethodClass {
     RESET(1, false);
 
     static final InterfaceClass INTERFACE_CLASS = InterfaceClass.EXTENDED_REGISTER;
+
     private final int methodId;
     private final boolean mandatory;
 
