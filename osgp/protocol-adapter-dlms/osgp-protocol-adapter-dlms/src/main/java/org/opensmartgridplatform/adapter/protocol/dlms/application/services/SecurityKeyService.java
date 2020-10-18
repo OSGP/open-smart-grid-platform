@@ -38,16 +38,16 @@ public interface SecurityKeyService {
      *
      * @param deviceIdentification
      *         DLMS device id
-     * @param aesKey
-     *        key to store, AES-encrypted
+     * @param key
+     *        key to store, unencrypted
      * @param keyType
      *         type of key
      *
      *
      * @see #activateNewKey(String, SecurityKeyType)
      */
-    void storeNewKey(final String deviceIdentification, final SecurityKeyType keyType, final byte[] aesKey);
-    void storeNewKeys(final String deviceIdentification, final Map<SecurityKeyType, byte[]> aesKeysByType);
+    void storeNewKey(final String deviceIdentification, final SecurityKeyType keyType, final byte[] key);
+    void storeNewKeys(final String deviceIdentification, final Map<SecurityKeyType, byte[]> keysByType);
 
     /**
      * @see #storeNewKey(String, SecurityKeyType, byte[])

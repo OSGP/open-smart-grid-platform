@@ -202,24 +202,20 @@ public class SecretManagementService implements SecurityKeyService {
     }*/
 
     @Override
-    public void storeNewKey(String deviceIdentification, SecurityKeyType keyType, byte[] aesKey) {
+    public void storeNewKey(String deviceIdentification, SecurityKeyType keyType, byte[] key) {
         Map<SecurityKeyType, byte[]> keysByType = new HashMap<>();
-        keysByType.put(keyType, aesKey);
+        keysByType.put(keyType, key);
         this.storeNewKeys(deviceIdentification, keysByType);
     }
 
     @Override
-    public void storeNewKeys(String deviceIdentification, Map<SecurityKeyType, byte[]> aesKeysByType) {
+    public void storeNewKeys(String deviceIdentification, Map<SecurityKeyType, byte[]> keysByType) {
         TypedSecrets typedSecrets = new TypedSecrets();
         List<TypedSecret> typedSecretList = typedSecrets.getTypedSecret();
-        for (SecurityKeyType type : aesKeysByType.keySet()) {
+        for (SecurityKeyType type : keysByType.keySet()) {
             TypedSecret ts = new TypedSecret();
             ts.setType(type.toSecretType());
-            try {
-                ts.setSecret(this.encryptSoapSecret(this.aesDecryptKey(aesKeysByType.get(type))));
-            } catch (FunctionalException e) {
-                LOGGER.error("Could not encrypt/decrypt secret of type {}", type, e);
-            }
+            ts.setSecret(this.encryptSoapSecret(keysByType.get(type)));
             typedSecretList.add(ts);
         }
         StoreSecretsRequest request = this.createStoreSecretsRequest(deviceIdentification, typedSecrets);
