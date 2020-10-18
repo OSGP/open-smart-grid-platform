@@ -19,7 +19,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPowerQualityProfileRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.CaptureObjectDefinitions;
@@ -45,7 +44,6 @@ public class GetGetPowerQualityProfileRequestMappingTest {
     }
 
     @Test
-    @Disabled
     public void shouldConvertGetPowerQualityProfileRequest() {
         final GetPowerQualityProfileRequest source = this.makeRequest();
         final GetPowerQualityProfileRequestData result = this.mapper

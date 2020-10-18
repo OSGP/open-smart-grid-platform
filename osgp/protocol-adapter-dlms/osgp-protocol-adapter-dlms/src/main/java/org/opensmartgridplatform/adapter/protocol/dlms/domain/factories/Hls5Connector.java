@@ -16,7 +16,6 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Map;
 
-import com.google.common.primitives.UnsignedInteger;
 import org.apache.commons.lang3.StringUtils;
 import org.openmuc.jdlms.AuthenticationMechanism;
 import org.openmuc.jdlms.DlmsConnection;
@@ -153,9 +152,9 @@ public class Hls5Connector extends SecureDlmsConnector {
         }
         tcpConnectionBuilder.setSystemTitle(manufacturerId, device.getDeviceId());
 
-        UnsignedInteger frameCounter = UnsignedInteger.valueOf(device.getInvocationCounter());
+        long frameCounter = device.getInvocationCounter();
 
-        tcpConnectionBuilder.setFrameCounter(frameCounter.intValue());
+        tcpConnectionBuilder.setFrameCounter(frameCounter);
         LOGGER.debug("Framecounter for device {} set to {}", device.getDeviceIdentification(), frameCounter);
 
     }

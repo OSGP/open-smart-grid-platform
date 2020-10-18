@@ -28,8 +28,6 @@ import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleType;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion;
 import org.opensmartgridplatform.domain.core.valueobjects.LightType;
 import org.opensmartgridplatform.domain.core.valueobjects.LinkType;
-import org.opensmartgridplatform.domain.core.valueobjects.LongTermIntervalType;
-import org.opensmartgridplatform.domain.core.valueobjects.MeterType;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayConfiguration;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayMap;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayMatrix;
@@ -40,18 +38,16 @@ import org.opensmartgridplatform.dto.valueobjects.DeviceFixedIpDto;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
 import org.opensmartgridplatform.dto.valueobjects.LightTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.LinkTypeDto;
-import org.opensmartgridplatform.dto.valueobjects.LongTermIntervalTypeDto;
-import org.opensmartgridplatform.dto.valueobjects.MeterTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.RelayConfigurationDto;
 import org.opensmartgridplatform.dto.valueobjects.RelayMapDto;
 import org.opensmartgridplatform.dto.valueobjects.RelayMatrixDto;
 import org.opensmartgridplatform.dto.valueobjects.RelayTypeDto;
 
-public class DomainCoreMapperTest {
+class DomainCoreMapperTest {
     private final DomainCoreMapper mapper = new DomainCoreMapper();
 
     @Test
-    public void testMapFirmwareVersionDtoList() {
+    void testMapFirmwareVersionDtoList() {
         // Arrange
         final List<FirmwareVersionDto> firmwareVersionsDto = new ArrayList<>();
         final String version = "1";
@@ -69,7 +65,7 @@ public class DomainCoreMapperTest {
     }
 
     @Test
-    public void mapsFirmwareModuleDate() {
+    void mapsFirmwareModuleDate() {
         final org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData source = new FirmwareModuleDataBuilder()
                 .build();
 
@@ -88,7 +84,7 @@ public class DomainCoreMapperTest {
     }
 
     @Test
-    public void convertsConfigurationDtoToConfiguration() {
+    void convertsConfigurationDtoToConfiguration() {
         final ConfigurationDto source = this.aConfigurationDto();
 
         final Configuration result = this.mapper.map(source, Configuration.class);
@@ -100,11 +96,7 @@ public class DomainCoreMapperTest {
         final ConfigurationDto source = new ConfigurationDto.Builder().withLightType(this.aLightTypeDto())
                 .withDaliConfiguration(this.aDaliConfigurationDto())
                 .withRelayConfiguration(this.aRelayConfigurationDto())
-                .withShortTermHistoryIntervalMinutes(131)
-                .withLongTermHistoryInterval(132)
-                .withLongTermHysteryIntervalType(LongTermIntervalTypeDto.DAYS)
                 .withPreferredLinkType(LinkTypeDto.CDMA)
-                .withMeterType(MeterTypeDto.AUX)
                 .build();
         source.setTimeSyncFrequency(133);
         source.setDeviceFixedIp(new DeviceFixedIpDto("ipAddress1", "netMask1", "gateWay1"));
@@ -136,11 +128,7 @@ public class DomainCoreMapperTest {
         return new Configuration.Builder().withLightType(LightType.DALI)
                 .withDaliConfiguration(this.toDaliConfiguration(source.getDaliConfiguration()))
                 .withRelayConfiguration(this.toRelayConfiguration(source.getRelayConfiguration()))
-                .withShortTemHistoryIntervalMinutes(source.getShortTermHistoryIntervalMinutes())
-                .withLongTermHistoryInterval(source.getLongTermHistoryInterval())
-                .withLongTermHistoryIntervalType(this.toLongTermIntervalType(source.getLongTermHistoryIntervalType()))
                 .withPreferredLinkType(this.toPreferredLinkType(source.getPreferredLinkType()))
-                .withMeterType(this.toMeterType(source.getMeterType()))
                 .withTimeSyncFrequency(source.getTimeSyncFrequency())
                 .withDeviceFixedIp(this.toDeviceFixedIp(source.getDeviceFixedIp()))
                 .withDhcpEnabled(source.isDhcpEnabled())
@@ -180,16 +168,8 @@ public class DomainCoreMapperTest {
         return new DeviceFixedIp(dto.getIpAddress(), dto.getNetMask(), dto.getGateWay());
     }
 
-    private MeterType toMeterType(final MeterTypeDto dto) {
-        return MeterType.valueOf(dto.name());
-    }
-
     private LinkType toPreferredLinkType(final LinkTypeDto dto) {
         return LinkType.valueOf(dto.name());
-    }
-
-    private LongTermIntervalType toLongTermIntervalType(final LongTermIntervalTypeDto dto) {
-        return LongTermIntervalType.valueOf(dto.name());
     }
 
     private RelayConfiguration toRelayConfiguration(final RelayConfigurationDto dto) {

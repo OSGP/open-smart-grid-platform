@@ -40,11 +40,7 @@ public class ConfigurationToOslpSetConfigurationRequestConverter
         this.setLightType(source, setConfigurationRequest);
         this.setDaliConfiguration(source, setConfigurationRequest);
         this.setRelayConfiguration(source, setConfigurationRequest);
-        this.setShortTermHistoryIntervalMinutes(source, setConfigurationRequest);
-        this.setLongTermHistoryInterval(source, setConfigurationRequest);
-        this.setLongTermHistoryIntervalType(source, setConfigurationRequest);
         this.setPreferredLinkType(source, setConfigurationRequest);
-        this.setMeterType(source, setConfigurationRequest);
         this.setAstroGateSunRiseOffset(source, setConfigurationRequest);
         this.setAstroGateSunSetOffset(source, setConfigurationRequest);
         this.setIsAutomaticSummerTimingEnabled(source, setConfigurationRequest);
@@ -89,42 +85,11 @@ public class ConfigurationToOslpSetConfigurationRequestConverter
         }
     }
 
-    private void setShortTermHistoryIntervalMinutes(final ConfigurationDto source,
-            final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
-        if (source.getShortTermHistoryIntervalMinutes() != null) {
-            setConfigurationRequest.setShortTermHistoryIntervalMinutes(
-                    this.mapperFacade.map(source.getShortTermHistoryIntervalMinutes(), Integer.class));
-        }
-    }
-
-    private void setLongTermHistoryInterval(final ConfigurationDto source,
-            final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
-        if (source.getLongTermHistoryInterval() != null) {
-            setConfigurationRequest.setLongTermHistoryInterval(
-                    this.mapperFacade.map(source.getLongTermHistoryInterval(), Integer.class));
-        }
-    }
-
-    private void setLongTermHistoryIntervalType(final ConfigurationDto source,
-            final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
-        if (source.getLongTermHistoryIntervalType() != null) {
-            setConfigurationRequest.setLongTermHistoryIntervalType(
-                    this.mapperFacade.map(source.getLongTermHistoryIntervalType(), Oslp.LongTermIntervalType.class));
-        }
-    }
-
     private void setPreferredLinkType(final ConfigurationDto source,
             final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
         if (source.getPreferredLinkType() != null) {
             setConfigurationRequest
                     .setPreferredLinkType(this.mapperFacade.map(source.getPreferredLinkType(), Oslp.LinkType.class));
-        }
-    }
-
-    private void setMeterType(final ConfigurationDto source,
-            final Oslp.SetConfigurationRequest.Builder setConfigurationRequest) {
-        if (source.getMeterType() != null) {
-            setConfigurationRequest.setMeterType(this.mapperFacade.map(source.getMeterType(), Oslp.MeterType.class));
         }
     }
 
@@ -273,8 +238,7 @@ public class ConfigurationToOslpSetConfigurationRequestConverter
         }
     }
 
-    // @formatter:off
-    /*
+    /*-
      * SummerTimeDetails/WinterTimeDetails string: MMWHHmi
      *
      * where: (note, north hemisphere summer begins at the end of march) MM:
@@ -284,7 +248,6 @@ public class ConfigurationToOslpSetConfigurationRequestConverter
      * Default value for summer time: 0360100 Default value for summer time:
      * 1060200
      */
-    // @formatter:on
     private String convertSummerTimeWinterTimeDetails(final DateTime dateTime) {
         LOGGER.info("dateTime: {}", dateTime);
 

@@ -28,8 +28,6 @@ import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.
 import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.IndexAddressMap;
 import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.LightType;
 import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.LinkType;
-import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.LongTermIntervalType;
-import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.MeterType;
 import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.RelayConfiguration;
 import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.RelayMap;
 import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.RelayType;
@@ -206,45 +204,6 @@ public class GetConfigurationSteps {
                 && configuration.getPreferredLinkType() != null) {
             assertThat(configuration.getPreferredLinkType())
                     .isEqualTo(getEnum(expectedResponseData, PlatformKeys.KEY_PREFERRED_LINKTYPE, LinkType.class));
-        }
-
-        // Note: This piece of code has been made because there are multiple
-        // enumerations with the name MeterType, but not all of them has all
-        // values the same. Some with underscore and some without.
-
-        if (expectedResponseData.containsKey(PlatformKeys.METER_TYPE)
-                && StringUtils.isNotBlank(expectedResponseData.get(PlatformKeys.METER_TYPE))
-                && configuration.getMeterType() != null) {
-            MeterType meterType;
-            final String sMeterType = getString(expectedResponseData, PlatformKeys.METER_TYPE);
-            if (!sMeterType.contains("_") && sMeterType.equals(MeterType.P_1.toString().replaceAll("_", ""))) {
-                final String[] sMeterTypeArray = sMeterType.split("");
-                meterType = MeterType.valueOf(sMeterTypeArray[0] + "_" + sMeterTypeArray[1]);
-            } else {
-                meterType = getEnum(expectedResponseData, PlatformKeys.METER_TYPE, MeterType.class);
-            }
-            assertThat(configuration.getMeterType()).isEqualTo(meterType);
-        }
-
-        if (expectedResponseData.containsKey(PlatformKeys.SHORT_INTERVAL)
-                && StringUtils.isNotBlank(expectedResponseData.get(PlatformKeys.SHORT_INTERVAL))
-                && configuration.getShortTermHistoryIntervalMinutes() != null) {
-            assertThat(configuration.getShortTermHistoryIntervalMinutes()).isEqualTo(getInteger(expectedResponseData,
-                    PlatformKeys.SHORT_INTERVAL, PlatformDefaults.DEFAULT_SHORT_INTERVAL));
-        }
-
-        if (expectedResponseData.containsKey(PlatformKeys.LONG_INTERVAL)
-                && StringUtils.isNotBlank(expectedResponseData.get(PlatformKeys.LONG_INTERVAL))
-                && configuration.getLongTermHistoryInterval() != null) {
-            assertThat(configuration.getLongTermHistoryInterval()).isEqualTo(getInteger(expectedResponseData,
-                    PlatformKeys.LONG_INTERVAL, PlatformDefaults.DEFAULT_LONG_INTERVAL));
-        }
-
-        if (expectedResponseData.containsKey(PlatformKeys.INTERVAL_TYPE)
-                && StringUtils.isNotBlank(expectedResponseData.get(PlatformKeys.INTERVAL_TYPE))
-                && configuration.getLongTermHistoryIntervalType() != null) {
-            assertThat(configuration.getLongTermHistoryIntervalType())
-                    .isEqualTo(getEnum(expectedResponseData, PlatformKeys.INTERVAL_TYPE, LongTermIntervalType.class));
         }
 
         if (expectedResponseData.containsKey(PlatformKeys.OSGP_IP_ADDRESS)

@@ -10,7 +10,7 @@ package org.opensmartgridplatform.adapter.kafka.da.application.mapping;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opensmartgridplatform.adapter.kafka.da.avro.Analog;
+import com.alliander.data.scadameasurementpublishedevent.Analog;
 
 public class LsMeasurementMessageToAnalogList implements StringArrayToAnalogList {
 

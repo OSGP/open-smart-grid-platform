@@ -17,8 +17,6 @@ import org.opensmartgridplatform.dto.valueobjects.DaliConfigurationDto;
 import org.opensmartgridplatform.dto.valueobjects.DeviceFixedIpDto;
 import org.opensmartgridplatform.dto.valueobjects.LightTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.LinkTypeDto;
-import org.opensmartgridplatform.dto.valueobjects.LongTermIntervalTypeDto;
-import org.opensmartgridplatform.dto.valueobjects.MeterTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.RelayConfigurationDto;
 import org.opensmartgridplatform.dto.valueobjects.RelayMatrixDto;
 import org.opensmartgridplatform.oslp.Oslp;
@@ -46,22 +44,14 @@ public class OslpGetConfigurationResponseToConfigurationConverter
         // Convert the required values for the constructor of Configuration.
         final LightTypeDto lightType = this.getLightType(source);
         final DaliConfigurationDto daliConfiguration = this.getDaliConfiguration(source);
-        final Integer shortTermHistoryIntervalMinutes = this.getShortTermHistoryIntervalMinutes(source);
         final RelayConfigurationDto relayConfiguration = this.getRelayConfiguration(source);
         final LinkTypeDto preferredLinkType = this.getPreferredLinkType(source);
-        final MeterTypeDto meterType = this.getMeterType(source);
-        final Integer longTermHistoryInterval = this.getLongTermHistoryInterval(source);
-        final LongTermIntervalTypeDto longTermHistoryIntervalType = this.getLongTermHistoryIntervalType(source);
 
         final ConfigurationDto configuration = ConfigurationDto.newBuilder()
                 .withLightType(lightType)
                 .withDaliConfiguration(daliConfiguration)
                 .withRelayConfiguration(relayConfiguration)
-                .withShortTermHistoryIntervalMinutes(shortTermHistoryIntervalMinutes)
                 .withPreferredLinkType(preferredLinkType)
-                .withMeterType(meterType)
-                .withLongTermHistoryInterval(longTermHistoryInterval)
-                .withLongTermHysteryIntervalType(longTermHistoryIntervalType)
                 .build();
 
         // Set the optional values using the set() functions.
@@ -100,12 +90,6 @@ public class OslpGetConfigurationResponseToConfigurationConverter
                 : null;
     }
 
-    private Integer getShortTermHistoryIntervalMinutes(final Oslp.GetConfigurationResponse source) {
-        return source.hasShortTermHistoryIntervalMinutes()
-                ? this.mapperFacade.map(source.getShortTermHistoryIntervalMinutes(), Integer.class)
-                : null;
-    }
-
     private RelayConfigurationDto getRelayConfiguration(final Oslp.GetConfigurationResponse source) {
         return source.hasRelayConfiguration()
                 ? this.mapperFacade.map(source.getRelayConfiguration(), RelayConfigurationDto.class)
@@ -116,25 +100,6 @@ public class OslpGetConfigurationResponseToConfigurationConverter
         return source.hasPreferredLinkType() && !source.getPreferredLinkType().equals(Oslp.LinkType.LINK_NOT_SET)
                 ? this.mapperFacade.map(source.getPreferredLinkType(), LinkTypeDto.class)
                 : null;
-    }
-
-    private MeterTypeDto getMeterType(final Oslp.GetConfigurationResponse source) {
-        return source.hasMeterType() && !source.getMeterType().equals(Oslp.MeterType.MT_NOT_SET)
-                ? this.mapperFacade.map(source.getMeterType(), MeterTypeDto.class)
-                : null;
-    }
-
-    private Integer getLongTermHistoryInterval(final Oslp.GetConfigurationResponse source) {
-        return source.hasLongTermHistoryInterval()
-                ? this.mapperFacade.map(source.getLongTermHistoryInterval(), Integer.class)
-                : null;
-    }
-
-    private LongTermIntervalTypeDto getLongTermHistoryIntervalType(final Oslp.GetConfigurationResponse source) {
-        return source.hasLongTermHistoryIntervalType()
-                && !source.getLongTermHistoryIntervalType().equals(Oslp.LongTermIntervalType.LT_INT_NOT_SET)
-                        ? this.mapperFacade.map(source.getLongTermHistoryIntervalType(), LongTermIntervalTypeDto.class)
-                        : null;
     }
 
     private void setRelayLinking(final Oslp.GetConfigurationResponse source, final ConfigurationDto configuration) {
@@ -185,8 +150,7 @@ public class OslpGetConfigurationResponseToConfigurationConverter
         return ipValue.substring(0, ipValue.length() - 1);
     }
 
-    // @formatter:off
-    /*
+    /*-
      * SummerTimeDetails/WinterTimeDetails string: MMWHHmi
      *
      * where: (note, north hemisphere summer begins at the end of march) MM:
@@ -196,7 +160,6 @@ public class OslpGetConfigurationResponseToConfigurationConverter
      * Default value for summer time: 0360100 Default value for summer time:
      * 1060200
      */
-    // @formatter:on
     private DateTime convertSummerTimeWinterTimeDetails(final String timeDetails) {
         final int month = Integer.parseInt(timeDetails.substring(0, 2));
         final int day = Integer.parseInt(timeDetails.substring(2, 3));
@@ -209,7 +172,7 @@ public class OslpGetConfigurationResponseToConfigurationConverter
         final int dayOfMonth = this.getLastDayOfMonth(month, day);
         final DateTime dateTime = new DateTime(year, month, dayOfMonth, hour, minutes);
 
-        LOGGER.info("dateTime: {}", dateTime.toString());
+        LOGGER.info("dateTime: {}", dateTime);
 
         return dateTime;
     }
