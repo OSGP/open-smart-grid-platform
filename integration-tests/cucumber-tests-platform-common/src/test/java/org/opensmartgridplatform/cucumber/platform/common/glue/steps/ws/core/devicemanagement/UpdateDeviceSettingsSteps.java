@@ -15,13 +15,10 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 
 import java.util.Map;
 
-import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device;
-import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DeviceModel;
-import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Manufacturer;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceResponse;
+import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdatedDevice;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
-import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonDefaults;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreDeviceManagementClient;
@@ -51,8 +48,8 @@ public class UpdateDeviceSettingsSteps {
         if (deviceIdentification.matches("(?!\")\\s*(?=\")")) {
             deviceIdentification = deviceIdentification.replaceAll("\"", " ");
         }
+        final UpdatedDevice device = this.createUpdatedDevice(settings);
         request.setDeviceIdentification(deviceIdentification);
-        final Device device = this.createDevice(settings);
         request.setUpdatedDevice(device);
 
         try {
@@ -62,47 +59,18 @@ public class UpdateDeviceSettingsSteps {
         }
     }
 
-    private Device createDevice(final Map<String, String> settings) {
+    private UpdatedDevice createUpdatedDevice(final Map<String, String> settings) {
 
-        final Device device = new Device();
+        final UpdatedDevice device = new UpdatedDevice();
         device.setAlias(getString(settings, PlatformKeys.ALIAS, PlatformCommonDefaults.DEFAULT_ALIAS));
         device.setContainerAddress(new AddressBuilder().withSettings(settings).build());
-        device.setDeviceIdentification(getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-
-        final DeviceModel deviceModel = new DeviceModel();
-        deviceModel.setDescription(getString(settings, PlatformKeys.KEY_DEVICE_MODEL_DESCRIPTION,
-                PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_DESCRIPTION));
-
-        deviceModel.setManufacturer(this.createManufacturer(settings));
-
-        deviceModel.setModelCode(getString(settings, PlatformKeys.KEY_DEVICE_MODEL_MODELCODE,
-                PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
-        device.setDeviceModel(deviceModel);
-        device.setDeviceUid(getString(settings, PlatformKeys.KEY_DEVICE_UID, PlatformCommonDefaults.DEVICE_UID));
         device.setGpsLatitude(
                 getString(settings, PlatformKeys.KEY_LATITUDE, PlatformCommonDefaults.DEFAULT_LATITUDE_STRING));
         device.setGpsLongitude(
                 getString(settings, PlatformKeys.KEY_LONGITUDE, PlatformCommonDefaults.DEFAULT_LONGITUDE_STRING));
-        device.setHasSchedule(
-                getBoolean(settings, PlatformKeys.KEY_HAS_SCHEDULE, PlatformCommonDefaults.DEFAULT_HASSCHEDULE));
-        device.setOwner(getString(settings, PlatformKeys.KEY_OWNER, PlatformCommonDefaults.DEFAULT_OWNER));
-        device.setPublicKeyPresent(getBoolean(settings, PlatformKeys.KEY_PUBLICKEYPRESENT,
-                PlatformCommonDefaults.DEFAULT_PUBLICKEYPRESENT));
         device.setActivated(getBoolean(settings, PlatformKeys.KEY_ACTIVATED, PlatformCommonDefaults.DEFAULT_ACTIVATED));
 
         return device;
-    }
-
-    private Manufacturer createManufacturer(final Map<String, String> settings) {
-        final Manufacturer manufacturer = new Manufacturer();
-        manufacturer.setName(
-                getString(settings, PlatformKeys.MANUFACTURER_NAME, PlatformDefaults.DEFAULT_MANUFACTURER_NAME));
-        manufacturer.setManufacturerId(getString(settings, PlatformKeys.KEY_DEVICE_MODEL_MANUFACTURER,
-                PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_MANUFACTURER));
-        manufacturer.setUsePrefix(
-                getBoolean(settings, PlatformKeys.USE_PREFIX, PlatformDefaults.DEFAULT_MANUFACTURER_USE_PREFIX));
-        return manufacturer;
     }
 
     @Then("^the device management update device response is successful$")
