@@ -8,12 +8,8 @@
  */
 package org.opensmartgridplatform.adapter.kafka.da.application.mapping;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.TimeZone;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -41,7 +37,7 @@ import ma.glasnost.orika.metadata.Type;
  * current_returned_L2; current_returned_L3;
  * <p>
  * ls peak shaving measurement: ean_code + the values of
- * LsPeakShavingMeasurementType seperated by semicolons.
+ * LsPeakShavingMeasurementType separated by semicolons.
  */
 public class ScadaMeasurementPublishedEventConverter extends CustomConverter<String, ScadaMeasurementPublishedEvent> {
 
@@ -80,22 +76,13 @@ public class ScadaMeasurementPublishedEventConverter extends CustomConverter<Str
             final String eanCode = measurementValues[0];
             final ConductingEquipment powerSystemResource = new ConductingEquipment(new BaseVoltage(eanCode, null),
                     new ArrayList<Name>());
-            final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
-            dateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Amsterdam"));
-            final Date date = dateFormat.parse(payload.date);
-            final long createdDateTime = date.getTime();
-            LOGGER.debug("CreatedDateTime: {}", createdDateTime);
             return new ScadaMeasurementPublishedEvent(stringArrayToAnalogList.convertToAnalogList(measurementValues),
-                    powerSystemResource, createdDateTime, eanCode, UUID.randomUUID().toString());
+                    powerSystemResource, payload.createdUtcSeconds * 1000l, eanCode, UUID.randomUUID().toString());
         } catch (final JsonMappingException e) {
             LOGGER.error("Caught an error mapping a JSON string to Payload. {}", source, e);
             return null;
         } catch (final JsonProcessingException e) {
             LOGGER.error("Caught an error processing a JSON string to Payload. {}", source, e);
-            return null;
-        } catch (final ParseException e) {
-            LOGGER.error("Date could not be parsed corrrectly. Date format is: yyyy-mm-dd HH:mm:ss, "
-                    + "however the provided date was not in the correct format. {}", source, e);
             return null;
         }
     }
@@ -106,6 +93,8 @@ public class ScadaMeasurementPublishedEventConverter extends CustomConverter<Str
         private String feeder;
         @JsonAlias({ "D" })
         private String date;
+        @JsonAlias({ "uts" })
+        private long createdUtcSeconds;
         private String[] data;
 
         // Super is needed to map the String to the Payload object by the
@@ -115,10 +104,12 @@ public class ScadaMeasurementPublishedEventConverter extends CustomConverter<Str
             super();
         }
 
-        public Payload(final String gisnr, final String feeder, final String date, final String[] data) {
+        public Payload(final String gisnr, final String feeder, final String date, final long createdUtcSeconds,
+                final String[] data) {
             this.gisnr = gisnr;
             this.feeder = feeder;
             this.date = date;
+            this.createdUtcSeconds = createdUtcSeconds;
             this.data = data;
         }
 
@@ -132,6 +123,10 @@ public class ScadaMeasurementPublishedEventConverter extends CustomConverter<Str
 
         public String getDate() {
             return this.date;
+        }
+
+        public long getCreatedUtcSeconds() {
+            return this.createdUtcSeconds;
         }
 
         public String[] getData() {

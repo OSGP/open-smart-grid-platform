@@ -7,6 +7,9 @@
  */
 package org.opensmartgridplatform.cucumber.platform.publiclighting.mocks.oslpdevice;
 
+import static org.opensmartgridplatform.oslp.Oslp.RelayType.LIGHT;
+import static org.opensmartgridplatform.oslp.Oslp.RelayType.TARIFF;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.security.PrivateKey;
@@ -21,16 +24,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.apache.commons.codec.binary.Base64;
 import org.joda.time.DateTime;
-import org.opensmartgridplatform.cucumber.core.ScenarioContext;
-import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.oslp.Oslp;
 import org.opensmartgridplatform.oslp.Oslp.Message;
 import org.opensmartgridplatform.oslp.OslpEnvelope;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.annotation.Transient;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -100,13 +101,12 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MockOslpChannelHandler.class);
-    @Transient
-    private static final Integer SEQUENCE_NUMBER_MAXIMUM = 65535;
+
     private final ConcurrentMap<String, Callback> callbacks = new ConcurrentHashMap<>();
     private final Bootstrap clientBootstrap;
     private final int connectionTimeout;
     private final Lock lock = new ReentrantLock();
-    private final ConcurrentMap<MessageType, Message> mockResponses;
+    private final DevicesContext devicesContext;
     private final String oslpSignature;
 
     private final String oslpSignatureProvider;
@@ -117,7 +117,6 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
 
     private final Random random = new Random();
 
-    private final ConcurrentMap<MessageType, Message> receivedRequests;
     private final List<Message> receivedResponses;
 
     private final Long reponseDelayRandomRange;
@@ -125,14 +124,12 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
     private final Long responseDelayTime;
 
     // Device settings
-    private Integer sequenceNumber = 0;
     private final Integer sequenceNumberMaximum;
 
     public MockOslpChannelHandler(final String oslpSignature, final String oslpSignatureProvider,
-            final int connectionTimeout, final Integer sequenceNumberWindow, final Integer sequenceNumberMaximum,
-            final Long responseDelayTime, final Long reponseDelayRandomRange, final PrivateKey privateKey,
-            final Bootstrap clientBootstrap, final ConcurrentMap<MessageType, Message> mockResponses,
-            final ConcurrentMap<MessageType, Message> receivedRequests, final List<Message> receivedResponses) {
+            final int connectionTimeout, final Integer sequenceNumberMaximum, final Long responseDelayTime,
+            final Long reponseDelayRandomRange, final PrivateKey privateKey, final Bootstrap clientBootstrap,
+            final DevicesContext devicesContext, final List<Message> receivedResponses) {
         this.oslpSignature = oslpSignature;
         this.oslpSignatureProvider = oslpSignatureProvider;
         this.connectionTimeout = connectionTimeout;
@@ -141,8 +138,7 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
         this.reponseDelayRandomRange = reponseDelayRandomRange;
         this.privateKey = privateKey;
         this.clientBootstrap = clientBootstrap;
-        this.mockResponses = mockResponses;
-        this.receivedRequests = receivedRequests;
+        this.devicesContext = devicesContext;
         this.receivedResponses = receivedResponses;
     }
 
@@ -167,14 +163,6 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
         }
 
         ctx.channel().close();
-    }
-
-    public ConcurrentMap<MessageType, Message> getMap() {
-        return this.mockResponses;
-    }
-
-    public Integer getSequenceNumber() {
-        return this.sequenceNumber;
     }
 
     public Integer getSequenceNumberMaximum() {
@@ -215,8 +203,15 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
     public void channelRead0(final ChannelHandlerContext ctx, final OslpEnvelope message) throws Exception {
 
         if (message.isValid()) {
+            final String deviceUid = MockOslpChannelHandler.getDeviceUid(message);
+            final DeviceState deviceState = this.devicesContext.getDeviceState(deviceUid);
+
+            LOGGER.debug("Device {} received a message with sequence number {}", deviceUid,
+                    message.getSequenceNumber());
+
             if (this.isOslpResponse(message)) {
-                LOGGER.debug("Received OSLP Response (before callback): {}", message.getPayloadMessage());
+                LOGGER.debug("Device {} received an OSLP Response (before callback): {}",
+                        MockOslpChannelHandler.getDeviceUid(message), message.getPayloadMessage());
 
                 // Lookup correct callback and call handle method.
                 final String channelId = ctx.channel().id().asLongText();
@@ -228,27 +223,26 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
 
                 callback.handle(message);
             } else {
-                if (!this.mockResponses.isEmpty()) {
-                    LOGGER.debug("Received OSLP Request: {}", message.getPayloadMessage().toString().split(" ")[0]);
+                final MessageType messageType = this.getMessageType(message.getPayloadMessage());
 
-                    final byte[] deviceId = message.getDeviceId();
+                LOGGER.debug("Device {} received an OSLP Request of type {}", deviceUid, messageType);
+
+                if (deviceState.hasMockedResponses(messageType)) {
 
                     // Build the OslpEnvelope.
                     final OslpEnvelope.Builder responseBuilder = new OslpEnvelope.Builder()
                             .withSignature(this.oslpSignature)
                             .withProvider(this.oslpSignatureProvider)
                             .withPrimaryKey(this.privateKey)
-                            .withDeviceId(deviceId);
+                            .withDeviceId(message.getDeviceId())
+                            .withPayloadMessage(this.handleRequest(message));
 
-                    // Pass the incremented sequence number to the
-                    // handleRequest() function for checking.
-                    responseBuilder.withPayloadMessage(this.handleRequest(message));
                     // Add the new sequence number to the OslpEnvelope.
-                    responseBuilder.withSequenceNumber(convertIntegerToByteArray(this.sequenceNumber));
-
+                    responseBuilder.withSequenceNumber(convertIntegerToByteArray(deviceState.getSequenceNumber()));
                     final OslpEnvelope response = responseBuilder.build();
 
-                    LOGGER.debug("sending OSLP response with sequence number: {}",
+                    LOGGER.debug("Device {} is sending an OSLP response with sequence number {}",
+                            MockOslpChannelHandler.getDeviceUid(response),
                             convertByteArrayToInteger(response.getSequenceNumber()));
 
                     // wait for the response to actually be written. This
@@ -256,7 +250,11 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
                     final ChannelFuture future = ctx.channel().writeAndFlush(response);
                     future.await();
 
-                    LOGGER.debug("Send OSLP Response: {}", response.getPayloadMessage().toString().split(" ")[0]);
+                    LOGGER.debug("Sent OSLP response: {}", response.getPayloadMessage().toString().split(" ")[0]);
+                } else {
+                    LOGGER.error(
+                            "Device {} received a message of type {}, but no mocks are available, this test will fail!",
+                            deviceUid, messageType);
                 }
             }
         } else {
@@ -280,7 +278,7 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
             if (channelFuture.channel() != null && channelFuture.channel().isActive()) {
                 LOGGER.debug("Connection established to: {}", address);
             } else {
-                LOGGER.debug("The connnection to the device {} is not successfull", deviceIdentification);
+                LOGGER.debug("The connection to the device {} is not successful", deviceIdentification);
                 LOGGER.warn("Unable to connect to: {}", address);
                 throw new IOException("Unable to connect");
             }
@@ -330,124 +328,44 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
     // WITH a sequence number
     public Oslp.Message handleRequest(final OslpEnvelope message, final int sequenceNumber)
             throws DeviceSimulatorException, IOException, ParseException {
+
+        message.setSequenceNumber(convertIntegerToByteArray(sequenceNumber));
         return this.handleRequest(message);
     }
 
-    public Oslp.Message handleRequest(final OslpEnvelope message)
+    public Oslp.Message handleRequest(final OslpEnvelope requestMessage)
             throws DeviceSimulatorException, IOException, ParseException {
-        final Oslp.Message request = message.getPayloadMessage();
+        final Oslp.Message request = requestMessage.getPayloadMessage();
 
-        // Create response message
-        Oslp.Message response = null;
+        final String deviceUid = MockOslpChannelHandler.getDeviceUid(requestMessage);
+        final MessageType messageType = this.getMessageType(requestMessage.getPayloadMessage());
+        final DeviceState deviceState = this.devicesContext.getDeviceState(deviceUid);
 
-        LOGGER.info("Received a new request: [" + request + "], sequencenumber [" + this.sequenceNumber + "]");
+        LOGGER.info("Device {} received [{}], sequence number [{}]", deviceUid, request,
+                requestMessage.getSequenceNumber());
 
         // Calculate expected sequence number
-        this.sequenceNumber = this.doGetNextSequence();
+        deviceState.incrementSequenceNumber();
 
         // If responseDelayTime (and optional responseDelayRandomRange) are set,
         // sleep for a little while
         if (this.responseDelayTime != null && this.reponseDelayRandomRange == null) {
             this.sleep(this.responseDelayTime);
-        } else if (this.responseDelayTime != null && this.reponseDelayRandomRange != null) {
+        } else if (this.responseDelayTime != null) {
             final Long randomDelay = (long) (this.reponseDelayRandomRange * this.random.nextDouble());
             this.sleep(this.responseDelayTime + randomDelay);
         }
 
-        // Handle requests
-        if (request.hasGetFirmwareVersionRequest()
-                && this.mockResponses.containsKey(MessageType.GET_FIRMWARE_VERSION)) {
-            response = this.processRequest(MessageType.GET_FIRMWARE_VERSION, request);
-        } else if (request.hasUpdateFirmwareRequest() && this.mockResponses.containsKey(MessageType.UPDATE_FIRMWARE)) {
-            response = this.processRequest(MessageType.UPDATE_FIRMWARE, request);
-        } else if (request.hasSetLightRequest() && this.mockResponses.containsKey(MessageType.SET_LIGHT)) {
-            response = this.processRequest(MessageType.SET_LIGHT, request);
-        } else if (request.hasSetEventNotificationsRequest()
-                && this.mockResponses.containsKey(MessageType.SET_EVENT_NOTIFICATIONS)) {
-            response = this.processRequest(MessageType.SET_EVENT_NOTIFICATIONS, request);
-        } else if (request.hasStartSelfTestRequest() && this.mockResponses.containsKey(MessageType.START_SELF_TEST)) {
-            response = this.processRequest(MessageType.START_SELF_TEST, request);
-        } else if (request.hasStopSelfTestRequest() && this.mockResponses.containsKey(MessageType.STOP_SELF_TEST)) {
-            response = this.processRequest(MessageType.STOP_SELF_TEST, request);
-        } else if (request.hasGetStatusRequest() && this.mockResponses.containsKey(MessageType.GET_STATUS)) {
-            response = this.processRequest(MessageType.GET_STATUS, request);
-        } else if (request.hasGetStatusRequest() && this.mockResponses.containsKey(MessageType.GET_LIGHT_STATUS)) {
-            response = this.processRequest(MessageType.GET_LIGHT_STATUS, request);
-        } else if (request.hasResumeScheduleRequest() && this.mockResponses.containsKey(MessageType.RESUME_SCHEDULE)) {
-            response = this.processRequest(MessageType.RESUME_SCHEDULE, request);
-        } else if (request.hasSetRebootRequest() && this.mockResponses.containsKey(MessageType.SET_REBOOT)) {
-            response = this.processRequest(MessageType.SET_REBOOT, request);
-        } else if (request.hasSetTransitionRequest() && this.mockResponses.containsKey(MessageType.SET_TRANSITION)) {
-            response = this.processRequest(MessageType.SET_TRANSITION, request);
-        } else if (request.hasSetDeviceVerificationKeyRequest()
-                && this.mockResponses.containsKey(MessageType.UPDATE_KEY)) {
-            response = this.processRequest(MessageType.UPDATE_KEY, request);
-        } else if (request.hasSetScheduleRequest()) {
-            if (this.mockResponses.containsKey(MessageType.SET_LIGHT_SCHEDULE)) {
-                response = this.processRequest(MessageType.SET_LIGHT_SCHEDULE, request);
-            } else if (this.mockResponses.containsKey(MessageType.SET_TARIFF_SCHEDULE)) {
-                response = this.processRequest(MessageType.SET_TARIFF_SCHEDULE, request);
-            }
-        } else if (request.hasGetConfigurationRequest()
-                && this.mockResponses.containsKey(MessageType.GET_CONFIGURATION)) {
-            response = this.processRequest(MessageType.GET_CONFIGURATION, request);
-        } else if (request.hasSetConfigurationRequest()
-                && this.mockResponses.containsKey(MessageType.SET_CONFIGURATION)) {
-            response = this.processRequest(MessageType.SET_CONFIGURATION, request);
-        }
-        // TODO: Implement further requests.
-        else {
-            // Handle errors by logging
-            LOGGER.error("Did not expect request, ignoring: " + request.toString());
-        }
+        deviceState.addReceivedRequest(messageType, request);
 
-        // Write log entry for response
-        LOGGER.info("Mock Response: " + response);
+        final Oslp.Message response = deviceState.pollMockedResponse(messageType);
 
-        return response;
-    }
-
-    private Oslp.Message processRequest(final MessageType type, final Oslp.Message request) {
-        Oslp.Message response;
-
-        LOGGER.debug("Processing [{}] ...", type.name());
-        LOGGER.debug("Received [{}] ...", request);
-
-        this.receivedRequests.put(type, request);
-        response = this.mockResponses.get(type);
-        this.mockResponses.remove(type);
+        LOGGER.info("Device {} mocked response: [{}]", deviceState.getDeviceUid(), response);
 
         return response;
     }
 
     public void reset() {
-        this.sequenceNumber = 0;
-    }
-
-    public int doGetNextSequence() {
-        int numberToAddToSequenceNumberValue = 1;
-
-        if (ScenarioContext.current().get(PlatformKeys.NUMBER_TO_ADD_TO_SEQUENCE_NUMBER) != null) {
-            final String numberToAddAsNextSequenceNumber = ScenarioContext.current()
-                    .get(PlatformKeys.NUMBER_TO_ADD_TO_SEQUENCE_NUMBER)
-                    .toString();
-            if (!numberToAddAsNextSequenceNumber.isEmpty()) {
-                numberToAddToSequenceNumberValue = Integer.parseInt(numberToAddAsNextSequenceNumber);
-            }
-        }
-        int next = this.sequenceNumber + numberToAddToSequenceNumberValue;
-        if (next > SEQUENCE_NUMBER_MAXIMUM) {
-            final int sequenceNumberMaximumCross = next - SEQUENCE_NUMBER_MAXIMUM;
-            if (sequenceNumberMaximumCross >= 1) {
-                next = sequenceNumberMaximumCross - 1;
-            }
-        } else if (next < 0) {
-            final int sequenceNumberMaximumCross = next * -1;
-            if (sequenceNumberMaximumCross >= 1) {
-                next = SEQUENCE_NUMBER_MAXIMUM - sequenceNumberMaximumCross + 1;
-            }
-        }
-        return this.sequenceNumber = next;
     }
 
     private static byte[] convertIntegerToByteArray(final Integer value) {
@@ -462,4 +380,70 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
         // See: platform.service.SequenceNumberUtils
         return (array[0] & 0xFF) << 8 | (array[1] & 0xFF);
     }
+
+    private static String getDeviceUid(final OslpEnvelope message) {
+        return Base64.encodeBase64String(message.getDeviceId());
+    }
+
+    /**
+     * TODO: Isn't there somewhere a (better) method like this?
+     *
+     * @param request
+     * @return
+     */
+    private MessageType getMessageType(final Oslp.Message request) throws DeviceSimulatorException {
+        if (request.hasGetFirmwareVersionRequest()) {
+            return MessageType.GET_FIRMWARE_VERSION;
+        }
+        if (request.hasUpdateFirmwareRequest()) {
+            return MessageType.UPDATE_FIRMWARE;
+        }
+        if (request.hasSetLightRequest()) {
+            return MessageType.SET_LIGHT;
+        }
+        if (request.hasSetEventNotificationsRequest()) {
+            return MessageType.SET_EVENT_NOTIFICATIONS;
+        }
+        if (request.hasStartSelfTestRequest()) {
+            return MessageType.START_SELF_TEST;
+        }
+        if (request.hasStopSelfTestRequest()) {
+            return MessageType.STOP_SELF_TEST;
+        }
+        if (request.hasGetStatusRequest()) {
+            return MessageType.GET_STATUS;
+        }
+        if (request.hasResumeScheduleRequest()) {
+            return MessageType.RESUME_SCHEDULE;
+        }
+        if (request.hasSetRebootRequest()) {
+            return MessageType.SET_REBOOT;
+        }
+        if (request.hasSetTransitionRequest()) {
+            return MessageType.SET_TRANSITION;
+        }
+        if (request.hasSetDeviceVerificationKeyRequest()) {
+            return MessageType.UPDATE_KEY;
+        }
+        if (request.hasGetConfigurationRequest()) {
+            return MessageType.GET_CONFIGURATION;
+        }
+        if (request.hasSetConfigurationRequest()) {
+            return MessageType.SET_CONFIGURATION;
+        }
+        if (request.hasSetScheduleRequest()) {
+            final Oslp.RelayType relayType = request.getSetScheduleRequest().getScheduleType();
+            if (TARIFF == relayType) {
+                return MessageType.SET_TARIFF_SCHEDULE;
+            } else if (LIGHT == relayType) {
+                return MessageType.SET_LIGHT_SCHEDULE;
+            } else {
+                throw new DeviceSimulatorException(String
+                        .format("Received an unimplemented RelayType in setScheduleRequest of type %s", relayType));
+            }
+        }
+
+        throw new DeviceSimulatorException("Received an unimplemented message type");
+    }
+
 }

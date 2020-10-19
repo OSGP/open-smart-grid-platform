@@ -208,11 +208,11 @@ message SetConfigurationRequest {
     optional LightType lightType = 1;
     optional DaliConfiguration daliConfiguration = 2;                                    // Contains specific configuration for DALI controllers.
     optional RelayConfiguration relayConfiguration = 3;                                  // Contains specific configuration for Relay.
-    optional uint32 shortTermHistoryIntervalMinutes = 4; 
+    optional uint32 shortTermHistoryIntervalMinutes = 4;                                 // Deprecated, no longer supported by the platform.
     optional LinkType preferredLinkType = 5;
-    optional MeterType meterType = 6;
-    optional uint32 longTermHistoryInterval = 7; 
-    optional LongTermIntervalType longTermHistoryIntervalType = 8;
+    optional MeterType meterType = 6;                                                    // Deprecated, no longer supported by the platform.
+    optional uint32 longTermHistoryInterval = 7;                                         // Deprecated, no longer supported by the platform.
+    optional LongTermIntervalType longTermHistoryIntervalType = 8;                       // Deprecated, no longer supported by the platform.
     optional uint32 timeSyncFrequency = 9 [default = 86400];                             // Time synch frequency (seconds).
     optional bytes deviceFixIpValue = 10; // [(nanopb).max_count = 4];                   // The fixed IP address of this device.
     optional bytes netMask = 11; // [(nanopb).max_count = 4];                            // Network mask for fixed IP address.
@@ -258,11 +258,11 @@ message GetConfigurationResponse {
     optional LightType lightType = 2;
     optional DaliConfiguration daliConfiguration = 3;                                    // Contains specific configuration for DALI controllers.
     optional RelayConfiguration relayConfiguration = 4;                                  // Contains specific configuration for Relay.
-    optional uint32 shortTermHistoryIntervalMinutes = 5; 
+    optional uint32 shortTermHistoryIntervalMinutes = 5;                                 // Deprecated, no longer supported by the platform.
     optional LinkType preferredLinkType = 6;
-    optional MeterType meterType = 7;
-    optional uint32 longTermHistoryInterval = 8; 
-    optional LongTermIntervalType longTermHistoryIntervalType = 9;
+    optional MeterType meterType = 7;                                                    // Deprecated, no longer supported by the platform.
+    optional uint32 longTermHistoryInterval = 8;                                         // Deprecated, no longer supported by the platform.
+    optional LongTermIntervalType longTermHistoryIntervalType = 9;                       // Deprecated, no longer supported by the platform.
     optional uint32 timeSyncFrequency = 10 [default = 86400];                            // Time synch frequency (seconds).
     optional bytes deviceFixIpValue = 11; // [(nanopb).max_count = 4];                   // The fixed IP address of this device.
     optional bytes netMask = 12; // [(nanopb).max_count = 4];                            // Network mask for fixed IP address.
@@ -454,6 +454,7 @@ message SsldData {
     repeated RelayData relayData = 10; // [(nanopb).max_count = 4]; // Measurement data per relay.
 }
 
+// Deprecated, no longer supported by the platform.
 message RelayData {
     required bytes index = 1; // [(nanopb).max_size = 1]; // external index, for example 1
     required uint32 totalLightingMinutes = 2; // Total lighting minutes for lighting relay
