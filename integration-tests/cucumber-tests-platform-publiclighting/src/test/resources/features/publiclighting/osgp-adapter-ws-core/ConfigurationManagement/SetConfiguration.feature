@@ -69,8 +69,7 @@ Feature: CoreConfigurationManagement SetConfiguration
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
-    And the device returns a set configuration status over "<Protocol>"
-      | Status | OK |
+    And the device returns a set configuration status "OK" over "<Protocol>"
     When receiving a set configuration request
       | DeviceIdentification | TEST1024000000001 |
       | LightType            | <LightType>       |
@@ -104,8 +103,7 @@ Feature: CoreConfigurationManagement SetConfiguration
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
-    And the device returns a set configuration status over "<Protocol>"
-      | Status | OK |
+    And the device returns a set configuration status "OK" over "<Protocol>"
     When receiving a set configuration request
       | DeviceIdentification | TEST1024000000001 |
       | LightType            | <LightType>       |
@@ -155,7 +153,7 @@ Feature: CoreConfigurationManagement SetConfiguration
       | Protocol    |
       | OSLP ELSTER |
 
-  @OslpMockServer
+  @OslpMockServer @SetConfigurationRejected
   Scenario Outline: Rejected set configuration of a device
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
