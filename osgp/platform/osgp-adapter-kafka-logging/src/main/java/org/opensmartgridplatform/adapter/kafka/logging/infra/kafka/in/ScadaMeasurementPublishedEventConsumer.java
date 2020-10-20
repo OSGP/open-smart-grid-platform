@@ -25,7 +25,7 @@ public class ScadaMeasurementPublishedEventConsumer {
     private KafkaLogger kafkaLogger;
 
     @KafkaListener(containerFactory = "scadaMeasurementPublishedEventKafkaListenerContainerFactory",
-            topics = "${grid.measurement.published.event.kafka.topic}")
+            topics = "${scada.measurement.published.event.kafka.topic}")
     public void listen(final ConsumerRecord<String, ScadaMeasurementPublishedEvent> consumerRecord) {
         this.kafkaLogger.log(consumerRecord);
     }

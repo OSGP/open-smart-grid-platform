@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.ws.admin.infra.specifications;
 
-import static org.opensmartgridplatform.shared.utils.SearchUtil.replaceWildcards;
+import static org.opensmartgridplatform.shared.utils.SearchUtil.replaceAndEscapeWildcards;
 
 import java.time.ZonedDateTime;
 import java.util.Date;
@@ -37,7 +37,7 @@ public class JpaDeviceLogItemSpecifications implements DeviceLogItemSpecificatio
         } else {
             return (final Root<DeviceLogItem> r, final CriteriaQuery<?> q, final CriteriaBuilder cb) -> cb.like(
                     cb.upper(r.<String> get(DEVICE_IDENTIFICATION)),
-                    replaceWildcards(deviceIdentification.toUpperCase()));
+                    replaceAndEscapeWildcards(deviceIdentification.toUpperCase()));
         }
     }
 
@@ -48,7 +48,7 @@ public class JpaDeviceLogItemSpecifications implements DeviceLogItemSpecificatio
         } else {
             return (final Root<DeviceLogItem> r, final CriteriaQuery<?> q, final CriteriaBuilder cb) -> cb.like(
                     cb.upper(r.<String> get(ORGANISATION_IDENTIFICATION)),
-                    replaceWildcards(organisationIdentification.toUpperCase()));
+                    replaceAndEscapeWildcards(organisationIdentification.toUpperCase()));
         }
     }
 

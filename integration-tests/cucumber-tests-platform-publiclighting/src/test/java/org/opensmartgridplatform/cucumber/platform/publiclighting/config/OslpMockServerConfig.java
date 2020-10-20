@@ -49,9 +49,6 @@ public class OslpMockServerConfig extends AbstractPlatformApplicationConfigurati
     @Value("${oslp.security.keytype}")
     private String keytype;
 
-    @Value("${oslp.sequence.number.window}")
-    private Integer sequenceNumberWindow;
-
     @Value("${oslp.sequence.number.maximum}")
     private Integer sequenceNumberMaximum;
 
@@ -65,7 +62,7 @@ public class OslpMockServerConfig extends AbstractPlatformApplicationConfigurati
     public MockOslpServer mockOslpServer() {
         return new MockOslpServer(this.configuration, this.oslpPortServer, this.oslpElsterPortServer,
                 this.oslpSignature, this.oslpSignatureProvider, this.connectionTimeout, this.signKeyPath,
-                this.verifyKeyPath, this.keytype, this.sequenceNumberWindow, this.sequenceNumberMaximum,
+                this.verifyKeyPath, this.keytype, this.sequenceNumberMaximum,
                 this.responseDelayTime, this.responseDelayRandomRange);
     }
 }
