@@ -82,10 +82,8 @@ class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.enti
                     source.getTechnicalInstallationDate().toGregorianCalendar().getTime());
         }
 
-        if (source.getDeviceModel() != null) {
-            final DeviceModel deviceModel = new DeviceModel();
-            deviceModel.setModelCode(source.getDeviceModel().getModelCode());
-        }
+        destination.setDeviceModel(this.mapper.map(source.getDeviceModel(),
+                org.opensmartgridplatform.domain.core.entities.DeviceModel.class));
 
         return destination;
     }
