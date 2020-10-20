@@ -53,8 +53,16 @@ public class Ean extends AbstractEntity {
         return this.code;
     }
 
+    public void setCode(final Long code) {
+        this.code = code;
+    }
+
     public String getDescription() {
         return this.description;
+    }
+
+    public void setDescription(final String description) {
+        this.description = description;
     }
 
     @Override
@@ -65,7 +73,7 @@ public class Ean extends AbstractEntity {
         }
 
         boolean result = false;
-        if (o != null && o instanceof Ean) {
+        if (o instanceof Ean) {
             final Ean that = (Ean) o;
 
             // "code" is a unique identifier for an EAN, so check

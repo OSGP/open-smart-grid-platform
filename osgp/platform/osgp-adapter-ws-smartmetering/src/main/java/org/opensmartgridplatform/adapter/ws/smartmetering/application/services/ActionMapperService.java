@@ -199,7 +199,7 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(GetActualMeterReadsGasRequest.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(GetPowerQualityProfileRequest.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP
-                .put(org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileRequestData.class,
+                .put(org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileRequest.class,
                         this.monitoringMapper);
         CLASS_TO_MAPPER_MAP
                 .put(org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ClearAlarmRegisterData.class,

@@ -7,19 +7,15 @@
  */
 package org.opensmartgridplatform.adapter.kafka.da.application.mapping;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
-import org.opensmartgridplatform.adapter.kafka.da.avro.AccumulationKind;
-import org.opensmartgridplatform.adapter.kafka.da.avro.Analog;
-import org.opensmartgridplatform.adapter.kafka.da.avro.AnalogValue;
-import org.opensmartgridplatform.adapter.kafka.da.avro.MeasuringPeriodKind;
-import org.opensmartgridplatform.adapter.kafka.da.avro.Name;
-import org.opensmartgridplatform.adapter.kafka.da.avro.PhaseCode;
-import org.opensmartgridplatform.adapter.kafka.da.avro.UnitMultiplier;
-import org.opensmartgridplatform.adapter.kafka.da.avro.UnitSymbol;
+import com.alliander.data.scadameasurementpublishedevent.AccumulationKind;
+import com.alliander.data.scadameasurementpublishedevent.Analog;
+import com.alliander.data.scadameasurementpublishedevent.AnalogValue;
+import com.alliander.data.scadameasurementpublishedevent.MeasuringPeriodKind;
+import com.alliander.data.scadameasurementpublishedevent.UnitMultiplier;
+import com.alliander.data.scadameasurementpublishedevent.UnitSymbol;
 
 public interface StringArrayToAnalogList {
 
@@ -27,9 +23,8 @@ public interface StringArrayToAnalogList {
 
     default Analog createAnalog(final String description, final Float value, final UnitSymbol unitSymbol,
             final UnitMultiplier unitMultiplier) {
-        return new Analog(description, UUID.randomUUID().toString(), AccumulationKind.none, MeasuringPeriodKind.none,
-                PhaseCode.none, unitMultiplier, unitSymbol, new ArrayList<Name>(),
-                Arrays.asList(new AnalogValue(value, null, null)));
+        return new Analog(Arrays.asList(new AnalogValue(null, value)), AccumulationKind.none, description,
+                MeasuringPeriodKind.none, unitMultiplier, unitSymbol);
     }
 
 }
