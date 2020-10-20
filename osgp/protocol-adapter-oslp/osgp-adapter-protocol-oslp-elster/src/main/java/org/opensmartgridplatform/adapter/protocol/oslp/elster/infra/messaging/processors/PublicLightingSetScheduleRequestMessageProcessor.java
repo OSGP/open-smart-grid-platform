@@ -8,15 +8,20 @@
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.processors;
 
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.oslp.PendingSetScheduleRequestService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponseHandler;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.requests.SetScheduleDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.responses.GetConfigurationDeviceResponse;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.PendingSetScheduleRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageProcessor;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.OslpEnvelopeProcessor;
 import org.opensmartgridplatform.dto.valueobjects.RelayTypeDto;
@@ -26,10 +31,14 @@ import org.opensmartgridplatform.dto.valueobjects.ScheduleMessageTypeDto;
 import org.opensmartgridplatform.oslp.OslpEnvelope;
 import org.opensmartgridplatform.oslp.SignedOslpEnvelopeDto;
 import org.opensmartgridplatform.oslp.UnsignedOslpEnvelopeDto;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -46,6 +55,9 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
 
     private static final String LOG_MESSAGE_CALL_DEVICE_SERVICE = "Calling DeviceService function: {} of type {} for domain: {} {}";
 
+    @Autowired
+    private PendingSetScheduleRequestService pendingSetScheduleRequestService;
+
     public PublicLightingSetScheduleRequestMessageProcessor() {
         super(MessageType.SET_LIGHT_SCHEDULE);
     }
@@ -54,8 +66,8 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
     public void processMessage(final ObjectMessage message) {
         LOGGER.debug("Processing public lighting set schedule request message");
 
-        MessageMetadata messageMetadata;
-        ScheduleDto schedule;
+        final MessageMetadata messageMetadata;
+        final ScheduleDto schedule;
         try {
             messageMetadata = MessageMetadata.fromMessage(message);
             schedule = (ScheduleDto) message.getObject();
@@ -67,8 +79,19 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
         try {
             ScheduleMessageDataContainerDto.Builder builder = new ScheduleMessageDataContainerDto.Builder(schedule);
             if (schedule.getAstronomicalSunriseOffset() != null || schedule.getAstronomicalSunsetOffset() != null) {
-                builder = builder.withScheduleMessageType(ScheduleMessageTypeDto.RETRIEVE_CONFIGURATION);
+                // prevent a pending astronomical set schedule
+                final List<PendingSetScheduleRequest> pendingSetScheduleRequestList = this.pendingSetScheduleRequestService
+                        .getAllByDeviceIdentificationNotExpired(messageMetadata.getDeviceIdentification());
+                if (pendingSetScheduleRequestList.isEmpty()) {
+                    builder = builder.withScheduleMessageType(ScheduleMessageTypeDto.RETRIEVE_CONFIGURATION);
+                } else {
+                    throw new FunctionalException(
+                            FunctionalExceptionType.SET_SCHEDULE_WITH_ASTRONOMICAL_OFFSETS_IN_PROGRESS,
+                            ComponentType.PROTOCOL_OSLP,
+                            new Throwable(String.format("A set schedule with astronomical offsets is already in progress for device %s", messageMetadata.getDeviceIdentification())));
+                }
             }
+
             final ScheduleMessageDataContainerDto scheduleMessageDataContainer = builder.build();
 
             this.printDomainInfo(messageMetadata.getMessageType(), messageMetadata.getDomain(),
@@ -81,6 +104,8 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
             this.deviceService.setSchedule(deviceRequest);
         } catch (final RuntimeException e) {
             this.handleError(e, messageMetadata);
+        } catch (final FunctionalException e) {
+            this.handleFunctionalException(e, messageMetadata);
         }
     }
 
@@ -146,11 +171,14 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
 
         switch (scheduleMessageTypeDto) {
         case RETRIEVE_CONFIGURATION:
-            final GetConfigurationDeviceResponse response = (GetConfigurationDeviceResponse) deviceResponse;
-            this.handleGetConfigurationBeforeSetScheduleResponse(deviceRequest, response);
+            final GetConfigurationDeviceResponse getConfigurationDeviceResponse = (GetConfigurationDeviceResponse) deviceResponse;
+            this.handleSetScheduleGetConfigurationResponse(deviceRequest, getConfigurationDeviceResponse);
             break;
         case SET_ASTRONOMICAL_OFFSETS:
             this.handleSetScheduleAstronomicalOffsetsResponse(deviceRequest);
+            break;
+        case SET_REBOOT:
+            this.handleSetScheduleSetRebootResponse(deviceRequest);
             break;
         case SET_SCHEDULE:
         default:
@@ -160,7 +188,7 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
 
     }
 
-    private void handleGetConfigurationBeforeSetScheduleResponse(final SetScheduleDeviceRequest deviceRequest,
+    private void handleSetScheduleGetConfigurationResponse(final SetScheduleDeviceRequest deviceRequest,
             final GetConfigurationDeviceResponse deviceResponse) {
         // Configuration is retrieved, so now continue with setting the
         // astronomical offsets
@@ -181,9 +209,28 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
     }
 
     private void handleSetScheduleAstronomicalOffsetsResponse(final SetScheduleDeviceRequest deviceRequest) {
+        // Configuration / Astronomical offsets are set , so now continue with rebooting the device
 
-        // Astronomical offsets are set, so now continue with the actual
-        // schedule
+        LOGGER.info(LOG_MESSAGE_CALL_DEVICE_SERVICE, deviceRequest.getMessageType(),
+                ScheduleMessageTypeDto.SET_ASTRONOMICAL_OFFSETS, deviceRequest.getDomain(),
+                deviceRequest.getDomainVersion());
+
+        final ScheduleMessageDataContainerDto dataContainer = new ScheduleMessageDataContainerDto.Builder(
+                deviceRequest.getScheduleMessageDataContainer().getSchedule())
+                .withScheduleMessageType(ScheduleMessageTypeDto.SET_REBOOT)
+                .build();
+
+        final SetScheduleDeviceRequest newDeviceRequest = new SetScheduleDeviceRequest(
+                createDeviceRequestBuilder(deviceRequest), dataContainer, RelayTypeDto.LIGHT);
+
+        this.deviceService.setSchedule(newDeviceRequest);
+    }
+
+    private void handleSetScheduleSetRebootResponse(final SetScheduleDeviceRequest deviceRequest) {
+
+        // The device will reboot now.
+        // At this point we will need to save the current state to the pending_set_schedule_request table
+
         LOGGER.info(LOG_MESSAGE_CALL_DEVICE_SERVICE, deviceRequest.getMessageType(),
                 ScheduleMessageTypeDto.SET_SCHEDULE, deviceRequest.getDomain(), deviceRequest.getDomainVersion());
 
@@ -192,10 +239,18 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
                         .withScheduleMessageType(ScheduleMessageTypeDto.SET_SCHEDULE)
                         .build();
 
-        final SetScheduleDeviceRequest newDeviceRequest = new SetScheduleDeviceRequest(
-                createDeviceRequestBuilder(deviceRequest), dataContainer, RelayTypeDto.LIGHT);
+        final Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.MINUTE, 1);
+        final PendingSetScheduleRequest pendingSetScheduleRequest = PendingSetScheduleRequest.builder()
+                .deviceIdentification(deviceRequest.getDeviceIdentification())
+                .scheduleMessageDataContainerDto(dataContainer)
+                .deviceRequest(deviceRequest)
+                .expiredAt(calendar.getTime())
+                .build();
 
-        this.deviceService.setSchedule(newDeviceRequest);
+        this.pendingSetScheduleRequestService.add(pendingSetScheduleRequest);
+
     }
 
     private static DeviceRequest.Builder createDeviceRequestBuilder(final DeviceRequest deviceRequest) {

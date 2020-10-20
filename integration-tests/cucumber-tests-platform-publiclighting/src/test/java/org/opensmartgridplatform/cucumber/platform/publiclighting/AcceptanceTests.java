@@ -17,7 +17,8 @@ import io.cucumber.junit.CucumberOptions.SnippetType;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(features = { "classpath:features/publiclighting" },
-        tags = { "not @Skip", "not @NightlyBuildOnly" },
+        //tags = { "not @Skip", "not @NightlyBuildOnly" },
+        tags = { "@AstronomicalSchedule"},
         glue = { "classpath:org.opensmartgridplatform.cucumber.platform.glue",
                 "classpath:org.opensmartgridplatform.cucumber.platform.common.glue",
                 "classpath:org.opensmartgridplatform.cucumber.platform.publiclighting.glue" },

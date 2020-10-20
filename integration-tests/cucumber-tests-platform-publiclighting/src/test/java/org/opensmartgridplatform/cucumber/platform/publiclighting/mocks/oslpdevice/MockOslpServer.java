@@ -120,7 +120,7 @@ public class MockOslpServer {
 
     private DisposableNioEventLoopGroup serverBossGroup = new DisposableNioEventLoopGroup();
     private DisposableNioEventLoopGroup serverWorkerGroup = new DisposableNioEventLoopGroup();
-    private DisposableNioEventLoopGroup clientWorkerGroup = new DisposableNioEventLoopGroup();
+    private final DisposableNioEventLoopGroup clientWorkerGroup = new DisposableNioEventLoopGroup();
 
     // TODO split channel handler in client/server
     private MockOslpChannelHandler channelHandler;
@@ -416,7 +416,8 @@ public class MockOslpServer {
     public void mockSetEventNotificationResponse(final Oslp.Status status) {
         LOGGER.info(MOCKING_MESSAGE_TYPE, MessageType.SET_EVENT_NOTIFICATIONS);
         this.mockResponses.put(MessageType.SET_EVENT_NOTIFICATIONS,
-                Oslp.Message.newBuilder()
+
+                                  Oslp.Message.newBuilder()
                         .setSetEventNotificationsResponse(SetEventNotificationsResponse.newBuilder().setStatus(status))
                         .build());
     }
@@ -502,7 +503,7 @@ public class MockOslpServer {
 
     public void mockGetPowerUsageHistoryResponse(final Oslp.Status status, final Map<String, String[]> requestMap) {
 
-        org.opensmartgridplatform.oslp.Oslp.GetPowerUsageHistoryResponse response;
+        final org.opensmartgridplatform.oslp.Oslp.GetPowerUsageHistoryResponse response;
 
         final org.opensmartgridplatform.oslp.Oslp.GetPowerUsageHistoryResponse.Builder builder = org.opensmartgridplatform.oslp.Oslp.GetPowerUsageHistoryResponse
                 .newBuilder();

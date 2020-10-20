@@ -9,6 +9,8 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
+    And a pending set schedule request that expires within "5" minutes
+      | DeviceIdentification | TEST1024000000001 |
     And the device returns a set light schedule response "OK" over "<Protocol>"
     When receiving a set light schedule request
       | DeviceIdentification | TEST1024000000001 |
@@ -63,7 +65,7 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
 
   #Note: the astronomical offsets are part of the set schedule request in the web services,
   #      while in the oslp elster protocol adapter they are sent to the device using a set configuration message
-  @OslpMockServer
+  @OslpMockServer @AstronomicalSchedule
   Scenario: Set light schedule with astronomical offsets
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
@@ -89,10 +91,20 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | SunsetOffset         |                45 |
     Then the set light schedule async response contains
       | DeviceIdentification | TEST1024000000001 |
+    And the device returns a set reboot response "OK" over "OLSP ELSTER"
     And a get configuration "OSLP ELSTER" message is sent to device "TEST1024000000001"
+
+    And a set reboot "OSLP ELSTER" message is sent to device "TEST1024000000001"
     And a set configuration "OSLP ELSTER" message is sent to device "TEST1024000000001"
       | SunriseOffset | -900 |
       | SunsetOffset  | 2700 |
+
+    # Register.
+    And the device sends a register device request to the platform over "OSLP ELSTER"
+      | DeviceIdentification | TEST1024000000001 |
+    And the device sends a confirm register device request to the platform over "OSLP ELSTER"
+      | DeviceIdentification | TEST1024000000001 |
+
     And a set light schedule "OSLP ELSTER" message is sent to device "TEST1024000000001"
       | WeekDay     | ALL          |
       | ActionTime  | SUNRISE      |
@@ -100,6 +112,22 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | TriggerType | ASTRONOMICAL |
     And the platform buffers a set light schedule response message for device "TEST1024000000001"
       | Result | OK |
+
+  @OslpMockServer @AstronomicalSchedule
+  Scenario: Set light schedule with astronomical offsets when a previous request is in progress
+    Given an ssld oslp device
+      | DeviceIdentification | TEST1024000000001 |
+      | Protocol             | OSLP ELSTER       |
+    And a pending set schedule request that expires within "5" minutes
+      | DeviceIdentification | TEST1024000000001 |
+    When receiving a set light schedule request with astronomical offsets
+      | DeviceIdentification | TEST1024000000001 |
+      | SunriseOffset        |               -15 |
+      | SunsetOffset         |                45 |
+    Then the set light schedule async response contains
+      | DeviceIdentification | TEST1024000000001 |
+
+
 
   @OslpMockServer
   Scenario Outline: Failed set light schedule

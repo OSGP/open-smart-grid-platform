@@ -210,6 +210,13 @@
       <artifactId>netty-all</artifactId>
     </dependency>
 
+    <!-- Lombok -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- Apache ActiveMQ -->
     <dependency>
       <groupId>org.apache.activemq</groupId>
