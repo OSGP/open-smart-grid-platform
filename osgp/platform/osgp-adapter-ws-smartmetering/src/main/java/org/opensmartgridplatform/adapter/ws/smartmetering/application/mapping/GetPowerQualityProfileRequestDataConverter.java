@@ -31,8 +31,10 @@ public class GetPowerQualityProfileRequestDataConverter
         GetPowerQualityProfileRequestData data = new GetPowerQualityProfileRequestData(source.getProfileType(),
                 source.getBeginDate().toGregorianCalendar().getTime(),
                 source.getEndDate().toGregorianCalendar().getTime());
-        List<CaptureObjectDefinition> captureObjectDefinitions = source.getSelectedValues().getCaptureObject();
-        captureObjectDefinitions.forEach(cod -> data.getSelectedValues().add(convert(cod)));
+        if (source.getSelectedValues() != null) {
+            List<CaptureObjectDefinition> captureObjectDefinitions = source.getSelectedValues().getCaptureObject();
+            captureObjectDefinitions.forEach(cod -> data.getSelectedValues().add(this.convert(cod)));
+        }
         return data;
     }
 
