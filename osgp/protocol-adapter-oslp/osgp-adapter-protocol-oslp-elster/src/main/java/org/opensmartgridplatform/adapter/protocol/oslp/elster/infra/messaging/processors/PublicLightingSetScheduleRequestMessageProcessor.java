@@ -58,6 +58,9 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
     @Autowired
     private PendingSetScheduleRequestService pendingSetScheduleRequestService;
 
+    @Autowired
+    private Integer pendingSetScheduleRequestExpirationTime;
+
     public PublicLightingSetScheduleRequestMessageProcessor() {
         super(MessageType.SET_LIGHT_SCHEDULE);
     }
@@ -79,7 +82,8 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
         try {
             ScheduleMessageDataContainerDto.Builder builder = new ScheduleMessageDataContainerDto.Builder(schedule);
             if (schedule.getAstronomicalSunriseOffset() != null || schedule.getAstronomicalSunsetOffset() != null) {
-                // prevent a pending astronomical set schedule
+                // prevent a pending astronomical set schedule from being set when already an astronomical set schedule request is pending
+                // note: others are allowed. I guess that's not totally correct.
                 final List<PendingSetScheduleRequest> pendingSetScheduleRequestList = this.pendingSetScheduleRequestService
                         .getAllByDeviceIdentificationNotExpired(messageMetadata.getDeviceIdentification());
                 if (pendingSetScheduleRequestList.isEmpty()) {
@@ -241,7 +245,7 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
 
         final Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        calendar.add(Calendar.MINUTE, 1);
+        calendar.add(Calendar.MINUTE, this.pendingSetScheduleRequestExpirationTime);
         final PendingSetScheduleRequest pendingSetScheduleRequest = PendingSetScheduleRequest.builder()
                 .deviceIdentification(deviceRequest.getDeviceIdentification())
                 .scheduleMessageDataContainerDto(dataContainer)

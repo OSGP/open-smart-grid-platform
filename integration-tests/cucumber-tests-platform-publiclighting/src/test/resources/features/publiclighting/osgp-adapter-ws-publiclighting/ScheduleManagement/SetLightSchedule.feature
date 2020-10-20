@@ -126,6 +126,10 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | SunsetOffset         |                45 |
     Then the set light schedule async response contains
       | DeviceIdentification | TEST1024000000001 |
+    And I wait 5 seconds
+    And the platform buffers a set light schedule response message for device "TEST1024000000001" that contains a soap fault
+      | Message | Device reports failure |
+
 
 
 
