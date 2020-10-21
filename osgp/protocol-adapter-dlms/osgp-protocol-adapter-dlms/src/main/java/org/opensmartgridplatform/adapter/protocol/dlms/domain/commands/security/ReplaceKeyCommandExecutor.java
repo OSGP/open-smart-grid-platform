@@ -129,9 +129,9 @@ public class ReplaceKeyCommandExecutor
 
     private SetKeysRequestDto reEncryptKeys(final SetKeysRequestDto setKeysRequestDto) throws FunctionalException {
         final byte[] reEncryptedAuthenticationKey = this.securityKeyService
-                .reEncryptKey(setKeysRequestDto.getAuthenticationKey()); //, SecurityKeyType.E_METER_AUTHENTICATION);
+                .reEncryptKey(setKeysRequestDto.getAuthenticationKey());
         final byte[] reEncryptedEncryptionKey = this.securityKeyService
-                .reEncryptKey(setKeysRequestDto.getEncryptionKey()); //, SecurityKeyType.E_METER_ENCRYPTION);
+                .reEncryptKey(setKeysRequestDto.getEncryptionKey());
 
         return new SetKeysRequestDto(reEncryptedAuthenticationKey, reEncryptedEncryptionKey);
     }

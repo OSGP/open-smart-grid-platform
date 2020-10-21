@@ -90,44 +90,34 @@ public class SecretManagementService implements SecurityKeyService {
      *         key
      */
     @Override
-    public byte[] reEncryptKey(final byte[] externallyEncryptedKey/*, final SecurityKeyType keyType*/)
-            throws FunctionalException {
+    public byte[] reEncryptKey(final byte[] externallyEncryptedKey) throws FunctionalException {
 
         if (externallyEncryptedKey == null) {
             return new byte[0];
         }
 
-        final byte[] key = this.rsaDecrypt(externallyEncryptedKey);//, keyType);
-        return this.aesEncryptKey(key);//, keyType);
+        final byte[] key = this.rsaDecrypt(externallyEncryptedKey);
+        return this.aesEncryptKey(key);
 
     }
 
     @Override
-    public byte[] rsaDecrypt(final byte[] externallyEncryptedKey) //, final SecurityKeyType keyType)
-            throws FunctionalException {
-
+    public byte[] rsaDecrypt(final byte[] externallyEncryptedKey) throws FunctionalException {
         try {
             return this.rsaEncryptionService.decrypt(externallyEncryptedKey);
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during decryption", e);
             throw new FunctionalException(FunctionalExceptionType.DECRYPTION_EXCEPTION, ComponentType.PROTOCOL_DLMS, e);
-            // new EncrypterException(
-            //         String.format("Unexpected exception during decryption of key.", keyType)));
         }
-
     }
 
     //@Override
-    public byte[] aesEncryptKey(final byte[] key) /*, final SecurityKeyType keyType)*/ throws FunctionalException {
-
+    private byte[] aesEncryptKey(final byte[] key) throws FunctionalException {
         try {
             return this.aesEncryptionService.encrypt(key);
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during encryption", e);
-            //TODO refactor this?
             throw new FunctionalException(FunctionalExceptionType.ENCRYPTION_EXCEPTION, ComponentType.PROTOCOL_DLMS, e);
-            //   new EncrypterException(
-            //           String.format("Unexpected exception during encryption of %s key.", keyType)));
         }
     }
 
@@ -185,25 +175,13 @@ public class SecretManagementService implements SecurityKeyService {
     }
 
     private void validateGetResponse(List<SecurityKeyType> keyTypes, GetSecretsResponse response) {
-        if (!OsgpResultType.OK.equals(response.getResult()) || response.getTypedSecrets() == null
-                || response.getTypedSecrets().getTypedSecret() == null) {
-            throw new IllegalStateException(
-                    "Invalid/incomplete soap response: resulttype=" + response.getResult().value());
-        }
-        if (keyTypes.size() != response.getTypedSecrets().getTypedSecret().size()) {
-            throw new IllegalStateException("Unexpected number of secrets in response");
-        }
+        this.validateOsgpResultAndTypedSecrets(response.getResult(), response.getTechnicalFault(),
+                response.getTypedSecrets(), keyTypes.size());
     }
 
     private void validateGetNewResponse(List<SecurityKeyType> keyTypes, GetNewSecretsResponse response) {
-        if (!OsgpResultType.OK.equals(response.getResult()) || response.getTypedSecrets() == null
-                || response.getTypedSecrets().getTypedSecret() == null) {
-            throw new IllegalStateException(
-                    "Invalid/incomplete soap response: resulttype=" + response.getResult().value());
-        }
-        if (keyTypes.size() != response.getTypedSecrets().getTypedSecret().size()) {
-            throw new IllegalStateException("Unexpected number of secrets in response");
-        }
+        this.validateOsgpResultAndTypedSecrets(response.getResult(), response.getTechnicalFault(),
+                response.getTypedSecrets(), keyTypes.size());
     }
 
     private Map<SecurityKeyType, byte[]> convertSoapSecretsToSecretMapByType(List<TypedSecret> soapSecrets) {
@@ -272,7 +250,8 @@ public class SecretManagementService implements SecurityKeyService {
     }
 
     @Override
-    public void activateNewKeys(String deviceIdentification, List<SecurityKeyType> keyTypes) throws ProtocolAdapterException {
+    public void activateNewKeys(String deviceIdentification, List<SecurityKeyType> keyTypes)
+            throws ProtocolAdapterException {
         ActivateSecretsRequest request = new ActivateSecretsRequest();
         request.setDeviceId(deviceIdentification);
         request.setSecretTypes(new SecretTypes());
@@ -331,11 +310,21 @@ public class SecretManagementService implements SecurityKeyService {
 
     private void validateGenerateAndStoreResponse(List<SecurityKeyType> keyTypes,
             GenerateAndStoreSecretsResponse response, List<TypedSecret> typedSecretList) {
-        if (!OsgpResultType.OK.equals(response.getResult())) {
+        this.validateOsgpResultAndTypedSecrets(response.getResult(), response.getTechnicalFault(),
+                response.getTypedSecrets(), keyTypes.size());
+        typedSecretList.forEach(ts->ts.getSecret()==null?);
+    }
+
+    private void validateOsgpResultAndTypedSecrets(OsgpResultType result, Object fault, TypedSecrets typedSecrets,
+            int expectedNrKeys) {
+        if (!OsgpResultType.OK.equals(result)) {
+            throw new IllegalStateException("Could not generate and store keys in secret-mgmt: " + fault.toString());
+        } else if (typedSecrets == null || typedSecrets.getTypedSecret() == null) {
+            throw new IllegalStateException("No secrets in response");
+        } else if (expectedNrKeys != typedSecrets.getTypedSecret().size()) {
             throw new IllegalStateException(
-                    "Could not generate and store keys in secret-mgmt: " + response.getTechnicalFault().toString());
-        } else if (keyTypes.size() != typedSecretList.size()) {
-            throw new IllegalStateException("Unexpected number of secrets in response");
+                    String.format("Unexpected number of secrets in response: expected %s but " + "found %s",
+                            expectedNrKeys, typedSecrets.getTypedSecret().size()));
         }
     }
 
