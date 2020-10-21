@@ -80,21 +80,24 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
         }
 
         try {
+
+            final List<PendingSetScheduleRequest> pendingSetScheduleRequestList = this.pendingSetScheduleRequestService
+                    .getAllByDeviceIdentificationNotExpired(messageMetadata.getDeviceIdentification());
+
+            if (!pendingSetScheduleRequestList.isEmpty()) {
+                throw new FunctionalException(
+                        FunctionalExceptionType.SET_SCHEDULE_WITH_ASTRONOMICAL_OFFSETS_IN_PROGRESS,
+                        ComponentType.PROTOCOL_OSLP,
+                        new Throwable(String.format("A set schedule with astronomical offsets is already in progress for device %s", messageMetadata.getDeviceIdentification())));
+            }
+
             ScheduleMessageDataContainerDto.Builder builder = new ScheduleMessageDataContainerDto.Builder(schedule);
             if (schedule.getAstronomicalSunriseOffset() != null || schedule.getAstronomicalSunsetOffset() != null) {
                 // prevent a pending astronomical set schedule from being set when already an astronomical set schedule request is pending
                 // note: others are allowed. I guess that's not totally correct.
-                final List<PendingSetScheduleRequest> pendingSetScheduleRequestList = this.pendingSetScheduleRequestService
-                        .getAllByDeviceIdentificationNotExpired(messageMetadata.getDeviceIdentification());
-                if (pendingSetScheduleRequestList.isEmpty()) {
-                    builder = builder.withScheduleMessageType(ScheduleMessageTypeDto.RETRIEVE_CONFIGURATION);
-                } else {
-                    throw new FunctionalException(
-                            FunctionalExceptionType.SET_SCHEDULE_WITH_ASTRONOMICAL_OFFSETS_IN_PROGRESS,
-                            ComponentType.PROTOCOL_OSLP,
-                            new Throwable(String.format("A set schedule with astronomical offsets is already in progress for device %s", messageMetadata.getDeviceIdentification())));
-                }
+                builder = builder.withScheduleMessageType(ScheduleMessageTypeDto.RETRIEVE_CONFIGURATION);
             }
+
 
             final ScheduleMessageDataContainerDto scheduleMessageDataContainer = builder.build();
 
