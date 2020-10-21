@@ -59,7 +59,7 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
     private PendingSetScheduleRequestService pendingSetScheduleRequestService;
 
     @Autowired
-    private Integer pendingSetScheduleRequestExpirationTime;
+    private Integer pendingSetScheduleRequestExpiresInMinutes;
 
     public PublicLightingSetScheduleRequestMessageProcessor() {
         super(MessageType.SET_LIGHT_SCHEDULE);
@@ -248,7 +248,7 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
 
         final Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        calendar.add(Calendar.MINUTE, this.pendingSetScheduleRequestExpirationTime);
+        calendar.add(Calendar.MINUTE, this.pendingSetScheduleRequestExpiresInMinutes);
         final PendingSetScheduleRequest pendingSetScheduleRequest = PendingSetScheduleRequest.builder()
                 .deviceIdentification(deviceRequest.getDeviceIdentification())
                 .scheduleMessageDataContainerDto(dataContainer)

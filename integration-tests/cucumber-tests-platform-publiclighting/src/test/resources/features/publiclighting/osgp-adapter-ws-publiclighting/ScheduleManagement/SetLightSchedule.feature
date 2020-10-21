@@ -121,7 +121,6 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | SunsetOffset         |                45 |
     Then the set light schedule async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And I wait 2 seconds
     And the platform buffers a set light schedule response message for device "TEST1024000000001"
       | Result      | NOT_OK                                             |
       | Description | SET_SCHEDULE_WITH_ASTRONOMICAL_OFFSETS_IN_PROGRESS |
@@ -142,7 +141,6 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | TriggerType          |                   |
     Then the set light schedule async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And I wait 2 seconds
     And the platform buffers a set light schedule response message for device "TEST1024000000001"
       | Result      | NOT_OK                                             |
       | Description | SET_SCHEDULE_WITH_ASTRONOMICAL_OFFSETS_IN_PROGRESS |
@@ -176,6 +174,9 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | TriggerType   |              |
       | TriggerWindow |              |
     # Note: The platform throws a TechnicalException when the status is 'FAILURE'.
+    #And the platform buffers a set light schedule response message for device "TEST1024000000001"
+    #  | Result      | NOT_OK                 |
+    #  | Description | Device reports failure |
     And the platform buffers a set light schedule response message for device "TEST1024000000001" that contains a soap fault
       | Message | Device reports failure |
 
@@ -309,11 +310,23 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | InnerMessage | Device TEST1024000000001 is not registered |
 
   # Note: HasScheduled is set to 'false' because the response type is 'NOT_OK', but should be 'OK'
-  @OslpMockServer
+  @OslpMockServer @Skip
   Scenario Outline: Set light schedule with 50 schedules # Success
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
+    And the device returns a set light schedule response "OK" over "<Protocol>"
+    And the device returns a set light schedule response "OK" over "<Protocol>"
+    And the device returns a set light schedule response "OK" over "<Protocol>"
+    And the device returns a set light schedule response "OK" over "<Protocol>"
+    And the device returns a set light schedule response "OK" over "<Protocol>"
+    And the device returns a set light schedule response "OK" over "<Protocol>"
+    And the device returns a set light schedule response "OK" over "<Protocol>"
+    And the device returns a set light schedule response "OK" over "<Protocol>"
+    And the device returns a set light schedule response "OK" over "<Protocol>"
+    And the device returns a set light schedule response "OK" over "<Protocol>"
+    And the device returns a set light schedule response "OK" over "<Protocol>"
+    And the device returns a set light schedule response "OK" over "<Protocol>"
     And the device returns a set light schedule response "OK" over "<Protocol>"
     When receiving a set light schedule request for 50 schedules
       | DeviceIdentification | TEST1024000000001 |
