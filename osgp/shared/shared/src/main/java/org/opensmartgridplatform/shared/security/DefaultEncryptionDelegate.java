@@ -28,7 +28,7 @@ public class DefaultEncryptionDelegate implements EncryptionDelegate {
     }
 
     private EncryptionProvider getEncryptionProvider(EncryptionProviderType type) {
-        return this.providers.stream().filter(type::equals).findFirst()
+        return this.providers.stream().filter(provider -> provider.getType().equals(type)).findFirst()
                              .orElseThrow(() -> new EncrypterException(String.format(ERROR_NO_PROVIDER, type)));
     }
 
