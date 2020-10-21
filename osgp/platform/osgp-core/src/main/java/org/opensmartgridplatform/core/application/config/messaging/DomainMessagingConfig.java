@@ -29,9 +29,6 @@ import org.springframework.context.annotation.Configuration;
 public class DomainMessagingConfig extends AbstractConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(DomainMessagingConfig.class);
 
-    @Value("${jms.get.power.usage.history.request.time.to.live:3600000}")
-    private long getPowerUsageHistoryRequestTimeToLive;
-
     @Value("${netmanagement.organisation:test-org}")
     private String netmanagementOrganisation;
 
@@ -95,12 +92,6 @@ public class DomainMessagingConfig extends AbstractConfig {
     public DomainResponseMessageListenerContainerFactory domainResponseMessageListenerContainer() {
         return new DomainResponseMessageListenerContainerFactory(this.environment, this.domainInfos,
                 this.protocolInfos);
-    }
-
-    // Custom time to live for get power usage history requests.
-    @Bean
-    public Long getPowerUsageHistoryRequestTimeToLive() {
-        return this.getPowerUsageHistoryRequestTimeToLive;
     }
 
     @Bean

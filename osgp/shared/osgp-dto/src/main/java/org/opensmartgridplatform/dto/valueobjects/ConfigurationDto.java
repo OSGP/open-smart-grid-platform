@@ -25,15 +25,7 @@ public class ConfigurationDto implements Serializable {
 
     private RelayConfigurationDto relayConfiguration;
 
-    private final Integer shortTermHistoryIntervalMinutes;
-
-    private final Integer longTermHistoryInterval;
-
-    private final LongTermIntervalTypeDto longTermHistoryIntervalType;
-
     private final LinkTypeDto preferredLinkType;
-
-    private final MeterTypeDto meterType;
 
     private Integer timeSyncFrequency;
 
@@ -85,11 +77,7 @@ public class ConfigurationDto implements Serializable {
         this.lightType = builder.lightType;
         this.daliConfiguration = builder.daliConfiguration;
         this.relayConfiguration = builder.relayConfiguration;
-        this.shortTermHistoryIntervalMinutes = builder.shortTermHistoryIntervalMinutes;
         this.preferredLinkType = builder.preferredLinkType;
-        this.meterType = builder.meterType;
-        this.longTermHistoryInterval = builder.longTermHistoryInterval;
-        this.longTermHistoryIntervalType = builder.longTermHistoryIntervalType;
     }
 
     public static class Builder {
@@ -97,11 +85,7 @@ public class ConfigurationDto implements Serializable {
         private LightTypeDto lightType;
         private DaliConfigurationDto daliConfiguration;
         private RelayConfigurationDto relayConfiguration;
-        private Integer shortTermHistoryIntervalMinutes;
         private LinkTypeDto preferredLinkType;
-        private MeterTypeDto meterType;
-        private Integer longTermHistoryInterval;
-        private LongTermIntervalTypeDto longTermHistoryIntervalType;
 
         public ConfigurationDto build() {
             return new ConfigurationDto(this);
@@ -122,38 +106,14 @@ public class ConfigurationDto implements Serializable {
             return this;
         }
 
-        public Builder withShortTermHistoryIntervalMinutes(final Integer shortTermHistoryIntervalMinutes) {
-            this.shortTermHistoryIntervalMinutes = shortTermHistoryIntervalMinutes;
-            return this;
-        }
-
         public Builder withPreferredLinkType(final LinkTypeDto preferredLinkType) {
             this.preferredLinkType = preferredLinkType;
-            return this;
-        }
-
-        public Builder withMeterType(final MeterTypeDto meterType) {
-            this.meterType = meterType;
-            return this;
-        }
-
-        public Builder withLongTermHistoryInterval(final Integer longTermHistoryInterval) {
-            this.longTermHistoryInterval = longTermHistoryInterval;
-            return this;
-        }
-
-        public Builder withLongTermHysteryIntervalType(final LongTermIntervalTypeDto longTermHistoryIntervalType) {
-            this.longTermHistoryIntervalType = longTermHistoryIntervalType;
             return this;
         }
     }
 
     public static Builder newBuilder() {
         return new Builder();
-    }
-
-    public MeterTypeDto getMeterType() {
-        return this.meterType;
     }
 
     public LightTypeDto getLightType() {
@@ -172,20 +132,8 @@ public class ConfigurationDto implements Serializable {
         this.relayConfiguration = relayConfiguration;
     }
 
-    public Integer getShortTermHistoryIntervalMinutes() {
-        return this.shortTermHistoryIntervalMinutes;
-    }
-
     public LinkTypeDto getPreferredLinkType() {
         return this.preferredLinkType;
-    }
-
-    public Integer getLongTermHistoryInterval() {
-        return this.longTermHistoryInterval;
-    }
-
-    public LongTermIntervalTypeDto getLongTermHistoryIntervalType() {
-        return this.longTermHistoryIntervalType;
     }
 
     public Integer getTimeSyncFrequency() {

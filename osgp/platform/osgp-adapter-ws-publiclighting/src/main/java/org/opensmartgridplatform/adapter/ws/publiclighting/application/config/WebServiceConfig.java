@@ -44,7 +44,6 @@ public class WebServiceConfig extends AbstractConfig {
 
     private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_PUBLIC_LIGHTING_AD_HOC_MANAGEMENT = "jaxb2.marshaller.context.path.publiclighting.adhocmanagement";
     private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_PUBLIC_LIGHTING_SCHEDULE_MANAGEMENT = "jaxb2.marshaller.context.path.publiclighting.schedulemanagement";
-    private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_PUBLIC_LIGHTING_DEVICE_MONITORING = "jaxb2.marshaller.context.path.publiclighting.devicemonitoring";
 
     private static final String PROPERTY_NAME_SOAP_MESSAGE_LOGGING_ENABLED = "soap.message.logging.enabled";
     private static final String PROPERTY_NAME_SOAP_MESSAGE_PRINTING_ENABLED = "soap.message.printing.enabled";
@@ -62,37 +61,6 @@ public class WebServiceConfig extends AbstractConfig {
     private static final String SERVER = "SERVER";
 
     // === PUBLIC LIGHTING MARSHALLERS ===
-
-    /**
-     * Method for creating the Marshaller for device monitoring.
-     *
-     * @return Jaxb2Marshaller
-     */
-    @Bean
-    public Jaxb2Marshaller deviceMonitoringMarshaller() {
-        LOGGER.debug("Creating Public Lighting Device Monitoring JAXB 2 Marshaller Bean");
-
-        final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-
-        marshaller.setContextPath(this.environment
-                .getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_PUBLIC_LIGHTING_DEVICE_MONITORING));
-
-        return marshaller;
-    }
-
-    /**
-     * Method for creating the Marshalling Payload Method Processor for device
-     * monitoring.
-     *
-     * @return MarshallingPayloadMethodProcessor
-     */
-    @Bean
-    public MarshallingPayloadMethodProcessor deviceMonitoringMarshallingPayloadMethodProcessor() {
-        LOGGER.debug("Creating Public Lighting Device Monitoring Marshalling Payload Method Processor Bean");
-
-        return new MarshallingPayloadMethodProcessor(this.deviceMonitoringMarshaller(),
-                this.deviceMonitoringMarshaller());
-    }
 
     /**
      * Method for creating the Marshaller for schedule management.
@@ -171,7 +139,6 @@ public class WebServiceConfig extends AbstractConfig {
 
         // Add Public Lighting Marshalling Payload Method Processors to Method
         // Argument Resolvers
-        methodArgumentResolvers.add(this.deviceMonitoringMarshallingPayloadMethodProcessor());
         methodArgumentResolvers.add(this.publicLightingAdHocManagementMarshallingPayloadMethodProcessor());
         methodArgumentResolvers.add(this.publicLightingScheduleManagementMarshallingPayloadMethodProcessor());
 
@@ -188,7 +155,6 @@ public class WebServiceConfig extends AbstractConfig {
         // Return Value Handlers
         methodReturnValueHandlers.add(this.publicLightingAdHocManagementMarshallingPayloadMethodProcessor());
         methodReturnValueHandlers.add(this.publicLightingScheduleManagementMarshallingPayloadMethodProcessor());
-        methodReturnValueHandlers.add(this.deviceMonitoringMarshallingPayloadMethodProcessor());
 
         defaultMethodEndpointAdapter.setMethodReturnValueHandlers(methodReturnValueHandlers);
 

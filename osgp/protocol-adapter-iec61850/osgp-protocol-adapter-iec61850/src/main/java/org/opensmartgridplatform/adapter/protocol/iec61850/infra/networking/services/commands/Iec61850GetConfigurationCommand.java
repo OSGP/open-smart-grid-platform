@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.joda.time.DateTimeZone;
-import com.beanit.openiec61850.Fc;
 import org.opensmartgridplatform.adapter.protocol.iec61850.application.mapping.Iec61850Mapper;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DaylightSavingTimeTransition;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
@@ -34,12 +33,12 @@ import org.opensmartgridplatform.dto.valueobjects.DaliConfigurationDto;
 import org.opensmartgridplatform.dto.valueobjects.DeviceFixedIpDto;
 import org.opensmartgridplatform.dto.valueobjects.LightTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.LinkTypeDto;
-import org.opensmartgridplatform.dto.valueobjects.LongTermIntervalTypeDto;
-import org.opensmartgridplatform.dto.valueobjects.MeterTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.RelayConfigurationDto;
 import org.opensmartgridplatform.dto.valueobjects.RelayMapDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.beanit.openiec61850.Fc;
 
 public class Iec61850GetConfigurationCommand {
 
@@ -64,17 +63,7 @@ public class Iec61850GetConfigurationCommand {
             public ConfigurationDto apply(final DeviceMessageLog deviceMessageLog) throws ProtocolAdapterException {
                 // Keeping the hardcoded values and values that aren't fetched
                 // from the device out of the Function.
-
-                // Hardcoded (not supported)
-                final MeterTypeDto meterType = MeterTypeDto.AUX;
-                // Hardcoded (not supported)
-                final Integer shortTermHistoryIntervalMinutes = 15;
-                // Hardcoded (not supported)
                 final LinkTypeDto preferredLinkType = LinkTypeDto.ETHERNET;
-                // Hardcoded (not supported)
-                final Integer longTermHistoryInterval = 1;
-                // Hardcoded (not supported)
-                final LongTermIntervalTypeDto longTermHistoryIntervalType = LongTermIntervalTypeDto.DAYS;
 
                 // Map the relay configuration.
                 final List<RelayMapDto> relayMaps = new ArrayList<>();
@@ -127,11 +116,7 @@ public class Iec61850GetConfigurationCommand {
                         .withLightType(lightType)
                         .withDaliConfiguration(daliConfiguration)
                         .withRelayConfiguration(relayConfiguration)
-                        .withShortTermHistoryIntervalMinutes(shortTermHistoryIntervalMinutes)
                         .withPreferredLinkType(preferredLinkType)
-                        .withMeterType(meterType)
-                        .withLongTermHistoryInterval(longTermHistoryInterval)
-                        .withLongTermHysteryIntervalType(longTermHistoryIntervalType)
                         .build();
 
                 // getting the registration configuration values
