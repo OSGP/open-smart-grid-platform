@@ -18,10 +18,6 @@ Feature: CoreConfigurationManagement SetConfiguration
       | DcMap                | <DcMap>             |
       | RelayConf            | <RelayConf>         |
       | PreferredLinkType    | <PreferredLinkType> |
-      | MeterType            | <MeterType>         |
-      | ShortInterval        | <ShortInterval>     |
-      | LongInterval         | <LongInterval>      |
-      | IntervalType         | <IntervalType>      |
       | OsgpIpAddress        | <OsgpIpAddress>     |
       | OsgpPort             | <OsgpPort>          |
     Then the set configuration async response contains
@@ -32,10 +28,6 @@ Feature: CoreConfigurationManagement SetConfiguration
       | DcMap             | <DcMap>             |
       | RelayConf         | <RelayConf>         |
       | PreferredLinkType | <PreferredLinkType> |
-      | MeterType         | <MeterType>         |
-      | ShortInterval     | <ShortInterval>     |
-      | LongInterval      | <LongInterval>      |
-      | IntervalType      | <IntervalType>      |
       | OsgpIpAddress     | <OsgpIpAddress>     |
       | OsgpPort          | <OsgpPort>          |
     And a set reboot "<Protocol>" message is sent to device "TEST1024000000001"
@@ -43,27 +35,23 @@ Feature: CoreConfigurationManagement SetConfiguration
       | Result | OK |
 
     Examples:
-      | Protocol    | LightType               | DcLights | DcMap   | RelayConf  | PreferredLinkType | MeterType | ShortInterval | LongInterval | IntervalType | OsgpIpAddress | OsgpPort |
-      | OSLP ELSTER | RELAY                   |          |         |            |                   | AUX       |               |              |              | 10.20.30.40   | 12122    |
-      | OSLP ELSTER | RELAY                   |          |         | 1,1,TARIFF |                   |           |               |              |              | 10.20.30.40   | 12122    |
-      | OSLP ELSTER | RELAY                   |          |         | 1,1,TARIFF |                   | AUX       |               |              |              | 10.20.30.40   | 12122    |
-      | OSLP ELSTER | ONE_TO_TEN_VOLT         |          |         |            |                   |           |               |              |              | 10.20.30.40   | 12122    |
-      | OSLP ELSTER | ONE_TO_TEN_VOLT_REVERSE |          |         |            |                   |           |               |              |              | 10.20.30.40   | 12122    |
-      | OSLP ELSTER | DALI                    | 2        | 1,2;2,1 |            |                   |           |               |              |              | 10.20.30.40   | 12123    |
-      | OSLP ELSTER |                         |          |         |            |                   |           | 30            |              |              | 10.20.30.40   | 12123    |
-      | OSLP ELSTER |                         |          |         |            | GPRS              |           |               |              |              | 10.20.30.40   | 12123    |
-      | OSLP ELSTER | RELAY                   |          |         |            |                   |           |               |              |              | 10.20.30.40   | 12123    |
-      | OSLP ELSTER | DALI                    |          |         |            |                   |           |               |              |              | 10.20.30.40   | 12123    |
-      | OSLP ELSTER | RELAY                   |          |         | 1,1,LIGHT  |                   |           |               |              |              | 10.20.30.50   | 12122    |
-      | OSLP ELSTER |                         |          |         |            |                   |           |               |              |              | 10.20.30.50   | 12122    |
-      | OSLP ELSTER |                         |          |         |            |                   | P1        |               |              |              | 10.20.30.50   | 12122    |
-      | OSLP ELSTER |                         |          |         |            |                   |           |               | 10           | DAYS         | 10.20.30.50   | 12122    |
-      | OSLP ELSTER |                         |          |         |            |                   |           |               | 10           | MONTHS       | 10.20.30.50   | 12122    |
-      | OSLP ELSTER | RELAY                   |          |         | 1,1,LIGHT  | CDMA              | PULSE     | 15            | 30           | DAYS         | 10.20.30.50   | 12123    |
-      | OSLP ELSTER | RELAY                   |          |         | 1,1,LIGHT  | ETHERNET          | P1        | 15            | 1            | DAYS         | 10.20.30.50   | 12123    |
-      | OSLP ELSTER | DALI                    | 1        | 1,1     |            |                   |           |               |              |              | 10.20.30.50   | 12123    |
-      | OSLP ELSTER | DALI                    | 2        | 1,1;2,2 |            |                   |           |               |              |              | 10.20.30.50   | 12123    |
-      | OSLP ELSTER |                         |          |         |            |                   |           |               | 10           |              | 10.20.30.50   | 12123    |
+      | Protocol    | LightType               | DcLights | DcMap   | RelayConf  | PreferredLinkType | OsgpIpAddress | OsgpPort |
+      | OSLP ELSTER | RELAY                   |          |         |            |                   | 10.20.30.40   | 12122    |
+      | OSLP ELSTER | RELAY                   |          |         | 1,1,TARIFF |                   | 10.20.30.40   | 12122    |
+      | OSLP ELSTER | ONE_TO_TEN_VOLT         |          |         |            |                   | 10.20.30.40   | 12122    |
+      | OSLP ELSTER | ONE_TO_TEN_VOLT_REVERSE |          |         |            |                   | 10.20.30.40   | 12122    |
+      | OSLP ELSTER | DALI                    | 2        | 1,2;2,1 |            |                   | 10.20.30.40   | 12123    |
+      | OSLP ELSTER |                         |          |         |            |                   | 10.20.30.40   | 12123    |
+      | OSLP ELSTER |                         |          |         |            | GPRS              | 10.20.30.40   | 12123    |
+      | OSLP ELSTER | RELAY                   |          |         |            |                   | 10.20.30.40   | 12123    |
+      | OSLP ELSTER | DALI                    |          |         |            |                   | 10.20.30.40   | 12123    |
+      | OSLP ELSTER | RELAY                   |          |         | 1,1,LIGHT  |                   | 10.20.30.50   | 12122    |
+      | OSLP ELSTER |                         |          |         |            |                   | 10.20.30.50   | 12122    |
+      | OSLP ELSTER | RELAY                   |          |         | 1,1,LIGHT  | CDMA              | 10.20.30.50   | 12123    |
+      | OSLP ELSTER | RELAY                   |          |         | 1,1,LIGHT  | ETHERNET          | 10.20.30.50   | 12123    |
+      | OSLP ELSTER | DALI                    | 1        | 1,1     |            |                   | 10.20.30.50   | 12123    |
+      | OSLP ELSTER | DALI                    | 2        | 1,1;2,2 |            |                   | 10.20.30.50   | 12123    |
+      | OSLP ELSTER |                         |          |         |            |                   | 10.20.30.50   | 12123    |
 
   Scenario: Set configuration of an unknown device
     When receiving a set configuration request
@@ -73,10 +61,6 @@ Feature: CoreConfigurationManagement SetConfiguration
       | DcMap                |                   |
       | RelayConf            | 1,1,LIGHT         |
       | PreferredLinkType    | ETHERNET          |
-      | MeterType            | P1                |
-      | ShortInterval        | 15                |
-      | LongInterval         | 1                 |
-      | IntervalType         | DAYS              |
     Then the get configuration async response contains soap fault
       | Message | UNKNOWN_DEVICE |
 
@@ -85,8 +69,7 @@ Feature: CoreConfigurationManagement SetConfiguration
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
-    And the device returns a set configuration status over "<Protocol>"
-      | Status | OK |
+    And the device returns a set configuration status "OK" over "<Protocol>"
     When receiving a set configuration request
       | DeviceIdentification | TEST1024000000001 |
       | LightType            | <LightType>       |
@@ -120,17 +103,13 @@ Feature: CoreConfigurationManagement SetConfiguration
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
-    And the device returns a set configuration status over "<Protocol>"
-      | Status | OK |
+    And the device returns a set configuration status "OK" over "<Protocol>"
     When receiving a set configuration request
       | DeviceIdentification | TEST1024000000001 |
       | LightType            | <LightType>       |
       | DcLights             | <DcLights>        |
       | DcMap                | <DcMap>           |
       | RelayConf            | <RelayConf>       |
-      | ShortInterval        | <ShortInterval>   |
-      | LongInterval         | <LongInterval>    |
-      | IntervalType         | <IntervalType>    |
     Then the set configuration async response contains soap fault
       | Code           | 401                                                                  |
       | Message        | VALIDATION_ERROR                                                     |
@@ -139,14 +118,11 @@ Feature: CoreConfigurationManagement SetConfiguration
       | InnerMessage   | Validation Exception, violations: <InnerMessage>;                    |
 
     Examples:
-      | Protocol    | LightType       | DcLights | DcMap | RelayConf           | ShortInterval | LongInterval | IntervalType | InnerMessage                                                                                                                                                                                                      |
-      | OSLP ELSTER | RELAY           | 1        | 1,1   |                     |               |              |              | Light type (e.g. relay, dali) must match configuration type (e.g. relay, dali).                                                                                                                                   |
-      | OSLP ELSTER | DALI            |          |       | 1,1,LIGHT           |               |              |              | Light type (e.g. relay, dali) must match configuration type (e.g. relay, dali).                                                                                                                                   |
-      | OSLP ELSTER | ONE_TO_TEN_VOLT |          |       | 1,1,TARIFF          |               |              |              | Light type (e.g. relay, dali) must match configuration type (e.g. relay, dali).                                                                                                                                   |
-      | OSLP ELSTER | ONE_TO_TEN_VOLT |          |       | 1,1,TARIFF_REVERSED |               |              |              | Light type (e.g. relay, dali) must match configuration type (e.g. relay, dali).                                                                                                                                   |
-      | OSLP ELSTER |                 |          |       |                     | 12            |              |              | Permissable values for short term history interval minutes are: 15 - 30 - 60 and 240 minutes.                                                                                                                     |
-      | OSLP ELSTER |                 |          |       |                     |               | 31           | DAYS         | LongTermInterval and LongTermIntervalType must both be omitted or both be present. Further the permitted range for LongTermIntervalType.DAYS is from 1 to 30 and for LongTermIntervalType.MONTHS is from 1 to 12. |
-      | OSLP ELSTER |                 |          |       |                     |               | 13           | MONTHS       | LongTermInterval and LongTermIntervalType must both be omitted or both be present. Further the permitted range for LongTermIntervalType.DAYS is from 1 to 30 and for LongTermIntervalType.MONTHS is from 1 to 12. |
+      | Protocol    | LightType       | DcLights | DcMap | RelayConf           | InnerMessage                                                                                                                                                                                                      |
+      | OSLP ELSTER | RELAY           | 1        | 1,1   |                     | Light type (e.g. relay, dali) must match configuration type (e.g. relay, dali).                                                                                                                                   |
+      | OSLP ELSTER | DALI            |          |       | 1,1,LIGHT           | Light type (e.g. relay, dali) must match configuration type (e.g. relay, dali).                                                                                                                                   |
+      | OSLP ELSTER | ONE_TO_TEN_VOLT |          |       | 1,1,TARIFF          | Light type (e.g. relay, dali) must match configuration type (e.g. relay, dali).                                                                                                                                   |
+      | OSLP ELSTER | ONE_TO_TEN_VOLT |          |       | 1,1,TARIFF_REVERSED | Light type (e.g. relay, dali) must match configuration type (e.g. relay, dali).                                                                                                                                   |
 
   @OslpMockServer
   Scenario Outline: Failed set configuration of a device
@@ -160,10 +136,6 @@ Feature: CoreConfigurationManagement SetConfiguration
       | DcMap             |           |
       | RelayConf         | 1,1,LIGHT |
       | PreferredLinkType | ETHERNET  |
-      | MeterType         | P1        |
-      | ShortInterval     | 15        |
-      | LongInterval      | 30        |
-      | IntervalType      | DAYS      |
     When receiving a set configuration request
       | DeviceIdentification | TEST1024000000001 |
     Then the set configuration async response contains
@@ -174,10 +146,6 @@ Feature: CoreConfigurationManagement SetConfiguration
       | DcMap             |                |
       | RelayConf         | 1,1,LIGHT      |
       | PreferredLinkType | LINK_NOT_SET   |
-      | MeterType         | MT_NOT_SET     |
-      | ShortInterval     | 15             |
-      | LongInterval      | 30             |
-      | IntervalType      | LT_INT_NOT_SET |
     And the platform buffers a set configuration response message for device "TEST1024000000001" contains soap fault
       | Message | Device reports failure |
 
@@ -185,7 +153,7 @@ Feature: CoreConfigurationManagement SetConfiguration
       | Protocol    |
       | OSLP ELSTER |
 
-  @OslpMockServer
+  @OslpMockServer @SetConfigurationRejected
   Scenario Outline: Rejected set configuration of a device
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
@@ -197,10 +165,6 @@ Feature: CoreConfigurationManagement SetConfiguration
       | DcMap             |           |
       | RelayConf         | 1,1,LIGHT |
       | PreferredLinkType | ETHERNET  |
-      | MeterType         | P1        |
-      | ShortInterval     | 15        |
-      | LongInterval      | 30        |
-      | IntervalType      | DAYS      |
     When receiving a set configuration request
       | DeviceIdentification | TEST1024000000001 |
     Then the set configuration async response contains
@@ -211,10 +175,6 @@ Feature: CoreConfigurationManagement SetConfiguration
       | DcMap             |                |
       | RelayConf         | 1,1,LIGHT      |
       | PreferredLinkType | LINK_NOT_SET   |
-      | MeterType         | MT_NOT_SET     |
-      | ShortInterval     | 15             |
-      | LongInterval      | 30             |
-      | IntervalType      | LT_INT_NOT_SET |
     And the platform buffers a set configuration response message for device "TEST1024000000001" contains soap fault
       | Message | Device reports rejected |
 

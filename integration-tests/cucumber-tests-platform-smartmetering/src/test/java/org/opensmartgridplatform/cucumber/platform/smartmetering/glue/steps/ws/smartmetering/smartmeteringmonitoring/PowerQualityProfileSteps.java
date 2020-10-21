@@ -20,7 +20,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.CaptureO
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ProfileEntry;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileAsyncResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileRequestData;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileResponse;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -33,7 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class PowerQualityProfileSteps {
 
     @Autowired
-    private SmartMeteringMonitoringRequestClient<GetPowerQualityProfileAsyncResponse, GetPowerQualityProfileRequestData> requestClient;
+    private SmartMeteringMonitoringRequestClient<GetPowerQualityProfileAsyncResponse, GetPowerQualityProfileRequest> requestClient;
 
     @Autowired
     private SmartMeteringMonitoringResponseClient<GetPowerQualityProfileResponse, GetPowerQualityProfileAsyncRequest> responseClient;
@@ -41,7 +41,7 @@ public class PowerQualityProfileSteps {
     @When("^the get power quality profile request data is received$")
     public void theGetPowerQualityProfileRequestDataIsReceived(final Map<String, String> settings) throws Throwable {
 
-        final GetPowerQualityProfileRequestData request = GetPowerQualityProfileRequestFactory.fromParameterMap(settings);
+        final GetPowerQualityProfileRequest request = GetPowerQualityProfileRequestFactory.fromParameterMap(settings);
         final GetPowerQualityProfileAsyncResponse asyncResponse = this.requestClient.doRequest(request);
 
         assertThat(asyncResponse).as("AsyncResponse should not be null").isNotNull();

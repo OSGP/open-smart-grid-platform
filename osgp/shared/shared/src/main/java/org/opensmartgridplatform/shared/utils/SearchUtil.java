@@ -34,7 +34,7 @@ public class SearchUtil {
      *            String
      * @return an output String containing the correct wildcards.
      */
-    public static String replaceWildcards(final String input) {
+    public static String replaceAndEscapeWildcards(final String input) {
         if (input == null) {
             return null;
         } else {
@@ -42,6 +42,22 @@ public class SearchUtil {
                     .replace(WILDCARD_ALL_REPLACEMENT, ESCAPE + WILDCARD_ALL_REPLACEMENT)
                     .replace(WILDCARD_SINGLE_REPLACEMENT, ESCAPE + WILDCARD_SINGLE_REPLACEMENT)
                     .replace(WILDCARD_ALL, WILDCARD_ALL_REPLACEMENT)
+                    .replace(WILDCARD_SINGLE, WILDCARD_SINGLE_REPLACEMENT);
+        }
+    }
+
+    /**
+     * Replaces normal wildcards by SQL wildcards
+     *
+     * @param input
+     *            String
+     * @return an output String containing the correct wildcards.
+     */
+    public static String replaceWildcards(final String input) {
+        if (input == null) {
+            return null;
+        } else {
+            return input.replace(WILDCARD_ALL, WILDCARD_ALL_REPLACEMENT)
                     .replace(WILDCARD_SINGLE, WILDCARD_SINGLE_REPLACEMENT);
         }
     }
