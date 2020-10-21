@@ -20,31 +20,33 @@ import org.springframework.stereotype.Component;
 @Component
 public class DefaultEncryptionDelegate implements EncryptionDelegate {
 
-    private static final String ERROR_NO_PROVIDER = "Could not find a provider";
+    private static final String ERROR_NO_PROVIDER = "Could not find a provider of type %s";
     private final List<EncryptionProvider> providers;
 
     public DefaultEncryptionDelegate(final List<EncryptionProvider> encryptionProviders) {
         this.providers = encryptionProviders;
     }
 
-    @Override
-    public EncryptedSecret encrypt(final EncryptionProviderType encryptionProviderType, final byte[] secret,
-            final String keyReference) throws EncrypterException {
-        return this.providers.stream().filter(ep -> ep.getType().equals(encryptionProviderType)).findFirst().orElseThrow(
-                () -> new EncrypterException(ERROR_NO_PROVIDER)).encrypt(secret, keyReference);
+    private EncryptionProvider getEncryptionProvider(EncryptionProviderType type) {
+        return this.providers.stream().filter(type::equals).findFirst()
+                             .orElseThrow(() -> new EncrypterException(String.format(ERROR_NO_PROVIDER, type)));
     }
 
     @Override
-    public byte[] decrypt(final EncryptedSecret secret, final String keyReference) throws EncrypterException {
-        return this.providers.stream().filter(ep -> ep.getType().equals(secret.getType())).findFirst().orElseThrow(
-                () -> new EncrypterException(ERROR_NO_PROVIDER)).decrypt(secret, keyReference);
+    public EncryptedSecret encrypt(final EncryptionProviderType encryptionProviderType, final byte[] secret,
+            final String keyReference) {
+        return this.getEncryptionProvider(encryptionProviderType).encrypt(secret, keyReference);
+    }
+
+    @Override
+    public byte[] decrypt(final EncryptedSecret secret, final String keyReference) {
+        return this.getEncryptionProvider(secret.getType()).decrypt(secret, keyReference);
     }
 
     @Override
     public byte[] generateAes128BitsSecret(final EncryptionProviderType encryptionProviderType,
-            final String keyReference) throws EncrypterException {
-        return this.providers.stream().filter(ep -> ep.getType().equals(encryptionProviderType)).findFirst().orElseThrow(
-                () -> new EncrypterException(ERROR_NO_PROVIDER)).generateAes128BitsSecret(keyReference);
+            final String keyReference) {
+        return this.getEncryptionProvider(encryptionProviderType).generateAes128BitsSecret(keyReference);
     }
 }
 

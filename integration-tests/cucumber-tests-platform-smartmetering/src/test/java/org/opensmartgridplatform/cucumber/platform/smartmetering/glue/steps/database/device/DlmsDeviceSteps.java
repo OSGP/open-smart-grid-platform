@@ -14,13 +14,17 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShor
 import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.SMART_METER_E;
 import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.SMART_METER_G;
 
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
-import org.javalite.activejdbc.Base;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKey;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -30,6 +34,7 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartme
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.builders.entities.DeviceBuilder;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.builders.entities.DlmsDeviceBuilder;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.builders.entities.SecurityKeyBuilder;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.builders.entities.SmartMeterBuilder;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
@@ -47,6 +52,13 @@ import org.opensmartgridplatform.domain.core.repositories.OrganisationRepository
 import org.opensmartgridplatform.domain.core.repositories.ProtocolInfoRepository;
 import org.opensmartgridplatform.domain.core.repositories.SmartMeterRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
+import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptedSecret;
+import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptionKeyReference;
+import org.opensmartgridplatform.secretmanagement.application.domain.SecretStatus;
+import org.opensmartgridplatform.secretmanagement.application.endpoints.SoapEndpointDataTypeConverter;
+import org.opensmartgridplatform.secretmanagement.application.repository.DbEncryptedSecretRepository;
+import org.opensmartgridplatform.secretmanagement.application.repository.DbEncryptionKeyRepository;
+import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 /**
@@ -85,6 +97,23 @@ public class DlmsDeviceSteps {
     @Autowired
     private DeviceFirmwareModuleSteps deviceFirmwareModuleSteps;
 
+    @Autowired
+    private DbEncryptedSecretRepository encryptedSecretRepository;
+
+    @Autowired
+    private DbEncryptionKeyRepository encryptionKeyRepository;
+
+    @Autowired
+    private SoapEndpointDataTypeConverter soapEndpointDataTypeConverter;
+
+    private final SecurityKeyBuilder authenticationSecurityKeyBuilder = new SecurityKeyBuilder()
+            .setSecurityKeyType(SecurityKeyType.E_METER_AUTHENTICATION)
+            .setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_A_DB);
+    private final SecurityKeyBuilder encryptionSecurityKeyBuilder = new SecurityKeyBuilder()
+            .setSecurityKeyType(SecurityKeyType.E_METER_ENCRYPTION)
+            .setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_E_DB);
+    private final SecurityKeyBuilder masterSecurityKeyBuilder = new SecurityKeyBuilder()
+            .setSecurityKeyType(SecurityKeyType.E_METER_MASTER).setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_M_DB);
 
     @Given("^a dlms device$")
     public void aDlmsDevice(final Map<String, String> inputSettings) {
@@ -95,7 +124,7 @@ public class DlmsDeviceSteps {
         this.createDeviceAuthorisationInCoreDatabase(device);
 
         this.createDlmsDeviceInProtocolAdapterDatabase(inputSettings);
-        this.createDlmsDeviceInSecretManagementDatabase(inputSettings);
+        //this.createDlmsDeviceInSecretManagementDatabase(inputSettings);
     }
 
     @Given("^all mbus channels are occupied for E-meter \"([^\"]*)\"$")
@@ -466,48 +495,52 @@ public class DlmsDeviceSteps {
          * DLMS device builder.
          */
         final String deviceType = inputSettings.getOrDefault(PlatformSmartmeteringKeys.DEVICE_TYPE, SMART_METER_E);
-        if (inputSettings.containsKey(PlatformSmartmeteringKeys.LLS1_ACTIVE) && "true"
+        /*if (inputSettings.containsKey(PlatformSmartmeteringKeys.LLS1_ACTIVE) && "true"
                 .equals(inputSettings.get(PlatformSmartmeteringKeys.LLS1_ACTIVE))) {
             dlmsDeviceBuilder.getPasswordBuilder().enable();
         } else if (this.isGasSmartMeter(deviceType)) {
-            dlmsDeviceBuilder.getMbusMasterSecurityKeyBuilder().enable();
+            dlmsDeviceBuilder.getMbusMasterSecurityKeyBuilder().enable();*/
             /*
              * Don't insert a default value for the M-Bus User key. So only
              * enable the builder if an M-Bus User key is explicitly configured
              * in the step data.
              */
-            if (inputSettings.containsKey(PlatformSmartmeteringKeys.MBUS_USER_KEY)) {
+            /*if (inputSettings.containsKey(PlatformSmartmeteringKeys.MBUS_USER_KEY)) {
                 dlmsDeviceBuilder.getMbusEncryptionSecurityKeyBuilder().enable();
             }
-        } else if (this.isESmartMeter(deviceType)) {
-            dlmsDeviceBuilder.getEncryptionSecurityKeyBuilder().enable();
-            dlmsDeviceBuilder.getMasterSecurityKeyBuilder().enable();
-            dlmsDeviceBuilder.getAuthenticationSecurityKeyBuilder().enable();
-        }
+        //} else if (this.isESmartMeter(deviceType)) {
+        //    dlmsDeviceBuilder.getEncryptionSecurityKeyBuilder().enable();
+        //    dlmsDeviceBuilder.getMasterSecurityKeyBuilder().enable();
+        //    dlmsDeviceBuilder.getAuthenticationSecurityKeyBuilder().enable();
+        }*/
 
         final DlmsDevice dlmsDevice = dlmsDeviceBuilder.withSettings(inputSettings).build();
         this.dlmsDeviceRepository.save(dlmsDevice);
 
-        if (!Base.hasConnection()) {
-            Base.open(DatabaseConnectionParameters.getDriver(), String.format("jdbc:postgresql://%s:%s/%s", DatabaseConnectionParameters.getHost(), DatabaseConnectionParameters.getPort(), DatabaseConnectionParameters.getDatabase()),
-                    DatabaseConnectionParameters.getUser(), DatabaseConnectionParameters.getPassword());
-        }
-
-        //TODO replace SQL with domain-objects/builders
-        Base.exec("INSERT INTO encrypted_secret (device_identification,secret_type,encoded_secret,secret_status,creation_time,encryption_key_reference_id)" +
-                "VALUES ('TEST1024000000001', 'E_METER_AUTHENTICATION_KEY', 'c19fe80a22a0f6c5cdaad0826c4d204f23694ded08d811b66e9b845d9f2157d2', 'ACTIVE', NOW(), (SELECT id FROM public.encryption_key_reference where encryption_provider_type = 'JRE'))," +
-                "('TEST1024000000001', 'E_METER_ENCRYPTION_KEY_UNICAST', '867424ac75b6d53c89276d304608321f0a1f6e401f453f84adf3477c7ee1623c', 'ACTIVE', NOW(), (SELECT id FROM public.encryption_key_reference where encryption_provider_type = 'JRE'))," +
-                "('TEST1024000000001', 'E_METER_MASTER_KEY', '55dc88791e6c8f6aff4c8be7714fb8d2ae3d02693ec474593acd3523ee032638', 'ACTIVE', NOW(), (SELECT id FROM public.encryption_key_reference where encryption_provider_type = 'JRE'));");
-
-        Base.exec("INSERT INTO encrypted_secret (device_identification,secret_type,encoded_secret,secret_status,creation_time,encryption_key_reference_id)" +
-                "VALUES ('TEST1027000000001', 'E_METER_AUTHENTICATION_KEY', 'c19fe80a22a0f6c5cdaad0826c4d204f23694ded08d811b66e9b845d9f2157d2', 'ACTIVE', NOW(), (SELECT id FROM public.encryption_key_reference where encryption_provider_type = 'JRE'))," +
-                "('TEST1027000000001', 'E_METER_ENCRYPTION_KEY_UNICAST', '867424ac75b6d53c89276d304608321f0a1f6e401f453f84adf3477c7ee1623c', 'ACTIVE', NOW(), (SELECT id FROM public.encryption_key_reference where encryption_provider_type = 'JRE'))," +
-                "('TEST1027000000001', 'E_METER_MASTER_KEY', '55dc88791e6c8f6aff4c8be7714fb8d2ae3d02693ec474593acd3523ee032638', 'ACTIVE', NOW(), (SELECT id FROM public.encryption_key_reference where encryption_provider_type = 'JRE'));");
-
-        Base.close();
+        //TODO refactor to builder pattern & specialize for device types (E/G/...)
+        this.createDlmsDeviceInSecretManagementDatabase(dlmsDevice);
     }
 
-    private void createDlmsDeviceInSecretManagementDatabase(final Map<String, String> inputSettings) {
+    private void createDlmsDeviceInSecretManagementDatabase(DlmsDevice dlmsDevice) {
+        DbEncryptionKeyReference encryptionKeyRef = this.encryptionKeyRepository.findByTypeAndValid(EncryptionProviderType.JRE,
+                new Date()).iterator().next();
+        List<SecurityKey> keys = Arrays.asList(this.authenticationSecurityKeyBuilder.build(),
+                this.encryptionSecurityKeyBuilder.build(),this.masterSecurityKeyBuilder.build());
+        keys.stream().map(key -> this.createSecretFromKey(dlmsDevice.getDeviceIdentification(), encryptionKeyRef,
+                key)).forEach(this.encryptedSecretRepository::save);
+    }
+
+    private DbEncryptedSecret createSecretFromKey(String deviceIdentification,
+            DbEncryptionKeyReference encryptionKeyRef, SecurityKey key) {
+        DbEncryptedSecret dbEncryptedSecret = new DbEncryptedSecret();
+        dbEncryptedSecret.setCreationTime(new Date());
+        dbEncryptedSecret.setSecretStatus(SecretStatus.ACTIVE);
+        dbEncryptedSecret.setDeviceIdentification(deviceIdentification);
+        dbEncryptedSecret.setSecretType(
+                this.soapEndpointDataTypeConverter.convertToSecretType(key.getSecurityKeyType().toSecretType()));
+        dbEncryptedSecret.setEncodedSecret(key.getKey());
+        dbEncryptedSecret.setEncryptionKeyReference(encryptionKeyRef);
+        return dbEncryptedSecret;
 
     }
 

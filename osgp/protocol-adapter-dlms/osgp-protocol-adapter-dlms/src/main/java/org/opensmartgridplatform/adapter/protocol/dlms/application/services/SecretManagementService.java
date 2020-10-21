@@ -312,7 +312,12 @@ public class SecretManagementService implements SecurityKeyService {
             GenerateAndStoreSecretsResponse response, List<TypedSecret> typedSecretList) {
         this.validateOsgpResultAndTypedSecrets(response.getResult(), response.getTechnicalFault(),
                 response.getTypedSecrets(), keyTypes.size());
-        typedSecretList.forEach(ts->ts.getSecret()==null?);
+        typedSecretList.forEach(ts-> {
+            if(ts.getSecret()==null) {
+                throw new IllegalStateException(String.format("Generated a NULL key (key_type=%s)",
+                        ts.getType()));
+            }
+        });
     }
 
     private void validateOsgpResultAndTypedSecrets(OsgpResultType result, Object fault, TypedSecrets typedSecrets,

@@ -159,11 +159,11 @@
       <artifactId>osgp-adapter-ws-smartmetering</artifactId>
       <classifier>classes</classifier>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>org.opensmartgridplatform</groupId>-->
-<!--      <artifactId>osgp-secret-management</artifactId>-->
-<!--      <classifier>classes</classifier>-->
-<!--    </dependency>-->
+    <dependency>
+      <groupId>org.opensmartgridplatform</groupId>
+      <artifactId>osgp-secret-management</artifactId>
+      <classifier>classes</classifier>
+    </dependency>
 
     <!-- Automatic tests platform -->
     <dependency>

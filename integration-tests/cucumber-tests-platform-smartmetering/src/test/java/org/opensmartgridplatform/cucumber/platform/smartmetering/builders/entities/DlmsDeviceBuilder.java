@@ -10,13 +10,9 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering.builders.entit
 
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getLong;
 
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.cucumber.platform.core.builders.CucumberBuilder;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
@@ -48,7 +44,7 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     private String protocolName = PlatformSmartmeteringDefaults.PROTOCOL;
     private String protocolVersion = PlatformSmartmeteringDefaults.PROTOCOL_VERSION;
 
-    private final SecurityKeyBuilder passwordBuilder = new SecurityKeyBuilder()
+    /*private final SecurityKeyBuilder passwordBuilder = new SecurityKeyBuilder()
             .setSecurityKeyType(SecurityKeyType.PASSWORD).setKey(PlatformSmartmeteringDefaults.PASSWORD);
     private final SecurityKeyBuilder authenticationSecurityKeyBuilder = new SecurityKeyBuilder()
             .setSecurityKeyType(SecurityKeyType.E_METER_AUTHENTICATION)
@@ -63,7 +59,7 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
             .setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_G_ENCRYPTION);
     private final SecurityKeyBuilder mbusMasterSecurityKeyBuilder = new SecurityKeyBuilder()
             .setSecurityKeyType(SecurityKeyType.G_METER_MASTER)
-            .setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_G_MASTER);
+            .setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_G_MASTER);*/
 
     public DlmsDeviceBuilder setDeviceIdentification(final String deviceIdentification) {
         this.deviceIdentification = deviceIdentification;
@@ -184,14 +180,14 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
      *
      * @return Security key builder for authentication key.
      */
-    public SecurityKeyBuilder getAuthenticationSecurityKeyBuilder() {
+    /*public SecurityKeyBuilder getAuthenticationSecurityKeyBuilder() {
         return this.authenticationSecurityKeyBuilder;
     }
 
     public SecurityKeyBuilder getPasswordBuilder() {
         return this.passwordBuilder;
 
-    }
+    }*/
 
     /**
      * Retrieve the SecurityKeyBuilder in order to manipulate its values. A
@@ -201,9 +197,9 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
      *
      * @return Security key builder for encryption key.
      */
-    public SecurityKeyBuilder getEncryptionSecurityKeyBuilder() {
+    /*public SecurityKeyBuilder getEncryptionSecurityKeyBuilder() {
         return this.encryptionSecurityKeyBuilder;
-    }
+    }*/
 
     /**
      * Retrieve the SecurityKeyBuilder in order to manipulate its values. A
@@ -213,9 +209,9 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
      *
      * @return Security key builder for master key.
      */
-    public SecurityKeyBuilder getMasterSecurityKeyBuilder() {
+    /*public SecurityKeyBuilder getMasterSecurityKeyBuilder() {
         return this.masterSecurityKeyBuilder;
-    }
+    }*/
 
     /**
      * Retrieve the SecurityKeyBuilder in order to manipulate its values. A
@@ -225,9 +221,9 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
      *
      * @return Security key builder for master key.
      */
-    public SecurityKeyBuilder getMbusEncryptionSecurityKeyBuilder() {
+    /*public SecurityKeyBuilder getMbusEncryptionSecurityKeyBuilder() {
         return this.mbusEncryptionSecurityKeyBuilder;
-    }
+    }*/
 
     /**
      * Retrieve the SecurityKeyBuilder in order to manipulate its values. A
@@ -237,9 +233,9 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
      *
      * @return Security key builder for master key.
      */
-    public SecurityKeyBuilder getMbusMasterSecurityKeyBuilder() {
+    /*public SecurityKeyBuilder getMbusMasterSecurityKeyBuilder() {
         return this.mbusMasterSecurityKeyBuilder;
-    }
+    }*/
 
     @Override
     public DlmsDeviceBuilder withSettings(final Map<String, String> inputSettings) {
@@ -325,7 +321,7 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
             }
         }
 
-        this.getEnabledKeyBuilders().forEach(skb -> skb.withSettings(inputSettings));
+        //this.getEnabledKeyBuilders().forEach(skb -> skb.withSettings(inputSettings));
 
         return this;
     }
@@ -369,9 +365,9 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
         return dlmsDevice;
     }
 
-    private List<SecurityKeyBuilder> getEnabledKeyBuilders() {
+    /*private List<SecurityKeyBuilder> getEnabledKeyBuilders() {
         return Stream.of(this.authenticationSecurityKeyBuilder, this.encryptionSecurityKeyBuilder,
                 this.masterSecurityKeyBuilder, this.mbusEncryptionSecurityKeyBuilder, this.mbusMasterSecurityKeyBuilder,
                 this.passwordBuilder).filter(skb -> skb.enabled()).collect(Collectors.toList());
-    }
+    }*/
 }

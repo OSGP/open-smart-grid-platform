@@ -103,8 +103,6 @@ public class Hls5Connector extends SecureDlmsConnector {
                     Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION));
             dlmsAuthenticationKey = encryptedKeys.get(E_METER_AUTHENTICATION);
             dlmsEncryptionKey = encryptedKeys.get(E_METER_ENCRYPTION);
-            //this.securityKeyService.getDlmsAuthenticationKey(deviceIdentification);
-            //this.securityKeyService.getDlmsGlobalUnicastEncryptionKey(deviceIdentification);
         } catch (final EncrypterException e) {
             LOGGER.error("Error determining DLMS communication key setting up HLS5 connection", e);
             throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION,
