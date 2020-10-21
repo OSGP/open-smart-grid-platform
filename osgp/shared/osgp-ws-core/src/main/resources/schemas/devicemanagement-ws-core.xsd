@@ -184,7 +184,7 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:Identification" />
-        <xsd:element name="UpdatedDevice" type="tns:Device" />
+        <xsd:element name="UpdatedDevice" type="tns:UpdatedDevice" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -432,6 +432,20 @@
       <xsd:element name="LightMeasurementDevice" type="tns:LightMeasurementDevice" minOccurs="0" />
       <xsd:element name="DeviceLifecycleStatus" type="tns:DeviceLifecycleStatus" minOccurs="0" />
       <xsd:element name="LastCommunicationTime" type="xsd:dateTime" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="UpdatedDevice">
+    <xsd:sequence>
+      <xsd:element name="Alias" type="xsd:string" minOccurs="0" />
+      <xsd:element name="ContainerAddress" type="common:Address" minOccurs="0" />
+      <xsd:element name="GpsLatitude" type="xsd:string" minOccurs="0" />
+      <xsd:element name="GpsLongitude" type="xsd:string" minOccurs="0" />
+      <xsd:element name="Activated" type="xsd:boolean" minOccurs="0" />
+      <xsd:element name="OutputSettings" type="tns:DeviceOutputSetting" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="Eans" type="tns:Ean" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="TechnicalInstallationDate" type="xsd:dateTime" minOccurs="0" />
+      <xsd:element name="DeviceLifecycleStatus" type="tns:DeviceLifecycleStatus" minOccurs="0" />
     </xsd:sequence>
   </xsd:complexType>
 
@@ -723,7 +737,7 @@
         maxOccurs="1">
         <xsd:simpleType>
           <xsd:restriction base="xsd:string">
-            <xsd:maxLength value="255" />
+           <xsd:maxLength value="255" />
           </xsd:restriction>
         </xsd:simpleType>
       </xsd:element>
