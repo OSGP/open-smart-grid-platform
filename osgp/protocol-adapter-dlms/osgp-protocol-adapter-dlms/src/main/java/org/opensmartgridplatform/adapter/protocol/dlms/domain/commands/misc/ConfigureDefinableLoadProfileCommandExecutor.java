@@ -13,26 +13,27 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import ma.glasnost.orika.MapperFacade;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.openmuc.jdlms.interfaceclass.InterfaceClass;
-import org.openmuc.jdlms.interfaceclass.attribute.ClockAttribute;
-import org.openmuc.jdlms.interfaceclass.attribute.ProfileGenericAttribute;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.ClockAttribute;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.ProfileGenericAttribute;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDefinitionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DefinableLoadProfileConfigurationDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import ma.glasnost.orika.MapperFacade;
 
 @Component
 public class ConfigureDefinableLoadProfileCommandExecutor
@@ -52,10 +53,9 @@ public class ConfigureDefinableLoadProfileCommandExecutor
     private static final ObisCode LOGICAL_NAME_CLOCK = new ObisCode("0.0.1.0.0.255");
     private static final int CLASS_ID_CLOCK = InterfaceClass.CLOCK.id();
     private static final byte ATTRIBUTE_INDEX_CLOCK_TIME = (byte) ClockAttribute.TIME.attributeId();
-    private static final DataObject CLOCK_TIME_DEFINITION = DataObject
-            .newStructureData(DataObject.newUInteger16Data(CLASS_ID_CLOCK),
-                    DataObject.newOctetStringData(LOGICAL_NAME_CLOCK.bytes()),
-                    DataObject.newInteger8Data(ATTRIBUTE_INDEX_CLOCK_TIME), DataObject.newUInteger16Data(0));
+    private static final DataObject CLOCK_TIME_DEFINITION = DataObject.newStructureData(
+            DataObject.newUInteger16Data(CLASS_ID_CLOCK), DataObject.newOctetStringData(LOGICAL_NAME_CLOCK.bytes()),
+            DataObject.newInteger8Data(ATTRIBUTE_INDEX_CLOCK_TIME), DataObject.newUInteger16Data(0));
 
     @Autowired
     private MapperFacade configurationMapper;
@@ -93,8 +93,10 @@ public class ConfigureDefinableLoadProfileCommandExecutor
             final List<CaptureObjectDefinitionDto> captureObjects) throws ProtocolAdapterException {
 
         this.dlmsLogWrite(conn, ATTRIBUTE_CAPTURE_OBJECTS, ATTRIBUTE_NAME_CAPTURE_OBJECTS);
-        this.writeAttribute(conn, new SetParameter(ATTRIBUTE_CAPTURE_OBJECTS,
-                DataObject.newArrayData(this.mapCaptureObjects(captureObjects))), ATTRIBUTE_NAME_CAPTURE_OBJECTS);
+        this.writeAttribute(conn,
+                new SetParameter(ATTRIBUTE_CAPTURE_OBJECTS,
+                        DataObject.newArrayData(this.mapCaptureObjects(captureObjects))),
+                ATTRIBUTE_NAME_CAPTURE_OBJECTS);
     }
 
     private List<DataObject> mapCaptureObjects(final List<CaptureObjectDefinitionDto> captureObjects) {
@@ -114,8 +116,8 @@ public class ConfigureDefinableLoadProfileCommandExecutor
     }
 
     private boolean isClockTimeDefinition(final CaptureObjectDefinitionDto captureObject) {
-        return CLASS_ID_CLOCK == captureObject.getClassId() && Arrays
-                .equals(LOGICAL_NAME_CLOCK.bytes(), captureObject.getLogicalName().toByteArray())
+        return CLASS_ID_CLOCK == captureObject.getClassId()
+                && Arrays.equals(LOGICAL_NAME_CLOCK.bytes(), captureObject.getLogicalName().toByteArray())
                 && ATTRIBUTE_INDEX_CLOCK_TIME == captureObject.getAttributeIndex();
     }
 
@@ -144,8 +146,8 @@ public class ConfigureDefinableLoadProfileCommandExecutor
 
     private void dlmsLogWrite(final DlmsConnectionManager conn, final AttributeAddress attribute,
             final String attributeName) {
-        conn.getDlmsMessageListener().setDescription(
-                "Writing definable load profile attribute '" + attributeName + "': " + JdlmsObjectToStringUtil
-                        .describeAttributes(attribute));
+        conn.getDlmsMessageListener()
+                .setDescription("Writing definable load profile attribute '" + attributeName + "': "
+                        + JdlmsObjectToStringUtil.describeAttributes(attribute));
     }
 }

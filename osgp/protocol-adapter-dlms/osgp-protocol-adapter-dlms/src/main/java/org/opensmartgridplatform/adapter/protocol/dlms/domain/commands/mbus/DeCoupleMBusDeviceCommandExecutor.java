@@ -12,8 +12,6 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.openmuc.jdlms.interfaceclass.InterfaceClass;
-import org.openmuc.jdlms.interfaceclass.attribute.MbusClientAttribute;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.CosemObjectAccessor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.CosemObjectMethod;
@@ -22,6 +20,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Dat
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.MbusClientAttribute;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceResponseDto;
 import org.slf4j.Logger;
@@ -36,8 +36,8 @@ public class DeCoupleMBusDeviceCommandExecutor
 
     private static final int CLASS_ID = InterfaceClass.MBUS_CLIENT.id();
     /**
-     * The ObisCode for the M-Bus Client Setup exists for a number of channels. DSMR
-     * specifies these M-Bus Client Setup channels as values from 1..4.
+     * The ObisCode for the M-Bus Client Setup exists for a number of channels.
+     * DSMR specifies these M-Bus Client Setup channels as values from 1..4.
      */
     private static final String OBIS_CODE_TEMPLATE = "0.%d.24.1.0.255";
 
@@ -85,18 +85,19 @@ public class DeCoupleMBusDeviceCommandExecutor
 
         final DataObjectAttrExecutors dataObjectExecutors = new DataObjectAttrExecutors("DeCoupleMBusDevice")
                 .addExecutor(this.getMbusAttributeExecutor(deCoupleMbusDeviceDto, MbusClientAttribute.PRIMARY_ADDRESS,
-                        UINT_8_ZERO)).addExecutor(
-                        this.getMbusAttributeExecutor(deCoupleMbusDeviceDto, MbusClientAttribute.IDENTIFICATION_NUMBER,
-                                UINT_32_ZERO)).addExecutor(
-                        this.getMbusAttributeExecutor(deCoupleMbusDeviceDto, MbusClientAttribute.MANUFACTURER_ID,
-                                UINT_16_ZERO)).addExecutor(
+                        UINT_8_ZERO))
+                .addExecutor(this.getMbusAttributeExecutor(deCoupleMbusDeviceDto,
+                        MbusClientAttribute.IDENTIFICATION_NUMBER, UINT_32_ZERO))
+                .addExecutor(this.getMbusAttributeExecutor(deCoupleMbusDeviceDto, MbusClientAttribute.MANUFACTURER_ID,
+                        UINT_16_ZERO))
+                .addExecutor(
                         this.getMbusAttributeExecutor(deCoupleMbusDeviceDto, MbusClientAttribute.VERSION, UINT_8_ZERO))
                 .addExecutor(this.getMbusAttributeExecutor(deCoupleMbusDeviceDto, MbusClientAttribute.DEVICE_TYPE,
                         UINT_8_ZERO));
 
-        conn.getDlmsMessageListener().setDescription(
-                "Write updated MBus attributes to channel " + deCoupleMbusDeviceDto.getChannel() + ", set attributes: "
-                        + dataObjectExecutors.describeAttributes());
+        conn.getDlmsMessageListener()
+                .setDescription("Write updated MBus attributes to channel " + deCoupleMbusDeviceDto.getChannel()
+                        + ", set attributes: " + dataObjectExecutors.describeAttributes());
 
         dataObjectExecutors.execute(conn);
 
