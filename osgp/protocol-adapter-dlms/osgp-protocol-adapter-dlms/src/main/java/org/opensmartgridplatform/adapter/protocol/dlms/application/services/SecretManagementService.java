@@ -111,8 +111,8 @@ public class SecretManagementService implements SecurityKeyService {
         }
     }
 
-    //@Override
-    private byte[] aesEncryptKey(final byte[] key) throws FunctionalException {
+    @Override
+    public byte[] aesEncryptKey(final byte[] key) throws FunctionalException {
         try {
             return this.aesEncryptionService.encrypt(key);
         } catch (final Exception e) {

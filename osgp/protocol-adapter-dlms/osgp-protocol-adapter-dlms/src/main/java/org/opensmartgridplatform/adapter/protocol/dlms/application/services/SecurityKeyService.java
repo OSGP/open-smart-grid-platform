@@ -96,6 +96,6 @@ public interface SecurityKeyService {
     byte[] aesDecryptKey(final byte[] encryptedKey) throws FunctionalException;
 
     //AES encrypt (encrypt for safe memory storage)
-    //byte[] aesEncryptKey(final byte[] plainKey/*, final SecurityKeyType keyType*/) throws FunctionalException;
+    byte[] aesEncryptKey(final byte[] plainKey) throws FunctionalException;
 
 }
