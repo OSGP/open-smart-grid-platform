@@ -12,6 +12,8 @@ import org.opensmartgridplatform.ws.schema.core.secret.management.ActivateSecret
 import org.opensmartgridplatform.ws.schema.core.secret.management.ActivateSecretsResponse;
 import org.opensmartgridplatform.ws.schema.core.secret.management.GenerateAndStoreSecretsRequest;
 import org.opensmartgridplatform.ws.schema.core.secret.management.GenerateAndStoreSecretsResponse;
+import org.opensmartgridplatform.ws.schema.core.secret.management.GetNewSecretsRequest;
+import org.opensmartgridplatform.ws.schema.core.secret.management.GetNewSecretsResponse;
 import org.opensmartgridplatform.ws.schema.core.secret.management.GetSecretsRequest;
 import org.opensmartgridplatform.ws.schema.core.secret.management.GetSecretsResponse;
 import org.opensmartgridplatform.ws.schema.core.secret.management.HasNewSecretRequest;
@@ -39,6 +41,14 @@ public class SecretManagementClient {
         log.info("Calling SecretManagement.getSecretsRequest over SOAP for device {}", request.getDeviceId());
 
         return (GetSecretsResponse) this.webServiceTemplate
+                .marshalSendAndReceive(request);
+    }
+
+    public GetNewSecretsResponse getNewSecretsRequest(GetNewSecretsRequest request) {
+
+        log.info("Calling SecretManagement.getNewSecretsRequest over SOAP for device {}", request.getDeviceId());
+
+        return (GetNewSecretsResponse) this.webServiceTemplate
                 .marshalSendAndReceive(request);
     }
 

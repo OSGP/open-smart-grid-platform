@@ -155,10 +155,8 @@ public class RecoverKeyProcess implements Runnable {
      *         with the device.
      */
     private DlmsConnection createConnectionUsingNewKeys() throws IOException, FunctionalException {
-
-        //TODO: specify that the NEW keys should be retrieved
         Map<SecurityKeyType, byte[]> keys = this.securityKeyService
-                .getKeys(this.deviceIdentification, Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION));
+                .getNewKeys(this.deviceIdentification, Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION));
         final byte[] authenticationKey = Hex.decode(keys.get(E_METER_AUTHENTICATION));
         final byte[] encryptionKey = Hex.decode(keys.get(E_METER_ENCRYPTION));
 

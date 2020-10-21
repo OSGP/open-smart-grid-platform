@@ -31,6 +31,8 @@ import org.opensmartgridplatform.shared.security.RsaEncryptionService;
 import org.opensmartgridplatform.ws.schema.core.secret.management.ActivateSecretsRequest;
 import org.opensmartgridplatform.ws.schema.core.secret.management.GenerateAndStoreSecretsRequest;
 import org.opensmartgridplatform.ws.schema.core.secret.management.GenerateAndStoreSecretsResponse;
+import org.opensmartgridplatform.ws.schema.core.secret.management.GetNewSecretsRequest;
+import org.opensmartgridplatform.ws.schema.core.secret.management.GetNewSecretsResponse;
 import org.opensmartgridplatform.ws.schema.core.secret.management.GetSecretsRequest;
 import org.opensmartgridplatform.ws.schema.core.secret.management.GetSecretsResponse;
 import org.opensmartgridplatform.ws.schema.core.secret.management.HasNewSecretRequest;
@@ -168,7 +170,32 @@ public class SecretManagementService implements SecurityKeyService {
         return this.convertSoapSecretsToSecretMapByType(response.getTypedSecrets().getTypedSecret());
     }
 
+    @Override
+    public byte[] getNewKey(String deviceIdentification, SecurityKeyType keyType) {
+        LOGGER.info("Retrieving new {} for device {}", keyType.name(), deviceIdentification);
+        return this.getNewKeys(deviceIdentification, Arrays.asList(keyType)).get(keyType);
+    }
+
+    @Override
+    public Map<SecurityKeyType, byte[]> getNewKeys(String deviceIdentification, List<SecurityKeyType> keyTypes) {
+        GetNewSecretsRequest request = this.createGetNewSecretsRequest(deviceIdentification, keyTypes);
+        GetNewSecretsResponse response = this.secretManagementClient.getNewSecretsRequest(request);
+        this.validateGetNewResponse(keyTypes, response);
+        return this.convertSoapSecretsToSecretMapByType(response.getTypedSecrets().getTypedSecret());
+    }
+
     private void validateGetResponse(List<SecurityKeyType> keyTypes, GetSecretsResponse response) {
+        if (!OsgpResultType.OK.equals(response.getResult()) || response.getTypedSecrets() == null
+                || response.getTypedSecrets().getTypedSecret() == null) {
+            throw new IllegalStateException(
+                    "Invalid/incomplete soap response: resulttype=" + response.getResult().value());
+        }
+        if (keyTypes.size() != response.getTypedSecrets().getTypedSecret().size()) {
+            throw new IllegalStateException("Unexpected number of secrets in response");
+        }
+    }
+
+    private void validateGetNewResponse(List<SecurityKeyType> keyTypes, GetNewSecretsResponse response) {
         if (!OsgpResultType.OK.equals(response.getResult()) || response.getTypedSecrets() == null
                 || response.getTypedSecrets().getTypedSecret() == null) {
             throw new IllegalStateException(
@@ -187,6 +214,16 @@ public class SecretManagementService implements SecurityKeyService {
 
     private GetSecretsRequest createGetSecretsRequest(String deviceIdentification, List<SecurityKeyType> keyTypes) {
         GetSecretsRequest request = new GetSecretsRequest();
+        request.setDeviceId(deviceIdentification);
+        request.setSecretTypes(new SecretTypes());
+        List<SecretType> secretTypeList = request.getSecretTypes().getSecretType();
+        keyTypes.stream().forEach(kt -> secretTypeList.add(kt.toSecretType()));
+        return request;
+    }
+
+    private GetNewSecretsRequest createGetNewSecretsRequest(String deviceIdentification,
+            List<SecurityKeyType> keyTypes) {
+        GetNewSecretsRequest request = new GetNewSecretsRequest();
         request.setDeviceId(deviceIdentification);
         request.setSecretTypes(new SecretTypes());
         List<SecretType> secretTypeList = request.getSecretTypes().getSecretType();
@@ -231,11 +268,16 @@ public class SecretManagementService implements SecurityKeyService {
 
     @Override
     public void activateNewKey(String deviceIdentification, SecurityKeyType keyType) throws ProtocolAdapterException {
+        this.activateNewKeys(deviceIdentification, Arrays.asList(keyType));
+    }
+
+    @Override
+    public void activateNewKeys(String deviceIdentification, List<SecurityKeyType> keyTypes) throws ProtocolAdapterException {
         ActivateSecretsRequest request = new ActivateSecretsRequest();
         request.setDeviceId(deviceIdentification);
         request.setSecretTypes(new SecretTypes());
         List<SecretType> secretTypeList = request.getSecretTypes().getSecretType();
-        secretTypeList.add(keyType.toSecretType());
+        keyTypes.forEach(kt -> secretTypeList.add(kt.toSecretType()));
         this.secretManagementClient.activateSecretsRequest(request);
     }
 

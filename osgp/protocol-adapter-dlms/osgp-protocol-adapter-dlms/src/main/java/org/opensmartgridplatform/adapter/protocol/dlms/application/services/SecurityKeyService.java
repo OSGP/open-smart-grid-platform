@@ -20,6 +20,9 @@ public interface SecurityKeyService {
     byte[] getKey(String deviceIdentification, SecurityKeyType type);
     Map<SecurityKeyType, byte[]> getKeys(String deviceIdentification, List<SecurityKeyType> keyTypes);
 
+    byte[] getNewKey(String deviceIdentification, SecurityKeyType type);
+    Map<SecurityKeyType, byte[]> getNewKeys(String deviceIdentification, List<SecurityKeyType> keyTypes);
+
     /**
      * Store new key
      * <p>
@@ -74,6 +77,8 @@ public interface SecurityKeyService {
      * @see #storeNewKeys(String, Map)
      */
     void activateNewKey(final String deviceIdentification, final SecurityKeyType keyType)
+            throws ProtocolAdapterException;
+    void activateNewKeys(final String deviceIdentification, final List<SecurityKeyType> keyTypes)
             throws ProtocolAdapterException;
 
     byte[] generate128BitsKeyAndStoreAsNewKey(final String deviceIdentification, final SecurityKeyType keyType);

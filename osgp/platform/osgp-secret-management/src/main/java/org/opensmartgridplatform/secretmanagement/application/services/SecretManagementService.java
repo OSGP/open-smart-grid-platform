@@ -144,17 +144,26 @@ public class SecretManagementService {
     }
 
     public List<TypedSecret> retrieveSecrets(final String deviceIdentification, final List<SecretType> secretTypes) {
-        return this.retrieveAesSecrets(deviceIdentification, secretTypes).stream()
+        return this.doRetrieveSecrets(deviceIdentification,secretTypes, SecretStatus.ACTIVE);
+    }
+    public List<TypedSecret> retrieveNewSecrets(final String deviceIdentification,
+            final List<SecretType> secretTypes) {
+        return this.doRetrieveSecrets(deviceIdentification,secretTypes, SecretStatus.NEW);
+    }
+
+    private List<TypedSecret> doRetrieveSecrets(final String deviceIdentification,
+            final List<SecretType> secretTypes, SecretStatus status) {
+        return this.retrieveAesSecrets(deviceIdentification, secretTypes, status).stream()
                    .map(this::reencryptAes2Rsa)
                    .map(EncryptedTypedSecret::toTypedSecret)
                    .collect(Collectors.toList());
     }
 
     private List<EncryptedTypedSecret> retrieveAesSecrets(final String deviceIdentification,
-            final List<SecretType> secretTypes) {
+            final List<SecretType> secretTypes, SecretStatus status) {
         try {
             return secretTypes.stream()
-                              .map(secretType -> this.retrieveActiveSecret(deviceIdentification, secretType))
+                              .map(secretType -> this.retrieveSecret(deviceIdentification, secretType, status))
                               .collect(Collectors.toList());
         } catch (final Exception exc) {
             throw new IllegalStateException(
@@ -162,10 +171,10 @@ public class SecretManagementService {
         }
     }
 
-    private EncryptedTypedSecret retrieveActiveSecret(final String deviceIdentification,
-            final SecretType secretType) {
+    private EncryptedTypedSecret retrieveSecret(final String deviceIdentification,
+            final SecretType secretType, SecretStatus status) {
         final Optional<DbEncryptedSecret> optional = this
-                .getSingleDbEncryptedSecret(deviceIdentification, secretType, SecretStatus.ACTIVE);
+                .getSingleDbEncryptedSecret(deviceIdentification, secretType, status);
         if (optional.isPresent()) {
             DbEncryptedSecret dbEncryptedSecret = optional.get();
             byte[] aesEncrypted = HexUtils.fromHexString(dbEncryptedSecret.getEncodedSecret());
