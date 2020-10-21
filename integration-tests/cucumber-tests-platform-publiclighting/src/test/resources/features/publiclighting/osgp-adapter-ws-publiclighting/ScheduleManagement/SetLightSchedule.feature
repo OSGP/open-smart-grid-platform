@@ -9,8 +9,6 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
-    And a pending set schedule request that expires within "5" minutes
-      | DeviceIdentification | TEST1024000000001 |
     And the device returns a set light schedule response "OK" over "<Protocol>"
     When receiving a set light schedule request
       | DeviceIdentification | TEST1024000000001 |
@@ -65,6 +63,7 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
 
   #Note: the astronomical offsets are part of the set schedule request in the web services,
   #      while in the oslp elster protocol adapter they are sent to the device using a set configuration message
+  #      followed by a reboot sequence
   @OslpMockServer @AstronomicalSchedule
   Scenario: Set light schedule with astronomical offsets
     Given an ssld oslp device
@@ -110,7 +109,7 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | Result | OK |
 
   @OslpMockServer @AstronomicalSchedule
-  Scenario: Set light schedule with astronomical offsets is blocked when a previous request is in progress
+  Scenario: Set light schedule with astronomical offsets is blocked when a previous request with astronomical offsets is in progress
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | OSLP ELSTER       |
@@ -122,9 +121,10 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | SunsetOffset         |                45 |
     Then the set light schedule async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And I wait 5 seconds
-    And the platform buffers a set light schedule response message for device "TEST1024000000001" that contains a soap fault
-      | Message | Device reports failure |
+    And I wait 2 seconds
+    And the platform buffers a set light schedule response message for device "TEST1024000000001"
+      | Result      | NOT_OK                                             |
+      | Description | SET_SCHEDULE_WITH_ASTRONOMICAL_OFFSETS_IN_PROGRESS |
 
   @OslpMockServer @AstronomicalSchedule
   Scenario: Set light schedule when a previous request with astronomical offsets is in progress
@@ -142,9 +142,10 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | TriggerType          |                   |
     Then the set light schedule async response contains
       | DeviceIdentification | TEST1024000000001 |
-    And I wait 5 seconds
-    And the platform buffers a set light schedule response message for device "TEST1024000000001" that contains a soap fault
-      | Message | Device reports failure |
+    And I wait 2 seconds
+    And the platform buffers a set light schedule response message for device "TEST1024000000001"
+      | Result      | NOT_OK                                             |
+      | Description | SET_SCHEDULE_WITH_ASTRONOMICAL_OFFSETS_IN_PROGRESS |
 
 
   @OslpMockServer
