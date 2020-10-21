@@ -174,11 +174,9 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | TriggerType   |              |
       | TriggerWindow |              |
     # Note: The platform throws a TechnicalException when the status is 'FAILURE'.
-    #And the platform buffers a set light schedule response message for device "TEST1024000000001"
-    #  | Result      | NOT_OK                 |
-    #  | Description | Device reports failure |
-    And the platform buffers a set light schedule response message for device "TEST1024000000001" that contains a soap fault
-      | Message | Device reports failure |
+    And the platform buffers a set light schedule response message for device "TEST1024000000001"
+      | Result      | NOT_OK                 |
+      | Description | Device reports failure |
 
     Examples:
       | Protocol    |
@@ -212,8 +210,9 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | TriggerType   |              |
       | TriggerWindow |              |
     # Note: The platform throws a TechnicalException when the status is 'REJECTED'.
-    And the platform buffers a set light schedule response message for device "TEST1024000000001" that contains a soap fault
-      | Message | Device reports rejected |
+    And the platform buffers a set light schedule response message for device "TEST1024000000001"
+      | Result      | NOT_OK                  |
+      | Description | Device reports rejected |
 
     Examples:
       | Protocol    |
@@ -309,15 +308,12 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | FaultString  | UNREGISTERED_DEVICE                        |
       | InnerMessage | Device TEST1024000000001 is not registered |
 
-  # Note: HasScheduled is set to 'false' because the response type is 'NOT_OK', but should be 'OK'
-  @OslpMockServer @Skip
+
+  @OslpMockServer
   Scenario Outline: Set light schedule with 50 schedules # Success
     Given an ssld oslp device
       | DeviceIdentification | TEST1024000000001 |
       | Protocol             | <Protocol>        |
-    And the device returns a set light schedule response "OK" over "<Protocol>"
-    And the device returns a set light schedule response "OK" over "<Protocol>"
-    And the device returns a set light schedule response "OK" over "<Protocol>"
     And the device returns a set light schedule response "OK" over "<Protocol>"
     And the device returns a set light schedule response "OK" over "<Protocol>"
     And the device returns a set light schedule response "OK" over "<Protocol>"
@@ -340,6 +336,7 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | TriggerWindow        | <TriggerWindow>   |
     Then the set light schedule async response contains
       | DeviceIdentification | TEST1024000000001 |
+    And I wait 7 seconds
     And a set light schedule "<Protocol>" message is sent to device "TEST1024000000001"
       | WeekDay       | <WeekDay>       |
       | StartDay      | <StartDay>      |
@@ -350,9 +347,8 @@ Feature: PublicLightingScheduleManagement Set Light Schedule
       | TriggerType   | <TriggerType>   |
       | TriggerWindow | <TriggerWindow> |
       | ScheduledTime | <ScheduledTime> |
-    And the platform buffers a set light schedule response message for device "TEST1024000000001" that contains a soap fault
-      | FaultCode   | SOAP-ENV:Server            |
-      | FaultString | CorrelationUid is unknown. |
+    And the platform buffers a set light schedule response message for device "TEST1024000000001"
+      | Result | OK |
 
     Examples:
       | Protocol    | WeekDay     | StartDay   | EndDay     | ScheduledTime | ActionTime   | Time         | TriggerWindow | LightValues | TriggerType   |

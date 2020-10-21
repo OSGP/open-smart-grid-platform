@@ -274,7 +274,6 @@ public class SetLightScheduleSteps {
         assertThat(response.getResult())
                 .isEqualTo(getEnum(expectedResult, PlatformKeys.KEY_RESULT, OsgpResultType.class));
 
-
         if (expectedResult.containsKey(PlatformPubliclightingKeys.KEY_DESCRIPTION)) {
             assertThat(response.getDescription())
                     .isEqualTo(getString(expectedResult, PlatformPubliclightingKeys.KEY_DESCRIPTION,
