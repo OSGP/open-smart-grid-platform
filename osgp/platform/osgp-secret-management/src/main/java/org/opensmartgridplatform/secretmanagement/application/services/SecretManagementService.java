@@ -61,13 +61,13 @@ public class SecretManagementService {
         }
 
         private EncryptedTypedSecret(byte[] secret, SecretType type) {
-            this(secret,type,null);
+            this(secret, type, null);
         }
 
         private EncryptedTypedSecret(byte[] secret, SecretType type, String encryptionKeyReference) {
-            if(secret==null) {
+            if (secret == null) {
                 throw new IllegalArgumentException("No NULL value allowed for parameter 'secret'");
-            } else if(type==null) {
+            } else if (type == null) {
                 throw new IllegalArgumentException("No NULL value allowed for parameter 'secretType'");
             }
             this.encryptedSecret = secret;
@@ -76,7 +76,7 @@ public class SecretManagementService {
         }
 
         private boolean hasNullSecret() {
-            return this.encryptedSecret==null;
+            return this.encryptedSecret == null;
         }
 
         private TypedSecret toTypedSecret() {
@@ -111,7 +111,7 @@ public class SecretManagementService {
                 .findByTypeAndValid(this.encryptionProviderType, now);
         if (keyRefs.size() > 1) {
             throw new IllegalStateException("Multiple encryption keys found that are valid at " + now);
-        } else if(keyRefs.size()==0) {
+        } else if (keyRefs.size() == 0) {
             throw new NoSuchElementException("No encryption key found that is valid at " + now);
         }
         return keyRefs.get(0);
@@ -144,35 +144,33 @@ public class SecretManagementService {
     }
 
     public List<TypedSecret> retrieveSecrets(final String deviceIdentification, final List<SecretType> secretTypes) {
-        return this.doRetrieveSecrets(deviceIdentification,secretTypes, SecretStatus.ACTIVE);
-    }
-    public List<TypedSecret> retrieveNewSecrets(final String deviceIdentification,
-            final List<SecretType> secretTypes) {
-        return this.doRetrieveSecrets(deviceIdentification,secretTypes, SecretStatus.NEW);
+        return this.doRetrieveSecrets(deviceIdentification, secretTypes, SecretStatus.ACTIVE);
     }
 
-    private List<TypedSecret> doRetrieveSecrets(final String deviceIdentification,
-            final List<SecretType> secretTypes, SecretStatus status) {
-        return this.retrieveAesSecrets(deviceIdentification, secretTypes, status).stream()
-                   .map(this::reencryptAes2Rsa)
-                   .map(EncryptedTypedSecret::toTypedSecret)
-                   .collect(Collectors.toList());
+    public List<TypedSecret> retrieveNewSecrets(final String deviceIdentification, final List<SecretType> secretTypes) {
+        return this.doRetrieveSecrets(deviceIdentification, secretTypes, SecretStatus.NEW);
+    }
+
+    private List<TypedSecret> doRetrieveSecrets(final String deviceIdentification, final List<SecretType> secretTypes,
+            SecretStatus status) {
+        return this.retrieveAesSecrets(deviceIdentification, secretTypes, status).stream().map(this::reencryptAes2Rsa)
+                   .map(EncryptedTypedSecret::toTypedSecret).collect(Collectors.toList());
     }
 
     private List<EncryptedTypedSecret> retrieveAesSecrets(final String deviceIdentification,
             final List<SecretType> secretTypes, SecretStatus status) {
         try {
-            return secretTypes.stream()
-                              .map(secretType -> this.retrieveSecret(deviceIdentification, secretType, status))
+            return secretTypes.stream().map(secretType -> this.retrieveSecret(deviceIdentification, secretType, status))
                               .collect(Collectors.toList());
         } catch (final Exception exc) {
             throw new IllegalStateException(
-                    String.format("Something went wrong retrieving secrets for device %s", deviceIdentification), exc);
+                    String.format("Something went wrong retrieving secrets for device %s: %s", deviceIdentification,
+                            exc.toString()), exc);
         }
     }
 
-    private EncryptedTypedSecret retrieveSecret(final String deviceIdentification,
-            final SecretType secretType, SecretStatus status) {
+    private EncryptedTypedSecret retrieveSecret(final String deviceIdentification, final SecretType secretType,
+            SecretStatus status) {
         final Optional<DbEncryptedSecret> optional = this
                 .getSingleDbEncryptedSecret(deviceIdentification, secretType, status);
         if (optional.isPresent()) {
@@ -194,36 +192,29 @@ public class SecretManagementService {
         if (secretsList.size() == 0) {
             return Optional.empty();
         } else if (secretsList.size() > 1 && onlySingleSecretAllowed) {
-            String msgFormat = "Only 1 instance allowed with status %s, but found %s for device %s";
-            throw new IllegalStateException(String.format(msgFormat, secretStatus, secretsList.size(),
-                    deviceIdentification));
+            String msgFormat = "Only 1 instance allowed with status %s, but found %s for device %s, secret type %s";
+            throw new IllegalStateException(
+                    String.format(msgFormat, secretStatus, secretsList.size(), deviceIdentification, secretType));
         }
         return Optional.of(secretsList.iterator().next());
     }
 
     public synchronized void storeSecrets(final String deviceIdentification, final List<TypedSecret> secrets) {
-        List<EncryptedTypedSecret> aesSecrets =
-                secrets.stream()
-                       .map(ts -> new EncryptedTypedSecret(ts.getSecret(), ts.getSecretType()))
-                       .map(this::reencryptRsa2Aes)
-                       .collect(toList());
+        List<EncryptedTypedSecret> aesSecrets = secrets.stream().map(ts -> new EncryptedTypedSecret(ts.getSecret(),
+                ts.getSecretType())).map(this::reencryptRsa2Aes).collect(toList());
         this.storeAesSecrets(deviceIdentification, aesSecrets);
     }
 
     private void storeAesSecrets(final String deviceIdentification, final List<EncryptedTypedSecret> secrets) {
-        secrets.stream()
-               .map(ets -> this.validateNewSecret(deviceIdentification, ets))
-               .map(ets -> this.createDbEncrypted(deviceIdentification, ets,
-                       this.getKeyByReference(ets.encryptionKeyReference)))
+        secrets.stream().map(ets -> this.validateNewSecret(deviceIdentification, ets)).map(ets -> this
+                .createDbEncrypted(deviceIdentification, ets, this.getKeyByReference(ets.encryptionKeyReference)))
                .collect(collectingAndThen(toList(), this.secretRepository::saveAll));
     }
 
     public synchronized void activateNewSecrets(final String deviceIdentification, final List<SecretType> secretTypes) {
         secretTypes.stream().forEach(t -> this.checkNrNewSecretsOfType(deviceIdentification, t, 1));
-        secretTypes.stream()
-                   .map(t -> this.getUpdatedSecretsForActivation(deviceIdentification, t))
-                   .flatMap(Collection::stream)
-                   .collect(collectingAndThen(toList(), this.secretRepository::saveAll));
+        secretTypes.stream().map(t -> this.getUpdatedSecretsForActivation(deviceIdentification, t))
+                   .flatMap(Collection::stream).collect(collectingAndThen(toList(), this.secretRepository::saveAll));
     }
 
     public boolean hasNewSecret(final String deviceIdentification, final SecretType secretType) {
@@ -252,8 +243,8 @@ public class SecretManagementService {
         final int nrNewSecretsOfType = this.secretRepository.getSecretCount(deviceIdentification, t, SecretStatus.NEW);
         if (nrNewSecretsOfType != expectedNr) {
             final String errorMsg = "Expected %s new secrets of type %s for device %s, but %s new secret(s) present";
-            throw new IllegalStateException(String.format(errorMsg, expectedNr, t,
-                    deviceIdentification, nrNewSecretsOfType));
+            throw new IllegalStateException(
+                    String.format(errorMsg, expectedNr, t, deviceIdentification, nrNewSecretsOfType));
         }
     }
 
@@ -278,15 +269,15 @@ public class SecretManagementService {
     }
 
     private EncryptedTypedSecret reencryptRsa2Aes(EncryptedTypedSecret secret) {
-            byte[] aesEncrypted = this.reencryptRsa2Aes(secret.encryptedSecret);
-            String keyReference = this.getCurrentKey().getReference();
-            return new EncryptedTypedSecret(aesEncrypted, secret.type, keyReference);
+        byte[] aesEncrypted = this.reencryptRsa2Aes(secret.encryptedSecret);
+        String keyReference = this.getCurrentKey().getReference();
+        return new EncryptedTypedSecret(aesEncrypted, secret.type, keyReference);
     }
 
     private EncryptedTypedSecret reencryptAes2Rsa(EncryptedTypedSecret secret) {
         if (secret.hasNullSecret()) {
             return secret;  //No need to encrypt NULL value
-        } else  {
+        } else {
             byte[] rsaEncrypted = this.reencryptAes2Rsa(secret.encryptedSecret, secret.encryptionKeyReference);
             return new EncryptedTypedSecret(rsaEncrypted, secret.type);
         }
@@ -297,8 +288,7 @@ public class SecretManagementService {
         String keyReference = this.getCurrentKey().getReference();
         try {
             return this.encryptionDelegate
-                    .encrypt(this.encryptionProviderType, this.rsaEncrypter.decrypt(rsa), keyReference)
-                    .getSecret();
+                    .encrypt(this.encryptionProviderType, this.rsaEncrypter.decrypt(rsa), keyReference).getSecret();
         } catch (final EncrypterException ee) {
             throw new IllegalStateException("Could not reecrypt secret from RSA to AES", ee);
         }
