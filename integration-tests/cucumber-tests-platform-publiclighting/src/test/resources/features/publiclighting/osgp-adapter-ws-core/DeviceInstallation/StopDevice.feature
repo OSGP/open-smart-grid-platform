@@ -23,7 +23,12 @@ Feature: CoreDeviceInstallation Device Stopping
       | OSLP ELSTER |
 
   Scenario Outline: Stop device with incorrect parameters
-    Given an ssld device
+    Given an organization
+      | OrganizationIdentification | <OrganizationIdentification> |
+      | Name                       | <OrganizationIdentification> |
+      | Domains                    |                              |
+      | Prefix                     | INV                          |
+    And an ssld device
       | DeviceIdentification       | TEST1024000000001            |
       | OrganizationIdentification | <OrganizationIdentification> |
       | Status                     | unknown                      |
