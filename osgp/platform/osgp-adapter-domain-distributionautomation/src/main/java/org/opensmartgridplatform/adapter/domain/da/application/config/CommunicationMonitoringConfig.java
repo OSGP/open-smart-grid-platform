@@ -14,6 +14,7 @@ import org.opensmartgridplatform.adapter.domain.da.application.tasks.Communicati
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -60,7 +61,14 @@ public class CommunicationMonitoringConfig extends AbstractConfig {
     @Resource
     private Environment environment;
 
-    // suppress warning concerning the string in the LOGGER.info. This is actually a correct way of doing it.
+    // suppress warning about field being autowired for class rather than the method it is used in. The calling of
+    // the method might not be able to provide CommunicationMonitoringTask as parameter.
+    @SuppressWarnings("squid:S3305")
+    @Autowired
+    private CommunicationMonitoringTask communicationMonitoringTask;
+
+    // suppress warning concerning the string in the LOGGER.info. This is actually a correct way of doing it. the
+    // this.cronExpression() expression is not very complex, making it not necessary to check before calling it.
     @SuppressWarnings("squid:S2629")
     @Bean
     public CronTrigger communicationMonitoringTaskCronTrigger() {
@@ -69,11 +77,8 @@ public class CommunicationMonitoringConfig extends AbstractConfig {
         return new CronTrigger(this.cronExpression());
     }
 
-    // suppress warning about using method for boolean in if. The method can only return a boolean, and not a null
-    // value that would result in an issue.
-    @SuppressWarnings("squid:S5411")
     @Bean(destroyMethod = "shutdown")
-    public TaskScheduler communicationMonitoringTaskScheduler(CommunicationMonitoringTask communicationMonitoringTask) {
+    public TaskScheduler communicationMonitoringTaskScheduler() {
         LOGGER.info("Initializing Communication Monitoring Task Scheduler bean");
         final ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
 
@@ -84,7 +89,7 @@ public class CommunicationMonitoringConfig extends AbstractConfig {
             taskScheduler.setWaitForTasksToCompleteOnShutdown(false);
             taskScheduler.setAwaitTerminationSeconds(DEFAULT_AWAIT_TERMINATION_SECONDS);
             taskScheduler.initialize();
-            taskScheduler.schedule(communicationMonitoringTask, this.communicationMonitoringTaskCronTrigger());
+            taskScheduler.schedule(this.communicationMonitoringTask, this.communicationMonitoringTaskCronTrigger());
         } else {
             LOGGER.info("Communication Monitoring not enabled, skipping task scheduler initialization.");
         }
@@ -132,7 +137,7 @@ public class CommunicationMonitoringConfig extends AbstractConfig {
         }
     }
 
-    private Boolean communicationMonitoringEnabled() {
+    private boolean communicationMonitoringEnabled() {
         final String value = this.environment.getProperty(PROPERTY_NAME_COMMUNICATION_MONITORING_ENABLED);
         if (StringUtils.isNotBlank(value)) {
             LOGGER.info("Using value {} for communication monitoring enabled.", value);
