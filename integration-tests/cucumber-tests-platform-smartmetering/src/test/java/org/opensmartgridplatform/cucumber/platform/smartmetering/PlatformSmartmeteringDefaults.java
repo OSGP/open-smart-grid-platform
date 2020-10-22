@@ -58,9 +58,9 @@ public class PlatformSmartmeteringDefaults extends org.opensmartgridplatform.cuc
     public static final Long PORT = 1024L;
     public static final String PROTOCOL = "DSMR";
     public static final String PROTOCOL_VERSION = "4.2.2";
-    public static final String SECURITY_KEY_A_DB = "bc082efed278e1bbebddc0431877d4fae80fa4e72925b6ad0bc67c84b8721598eda8458bcc1b2827fe6e5e7918ce22fd";
-    public static final String SECURITY_KEY_E_DB = "bc082efed278e1bbebddc0431877d4fa2df7728229f3e03c57b2549142b40d047b35011dbf9f77ad91db5fe6f19a7b9c";
-    public static final String SECURITY_KEY_M_DB = "bc082efed278e1bbebddc0431877d4fa16374b00e96dd102beab666dcb72efbd1f0b868412497f6d3d0c62caa4700585";
+    public static final String SECURITY_KEY_A_DB = "c19fe80a22a0f6c5cdaad0826c4d204f23694ded08d811b66e9b845d9f2157d2";
+    public static final String SECURITY_KEY_E_DB = "867424ac75b6d53c89276d304608321f0a1f6e401f453f84adf3477c7ee1623c";
+    public static final String SECURITY_KEY_M_DB = "55dc88791e6c8f6aff4c8be7714fb8d2ae3d02693ec474593acd3523ee032638";
     public static final String SECURITY_KEY_A_XML = "9eab9df8169a9c22d694067435b584d573b1a57d62d491b58fd9058e994861666831fb9f5ddbf5aba9ef"
             + "169256cffc8e540c34b3f92246d062889eca13639fe317e92beec86b48b14d5ef4b74682497eed7d8ea3ae6ea3dfa1877045653cb989146f826b2d97a3294a2aa22f804b1f389d06"
             + "84482dde33e6cdfc51700156e3be94fc8d5b3a1302b3f3992564982e7cd7885c26fa96eeb7cab5a13d6d7fd341f665d61581dd71f652dc278823216ab75b5a430edc826021c4a2dc"
