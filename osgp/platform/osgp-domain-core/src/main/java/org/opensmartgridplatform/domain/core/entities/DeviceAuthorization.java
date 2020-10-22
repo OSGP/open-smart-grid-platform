@@ -29,16 +29,16 @@ public class DeviceAuthorization extends AbstractEntity {
      */
     private static final long serialVersionUID = 1468328289658974067L;
 
-    @ManyToOne()
+    @ManyToOne(optional = false)
     @JoinColumn(name = "device")
     @Cascade(value = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.SAVE_UPDATE })
     private Device device;
 
-    @ManyToOne()
+    @ManyToOne(optional = false)
     @JoinColumn(name = "organisation")
     private Organisation organisation;
 
-    @Column()
+    @Column(nullable = false)
     @Enumerated(EnumType.ORDINAL)
     private DeviceFunctionGroup functionGroup;
 
