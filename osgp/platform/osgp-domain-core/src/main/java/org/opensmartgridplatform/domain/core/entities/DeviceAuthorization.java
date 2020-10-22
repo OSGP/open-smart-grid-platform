@@ -38,7 +38,7 @@ public class DeviceAuthorization extends AbstractEntity {
     @JoinColumn(name = "organisation")
     private Organisation organisation;
 
-    @Column()
+    @Column(nullable = false)
     @Enumerated(EnumType.ORDINAL)
     private DeviceFunctionGroup functionGroup;
 
