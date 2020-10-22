@@ -290,7 +290,7 @@ public class SecretManagementService {
             return this.encryptionDelegate
                     .encrypt(this.encryptionProviderType, this.rsaEncrypter.decrypt(rsa), keyReference).getSecret();
         } catch (final EncrypterException ee) {
-            throw new IllegalStateException("Could not reecrypt secret from RSA to AES", ee);
+            throw new IllegalStateException("Could not reencrypt secret from RSA to AES: "+ee.toString(), ee);
         }
     }
 
@@ -300,7 +300,7 @@ public class SecretManagementService {
             return this.rsaEncrypter.encrypt(this.encryptionDelegate
                     .decrypt(new EncryptedSecret(this.encryptionProviderType, aes), keyReference));
         } catch (final EncrypterException ee) {
-            throw new IllegalStateException("Could not reecrypt secret from AES to RSA", ee);
+            throw new IllegalStateException("Could not reencrypt secret from AES to RSA: "+ee.toString(), ee);
         }
     }
 }
