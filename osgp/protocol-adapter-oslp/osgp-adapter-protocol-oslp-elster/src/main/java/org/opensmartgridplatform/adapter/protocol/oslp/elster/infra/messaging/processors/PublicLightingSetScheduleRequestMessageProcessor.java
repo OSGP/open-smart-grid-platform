@@ -93,8 +93,6 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
 
             ScheduleMessageDataContainerDto.Builder builder = new ScheduleMessageDataContainerDto.Builder(schedule);
             if (schedule.getAstronomicalSunriseOffset() != null || schedule.getAstronomicalSunsetOffset() != null) {
-                // prevent a pending astronomical set schedule from being set when already an astronomical set schedule request is pending
-                // note: others are allowed. I guess that's not totally correct.
                 builder = builder.withScheduleMessageType(ScheduleMessageTypeDto.RETRIEVE_CONFIGURATION);
             }
 
