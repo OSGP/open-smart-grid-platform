@@ -76,7 +76,6 @@ public class OslpDeviceService implements DeviceService {
 
     private static final String DATE_FORMAT = "yyyyMMdd";
     private static final String TIME_FORMAT = "HHmmss";
-    private static final String DATETIME_FORMAT = DATE_FORMAT + TIME_FORMAT;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OslpDeviceService.class);
 

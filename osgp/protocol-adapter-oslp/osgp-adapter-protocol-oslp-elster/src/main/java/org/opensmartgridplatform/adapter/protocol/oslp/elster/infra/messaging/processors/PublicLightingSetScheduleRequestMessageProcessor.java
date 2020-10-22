@@ -92,7 +92,9 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
             }
 
             ScheduleMessageDataContainerDto.Builder builder = new ScheduleMessageDataContainerDto.Builder(schedule);
-            if (schedule.getAstronomicalSunriseOffset() != null || schedule.getAstronomicalSunsetOffset() != null) {
+            if ((schedule.getAstronomicalSunriseOffset() != null && schedule.getAstronomicalSunriseOffset() != 0) ||
+                    (schedule.getAstronomicalSunsetOffset() != null && schedule.getAstronomicalSunsetOffset() != 0)) {
+                LOGGER.info("Set a schedule for a device with astronomical offsets");
                 builder = builder.withScheduleMessageType(ScheduleMessageTypeDto.RETRIEVE_CONFIGURATION);
             }
 
