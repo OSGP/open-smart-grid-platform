@@ -14,6 +14,7 @@ void setBuildStatus(String message, String state) {
         reposSource: [$class: "ManuallyEnteredRepositorySource", url: "git@github.com:OSGP/open-smart-grid-platform.git"],
         contextSource: [$class: "ManuallyEnteredCommitContextSource", context: "ci/jenkins/build-status"],
         errorHandlers: [[$class: "ChangingBuildStatusErrorHandler", result: "UNSTABLE"]],
+        commitShaSource: [$class: "ManuallyEnteredShaSource", sha:  env.ghprbActualCommit],
         statusResultSource: [ $class: "ConditionalStatusResultSource", results: [[$class: "AnyBuildResult", message: message, state: state]] ]
     ]);
 }
