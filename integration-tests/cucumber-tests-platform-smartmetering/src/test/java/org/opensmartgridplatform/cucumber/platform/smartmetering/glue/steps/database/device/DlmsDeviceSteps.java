@@ -55,12 +55,13 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptedSecret;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptionKeyReference;
 import org.opensmartgridplatform.secretmanagement.application.domain.SecretStatus;
-import org.opensmartgridplatform.secretmanagement.application.endpoints.SoapEndpointDataTypeConverter;
+import org.opensmartgridplatform.secretmanagement.application.domain.SecretType;
 import org.opensmartgridplatform.secretmanagement.application.repository.DbEncryptedSecretRepository;
 import org.opensmartgridplatform.secretmanagement.application.repository.DbEncryptionKeyRepository;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
 /**
  * DLMS device specific steps.
  */
@@ -102,9 +103,6 @@ public class DlmsDeviceSteps {
 
     @Autowired
     private DbEncryptionKeyRepository encryptionKeyRepository;
-
-    @Autowired
-    private SoapEndpointDataTypeConverter soapEndpointDataTypeConverter;
 
     private final SecurityKeyBuilder authenticationSecurityKeyBuilder = new SecurityKeyBuilder()
             .setSecurityKeyType(SecurityKeyType.E_METER_AUTHENTICATION)
@@ -251,11 +249,11 @@ public class DlmsDeviceSteps {
         final DlmsDevice dlmsDevice = this.findExistingDlmsDevice(deviceIdentification);
         final List<SecurityKey> securityKeys = dlmsDevice.getSecurityKeys();
      */
-        /*
-         * If the keys are not changed, the device should only have valid keys.
-         * There should be 1 master key and one authentication and encryption
-         * key.
-         */
+    /*
+     * If the keys are not changed, the device should only have valid keys.
+     * There should be 1 master key and one authentication and encryption
+     * key.
+     */
     /*
         int numberOfMasterKeys = 0;
         int numberOfAuthenticationKeys = 0;
@@ -309,7 +307,8 @@ public class DlmsDeviceSteps {
         final SecurityKey authenticationKey = this
                 .findExistingSecurityKey(dlmsDevice, SecurityKeyType.E_METER_AUTHENTICATION, "Authentication key");
         final String receivedAuthenticationKey = (String) ScenarioContext.current()
-                                                                         .get(PlatformSmartmeteringKeys.KEY_DEVICE_AUTHENTICATIONKEY);
+                                                                         .get(PlatformSmartmeteringKeys
+                                                                         .KEY_DEVICE_AUTHENTICATIONKEY);
         assertThat(authenticationKey.getKey())
                 .as("Stored authentication key for " + deviceDescription + " must be different from received key")
                 .isNotEqualTo(receivedAuthenticationKey);
@@ -317,7 +316,8 @@ public class DlmsDeviceSteps {
         final SecurityKey encryptionKey = this
                 .findExistingSecurityKey(dlmsDevice, SecurityKeyType.E_METER_ENCRYPTION, "Encryption key");
         final String receivedEncryptionKey = (String) ScenarioContext.current()
-                                                                     .get(PlatformSmartmeteringKeys.KEY_DEVICE_AUTHENTICATIONKEY);
+                                                                     .get(PlatformSmartmeteringKeys
+                                                                     .KEY_DEVICE_AUTHENTICATIONKEY);
         assertThat(encryptionKey.getKey())
                 .as("Stored encryption key for " + deviceDescription + " must be different from received key")
                 .isNotEqualTo(receivedEncryptionKey);
@@ -500,11 +500,11 @@ public class DlmsDeviceSteps {
             dlmsDeviceBuilder.getPasswordBuilder().enable();
         } else if (this.isGasSmartMeter(deviceType)) {
             dlmsDeviceBuilder.getMbusMasterSecurityKeyBuilder().enable();*/
-            /*
-             * Don't insert a default value for the M-Bus User key. So only
-             * enable the builder if an M-Bus User key is explicitly configured
-             * in the step data.
-             */
+        /*
+         * Don't insert a default value for the M-Bus User key. So only
+         * enable the builder if an M-Bus User key is explicitly configured
+         * in the step data.
+         */
             /*if (inputSettings.containsKey(PlatformSmartmeteringKeys.MBUS_USER_KEY)) {
                 dlmsDeviceBuilder.getMbusEncryptionSecurityKeyBuilder().enable();
             }
@@ -522,12 +522,13 @@ public class DlmsDeviceSteps {
     }
 
     private void createDlmsDeviceInSecretManagementDatabase(DlmsDevice dlmsDevice) {
-        DbEncryptionKeyReference encryptionKeyRef = this.encryptionKeyRepository.findByTypeAndValid(EncryptionProviderType.JRE,
-                new Date()).iterator().next();
-        List<SecurityKey> keys = Arrays.asList(this.authenticationSecurityKeyBuilder.build(),
-                this.encryptionSecurityKeyBuilder.build(),this.masterSecurityKeyBuilder.build());
-        keys.stream().map(key -> this.createSecretFromKey(dlmsDevice.getDeviceIdentification(), encryptionKeyRef,
-                key)).forEach(this.encryptedSecretRepository::save);
+        DbEncryptionKeyReference encryptionKeyRef = this.encryptionKeyRepository
+                .findByTypeAndValid(EncryptionProviderType.JRE, new Date()).iterator().next();
+        List<SecurityKey> keys = Arrays
+                .asList(this.authenticationSecurityKeyBuilder.build(), this.encryptionSecurityKeyBuilder.build(),
+                        this.masterSecurityKeyBuilder.build());
+        keys.stream().map(key -> this.createSecretFromKey(dlmsDevice.getDeviceIdentification(), encryptionKeyRef, key))
+            .forEach(this.encryptedSecretRepository::save);
     }
 
     private DbEncryptedSecret createSecretFromKey(String deviceIdentification,
@@ -536,8 +537,7 @@ public class DlmsDeviceSteps {
         dbEncryptedSecret.setCreationTime(new Date());
         dbEncryptedSecret.setSecretStatus(SecretStatus.ACTIVE);
         dbEncryptedSecret.setDeviceIdentification(deviceIdentification);
-        dbEncryptedSecret.setSecretType(
-                this.soapEndpointDataTypeConverter.convertToSecretType(key.getSecurityKeyType().toSecretType()));
+        dbEncryptedSecret.setSecretType(SecretType.valueOf(key.getSecurityKeyType().toSecretType().value()));
         dbEncryptedSecret.setEncodedSecret(key.getKey());
         dbEncryptedSecret.setEncryptionKeyReference(encryptionKeyRef);
         return dbEncryptedSecret;
