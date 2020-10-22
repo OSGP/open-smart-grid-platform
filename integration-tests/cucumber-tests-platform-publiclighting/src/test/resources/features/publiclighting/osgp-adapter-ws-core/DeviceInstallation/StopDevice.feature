@@ -18,7 +18,7 @@ Feature: CoreDeviceInstallation Device Stopping
     And the platform buffers a stop device response message for device "TEST1024000000001"
       | Result | OK |
 
-    Examples: 
+    Examples:
       | Protocol    |
       | OSLP ELSTER |
 
@@ -32,7 +32,7 @@ Feature: CoreDeviceInstallation Device Stopping
     Then the stop device response contains soap fault
       | Message | UNAUTHORIZED |
 
-    Examples: 
+    Examples:
       | OrganizationIdentification |
       | ORGANIZATION-01            |
       | ORGANIZATION_ID_UNKNOWN    |
