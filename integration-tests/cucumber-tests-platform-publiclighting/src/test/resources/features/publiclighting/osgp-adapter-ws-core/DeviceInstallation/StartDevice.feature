@@ -19,17 +19,12 @@ Feature: CoreDeviceInstallation Device Starting
     And the platform buffers a start device response message for device "TEST1024000000001"
       | Result | OK |
 
-    Examples: 
+    Examples:
       | Protocol    |
       | OSLP ELSTER |
 
   Scenario Outline: Start device with incorrect parameters
-    Given an organization
-      | OrganizationIdentification | <OrganizationIdentification> |
-      | Name                       | <OrganizationIdentification> |
-      | Domains                    |                              |
-      | Prefix                     | INF                          |
-    And an ssld device
+    Given an ssld device
       | DeviceIdentification       | TEST1024000000001            |
       | OrganizationIdentification | <OrganizationIdentification> |
       | Status                     | unknown                      |
@@ -38,7 +33,7 @@ Feature: CoreDeviceInstallation Device Starting
     Then the start device response contains soap fault
       | Message | UNAUTHORIZED |
 
-    Examples: 
+    Examples:
       | OrganizationIdentification |
       | ORGANIZATION-01            |
       | ORGANIZATION_ID_UNKNOWN    |
