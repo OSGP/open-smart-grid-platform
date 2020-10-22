@@ -6,7 +6,12 @@ Feature: CoreDeviceInstallation Device Starting
 
   @OslpMockServer
   Scenario Outline: Start an ssld device
-    Given an ssld oslp device
+    Given an organization
+      | OrganizationIdentification | test-org                                |
+      | Name                       | Test Organization                       |
+      | Domains                    | COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING |
+      | Prefix                     | TOR                                     |
+    And an ssld oslp device
       | DeviceIdentification       | TEST1024000000001 |
       | OrganizationIdentification | test-org          |
       | Protocol                   | <Protocol>        |

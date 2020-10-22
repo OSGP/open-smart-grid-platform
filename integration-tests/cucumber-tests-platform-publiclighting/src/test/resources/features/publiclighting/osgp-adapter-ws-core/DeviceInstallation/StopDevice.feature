@@ -6,9 +6,15 @@ Feature: CoreDeviceInstallation Device Stopping
 
   @OslpMockServer
   Scenario Outline: Stop an ssld oslp Device
-    Given an ssld oslp device
-      | DeviceIdentification | TEST1024000000001 |
-      | Protocol             | <Protocol>        |
+    Given an organization
+      | OrganizationIdentification | test-org                                |
+      | Name                       | Test Organization                       |
+      | Domains                    | COMMON;PUBLIC_LIGHTING;TARIFF_SWITCHING |
+      | Prefix                     | TOR                                     |
+    And an ssld oslp device
+      | DeviceIdentification       | TEST1024000000001 |
+      | OrganizationIdentification | test-org          |
+      | Protocol                   | <Protocol>        |
     And the device returns a stop device response "OK" over "<Protocol>"
     When receiving a stop device test request
       | DeviceIdentification | TEST1024000000001 |
