@@ -11,15 +11,6 @@ import javax.validation.ConstraintViolationException;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.ws.server.endpoint.annotation.Endpoint;
-import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
-import org.springframework.ws.server.endpoint.annotation.RequestPayload;
-import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
-
 import org.opensmartgridplatform.adapter.ws.core.application.mapping.ConfigurationManagementMapper;
 import org.opensmartgridplatform.adapter.ws.core.application.services.ConfigurationManagementService;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
@@ -49,7 +40,19 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
+// suppress warnings about logging an exception and then rethrowing it. The error is being logged in order to see the
+// original exception and location, and then rethrown as a different exception with more information. Without knowledge of
+// the class that calls the methods it is impossible to judge the importance of logging the exception here.
+@SuppressWarnings("squid:S2139")
 @Endpoint
 public class ConfigurationManagementEndpoint {
 
@@ -105,8 +108,8 @@ public class ConfigurationManagementEndpoint {
             response.setAsyncResponse(asyncResponse);
         } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
-            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations())));
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -172,8 +175,8 @@ public class ConfigurationManagementEndpoint {
             response.setAsyncResponse(asyncResponse);
         } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception get configuration: {} ", e.getMessage(), e);
-            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations())));
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -238,8 +241,8 @@ public class ConfigurationManagementEndpoint {
             response.setAsyncResponse(asyncResponse);
         } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception get configuration: {} ", e.getMessage(), e);
-            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations())));
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             this.handleException(e);
         }

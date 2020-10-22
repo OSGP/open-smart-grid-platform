@@ -68,7 +68,10 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
-
+// suppress warnings about logging an exception and then rethrowing it. The error is being logged in order to see the
+// original exception and location, and then rethrown as a different exception with more information. Without knowledge of
+// the class that calls the methods it is impossible to judge the importance of logging the exception here.
+@SuppressWarnings("squid:S2139")
 @Endpoint
 public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
 
@@ -155,8 +158,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
 
         } catch (final ConstraintViolationException e) {
             LOGGER.error("FindEventsRequest Exception", e.getMessage(), e.getStackTrace(), e);
-            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
-                    new ValidationException(e.getConstraintViolations())));
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -184,8 +187,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             response.setDevicePage(devicePage);
         } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
-            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_WS_SMART_METERING,
-                    new ValidationException(e.getConstraintViolations())));
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_WS_SMART_METERING,
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -249,8 +252,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             }
         } catch (final ConstraintViolationException e) {
             LOGGER.error("EnableDebuggingResponse Exception", e.getMessage(), e.getStackTrace(), e);
-            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
-                    new ValidationException(e.getConstraintViolations())));
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -314,8 +317,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             }
         } catch (final ConstraintViolationException e) {
             LOGGER.error("DisableDebuggingResponse Exception", e.getMessage(), e.getStackTrace(), e);
-            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
-                    new ValidationException(e.getConstraintViolations())));
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -400,8 +403,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             response.setMessageLogPage(logPage);
         } catch (final ConstraintViolationException e) {
             LOGGER.error("FindMessageLogsResponse Exception", e.getMessage(), e.getStackTrace(), e);
-            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
-                    new ValidationException(e.getConstraintViolations())));
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -467,8 +470,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             }
         } catch (final ConstraintViolationException e) {
             LOGGER.error("SetDeviceCommunicationSettingsResponse Exception", e.getMessage(), e.getStackTrace(), e);
-            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
-                    new ValidationException(e.getConstraintViolations())));
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -534,8 +537,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
 
         } catch (final ConstraintViolationException e) {
             LOGGER.error("Set device lifecycle status by channel Exception", e.getMessage(), e.getStackTrace(), e);
-            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
-                    new ValidationException(e.getConstraintViolations())));
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             this.handleException(e);
         }

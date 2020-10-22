@@ -7,16 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.ws.tariffswitching.endpoints;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.Page;
-import org.springframework.ws.server.endpoint.annotation.Endpoint;
-import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
-import org.springframework.ws.server.endpoint.annotation.RequestPayload;
-import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
-
 import javax.validation.ConstraintViolationException;
 
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
@@ -42,6 +32,15 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 @Endpoint
 public class TariffSwitchingAdHocManagementEndpoint {
@@ -61,6 +60,10 @@ public class TariffSwitchingAdHocManagementEndpoint {
         this.adHocManagementMapper = adHocManagementMapper;
     }
 
+    // suppress warnings about logging an exception and then rethrowing it. The error is being logged in order to see the
+    // original exception and location, and then rethrown as a different exception with more information. Without knowledge of
+    // the class that calls the methods it is impossible to judge the importance of logging the exception here.
+    @SuppressWarnings("squid:S2139")
     @PayloadRoot(localPart = "GetDevicesRequest", namespace = NAMESPACE)
     @ResponsePayload
     public GetDevicesResponse getDevices(@OrganisationIdentification final String organisationIdentification,
@@ -81,8 +84,8 @@ public class TariffSwitchingAdHocManagementEndpoint {
             response.setDevicePage(devicePage);
         } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
-            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_WS_TARIFF_SWITCHING,
-                    new ValidationException(e.getConstraintViolations())));
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_WS_TARIFF_SWITCHING,
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             this.handleException(e);
         }

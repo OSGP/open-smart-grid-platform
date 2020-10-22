@@ -68,6 +68,10 @@ public class TariffSwitchingScheduleManagementEndpoint {
         this.scheduleManagementMapper = scheduleManagementMapper;
     }
 
+    // suppress warnings about logging an exception and then rethrowing it. The error is being logged in order to see the
+    // original exception and location, and then rethrown as a different exception with more information. Without knowledge of
+    // the class that calls the methods it is impossible to judge the importance of logging the exception here.
+    @SuppressWarnings("squid:S2139")
     @PayloadRoot(localPart = "SetScheduleRequest", namespace = NAMESPACE)
     @ResponsePayload
     public SetScheduleAsyncResponse setSchedule(@OrganisationIdentification final String organisationIdentification,
@@ -99,9 +103,9 @@ public class TariffSwitchingScheduleManagementEndpoint {
             response.setAsyncResponse(asyncResponse);
         } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
-            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
                 ComponentType.WS_TARIFF_SWITCHING,
-                    new ValidationException(e.getConstraintViolations())));
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             this.handleException(e);
         }

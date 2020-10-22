@@ -91,6 +91,10 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 /**
  * Device Management Endpoint class
  */
+// suppress warnings about logging an exception and then rethrowing it. The error is being logged in order to see the
+// original exception and location, and then rethrown as a different exception with more information. Without knowledge of
+// the class that calls the methods it is impossible to judge the importance of logging the exception here.
+@SuppressWarnings("squid:S2139")
 @Endpoint(value = "coreDeviceManagementEndpoint")
 public class DeviceManagementEndpoint {
 
@@ -135,8 +139,8 @@ public class DeviceManagementEndpoint {
                     org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Organisation.class));
         } catch (final ConstraintViolationException e) {
             LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
-            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations())));
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -162,8 +166,8 @@ public class DeviceManagementEndpoint {
                             org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Organisation.class));
         } catch (final ConstraintViolationException e) {
             LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
-            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations())));
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -269,8 +273,8 @@ public class DeviceManagementEndpoint {
             response.getPage().setCurrentPage(result.getNumber());
         } catch (final ConstraintViolationException e) {
             LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
-            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations())));
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -316,8 +320,8 @@ public class DeviceManagementEndpoint {
             }
         } catch (final ConstraintViolationException e) {
             LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
-            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations())));
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
             this.handleException(e);
@@ -347,7 +351,7 @@ public class DeviceManagementEndpoint {
         final FindScheduledTasksResponse response = new FindScheduledTasksResponse();
 
         try {
-            List<ScheduledTaskWithoutData> scheduledTasks;
+            final List<ScheduledTaskWithoutData> scheduledTasks;
             if (request.getDeviceIdentification() == null) {
                 scheduledTasks = this.deviceManagementService.findScheduledTasks(organisationIdentification);
             } else {
@@ -360,8 +364,8 @@ public class DeviceManagementEndpoint {
                             org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.ScheduledTask.class));
         } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception find Scheduled tasks: {} ", e.getMessage(), e);
-            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations())));
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -385,8 +389,8 @@ public class DeviceManagementEndpoint {
 
         } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception update Device: {} ", e.getMessage(), e);
-            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations())));
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             LOGGER.error(EXCEPTION_WHILE_UPDATING_DEVICE, e.getMessage(), request.getDeviceIdentification(),
                     organisationIdentification, e);
@@ -427,8 +431,8 @@ public class DeviceManagementEndpoint {
                     request.getDeviceAlias(), request.getDeviceOutputSettings());
         } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception setting alias Device: {} ", e.getMessage(), e);
-            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations())));
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             LOGGER.error(EXCEPTION_WHILE_UPDATING_DEVICE, e.getMessage(), request.getDeviceIdentification(),
                     organisationIdentification, e);
@@ -469,8 +473,8 @@ public class DeviceManagementEndpoint {
                     request.getDeviceIdentification(), request.isStatus());
         } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception update Device: {} ", e.getMessage(), e);
-            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations())));
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             LOGGER.error(EXCEPTION_WHILE_UPDATING_DEVICE, e.getMessage(), request.getDeviceIdentification(),
                     organisationIdentification, e);
@@ -518,8 +522,8 @@ public class DeviceManagementEndpoint {
 
         } catch (final ConstraintViolationException e) {
             LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
-            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations())));
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -578,8 +582,8 @@ public class DeviceManagementEndpoint {
 
         } catch (final ConstraintViolationException e) {
             LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
-            this.handleException(new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations())));
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             this.handleException(e);
         }
