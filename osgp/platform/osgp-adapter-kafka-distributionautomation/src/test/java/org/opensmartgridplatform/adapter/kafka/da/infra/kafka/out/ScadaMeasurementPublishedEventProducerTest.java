@@ -104,8 +104,7 @@ class ScadaMeasurementPublishedEventProducerTest {
         final List<Analog> measurements = new ArrayList<>();
         final ConductingEquipment powerSystemResource = new ConductingEquipment(new BaseVoltage(description, null),
                 new ArrayList<Name>());
-        final ScadaMeasurementPublishedEvent event = new ScadaMeasurementPublishedEvent(measurements,
-                powerSystemResource, createdDateTime, description, mRid);
-        return event;
+        return new ScadaMeasurementPublishedEvent(measurements, powerSystemResource, createdDateTime, description,
+                mRid);
     }
 }
