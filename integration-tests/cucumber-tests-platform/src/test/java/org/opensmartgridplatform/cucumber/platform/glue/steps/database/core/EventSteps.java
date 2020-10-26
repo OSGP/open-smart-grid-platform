@@ -22,7 +22,6 @@ import org.joda.time.DateTime;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
-import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Event;
 import org.opensmartgridplatform.domain.core.entities.RelayStatus;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
@@ -48,10 +47,10 @@ public class EventSteps {
 
     @Given("^an event$")
     public void anEvent(final Map<String, String> data) {
-        final Device device = this.deviceRepository
-                .findByDeviceIdentification(getString(data, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
+        final String deviceIdentification = getString(data, PlatformKeys.KEY_DEVICE_IDENTIFICATION);
 
-        final Event event = new Event(device, getDateTime2(getString(data, PlatformKeys.DATE), DateTime.now()).toDate(),
+        final Event event = new Event(deviceIdentification,
+                getDateTime2(getString(data, PlatformKeys.DATE), DateTime.now()).toDate(),
                 getEnum(data, PlatformKeys.EVENT_TYPE, EventType.class, EventType.DIAG_EVENTS_GENERAL),
                 getString(data, PlatformKeys.KEY_DESCRIPTION, ""),
                 getInteger(data, PlatformKeys.KEY_INDEX, PlatformDefaults.DEFAULT_INDEX));
@@ -85,11 +84,10 @@ public class EventSteps {
 
         // Wait for the correct events to be available
         Wait.until(() -> {
-            final Device device = this.deviceRepository
-                    .findByDeviceIdentification(getString(expectedEntity, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
+            final String deviceIdentification = getString(expectedEntity, PlatformKeys.KEY_DEVICE_IDENTIFICATION);
 
             // Read the actual events received and check the desired size
-            final List<Event> actualEvents = this.eventRepository.findByDevice(device);
+            final List<Event> actualEvents = this.eventRepository.findByDeviceIdentification(deviceIdentification);
 
             // Assume default 1 expected event
             final int expectedNumberOfEvents = getInteger(expectedEntity, PlatformKeys.NUMBER_OF_EVENTS, 1);
@@ -110,8 +108,9 @@ public class EventSteps {
                         break;
                     }
                 }
-                assertThat(foundEventIndex != -1).as(
-                        "Unable to find event [" + actualEvent.getEventType() + "] with index [" + actualIndex + "]")
+                assertThat(foundEventIndex != -1)
+                        .as("Unable to find event [" + actualEvent.getEventType() + "] with index [" + actualIndex
+                                + "]")
                         .isTrue();
 
                 // Correct combination of event and index are found, remove them

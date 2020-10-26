@@ -21,7 +21,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Event;
 import org.opensmartgridplatform.domain.core.repositories.EventRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
@@ -77,12 +76,11 @@ public class TransactionalEventServiceTest {
     }
 
     private Slice<Event> mockSliceOfEvents(final int numberOfEvents) {
-        final Device device = new Device("test");
         final Date oneMonthAgo = DateTime.now().minusMonths(1).toDate();
 
         final List<Event> events = new ArrayList<>();
         for (int i = 0; i < numberOfEvents; i++) {
-            final Event event = new Event(device, oneMonthAgo, EventType.DIAG_EVENTS_GENERAL, "description", 1);
+            final Event event = new Event("test", oneMonthAgo, EventType.DIAG_EVENTS_GENERAL, "description", 1);
             events.add(event);
         }
 

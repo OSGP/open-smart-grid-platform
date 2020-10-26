@@ -23,12 +23,18 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
 
-    List<Event> findByDevice(Device device);
+    List<Event> findByDeviceIdentification(String deviceIdentification);
 
-    @Query("SELECT e.device.id as device,max(e.dateTime) as dateTime FROM Event e WHERE e.device IN (?1) GROUP BY e.device.id")
+    // @Query("SELECT e.device.id as device, max(e.dateTime) as dateTime FROM
+    // Event e WHERE e.device IN (?1) GROUP BY e.device.id")
+    // List<Object> findLatestEventForEveryDevice(Collection<Device> devices);
+
+    @Query("SELECT d.id as device, MAX(e.dateTime) as dateTime "
+            + "FROM Event e JOIN Device d ON e.deviceIdentification = d.deviceIdentification "
+            + "WHERE d IN (?1) GROUP BY d.id")
     List<Object> findLatestEventForEveryDevice(Collection<Device> devices);
 
-    List<Event> findTop2ByDeviceOrderByDateTimeDesc(Device device);
+    List<Event> findTop2ByDeviceIdentificationOrderByDateTimeDesc(String deviceIdentification);
 
     List<Event> findByDateTimeBefore(Date date);
 

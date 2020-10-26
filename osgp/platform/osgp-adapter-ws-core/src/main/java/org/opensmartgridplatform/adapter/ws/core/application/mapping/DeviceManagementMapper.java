@@ -54,7 +54,6 @@ public class DeviceManagementMapper extends ConfigurableMapper {
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(org.opensmartgridplatform.domain.core.entities.Event.class,
                         org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Event.class)
-                .field("device.deviceIdentification", "deviceIdentification")
                 .field("dateTime", "timestamp")
                 .byDefault()
                 .toClassMap());
