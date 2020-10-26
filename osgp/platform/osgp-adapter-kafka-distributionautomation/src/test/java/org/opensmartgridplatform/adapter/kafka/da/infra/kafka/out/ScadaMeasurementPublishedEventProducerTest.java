@@ -11,7 +11,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.kafka.test.assertj.KafkaConditions.value;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.kafka.da.application.config.ScadaMeasurementKafkaProducerConfig;
 import org.opensmartgridplatform.adapter.kafka.da.application.mapping.DistributionAutomationMapper;
-import org.opensmartgridplatform.adapter.kafka.da.serialization.ScadaMeasurementPublishedEventDeserializer;
+import org.opensmartgridplatform.adapter.kafka.da.serialization.MessageDeserializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.ConsumerFactory;
@@ -43,6 +42,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import com.alliander.data.scadameasurementpublishedevent.Analog;
 import com.alliander.data.scadameasurementpublishedevent.BaseVoltage;
 import com.alliander.data.scadameasurementpublishedevent.ConductingEquipment;
+import com.alliander.data.scadameasurementpublishedevent.Message;
 import com.alliander.data.scadameasurementpublishedevent.Name;
 import com.alliander.data.scadameasurementpublishedevent.ScadaMeasurementPublishedEvent;
 
@@ -65,16 +65,14 @@ class ScadaMeasurementPublishedEventProducerTest {
     private DistributionAutomationMapper mapper;
 
     @Autowired
-    private KafkaTemplate<String, ScadaMeasurementPublishedEvent> template;
+    private KafkaTemplate<String, Message> template;
 
     private ScadaMeasurementPublishedEventProducer producer;
-    private ScadaMeasurementPublishedEvent message;
 
     @BeforeEach
     @SuppressWarnings("unchecked")
     public void setup() {
-        this.message = this.createMessage();
-        when(this.mapper.map(anyString(), any(Class.class))).thenReturn(this.message);
+        when(this.mapper.map(anyString(), any(Class.class))).thenReturn(this.createEvent());
         this.producer = new ScadaMeasurementPublishedEventProducer(this.template, this.mapper);
     }
 
@@ -82,30 +80,32 @@ class ScadaMeasurementPublishedEventProducerTest {
     void sendTest() {
 
         // send a message to the kafka bus
-        this.producer.send("TST-01; 220.1; 220.2; 220.3; 5.1; 5.2; 5.3; 7.1; 7.2; 7.3;");
+        this.producer.send("since we mock DistributionAutomationMapper, it doesn't matter what this string is");
 
         // consume the message with embeddedKafka
         final Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "true", this.embeddedKafka);
         consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        final ConsumerFactory<String, ScadaMeasurementPublishedEvent> consumerFactory = new DefaultKafkaConsumerFactory<>(
-                consumerProps, new StringDeserializer(), new ScadaMeasurementPublishedEventDeserializer());
-        final Consumer<String, ScadaMeasurementPublishedEvent> consumer = consumerFactory.createConsumer();
+        final ConsumerFactory<String, Message> consumerFactory = new DefaultKafkaConsumerFactory<>(consumerProps,
+                new StringDeserializer(), new MessageDeserializer());
+        final Consumer<String, Message> consumer = consumerFactory.createConsumer();
         this.embeddedKafka.consumeFromAnEmbeddedTopic(consumer, this.topic);
-        final ConsumerRecord<String, ScadaMeasurementPublishedEvent> received = KafkaTestUtils.getSingleRecord(consumer,
-                this.topic);
+        final ConsumerRecord<String, Message> received = KafkaTestUtils.getSingleRecord(consumer, this.topic);
 
         // check the consumed message
-        assertThat(received).has(value(this.message));
+        final Message actualMessage = received.value();
+        assertThat(actualMessage.getMessageId()).isNotNull();
+        assertThat(actualMessage.getProducerId().toString()).isEqualTo("GXF");
     }
 
-    private ScadaMeasurementPublishedEvent createMessage() {
+    private ScadaMeasurementPublishedEvent createEvent() {
         final long createdDateTime = System.currentTimeMillis();
         final String description = "description";
         final String mRid = "mRid";
         final List<Analog> measurements = new ArrayList<>();
         final ConductingEquipment powerSystemResource = new ConductingEquipment(new BaseVoltage(description, null),
                 new ArrayList<Name>());
-        return new ScadaMeasurementPublishedEvent(measurements, powerSystemResource, createdDateTime, description,
-                mRid);
+        final ScadaMeasurementPublishedEvent event = new ScadaMeasurementPublishedEvent(measurements,
+                powerSystemResource, createdDateTime, description, mRid);
+        return event;
     }
 }
