@@ -15,9 +15,9 @@ Feature: BasicOsgpFunctions PublicLighting Authorizing Device Functions
 
     Examples: 
       | DeviceFunction           | DeviceFunctionGroup | Allowed |
-      | SET_LIGHT                | OWNER               | false    |
-      | SET_LIGHT                | INSTALLATION        | true   |
-      | SET_LIGHT                | AD_HOC              | false    |
+      | SET_LIGHT                | OWNER               | true    |
+      | SET_LIGHT                | INSTALLATION        | false   |
+      | SET_LIGHT                | AD_HOC              | true    |
       | SET_LIGHT                | MANAGEMENT          | false   |
       | SET_LIGHT                | FIRMWARE            | false   |
       | SET_LIGHT                | SCHEDULING          | false   |
