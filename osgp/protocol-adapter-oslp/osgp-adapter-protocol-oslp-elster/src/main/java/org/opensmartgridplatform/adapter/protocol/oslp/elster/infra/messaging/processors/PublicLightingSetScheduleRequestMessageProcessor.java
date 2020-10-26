@@ -24,6 +24,7 @@ import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.responses.G
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.PendingSetScheduleRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageProcessor;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.OslpEnvelopeProcessor;
+import org.opensmartgridplatform.dto.valueobjects.ConfigurationDto;
 import org.opensmartgridplatform.dto.valueobjects.RelayTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.ScheduleDto;
 import org.opensmartgridplatform.dto.valueobjects.ScheduleMessageDataContainerDto;
@@ -92,8 +93,7 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
             }
 
             ScheduleMessageDataContainerDto.Builder builder = new ScheduleMessageDataContainerDto.Builder(schedule);
-            if ((schedule.getAstronomicalSunriseOffset() != null && schedule.getAstronomicalSunriseOffset() != 0) ||
-                    (schedule.getAstronomicalSunsetOffset() != null && schedule.getAstronomicalSunsetOffset() != 0)) {
+            if (schedule.getAstronomicalSunriseOffset() != null || schedule.getAstronomicalSunsetOffset() != null) {
                 LOGGER.info("Set a schedule for a device with astronomical offsets");
                 builder = builder.withScheduleMessageType(ScheduleMessageTypeDto.RETRIEVE_CONFIGURATION);
             }
@@ -203,16 +203,36 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
                 ScheduleMessageTypeDto.SET_ASTRONOMICAL_OFFSETS, deviceRequest.getDomain(),
                 deviceRequest.getDomainVersion());
 
+        final ScheduleMessageTypeDto nextRequest = this.determineNextRequest(deviceRequest, deviceResponse);
+        LOGGER.info("Request after getConfiguration: {}", nextRequest);
+
         final ScheduleMessageDataContainerDto dataContainer = new ScheduleMessageDataContainerDto.Builder(
                 deviceRequest.getScheduleMessageDataContainer().getSchedule())
                         .withConfiguration(deviceResponse.getConfiguration())
-                        .withScheduleMessageType(ScheduleMessageTypeDto.SET_ASTRONOMICAL_OFFSETS)
+                        .withScheduleMessageType(nextRequest)
                         .build();
 
         final SetScheduleDeviceRequest newDeviceRequest = new SetScheduleDeviceRequest(
                 createDeviceRequestBuilder(deviceRequest), dataContainer, RelayTypeDto.LIGHT);
 
         this.deviceService.setSchedule(newDeviceRequest);
+    }
+
+    private ScheduleMessageTypeDto determineNextRequest(final SetScheduleDeviceRequest deviceRequest, final GetConfigurationDeviceResponse deviceResponse) {
+        final int requestedSunriseOffset = deviceRequest.getScheduleMessageDataContainer().getSchedule().getAstronomicalSunriseOffset();
+        final int requestedSunsetOffset = deviceRequest.getScheduleMessageDataContainer().getSchedule().getAstronomicalSunsetOffset();
+        final ConfigurationDto configurationInDevice = deviceResponse.getConfiguration();
+
+        LOGGER.info("Requested astroGateSunRiseOffset {},  astroGateSunRiseOffset in device {}, Requested astroGateSunSetOffset {},  astroGateSunSetOffset in device {}, ",
+                requestedSunriseOffset,configurationInDevice.getAstroGateSunRiseOffset(),
+                requestedSunsetOffset, configurationInDevice.getAstroGateSunSetOffset());
+
+        if (requestedSunriseOffset != configurationInDevice.getAstroGateSunRiseOffset() ||
+                requestedSunsetOffset != configurationInDevice.getAstroGateSunSetOffset()) {
+            return ScheduleMessageTypeDto.SET_ASTRONOMICAL_OFFSETS;
+        }
+
+        return ScheduleMessageTypeDto.SET_SCHEDULE;
     }
 
     private void handleSetScheduleAstronomicalOffsetsResponse(final SetScheduleDeviceRequest deviceRequest) {
