@@ -57,6 +57,7 @@
       <xsd:enumeration value="SMART_METER_E"/>
       <xsd:enumeration value="SMART_METER_G"/>
       <xsd:enumeration value="SMART_METER_W"/>
+      <xsd:enumeration value="UNKNOWN"/>
     </xsd:restriction>
   </xsd:simpleType>
 
