@@ -87,9 +87,9 @@ CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} -r ${USER}@${SERVER}:/tmp/${
 echo "  [${CMD}]"
 ${CMD}
 
-echo "- Clean logging for next tests on ${SERVER} ..."
-CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"sudo rm -rf /var/log/tomcat/* && sudo rm -rf /var/log/osgp/logs/*\"\""
-echo "  [${CMD}]"
-${CMD}
+# echo "- Clean logging for next tests on ${SERVER} ..."
+#CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"sudo rm -rf /var/log/tomcat/* && sudo rm -rf /var/log/osgp/logs/*\"\""
+#echo "  [${CMD}]"
+#${CMD}
 
 echo "Done."
