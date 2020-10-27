@@ -78,7 +78,6 @@ public class MqttDeviceSteps {
     @Then("a message is published to Kafka")
     public void aMessageIsPublishedToKafka(final Map<String, String> parameters) {
         final String description = getString(parameters, PlatformDistributionAutomationKeys.DESCRIPTION);
-        final String kind = getString(parameters, PlatformDistributionAutomationKeys.KIND);
         final ConductingEquipment powerSystemResource = new ConductingEquipment(
                 new BaseVoltage(new Utf8(description), null), new ArrayList<Name>());
 

@@ -16,12 +16,11 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 
-import com.alliander.data.scadameasurementpublishedevent.ScadaMeasurementPublishedEvent;
+import com.alliander.data.scadameasurementpublishedevent.Message;
 
 @Configuration
 @EnableKafka
-public class KafkaPeakShavingConsumerConfig
-        extends AbstractKafkaConsumerConfig<String, ScadaMeasurementPublishedEvent> {
+public class KafkaPeakShavingConsumerConfig extends AbstractKafkaConsumerConfig<String, Message> {
 
     public KafkaPeakShavingConsumerConfig(final Environment environment,
             @Value("${peakshaving.kafka.common.properties.prefix}") final String propertiesPrefix,
@@ -34,13 +33,13 @@ public class KafkaPeakShavingConsumerConfig
 
     @Bean("peakShavingConsumerFactory")
     @Override
-    public ConsumerFactory<String, ScadaMeasurementPublishedEvent> consumerFactory() {
+    public ConsumerFactory<String, Message> consumerFactory() {
         return this.getConsumerFactory();
     }
 
     @Bean("peakShavingKafkaListenerContainerFactory")
     @Override
-    public ConcurrentKafkaListenerContainerFactory<String, ScadaMeasurementPublishedEvent> kafkaListenerContainerFactory() {
+    public ConcurrentKafkaListenerContainerFactory<String, Message> kafkaListenerContainerFactory() {
         return this.getKafkaListenerContainerFactory();
     }
 
