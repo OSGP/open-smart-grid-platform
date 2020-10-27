@@ -59,7 +59,7 @@ public class Ssld extends Device {
 
     @OneToMany(mappedBy = "device", targetEntity = Ean.class, cascade = CascadeType.ALL, orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.FALSE)
-    private List<Ean> eans = new ArrayList<>();
+    private final List<Ean> eans = new ArrayList<>();
 
     @LazyCollection(LazyCollectionOption.FALSE)
     @ElementCollection()
@@ -97,7 +97,6 @@ public class Ssld extends Device {
         super(deviceIdentification, alias, containerAddress, gpsCoordinates, cdmaSettings);
     }
 
-    @SuppressWarnings("squid:S2159")
     @Override
     public boolean equals(final Object o) {
         /*
