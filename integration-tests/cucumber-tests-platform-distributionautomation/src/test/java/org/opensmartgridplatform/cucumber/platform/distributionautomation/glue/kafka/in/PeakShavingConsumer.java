@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+import com.alliander.data.scadameasurementpublishedevent.Message;
 import com.alliander.data.scadameasurementpublishedevent.ScadaMeasurementPublishedEvent;
 
 @Component
@@ -26,10 +27,10 @@ public class PeakShavingConsumer {
     @Value("${peakshaving.kafka.consumer.wait.fail.duration:90000}")
     private long waitFailMillis;
 
-    private ConsumerRecord<String, ScadaMeasurementPublishedEvent> consumerRecord;
+    private ConsumerRecord<String, Message> consumerRecord;
 
     @KafkaListener(containerFactory = "peakShavingKafkaListenerContainerFactory", topics = "${peakshaving.kafka.topic}")
-    public void listen(final ConsumerRecord<String, ScadaMeasurementPublishedEvent> consumerRecord) {
+    public void listen(final ConsumerRecord<String, Message> consumerRecord) {
         LOGGER.info("received consumerRecord");
         this.consumerRecord = consumerRecord;
     }
@@ -43,11 +44,14 @@ public class PeakShavingConsumer {
             remaining = this.waitFailMillis - elapsed;
         }
         assertThat(this.consumerRecord).isNotNull();
-        final ScadaMeasurementPublishedEvent message = this.consumerRecord.value();
-        assertThat(message).isEqualToComparingOnlyGivenFields(expectedMessage, "description");
-        assertThat(message.getPowerSystemResource().getBaseVoltage()).isEqualToComparingOnlyGivenFields(
+        final Message message = this.consumerRecord.value();
+        assertThat(message.getMessageId()).isNotNull();
+        assertThat(message.getProducerId().toString()).isEqualTo("GXF");
+        final ScadaMeasurementPublishedEvent event = message.getPayload();
+        assertThat(event).isEqualToComparingOnlyGivenFields(expectedMessage, "description");
+        assertThat(event.getPowerSystemResource().getBaseVoltage()).isEqualToComparingOnlyGivenFields(
                 expectedMessage.getPowerSystemResource().getBaseVoltage(), "description");
-        assertThat(message.getMeasurements()).usingElementComparatorIgnoringFields("mRID")
+        assertThat(event.getMeasurements()).usingElementComparatorIgnoringFields("mRID")
                 .isEqualTo(expectedMessage.getMeasurements());
 
     }
