@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.ws.core.application.services;
 
-import static org.opensmartgridplatform.shared.utils.SearchUtil.replaceWildcards;
+import static org.opensmartgridplatform.shared.utils.SearchUtil.replaceAndEscapeWildcards;
 import static org.springframework.data.jpa.domain.Specification.where;
 
 import java.util.ArrayList;
@@ -219,8 +219,8 @@ public class DeviceManagementService {
         }
 
         specification = specification.and(this.eventSpecifications.hasEventTypes(criteria.getEventTypes()));
-        specification = this.handleDescription(SearchUtil.replaceWildcards(criteria.getDescription()),
-                SearchUtil.replaceWildcards(criteria.getDescriptionStartsWith()), specification);
+        specification = this.handleDescription(SearchUtil.replaceAndEscapeWildcards(criteria.getDescription()),
+                SearchUtil.replaceAndEscapeWildcards(criteria.getDescriptionStartsWith()), specification);
 
         LOGGER.debug("request offset     : {}", request.getOffset());
         LOGGER.debug("        pageNumber : {}", request.getPageNumber());
@@ -412,7 +412,7 @@ public class DeviceManagementService {
         if (!StringUtils.isEmpty(deviceFilter.getFirmwareModuleVersion())) {
             specification = specification
                     .and(this.deviceSpecifications.forFirmwareModuleVersion(deviceFilter.getFirmwareModuleType(),
-                            replaceWildcards(deviceFilter.getFirmwareModuleVersion()).toUpperCase()));
+                            replaceAndEscapeWildcards(deviceFilter.getFirmwareModuleVersion()).toUpperCase()));
         }
         return specification;
     }
@@ -431,7 +431,7 @@ public class DeviceManagementService {
             Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getModel())) {
             specification = specification.and(
-                    this.deviceSpecifications.forDeviceModel(replaceWildcards(deviceFilter.getModel()).toUpperCase()));
+                    this.deviceSpecifications.forDeviceModel(replaceAndEscapeWildcards(deviceFilter.getModel()).toUpperCase()));
         }
         return specification;
     }
@@ -440,7 +440,7 @@ public class DeviceManagementService {
             Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getDeviceType())) {
             specification = specification.and(this.deviceSpecifications
-                    .forDeviceType(replaceWildcards(deviceFilter.getDeviceType()).toUpperCase()));
+                    .forDeviceType(replaceAndEscapeWildcards(deviceFilter.getDeviceType()).toUpperCase()));
         }
         return specification;
     }
@@ -449,7 +449,7 @@ public class DeviceManagementService {
             throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getOwner())) {
             specification = specification
-                    .and(this.deviceSpecifications.forOwner(replaceWildcards(deviceFilter.getOwner()).toUpperCase()));
+                    .and(this.deviceSpecifications.forOwner(replaceAndEscapeWildcards(deviceFilter.getOwner()).toUpperCase()));
         }
         return specification;
     }
@@ -496,23 +496,23 @@ public class DeviceManagementService {
             Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getCity())) {
             specification = specification
-                    .and(this.deviceSpecifications.hasCity(replaceWildcards(deviceFilter.getCity()).toUpperCase()));
+                    .and(this.deviceSpecifications.hasCity(replaceAndEscapeWildcards(deviceFilter.getCity()).toUpperCase()));
         }
         if (!StringUtils.isEmpty(deviceFilter.getPostalCode())) {
             specification = specification.and(this.deviceSpecifications
-                    .hasPostalCode(replaceWildcards(deviceFilter.getPostalCode()).toUpperCase()));
+                    .hasPostalCode(replaceAndEscapeWildcards(deviceFilter.getPostalCode()).toUpperCase()));
         }
         if (!StringUtils.isEmpty(deviceFilter.getStreet())) {
             specification = specification
-                    .and(this.deviceSpecifications.hasStreet(replaceWildcards(deviceFilter.getStreet()).toUpperCase()));
+                    .and(this.deviceSpecifications.hasStreet(replaceAndEscapeWildcards(deviceFilter.getStreet()).toUpperCase()));
         }
         if (!StringUtils.isEmpty(deviceFilter.getNumber())) {
             specification = specification
-                    .and(this.deviceSpecifications.hasNumber(replaceWildcards(deviceFilter.getNumber()).toUpperCase()));
+                    .and(this.deviceSpecifications.hasNumber(replaceAndEscapeWildcards(deviceFilter.getNumber()).toUpperCase()));
         }
         if (!StringUtils.isEmpty(deviceFilter.getMunicipality())) {
             specification = specification.and(this.deviceSpecifications
-                    .hasMunicipality(replaceWildcards(deviceFilter.getMunicipality()).toUpperCase()));
+                    .hasMunicipality(replaceAndEscapeWildcards(deviceFilter.getMunicipality()).toUpperCase()));
         }
         return specification;
     }
@@ -521,7 +521,7 @@ public class DeviceManagementService {
             Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getAlias())) {
             specification = specification
-                    .and(this.deviceSpecifications.hasAlias(replaceWildcards(deviceFilter.getAlias()).toUpperCase()));
+                    .and(this.deviceSpecifications.hasAlias(replaceAndEscapeWildcards(deviceFilter.getAlias()).toUpperCase()));
         }
         return specification;
     }
@@ -532,7 +532,7 @@ public class DeviceManagementService {
             String searchString = deviceFilter.getDeviceIdentification();
 
             if (!deviceFilter.isExactMatch()) {
-                searchString = replaceWildcards(searchString).toUpperCase();
+                searchString = replaceAndEscapeWildcards(searchString).toUpperCase();
             }
 
             specification = specification

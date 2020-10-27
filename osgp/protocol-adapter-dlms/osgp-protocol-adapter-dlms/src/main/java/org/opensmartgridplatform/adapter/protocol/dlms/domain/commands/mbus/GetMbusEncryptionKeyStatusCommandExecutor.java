@@ -14,14 +14,14 @@ import java.util.Map;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.openmuc.jdlms.interfaceclass.InterfaceClass;
-import org.openmuc.jdlms.interfaceclass.attribute.MbusClientAttribute;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.valueobjects.EncryptionKeyStatusType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.MbusClientAttribute;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EncryptionKeyStatusTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseDto;
@@ -67,13 +67,14 @@ public class GetMbusEncryptionKeyStatusCommandExecutor
 
         final AttributeAddress getParameter = new AttributeAddress(CLASS_ID, obisCode, ATTRIBUTE_ID);
 
-        conn.getDlmsMessageListener().setDescription(
-                "GetMbusEncryptionKeyStatusByChannel, retrieve attribute: " + JdlmsObjectToStringUtil
-                        .describeAttributes(getParameter));
+        conn.getDlmsMessageListener()
+                .setDescription("GetMbusEncryptionKeyStatusByChannel, retrieve attribute: "
+                        + JdlmsObjectToStringUtil.describeAttributes(getParameter));
 
         LOGGER.info(
                 "Retrieving current M-Bus encryption key status by issuing get request for class id: {}, obis code: "
-                        + "{}, attribute id: {}", CLASS_ID, obisCode, ATTRIBUTE_ID);
+                        + "{}, attribute id: {}",
+                CLASS_ID, obisCode, ATTRIBUTE_ID);
 
         final DataObject dataObject = this.getValidatedResultData(conn, getParameter);
 

@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -69,7 +70,8 @@ public class OrganizationSteps {
         // Add all the mandatory stuff.
         entity.setDomains(new ArrayList<>());
         String domains = PlatformDefaults.DEFAULT_DOMAINS;
-        if (settings.containsKey(PlatformKeys.KEY_DOMAINS) && !settings.get(PlatformKeys.KEY_DOMAINS).isEmpty()) {
+        if (settings.containsKey(PlatformKeys.KEY_DOMAINS)
+                && StringUtils.isNotBlank(settings.get(PlatformKeys.KEY_DOMAINS))) {
             domains = settings.get(PlatformKeys.KEY_DOMAINS);
         }
         for (final String domain : domains.split(PlatformKeys.SEPARATOR_SEMICOLON)) {
