@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Calendar;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -74,21 +74,21 @@ public class OslpDeviceSteps {
 
         final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
+        final String deviceUid = getString(settings, PlatformKeys.KEY_DEVICE_UID, PlatformDefaults.DEVICE_UID);
         final String organisationIdentification = getString(settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
                 PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
 
-        final Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        calendar.add(Calendar.MINUTE, expiresInMinutes);
+        final Date expireDateTime = Date.from(ZonedDateTime.now().plusMinutes(expiresInMinutes).toInstant());
 
-        // just add a dummy DeviceRequest and a dummy ScheduleMessageDataContainerDto
-        final PendingSetScheduleRequest pendingSetScheduleRequest = PendingSetScheduleRequest
-                    .builder()
-                        .deviceIdentification(deviceIdentification)
-                        .expiredAt(calendar.getTime())
-                        .deviceRequest(new DeviceRequest(organisationIdentification, deviceIdentification, null, 4))
-                        .scheduleMessageDataContainerDto(new ScheduleMessageDataContainerDto.Builder(null).build())
-                        .build();
+        // just add a dummy DeviceRequest and a dummy
+        // ScheduleMessageDataContainerDto
+        final PendingSetScheduleRequest pendingSetScheduleRequest = PendingSetScheduleRequest.builder()
+                .deviceIdentification(deviceIdentification)
+                .deviceUid(deviceUid)
+                .expiredAt(expireDateTime)
+                .deviceRequest(new DeviceRequest(organisationIdentification, deviceIdentification, null, 4))
+                .scheduleMessageDataContainerDto(new ScheduleMessageDataContainerDto.Builder(null).build())
+                .build();
 
         this.pendingSetScheduleRequestRepository.save(pendingSetScheduleRequest);
     }

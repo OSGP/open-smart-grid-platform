@@ -18,17 +18,28 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+
 public class PendingSetScheduleRequest extends AbstractEntity {
 
-    @Column (nullable = false) @Getter
+    private static final long serialVersionUID = 1L;
+
+    @Column(nullable = false)
+    @Getter
     private String deviceIdentification;
 
-    @Column (nullable = false) @Getter
+    @Column(nullable = false)
+    @Getter
+    private String deviceUid;
+
+    @Column(nullable = false)
+    @Getter
     private Date expiredAt;
 
-    @Column (nullable = false) @Getter
+    @Column(nullable = false)
+    @Getter
     private ScheduleMessageDataContainerDto scheduleMessageDataContainerDto;
 
-    @Column (nullable = false) @Getter
+    @Column(nullable = false)
+    @Getter
     private DeviceRequest deviceRequest;
 }

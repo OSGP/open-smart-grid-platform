@@ -17,6 +17,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PendingSetScheduleRequestRepository extends JpaRepository<PendingSetScheduleRequest, Long> {
 
-    List<PendingSetScheduleRequest> findAllByDeviceIdentificationAndExpiredAtIsAfter(String deviceIdentification, Date expiredAt);
+    List<PendingSetScheduleRequest> findAllByDeviceIdentificationAndExpiredAtIsAfter(String deviceIdentification,
+            Date expiredAt);
+
+    List<PendingSetScheduleRequest> findAllByDeviceUidAndExpiredAtIsAfter(String deviceUid, Date expiredAt);
 
 }

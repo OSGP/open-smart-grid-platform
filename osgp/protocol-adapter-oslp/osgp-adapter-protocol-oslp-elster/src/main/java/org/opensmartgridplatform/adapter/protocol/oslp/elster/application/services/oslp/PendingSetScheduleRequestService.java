@@ -35,24 +35,33 @@ public class PendingSetScheduleRequestService {
     }
 
     public PendingSetScheduleRequest add(final PendingSetScheduleRequest pendingSetScheduleRequest) {
-        LOGGER.info("add PendingSetScheduleRequest for device : {}", pendingSetScheduleRequest.getDeviceIdentification());
+        LOGGER.info("add PendingSetScheduleRequest for device : {}",
+                pendingSetScheduleRequest.getDeviceIdentification());
 
         return this.pendingSetScheduleRequestRepository.save(pendingSetScheduleRequest);
     }
 
     public void remove(final PendingSetScheduleRequest pendingSetScheduleRequest) {
-        LOGGER.info("remove PendingSetScheduleRequest for device : {}", pendingSetScheduleRequest.getDeviceIdentification());
+        LOGGER.info("remove PendingSetScheduleRequest for device : {}",
+                pendingSetScheduleRequest.getDeviceIdentification());
 
         this.pendingSetScheduleRequestRepository.delete(pendingSetScheduleRequest);
     }
 
-    public List<PendingSetScheduleRequest> getAllByDeviceIdentificationNotExpired(final String deviceUid) {
+    public List<PendingSetScheduleRequest> getAllByDeviceIdentificationNotExpired(final String deviceIdentification) {
+        final Date currentDate = new Date();
+        LOGGER.info("get device by deviceIdentification {} and current time: {}", deviceIdentification, currentDate);
+
+        return this.pendingSetScheduleRequestRepository
+                .findAllByDeviceIdentificationAndExpiredAtIsAfter(deviceIdentification, currentDate);
+    }
+
+    public List<PendingSetScheduleRequest> getAllByDeviceUidNotExpired(final String deviceUid) {
         final Date currentDate = new Date();
         LOGGER.info("get device by deviceUid {} and current time: {}", deviceUid, currentDate);
 
-        return this.pendingSetScheduleRequestRepository.findAllByDeviceIdentificationAndExpiredAtIsAfter(deviceUid, currentDate);
+        return this.pendingSetScheduleRequestRepository.findAllByDeviceUidAndExpiredAtIsAfter(deviceUid, currentDate);
     }
-
 
     public List<PendingSetScheduleRequest> getAll() {
         LOGGER.info("get all PendingSetScheduleRequests");

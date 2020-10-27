@@ -86,7 +86,7 @@ public class RegisterDevice {
     public DeviceMessageStatus sendRegisterDeviceCommand(final long deviceId, final Boolean hasSchedule) {
 
         // Find device.
-        Device device = this.deviceManagementService.findDevice(deviceId);
+        final Device device = this.deviceManagementService.findDevice(deviceId);
         if (device == null) {
             // Set the DeviceMessageStatus NOT_FOUND as the Device is not found.
             return DeviceMessageStatus.NOT_FOUND;
@@ -95,17 +95,6 @@ public class RegisterDevice {
         this.errorMessage = "";
 
         try {
-            // Create new deviceUID. This is a temporary fix for devices that
-            // have been created in the past (with a 10 byte deviceUID).
-            // Alternative would be to 1) change the deviceUID in the database
-            // or 2) delete all devices and create new devices (with a 12 byte
-            // deviceUID).
-            // There seems no problem with creating a new deviceUID for every
-            // registration attempt of the device.
-            // However, NOTE: THIS BEHAVIOUR IS NOT EQUAL TO THE REAL SSLD/PSLD.
-            device.setDeviceUid(this.createRandomDeviceUid());
-            device = this.deviceManagementService.updateDevice(device);
-
             // Generate random sequence number and random device number.
             final Integer sequenceNumber = device.doGenerateRandomNumber();
             final Integer randomDevice = device.doGenerateRandomNumber();
@@ -363,6 +352,7 @@ public class RegisterDevice {
         }
     }
 
+    @Deprecated("No longer used, as device creation scripts create device UID")
     private byte[] createRandomDeviceUid() {
         // Generate random bytes for UID
         final byte[] deviceUid = new byte[OslpEnvelope.DEVICE_ID_LENGTH];

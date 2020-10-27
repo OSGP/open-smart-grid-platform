@@ -9,7 +9,6 @@ package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -24,17 +23,11 @@ import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.servic
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.oslp.OslpDeviceSettingsService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.oslp.OslpSigningService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.oslp.PendingSetScheduleRequestService;
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceRequest;
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.requests.SetScheduleDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.PendingSetScheduleRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.repositories.OslpDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.core.db.api.application.services.DeviceDataService;
 import org.opensmartgridplatform.dto.valueobjects.GpsCoordinatesDto;
-import org.opensmartgridplatform.dto.valueobjects.RelayTypeDto;
-import org.opensmartgridplatform.dto.valueobjects.ScheduleMessageDataContainerDto;
-import org.opensmartgridplatform.dto.valueobjects.ScheduleMessageTypeDto;
 import org.opensmartgridplatform.oslp.Oslp;
 import org.opensmartgridplatform.oslp.Oslp.EventNotificationRequest;
 import org.opensmartgridplatform.oslp.Oslp.LocationInfo;
@@ -43,7 +36,6 @@ import org.opensmartgridplatform.oslp.OslpEnvelope;
 import org.opensmartgridplatform.oslp.OslpUtils;
 import org.opensmartgridplatform.oslp.SignedOslpEnvelopeDto;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
-import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -256,8 +248,8 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
         return Oslp.Message.newBuilder().setRegisterDeviceResponse(responseBuilder.build()).build();
     }
 
-    private InetAddress getInetAddress(final Oslp.RegisterDeviceRequest registerRequest, final String deviceIdentification)
-            throws UnknownHostException {
+    private InetAddress getInetAddress(final Oslp.RegisterDeviceRequest registerRequest,
+            final String deviceIdentification) throws UnknownHostException {
         final InetAddress inetAddress;
 
         // In case the optional properties 'testDeviceId' and 'testDeviceIp' are
@@ -301,59 +293,10 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
     }
 
     private void handleSetSchedule(final byte[] deviceUid) throws TechnicalException {
-        final String deviceUidBase64encoded = Base64.encodeBase64String(deviceUid);
-        final OslpDevice oslpDevice = this.oslpDeviceRepository.findByDeviceUid(deviceUidBase64encoded);
-        if (oslpDevice == null) {
-            throw new TechnicalException(String.format("Oslp device %s not found", deviceUidBase64encoded));
-        }
 
-        LOGGER.info("Device: uid {}, identification {}", deviceUidBase64encoded, oslpDevice.getDeviceIdentification());
-
-        final List<PendingSetScheduleRequest> pendingSetScheduleRequestList = this.pendingSetScheduleRequestService.getAllByDeviceIdentificationNotExpired(oslpDevice.getDeviceIdentification());
-        if (pendingSetScheduleRequestList.isEmpty()) {
-            // Resume the default flow
-            // This confirm register device request was not triggered by a set schedule with astronomical offsets
-            return;
-        }
-
-        if (pendingSetScheduleRequestList.size() > 1) {
-            throw new TechnicalException(String.format("Currently there are %d pending set schedule requests for device %s. Only one is allowed.", pendingSetScheduleRequestList.size(), deviceUidBase64encoded));
-        }
-
-        final PendingSetScheduleRequest pendingSetScheduleRequest = pendingSetScheduleRequestList.get(0);
-
-        final ScheduleMessageDataContainerDto dto = pendingSetScheduleRequest.getScheduleMessageDataContainerDto();
-        ScheduleMessageDataContainerDto.Builder builder = new ScheduleMessageDataContainerDto.Builder(dto.getSchedule());
-        builder = builder.withScheduleMessageType(ScheduleMessageTypeDto.SET_SCHEDULE);
-        final ScheduleMessageDataContainerDto scheduleMessageDataContainer = builder.build();
-
-        final DeviceRequest deviceRequest = pendingSetScheduleRequest.getDeviceRequest();
-        final MessageMetadata messageMetadata = this.getMessageMetadataFromDeviceRequest(deviceRequest);
-
-        final SetScheduleDeviceRequest newDeviceRequest = new SetScheduleDeviceRequest(
-                DeviceRequest.newBuilder().messageMetaData(messageMetadata), scheduleMessageDataContainer,
-                RelayTypeDto.LIGHT);
-
-        this.deviceService.setSchedule(newDeviceRequest);
-        this.pendingSetScheduleRequestService.remove(pendingSetScheduleRequest);
+        final String deviceUidBase64Encoded = Base64.encodeBase64String(deviceUid);
+        this.deviceManagementService.handleSetSchedule(deviceUidBase64Encoded);
     }
-
-
-    private MessageMetadata getMessageMetadataFromDeviceRequest(final DeviceRequest deviceRequest) {
-        final MessageMetadata.Builder messageMetadataBuilder = MessageMetadata.newMessageMetadataBuilder()
-                .withCorrelationUid(deviceRequest.getCorrelationUid())
-                .withOrganisationIdentification(deviceRequest.getOrganisationIdentification())
-                .withDeviceIdentification(deviceRequest.getDeviceIdentification())
-                .withMessageType(deviceRequest.getMessageType())
-                .withDomain(deviceRequest.getDomain())
-                .withDomainVersion(deviceRequest.getDomainVersion())
-                .withIpAddress(deviceRequest.getIpAddress())
-                .withMessagePriority(deviceRequest.getMessagePriority())
-                .withScheduled(deviceRequest.isScheduled())
-                .withRetryCount(deviceRequest.getRetryCount());
-        return messageMetadataBuilder.build();
-    }
-
 
     private Oslp.Message handleEventNotificationRequest(final byte[] deviceUid, final byte[] sequenceNumber,
             final EventNotificationRequest request) throws ProtocolAdapterException {

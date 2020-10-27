@@ -8,19 +8,21 @@
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.processors;
 
 import java.io.IOException;
-import java.util.Calendar;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.oslp.OslpDeviceSettingsService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.oslp.PendingSetScheduleRequestService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponseHandler;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.requests.SetScheduleDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.responses.GetConfigurationDeviceResponse;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.PendingSetScheduleRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageProcessor;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.OslpEnvelopeProcessor;
@@ -57,6 +59,9 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
     private static final String LOG_MESSAGE_CALL_DEVICE_SERVICE = "Calling DeviceService function: {} of type {} for domain: {} {}";
 
     @Autowired
+    private OslpDeviceSettingsService oslpDeviceSettingsService;
+
+    @Autowired
     private PendingSetScheduleRequestService pendingSetScheduleRequestService;
 
     @Autowired
@@ -89,7 +94,9 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
                 throw new FunctionalException(
                         FunctionalExceptionType.SET_SCHEDULE_WITH_ASTRONOMICAL_OFFSETS_IN_PROGRESS,
                         ComponentType.PROTOCOL_OSLP,
-                        new Throwable(String.format("A set schedule with astronomical offsets is already in progress for device %s", messageMetadata.getDeviceIdentification())));
+                        new Throwable(String.format(
+                                "A set schedule with astronomical offsets is already in progress for device %s",
+                                messageMetadata.getDeviceIdentification())));
             }
 
             ScheduleMessageDataContainerDto.Builder builder = new ScheduleMessageDataContainerDto.Builder(schedule);
@@ -97,7 +104,6 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
                 LOGGER.info("Set a schedule for a device with astronomical offsets");
                 builder = builder.withScheduleMessageType(ScheduleMessageTypeDto.RETRIEVE_CONFIGURATION);
             }
-
 
             final ScheduleMessageDataContainerDto scheduleMessageDataContainer = builder.build();
 
@@ -218,17 +224,23 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
         this.deviceService.setSchedule(newDeviceRequest);
     }
 
-    private ScheduleMessageTypeDto determineNextRequest(final SetScheduleDeviceRequest deviceRequest, final GetConfigurationDeviceResponse deviceResponse) {
-        final int requestedSunriseOffset = deviceRequest.getScheduleMessageDataContainer().getSchedule().getAstronomicalSunriseOffset();
-        final int requestedSunsetOffset = deviceRequest.getScheduleMessageDataContainer().getSchedule().getAstronomicalSunsetOffset();
+    private ScheduleMessageTypeDto determineNextRequest(final SetScheduleDeviceRequest deviceRequest,
+            final GetConfigurationDeviceResponse deviceResponse) {
+        final int requestedSunriseOffset = deviceRequest.getScheduleMessageDataContainer()
+                .getSchedule()
+                .getAstronomicalSunriseOffset();
+        final int requestedSunsetOffset = deviceRequest.getScheduleMessageDataContainer()
+                .getSchedule()
+                .getAstronomicalSunsetOffset();
         final ConfigurationDto configurationInDevice = deviceResponse.getConfiguration();
 
-        LOGGER.info("Requested astroGateSunRiseOffset {},  astroGateSunRiseOffset in device {}, Requested astroGateSunSetOffset {},  astroGateSunSetOffset in device {}, ",
-                requestedSunriseOffset,configurationInDevice.getAstroGateSunRiseOffset(),
-                requestedSunsetOffset, configurationInDevice.getAstroGateSunSetOffset());
+        LOGGER.info(
+                "Requested astroGateSunRiseOffset {},  astroGateSunRiseOffset in device {}, Requested astroGateSunSetOffset {},  astroGateSunSetOffset in device {}, ",
+                requestedSunriseOffset, configurationInDevice.getAstroGateSunRiseOffset(), requestedSunsetOffset,
+                configurationInDevice.getAstroGateSunSetOffset());
 
-        if (requestedSunriseOffset != configurationInDevice.getAstroGateSunRiseOffset() ||
-                requestedSunsetOffset != configurationInDevice.getAstroGateSunSetOffset()) {
+        if (requestedSunriseOffset != configurationInDevice.getAstroGateSunRiseOffset()
+                || requestedSunsetOffset != configurationInDevice.getAstroGateSunSetOffset()) {
             return ScheduleMessageTypeDto.SET_ASTRONOMICAL_OFFSETS;
         }
 
@@ -236,7 +248,8 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
     }
 
     private void handleSetScheduleAstronomicalOffsetsResponse(final SetScheduleDeviceRequest deviceRequest) {
-        // Configuration / Astronomical offsets are set , so now continue with rebooting the device
+        // Configuration / Astronomical offsets are set , so now continue with
+        // rebooting the device
 
         LOGGER.info(LOG_MESSAGE_CALL_DEVICE_SERVICE, deviceRequest.getMessageType(),
                 ScheduleMessageTypeDto.SET_ASTRONOMICAL_OFFSETS, deviceRequest.getDomain(),
@@ -244,8 +257,8 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
 
         final ScheduleMessageDataContainerDto dataContainer = new ScheduleMessageDataContainerDto.Builder(
                 deviceRequest.getScheduleMessageDataContainer().getSchedule())
-                .withScheduleMessageType(ScheduleMessageTypeDto.SET_REBOOT)
-                .build();
+                        .withScheduleMessageType(ScheduleMessageTypeDto.SET_REBOOT)
+                        .build();
 
         final SetScheduleDeviceRequest newDeviceRequest = new SetScheduleDeviceRequest(
                 createDeviceRequestBuilder(deviceRequest), dataContainer, RelayTypeDto.LIGHT);
@@ -256,7 +269,8 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
     private void handleSetScheduleSetRebootResponse(final SetScheduleDeviceRequest deviceRequest) {
 
         // The device will reboot now.
-        // At this point we will need to save the current state to the pending_set_schedule_request table
+        // At this point we will need to save the current state to the
+        // pending_set_schedule_request table
 
         LOGGER.info(LOG_MESSAGE_CALL_DEVICE_SERVICE, deviceRequest.getMessageType(),
                 ScheduleMessageTypeDto.SET_SCHEDULE, deviceRequest.getDomain(), deviceRequest.getDomainVersion());
@@ -266,18 +280,23 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
                         .withScheduleMessageType(ScheduleMessageTypeDto.SET_SCHEDULE)
                         .build();
 
-        final Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        calendar.add(Calendar.MINUTE, this.pendingSetScheduleRequestExpiresInMinutes);
+        final String deviceIdentification = deviceRequest.getDeviceIdentification();
+        final OslpDevice oslpDevice = this.oslpDeviceSettingsService
+                .getDeviceByDeviceIdentification(deviceIdentification);
+        final String deviceUid = oslpDevice.getDeviceUid();
+
+        final Date expireDateTime = Date
+                .from(ZonedDateTime.now().plusMinutes(this.pendingSetScheduleRequestExpiresInMinutes).toInstant());
+
         final PendingSetScheduleRequest pendingSetScheduleRequest = PendingSetScheduleRequest.builder()
-                .deviceIdentification(deviceRequest.getDeviceIdentification())
+                .deviceIdentification(deviceIdentification)
+                .deviceUid(deviceUid)
                 .scheduleMessageDataContainerDto(dataContainer)
                 .deviceRequest(deviceRequest)
-                .expiredAt(calendar.getTime())
+                .expiredAt(expireDateTime)
                 .build();
 
         this.pendingSetScheduleRequestService.add(pendingSetScheduleRequest);
-
     }
 
     private static DeviceRequest.Builder createDeviceRequestBuilder(final DeviceRequest deviceRequest) {
