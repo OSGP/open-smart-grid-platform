@@ -15,11 +15,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.kafka.core.KafkaTemplate;
 
-import com.alliander.data.scadameasurementpublishedevent.ScadaMeasurementPublishedEvent;
+import com.alliander.data.scadameasurementpublishedevent.Message;
 
 @Configuration
-public class ScadaMeasurementKafkaProducerConfig
-        extends AbstractKafkaProducerConfig<String, ScadaMeasurementPublishedEvent> {
+public class ScadaMeasurementKafkaProducerConfig extends AbstractKafkaProducerConfig<String, Message> {
 
     @Autowired
     public ScadaMeasurementKafkaProducerConfig(final Environment environment,
@@ -30,7 +29,7 @@ public class ScadaMeasurementKafkaProducerConfig
 
     @Bean("distributionAutomationKafkaTemplate")
     @Override
-    public KafkaTemplate<String, ScadaMeasurementPublishedEvent> kafkaTemplate() {
+    public KafkaTemplate<String, Message> kafkaTemplate() {
         return this.getKafkaTemplate();
     }
 }

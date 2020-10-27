@@ -7,6 +7,9 @@
  */
 package org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out;
 
+import java.nio.ByteBuffer;
+import java.util.UUID;
+
 import org.opensmartgridplatform.adapter.kafka.da.application.mapping.DistributionAutomationMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,20 +18,22 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import com.alliander.data.scadameasurementpublishedevent.Message;
 import com.alliander.data.scadameasurementpublishedevent.ScadaMeasurementPublishedEvent;
+import com.alliander.messaging.MessageId;
 
 @Service
 public class ScadaMeasurementPublishedEventProducer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScadaMeasurementPublishedEventProducer.class);
 
-    private final KafkaTemplate<String, ScadaMeasurementPublishedEvent> kafkaTemplate;
+    private final KafkaTemplate<String, Message> kafkaTemplate;
 
     private final DistributionAutomationMapper mapper;
 
     @Autowired
     public ScadaMeasurementPublishedEventProducer(
-            @Qualifier("distributionAutomationKafkaTemplate") final KafkaTemplate<String, ScadaMeasurementPublishedEvent> kafkaTemplate,
+            @Qualifier("distributionAutomationKafkaTemplate") final KafkaTemplate<String, Message> kafkaTemplate,
             final DistributionAutomationMapper mapper) {
         this.kafkaTemplate = kafkaTemplate;
         this.mapper = mapper;
@@ -40,16 +45,25 @@ public class ScadaMeasurementPublishedEventProducer {
 
         final ScadaMeasurementPublishedEvent event = this.mapper.map(measurement, ScadaMeasurementPublishedEvent.class);
 
-        LOGGER.info("Trying to send ScadaMeasurementPublishedEventProducer {}", event);
+        LOGGER.debug("Trying to send ScadaMeasurementPublishedEventProducer {}", event);
 
         if (event != null) {
+            final MessageId messageId = new MessageId(getBytesFromUUID(UUID.randomUUID()));
+            final Message message = new Message(messageId, System.currentTimeMillis(), "GXF", null, event);
             /*
              * No need for callback functionality now; by default, the template
              * is configured with a LoggingProducerListener, which logs errors
              * and does nothing when the send is successful.
              */
-            this.kafkaTemplate.sendDefault(event);
+            this.kafkaTemplate.sendDefault(message);
         }
     }
 
+    private static byte[] getBytesFromUUID(final UUID uuid) {
+        final ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
+        bb.putLong(uuid.getMostSignificantBits());
+        bb.putLong(uuid.getLeastSignificantBits());
+
+        return bb.array();
+    }
 }
