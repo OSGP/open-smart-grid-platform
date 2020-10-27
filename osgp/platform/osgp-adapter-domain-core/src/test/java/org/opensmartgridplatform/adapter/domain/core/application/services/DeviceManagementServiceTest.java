@@ -1,3 +1,12 @@
+/**
+ * Copyright 2020 Alliander N.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
+
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,21 +40,14 @@ import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
 import org.opensmartgridplatform.domain.core.valueobjects.Certification;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.EventNotificationType;
+import org.opensmartgridplatform.dto.valueobjects.CertificationDto;
 import org.opensmartgridplatform.dto.valueobjects.EventNotificationMessageDataContainerDto;
+import org.opensmartgridplatform.dto.valueobjects.EventNotificationTypeDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-
-/**
- * Copyright 2020 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
 
 @ExtendWith(MockitoExtension.class)
 public class DeviceManagementServiceTest {
@@ -55,6 +57,7 @@ public class DeviceManagementServiceTest {
     private static final String TEST_IP = "testIp";
     private static final String TEST_UID = "testUid";
     private static final String TEST_MESSAGE_TYPE = "testMessageType";
+    private static final int TEST_PRIORITY = 1;
 
     @Mock
     private TransactionalDeviceService transactionalDeviceService;
@@ -109,25 +112,25 @@ public class DeviceManagementServiceTest {
         when(this.deviceDomainService.searchActiveDevice(TEST_DEVICE, ComponentType.DOMAIN_CORE)).thenReturn(device);
 
         this.deviceManagementService.setEventNotifications(TEST_ORGANISATION, TEST_DEVICE, TEST_UID,
-                eventNotifications, TEST_MESSAGE_TYPE, 1);
+                eventNotifications, TEST_MESSAGE_TYPE, TEST_PRIORITY);
 
         verify(this.osgpCoreRequestManager).send(this.argumentRequestMessage.capture(),
                 this.argumentMessageType.capture(), this.argumentPriority.capture(), this.argumentIpAddress.capture());
 
         final RequestMessage expectedRequestMessage = this.createNewRequestMessage(
                 new EventNotificationMessageDataContainerDto(this.domainCoreMapper.mapAsList(eventNotifications,
-                        org.opensmartgridplatform.dto.valueobjects.EventNotificationTypeDto.class)));
+                        EventNotificationTypeDto.class)));
 
         assertThat(this.argumentRequestMessage.getValue()).usingRecursiveComparison().isEqualTo(expectedRequestMessage);
         assertThat(this.argumentMessageType.getValue()).isEqualTo(TEST_MESSAGE_TYPE);
-        assertThat(this.argumentPriority.getValue()).isEqualTo(1);
+        assertThat(this.argumentPriority.getValue()).isEqualTo(TEST_PRIORITY);
         assertThat(this.argumentIpAddress.getValue()).isEqualTo(TEST_IP);
     }
 
     @Test
     public void testUpdateDeviceSslCertificationIsNull() throws FunctionalException {
         this.deviceManagementService.updateDeviceSslCertification(TEST_ORGANISATION, TEST_DEVICE, TEST_UID, null,
-                TEST_MESSAGE_TYPE, 1);
+                TEST_MESSAGE_TYPE, TEST_PRIORITY);
 
         //This method is not called since it comes after the check of the certificate
         verifyNoInteractions(this.domainCoreMapper);
@@ -141,24 +144,24 @@ public class DeviceManagementServiceTest {
         final Certification certification = new Certification("testUrl", "testDomain");
 
         this.deviceManagementService.updateDeviceSslCertification(TEST_ORGANISATION, TEST_DEVICE, TEST_UID,
-                certification, TEST_MESSAGE_TYPE, 1);
+                certification, TEST_MESSAGE_TYPE, TEST_PRIORITY);
 
         verify(this.osgpCoreRequestManager).send(this.argumentRequestMessage.capture(),
                 this.argumentMessageType.capture(), this.argumentPriority.capture(), this.argumentIpAddress.capture());
 
         final RequestMessage expectedRequestMessage = this.createNewRequestMessage(this.domainCoreMapper.map(certification,
-                org.opensmartgridplatform.dto.valueobjects.CertificationDto.class));
+                CertificationDto.class));
 
         assertThat(this.argumentRequestMessage.getValue()).usingRecursiveComparison().isEqualTo(expectedRequestMessage);
         assertThat(this.argumentMessageType.getValue()).isEqualTo(TEST_MESSAGE_TYPE);
-        assertThat(this.argumentPriority.getValue()).isEqualTo(1);
+        assertThat(this.argumentPriority.getValue()).isEqualTo(TEST_PRIORITY);
         assertThat(this.argumentIpAddress.getValue()).isEqualTo(TEST_IP);
     }
 
     @Test
     public void testSetDeviceVerificationKeyIsNull() throws FunctionalException {
         this.deviceManagementService.setDeviceVerificationKey(TEST_ORGANISATION, TEST_DEVICE, TEST_UID, null,
-                TEST_MESSAGE_TYPE, 1);
+                TEST_MESSAGE_TYPE, TEST_PRIORITY);
 
         //This method is not called since it comes after the check of the verification
         verifyNoInteractions(this.osgpCoreRequestManager);
@@ -170,7 +173,7 @@ public class DeviceManagementServiceTest {
         when(device.getIpAddress()).thenReturn(TEST_IP);
         when(this.deviceDomainService.searchActiveDevice(TEST_DEVICE, ComponentType.DOMAIN_CORE)).thenReturn(device);
         this.deviceManagementService.setDeviceVerificationKey(TEST_ORGANISATION, TEST_DEVICE, TEST_UID, "testKey",
-                TEST_MESSAGE_TYPE, 1);
+                TEST_MESSAGE_TYPE, TEST_PRIORITY);
 
         verify(this.osgpCoreRequestManager).send(this.argumentRequestMessage.capture(),
                 this.argumentMessageType.capture(), this.argumentPriority.capture(), this.argumentIpAddress.capture());
@@ -179,7 +182,7 @@ public class DeviceManagementServiceTest {
 
         assertThat(this.argumentRequestMessage.getValue()).usingRecursiveComparison().isEqualTo(expectedRequestMessage);
         assertThat(this.argumentMessageType.getValue()).isEqualTo(TEST_MESSAGE_TYPE);
-        assertThat(this.argumentPriority.getValue()).isEqualTo(1);
+        assertThat(this.argumentPriority.getValue()).isEqualTo(TEST_PRIORITY);
         assertThat(this.argumentIpAddress.getValue()).isEqualTo(TEST_IP);
     }
 
