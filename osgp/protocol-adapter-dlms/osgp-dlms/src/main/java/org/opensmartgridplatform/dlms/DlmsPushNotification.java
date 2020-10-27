@@ -13,8 +13,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.apache.cxf.common.util.StringUtils;
-
+import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
 
 public class DlmsPushNotification implements Serializable {
