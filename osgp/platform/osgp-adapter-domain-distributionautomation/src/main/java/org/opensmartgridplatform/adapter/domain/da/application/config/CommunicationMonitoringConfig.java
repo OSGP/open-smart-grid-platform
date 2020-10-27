@@ -67,8 +67,8 @@ public class CommunicationMonitoringConfig extends AbstractConfig {
     @Autowired
     private CommunicationMonitoringTask communicationMonitoringTask;
 
-    // suppress warning concerning the string in the LOGGER.info. This is actually a correct way of doing it. the
-    // this.cronExpression() expression is not very complex, making it not necessary to check before calling it.
+    // suppress warning concerning the string in the LOGGER.info. The this.cronExpression() expression is not very
+    // complex, making it not necessary to check before calling it.
     @SuppressWarnings("squid:S2629")
     @Bean
     public CronTrigger communicationMonitoringTaskCronTrigger() {

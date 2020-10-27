@@ -64,7 +64,14 @@ public class CommunicationMonitoringConfig extends AbstractConfig {
     @Resource
     private Environment environment;
 
-    // suppress warning about string building in LOGGER. The way it is done here is actually correct.
+    // suppress warning about field being autowired for class rather than the method it is used in. The calling of
+    // the method might not be able to provide CommunicationMonitoringTask as parameter.
+    @SuppressWarnings("squid:3305")
+    @Autowired
+    private Runnable communicationMonitoringTask;
+
+    // suppress warning concerning the string in the LOGGER.info. The this.cronExpression() expression is not very
+    // complex, making it not necessary to check before calling it.
     @SuppressWarnings("squid:S2629")
     @Bean
     public CronTrigger communicationMonitoringTaskCronTrigger() {
@@ -74,7 +81,7 @@ public class CommunicationMonitoringConfig extends AbstractConfig {
 
     // runnable set in method call rather than in @Autowired. This method is the only one that uses it.
     @Bean(destroyMethod = "shutdown")
-    public TaskScheduler communicationMonitoringTaskScheduler(Runnable communicationMonitoringTask) {
+    public TaskScheduler communicationMonitoringTaskScheduler() {
         LOGGER.info("Initializing Communication Monitoring Task Scheduler bean");
         final ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
 
@@ -85,7 +92,7 @@ public class CommunicationMonitoringConfig extends AbstractConfig {
             taskScheduler.setWaitForTasksToCompleteOnShutdown(false);
             taskScheduler.setAwaitTerminationSeconds(DEFAULT_AWAIT_TERMINATION_SECONDS);
             taskScheduler.initialize();
-            taskScheduler.schedule(communicationMonitoringTask, this.communicationMonitoringTaskCronTrigger());
+            taskScheduler.schedule(this.communicationMonitoringTask, this.communicationMonitoringTaskCronTrigger());
         } else {
             LOGGER.info("Communication Monitoring not enabled, skipping task scheduler initialization.");
         }

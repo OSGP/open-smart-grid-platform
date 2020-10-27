@@ -16,8 +16,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.ws.soap.server.endpoint.annotation.FaultCode;
 import org.springframework.ws.soap.server.endpoint.annotation.SoapFault;
 
-// suppress warning about the Set<? extends ConstraintViolation<?>>. This is because it is apparently required to be
-// written this way.
+// suppress warning about the Set<? extends ConstraintViolation<?>>. SonarQube complains about the generic wildcard
+// type being used. The generic wildcart makes it that the set expects an object from a class that extends
+// ConstraintViolation. Removing the wildcard would change the behaviour.
 @SuppressWarnings("squid:S1452")
 @SoapFault(faultCode = FaultCode.SERVER)
 public class ValidationException extends PlatformException {

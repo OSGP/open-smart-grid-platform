@@ -126,9 +126,6 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
         return response;
     }
 
-    // suppress warnings about the string in the final LOGGER. THere are 3 arguments provided that SonarLint expects
-    // to be part of the string, but they are actually arguments for the error method.
-    @SuppressWarnings("squid:S3457")
     @PayloadRoot(localPart = "FindEventsAsyncRequest", namespace = NAMESPACE)
     @ResponsePayload
     public FindEventsResponse getFindEventsResponse(@OrganisationIdentification final String organisationIdentification,
@@ -157,7 +154,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
                     org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event.class));
 
         } catch (final ConstraintViolationException e) {
-            LOGGER.error("FindEventsRequest Exception", e.getMessage(), e.getStackTrace(), e);
+            LOGGER.error("FindEventsRequest Exception {}", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
