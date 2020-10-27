@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DefaultEncryptionDelegate implements EncryptionDelegate {
 
-    private static final String ERROR_NO_PROVIDER = "Could not find a provider of type %s";
+    private static final String ERROR_NO_PROVIDER = "Could not find a provider of type %s; available providers are %s";
     private final List<EncryptionProvider> providers;
 
     public DefaultEncryptionDelegate(final List<EncryptionProvider> encryptionProviders) {
@@ -29,7 +29,8 @@ public class DefaultEncryptionDelegate implements EncryptionDelegate {
 
     private EncryptionProvider getEncryptionProvider(EncryptionProviderType type) {
         return this.providers.stream().filter(provider -> provider.getType().equals(type)).findFirst()
-                             .orElseThrow(() -> new EncrypterException(String.format(ERROR_NO_PROVIDER, type)));
+                             .orElseThrow(() -> new EncrypterException(String.format(ERROR_NO_PROVIDER, type,
+                                     this.providers)));
     }
 
     @Override
