@@ -8,13 +8,13 @@
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.processors;
 
 import java.io.IOException;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.oslp.PendingSetScheduleRequestService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponse;
@@ -266,14 +266,12 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
                         .withScheduleMessageType(ScheduleMessageTypeDto.SET_SCHEDULE)
                         .build();
 
-        final Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        calendar.add(Calendar.MINUTE, this.pendingSetScheduleRequestExpiresInMinutes);
+        final Date date = DateTime.now().plusMinutes(this.pendingSetScheduleRequestExpiresInMinutes).toDate();
         final PendingSetScheduleRequest pendingSetScheduleRequest = PendingSetScheduleRequest.builder()
                 .deviceIdentification(deviceRequest.getDeviceIdentification())
                 .scheduleMessageDataContainerDto(dataContainer)
                 .deviceRequest(deviceRequest)
-                .expiredAt(calendar.getTime())
+                .expiredAt(date)
                 .build();
 
         this.pendingSetScheduleRequestService.add(pendingSetScheduleRequest);
