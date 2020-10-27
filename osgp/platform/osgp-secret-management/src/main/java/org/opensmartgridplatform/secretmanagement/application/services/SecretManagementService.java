@@ -89,6 +89,15 @@ public class SecretManagementService {
         private static EncryptedTypedSecret getNullInstance(SecretType type) {
             return new EncryptedTypedSecret(type);
         }
+
+        private static EncryptedTypedSecret fromDbEncryptedSecret(DbEncryptedSecret dbEncryptedSecret) {
+            byte[] aesEncrypted = HexUtils.fromHexString(dbEncryptedSecret.getEncodedSecret());
+            String keyReference = dbEncryptedSecret.getEncryptionKeyReference().getReference();
+            EncryptionProviderType providerType = dbEncryptedSecret.getEncryptionKeyReference()
+                                                                   .getEncryptionProviderType();
+            return new EncryptedTypedSecret(aesEncrypted, dbEncryptedSecret.getSecretType(), keyReference,
+                    providerType);
+        }
     }
 
     private final EncryptionDelegate encryptionDelegate;
@@ -177,13 +186,7 @@ public class SecretManagementService {
         final Optional<DbEncryptedSecret> optional = this
                 .getSingleDbEncryptedSecret(deviceIdentification, secretType, status);
         if (optional.isPresent()) {
-            DbEncryptedSecret dbEncryptedSecret = optional.get();
-            byte[] aesEncrypted = HexUtils.fromHexString(dbEncryptedSecret.getEncodedSecret());
-            String keyReference = dbEncryptedSecret.getEncryptionKeyReference().getReference();
-            EncryptionProviderType providerType = dbEncryptedSecret.getEncryptionKeyReference()
-                                                                   .getEncryptionProviderType();
-            return new EncryptedTypedSecret(aesEncrypted, dbEncryptedSecret.getSecretType(), keyReference,
-                    providerType);
+            return EncryptedTypedSecret.fromDbEncryptedSecret(optional.get());
         } else {
             return EncryptedTypedSecret.getNullInstance(secretType);
         }
@@ -306,8 +309,8 @@ public class SecretManagementService {
     private byte[] reencryptAes2Rsa(byte[] aes, String keyReference, EncryptionProviderType encryptionProviderType) {
         //Outgoing existing secret, so use AES key provided by parameter for decrypting aes
         try {
-            return this.rsaEncrypter.encrypt(this.encryptionDelegate
-                    .decrypt(new EncryptedSecret(encryptionProviderType, aes), keyReference));
+            return this.rsaEncrypter.encrypt(
+                    this.encryptionDelegate.decrypt(new EncryptedSecret(encryptionProviderType, aes), keyReference));
         } catch (final EncrypterException ee) {
             throw new IllegalStateException("Could not reencrypt secret from AES to RSA: " + ee.toString(), ee);
         }
