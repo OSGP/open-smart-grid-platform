@@ -55,16 +55,18 @@ public class SecretManagementService {
         byte[] encryptedSecret;
         SecretType type;
         String encryptionKeyReference;  //NULL when RSA
+        EncryptionProviderType encryptionProviderType;  //NULL when RSA
 
         private EncryptedTypedSecret(SecretType type) {
             this.type = type;
         }
 
         private EncryptedTypedSecret(byte[] secret, SecretType type) {
-            this(secret, type, null);
+            this(secret, type, null, null);
         }
 
-        private EncryptedTypedSecret(byte[] secret, SecretType type, String encryptionKeyReference) {
+        private EncryptedTypedSecret(byte[] secret, SecretType type, String encryptionKeyReference,
+                EncryptionProviderType encryptionProviderType) {
             if (secret == null) {
                 throw new IllegalArgumentException("No NULL value allowed for parameter 'secret'");
             } else if (type == null) {
@@ -73,6 +75,7 @@ public class SecretManagementService {
             this.encryptedSecret = secret;
             this.type = type;
             this.encryptionKeyReference = encryptionKeyReference;
+            this.encryptionProviderType = encryptionProviderType;
         }
 
         private boolean hasNullSecret() {
@@ -177,7 +180,10 @@ public class SecretManagementService {
             DbEncryptedSecret dbEncryptedSecret = optional.get();
             byte[] aesEncrypted = HexUtils.fromHexString(dbEncryptedSecret.getEncodedSecret());
             String keyReference = dbEncryptedSecret.getEncryptionKeyReference().getReference();
-            return new EncryptedTypedSecret(aesEncrypted, dbEncryptedSecret.getSecretType(), keyReference);
+            EncryptionProviderType providerType = dbEncryptedSecret.getEncryptionKeyReference()
+                                                                   .getEncryptionProviderType();
+            return new EncryptedTypedSecret(aesEncrypted, dbEncryptedSecret.getSecretType(), keyReference,
+                    providerType);
         } else {
             return EncryptedTypedSecret.getNullInstance(secretType);
         }
@@ -259,10 +265,11 @@ public class SecretManagementService {
 
     private EncryptedTypedSecret generateAes128BitsSecret(final SecretType secretType) {
         try {
-            String keyReference = this.getCurrentKey().getReference();
+            DbEncryptionKeyReference currentKey = this.getCurrentKey();
             byte[] aesEncrypted = this.encryptionDelegate
-                    .generateAes128BitsSecret(this.encryptionProviderType, keyReference);
-            return new EncryptedTypedSecret(aesEncrypted, secretType, keyReference);
+                    .generateAes128BitsSecret(this.encryptionProviderType, currentKey.getReference());
+            return new EncryptedTypedSecret(aesEncrypted, secretType, currentKey.getReference(),
+                    currentKey.getEncryptionProviderType());
         } catch (EncrypterException ee) {
             throw new IllegalStateException("Eror generating secret", ee);
         }
@@ -270,15 +277,17 @@ public class SecretManagementService {
 
     private EncryptedTypedSecret reencryptRsa2Aes(EncryptedTypedSecret secret) {
         byte[] aesEncrypted = this.reencryptRsa2Aes(secret.encryptedSecret);
-        String keyReference = this.getCurrentKey().getReference();
-        return new EncryptedTypedSecret(aesEncrypted, secret.type, keyReference);
+        DbEncryptionKeyReference currentKey = this.getCurrentKey();
+        return new EncryptedTypedSecret(aesEncrypted, secret.type, currentKey.getReference(),
+                currentKey.getEncryptionProviderType());
     }
 
     private EncryptedTypedSecret reencryptAes2Rsa(EncryptedTypedSecret secret) {
         if (secret.hasNullSecret()) {
             return secret;  //No need to encrypt NULL value
         } else {
-            byte[] rsaEncrypted = this.reencryptAes2Rsa(secret.encryptedSecret, secret.encryptionKeyReference);
+            byte[] rsaEncrypted = this.reencryptAes2Rsa(secret.encryptedSecret, secret.encryptionKeyReference,
+                    secret.encryptionProviderType);
             return new EncryptedTypedSecret(rsaEncrypted, secret.type);
         }
     }
@@ -290,17 +299,17 @@ public class SecretManagementService {
             return this.encryptionDelegate
                     .encrypt(this.encryptionProviderType, this.rsaEncrypter.decrypt(rsa), keyReference).getSecret();
         } catch (final EncrypterException ee) {
-            throw new IllegalStateException("Could not reencrypt secret from RSA to AES: "+ee.toString(), ee);
+            throw new IllegalStateException("Could not reencrypt secret from RSA to AES: " + ee.toString(), ee);
         }
     }
 
-    private byte[] reencryptAes2Rsa(byte[] aes, String keyReference) {
+    private byte[] reencryptAes2Rsa(byte[] aes, String keyReference, EncryptionProviderType encryptionProviderType) {
         //Outgoing existing secret, so use AES key provided by parameter for decrypting aes
         try {
             return this.rsaEncrypter.encrypt(this.encryptionDelegate
-                    .decrypt(new EncryptedSecret(this.encryptionProviderType, aes), keyReference));
+                    .decrypt(new EncryptedSecret(encryptionProviderType, aes), keyReference));
         } catch (final EncrypterException ee) {
-            throw new IllegalStateException("Could not reencrypt secret from AES to RSA: "+ee.toString(), ee);
+            throw new IllegalStateException("Could not reencrypt secret from AES to RSA: " + ee.toString(), ee);
         }
     }
 }
