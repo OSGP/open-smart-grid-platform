@@ -352,8 +352,10 @@ public class RegisterDevice {
         }
     }
 
+    /**
+     * @deprecated No longer used, as device creation scripts create device UID
+     */
     @Deprecated
-    // No longer used, as device creation scripts create device UID
     private byte[] createRandomDeviceUid() {
         // Generate random bytes for UID
         final byte[] deviceUid = new byte[OslpEnvelope.DEVICE_ID_LENGTH];

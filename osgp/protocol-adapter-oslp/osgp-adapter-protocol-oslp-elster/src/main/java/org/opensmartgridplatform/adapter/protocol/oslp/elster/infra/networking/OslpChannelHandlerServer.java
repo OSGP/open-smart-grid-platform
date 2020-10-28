@@ -22,9 +22,7 @@ import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.servic
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.LoggingService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.oslp.OslpDeviceSettingsService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.oslp.OslpSigningService;
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.oslp.PendingSetScheduleRequestService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.repositories.OslpDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.core.db.api.application.services.DeviceDataService;
 import org.opensmartgridplatform.dto.valueobjects.GpsCoordinatesDto;
@@ -72,13 +70,7 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
     @Autowired
     private OslpSigningService oslpSigningService;
     @Autowired
-    private PendingSetScheduleRequestService pendingSetScheduleRequestService;
-    @Autowired
-    private DeviceService deviceService;
-    @Autowired
     private LoggingService loggingService;
-    @Autowired
-    private OslpDeviceRepository oslpDeviceRepository;
     /**
      * Convert list in property files to {@code Map}.
      *
