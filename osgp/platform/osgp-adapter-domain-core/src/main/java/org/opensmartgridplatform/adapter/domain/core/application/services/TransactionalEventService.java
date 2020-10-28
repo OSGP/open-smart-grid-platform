@@ -9,6 +9,7 @@ package org.opensmartgridplatform.adapter.domain.core.application.services;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.opensmartgridplatform.adapter.domain.core.application.config.PersistenceDomainCoreConfig;
 import org.opensmartgridplatform.domain.core.entities.Event;
@@ -30,13 +31,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(transactionManager = "transactionManager")
 public class TransactionalEventService {
 
+    private static final int PAGE_SIZE = 500;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(TransactionalEventService.class);
 
     @Autowired
     private EventRepository eventRepository;
 
     public List<Event> getEventsBeforeDate(final Date date, final int pageSize) {
-        final PageRequest pageRequest = PageRequest.of(0, pageSize, Sort.Direction.DESC, "id");
+        final PageRequest pageRequest = PageRequest.of(0, pageSize, Sort.Direction.ASC, "id");
         final Slice<Event> slice = this.eventRepository.findByDateTimeBefore(date, pageRequest);
         final List<Event> events = slice.getContent();
         LOGGER.info("Found {} events with date time before {}.", events.size(), date);
@@ -46,7 +49,19 @@ public class TransactionalEventService {
 
     public void deleteEvents(final List<Event> events) {
         final int size = events.size();
-        this.eventRepository.deleteAll(events);
+        final List<Long> ids = events.stream().map(Event::getId).collect(Collectors.toList());
+
+        final int listSize = ids.size();
+
+        for (int pageNumber = 0; pageNumber < (listSize + PAGE_SIZE - 1) / PAGE_SIZE; pageNumber++) {
+            final int fromIndex = pageNumber * PAGE_SIZE;
+            final int toIndex = Math.min(listSize, pageNumber * PAGE_SIZE + PAGE_SIZE);
+
+            final List<Long> sublistToDelete = ids.subList(fromIndex, toIndex);
+            this.eventRepository.deleteBatchById(sublistToDelete);
+        }
+
         LOGGER.info("{} events deleted.", size);
     }
+
 }

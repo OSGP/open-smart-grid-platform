@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -58,11 +59,9 @@ public class EventNotificationMessageService {
     public void handleEvent(final String deviceIdentification, final Date dateTime, final EventType eventType,
             final String description, final Integer index) throws UnknownEntityException {
 
-        // // Lookup device
-        // final Device device =
-        // this.eventNotificationHelperService.findDevice(deviceIdentification);
-        // If the event belongs to an existing device, then save it,
-        // otherwise don't.
+        // Check if the event belongs to an existing device
+        this.eventNotificationHelperService.findDevice(deviceIdentification);
+
         this.eventNotificationHelperService.saveEvent(new Event(deviceIdentification,
                 dateTime != null ? dateTime : DateTime.now().toDate(), eventType, description, index));
 
@@ -329,8 +328,8 @@ public class EventNotificationMessageService {
     private void printRelayStatuses(final Map<Integer, RelayStatus> lastRelayStatusPerIndex,
             final String deviceIdentification) {
         LOGGER.info("print relay statuses for device: {}", deviceIdentification);
-        for (final Integer key : lastRelayStatusPerIndex.keySet()) {
-            LOGGER.info("key: {}, value: {}", key, lastRelayStatusPerIndex.get(key));
+        for (final Entry<Integer, RelayStatus> entry : lastRelayStatusPerIndex.entrySet()) {
+            LOGGER.info("key: {}, value: {}", entry.getKey(), entry.getValue());
         }
     }
 }

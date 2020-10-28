@@ -23,10 +23,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DeviceLogItemSlicingRepository
         extends JpaRepository<DeviceLogItem, Long>, JpaSpecificationExecutor<DeviceLogItem> {
-    Slice<DeviceLogItem> findByCreationTimeBefore(Date endDate, Pageable pageable);
+    Slice<DeviceLogItem> findByModificationTimeBefore(Date endDate, Pageable pageable);
 
     @Modifying
     @Query("delete from DeviceLogItem d where d.id in :ids")
-    void deleteMyBatchById(@Param("ids") List<Long> ids);
+    void deleteBatchById(@Param("ids") List<Long> ids);
 
 }

@@ -17,17 +17,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
 
     List<Event> findByDeviceIdentification(String deviceIdentification);
-
-    // @Query("SELECT e.device.id as device, max(e.dateTime) as dateTime FROM
-    // Event e WHERE e.device IN (?1) GROUP BY e.device.id")
-    // List<Object> findLatestEventForEveryDevice(Collection<Device> devices);
 
     @Query("SELECT d.id as device, MAX(e.dateTime) as dateTime "
             + "FROM Event e JOIN Device d ON e.deviceIdentification = d.deviceIdentification "
@@ -39,5 +37,9 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
     List<Event> findByDateTimeBefore(Date date);
 
     Slice<Event> findByDateTimeBefore(Date date, Pageable pageable);
+
+    @Modifying
+    @Query("delete from Event e where e.id in :ids")
+    void deleteBatchById(@Param("ids") List<Long> ids);
 
 }
