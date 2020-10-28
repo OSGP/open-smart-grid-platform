@@ -127,11 +127,4 @@ public class OslpDeviceSteps {
         this.ssldDeviceSteps.theSsldDeviceContains(expectedEntity);
     }
 
-    @Then("^I wait (\\d+) seconds$")
-    public void IWaitXSeconds(final Integer seconds) {
-        try {
-            Thread.sleep(seconds * 1000);
-        } catch (final InterruptedException e) {
-        }
-    }
 }
