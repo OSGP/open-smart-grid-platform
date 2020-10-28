@@ -160,6 +160,10 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
         }
 
         ctx.fireChannelRead(message);
+
+        if (message.isValid() && message.getPayloadMessage().hasConfirmRegisterDeviceRequest()) {
+            this.handleSetSchedule(message.getDeviceId());
+        }
     }
 
     /**
@@ -267,9 +271,6 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
             this.deviceRegistrationService.confirmRegisterDevice(deviceUid,
                     SequenceNumberUtils.convertByteArrayToInteger(sequenceNumber),
                     confirmRegisterDeviceRequest.getRandomDevice(), confirmRegisterDeviceRequest.getRandomPlatform());
-
-            this.handleSetSchedule(deviceUid);
-
         } catch (final Exception e) {
             LOGGER.error("handle confirm register device request exception");
             throw new ProtocolAdapterException("ConfirmRegisterDevice failed", e);
