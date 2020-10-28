@@ -119,12 +119,14 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
             public void operationComplete(final ChannelFuture future) throws IOException {
 
                 if (future.isSuccess()) {
-                    OslpChannelHandlerClient.this.write(future, address, request);
-                    // What is this call below good for?
-                    future.channel().id();
+                    try {
+                        OslpChannelHandlerClient.this.write(future, address, request);
+                    } catch (IOException e) {
+                        responseHandler.handleException(e);
+                    }
                 } else {
                     LOGGER.info("The connection to the device {} is not successful", deviceIdentification);
-                    throw new IOException("ChannelFuture - Unable to connect");
+                    responseHandler.handleException(new IOException("ChannelFuture - Unable to connect"));
                 }
             }
         });
@@ -144,7 +146,6 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
 
         try {
             channel.writeAndFlush(request);
-
         } catch (final Exception e) {
             LOGGER.error("{} Exception while writing request: {}", channelFuture.channel().id(), e.getCause(), e);
             this.callbackHandlers.remove(channel.id().asLongText());
