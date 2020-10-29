@@ -17,12 +17,20 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.oslp.OslpDeviceSettingsService;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.oslp.PendingSetScheduleRequestService;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceRequest;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.requests.SetScheduleDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.PendingSetScheduleRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.OsgpRequestMessageSender;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking.DeviceService;
 import org.opensmartgridplatform.dto.valueobjects.EventNotificationDto;
 import org.opensmartgridplatform.dto.valueobjects.EventTypeDto;
+import org.opensmartgridplatform.dto.valueobjects.RelayTypeDto;
+import org.opensmartgridplatform.dto.valueobjects.ScheduleMessageDataContainerDto;
+import org.opensmartgridplatform.dto.valueobjects.ScheduleMessageTypeDto;
 import org.opensmartgridplatform.oslp.Oslp;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -51,6 +59,12 @@ public class DeviceManagementService {
 
     @Autowired
     private OsgpRequestMessageSender osgpRequestMessageSender;
+
+    @Autowired
+    private PendingSetScheduleRequestService pendingSetScheduleRequestService;
+
+    @Autowired
+    private DeviceService deviceService;
 
     /**
      * Constructor
@@ -151,8 +165,8 @@ public class DeviceManagementService {
                 organisationIdentification, publicKey);
 
         try {
-            OslpDevice oslpDevice = this.oslpDeviceSettingsService.getDeviceByDeviceIdentification(
-                    deviceIdentification);
+            OslpDevice oslpDevice = this.oslpDeviceSettingsService
+                    .getDeviceByDeviceIdentification(deviceIdentification);
             if (oslpDevice == null) {
                 // Device not found, create new device
                 LOGGER.debug("Device [{}] does not exist, creating new device", deviceIdentification);
@@ -185,8 +199,8 @@ public class DeviceManagementService {
                 organisationIdentification);
 
         try {
-            final OslpDevice oslpDevice = this.oslpDeviceSettingsService.getDeviceByDeviceIdentification(
-                    deviceIdentification);
+            final OslpDevice oslpDevice = this.oslpDeviceSettingsService
+                    .getDeviceByDeviceIdentification(deviceIdentification);
             if (oslpDevice == null) {
                 throw new ProtocolAdapterException(String.format("Device not found: %s", deviceIdentification));
             }
@@ -208,10 +222,65 @@ public class DeviceManagementService {
             final OsgpException osgpException, final DeviceResponseMessageSender responseMessageSender) {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(messageMetadata);
-        final ProtocolResponseMessage responseMessage = ProtocolResponseMessage.newBuilder().domain(
-                messageMetadata.getDomain()).domainVersion(messageMetadata.getDomainVersion()).deviceMessageMetadata(
-                deviceMessageMetadata).result(result).osgpException(osgpException).build();
+        final ProtocolResponseMessage responseMessage = ProtocolResponseMessage.newBuilder()
+                .domain(messageMetadata.getDomain())
+                .domainVersion(messageMetadata.getDomainVersion())
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .result(result)
+                .osgpException(osgpException)
+                .build();
 
         responseMessageSender.send(responseMessage);
     }
+
+    public void handleSetSchedule(final String deviceUid) throws TechnicalException {
+        final List<PendingSetScheduleRequest> pendingSetScheduleRequestList = this.pendingSetScheduleRequestService
+                .getAllByDeviceUidNotExpired(deviceUid);
+        if (pendingSetScheduleRequestList.isEmpty()) {
+            // Resume the default flow
+            // This confirm register device request was not triggered by a set
+            // schedule with astronomical offsets
+            return;
+        }
+
+        if (pendingSetScheduleRequestList.size() > 1) {
+            throw new TechnicalException(String.format(
+                    "Currently there are %d pending set schedule requests for device %s. Only one is allowed.",
+                    pendingSetScheduleRequestList.size(), deviceUid));
+        }
+
+        final PendingSetScheduleRequest pendingSetScheduleRequest = pendingSetScheduleRequestList.get(0);
+
+        final ScheduleMessageDataContainerDto dto = pendingSetScheduleRequest.getScheduleMessageDataContainerDto();
+        ScheduleMessageDataContainerDto.Builder builder = new ScheduleMessageDataContainerDto.Builder(
+                dto.getSchedule());
+        builder = builder.withScheduleMessageType(ScheduleMessageTypeDto.SET_SCHEDULE);
+        final ScheduleMessageDataContainerDto scheduleMessageDataContainer = builder.build();
+
+        final DeviceRequest deviceRequest = pendingSetScheduleRequest.getDeviceRequest();
+        final MessageMetadata messageMetadata = this.getMessageMetadataFromDeviceRequest(deviceRequest);
+
+        final SetScheduleDeviceRequest newDeviceRequest = new SetScheduleDeviceRequest(
+                DeviceRequest.newBuilder().messageMetaData(messageMetadata), scheduleMessageDataContainer,
+                RelayTypeDto.LIGHT);
+
+        this.deviceService.setSchedule(newDeviceRequest);
+        this.pendingSetScheduleRequestService.remove(pendingSetScheduleRequest);
+    }
+
+    private MessageMetadata getMessageMetadataFromDeviceRequest(final DeviceRequest deviceRequest) {
+        final MessageMetadata.Builder messageMetadataBuilder = MessageMetadata.newMessageMetadataBuilder()
+                .withCorrelationUid(deviceRequest.getCorrelationUid())
+                .withOrganisationIdentification(deviceRequest.getOrganisationIdentification())
+                .withDeviceIdentification(deviceRequest.getDeviceIdentification())
+                .withMessageType(deviceRequest.getMessageType())
+                .withDomain(deviceRequest.getDomain())
+                .withDomainVersion(deviceRequest.getDomainVersion())
+                .withIpAddress(deviceRequest.getIpAddress())
+                .withMessagePriority(deviceRequest.getMessagePriority())
+                .withScheduled(deviceRequest.isScheduled())
+                .withRetryCount(deviceRequest.getRetryCount());
+        return messageMetadataBuilder.build();
+    }
+
 }

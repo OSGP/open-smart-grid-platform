@@ -17,6 +17,8 @@ import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.responses.E
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking.DeviceService;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.services.DeviceResponseService;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -152,19 +154,32 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         this.responseMessageSender.send(protocolResponseMessage);
     }
 
+    protected void handleFunctionalException(final FunctionalException e, final MessageMetadata messageMetadata) {
+        LOGGER.error("Functional error while processing message, using MessageMetadata to create error response", e);
+
+        final ProtocolResponseMessage protocolResponseMessage = createProtocolResponseMessage(messageMetadata, e);
+        this.responseMessageSender.send(protocolResponseMessage);
+    }
+
     protected void handleError(final RuntimeException e, final MessageMetadata messageMetadata) {
         LOGGER.error("Error while processing message, using MessageMetadata to create error response", e);
 
         // Set the exception to a class known by all OSGP components
         final TechnicalException ex = new TechnicalException(ComponentType.PROTOCOL_OSLP, UNEXPECTED_EXCEPTION);
-
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(messageMetadata);
-        final ProtocolResponseMessage protocolResponseMessage = ProtocolResponseMessage.newBuilder()
-                .domain(messageMetadata.getDomain()).domainVersion(messageMetadata.getDomainVersion())
-                .deviceMessageMetadata(deviceMessageMetadata).result(ResponseMessageResultType.NOT_OK).osgpException(ex)
-                .retryCount(messageMetadata.getRetryCount()).build();
-
+        final ProtocolResponseMessage protocolResponseMessage = createProtocolResponseMessage(messageMetadata, ex);
         this.responseMessageSender.send(protocolResponseMessage);
+    }
+
+    private ProtocolResponseMessage createProtocolResponseMessage(
+            final MessageMetadata messageMetadata, final OsgpException ex) {
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(messageMetadata);
+        return ProtocolResponseMessage.newBuilder()
+                    .domain(messageMetadata.getDomain())
+                    .domainVersion(messageMetadata.getDomainVersion())
+                    .deviceMessageMetadata(deviceMessageMetadata)
+                    .result(ResponseMessageResultType.NOT_OK)
+                    .osgpException(ex)
+                    .retryCount(messageMetadata.getRetryCount()).build();
     }
 
     public void handleUnableToConnectDeviceResponse(final DeviceResponse deviceResponse, final Throwable t,
