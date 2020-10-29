@@ -17,6 +17,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+/**
+ * @Deprecated with the introduction of secret-management, the security_key table has become obsolete.
+ */
+@Deprecated
 @Repository
 public interface DlmsSecurityKeyRepository extends JpaRepository<SecurityKey, Long> {
 
