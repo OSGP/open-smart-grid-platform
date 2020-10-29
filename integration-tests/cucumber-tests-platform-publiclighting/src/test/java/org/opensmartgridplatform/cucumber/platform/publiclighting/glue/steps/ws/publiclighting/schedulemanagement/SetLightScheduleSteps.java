@@ -259,13 +259,20 @@ public class SetLightScheduleSteps {
         request.setAsyncRequest(asyncRequest);
 
         final SetScheduleResponse response = Wait.untilAndReturn(() -> {
-            final SetScheduleResponse retval = this.client.getSetSchedule(request);
-            assertThat(retval).isNotNull();
-            assertThat(retval.getResult())
-                    .isEqualTo(getEnum(expectedResult, PlatformKeys.KEY_RESULT, OsgpResultType.class));
-
-            return retval;
+            try {
+                return this.client.getSetSchedule(request);
+            } catch (final SoapFaultClientException ex) {
+                LOGGER.info("Received a SOAP fault on setSchedule");
+                if ("CorrelationUid is unknown.".equals(ex.getFaultStringOrReason())) {
+                    throw new Exception("Received a SOAP fault on setSchedule that could be rejected because the CorrelationUid is unknown");
+                }
+                return null;
+            }
         });
+
+        assertThat(response).isNotNull();
+        assertThat(response.getResult())
+                .isEqualTo(getEnum(expectedResult, PlatformKeys.KEY_RESULT, OsgpResultType.class));
 
         if (expectedResult.containsKey(PlatformPubliclightingKeys.KEY_DESCRIPTION)) {
             assertThat(response.getDescription())
@@ -284,11 +291,21 @@ public class SetLightScheduleSteps {
                 (String) ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID));
         request.setAsyncRequest(asyncRequest);
 
-        try {
-            this.client.getSetSchedule(request);
-        } catch (final SoapFaultClientException ex) {
-            ScenarioContext.current().put(PlatformKeys.RESPONSE, ex);
-            GenericResponseSteps.verifySoapFault(expectedResponseData);
-        }
+        Wait.untilAndReturn(() -> {
+            try {
+                this.client.getSetSchedule(request);
+            } catch (final SoapFaultClientException ex) {
+                LOGGER.info("Received a SOAP fault on setSchedule");
+                final String faultString = ex.getFaultStringOrReason();
+                if ("CorrelationUid is unknown.".equals(faultString)) {
+                    throw new Exception("Received a SOAP fault on setSchedule that could be rejected because the CorrelationUid is unknown");
+                }
+                ScenarioContext.current().put(PlatformKeys.RESPONSE, ex);
+                return null;
+            }
+            throw new Exception("Received a setSchedule message without a SOAP fault");
+        });
+
+        GenericResponseSteps.verifySoapFault(expectedResponseData);
     }
 }

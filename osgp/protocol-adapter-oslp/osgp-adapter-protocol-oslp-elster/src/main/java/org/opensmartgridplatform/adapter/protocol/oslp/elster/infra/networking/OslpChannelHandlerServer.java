@@ -33,6 +33,7 @@ import org.opensmartgridplatform.oslp.Oslp.Message;
 import org.opensmartgridplatform.oslp.OslpEnvelope;
 import org.opensmartgridplatform.oslp.OslpUtils;
 import org.opensmartgridplatform.oslp.SignedOslpEnvelopeDto;
+import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,7 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OslpChannelHandlerServer.class);
 
-    private static DateTimeFormatter format = DateTimeFormat.forPattern("yyyyMMddHHmmss");
+    private static final DateTimeFormatter format = DateTimeFormat.forPattern("yyyyMMddHHmmss");
     private final ConcurrentMap<String, Channel> channelMap = new ConcurrentHashMap<>();
     @Autowired
     private DeviceRegistrationService deviceRegistrationService;
@@ -114,7 +115,9 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
     @Override
     public void channelRead0(final ChannelHandlerContext ctx, final OslpEnvelope message) throws Exception {
         final ChannelId channelId = ctx.channel().id();
-        LOGGER.info("channelRead0 called for channel{}.", channelId.asLongText());
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info("channelRead0 called for channel{}.", channelId.asLongText());
+        }
 
         this.loggingService.logMessage(message, true);
 
@@ -126,7 +129,7 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
                 LOGGER.info("{} Received OSLP Request: {}", channelId, message.getPayloadMessage());
 
                 // Response pay-load to send to device.
-                Message payload;
+                final Message payload;
 
                 // Check which request the device has sent and handle it.
                 if (message.getPayloadMessage().hasRegisterDeviceRequest()) {
@@ -139,8 +142,8 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
                     payload = this.handleEventNotificationRequest(message.getDeviceId(), message.getSequenceNumber(),
                             message.getPayloadMessage().getEventNotificationRequest());
                 } else {
-                    LOGGER.warn("{} Received unknown payload. Received: {}.", channelId,
-                            message.getPayloadMessage().toString());
+                    LOGGER.warn("{} Received unknown payload. Received: {}.", channelId, message.getPayloadMessage());
+
                     // Optional extra: return error code to device.
                     return;
                 }
@@ -157,6 +160,10 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
         }
 
         ctx.fireChannelRead(message);
+
+        if (message.isValid() && message.getPayloadMessage().hasConfirmRegisterDeviceRequest()) {
+            this.handleSetSchedule(message.getDeviceId());
+        }
     }
 
     /**
@@ -191,7 +198,7 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
         final String deviceIdentification = registerRequest.getDeviceIdentification();
         final String deviceType = registerRequest.getDeviceType().toString();
         final boolean hasSchedule = registerRequest.getHasSchedule();
-        InetAddress inetAddress = this.getInetAddress(registerRequest, deviceIdentification);
+        final InetAddress inetAddress = this.getInetAddress(registerRequest, deviceIdentification);
 
         // Send message to OSGP-CORE to save IP Address, device type and has
         // schedule values in OSGP-CORE database.
@@ -237,9 +244,9 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
         return Oslp.Message.newBuilder().setRegisterDeviceResponse(responseBuilder.build()).build();
     }
 
-    private InetAddress getInetAddress(Oslp.RegisterDeviceRequest registerRequest, String deviceIdentification)
-            throws UnknownHostException {
-        InetAddress inetAddress;
+    private InetAddress getInetAddress(final Oslp.RegisterDeviceRequest registerRequest,
+            final String deviceIdentification) throws UnknownHostException {
+        final InetAddress inetAddress;
 
         // In case the optional properties 'testDeviceId' and 'testDeviceIp' are
         // set, the values will be used to set an IP address for a device.
@@ -257,15 +264,15 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
         return (int) (input * 1000000);
     }
 
-    private Oslp.Message handleConfirmRegisterDeviceRequest(final byte[] deviceId, final byte[] sequenceNumber,
+    private Oslp.Message handleConfirmRegisterDeviceRequest(final byte[] deviceUid, final byte[] sequenceNumber,
             final Oslp.ConfirmRegisterDeviceRequest confirmRegisterDeviceRequest) throws ProtocolAdapterException {
 
         try {
-            this.deviceRegistrationService.confirmRegisterDevice(deviceId,
+            this.deviceRegistrationService.confirmRegisterDevice(deviceUid,
                     SequenceNumberUtils.convertByteArrayToInteger(sequenceNumber),
                     confirmRegisterDeviceRequest.getRandomDevice(), confirmRegisterDeviceRequest.getRandomPlatform());
         } catch (final Exception e) {
-            LOGGER.error("handle confirm register device request exception", e);
+            LOGGER.error("handle confirm register device request exception");
             throw new ProtocolAdapterException("ConfirmRegisterDevice failed", e);
         }
 
@@ -278,12 +285,18 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
                 .build();
     }
 
-    private Oslp.Message handleEventNotificationRequest(final byte[] deviceId, final byte[] sequenceNumber,
+    private void handleSetSchedule(final byte[] deviceUid) throws TechnicalException {
+
+        final String deviceUidBase64Encoded = Base64.encodeBase64String(deviceUid);
+        this.deviceManagementService.handleSetSchedule(deviceUidBase64Encoded);
+    }
+
+    private Oslp.Message handleEventNotificationRequest(final byte[] deviceUid, final byte[] sequenceNumber,
             final EventNotificationRequest request) throws ProtocolAdapterException {
 
         // Check & update sequence number first
         try {
-            this.deviceRegistrationService.updateDeviceSequenceNumber(deviceId,
+            this.deviceRegistrationService.updateDeviceSequenceNumber(deviceUid,
                     SequenceNumberUtils.convertByteArrayToInteger(sequenceNumber));
         } catch (final ProtocolAdapterException ex) {
             LOGGER.error("handle event notification request exception", ex);
@@ -294,9 +307,9 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
         }
 
         final Oslp.Status oslpStatus = Oslp.Status.OK;
-        final String deviceUid = Base64.encodeBase64String(deviceId);
+        final String deviceUidBase64Encoded = Base64.encodeBase64String(deviceUid);
 
-        this.deviceManagementService.addEventNotifications(deviceUid, request.getNotificationsList());
+        this.deviceManagementService.addEventNotifications(deviceUidBase64Encoded, request.getNotificationsList());
 
         return Oslp.Message.newBuilder()
                 .setEventNotificationResponse(Oslp.EventNotificationResponse.newBuilder().setStatus(oslpStatus))
