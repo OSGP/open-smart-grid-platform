@@ -82,7 +82,7 @@ pipeline {
                                                                 booleanParam(name: 'INSTALL_FROM_LOCAL_DIR', value: true),
                                                                 string(name: 'ARTIFACT_DIRECTORY', value: "/data/software/artifacts"),
                                                                 string(name: 'OSGP_VERSION', value: POMVERSION),
-                                                                booleanParam(name: 'ARTIFACT_DIRECTORY_REMOTE_SRC', value: true)
+                                                                booleanParam(name: 'ARTIFACT_DIRECTORY_REMOTE_SRC', value: true),
                                                                 string(name: 'BRANCH', value: branchReleaseRepo)]
             }
         } // stage
