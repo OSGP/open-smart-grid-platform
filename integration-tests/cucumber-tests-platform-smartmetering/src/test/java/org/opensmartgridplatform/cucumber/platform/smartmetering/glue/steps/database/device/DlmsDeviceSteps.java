@@ -488,32 +488,6 @@ public class DlmsDeviceSteps {
         final ProtocolInfo protocolInfo = this.getProtocolInfo(inputSettings);
 
         final DlmsDeviceBuilder dlmsDeviceBuilder = new DlmsDeviceBuilder().setProtocolName(protocolInfo);
-        /*
-         * Enable the necessary security key builders in the DLMS device builder
-         * before calling withSettings. This allows the withSettings to be
-         * called transitively on the enabled security key builders inside the
-         * DLMS device builder.
-         */
-        final String deviceType = inputSettings.getOrDefault(PlatformSmartmeteringKeys.DEVICE_TYPE, SMART_METER_E);
-        /*if (inputSettings.containsKey(PlatformSmartmeteringKeys.LLS1_ACTIVE) && "true"
-                .equals(inputSettings.get(PlatformSmartmeteringKeys.LLS1_ACTIVE))) {
-            dlmsDeviceBuilder.getPasswordBuilder().enable();
-        } else if (this.isGasSmartMeter(deviceType)) {
-            dlmsDeviceBuilder.getMbusMasterSecurityKeyBuilder().enable();*/
-        /*
-         * Don't insert a default value for the M-Bus User key. So only
-         * enable the builder if an M-Bus User key is explicitly configured
-         * in the step data.
-         */
-            /*if (inputSettings.containsKey(PlatformSmartmeteringKeys.MBUS_USER_KEY)) {
-                dlmsDeviceBuilder.getMbusEncryptionSecurityKeyBuilder().enable();
-            }
-        //} else if (this.isESmartMeter(deviceType)) {
-        //    dlmsDeviceBuilder.getEncryptionSecurityKeyBuilder().enable();
-        //    dlmsDeviceBuilder.getMasterSecurityKeyBuilder().enable();
-        //    dlmsDeviceBuilder.getAuthenticationSecurityKeyBuilder().enable();
-        }*/
-
         final DlmsDevice dlmsDevice = dlmsDeviceBuilder.withSettings(inputSettings).build();
         this.dlmsDeviceRepository.save(dlmsDevice);
 

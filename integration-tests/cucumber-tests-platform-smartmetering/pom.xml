@@ -53,11 +53,6 @@
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.javalite</groupId>
-      <artifactId>activejdbc</artifactId>
-      <version>1.4.13</version>
-    </dependency>
 
     <!-- Cucumber Framework -->
     <dependency>

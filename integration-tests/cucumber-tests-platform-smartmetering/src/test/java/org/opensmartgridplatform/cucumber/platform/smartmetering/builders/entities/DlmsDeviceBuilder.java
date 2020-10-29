@@ -44,23 +44,6 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     private String protocolName = PlatformSmartmeteringDefaults.PROTOCOL;
     private String protocolVersion = PlatformSmartmeteringDefaults.PROTOCOL_VERSION;
 
-    /*private final SecurityKeyBuilder passwordBuilder = new SecurityKeyBuilder()
-            .setSecurityKeyType(SecurityKeyType.PASSWORD).setKey(PlatformSmartmeteringDefaults.PASSWORD);
-    private final SecurityKeyBuilder authenticationSecurityKeyBuilder = new SecurityKeyBuilder()
-            .setSecurityKeyType(SecurityKeyType.E_METER_AUTHENTICATION)
-            .setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_A_DB);
-    private final SecurityKeyBuilder encryptionSecurityKeyBuilder = new SecurityKeyBuilder()
-            .setSecurityKeyType(SecurityKeyType.E_METER_ENCRYPTION)
-            .setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_E_DB);
-    private final SecurityKeyBuilder masterSecurityKeyBuilder = new SecurityKeyBuilder()
-            .setSecurityKeyType(SecurityKeyType.E_METER_MASTER).setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_M_DB);
-    private final SecurityKeyBuilder mbusEncryptionSecurityKeyBuilder = new SecurityKeyBuilder()
-            .setSecurityKeyType(SecurityKeyType.G_METER_ENCRYPTION)
-            .setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_G_ENCRYPTION);
-    private final SecurityKeyBuilder mbusMasterSecurityKeyBuilder = new SecurityKeyBuilder()
-            .setSecurityKeyType(SecurityKeyType.G_METER_MASTER)
-            .setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_G_MASTER);*/
-
     public DlmsDeviceBuilder setDeviceIdentification(final String deviceIdentification) {
         this.deviceIdentification = deviceIdentification;
         return this;
@@ -172,71 +155,6 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
         return this;
     }
 
-    /**
-     * Retrieve the SecurityKeyBuilder in order to manipulate its values. A
-     * SecurityKey can not be set directly because there is a circular
-     * dependency with the DlmsDevice. This dependency is resolved in the
-     * {@link #build()} method of this class.
-     *
-     * @return Security key builder for authentication key.
-     */
-    /*public SecurityKeyBuilder getAuthenticationSecurityKeyBuilder() {
-        return this.authenticationSecurityKeyBuilder;
-    }
-
-    public SecurityKeyBuilder getPasswordBuilder() {
-        return this.passwordBuilder;
-
-    }*/
-
-    /**
-     * Retrieve the SecurityKeyBuilder in order to manipulate its values. A
-     * SecurityKey can not be set directly because there is a circular
-     * dependency with the DlmsDevice. This dependency is resolved in the
-     * {@link #build()} method of this class.
-     *
-     * @return Security key builder for encryption key.
-     */
-    /*public SecurityKeyBuilder getEncryptionSecurityKeyBuilder() {
-        return this.encryptionSecurityKeyBuilder;
-    }*/
-
-    /**
-     * Retrieve the SecurityKeyBuilder in order to manipulate its values. A
-     * SecurityKey can not be set directly because there is a circular
-     * dependency with the DlmsDevice. This dependency is resolved in the
-     * {@link #build()} method of this class.
-     *
-     * @return Security key builder for master key.
-     */
-    /*public SecurityKeyBuilder getMasterSecurityKeyBuilder() {
-        return this.masterSecurityKeyBuilder;
-    }*/
-
-    /**
-     * Retrieve the SecurityKeyBuilder in order to manipulate its values. A
-     * SecurityKey can not be set directly because there is a circular
-     * dependency with the DlmsDevice. This dependency is resolved in the
-     * {@link #build()} method of this class.
-     *
-     * @return Security key builder for master key.
-     */
-    /*public SecurityKeyBuilder getMbusEncryptionSecurityKeyBuilder() {
-        return this.mbusEncryptionSecurityKeyBuilder;
-    }*/
-
-    /**
-     * Retrieve the SecurityKeyBuilder in order to manipulate its values. A
-     * SecurityKey can not be set directly because there is a circular
-     * dependency with the DlmsDevice. This dependency is resolved in the
-     * {@link #build()} method of this class.
-     *
-     * @return Security key builder for master key.
-     */
-    /*public SecurityKeyBuilder getMbusMasterSecurityKeyBuilder() {
-        return this.mbusMasterSecurityKeyBuilder;
-    }*/
-
     @Override
     public DlmsDeviceBuilder withSettings(final Map<String, String> inputSettings) {
         if (inputSettings.containsKey(PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION)) {
@@ -321,8 +239,6 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
             }
         }
 
-        //this.getEnabledKeyBuilders().forEach(skb -> skb.withSettings(inputSettings));
-
         return this;
     }
 
@@ -353,21 +269,6 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
         dlmsDevice.setProtocol(this.protocolName, this.protocolVersion);
         dlmsDevice.setInvocationCounter(0L);
 
-        /**
-         * It is not ideal that the build() method for security keys is called
-         * here, but necessary because the security key needs the dlmsDevice in
-         * order to be created. This seems to be the only way to work around
-         * this circular dependency.
-         */
-        //TODO FIX
-        // this.getEnabledKeyBuilders().forEach(skb -> dlmsDevice.addSecurityKey(skb.setDlmsDevice(dlmsDevice).build()));
-
         return dlmsDevice;
     }
-
-    /*private List<SecurityKeyBuilder> getEnabledKeyBuilders() {
-        return Stream.of(this.authenticationSecurityKeyBuilder, this.encryptionSecurityKeyBuilder,
-                this.masterSecurityKeyBuilder, this.mbusEncryptionSecurityKeyBuilder, this.mbusMasterSecurityKeyBuilder,
-                this.passwordBuilder).filter(skb -> skb.enabled()).collect(Collectors.toList());
-    }*/
 }
