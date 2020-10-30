@@ -86,6 +86,8 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
         }
 
         try {
+            this.pendingSetScheduleRequestService
+                    .removeExpiredPendingSetScheduleRequestRecords(messageMetadata.getDeviceIdentification());
 
             final List<PendingSetScheduleRequest> pendingSetScheduleRequestList = this.pendingSetScheduleRequestService
                     .getAllByDeviceIdentificationNotExpired(messageMetadata.getDeviceIdentification());

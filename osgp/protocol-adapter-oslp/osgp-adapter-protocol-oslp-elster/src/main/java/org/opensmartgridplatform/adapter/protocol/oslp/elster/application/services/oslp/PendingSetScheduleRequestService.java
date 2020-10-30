@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.application.services.oslp;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -27,6 +28,9 @@ public class PendingSetScheduleRequestService {
 
     @Autowired
     private PendingSetScheduleRequestRepository pendingSetScheduleRequestRepository;
+
+    @Autowired
+    private Integer pendingSetScheduleRequestExpiresInMinutes;
 
     /**
      * Constructor
@@ -68,5 +72,16 @@ public class PendingSetScheduleRequestService {
         LOGGER.info("get all PendingSetScheduleRequests");
 
         return this.pendingSetScheduleRequestRepository.findAll();
+    }
+
+    public void removeExpiredPendingSetScheduleRequestRecords(final String deviceIdentification) {
+        final Date expireDateTime = Date
+                .from(ZonedDateTime.now().minusMinutes(this.pendingSetScheduleRequestExpiresInMinutes).toInstant());
+
+        LOGGER.info("remove PendingSetScheduleRequest(s) for device {} and older than time: {}", deviceIdentification,
+                expireDateTime);
+
+        this.pendingSetScheduleRequestRepository
+                .deleteAllByDeviceIdentificationAndExpiredAtIsBefore(deviceIdentification, expireDateTime);
     }
 }

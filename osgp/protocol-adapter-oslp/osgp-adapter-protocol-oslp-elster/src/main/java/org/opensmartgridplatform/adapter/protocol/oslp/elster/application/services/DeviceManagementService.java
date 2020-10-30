@@ -282,5 +282,4 @@ public class DeviceManagementService {
                 .withRetryCount(deviceRequest.getRetryCount());
         return messageMetadataBuilder.build();
     }
-
 }
