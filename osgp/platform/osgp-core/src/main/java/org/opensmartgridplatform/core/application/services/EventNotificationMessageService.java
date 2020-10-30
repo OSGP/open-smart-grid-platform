@@ -59,18 +59,19 @@ public class EventNotificationMessageService {
     public void handleEvent(final String deviceIdentification, final Date dateTime, final EventType eventType,
             final String description, final Integer index) throws UnknownEntityException {
 
-        // Check if the event belongs to an existing device
-        this.eventNotificationHelperService.findDevice(deviceIdentification);
-
         this.eventNotificationHelperService.saveEvent(new Event(deviceIdentification,
                 dateTime != null ? dateTime : DateTime.now().toDate(), eventType, description, index));
 
         // Check if it was a switching event.
-        if (eventType.equals(EventType.LIGHT_EVENTS_LIGHT_ON) || eventType.equals(EventType.LIGHT_EVENTS_LIGHT_OFF)
-                || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_ON)
-                || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_OFF)) {
+        if (this.isSwitchingEvent(eventType)) {
             this.handleSwitchingEvent(deviceIdentification, dateTime, eventType, index);
         }
+    }
+
+    private boolean isSwitchingEvent(final EventType eventType) {
+        return eventType.equals(EventType.LIGHT_EVENTS_LIGHT_ON) || eventType.equals(EventType.LIGHT_EVENTS_LIGHT_OFF)
+                || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_ON)
+                || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_OFF);
     }
 
     public void handleEvent(final String deviceIdentification, final EventNotificationDto event)
@@ -118,9 +119,7 @@ public class EventNotificationMessageService {
                     eventNotification.getIndex());
             this.eventNotificationHelperService.saveEvent(event);
 
-            if (eventType.equals(EventType.LIGHT_EVENTS_LIGHT_ON) || eventType.equals(EventType.LIGHT_EVENTS_LIGHT_OFF)
-                    || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_ON)
-                    || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_OFF)) {
+            if (this.isSwitchingEvent(eventType)) {
                 switchDeviceEvents.add(event);
             } else if (eventType.equals(EventType.LIGHT_SENSOR_REPORTS_DARK)
                     || eventType.equals(EventType.LIGHT_SENSOR_REPORTS_LIGHT)) {
@@ -222,9 +221,9 @@ public class EventNotificationMessageService {
     private void handleSwitchingEvent(final String deviceIdentification, final Date dateTime, final EventType eventType,
             final int index) throws UnknownEntityException {
 
+        final Ssld ssld = this.eventNotificationHelperService.findSsld(deviceIdentification);
         // If the index == 0 handle all LIGHT relays, otherwise just handle the
         // index.
-        final Ssld ssld = this.eventNotificationHelperService.findSsld(deviceIdentification);
         if (index == 0) {
             for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
                 if (deviceOutputSetting.getOutputType().equals(RelayType.LIGHT)) {

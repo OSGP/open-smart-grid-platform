@@ -25,7 +25,6 @@ import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.domain.core.entities.Event;
 import org.opensmartgridplatform.domain.core.entities.RelayStatus;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
-import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.EventRepository;
 import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
@@ -35,9 +34,6 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 
 public class EventSteps {
-
-    @Autowired
-    private DeviceRepository deviceRepository;
 
     @Autowired
     private SsldRepository ssldRepository;
