@@ -9,6 +9,7 @@ package org.opensmartgridplatform.oslp;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.nio.ByteBuffer;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -17,8 +18,10 @@ import java.security.SecureRandom;
 import java.security.spec.ECGenParameterSpec;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.List;
 import java.util.Random;
 
 import org.apache.commons.codec.binary.Hex;
@@ -67,11 +70,8 @@ class OslpDecoderTest {
     void decodesAnOslpEnvelopeWhenAllBytesAreReceivedTogether() {
         final EmbeddedChannel channel = new EmbeddedChannel(this.oslpDecoder());
         final OslpEnvelope oslpEnvelope = this.oslpEnvelope();
-        final ByteBuf byteBuf = Unpooled.copiedBuffer(oslpEnvelope.getSecurityKey(), oslpEnvelope.getSequenceNumber(),
-                oslpEnvelope.getDeviceId(), oslpEnvelope.getLengthIndicator(),
-                oslpEnvelope.getPayloadMessage().toByteArray());
 
-        channel.writeInbound(byteBuf);
+        ConnectionBehavior.ALL_BYTES_TOGETHER.writeOslpEnvelope(channel, oslpEnvelope);
         final OslpEnvelope actualOslpEnvelope = channel.readInbound();
 
         final String description = this.oslpEnvelopeDetails(oslpEnvelope, this.signatureDefinition,
@@ -84,15 +84,7 @@ class OslpDecoderTest {
         final EmbeddedChannel channel = new EmbeddedChannel(this.oslpDecoder());
         final OslpEnvelope oslpEnvelope = this.oslpEnvelope();
 
-        channel.writeInbound(Unpooled.copiedBuffer(oslpEnvelope.getSecurityKey()));
-        assertThat(channel.<Object> readInbound()).isNull();
-        channel.writeInbound(Unpooled.copiedBuffer(oslpEnvelope.getSequenceNumber()));
-        assertThat(channel.<Object> readInbound()).isNull();
-        channel.writeInbound(Unpooled.copiedBuffer(oslpEnvelope.getDeviceId()));
-        assertThat(channel.<Object> readInbound()).isNull();
-        channel.writeInbound(Unpooled.copiedBuffer(oslpEnvelope.getLengthIndicator()));
-        assertThat(channel.<Object> readInbound()).isNull();
-        channel.writeInbound(Unpooled.copiedBuffer(oslpEnvelope.getPayloadMessage().toByteArray()));
+        ConnectionBehavior.FIELD_MATCHING_CHUNKS.writeOslpEnvelope(channel, oslpEnvelope);
         final OslpEnvelope actualOslpEnvelope = channel.readInbound();
 
         final String description = this.oslpEnvelopeDetails(oslpEnvelope, this.signatureDefinition,
@@ -104,16 +96,8 @@ class OslpDecoderTest {
     void decodesAnOslpEnvelopeWhenAllBytesAreReceivedOneByOne() {
         final EmbeddedChannel channel = new EmbeddedChannel(this.oslpDecoder());
         final OslpEnvelope oslpEnvelope = this.oslpEnvelope();
-        final ByteBuf byteBuf = Unpooled.copiedBuffer(oslpEnvelope.getSecurityKey(), oslpEnvelope.getSequenceNumber(),
-                oslpEnvelope.getDeviceId(), oslpEnvelope.getLengthIndicator(),
-                oslpEnvelope.getPayloadMessage().toByteArray());
-        final int numberOfBytes = byteBuf.array().length;
 
-        for (int index = 0; index < numberOfBytes - 1; index++) {
-            channel.writeInbound(byteBuf.copy(index, 1));
-            assertThat(channel.<Object> readInbound()).isNull();
-        }
-        channel.writeInbound(byteBuf.copy(numberOfBytes - 1, 1));
+        ConnectionBehavior.SINGLE_BYTE_CHUNKS.writeOslpEnvelope(channel, oslpEnvelope);
         final OslpEnvelope actualOslpEnvelope = channel.readInbound();
 
         final String description = this.oslpEnvelopeDetails(oslpEnvelope, this.signatureDefinition,
@@ -125,27 +109,12 @@ class OslpDecoderTest {
     void decodesAnOslpEnvelopeWhenAllBytesAreReceivedInRandomChunks() {
         final EmbeddedChannel channel = new EmbeddedChannel(this.oslpDecoder());
         final OslpEnvelope oslpEnvelope = this.oslpEnvelope();
-        final ByteBuf byteBuf = Unpooled.copiedBuffer(oslpEnvelope.getSecurityKey(), oslpEnvelope.getSequenceNumber(),
-                oslpEnvelope.getDeviceId(), oslpEnvelope.getLengthIndicator(),
-                oslpEnvelope.getPayloadMessage().toByteArray());
-        final int numberOfBytes = byteBuf.array().length;
-        final int[] chunkSizes = this.splitInRandomLengths(numberOfBytes);
-        final int numberOfChunks = chunkSizes.length;
 
-        int index = 0;
-        for (int i = 0; i < numberOfChunks - 1; i++) {
-            final int length = chunkSizes[i];
-            channel.writeInbound(byteBuf.copy(index, length));
-            index += length;
-            assertThat(channel.<Object> readInbound()).isNull();
-        }
-        channel.writeInbound(byteBuf.copy(index, chunkSizes[numberOfChunks - 1]));
+        ConnectionBehavior.RANDOM_CHUNKS.writeOslpEnvelope(channel, oslpEnvelope);
         final OslpEnvelope actualOslpEnvelope = channel.readInbound();
 
-        final String envelopeDescription = this.oslpEnvelopeDetails(oslpEnvelope, this.signatureDefinition,
+        final String description = this.oslpEnvelopeDetails(oslpEnvelope, this.signatureDefinition,
                 this.keyPair.getPrivate());
-        final String description = String.format("%s%nBytes written using chunk sizes: %s", envelopeDescription,
-                Arrays.toString(chunkSizes));
         this.assertActualOslpEnvelopeEqualsExpected(actualOslpEnvelope, oslpEnvelope, description);
     }
 
@@ -162,22 +131,33 @@ class OslpDecoderTest {
         this.assertActualOslpEnvelopeEqualsExpected(actualOslpEnvelope, oslpEnvelope, description);
     }
 
-    private int[] splitInRandomLengths(final int totalLength) {
-        final int[] lengths = new int[totalLength];
-        int numberOfLengths = 0;
-        int sumOfLengths = 0;
-        while (sumOfLengths < totalLength) {
-            final int nextLength;
-            if (sumOfLengths == totalLength - 1) {
-                nextLength = 1;
-            } else {
-                nextLength = 1 + this.random.nextInt(totalLength - sumOfLengths - 1);
-            }
-            lengths[numberOfLengths] = nextLength;
-            numberOfLengths += 1;
-            sumOfLengths += nextLength;
+    @Test
+    void decodesMultipleOslpEnvelopesInSequence() {
+        final EmbeddedChannel channel = new EmbeddedChannel(this.oslpDecoder());
+        final List<OslpEnvelope> oslpEnvelopes = this.oslpEnvelopes();
+        final List<String> descriptions = new ArrayList<>();
+
+        for (final OslpEnvelope oslpEnvelope : oslpEnvelopes) {
+            descriptions
+                    .add(this.oslpEnvelopeDetails(oslpEnvelope, this.signatureDefinition, this.keyPair.getPrivate()));
+            this.randomConnectionBehavior().writeOslpEnvelope(channel, oslpEnvelope);
         }
-        return Arrays.copyOf(lengths, numberOfLengths);
+
+        final int numberOfEnvelopes = oslpEnvelopes.size();
+        final StringBuilder descriptionBuilder = new StringBuilder();
+        int index = 1;
+        for (final String description : descriptions) {
+            descriptionBuilder
+                    .append(String.format("OslpEnvelope [%d of %d]:%n%s%n", index, numberOfEnvelopes, description));
+            index += 1;
+        }
+        for (int i = 0; i < numberOfEnvelopes; i++) {
+            final OslpEnvelope expectedOslpEnvelope = oslpEnvelopes.get(i);
+            final OslpEnvelope actualOslpEnvelope = channel.readInbound();
+            final String description = String.format("%s%nComparing OslpEnvelope %d of %d", descriptionBuilder, i + 1,
+                    numberOfEnvelopes);
+            this.assertActualOslpEnvelopeEqualsExpected(actualOslpEnvelope, expectedOslpEnvelope, description);
+        }
     }
 
     private OslpEnvelope oslpEnvelope() {
@@ -191,6 +171,36 @@ class OslpDecoderTest {
                 .build();
     }
 
+    private List<OslpEnvelope> oslpEnvelopes() {
+        final List<OslpEnvelope> envelopes = new ArrayList<>();
+        final OslpEnvelope.Builder builder = new OslpEnvelope.Builder()
+                .withSignature(this.signatureDefinition.algorithm())
+                .withProvider(this.signatureDefinition.provider())
+                .withPrimaryKey(this.keyPair.getPrivate())
+                .withSecurityKey(null /* will be generated */)
+                .withDeviceId(this.deviceId);
+
+        final ByteBuffer bb = ByteBuffer.allocate(2);
+        short sequenceNumberValue = (short) this.random.nextInt();
+        this.sequenceNumber = bb.putShort(sequenceNumberValue).array();
+        this.message = OslpMessageType.REGISTER_DEVICE_REQUEST.randomMessage(this);
+        envelopes.add(builder.withSequenceNumber(this.sequenceNumber).withPayloadMessage(this.message).build());
+
+        bb.rewind();
+        sequenceNumberValue += 1;
+        this.sequenceNumber = bb.putShort(sequenceNumberValue).array();
+        this.message = OslpMessageType.CONFIRM_REGISTER_DEVICE_REQUEST.randomMessage(this);
+        envelopes.add(builder.withSequenceNumber(this.sequenceNumber).withPayloadMessage(this.message).build());
+
+        bb.rewind();
+        sequenceNumberValue += 1;
+        this.sequenceNumber = bb.putShort(sequenceNumberValue).array();
+        this.message = OslpMessageType.EVENT_NOTIFICATION_REQUEST.randomMessage(this);
+        envelopes.add(builder.withSequenceNumber(this.sequenceNumber).withPayloadMessage(this.message).build());
+
+        return envelopes;
+    }
+
     private OslpDecoder oslpDecoder() {
         return new OslpDecoder(this.signatureDefinition.algorithm(), this.signatureDefinition.provider());
     }
@@ -202,6 +212,11 @@ class OslpDecoderTest {
 
     private OslpMessageType randomOslpMessageType() {
         final OslpMessageType[] values = OslpMessageType.values();
+        return values[this.random.nextInt(values.length)];
+    }
+
+    private ConnectionBehavior randomConnectionBehavior() {
+        final ConnectionBehavior[] values = ConnectionBehavior.values();
         return values[this.random.nextInt(values.length)];
     }
 
@@ -294,6 +309,7 @@ class OslpDecoderTest {
 
     private void assertActualOslpEnvelopeEqualsExpected(final OslpEnvelope actual, final OslpEnvelope expected,
             final String description) {
+
         assertThat(actual).usingRecursiveComparison()
                 /*
                  * Fields privateKey and valid are related to creation or
@@ -306,6 +322,81 @@ class OslpDecoderTest {
                 .ignoringFields("privateKey", "valid")
                 .as(description)
                 .isEqualTo(expected);
+    }
+
+    enum ConnectionBehavior {
+        ALL_BYTES_TOGETHER {
+            @Override
+            public void writeOslpEnvelope(final EmbeddedChannel channel, final OslpEnvelope envelope) {
+                assertThat(channel.writeInbound(byteBuf(envelope))).isTrue();
+            }
+        },
+        FIELD_MATCHING_CHUNKS {
+            @Override
+            public void writeOslpEnvelope(final EmbeddedChannel channel, final OslpEnvelope envelope) {
+                channel.writeInbound(Unpooled.copiedBuffer(envelope.getSecurityKey()));
+                channel.writeInbound(Unpooled.copiedBuffer(envelope.getSequenceNumber()));
+                channel.writeInbound(Unpooled.copiedBuffer(envelope.getDeviceId()));
+                channel.writeInbound(Unpooled.copiedBuffer(envelope.getLengthIndicator()));
+                assertThat(channel.writeInbound(Unpooled.copiedBuffer(envelope.getPayloadMessage().toByteArray())))
+                        .isTrue();
+            }
+        },
+        SINGLE_BYTE_CHUNKS {
+            @Override
+            public void writeOslpEnvelope(final EmbeddedChannel channel, final OslpEnvelope envelope) {
+                final ByteBuf byteBuf = byteBuf(envelope);
+                final int numberOfBytes = byteBuf.array().length;
+                for (int index = 0; index < numberOfBytes - 1; index++) {
+                    channel.writeInbound(byteBuf.copy(index, 1));
+                }
+                assertThat(channel.writeInbound(byteBuf.copy(numberOfBytes - 1, 1))).isTrue();
+            }
+        },
+        RANDOM_CHUNKS {
+
+            private final Random random = new SecureRandom();
+
+            private int[] splitInRandomLengths(final int totalLength) {
+                final int[] lengths = new int[totalLength];
+                int numberOfLengths = 0;
+                int sumOfLengths = 0;
+                while (sumOfLengths < totalLength) {
+                    final int nextLength;
+                    if (sumOfLengths == totalLength - 1) {
+                        nextLength = 1;
+                    } else {
+                        nextLength = 1 + this.random.nextInt(totalLength - sumOfLengths - 1);
+                    }
+                    lengths[numberOfLengths] = nextLength;
+                    numberOfLengths += 1;
+                    sumOfLengths += nextLength;
+                }
+                return Arrays.copyOf(lengths, numberOfLengths);
+            }
+
+            @Override
+            public void writeOslpEnvelope(final EmbeddedChannel channel, final OslpEnvelope envelope) {
+                final ByteBuf byteBuf = byteBuf(envelope);
+                final int numberOfBytes = byteBuf.array().length;
+                final int[] chunkSizes = this.splitInRandomLengths(numberOfBytes);
+                final int numberOfChunks = chunkSizes.length;
+                int index = 0;
+                for (int i = 0; i < numberOfChunks - 1; i++) {
+                    final int length = chunkSizes[i];
+                    channel.writeInbound(byteBuf.copy(index, length));
+                    index += length;
+                }
+                assertThat(channel.writeInbound(byteBuf.copy(index, chunkSizes[numberOfChunks - 1]))).isTrue();
+            }
+        };
+
+        public static ByteBuf byteBuf(final OslpEnvelope envelope) {
+            return Unpooled.copiedBuffer(envelope.getSecurityKey(), envelope.getSequenceNumber(),
+                    envelope.getDeviceId(), envelope.getLengthIndicator(), envelope.getPayloadMessage().toByteArray());
+        }
+
+        public abstract void writeOslpEnvelope(final EmbeddedChannel channel, final OslpEnvelope envelope);
     }
 
     enum OslpMessageType {
@@ -338,17 +429,21 @@ class OslpDecoderTest {
             @Override
             public Message randomMessage(final OslpDecoderTest test) {
                 final Event event = test.randomEvent();
-                final EventNotification.Builder eventNotificationBuilder = EventNotification.newBuilder()
-                        .setEvent(event)
-                        .setDescription(test.random.nextBoolean() ? "" : event.name() + " used in test")
-                        .setIndex(test.randomEventIndex());
-                if (test.random.nextBoolean()) {
-                    eventNotificationBuilder.setTimestamp(this.oslpTimestampFormatter.format(LocalDateTime.now()));
+                final EventNotificationRequest.Builder eventNotificationRequestBuilder = EventNotificationRequest
+                        .newBuilder();
+                final int numberOfEvents = 1 + test.random.nextInt(6);
+                for (int i = 0; i < numberOfEvents; i++) {
+                    final EventNotification.Builder eventNotificationBuilder = EventNotification.newBuilder()
+                            .setEvent(event)
+                            .setDescription(test.random.nextBoolean() ? ""
+                                    : String.format("%s [%d/%d] used in test", event, i + 1, numberOfEvents))
+                            .setIndex(test.randomEventIndex());
+                    if (test.random.nextBoolean()) {
+                        eventNotificationBuilder.setTimestamp(this.oslpTimestampFormatter.format(LocalDateTime.now()));
+                    }
+                    eventNotificationRequestBuilder.addNotifications(eventNotificationBuilder);
                 }
-                return Message.newBuilder()
-                        .setEventNotificationRequest(
-                                EventNotificationRequest.newBuilder().addNotifications(eventNotificationBuilder))
-                        .build();
+                return Message.newBuilder().setEventNotificationRequest(eventNotificationRequestBuilder).build();
             }
         };
 
