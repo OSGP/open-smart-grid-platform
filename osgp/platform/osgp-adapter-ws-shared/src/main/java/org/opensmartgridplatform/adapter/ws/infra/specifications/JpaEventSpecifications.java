@@ -17,7 +17,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.Event;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
@@ -28,7 +27,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 public class JpaEventSpecifications implements EventSpecifications {
 
-    private static final String DEVICE = "device";
+    private static final String DEVICE_IDENTIFICATION = "deviceIdentification";
     private static final String DESCRIPTION = "description";
     private static final Specification<Event> NO_FILTER = (deviceRoot, query, cb) -> cb.and();
 
@@ -53,13 +52,14 @@ public class JpaEventSpecifications implements EventSpecifications {
     }
 
     @Override
-    public Specification<Event> isFromDevice(final Device device) {
+    public Specification<Event> isFromDevice(final String deviceIdentification) {
 
-        if (device == null) {
+        if (deviceIdentification == null) {
             return NO_FILTER;
         }
 
-        return ((eventRoot, query, cb) -> cb.equal(eventRoot.<Integer> get(DEVICE), device.getId()));
+        return ((eventRoot, query, cb) -> cb.equal(eventRoot.<String> get(DEVICE_IDENTIFICATION),
+                deviceIdentification));
     }
 
     @Override
@@ -77,12 +77,12 @@ public class JpaEventSpecifications implements EventSpecifications {
 
         final Subquery<Long> subquery = query.subquery(Long.class);
         final Root<DeviceAuthorization> deviceAuthorizationRoot = subquery.from(DeviceAuthorization.class);
-        subquery.select(deviceAuthorizationRoot.get(DEVICE).get("id").as(Long.class));
+        subquery.select(deviceAuthorizationRoot.get(DEVICE_IDENTIFICATION).get("id").as(Long.class));
         subquery.where(cb.and(cb.equal(deviceAuthorizationRoot.get("organisation"), organisation.getId()), cb.or(
                 cb.equal(deviceAuthorizationRoot.get("functionGroup"), DeviceFunctionGroup.OWNER.ordinal()),
                 cb.equal(deviceAuthorizationRoot.get("functionGroup"), DeviceFunctionGroup.MANAGEMENT.ordinal()))));
 
-        return cb.in(eventRoot.get(DEVICE)).value(subquery);
+        return cb.in(eventRoot.get(DEVICE_IDENTIFICATION)).value(subquery);
     }
 
     @Override

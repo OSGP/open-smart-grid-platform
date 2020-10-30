@@ -390,18 +390,15 @@ public class AdHocManagementService extends AbstractService {
     }
 
     private boolean isDuplicateEvent(final Event event, final LightMeasurementDevice lmd) {
-        final List<Event> events = this.eventRepository.findTop2ByDeviceOrderByDateTimeDesc(lmd);
-        for (final Event e : events) {
-            if (event.getDateTime().equals(e.getDateTime())) {
-                // Exact match found, skip this event of the result set.
-                continue;
-            } else if (event.getEventType().equals(e.getEventType())) {
-                // If second event has same type, duplicate event has been
-                // detected.
-                return true;
-            }
-        }
-        return false;
+        final List<Event> events = this.eventRepository
+                .findTop2ByDeviceIdentificationOrderByDateTimeDesc(lmd.getDeviceIdentification());
+
+        // Returns true if one of the events differs in date/time and has the
+        // same event type
+        return events.stream()
+                .anyMatch(e -> !event.getDateTime().equals(e.getDateTime())
+                        && event.getEventType().equals(e.getEventType()));
+
     }
 
     private TransitionType determineTransitionTypeForEvent(final Event event) {
@@ -439,7 +436,7 @@ public class AdHocManagementService extends AbstractService {
             final String lightMeasurementDeviceIdentification, final String messageType) throws FunctionalException {
 
         LOGGER.debug(
-                "setLightMeasurementDevice called for device {} with organisation {} and light measurement device, message type: {}, correlationUid: {}",
+                "setLightMeasurementDevice called for device {} with organisation {} and light measurement device {}, message type: {}, correlationUid: {}",
                 deviceIdentification, organisationIdentification, lightMeasurementDeviceIdentification, messageType,
                 correlationUid);
 
