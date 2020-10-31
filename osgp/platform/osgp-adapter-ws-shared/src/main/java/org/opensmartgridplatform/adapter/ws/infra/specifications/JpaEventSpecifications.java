@@ -27,9 +27,10 @@ import org.springframework.data.jpa.domain.Specification;
 
 public class JpaEventSpecifications implements EventSpecifications {
 
+    private static final String DEVICE = "device";
     private static final String DEVICE_IDENTIFICATION = "deviceIdentification";
     private static final String DESCRIPTION = "description";
-    private static final Specification<Event> NO_FILTER = (deviceRoot, query, cb) -> cb.and();
+    private static final Specification<Event> NO_FILTER = (eventRoot, query, cb) -> cb.and();
 
     @Override
     public Specification<Event> isCreatedAfter(final Date dateFrom) {
@@ -75,9 +76,9 @@ public class JpaEventSpecifications implements EventSpecifications {
     private Predicate createPredicateForIsAuthorized(final Root<Event> eventRoot, final CriteriaQuery<?> query,
             final CriteriaBuilder cb, final Organisation organisation) {
 
-        final Subquery<Long> subquery = query.subquery(Long.class);
+        final Subquery<String> subquery = query.subquery(String.class);
         final Root<DeviceAuthorization> deviceAuthorizationRoot = subquery.from(DeviceAuthorization.class);
-        subquery.select(deviceAuthorizationRoot.get(DEVICE_IDENTIFICATION).get("id").as(Long.class));
+        subquery.select(deviceAuthorizationRoot.get(DEVICE).get(DEVICE_IDENTIFICATION).as(String.class));
         subquery.where(cb.and(cb.equal(deviceAuthorizationRoot.get("organisation"), organisation.getId()), cb.or(
                 cb.equal(deviceAuthorizationRoot.get("functionGroup"), DeviceFunctionGroup.OWNER.ordinal()),
                 cb.equal(deviceAuthorizationRoot.get("functionGroup"), DeviceFunctionGroup.MANAGEMENT.ordinal()))));

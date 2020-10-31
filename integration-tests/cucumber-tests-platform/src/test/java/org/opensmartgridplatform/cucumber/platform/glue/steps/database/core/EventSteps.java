@@ -15,6 +15,7 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -44,12 +45,13 @@ public class EventSteps {
     @Given("^an event$")
     public void anEvent(final Map<String, String> data) {
         final String deviceIdentification = getString(data, PlatformKeys.KEY_DEVICE_IDENTIFICATION);
+        final Date date = getDateTime2(getString(data, PlatformKeys.DATE), DateTime.now()).toDate();
+        final EventType eventType = getEnum(data, PlatformKeys.EVENT_TYPE, EventType.class,
+                EventType.DIAG_EVENTS_GENERAL);
+        final String description = getString(data, PlatformKeys.KEY_DESCRIPTION, "");
+        final Integer index = getInteger(data, PlatformKeys.KEY_INDEX, PlatformDefaults.DEFAULT_INDEX);
 
-        final Event event = new Event(deviceIdentification,
-                getDateTime2(getString(data, PlatformKeys.DATE), DateTime.now()).toDate(),
-                getEnum(data, PlatformKeys.EVENT_TYPE, EventType.class, EventType.DIAG_EVENTS_GENERAL),
-                getString(data, PlatformKeys.KEY_DESCRIPTION, ""),
-                getInteger(data, PlatformKeys.KEY_INDEX, PlatformDefaults.DEFAULT_INDEX));
+        final Event event = new Event(deviceIdentification, date, eventType, description, index);
 
         this.eventRepository.save(event);
     }

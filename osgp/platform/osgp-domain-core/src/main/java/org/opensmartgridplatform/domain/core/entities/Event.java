@@ -25,6 +25,7 @@ public class Event extends AbstractEntity {
      */
     private static final long serialVersionUID = 5987663923796632312L;
 
+    @Column(nullable = false)
     private String deviceIdentification;
 
     @Column(nullable = false)
