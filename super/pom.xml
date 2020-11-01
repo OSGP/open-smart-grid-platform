@@ -14,7 +14,7 @@
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>super-osgp</artifactId>
-  <version>5.2.0</version>
+  <version>5.3.0</version>
   <packaging>pom</packaging>
   <name>super-osgp</name>
   <!-- Description, Organization, Licences, URL and Distribution Management
@@ -46,10 +46,10 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
-    <osgp.version>5.2.0</osgp.version>
-    <osgp.dlms.version>5.2.0</osgp.dlms.version>
-    <osgp.shared.version>5.2.0</osgp.shared.version>
-    <osgp.jasper-interface.version>5.2.0</osgp.jasper-interface.version>
+    <osgp.version>5.3.0</osgp.version>
+    <osgp.dlms.version>5.3.0</osgp.dlms.version>
+    <osgp.shared.version>5.3.0</osgp.shared.version>
+    <osgp.jasper-interface.version>5.3.0</osgp.jasper-interface.version>
     <spring.version>5.2.6.RELEASE</spring.version>
     <spring.data.version>2.2.3.RELEASE</spring.data.version>
     <spring.data.commons.version>2.2.3.RELEASE</spring.data.commons.version>
@@ -102,7 +102,6 @@
     <versions.maven.plugin.version>2.7</versions.maven.plugin.version>
     <apache.activemq.version>5.15.12</apache.activemq.version>
     <logback.version>1.2.3</logback.version>
-    <logback.ext.version>0.1.5</logback.ext.version>
     <apache.commons.schema>2.2.5</apache.commons.schema>
     <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
     <netty.version>4.1.49.Final</netty.version>
@@ -791,6 +790,12 @@
         <version>${junit.version}</version>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-params</artifactId>
+        <version>${junit.version}</version>
+        <scope>test</scope>
+      </dependency>
       <!-- Cucumber tests depend on JUnit 4, add the vintage engine -->
       <dependency>
         <groupId>org.junit.vintage</groupId>
@@ -935,11 +940,6 @@
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-core</artifactId>
         <version>${logback.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.logback-extensions</groupId>
-        <artifactId>logback-ext-spring</artifactId>
-        <version>${logback.ext.version}</version>
       </dependency>
 
       <dependency>

@@ -81,10 +81,9 @@ public class SetRebootSteps {
      *            The table with the expected fields in the response.
      * @apiNote The response will contain the correlation uid, so store that in
      *          the current scenario context for later use.
-     * @throws Throwable
      */
     @Then("^the set reboot async response contains$")
-    public void theSetRebootAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
+    public void theSetRebootAsyncResponseContains(final Map<String, String> expectedResponseData) {
         final SetRebootAsyncResponse asyncResponse = (SetRebootAsyncResponse) ScenarioContext.current()
                 .get(PlatformKeys.RESPONSE);
 
@@ -104,7 +103,7 @@ public class SetRebootSteps {
 
     @Then("^the platform buffers a set reboot response message for device \"([^\"]*)\"$")
     public void thenThePlatformBuffersASetRebootResponseMessage(final String deviceIdentification,
-            final Map<String, String> expectedResult) throws Throwable {
+            final Map<String, String> expectedResult) {
         final SetRebootAsyncRequest request = new SetRebootAsyncRequest();
         final AsyncRequest asyncRequest = new AsyncRequest();
         asyncRequest.setDeviceId(deviceIdentification);

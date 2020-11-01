@@ -174,6 +174,7 @@ public class PlatformKeys extends Keys {
     public static final String KEY_MEASUREMENT_NODE = "MeasurementNode";
     public static final String KEY_MEASUREMENT_QUALIFIER = "MeasurementQualifier";
     public static final String KEY_MEASUREMENT_VALUE = "MeasurementValue";
+    public static final String KEY_DECODED_MESSAGE = "DecodedMessage";
     public static final String KEY_MESSAGE = "Message";
     public static final String KEY_MESSAGE_DATA = "MessageData";
     public static final String KEY_MESSAGE_TYPE = "MessageType";
@@ -195,6 +196,8 @@ public class PlatformKeys extends Keys {
     public static final String KEY_ORGANIZATION_IDENTIFICATION = "OrganizationIdentification";
     public static final String KEY_ORGANIZATION_IDENTIFICATION_TO_FIND = "OrganizationIdentificationToFind";
     public static final String KEY_OSLP_RESULT = "OSLPResult";
+    public static final String KEY_DOMAIN = "Domain";
+    public static final String KEY_DOMAIN_VERSION = "DomainVersion";
 
     public static final String KEY_OWNER = "Owner";
     public static final String KEY_SECOND_OWNER = "SecondOwner";

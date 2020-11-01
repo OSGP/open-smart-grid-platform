@@ -22,6 +22,7 @@ import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.Create
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.FindDevicesWhichHaveNoOwnerRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.FindMessageLogsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.GetProtocolInfosRequest;
+import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.MessageLogFilter;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.Organisation;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.ProtocolInfo;
@@ -234,9 +235,12 @@ public class AuthorizePlatformFunctionsSteps {
     private void getMessages(final Map<String, String> requestParameters)
             throws WebServiceSecurityException, GeneralSecurityException, IOException {
         final FindMessageLogsRequest request = new FindMessageLogsRequest();
+        final MessageLogFilter filter = new MessageLogFilter();
 
-        request.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
+        filter.setDeviceIdentification(getString(requestParameters, PlatformCommonKeys.KEY_DEVICE_IDENTIFICATION,
                 PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+
+        request.setMessageLogFilter(filter);
 
         ScenarioContext.current()
                 .put(PlatformCommonKeys.RESPONSE, this.adminDeviceManagementClient.findMessageLogs(request));

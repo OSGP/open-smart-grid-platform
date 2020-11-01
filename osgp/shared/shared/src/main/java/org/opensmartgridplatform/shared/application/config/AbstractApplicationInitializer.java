@@ -19,11 +19,14 @@ import javax.servlet.ServletException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.impl.StaticLoggerBinder;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.joran.spi.JoranException;
-import ch.qos.logback.ext.spring.LogbackConfigurer;
 
 /**
  * Web application Java configuration class.
@@ -31,13 +34,13 @@ import ch.qos.logback.ext.spring.LogbackConfigurer;
 public abstract class AbstractApplicationInitializer {
 
     protected final Logger logger;
-    private Class<?> contextClass;
-    private String logConfig;
+    private final Class<?> contextClass;
+    private final String logConfig;
     protected AnnotationConfigWebApplicationContext rootContext;
 
     /**
      * Constructs instance of ApplicationInitializer
-     * 
+     *
      * @param contextClass
      *            the class holding application specific Spring
      *            ApplicationContext
@@ -46,8 +49,8 @@ public abstract class AbstractApplicationInitializer {
      */
     public AbstractApplicationInitializer(final Class<?> contextClass, final String logConfig) {
         this.contextClass = contextClass;
-        this.logConfig = logConfig;
         this.logger = LoggerFactory.getLogger(this.contextClass);
+        this.logConfig = logConfig;
         this.rootContext = new AnnotationConfigWebApplicationContext();
     }
 
@@ -55,7 +58,7 @@ public abstract class AbstractApplicationInitializer {
      * Default startup of application context which: - Forces timezone to UTC -
      * Initializes the application logging - Registers the application context
      * with ServletContext
-     * 
+     *
      * @param servletContext
      *            Java servlet context as supplied by application server
      * @throws ServletException
@@ -75,15 +78,31 @@ public abstract class AbstractApplicationInitializer {
 
     private void initializeLogging() throws ServletException {
         Context initialContext;
+        String logLocation;
+
         try {
             initialContext = new InitialContext();
-            final String logLocation = (String) initialContext.lookup(this.logConfig);
+            logLocation = (String) initialContext.lookup(this.logConfig);
 
             // Load specific logback configuration, otherwise fallback to
             // classpath logback.xml
+
             if (new File(logLocation).exists()) {
-                LogbackConfigurer.initLogging(logLocation);
-                this.logger.info("Initialized logging using {}", this.logConfig);
+                final LoggerContext loggerContext = (LoggerContext) StaticLoggerBinder.getSingleton()
+                        .getLoggerFactory();
+
+                // in the current version logback automatically configures at
+                // startup the context, so we have to reset it
+                loggerContext.reset();
+
+                // reinitialize the logger context. calling this method allows
+                // configuration through groovy or xml
+                new ContextInitializer(loggerContext).configureByResource(ResourceUtils.getURL(logLocation));
+
+                this.logger.info("Initialized logging using {} ({})", this.logConfig, logLocation);
+
+            } else {
+                this.logger.info("{} not found, falling back to default logback initialization", logLocation);
             }
         } catch (final NamingException | FileNotFoundException | JoranException e) {
             this.logger.info("Failed to initialize logging using {}", this.logConfig, e);

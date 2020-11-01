@@ -13,7 +13,7 @@
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>platform</artifactId>
-  <version>5.2.0</version>
+  <version>5.3.0</version>
   <packaging>pom</packaging>
 
   <properties>
@@ -98,6 +98,8 @@
     <module>../shared/osgp-ws-publiclighting</module>
     <module>../shared/osgp-ws-distributionautomation</module>
     <module>../shared/osgp-ws-microgrids</module>
+    <module>../shared/osgp-kafka-distributionautomation</module>
+    <module>../shared/osgp-kafka-logger</module>
 
     <!-- Domain -->
     <module>osgp-domain-core</module>
@@ -114,6 +116,10 @@
     <module>osgp-adapter-domain-publiclighting</module>
     <module>osgp-adapter-domain-tariffswitching</module>
     <module>osgp-adapter-domain-smartmetering</module>
+
+    <!-- kafka -->
+    <module>osgp-adapter-kafka-distributionautomation</module>
+    <module>osgp-adapter-kafka-logging</module>
 
     <!-- Webservice -->
     <module>osgp-adapter-ws-shared</module>

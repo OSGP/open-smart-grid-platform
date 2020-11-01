@@ -13,6 +13,7 @@ import java.util.GregorianCalendar;
 import java.util.Objects;
 
 import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -51,8 +52,13 @@ public class XMLGregorianCalendarToZonedDateTimeConverter
             return null;
         }
 
-        final ZoneId zoneId = ZoneId.of("UTC");
-        return source.toGregorianCalendar().toZonedDateTime().toLocalDateTime().atZone(zoneId);
+        if (source.getTimezone() == DatatypeConstants.FIELD_UNDEFINED) {
+            // Optional timezone field is empty for source
+            final ZoneId zoneId = ZoneId.of("UTC");
+            return source.toGregorianCalendar().toZonedDateTime().toLocalDateTime().atZone(zoneId);
+        } else {
+            return source.toGregorianCalendar().toZonedDateTime();
+        }
     }
 
     @Override
