@@ -30,7 +30,7 @@ public class OsgpCoreRequestMessageProcessor {
     private AdHocManagementService adHocManagementService;
 
     public void processMessage(final RequestMessage requestMessage, final String messageType)
-            throws UnknownMessageTypeException, NotImplementedException {
+            throws UnknownMessageTypeException {
 
         final String organisationIdentification = requestMessage.getOrganisationIdentification();
         final String deviceIdentification = requestMessage.getDeviceIdentification();
