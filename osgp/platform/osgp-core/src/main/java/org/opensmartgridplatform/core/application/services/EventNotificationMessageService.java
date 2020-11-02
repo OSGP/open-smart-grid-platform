@@ -25,7 +25,6 @@ import org.opensmartgridplatform.domain.core.entities.Event;
 import org.opensmartgridplatform.domain.core.entities.RelayStatus;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.EventMessageDataContainer;
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayType;
@@ -326,7 +325,7 @@ public class EventNotificationMessageService {
     private void printRelayStatuses(final Map<Integer, RelayStatus> lastRelayStatusPerIndex,
             final String deviceIdentification) {
         LOGGER.info("print relay statuses for device: {}", deviceIdentification);
-        for (final Entry<Integer, RelayStatus> entry : lastRelayStatusPerIndex.entrySet()) {
+        for (final Map.Entry<Integer, RelayStatus> entry : lastRelayStatusPerIndex.entrySet()) {
             LOGGER.info("key: {}, value: {}", entry.getKey(), entry.getValue());
         }
     }
