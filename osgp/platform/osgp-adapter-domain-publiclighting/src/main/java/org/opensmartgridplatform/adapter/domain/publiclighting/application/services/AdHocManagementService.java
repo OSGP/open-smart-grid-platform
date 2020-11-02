@@ -406,7 +406,7 @@ public class AdHocManagementService extends AbstractService {
 
     private TransitionType determineTransitionTypeForEvent(final Event event) {
         final String transitionTypeFromLightMeasurementDevice = event.getEventType().name();
-        TransitionType transitionType;
+        final TransitionType transitionType;
         if (EventType.LIGHT_SENSOR_REPORTS_DARK.name().equals(transitionTypeFromLightMeasurementDevice)) {
             transitionType = TransitionType.DAY_NIGHT;
         } else {
@@ -439,7 +439,7 @@ public class AdHocManagementService extends AbstractService {
             final String lightMeasurementDeviceIdentification, final String messageType) throws FunctionalException {
 
         LOGGER.debug(
-                "setLightMeasurementDevice called for device {} with organisation {} and light measurement device, message type: {}, correlationUid: {}",
+                "setLightMeasurementDevice called for device {} with organisation {} and light measurement device {}, message type: {}, correlationUid: {}",
                 deviceIdentification, organisationIdentification, lightMeasurementDeviceIdentification, messageType,
                 correlationUid);
 

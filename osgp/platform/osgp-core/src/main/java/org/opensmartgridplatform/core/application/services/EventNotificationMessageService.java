@@ -25,7 +25,6 @@ import org.opensmartgridplatform.domain.core.entities.Event;
 import org.opensmartgridplatform.domain.core.entities.RelayStatus;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.EventMessageDataContainer;
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayType;
@@ -72,6 +71,7 @@ public class EventNotificationMessageService {
             this.handleSwitchingEvent(device, dateTime, eventType, index);
         }
     }
+
 
     public void handleEvent(final String deviceIdentification, final EventNotificationDto event)
             throws UnknownEntityException {
@@ -277,8 +277,8 @@ public class EventNotificationMessageService {
 
         try {
             final EventMessageDataContainer dataContainer = new EventMessageDataContainer(lightMeasurementDeviceEvents);
-            this.sendRequestMessageToDomainPublicLighting(DeviceFunction.SET_TRANSITION.name(),
-                    device.getDeviceIdentification(), dataContainer);
+            lightMeasurementDeviceEvents.forEach(lightMeasurementDeviceEvent -> this.sendRequestMessageToDomainPublicLighting(lightMeasurementDeviceEvent.getEventType().name(),
+                    device.getDeviceIdentification(), dataContainer));
         } catch (final Exception e) {
             LOGGER.error(String.format("Unexpected exception while handling events for light measurement device: %s",
                     device.getDeviceIdentification()), e);
