@@ -63,6 +63,14 @@ public class EventNotificationHelperService {
         return ssld.get();
     }
 
+    public Ssld findSsld(final String deviceIdentification) throws UnknownEntityException {
+        final Ssld ssld = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
+        if (ssld == null) {
+            throw new UnknownEntityException(Ssld.class, deviceIdentification);
+        }
+        return ssld;
+    }
+
     @Transactional(value = "transactionManager")
     public Ssld saveSsld(final Ssld ssld) {
         return this.ssldRepository.save(ssld);

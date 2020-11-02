@@ -76,7 +76,7 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
 
     @Override
     public void processMessage(final ObjectMessage message) {
-        LOGGER.debug("Processing smart metering response message");
+        LOGGER.debug("Processing public lighting response message");
 
         String correlationUid = null;
         String jmsType = null;
