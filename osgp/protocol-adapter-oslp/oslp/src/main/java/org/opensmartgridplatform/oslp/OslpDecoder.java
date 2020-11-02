@@ -72,13 +72,17 @@ public class OslpDecoder extends ReplayingDecoder<OslpDecoder.DecodingState> {
         case PAYLOAD_MESSAGE:
             LOGGER.debug("Decoding payload.");
             this.decodePayload(in);
-            final OslpEnvelope msg = this.builder.withSignature(this.signature).withProvider(this.provider).build();
-            this.reset();
-            out.add(msg);
+            this.outputOslpEnvelopeAndResetDecoder(out);
             break;
         default:
             throw new UnknownOslpDecodingStateException(decodingState.name());
         }
+    }
+
+    private void outputOslpEnvelopeAndResetDecoder(final List<Object> out) {
+        final OslpEnvelope msg = this.builder.withSignature(this.signature).withProvider(this.provider).build();
+        this.reset();
+        out.add(msg);
     }
 
     private void reset() {
@@ -136,8 +140,10 @@ public class OslpDecoder extends ReplayingDecoder<OslpDecoder.DecodingState> {
 
     private byte[] readBytes(final ByteBuf buffer, final int length) {
         final ByteBuf temp = buffer.readBytes(length);
-        final byte[] bytes = ByteBufUtil.getBytes(temp);
-        temp.release();
-        return bytes;
+        try {
+            return ByteBufUtil.getBytes(temp);
+        } finally {
+            temp.release();
+        }
     }
 }
