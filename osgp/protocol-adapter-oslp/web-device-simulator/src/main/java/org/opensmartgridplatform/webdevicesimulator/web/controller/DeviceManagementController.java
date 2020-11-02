@@ -45,7 +45,7 @@ public class DeviceManagementController extends AbstractController {
 
     protected static final String DEVICES_URL = "/devices";
     protected static final String DEVICE_CREATE_URL = "/devices/create";
-    protected static final String DEVICE_EDIT_URL = "/devices/edit/{id}";
+    protected static final String DEVICE_EDIT_URL = "/devices/edit/{deviceId}";
 
     protected static final String DEVICES_VIEW = "devices/list";
     protected static final String DEVICE_CREATE_VIEW = "devices/create";
@@ -281,21 +281,22 @@ public class DeviceManagementController extends AbstractController {
     }
 
     @RequestMapping(value = DEVICE_EDIT_URL, method = RequestMethod.GET)
-    public String showEditDevice(@PathVariable final Long id, final Model model) {
-        model.addAttribute(MODEL_ATTRIBUTE_DEVICE, this.deviceManagementService.findDevice(id));
+    public String showEditDevice(@PathVariable final Long deviceId, final Model model) {
+        model.addAttribute(MODEL_ATTRIBUTE_DEVICE, this.deviceManagementService.findDevice(deviceId));
         return DEVICE_EDIT_VIEW;
     }
 
     @RequestMapping(value = DEVICE_EDIT_URL, method = RequestMethod.POST)
-    public String editDevice(@ModelAttribute(MODEL_ATTRIBUTE_DEVICE) final Device updated, @PathVariable final Long id,
-            final BindingResult bindingResult, final RedirectAttributes attributes, final Model model) {
+    public String editDevice(@ModelAttribute(MODEL_ATTRIBUTE_DEVICE) final Device updated,
+            @PathVariable final Long deviceId, final BindingResult bindingResult, final RedirectAttributes attributes,
+            final Model model) {
 
         if (bindingResult.hasErrors()) {
             return DEVICE_EDIT_VIEW;
         }
 
         // Find device
-        final Device deviceToUpdate = this.deviceManagementService.findDevice(id);
+        final Device deviceToUpdate = this.deviceManagementService.findDevice(deviceId);
         if (deviceToUpdate == null) {
             return DEVICE_EDIT_VIEW;
         }
