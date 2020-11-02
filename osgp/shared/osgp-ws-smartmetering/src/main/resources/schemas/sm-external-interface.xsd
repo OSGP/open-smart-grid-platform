@@ -25,6 +25,7 @@
         <xsd:element name="deviceIdentification" type="xsd:string"/>
         <xsd:choice>
           <!-- requests from P4/P5 -->
+          <xsd:element ref="bun:FindEventsRequest"/>
           <xsd:element ref="bun:GetPeriodicMeterReadsRequest"/>
           <xsd:element ref="bun:GetPowerQualityProfileRequest"/>
           <xsd:element ref="adm:SetMaintenanceStateRequest"/>

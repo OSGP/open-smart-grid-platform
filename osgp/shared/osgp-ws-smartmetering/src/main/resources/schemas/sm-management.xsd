@@ -291,6 +291,7 @@
   <xsd:simpleType name="EventLogCategory">
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="STANDARD_EVENT_LOG"/>
+      <xsd:enumeration value="POWER_FAILURE_LOG"/>
       <xsd:enumeration value="FRAUD_DETECTION_LOG"/>
       <xsd:enumeration value="COMMUNICATION_SESSION_LOG"/>
       <xsd:enumeration value="M_BUS_EVENT_LOG"/>
