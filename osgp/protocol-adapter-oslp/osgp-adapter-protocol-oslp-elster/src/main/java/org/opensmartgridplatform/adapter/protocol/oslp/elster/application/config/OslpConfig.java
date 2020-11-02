@@ -30,7 +30,9 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.logging.ByteBufFormat;
 import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 
 /**
  * An application context Java configuration class.
@@ -58,6 +60,9 @@ public class OslpConfig extends AbstractConfig {
 
     private static final String PROPERTY_NAME_OSLP_DEFAULT_LATITUDE = "oslp.default.latitude";
     private static final String PROPERTY_NAME_OSLP_DEFAULT_LONGITUDE = "oslp.default.longitude";
+
+    private static final String PROPERTY_NAME_OSLP_NETTY_LOG_LEVEL = "oslp.netty.log.level";
+    private static final String PROPERTY_NAME_OSLP_NETTY_BYTE_BUF_FORMAT = "oslp.netty.byte.buf.format";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OslpConfig.class);
 
@@ -123,12 +128,44 @@ public class OslpConfig extends AbstractConfig {
     }
 
     private void createChannelPipeline(final SocketChannel channel, final ChannelHandler handler) {
-        final boolean hexDump = false;
-        channel.pipeline().addLast("loggingHandler", new OslpLoggingHandler(LogLevel.INFO, hexDump));
+        channel.pipeline().addLast("loggingHandler", this.loggingHandler(this.nettyLogLevel(), this.byteBufFormat()));
         channel.pipeline().addLast("oslpEncoder", new OslpEncoder());
         channel.pipeline().addLast("oslpDecoder", new OslpDecoder(this.oslpSignature(), this.oslpSignatureProvider()));
         channel.pipeline().addLast("oslpSecurity", this.oslpSecurityHandler());
         channel.pipeline().addLast("oslpChannelHandler", handler);
+    }
+
+    @Bean
+    public LoggingHandler loggingHandler(final LogLevel nettyLogLevel, final ByteBufFormat byteBufFormat) {
+        return new LoggingHandler(nettyLogLevel, byteBufFormat);
+    }
+
+    @Bean
+    public LogLevel nettyLogLevel() {
+        final LogLevel defaultLogLevel = LogLevel.INFO;
+        final String logLevelName = this.environment.getProperty(PROPERTY_NAME_OSLP_NETTY_LOG_LEVEL,
+                defaultLogLevel.name());
+        try {
+            return LogLevel.valueOf(logLevelName);
+        } catch (final IllegalArgumentException e) {
+            LOGGER.error("Configured value for {}: \"{}\" is not a known LogLevel name; using default: {}",
+                    PROPERTY_NAME_OSLP_NETTY_LOG_LEVEL, logLevelName, defaultLogLevel, e);
+        }
+        return defaultLogLevel;
+    }
+
+    @Bean
+    public ByteBufFormat byteBufFormat() {
+        final ByteBufFormat defaultByteBufFormat = ByteBufFormat.SIMPLE;
+        final String byteBufFormatName = this.environment.getProperty(PROPERTY_NAME_OSLP_NETTY_BYTE_BUF_FORMAT,
+                defaultByteBufFormat.name());
+        try {
+            return ByteBufFormat.valueOf(byteBufFormatName);
+        } catch (final IllegalArgumentException e) {
+            LOGGER.error("Configured value for {}: \"{}\" is not a known ByteBufFormat name; using default: {}",
+                    PROPERTY_NAME_OSLP_NETTY_BYTE_BUF_FORMAT, byteBufFormatName, defaultByteBufFormat, e);
+        }
+        return defaultByteBufFormat;
     }
 
     @Bean
