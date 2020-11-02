@@ -47,6 +47,11 @@ public class EventConverter extends
             event.setTimestamp(timestamp);
             event.setEventCounter(source.getEventCounter());
             event.setEventLogCategory(EventLogCategory.fromValue(source.getEventLogCategory().name()));
+            event.setEventDuration(source.getDuration());
+            if (source.getStartTime() != null) {
+                event.setStartTime(DatatypeFactory.newInstance().newXMLGregorianCalendar(
+                        source.getStartTime().toGregorianCalendar()));
+            }
             return event;
         } catch (final DatatypeConfigurationException e) {
             LOGGER.error("DatatypeConfigurationException", e);
@@ -68,6 +73,13 @@ public class EventConverter extends
         final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventLogCategory eventLogCategory =
                 org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventLogCategory.fromValue(
                 source.getEventLogCategory().value());
-        return new Event(timestamp, eventCode, source.getEventCounter(), eventLogCategory);
+
+        if (eventLogCategory
+                == org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventLogCategory.POWER_FAILURE_EVENT_LOG) {
+            return new Event(timestamp, eventCode, eventLogCategory,
+                    new DateTime(source.getStartTime().toGregorianCalendar().getTime()), source.getEventDuration());
+        } else {
+            return new Event(timestamp, eventCode, source.getEventCounter(), eventLogCategory);
+        }
     }
 }

@@ -37,4 +37,6 @@
     <!--<appender-ref ref="DB"/>-->
   </root>
 
+  <logger name="org.springframework.ws.server.MessageTracing" level="TRACE" />
+
 </configuration>
