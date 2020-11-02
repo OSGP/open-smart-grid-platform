@@ -50,5 +50,5 @@ Feature: SmartMetering Installation - Add smart meter
     And a SOAP fault should have been returned
       | Code         | 804                                                           |
       | Message      | DECRYPTION_EXCEPTION                                          |
-      | InnerMessage | Unexpected exception during decryption of E_METER_MASTER key. |
+      | InnerMessage | Unexpected exception during decryption |
     And the dlms device with identification "TEST1024000000001" does not exist
