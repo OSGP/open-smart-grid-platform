@@ -94,7 +94,7 @@ pipeline {
             }
         } // stage
 
-        stage('Parallel Stages') {
+        stage ('Parallel Stages') {
             parallel {
                 stage ('Sonar Analysis') {
                     steps {
@@ -138,7 +138,7 @@ pipeline {
             } // parallel
         } // stage
 
-        stage('Run Tests') {
+        stage ('Run Tests') {
             steps {
                 sh '''echo Searching for specific Cucumber tags in git commit.
 
@@ -183,7 +183,7 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
             }
         } // stage
 
-        stage('Reporting') {
+        stage ('Reporting') {
             steps {
                 jacoco execPattern: '**/code-coverage/jacoco-it.exec'
                 cucumber buildStatus: 'FAILURE', fileIncludePattern: '**/cucumber.json', sortingMethod: 'ALPHABETICAL'
@@ -201,8 +201,11 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
             // Always destroy the test environment
             build job: 'Destroy an AWS System', parameters: [string(name: 'SERVERNAME', value: servername), string(name: 'PLAYBOOK', value: playbook)]
         }
-        success {
-            setBuildStatus("Build failed", "SUCCESS")
+        aborted {
+            setBuildStatus("Build failed", "FAILURE")
+        }
+        unstable {
+            setBuildStatus("Build failed", "FAILURE")
         }
         failure {
             // Mail everyone that the job failed
@@ -214,6 +217,9 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
                 from: '${DEFAULT_REPLYTO}')
 
             setBuildStatus("Build failed", "FAILURE")
+        }
+        success {
+            setBuildStatus("Build succeeded", "SUCCESS")
         }
         cleanup {
             // Delete workspace folder.

@@ -546,6 +546,11 @@
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_248"/>
       <!-- 249 - Indicates a manufacturer specific code -->
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_249"/>
+      <!-- the following events are System Events -->
+      <xsd:enumeration value="SET_MAINTENANCE_STATE_E_SUCCESS"/>
+      <xsd:enumeration value="SET_MAINTENANCE_STATE_G_SUCCESS"/>
+      <xsd:enumeration value="SET_MAINTENANCE_STATE_E_FAILED"/>
+      <xsd:enumeration value="SET_MAINTENANCE_STATE_G_FAILED"/>
 
     </xsd:restriction>
   </xsd:simpleType>

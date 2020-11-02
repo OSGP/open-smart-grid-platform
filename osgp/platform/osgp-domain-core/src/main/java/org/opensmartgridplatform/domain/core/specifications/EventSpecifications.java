@@ -10,7 +10,6 @@ package org.opensmartgridplatform.domain.core.specifications;
 import java.util.Date;
 import java.util.List;
 
-import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Event;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
@@ -21,7 +20,7 @@ public interface EventSpecifications {
 
     Specification<Event> isCreatedBefore(final Date dateUntil);
 
-    Specification<Event> isFromDevice(final Device device);
+    Specification<Event> isFromDevice(final String deviceIdentification);
 
     Specification<Event> isAuthorized(final Organisation organisation);
 

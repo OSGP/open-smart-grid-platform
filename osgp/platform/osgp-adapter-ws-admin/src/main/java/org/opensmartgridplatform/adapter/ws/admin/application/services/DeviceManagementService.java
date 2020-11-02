@@ -378,7 +378,7 @@ public class DeviceManagementService {
         }
 
         // Remove all events
-        final List<Event> events = this.eventRepository.findByDevice(device);
+        final List<Event> events = this.eventRepository.findByDeviceIdentification(deviceIdentification);
         for (final Event event : events) {
             this.eventRepository.delete(event);
         }
