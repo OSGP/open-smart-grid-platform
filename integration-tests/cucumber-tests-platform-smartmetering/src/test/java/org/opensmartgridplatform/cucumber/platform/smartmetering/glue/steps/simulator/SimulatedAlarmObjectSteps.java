@@ -8,8 +8,8 @@
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.simulator;
 
 import org.openmuc.jdlms.ObisCode;
-import org.openmuc.jdlms.interfaceclass.InterfaceClass;
-import org.openmuc.jdlms.interfaceclass.attribute.DataAttribute;
+import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.DataAttribute;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;

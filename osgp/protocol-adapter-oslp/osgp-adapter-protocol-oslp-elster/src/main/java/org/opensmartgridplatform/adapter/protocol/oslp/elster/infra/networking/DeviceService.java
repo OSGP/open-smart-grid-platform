@@ -11,7 +11,6 @@ import java.io.IOException;
 
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponseHandler;
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.requests.GetPowerUsageHistoryDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.requests.GetStatusDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.requests.ResumeScheduleDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.requests.SetConfigurationDeviceRequest;
@@ -25,7 +24,6 @@ import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.requests.Sw
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.requests.UpdateDeviceSslCertificationDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.requests.UpdateFirmwareDeviceRequest;
 import org.opensmartgridplatform.dto.valueobjects.PageInfoDto;
-import org.opensmartgridplatform.dto.valueobjects.PowerUsageHistoryResponseMessageDataContainerDto;
 import org.opensmartgridplatform.oslp.OslpEnvelope;
 
 public interface DeviceService {
@@ -85,18 +83,6 @@ public interface DeviceService {
 
     void doSwitchFirmware(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
-
-    void getActualPowerUsage(DeviceRequest deviceRequest);
-
-    void doGetActualPowerUsage(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
-            DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
-
-    void getPowerUsageHistory(GetPowerUsageHistoryDeviceRequest deviceRequest);
-
-    void doGetPowerUsageHistory(OslpEnvelope oslpRequest,
-            PowerUsageHistoryResponseMessageDataContainerDto powerUsageHistoryResponseMessageDataContainer,
-            GetPowerUsageHistoryDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler,
-            String ipAddress) throws IOException;
 
     void resumeSchedule(ResumeScheduleDeviceRequest deviceRequest);
 

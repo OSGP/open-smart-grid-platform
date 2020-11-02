@@ -13,8 +13,8 @@ public class FirmwareFileDto implements Serializable {
 
     private static final long serialVersionUID = -4794626243032507358L;
 
-    private String firmwareIdentification;
-    private byte[] firmwareFile;
+    private final String firmwareIdentification;
+    private final byte[] firmwareFile;
 
     public FirmwareFileDto(final String firmwareIdentification, final byte[] firmwareFile) {
         this.firmwareIdentification = firmwareIdentification;

@@ -10,9 +10,9 @@ package org.opensmartgridplatform.adapter.kafka.da.application.mapping;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opensmartgridplatform.adapter.kafka.da.avro.Analog;
-import org.opensmartgridplatform.adapter.kafka.da.avro.UnitMultiplier;
-import org.opensmartgridplatform.adapter.kafka.da.avro.UnitSymbol;
+import com.alliander.data.scadameasurementpublishedevent.Analog;
+import com.alliander.data.scadameasurementpublishedevent.UnitMultiplier;
+import com.alliander.data.scadameasurementpublishedevent.UnitSymbol;
 
 public class LsPeakShavingMessageFactory extends MessageFactory {
     public static List<Analog> expectedMeasurements() {

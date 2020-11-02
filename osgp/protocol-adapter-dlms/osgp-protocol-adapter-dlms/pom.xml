@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-pa-dlms</artifactId>
-    <version>5.3.0</version>
+    <version>5.4.0</version>
     <relativePath>../parent-pa-dlms/pom.xml</relativePath>
   </parent>
 
@@ -32,6 +32,7 @@
   </properties>
 
   <build>
+
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -77,11 +78,29 @@
     </plugins>
   </build>
 
+  <!-- This repository was added to be able to draw the snapshot jDLMS version from artifactory -->
+  <repositories>
+    <repository>
+      <snapshots/>
+      <id>osgp-snapshots</id>
+      <name>osgp-snapshots</name>
+      <url>http://artifactory.shs.osgp.cloud/artifactory/osgp-snapshots</url>
+    </repository>
+  </repositories>
+
   <dependencies>
     <!-- OpenMUC Dependencies -->
     <dependency>
       <groupId>org.openmuc</groupId>
       <artifactId>jdlms</artifactId>
+      <!-- Note: version is hardcoded here because this is a TEMP fix only for the protocol-adapter-dlms -->
+      <version>1.7.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openmuc</groupId>
+      <artifactId>jasn1</artifactId>
+      <!-- Note: version is hardcoded here because this is a TEMP fix only for the protocol-adapter-dlms -->
+      <version>1.10.0</version>
     </dependency>
 
     <!-- OSGP -->
@@ -314,4 +333,5 @@
       <scope>compile</scope>
     </dependency>
   </dependencies>
+
 </project>

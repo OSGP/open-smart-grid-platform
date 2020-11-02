@@ -337,7 +337,6 @@ public class AuthorizePlatformFunctionsSteps {
         final DeviceModel deviceModel = new DeviceModel();
         deviceModel.setDescription(PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_DESCRIPTION);
         deviceModel.setManufacturer(PlatformCommonDefaults.DEFAULT_MANUFACTURER_CODE);
-        deviceModel.setMetered(PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_METERED);
         deviceModel.setModelCode(PlatformCommonDefaults.DEVICE_MODEL_MODEL_CODE);
         request.setDeviceModel(deviceModel);
         ScenarioContext.current()
@@ -357,7 +356,6 @@ public class AuthorizePlatformFunctionsSteps {
         final DeviceModel deviceModel = new DeviceModel();
         deviceModel.setDescription(PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_DESCRIPTION);
         deviceModel.setManufacturer(PlatformCommonDefaults.DEFAULT_MANUFACTURER_CODE);
-        deviceModel.setMetered(PlatformCommonDefaults.DEFAULT_DEVICE_MODEL_METERED);
         deviceModel.setModelCode(PlatformCommonDefaults.DEVICE_MODEL_MODEL_CODE);
         request.setDeviceModel(deviceModel);
         ScenarioContext.current()
