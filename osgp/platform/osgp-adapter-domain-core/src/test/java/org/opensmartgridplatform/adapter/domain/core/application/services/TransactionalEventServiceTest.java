@@ -21,7 +21,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Event;
 import org.opensmartgridplatform.domain.core.repositories.EventRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
@@ -48,7 +47,7 @@ public class TransactionalEventServiceTest {
     @Test
     public void serviceReturnsOneEvent() {
         final Slice<Event> mockSlice = this.mockSliceOfEvents(1);
-        final PageRequest pageRequest = PageRequest.of(0, 10, Sort.Direction.DESC, "id");
+        final PageRequest pageRequest = PageRequest.of(0, 10, Sort.Direction.ASC, "id");
         Mockito.when(this.eventRepository.findByDateTimeBefore(this.now, pageRequest)).thenReturn(mockSlice);
 
         final List<Event> events = this.transactionalEventService.getEventsBeforeDate(this.now, 10);
@@ -58,7 +57,7 @@ public class TransactionalEventServiceTest {
     @Test
     public void serviceReturnsTenEvents() {
         final Slice<Event> mockSlice = this.mockSliceOfEvents(10);
-        final PageRequest pageRequest = PageRequest.of(0, 10, Sort.Direction.DESC, "id");
+        final PageRequest pageRequest = PageRequest.of(0, 10, Sort.Direction.ASC, "id");
         Mockito.when(this.eventRepository.findByDateTimeBefore(this.now, pageRequest)).thenReturn(mockSlice);
 
         final List<Event> events = this.transactionalEventService.getEventsBeforeDate(this.now, 10);
@@ -77,12 +76,11 @@ public class TransactionalEventServiceTest {
     }
 
     private Slice<Event> mockSliceOfEvents(final int numberOfEvents) {
-        final Device device = new Device("test");
         final Date oneMonthAgo = DateTime.now().minusMonths(1).toDate();
 
         final List<Event> events = new ArrayList<>();
         for (int i = 0; i < numberOfEvents; i++) {
-            final Event event = new Event(device, oneMonthAgo, EventType.DIAG_EVENTS_GENERAL, "description", 1);
+            final Event event = new Event("test", oneMonthAgo, EventType.DIAG_EVENTS_GENERAL, "description", 1);
             events.add(event);
         }
 

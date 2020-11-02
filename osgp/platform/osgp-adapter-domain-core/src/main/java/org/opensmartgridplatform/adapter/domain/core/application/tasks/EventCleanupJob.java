@@ -152,7 +152,7 @@ public class EventCleanupJob implements Job {
             array[CREATION_TIME] = formatDate(event.getCreationTime());
             array[MODIFICATION_TIME] = formatDate(event.getModificationTime());
             array[VERSION] = String.valueOf(event.getVersion());
-            array[DEVICE_IDENTIFICATION] = event.getDevice().getDeviceIdentification();
+            array[DEVICE_IDENTIFICATION] = event.getDeviceIdentification();
             array[DATE_TIME] = formatDate(event.getDateTime());
             array[EVENT_TYPE] = event.getEventType().name();
             array[DESCRIPTION] = event.getDescription();

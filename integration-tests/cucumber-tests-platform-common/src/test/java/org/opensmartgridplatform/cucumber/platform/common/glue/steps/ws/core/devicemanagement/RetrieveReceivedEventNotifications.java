@@ -28,7 +28,6 @@ import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreDeviceManagementClient;
-import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Event;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.EventRepository;
@@ -62,23 +61,21 @@ public class RetrieveReceivedEventNotifications {
      */
     @Given("^all events are present for device$")
     public void allEvents(final Map<String, String> data) {
-        final Device device = this.deviceRepository
-                .findByDeviceIdentification(getString(data, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
+        final String deviceIdentification = getString(data, PlatformKeys.KEY_DEVICE_IDENTIFICATION);
 
         for (final EventType eventType : EventType.values()) {
-            final Event event = new Event(device, getDateTime(PlatformDefaults.TIMESTAMP).toDate(), eventType,
-                    PlatformDefaults.DEFAULT_EVENT_DESCRIPTION, PlatformDefaults.DEFAULT_INDEX);
+            final Event event = new Event(deviceIdentification, getDateTime(PlatformDefaults.TIMESTAMP).toDate(),
+                    eventType, PlatformDefaults.DEFAULT_EVENT_DESCRIPTION, PlatformDefaults.DEFAULT_INDEX);
             this.eventRepository.save(event);
         }
     }
 
     @Given("^(\\d+) events?$")
     public void anEvent(final int amount, final Map<String, String> data) throws Exception {
-        final Device device = this.deviceRepository
-                .findByDeviceIdentification(getString(data, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
+        final String deviceIdentification = getString(data, PlatformKeys.KEY_DEVICE_IDENTIFICATION);
 
         for (int i = 0; i < amount; i++) {
-            final Event event = new Event(device,
+            final Event event = new Event(deviceIdentification,
                     getDateTime(getString(data, PlatformKeys.TIMESTAMP, PlatformDefaults.TIMESTAMP)).toDate(),
                     getEnum(data, PlatformKeys.EVENT_TYPE, EventType.class, EventType.ALARM_NOTIFICATION),
                     getString(data, PlatformKeys.KEY_DESCRIPTION, PlatformDefaults.DEFAULT_EVENT_DESCRIPTION),
@@ -222,8 +219,7 @@ public class RetrieveReceivedEventNotifications {
     }
 
     public List<Event> retrieveStoredEvents(final String deviceIdentification) {
-        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-        return this.eventRepository.findByDevice(device);
+        return this.eventRepository.findByDeviceIdentification(deviceIdentification);
     }
 
     public List<Event> retrieveStoredEvents() {

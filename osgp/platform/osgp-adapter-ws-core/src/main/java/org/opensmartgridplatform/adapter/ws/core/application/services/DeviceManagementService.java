@@ -203,7 +203,7 @@ public class DeviceManagementService {
             final Device device = this.domainHelperService.findDevice(deviceIdentification);
             this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_EVENT_NOTIFICATIONS);
 
-            specification = where(this.eventSpecifications.isFromDevice(device));
+            specification = where(this.eventSpecifications.isFromDevice(deviceIdentification));
         } else {
             specification = where(this.eventSpecifications.isAuthorized(organisation));
         }
@@ -430,8 +430,8 @@ public class DeviceManagementService {
     private Specification<Device> doFilterOnDeviceModel(final DeviceFilter deviceFilter,
             Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getModel())) {
-            specification = specification.and(
-                    this.deviceSpecifications.forDeviceModel(replaceAndEscapeWildcards(deviceFilter.getModel()).toUpperCase()));
+            specification = specification.and(this.deviceSpecifications
+                    .forDeviceModel(replaceAndEscapeWildcards(deviceFilter.getModel()).toUpperCase()));
         }
         return specification;
     }
@@ -448,8 +448,8 @@ public class DeviceManagementService {
     private Specification<Device> doFilterOnOwner(final DeviceFilter deviceFilter, Specification<Device> specification)
             throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getOwner())) {
-            specification = specification
-                    .and(this.deviceSpecifications.forOwner(replaceAndEscapeWildcards(deviceFilter.getOwner()).toUpperCase()));
+            specification = specification.and(this.deviceSpecifications
+                    .forOwner(replaceAndEscapeWildcards(deviceFilter.getOwner()).toUpperCase()));
         }
         return specification;
     }
@@ -495,20 +495,20 @@ public class DeviceManagementService {
     private Specification<Device> doFilterOnAddress(final DeviceFilter deviceFilter,
             Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getCity())) {
-            specification = specification
-                    .and(this.deviceSpecifications.hasCity(replaceAndEscapeWildcards(deviceFilter.getCity()).toUpperCase()));
+            specification = specification.and(
+                    this.deviceSpecifications.hasCity(replaceAndEscapeWildcards(deviceFilter.getCity()).toUpperCase()));
         }
         if (!StringUtils.isEmpty(deviceFilter.getPostalCode())) {
             specification = specification.and(this.deviceSpecifications
                     .hasPostalCode(replaceAndEscapeWildcards(deviceFilter.getPostalCode()).toUpperCase()));
         }
         if (!StringUtils.isEmpty(deviceFilter.getStreet())) {
-            specification = specification
-                    .and(this.deviceSpecifications.hasStreet(replaceAndEscapeWildcards(deviceFilter.getStreet()).toUpperCase()));
+            specification = specification.and(this.deviceSpecifications
+                    .hasStreet(replaceAndEscapeWildcards(deviceFilter.getStreet()).toUpperCase()));
         }
         if (!StringUtils.isEmpty(deviceFilter.getNumber())) {
-            specification = specification
-                    .and(this.deviceSpecifications.hasNumber(replaceAndEscapeWildcards(deviceFilter.getNumber()).toUpperCase()));
+            specification = specification.and(this.deviceSpecifications
+                    .hasNumber(replaceAndEscapeWildcards(deviceFilter.getNumber()).toUpperCase()));
         }
         if (!StringUtils.isEmpty(deviceFilter.getMunicipality())) {
             specification = specification.and(this.deviceSpecifications
@@ -520,8 +520,8 @@ public class DeviceManagementService {
     private Specification<Device> doFilterOnDeviceAlias(final DeviceFilter deviceFilter,
             Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getAlias())) {
-            specification = specification
-                    .and(this.deviceSpecifications.hasAlias(replaceAndEscapeWildcards(deviceFilter.getAlias()).toUpperCase()));
+            specification = specification.and(this.deviceSpecifications
+                    .hasAlias(replaceAndEscapeWildcards(deviceFilter.getAlias()).toUpperCase()));
         }
         return specification;
     }
