@@ -39,72 +39,34 @@ import com.google.common.base.Joiner;
 @Proxy(lazy = false)
 public class Device extends AbstractEntity {
 
-    /**
-     * Device type indicator for PSLD
-     */
     public static final String PSLD_TYPE = "PSLD";
 
-    /**
-     * Device type indicator for SSLD
-     */
     public static final String SSLD_TYPE = "SSLD";
 
-    /**
-     * UID for serialization
-     */
-    private static final long serialVersionUID = -8500656078362786667L;
-
-    /**
-     * Backing field
-     */
     @Column(unique = true, nullable = false)
     private String deviceUid;
 
-    /**
-     * Backing field
-     */
     @Column(unique = true, nullable = false)
     private String deviceIdentification;
 
-    /**
-     * Backing field
-     */
     @Column(nullable = false)
     private String ipAddress;
 
-    /**
-     * Backing field
-     */
     @Column(nullable = false)
     private String deviceType;
 
-    /**
-     * Backing field
-     */
     @Column(nullable = false)
     private boolean lightOn;
 
-    /**
-     * Backing field
-     */
     @Column(nullable = true)
     private Integer dimValue;
 
-    /**
-     * Backing field
-     */
     @Column(nullable = false)
     private boolean selftestActive;
 
-    /**
-     * Backing field
-     */
     @Column()
     private Integer eventNotifications;
 
-    /**
-     * Backing field
-     */
     @Column()
     private String protocol;
 
@@ -138,6 +100,9 @@ public class Device extends AbstractEntity {
 
     @Column(nullable = false)
     private boolean hasEveningMorningBurner;
+
+    @Column(nullable = false)
+    private String firmwareVersion;
 
     @Transient
     private final SecureRandom random = new SecureRandom();
@@ -362,5 +327,13 @@ public class Device extends AbstractEntity {
 
     public boolean getHasEveningMorningBurner() {
         return this.hasEveningMorningBurner;
+    }
+
+    public String getFirmwareVersion() {
+        return this.firmwareVersion;
+    }
+
+    public void setFirmwareVersion(final String firmwareVersion) {
+        this.firmwareVersion = firmwareVersion;
     }
 }

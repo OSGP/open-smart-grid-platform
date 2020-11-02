@@ -95,8 +95,6 @@ public class ApplicationContext {
     private static final String PROPERTY_NAME_CHECKBOX_TARIFF_SWITCHING_VALUE = "checkbox.tariff.switching.value";
     private static final String PROPERTY_NAME_CHECKBOX_EVENT_NOTIFICATION_VALUE = "checkbox.event.notification.value";
 
-    private static final String PROPERTY_NAME_FIRMWARE_VERSION = "firmware.version";
-
     private static final String PROPERTY_NAME_CONFIGURATION_IP_CONFIG_FIXED_IP_ADDRESS = "configuration.ip.config.fixed.ip.address";
     private static final String PROPERTY_NAME_CONFIGURATION_IP_CONFIG_NETMASK = "configuration.ip.config.netmask";
     private static final String PROPERTY_NAME_CONFIGURATION_IP_CONFIG_GATEWAY = "configuration.ip.config.gateway";
@@ -296,11 +294,6 @@ public class ApplicationContext {
     public Boolean checkboxEventNotificationValue() {
         return Boolean
                 .parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_CHECKBOX_EVENT_NOTIFICATION_VALUE));
-    }
-
-    @Bean
-    public String firmwareVersion() {
-        return this.environment.getRequiredProperty(PROPERTY_NAME_FIRMWARE_VERSION);
     }
 
     @Bean

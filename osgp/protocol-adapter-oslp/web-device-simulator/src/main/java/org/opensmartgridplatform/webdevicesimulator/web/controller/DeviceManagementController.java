@@ -306,6 +306,7 @@ public class DeviceManagementController extends AbstractController {
         deviceToUpdate.setActualLinkType(updated.getActualLinkType());
         deviceToUpdate.setTariffOn(updated.isTariffOn());
         deviceToUpdate.setProtocol(updated.getProtocol());
+        deviceToUpdate.setFirmwareVersion(updated.getFirmwareVersion());
 
         // Store device
         final Device device = this.deviceManagementService.updateDevice(deviceToUpdate);
