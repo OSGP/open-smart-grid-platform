@@ -109,12 +109,11 @@ public class ReplaceKeyCommandExecutor
         SetKeysRequestDto setKeysRequestDto = (SetKeysRequestDto) actionRequestDto;
 
         if (!setKeysRequestDto.isGeneratedKeys()) {
-            // using AES
-            //decrypt using RSA and encrypt using AES
-            setKeysRequestDto = this.reEncryptKeys((SetKeysRequestDto) actionRequestDto);
+            //decrypt using RSA
+            setKeysRequestDto = this.decryptRsaKeys((SetKeysRequestDto) actionRequestDto);
         } //else
         //if isGeneratedKeys() == true, then:
-        // generated keys are encrypted using AES by the GenerateAndReplaceKeyCommandExecutor
+        // generated keys are unencrypted by the GenerateAndReplaceKeyCommandExecutor
 
         final DlmsDevice devicePostSave = this.execute(conn, device, ReplaceKeyCommandExecutor
                 .wrap(setKeysRequestDto.getAuthenticationKey(), KeyId.AUTHENTICATION_KEY,
@@ -127,11 +126,11 @@ public class ReplaceKeyCommandExecutor
         return new ActionResponseDto(REPLACE_KEYS + device.getDeviceIdentification() + WAS_SUCCESFULL);
     }
 
-    private SetKeysRequestDto reEncryptKeys(final SetKeysRequestDto setKeysRequestDto) throws FunctionalException {
+    private SetKeysRequestDto decryptRsaKeys(final SetKeysRequestDto setKeysRequestDto) throws FunctionalException {
         final byte[] reEncryptedAuthenticationKey = this.securityKeyService
-                .reEncryptKey(setKeysRequestDto.getAuthenticationKey());
+                .rsaDecrypt(setKeysRequestDto.getAuthenticationKey());
         final byte[] reEncryptedEncryptionKey = this.securityKeyService
-                .reEncryptKey(setKeysRequestDto.getEncryptionKey());
+                .rsaDecrypt(setKeysRequestDto.getEncryptionKey());
 
         return new SetKeysRequestDto(reEncryptedAuthenticationKey, reEncryptedEncryptionKey);
     }
@@ -164,7 +163,7 @@ public class ReplaceKeyCommandExecutor
             final ReplaceKeyCommandExecutor.ReplaceKeyInput keyWrapper) throws ProtocolAdapterException {
 
         try {
-            final byte[] decryptedKey = this.securityKeyService.aesDecryptKey(keyWrapper.getBytes());
+            final byte[] decryptedKey = keyWrapper.getBytes(); //this.securityKeyService.aesDecryptKey(keyWrapper.getBytes());
             final byte[] decryptedMasterKey = this.securityKeyService
                     .getKey(deviceIdentification, SecurityKeyType.E_METER_MASTER);
 
@@ -189,7 +188,7 @@ public class ReplaceKeyCommandExecutor
             }
         } catch (final IOException e) {
             throw new ConnectionException(e);
-        } catch (final EncrypterException | FunctionalException e) {
+        } catch (final EncrypterException e) {
             throw new ProtocolAdapterException(
                     "Unexpected exception during decryption of security keys, reason = " + e.getMessage(), e);
         }

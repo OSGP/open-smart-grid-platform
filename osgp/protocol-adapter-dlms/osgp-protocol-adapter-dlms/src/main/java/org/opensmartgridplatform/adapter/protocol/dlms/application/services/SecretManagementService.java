@@ -89,7 +89,7 @@ public class SecretManagementService implements SecurityKeyService {
      *         in case of a encryption/decryption errors while handling the
      *         key
      */
-    @Override
+    //@Override
     public byte[] reEncryptKey(final byte[] externallyEncryptedKey) throws FunctionalException {
 
         if (externallyEncryptedKey == null) {
@@ -111,7 +111,7 @@ public class SecretManagementService implements SecurityKeyService {
         }
     }
 
-    @Override
+    //@Override
     public byte[] aesEncryptKey(final byte[] key) throws FunctionalException {
         try {
             return this.aesEncryptionService.encrypt(key);
@@ -134,7 +134,7 @@ public class SecretManagementService implements SecurityKeyService {
      * @return the plain key, or an empty byte array if
      *         {@code encryptedKey == null}
      */
-    @Override
+    //@Override
     public byte[] aesDecryptKey(final byte[] encryptedKey) throws FunctionalException {
         if (encryptedKey == null) {
             throw new IllegalArgumentException("Cannot decrypt NULL key");

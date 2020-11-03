@@ -86,16 +86,16 @@ public interface SecurityKeyService {
             final List<SecurityKeyType> keyTypes);
 
     //RSA decrypt key (from incoming requests) and encrypt with AES (for in memory storage)
-    byte[] reEncryptKey(final byte[] externallyEncryptedKey) throws
-            FunctionalException;
+    //byte[] reEncryptKey(final byte[] externallyEncryptedKey) throws
+    //        FunctionalException;
 
     //decrypt OSGP provided RSA key
     byte[] rsaDecrypt(final byte[] externallyEncryptedKey) throws FunctionalException;
 
     //AES decrypt (decrypt memory storage for actual use of key)
-    byte[] aesDecryptKey(final byte[] encryptedKey) throws FunctionalException;
+    //byte[] aesDecryptKey(final byte[] encryptedKey) throws FunctionalException;
 
     //AES encrypt (encrypt for safe memory storage)
-    byte[] aesEncryptKey(final byte[] plainKey) throws FunctionalException;
+    //byte[] aesEncryptKey(final byte[] plainKey) throws FunctionalException;
 
 }
