@@ -11,8 +11,10 @@ package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 import java.io.Serializable;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.joda.time.DateTime;
 
+@ToString
 @Getter
 public class EventDto implements Serializable {
 
