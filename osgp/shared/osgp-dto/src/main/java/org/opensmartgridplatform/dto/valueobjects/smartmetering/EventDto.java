@@ -25,22 +25,10 @@ public class EventDto implements Serializable {
     private final Long duration;
 
     public EventDto(final DateTime timestamp, final Integer eventCode, final Integer eventCounter,
-            final String eventLogCategoryName) {
-        assert EventLogCategoryDto.valueOf(eventLogCategoryName) != EventLogCategoryDto.POWER_FAILURE_EVENT_LOG;
+            final String eventLogCategoryName, final DateTime startTime, final Long duration) {
         this.timestamp = timestamp;
         this.eventCode = eventCode;
         this.eventCounter = eventCounter;
-        this.eventLogCategoryName = eventLogCategoryName;
-        this.startTime = null;
-        this.duration = null;
-    }
-
-    public EventDto(final DateTime endTime, final Integer eventCode, final String eventLogCategoryName,
-            final DateTime startTime, final Long duration) {
-        assert EventLogCategoryDto.valueOf(eventLogCategoryName) == EventLogCategoryDto.POWER_FAILURE_EVENT_LOG;
-        this.timestamp = endTime;
-        this.eventCode = eventCode;
-        this.eventCounter = null;
         this.eventLogCategoryName = eventLogCategoryName;
         this.startTime = startTime;
         this.duration = duration;

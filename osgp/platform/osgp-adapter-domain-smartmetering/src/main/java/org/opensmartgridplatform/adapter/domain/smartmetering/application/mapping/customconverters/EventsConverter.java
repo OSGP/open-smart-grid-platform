@@ -23,13 +23,9 @@ public class EventsConverter extends BidirectionalConverter<EventDto, Event> {
             return null;
         }
 
-        EventLogCategory eventLogCategory = EventLogCategory.fromValue(source.getEventLogCategoryName());
-        if (eventLogCategory == EventLogCategory.POWER_FAILURE_EVENT_LOG) {
-            return new Event(source.getTimestamp(), source.getEventCode(), eventLogCategory, source.getStartTime(),
-                    source.getDuration());
-        } else {
-            return new Event(source.getTimestamp(), source.getEventCode(), source.getEventCounter(), eventLogCategory);
-        }
+        return new Event(source.getTimestamp(), source.getEventCode(), source.getEventCounter(),
+                EventLogCategory.fromValue(source.getEventLogCategoryName()), source.getStartTime(),
+                source.getDuration());
     }
 
     @Override
@@ -39,12 +35,7 @@ public class EventsConverter extends BidirectionalConverter<EventDto, Event> {
             return null;
         }
 
-        if (source.getEventLogCategory() == EventLogCategory.POWER_FAILURE_EVENT_LOG) {
-            return new EventDto(source.getTimestamp(), source.getEventCode(), source.getEventLogCategory().name(),
-                    source.getStartTime(), source.getDuration());
-        } else {
-            return new EventDto(source.getTimestamp(), source.getEventCode(), source.getEventCounter(),
-                    source.getEventLogCategory().name());
-        }
+        return new EventDto(source.getTimestamp(), source.getEventCode(), source.getEventCounter(),
+                source.getEventLogCategory().name(), source.getStartTime(), source.getDuration());
     }
 }

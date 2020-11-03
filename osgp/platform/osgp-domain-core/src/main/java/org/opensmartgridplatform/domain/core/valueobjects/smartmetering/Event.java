@@ -25,20 +25,10 @@ public class Event implements Serializable {
     private final Long duration;
 
     public Event(final DateTime timestamp, final Integer eventCode, final Integer eventCounter,
-            final EventLogCategory eventLogCategory) {
+            final EventLogCategory eventLogCategory, final DateTime startTime, final Long duration) {
         this.timestamp = timestamp;
         this.eventCode = eventCode;
         this.eventCounter = eventCounter;
-        this.eventLogCategory = eventLogCategory;
-        this.startTime = null;
-        this.duration = null;
-    }
-
-    public Event(final DateTime endTime, final Integer eventCode, final EventLogCategory eventLogCategory,
-            final DateTime startTime, final Long duration) {
-        this.timestamp = endTime;
-        this.eventCode = eventCode;
-        this.eventCounter = null;
         this.eventLogCategory = eventLogCategory;
         this.startTime = startTime;
         this.duration = duration;
@@ -46,17 +36,11 @@ public class Event implements Serializable {
 
     @Override
     public String toString() {
-        if (eventLogCategory == EventLogCategory.POWER_FAILURE_EVENT_LOG) {
-            return String.format("Event[startTime, endTime=%s, duration=%s, category=%s, type=%s%s]", this.startTime,
-                    this.timestamp, this.duration, this.eventLogCategory.name(),
-                    this.eventCode == null ? null : EventType.getByEventCode(this.eventCode),
-                    this.eventCounter == null ? "" : ", counter=" + this.eventCounter);
-        } else {
-            return String.format("Event[time=%s, code=%s, category=%s, type=%s%s]", this.timestamp, this.eventCode,
-                    this.eventLogCategory.name(),
-                    this.eventCode == null ? null : EventType.getByEventCode(this.eventCode),
-                    this.eventCounter == null ? "" : ", counter=" + this.eventCounter);
-        }
+        return String.format("Event[time=%s, code=%s, category=%s, type=%s%s%s%s]", this.timestamp, this.eventCode,
+                this.eventLogCategory.name(), this.eventCode == null ? null : EventType.getByEventCode(this.eventCode),
+                this.eventCounter == null ? "" : ", counter=" + this.eventCounter,
+                this.startTime == null ? "" : ", startTime=" + this.startTime,
+                this.duration == null ? "" : ". duration=" + this.duration);
     }
 
     public DateTime getTimestamp() {
