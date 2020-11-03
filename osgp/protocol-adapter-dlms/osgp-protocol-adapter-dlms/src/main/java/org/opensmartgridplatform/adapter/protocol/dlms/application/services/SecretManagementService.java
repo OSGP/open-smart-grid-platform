@@ -90,7 +90,7 @@ public class SecretManagementService implements SecurityKeyService {
      *         key
      */
     //@Override
-    public byte[] reEncryptKey(final byte[] externallyEncryptedKey) throws FunctionalException {
+    /*public byte[] reEncryptKey(final byte[] externallyEncryptedKey) throws FunctionalException {
 
         if (externallyEncryptedKey == null) {
             return new byte[0];
@@ -99,7 +99,7 @@ public class SecretManagementService implements SecurityKeyService {
         final byte[] key = this.rsaDecrypt(externallyEncryptedKey);
         return this.aesEncryptKey(key);
 
-    }
+    }*/
 
     @Override
     public byte[] rsaDecrypt(final byte[] externallyEncryptedKey) throws FunctionalException {
@@ -112,14 +112,14 @@ public class SecretManagementService implements SecurityKeyService {
     }
 
     //@Override
-    public byte[] aesEncryptKey(final byte[] key) throws FunctionalException {
+    /*public byte[] aesEncryptKey(final byte[] key) throws FunctionalException {
         try {
             return this.aesEncryptionService.encrypt(key);
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during encryption", e);
             throw new FunctionalException(FunctionalExceptionType.ENCRYPTION_EXCEPTION, ComponentType.PROTOCOL_DLMS, e);
         }
-    }
+    }*/
 
     /*
      * Decrypts the given symmetrically encrypted key.
@@ -135,7 +135,7 @@ public class SecretManagementService implements SecurityKeyService {
      *         {@code encryptedKey == null}
      */
     //@Override
-    public byte[] aesDecryptKey(final byte[] encryptedKey) throws FunctionalException {
+    /*public byte[] aesDecryptKey(final byte[] encryptedKey) throws FunctionalException {
         if (encryptedKey == null) {
             throw new IllegalArgumentException("Cannot decrypt NULL key");
         }
@@ -144,7 +144,7 @@ public class SecretManagementService implements SecurityKeyService {
         } catch (final Exception e) {
             throw new FunctionalException(FunctionalExceptionType.ENCRYPTION_EXCEPTION, ComponentType.PROTOCOL_DLMS, e);
         }
-    }
+    }*/
 
     @Override
     public byte[] getKey(String deviceIdentification, SecurityKeyType keyType) {
@@ -295,9 +295,7 @@ public class SecretManagementService implements SecurityKeyService {
         TypedSecrets typedSecrets = response.getTypedSecrets();
         List<TypedSecret> typedSecretList = typedSecrets.getTypedSecret();
         this.validateGenerateAndStoreResponse(keyTypes, response, typedSecretList);
-        Function<TypedSecret, SecurityKeyType> convertType = ts -> SecurityKeyType.fromSecretType(ts.getType());
-        Function<TypedSecret, byte[]> convertSecret = ts -> this.decryptSoapSecret(ts);
-        return typedSecretList.stream().collect(Collectors.toMap(convertType, convertSecret));
+        return this.convertSoapSecretsToSecretMapByType(typedSecrets.getTypedSecret());
     }
 
     private GenerateAndStoreSecretsRequest createGenerateAndStoreSecretsRequest(String deviceIdentification,

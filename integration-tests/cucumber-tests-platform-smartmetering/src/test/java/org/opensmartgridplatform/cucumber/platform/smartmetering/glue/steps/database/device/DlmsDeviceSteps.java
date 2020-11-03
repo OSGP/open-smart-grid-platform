@@ -13,6 +13,10 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getLong
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShort;
 import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.SMART_METER_E;
 import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.SMART_METER_G;
+import static org.opensmartgridplatform.secretmanagement.application.domain.SecretType.E_METER_AUTHENTICATION_KEY;
+import static org.opensmartgridplatform.secretmanagement.application.domain.SecretType.E_METER_ENCRYPTION_KEY_UNICAST;
+import static org.opensmartgridplatform.secretmanagement.application.domain.SecretType.E_METER_MASTER_KEY;
+import static org.opensmartgridplatform.secretmanagement.application.domain.SecretType.G_METER_MASTER_KEY;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -60,6 +64,7 @@ import org.opensmartgridplatform.secretmanagement.application.repository.DbEncry
 import org.opensmartgridplatform.secretmanagement.application.repository.DbEncryptionKeyRepository;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -194,8 +199,7 @@ public class DlmsDeviceSteps {
         assertThat(device).as("DLMS device with identification " + deviceIdentification + " in core database").isNull();
     }
 
-    //TODO FIX
-    /*@Then("^the new keys are stored in the osgp_adapter_protocol_dlms database security_key table$")
+    @Then("^the new keys are stored in the osgp_adapter_protocol_dlms database security_key table$")
     public void theNewKeysAreStoredInTheOsgpAdapterProtocolDlmsDatabaseSecurityKeyTable() {
         final String keyDeviceIdentification = PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION;
         final String deviceIdentification = (String) ScenarioContext.current().get(keyDeviceIdentification);
@@ -203,28 +207,26 @@ public class DlmsDeviceSteps {
                 .as("Device identification must be in the scenario context for key " + keyDeviceIdentification)
                 .isNotNull();
 
-        final DlmsDevice dlmsDevice = this.findExistingDlmsDevice(deviceIdentification);
-        final List<SecurityKey> securityKeys = dlmsDevice.getSecurityKeys();
-    /*
+        final List<DbEncryptedSecret> securityKeys = this.findAllSecretsForDevice(deviceIdentification);
+
         /*
          * If the new keys are stored, the device should have some no longer
          * valid keys. There should be 1 master key and more than one
          * authentication and encryption keys.
          */
-    /*
         int numberOfMasterKeys = 0;
         int numberOfAuthenticationKeys = 0;
         int numberOfEncryptionKeys = 0;
 
-        for (final SecurityKey securityKey : securityKeys) {
-            switch (securityKey.getSecurityKeyType()) {
-            case E_METER_MASTER:
+        for (final DbEncryptedSecret securityKey : securityKeys) {
+            switch (securityKey.getSecretType()) {
+            case E_METER_MASTER_KEY:
                 numberOfMasterKeys += 1;
                 break;
-            case E_METER_AUTHENTICATION:
+            case E_METER_AUTHENTICATION_KEY:
                 numberOfAuthenticationKeys += 1;
                 break;
-            case E_METER_ENCRYPTION:
+            case E_METER_ENCRYPTION_KEY_UNICAST:
                 numberOfEncryptionKeys += 1;
                 break;
             default:
@@ -235,56 +237,55 @@ public class DlmsDeviceSteps {
         assertThat(numberOfMasterKeys).as("Number of master keys").isEqualTo(1);
         assertThat(numberOfAuthenticationKeys > 1).as("Number of authentication keys > 1").isTrue();
         assertThat(numberOfEncryptionKeys > 1).as("Number of encryption keys > 1").isTrue();
-    }*/
+    }
 
-    //TODO FIX
-    /*@Then("^the keys are not changed in the osgp_adapter_protocol_dlms database security_key table$")
+    @Then("^the keys are not changed in the osgp_adapter_protocol_dlms database security_key table$")
     public void theKeysAreNotChangedInTheOsgpAdapterProtocolDlmsDatabaseSecurityKeyTable() {
         final String keyDeviceIdentification = PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION;
         final String deviceIdentification = (String) ScenarioContext.current().get(keyDeviceIdentification);
         assertThat(deviceIdentification)
                 .as("Device identification must be in the scenario context for key " + keyDeviceIdentification)
                 .isNotNull();
+        List<DbEncryptedSecret> securityKeys = this.findAllSecretsForDevice(deviceIdentification);
 
-        final DlmsDevice dlmsDevice = this.findExistingDlmsDevice(deviceIdentification);
-        final List<SecurityKey> securityKeys = dlmsDevice.getSecurityKeys();
-     */
-    /*
-     * If the keys are not changed, the device should only have valid keys.
-     * There should be 1 master key and one authentication and encryption
-     * key.
-     */
-    /*
+        /*
+         * If the keys are not changed, the device should only have valid keys.
+         * There should be 1 master key and one authentication and encryption
+         * key.
+         */
         int numberOfMasterKeys = 0;
         int numberOfAuthenticationKeys = 0;
         int numberOfEncryptionKeys = 0;
 
-        for (final SecurityKey securityKey : securityKeys) {
-            switch (securityKey.getSecurityKeyType()) {
-            case E_METER_MASTER:
+        for (final DbEncryptedSecret securityKey : securityKeys) {
+            switch (securityKey.getSecretType()) {
+            case E_METER_MASTER_KEY:
                 numberOfMasterKeys += 1;
                 break;
-            case E_METER_AUTHENTICATION:
+            case E_METER_AUTHENTICATION_KEY:
                 numberOfAuthenticationKeys += 1;
                 break;
-            case E_METER_ENCRYPTION:
+            case E_METER_ENCRYPTION_KEY_UNICAST:
                 numberOfEncryptionKeys += 1;
                 break;
             default:
                 // other keys are not counted
             }
-            assertThat(securityKey.getValidTo())
-                    .as("security key " + securityKey.getSecurityKeyType() + " valid to date").isNull();
+            assertThat(securityKey.getSecretStatus()).as("security key " + securityKey.getSecretType() + " is active")
+                                                     .isEqualTo(SecretStatus.ACTIVE);
         }
 
         assertThat(numberOfMasterKeys).as("Number of master keys").isEqualTo(1);
         assertThat(numberOfAuthenticationKeys).as("Number of authentication keys").isEqualTo(1);
         assertThat(numberOfEncryptionKeys).as("Number of encryption keys").isEqualTo(1);
     }
-    */
 
-    //TODO FIX
-    /*
+    private List<DbEncryptedSecret> findAllSecretsForDevice(String deviceIdentification) {
+        DbEncryptedSecret searchByIdExample = new DbEncryptedSecret();
+        searchByIdExample.setDeviceIdentification(deviceIdentification);
+        return this.encryptedSecretRepository.findAll(Example.of(searchByIdExample));
+    }
+
     @Then("^the stored keys are not equal to the received keys$")
     public void theStoredKeysAreNotEqualToTheReceivedKeys() {
         final String keyDeviceIdentification = PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION;
@@ -296,36 +297,31 @@ public class DlmsDeviceSteps {
         final String deviceDescription = "DLMS device with identification " + deviceIdentification;
         final DlmsDevice dlmsDevice = this.findExistingDlmsDevice(deviceIdentification);
 
-        final SecurityKey masterKey = this
-                .findExistingSecurityKey(dlmsDevice, SecurityKeyType.E_METER_MASTER, "Master key");
+        final DbEncryptedSecret masterKey = this
+                .findExistingSecurityKey(dlmsDevice, E_METER_MASTER_KEY, "Master key");
         final String receivedMasterKey = (String) ScenarioContext.current()
                                                                  .get(PlatformSmartmeteringKeys.KEY_DEVICE_MASTERKEY);
-        assertThat(masterKey.getKey())
+        assertThat(masterKey.getEncodedSecret())
                 .as("Stored master key for " + deviceDescription + " must be different from received key")
                 .isNotEqualTo(receivedMasterKey);
 
-        final SecurityKey authenticationKey = this
-                .findExistingSecurityKey(dlmsDevice, SecurityKeyType.E_METER_AUTHENTICATION, "Authentication key");
+        final DbEncryptedSecret authenticationKey = this
+                .findExistingSecurityKey(dlmsDevice, E_METER_AUTHENTICATION_KEY, "Authentication key");
         final String receivedAuthenticationKey = (String) ScenarioContext.current()
-                                                                         .get(PlatformSmartmeteringKeys
-                                                                         .KEY_DEVICE_AUTHENTICATIONKEY);
-        assertThat(authenticationKey.getKey())
+                                                                         .get(PlatformSmartmeteringKeys.KEY_DEVICE_AUTHENTICATIONKEY);
+        assertThat(authenticationKey.getEncodedSecret())
                 .as("Stored authentication key for " + deviceDescription + " must be different from received key")
                 .isNotEqualTo(receivedAuthenticationKey);
 
-        final SecurityKey encryptionKey = this
-                .findExistingSecurityKey(dlmsDevice, SecurityKeyType.E_METER_ENCRYPTION, "Encryption key");
+        final DbEncryptedSecret encryptionKey = this
+                .findExistingSecurityKey(dlmsDevice, E_METER_ENCRYPTION_KEY_UNICAST, "Encryption key");
         final String receivedEncryptionKey = (String) ScenarioContext.current()
-                                                                     .get(PlatformSmartmeteringKeys
-                                                                     .KEY_DEVICE_AUTHENTICATIONKEY);
-        assertThat(encryptionKey.getKey())
+                                                                     .get(PlatformSmartmeteringKeys.KEY_DEVICE_AUTHENTICATIONKEY);
+        assertThat(encryptionKey.getEncodedSecret())
                 .as("Stored encryption key for " + deviceDescription + " must be different from received key")
                 .isNotEqualTo(receivedEncryptionKey);
     }
-   */
 
-    //TODO FIX
-    /*
     @Then("^the stored M-Bus Default key is not equal to the received key$")
     public void theStoredMbusDefaultKeysIsNotEqualToTheReceivedKey() {
         final String keyDeviceIdentification = PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION;
@@ -337,17 +333,15 @@ public class DlmsDeviceSteps {
         final String deviceDescription = "DLMS device with identification " + deviceIdentification;
         final DlmsDevice dlmsDevice = this.findExistingDlmsDevice(deviceIdentification);
 
-        final SecurityKey mbusDefaultKey = this
-                .findExistingSecurityKey(dlmsDevice, SecurityKeyType.G_METER_MASTER, "M-Bus Default key");
+        final DbEncryptedSecret mbusDefaultKey = this
+                .findExistingSecurityKey(dlmsDevice, G_METER_MASTER_KEY, "M-Bus Default key");
         final String receivedMbusDefaultKey = (String) ScenarioContext.current()
                                                                       .get(PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY);
-        assertThat(mbusDefaultKey.getKey())
+        assertThat(mbusDefaultKey.getEncodedSecret())
                 .as("Stored M-Bus Default key for " + deviceDescription + " must be different from received key")
                 .isNotEqualTo(receivedMbusDefaultKey);
-    }*/
+    }
 
-    //TODO FIX
-    /*
     @Then("^a valid m-bus user key is stored$")
     public void aValidMbusUserKeyIsStored(final Map<String, String> settings) {
         final String keyDeviceIdentification = PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION;
@@ -360,23 +354,21 @@ public class DlmsDeviceSteps {
         final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
         assertThat(dlmsDevice).as(deviceDescription + " must be in the protocol database").isNotNull();
 
-        final List<SecurityKey> securityKeys = dlmsDevice.getSecurityKeys();
+        final List<DbEncryptedSecret> securityKeys = this.findAllSecretsForDevice(deviceIdentification);
 
         int numberOfMbusDefaultKeys = 0;
         int numberOfMbusUserKeys = 0;
         int numberOfValidMbusUserKeys = 0;
 
         final Date now = new Date();
-        for (final SecurityKey securityKey : securityKeys) {
-            switch (securityKey.getSecurityKeyType()) {
-            case G_METER_MASTER:
+        for (final DbEncryptedSecret securityKey : securityKeys) {
+            switch (securityKey.getSecretType()) {
+            case G_METER_MASTER_KEY:
                 numberOfMbusDefaultKeys += 1;
                 break;
-            case G_METER_ENCRYPTION:
+            case G_METER_ENCRYPTION_KEY:
                 numberOfMbusUserKeys += 1;
-                final Date validFrom = securityKey.getValidFrom();
-                final Date validTo = securityKey.getValidTo();
-                if ((validFrom != null && now.after(validFrom)) && (validTo == null || now.before(validTo))) {
+                if (securityKey.getSecretStatus().equals(SecretStatus.ACTIVE)) {
                     numberOfValidMbusUserKeys += 1;
                 }
                 break;
@@ -389,16 +381,13 @@ public class DlmsDeviceSteps {
         assertThat(numberOfMbusUserKeys > 0).as("At least one M-Bus User key must be stored").isTrue();
         assertThat(numberOfValidMbusUserKeys).as("Number of valid M-Bus User keys stored").isEqualTo(1);
     }
-    */
 
-    //TODO FIX
-    /*
     @Then("^the invocation counter for the encryption key of \"([^\"]*)\" should be greater than (\\d++)$")
     public void theInvocationCounterForTheEncryptionKeyOfShouldBeGreaterThan(final String deviceIdentification,
             final Integer invocationCounterLowerBound) {
 
         final DlmsDevice dlmsDevice = this.findExistingDlmsDevice(deviceIdentification);
-        this.findExistingSecurityKey(dlmsDevice, SecurityKeyType.E_METER_ENCRYPTION, "Encryption key");
+        this.findExistingSecurityKey(dlmsDevice, E_METER_ENCRYPTION_KEY_UNICAST, "Encryption key");
         final Long invocationCounter = dlmsDevice.getInvocationCounter();
 
         assertThat(invocationCounter)
@@ -409,7 +398,7 @@ public class DlmsDeviceSteps {
                 .as("The invocation counter for the encryption key of DLMS device with identification " + dlmsDevice
                         .getDeviceIdentification() + " (which is " + invocationCounter + ") must be greater than "
                         + invocationCounterLowerBound).isTrue();
-    }*/
+    }
 
     private DlmsDevice findExistingDlmsDevice(final String deviceIdentification) {
         final String deviceDescription = "DLMS device with identification " + deviceIdentification;
@@ -418,16 +407,19 @@ public class DlmsDeviceSteps {
         return dlmsDevice;
     }
 
-    //TODO FIX
-    /*
-    private SecurityKey findExistingSecurityKey(final DlmsDevice dlmsDevice, final SecurityKeyType keyType,
+    private DbEncryptedSecret findExistingSecurityKey(final DlmsDevice dlmsDevice, final SecretType secretType,
             final String keyDescription) {
-        final SecurityKey securityKey = dlmsDevice.getValidSecurityKey(keyType);
-        assertThat(securityKey)
+        List<DbEncryptedSecret> validSecrets = this.encryptedSecretRepository
+                .findSecrets(dlmsDevice.getDeviceIdentification(), secretType, SecretStatus.ACTIVE);
+        assertThat(validSecrets.size()).isEqualTo(1)
+                                       .as("Device %s should have 1 active secret of type %s, but found %s",
+                                               dlmsDevice.getDeviceIdentification(), secretType, validSecrets.size());
+        DbEncryptedSecret secret = validSecrets.get(0);
+        assertThat(secret)
                 .as(keyDescription + " for DLMS device with identification " + dlmsDevice.getDeviceIdentification()
                         + " must be stored").isNotNull();
-        return securityKey;
-    }*/
+        return secret;
+    }
 
     private void setScenarioContextForDevice(final Map<String, String> inputSettings, final Device device) {
         final String deviceType = inputSettings.get(PlatformSmartmeteringKeys.DEVICE_TYPE);
