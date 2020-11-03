@@ -64,13 +64,22 @@ public abstract class AbstractPushSetupConverter<S, D> extends CustomConverter<S
     private void configureBuilder(final AbstractPushSetupDto.AbstractBuilder<?> builder,
             final AbstractPushSetup pushSetup) {
 
-        if (pushSetup.getCommunicationWindow() != null) {
+        if (pushSetup.getCommunicationWindow() != null && pushSetup.getCommunicationWindow().size() != 0) {
             builder.withCommunicationWindow(
                     this.configurationMapper.mapAsList(pushSetup.getCommunicationWindow(), WindowElementDto.class));
+            // List<WindowElement> communicationWindow =
+            // pushSetup.getCommunicationWindow();
+            // if (pushSetup.getCommunicationWindow().size() == 0) {
+            // communicationWindow = null;
+            // }
+            // final List<WindowElementDto> dtoList =
+            // this.configurationMapper.mapAsList(communicationWindow,
+            // WindowElementDto.class);
+            // builder.withCommunicationWindow(dtoList);
         }
         builder.withLogicalName(this.configurationMapper.map(pushSetup.getLogicalName(), CosemObisCodeDto.class));
         builder.withNumberOfRetries(pushSetup.getNumberOfRetries());
-        if (pushSetup.getPushObjectList() != null) {
+        if (pushSetup.getPushObjectList() != null && pushSetup.getPushObjectList().size() != 0) {
             builder.withPushObjectList(
                     this.configurationMapper.mapAsList(pushSetup.getPushObjectList(), CosemObjectDefinitionDto.class));
         }
