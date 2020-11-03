@@ -12,6 +12,7 @@ import java.io.Serializable;
 
 public enum EventLogCategory implements Serializable {
     STANDARD_EVENT_LOG,
+    POWER_FAILURE_LOG,
     FRAUD_DETECTION_LOG,
     COMMUNICATION_SESSION_LOG,
     M_BUS_EVENT_LOG,
