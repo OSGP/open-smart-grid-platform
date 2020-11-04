@@ -87,7 +87,7 @@ public class OsgpCoreRequestSteps {
 
         final ArgumentCaptor<RequestMessage> requestMessageCaptor = ArgumentCaptor.forClass(RequestMessage.class);
         verify(this.osgpRequestMessageSenderMock, times(1)).send(requestMessageCaptor.capture(),
-                eq(MessageType.ADD_EVENT_NOTIFICATION.name()));
+                eq(MessageType.EVENT_NOTIFICATION.name()));
         final RequestMessage requestMessage = requestMessageCaptor.getValue();
 
         assertThat(requestMessage.getDeviceIdentification()).isEqualTo(expectedDeviceIdentification);

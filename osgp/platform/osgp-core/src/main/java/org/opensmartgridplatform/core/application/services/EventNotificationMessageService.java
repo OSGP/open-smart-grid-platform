@@ -8,7 +8,6 @@
 package org.opensmartgridplatform.core.application.services;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +24,6 @@ import org.opensmartgridplatform.domain.core.entities.Event;
 import org.opensmartgridplatform.domain.core.entities.RelayStatus;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
-import org.opensmartgridplatform.domain.core.valueobjects.EventMessageDataContainer;
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayType;
 import org.opensmartgridplatform.dto.valueobjects.EventNotificationDto;
@@ -60,16 +58,23 @@ public class EventNotificationMessageService {
         this.eventNotificationHelperService.saveEvent(new Event(deviceIdentification,
                 dateTime != null ? dateTime : DateTime.now().toDate(), eventType, description, index));
 
-        // Check if it was a switching event.
         if (this.isSwitchingEvent(eventType)) {
             this.handleSwitchingEvent(deviceIdentification, dateTime, eventType, index);
+        } else if (this.isLightEvent(eventType)) {
+            this.handleLightMeasurementDeviceEvent(deviceIdentification, dateTime, eventType, description, index);
         }
+
     }
 
     private boolean isSwitchingEvent(final EventType eventType) {
         return eventType.equals(EventType.LIGHT_EVENTS_LIGHT_ON) || eventType.equals(EventType.LIGHT_EVENTS_LIGHT_OFF)
                 || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_ON)
                 || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_OFF);
+    }
+
+    private boolean isLightEvent(final EventType eventType) {
+        return eventType.equals(EventType.LIGHT_SENSOR_REPORTS_DARK)
+                || eventType.equals(EventType.LIGHT_SENSOR_REPORTS_LIGHT);
     }
 
     public void handleEvent(final String deviceIdentification, final EventNotificationDto event)
@@ -85,49 +90,6 @@ public class EventNotificationMessageService {
         this.handleEvent(deviceIdentification, dateTime, eventType, description, index);
     }
 
-    public void handleEvents(final String deviceIdentification, final List<EventNotificationDto> eventNotifications)
-            throws UnknownEntityException {
-
-        LOGGER.info("handleEvents() called for device: {} with eventNotifications.size(): {}", deviceIdentification,
-                eventNotifications.size());
-        for (final EventNotificationDto event : eventNotifications) {
-            LOGGER.info("  event: {}", event);
-        }
-
-        final Device device = this.eventNotificationHelperService.findDevice(deviceIdentification);
-
-        /*
-         * A list of bundled events may contain events that occurred over a
-         * period of time (and as such may contain multiple switching events per
-         * relay). Handling light switching events, only update the relay status
-         * once for the last switching in the list.
-         */
-        final List<Event> switchDeviceEvents = new ArrayList<>();
-        final List<Event> lightMeasurementDeviceEvents = new ArrayList<>();
-
-        for (final EventNotificationDto eventNotification : eventNotifications) {
-            final DateTime eventTime = eventNotification.getDateTime();
-            final EventType eventType = EventType.valueOf(eventNotification.getEventType().name());
-            final Event event = new Event(deviceIdentification,
-                    eventTime != null ? eventTime.toDate() : DateTime.now().toDate(), eventType,
-                    eventNotification.getDescription(), eventNotification.getIndex());
-
-            LOGGER.info("Saving event for device: {} with eventType: {} eventTime: {} description: {} index: {}",
-                    deviceIdentification, eventType.name(), eventTime, eventNotification.getDescription(),
-                    eventNotification.getIndex());
-            this.eventNotificationHelperService.saveEvent(event);
-
-            if (this.isSwitchingEvent(eventType)) {
-                switchDeviceEvents.add(event);
-            } else if (eventType.equals(EventType.LIGHT_SENSOR_REPORTS_DARK)
-                    || eventType.equals(EventType.LIGHT_SENSOR_REPORTS_LIGHT)) {
-                lightMeasurementDeviceEvents.add(event);
-            }
-        }
-
-        this.checkSwitchDeviceEvents(device, switchDeviceEvents);
-        this.checkLightMeasurementDeviceEvents(device, lightMeasurementDeviceEvents);
-    }
 
     private void checkSwitchDeviceEvents(final Device device, final List<Event> switchDeviceEvents)
             throws UnknownEntityException {
@@ -136,12 +98,6 @@ public class EventNotificationMessageService {
         }
     }
 
-    private void checkLightMeasurementDeviceEvents(final Device device,
-            final List<Event> lightMeasurementDeviceEvents) {
-        if (!lightMeasurementDeviceEvents.isEmpty()) {
-            this.handleLightMeasurementDeviceEvents(device, lightMeasurementDeviceEvents);
-        }
-    }
 
     private void handleSwitchDeviceEvents(final Device device, final List<Event> switchDeviceEvents)
             throws UnknownEntityException {
@@ -263,21 +219,16 @@ public class EventNotificationMessageService {
         }
     }
 
-    private void handleLightMeasurementDeviceEvents(final Device device,
-            final List<Event> lightMeasurementDeviceEvents) {
-        if (lightMeasurementDeviceEvents.isEmpty()) {
-            LOGGER.info("List of events is empty for LMD: {}, not needed to process events.",
-                    device.getDeviceIdentification());
-            return;
-        }
+    private void handleLightMeasurementDeviceEvent(final String deviceIdentification, final Date dateTime, final EventType eventType, final String description,
+    final int index) {
 
         try {
-            final EventMessageDataContainer dataContainer = new EventMessageDataContainer(lightMeasurementDeviceEvents);
-            lightMeasurementDeviceEvents.forEach(lightMeasurementDeviceEvent -> this.sendRequestMessageToDomainPublicLighting(lightMeasurementDeviceEvent.getEventType().name(),
-                    device.getDeviceIdentification(), dataContainer));
+            final Event lightMeasurementDeviceEvent = new Event(deviceIdentification,
+                    dateTime != null ? dateTime : DateTime.now().toDate(), eventType, description, index);
+            this.sendRequestMessageToDomainPublicLighting(MessageType.EVENT_NOTIFICATION.name(), deviceIdentification, lightMeasurementDeviceEvent);
         } catch (final Exception e) {
             LOGGER.error(String.format("Unexpected exception while handling events for light measurement device: %s",
-                    device.getDeviceIdentification()), e);
+                    deviceIdentification), e);
         }
     }
 

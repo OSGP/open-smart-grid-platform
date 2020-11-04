@@ -7,11 +7,9 @@
  */
 package org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.AdHocManagementService;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.domain.core.valueobjects.EventMessageDataContainer;
-import org.opensmartgridplatform.domain.core.valueobjects.EventType;
+import org.opensmartgridplatform.domain.core.entities.Event;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.UnknownMessageTypeException;
 import org.slf4j.Logger;
@@ -42,14 +40,10 @@ public class OsgpCoreRequestMessageProcessor {
                 messageType, deviceIdentification, organisationIdentification, correlationUid,
                 dataObject.getClass().getCanonicalName());
 
-        if (DeviceFunction.SET_TRANSITION.name().equals(messageType)) {
-            final EventMessageDataContainer dataContainer = (EventMessageDataContainer) dataObject;
+        if (MessageType.EVENT_NOTIFICATION.name().equals(messageType)) {
+            final Event event = (Event) dataObject;
             this.handleLightMeasurementDeviceTransition(organisationIdentification, deviceIdentification,
-                    correlationUid, dataContainer);
-        } else
-        if (EventType.LIGHT_SENSOR_REPORTS_LIGHT.name().equals(messageType) ||
-            EventType.LIGHT_SENSOR_REPORTS_DARK.name().equals(messageType)) {
-            throw new NotImplementedException(String.format("Unknown JMSType: %s, these should be handled in https://smartsocietyservices.atlassian.net/browse/FLEX-5305" ,messageType));
+                    correlationUid, event);
         } else {
             throw new UnknownMessageTypeException("Unknown JMSType: " + messageType);
         }
@@ -57,10 +51,10 @@ public class OsgpCoreRequestMessageProcessor {
 
     private void handleLightMeasurementDeviceTransition(final String organisationIdentification,
             final String deviceIdentification, final String correlationUid,
-            final EventMessageDataContainer eventMessageDataContainer) {
+            final Event event) {
         LOGGER.info("Received transition message of light measurement device: {}", deviceIdentification);
 
         this.adHocManagementService.handleLightMeasurementDeviceTransition(organisationIdentification,
-                deviceIdentification, correlationUid, eventMessageDataContainer);
+                deviceIdentification, correlationUid, event);
     }
 }

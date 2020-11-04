@@ -32,7 +32,6 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceStatusMapped;
 import org.opensmartgridplatform.domain.core.valueobjects.DomainType;
-import org.opensmartgridplatform.domain.core.valueobjects.EventMessageDataContainer;
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
 import org.opensmartgridplatform.domain.core.valueobjects.LightSensorStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.LightValue;
@@ -326,20 +325,13 @@ public class AdHocManagementService extends AbstractService {
      *            Light measurement device identification.
      * @param correlationUid
      *            The generated correlation UID.
-     * @param eventMessageDataContainer
-     *            List of {@link Event}s contained by
-     *            {@link EventMessageDataContainer}.
+     * @param event
+     *            An {@link Event}.
      */
     public void handleLightMeasurementDeviceTransition(final String organisationIdentification,
             final String deviceIdentification, final String correlationUid,
-            final EventMessageDataContainer eventMessageDataContainer) {
+            final Event event) {
 
-        // Check the event and the LMD.
-        final Event event = eventMessageDataContainer.getEvents().get(0);
-        if (event == null) {
-            LOGGER.error("No event received for light measurement device: {}", deviceIdentification);
-            return;
-        }
         LightMeasurementDevice lmd = this.lightMeasurementDeviceRepository
                 .findByDeviceIdentification(deviceIdentification);
         if (lmd == null) {
