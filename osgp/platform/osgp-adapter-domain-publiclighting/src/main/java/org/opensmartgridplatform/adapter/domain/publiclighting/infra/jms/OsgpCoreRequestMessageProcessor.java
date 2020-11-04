@@ -40,21 +40,19 @@ public class OsgpCoreRequestMessageProcessor {
                 messageType, deviceIdentification, organisationIdentification, correlationUid,
                 dataObject.getClass().getCanonicalName());
 
-        if (MessageType.EVENT_NOTIFICATION.name().equals(messageType)) {
+        if (MessageType.EVENT_NOTIFICATION == MessageType.valueOf(messageType)) {
             final Event event = (Event) dataObject;
-            this.handleLightMeasurementDeviceTransition(organisationIdentification, deviceIdentification,
-                    correlationUid, event);
+            this.handleLightMeasurementDeviceTransition(organisationIdentification, correlationUid, event);
         } else {
             throw new UnknownMessageTypeException("Unknown JMSType: " + messageType);
         }
     }
 
     private void handleLightMeasurementDeviceTransition(final String organisationIdentification,
-            final String deviceIdentification, final String correlationUid,
-            final Event event) {
-        LOGGER.info("Received transition message of light measurement device: {}", deviceIdentification);
+            final String correlationUid, final Event event) {
+        LOGGER.info("Received transition message of light measurement device: {}", event.getDeviceIdentification());
 
-        this.adHocManagementService.handleLightMeasurementDeviceTransition(organisationIdentification,
-                deviceIdentification, correlationUid, event);
+        this.adHocManagementService.handleLightMeasurementDeviceTransition(organisationIdentification, correlationUid,
+                event);
     }
 }
