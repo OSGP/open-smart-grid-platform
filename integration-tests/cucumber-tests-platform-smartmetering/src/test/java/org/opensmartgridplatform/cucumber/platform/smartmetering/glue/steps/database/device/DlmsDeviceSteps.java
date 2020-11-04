@@ -18,7 +18,7 @@ import static org.opensmartgridplatform.secretmanagement.application.domain.Secr
 import static org.opensmartgridplatform.secretmanagement.application.domain.SecretType.E_METER_MASTER_KEY;
 import static org.opensmartgridplatform.secretmanagement.application.domain.SecretType.G_METER_MASTER_KEY;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -495,7 +495,7 @@ public class DlmsDeviceSteps {
 
     private void createDlmsDeviceInSecretManagementDatabase(DlmsDevice dlmsDevice, Map<String,String> inputSettings) {
         final String deviceType = inputSettings.getOrDefault(PlatformSmartmeteringKeys.DEVICE_TYPE, SMART_METER_E);
-        List<SecurityKeyBuilder> secretBuilders = Arrays.asList();
+        List<SecurityKeyBuilder> secretBuilders = new ArrayList<>();
         if (inputSettings.containsKey(PlatformSmartmeteringKeys.LLS1_ACTIVE) &&
                 "true".equals(inputSettings.get(PlatformSmartmeteringKeys.LLS1_ACTIVE))) {
             secretBuilders.add(this.passwordBuilder);
