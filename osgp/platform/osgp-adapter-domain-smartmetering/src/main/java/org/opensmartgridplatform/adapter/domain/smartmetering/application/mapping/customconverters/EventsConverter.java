@@ -24,7 +24,8 @@ public class EventsConverter extends BidirectionalConverter<EventDto, Event> {
         }
 
         return new Event(source.getTimestamp(), source.getEventCode(), source.getEventCounter(),
-                EventLogCategory.fromValue(source.getEventLogCategoryName()));
+                EventLogCategory.fromValue(source.getEventLogCategoryName()), source.getStartTime(),
+                source.getDuration());
     }
 
     @Override
@@ -35,6 +36,6 @@ public class EventsConverter extends BidirectionalConverter<EventDto, Event> {
         }
 
         return new EventDto(source.getTimestamp(), source.getEventCode(), source.getEventCounter(),
-                source.getEventLogCategory().name());
+                source.getEventLogCategory().name(), source.getStartTime(), source.getDuration());
     }
 }

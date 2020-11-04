@@ -11,22 +11,21 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.mapping;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventLogCategoryDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component(value = "dataObjectToEventListConverter")
 public class DataObjectToEventListConverter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DataObjectToEventListConverter.class);
-
+    public static final String EVENT_DATA_VALUE_IS_NOT_A_NUMBER = "eventData value is not a number";
     private final DlmsHelper dlmsHelper;
 
     @Autowired
@@ -43,14 +42,14 @@ public class DataObjectToEventListConverter {
 
         final List<DataObject> listOfEvents = source.getValue();
         for (final DataObject eventDataObject : listOfEvents) {
-            eventList.add(this.getEvent(eventDataObject, eventLogCategory));
+            eventList.add(this.getDefaultEvent(eventDataObject, eventLogCategory));
         }
 
         return eventList;
 
     }
 
-    private EventDto getEvent(final DataObject eventDataObject, final EventLogCategoryDto eventLogCategory)
+    private EventDto getDefaultEvent(final DataObject eventDataObject, final EventLogCategoryDto eventLogCategory)
             throws ProtocolAdapterException {
 
         final List<DataObject> eventData = eventDataObject.getValue();
@@ -64,32 +63,66 @@ public class DataObjectToEventListConverter {
                     "eventData size should be " + eventLogCategory.getNumberOfEventElements());
         }
 
+        EventDto event = null;
+
+        if (eventLogCategory == EventLogCategoryDto.POWER_FAILURE_EVENT_LOG) {
+            event = getPowerFailureEvent(eventData, eventLogCategory);
+        } else {
+            event = getDefaultEvent(eventData, eventLogCategory);
+        }
+
+        log.info("Converted dataObject to event: {}", event);
+        return event;
+    }
+
+    private EventDto getDefaultEvent(List<DataObject> eventData, final EventLogCategoryDto eventLogCategory)
+            throws ProtocolAdapterException {
         // extract values from List<DataObject> eventData.
         final DateTime dateTime = this.extractDateTime(eventData);
         final Short code = this.extractCode(eventData);
         final Integer eventCounter = this.extractEventCounter(eventLogCategory, eventData);
         final String eventLogCategoryName = eventLogCategory.name();
 
-        LOGGER.info("Event time is {}, event code is {}, event category is {} and event counter is {}", dateTime, code,
-                eventLogCategoryName, eventCounter);
-
         // build a new EventDto with those values.
-        return new EventDto(dateTime, code.intValue(), eventCounter, eventLogCategoryName);
+        return new EventDto(dateTime, code.intValue(), eventCounter, eventLogCategoryName, null, null);
+    }
+
+    private EventDto getPowerFailureEvent(List<DataObject> eventData, final EventLogCategoryDto eventLogCategory)
+            throws ProtocolAdapterException {
+        final DateTime endTime = this.extractDateTime(eventData);
+        final Long duration = this.extractEventDuration(eventData);
+        final String eventLogCategoryName = eventLogCategory.name();
+        final DateTime startTime = calculatePowerFailureStartTime(endTime, duration);
+
+        return new EventDto(endTime, 1, null, eventLogCategoryName, startTime, duration);
     }
 
     private DateTime extractDateTime(final List<DataObject> eventData) throws ProtocolAdapterException {
-
         final DateTime dateTime = this.dlmsHelper.convertDataObjectToDateTime(eventData.get(0)).asDateTime();
+
         if (dateTime == null) {
             throw new ProtocolAdapterException("eventData time is null/unspecified");
         }
+
         return dateTime;
     }
 
-    private Short extractCode(final List<DataObject> eventData) throws ProtocolAdapterException {
-
+    private Long extractEventDuration(List<DataObject> eventData)
+            throws ProtocolAdapterException {
         if (!eventData.get(1).isNumber()) {
-            throw new ProtocolAdapterException("eventData value is not a number");
+            throw new ProtocolAdapterException(EVENT_DATA_VALUE_IS_NOT_A_NUMBER);
+        }
+
+        return eventData.get(1).getValue();
+    }
+
+    private DateTime calculatePowerFailureStartTime(DateTime endTime, Long duration) {
+        return endTime.minusSeconds(duration.intValue());
+    }
+
+    private Short extractCode(final List<DataObject> eventData) throws ProtocolAdapterException {
+        if (!eventData.get(1).isNumber()) {
+            throw new ProtocolAdapterException(EVENT_DATA_VALUE_IS_NOT_A_NUMBER);
         }
         return eventData.get(1).getValue();
     }
@@ -101,7 +134,7 @@ public class DataObjectToEventListConverter {
 
         if (eventLogCategory.getNumberOfEventElements() == 3) {
             if (!eventData.get(2).isNumber()) {
-                throw new ProtocolAdapterException("eventData value is not a number");
+                throw new ProtocolAdapterException(EVENT_DATA_VALUE_IS_NOT_A_NUMBER);
             }
             eventCounter = eventData.get(2).getValue();
         }

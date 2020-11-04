@@ -65,6 +65,7 @@ public class FindEventsCommandExecutor extends AbstractCommandExecutor<FindEvent
         EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategoryDto.COMMUNICATION_SESSION_LOG, new ObisCode("0.0.99.98.4.255"));
         EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategoryDto.M_BUS_EVENT_LOG,           new ObisCode("0.0.99.98.3.255"));
         EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategoryDto.POWER_QUALITY_EVENT_LOG,   new ObisCode("0.0.99.98.5.255"));
+        EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategoryDto.POWER_FAILURE_EVENT_LOG,   new ObisCode("1.0.99.97.0.255"));
     }
 
     @Autowired
