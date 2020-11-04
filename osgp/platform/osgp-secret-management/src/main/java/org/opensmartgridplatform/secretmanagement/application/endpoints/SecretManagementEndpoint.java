@@ -106,7 +106,9 @@ public class SecretManagementEndpoint {
     public StoreSecretsResponse storeSecretsRequest(@RequestPayload final StoreSecretsRequest request)
             throws OsgpException {
         log.info("Handling incoming SOAP request 'storeSecretsRequest' for device {}", request.getDeviceId());
-        log.trace(request.toString());
+        if (log.isDebugEnabled()) {
+            log.debug(this.requestToString(request));
+        }
         final StoreSecretsResponse response = new StoreSecretsResponse();
         final TypedSecrets soapTypedSecrets = request.getTypedSecrets();
         if (soapTypedSecrets == null) {
@@ -123,8 +125,11 @@ public class SecretManagementEndpoint {
     @ResponsePayload
     public GenerateAndStoreSecretsResponse generateAndStoreSecretsRequest(
             @RequestPayload final GenerateAndStoreSecretsRequest request) throws OsgpException {
-        log.info("Handling incoming SOAP request 'storeSecretsRequest' for device {}", request.getDeviceId());
-        log.trace(request.toString());
+        log.info("Handling incoming SOAP request 'generateAndStoreSecretsRequest' for device {}",
+                request.getDeviceId());
+        if (log.isDebugEnabled()) {
+            log.debug(this.requestToString(request));
+        }
         final GenerateAndStoreSecretsResponse response = new GenerateAndStoreSecretsResponse();
         final SecretTypes soapSecretTypes = request.getSecretTypes();
         if (soapSecretTypes == null) {
@@ -157,7 +162,9 @@ public class SecretManagementEndpoint {
     public ActivateSecretsResponse activateSecretsRequest(@RequestPayload final ActivateSecretsRequest request)
             throws OsgpException {
         log.info("Handling incoming SOAP request 'activateSecretRequest' for device {}", request.getDeviceId());
-        log.trace(request.toString());
+        if (log.isDebugEnabled()) {
+            log.debug(this.requestToString(request));
+        }
         final ActivateSecretsResponse response = new ActivateSecretsResponse();
         final SecretTypes soapSecretTypes = request.getSecretTypes();
         if (soapSecretTypes == null) {
@@ -180,7 +187,9 @@ public class SecretManagementEndpoint {
     public HasNewSecretResponse hasNewSecretRequest(@RequestPayload final HasNewSecretRequest request)
             throws OsgpException {
         log.info("Handling incoming SOAP request 'hasNewSecretRequest' for device {}", request.getDeviceId());
-        log.trace(request.toString());
+        if (log.isDebugEnabled()) {
+            log.debug(this.requestToString(request));
+        }
         final HasNewSecretResponse response = new HasNewSecretResponse();
         final SecretType type = this.converter.convertToSecretType(request.getSecretType());
         final boolean result = this.secretManagementService.hasNewSecret(request.getDeviceId(), type);
