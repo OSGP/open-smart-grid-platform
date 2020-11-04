@@ -124,7 +124,7 @@ public class SecretManagementService {
         if (keyRefs.size() > 1) {
             throw new IllegalStateException("Multiple encryption keys found that are valid at " + now);
         } else if (keyRefs.size() == 0) {
-            throw new NoSuchElementException("No encryption key found that is valid at " + now);
+            throw new NoSuchElementException("No encryption key of type "+this.encryptionProviderType+" found that is valid at " + now);
         }
         return keyRefs.get(0);
     }
