@@ -10,11 +10,13 @@ package org.opensmartgridplatform.secretmanagement.application.exception;
 
 import javax.xml.namespace.QName;
 
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.springframework.ws.soap.SoapFault;
 import org.springframework.ws.soap.SoapFaultDetail;
 import org.springframework.ws.soap.server.endpoint.SoapFaultMappingExceptionResolver;
 
+@Slf4j
 public class DetailSoapFaultMappingExceptionResolver extends SoapFaultMappingExceptionResolver {
 
     private static final QName MESSAGE = new QName("Message");
@@ -22,6 +24,7 @@ public class DetailSoapFaultMappingExceptionResolver extends SoapFaultMappingExc
 
     @Override
     protected void customizeFault(Object endpoint, Exception ex, SoapFault fault) {
+        log.error("Exception occured during SOAP request processing", ex);
         SoapFaultDetail detail = fault.addFaultDetail();
 
         if (ex.getMessage() != null) {
