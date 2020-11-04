@@ -66,7 +66,7 @@ Feature: SmartMetering Configuration - Firmware
       | FirmwareModuleVersionFunc | M57 4836               |
       | FirmwareModuleVersionMbda | M00 0000               |
       | FirmwareIsForSmartMeters  | true                   |
-  @test @NightlyBuildOnly
+  @testJan @NightlyBuildOnly
   Scenario: successful upgrade of firmware
     Given a manufacturer
       | ManufacturerCode | KAIF  |
