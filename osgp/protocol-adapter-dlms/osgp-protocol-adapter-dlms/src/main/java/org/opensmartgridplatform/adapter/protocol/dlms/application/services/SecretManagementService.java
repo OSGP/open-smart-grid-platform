@@ -225,6 +225,7 @@ public class SecretManagementService implements SecurityKeyService {
 
     @Override
     public void storeNewKeys(String deviceIdentification, Map<SecurityKeyType, byte[]> keysByType) {
+        this.validateKeys(keysByType);
         TypedSecrets typedSecrets = new TypedSecrets();
         List<TypedSecret> typedSecretList = typedSecrets.getTypedSecret();
         for (SecurityKeyType type : keysByType.keySet()) {
@@ -235,6 +236,14 @@ public class SecretManagementService implements SecurityKeyService {
         }
         StoreSecretsRequest request = this.createStoreSecretsRequest(deviceIdentification, typedSecrets);
         this.secretManagementClient.storeSecretsRequest(request);
+    }
+
+    private void validateKeys(Map<SecurityKeyType,byte[]> keysByType) {
+        long nrNulls = keysByType.values().stream().filter(key -> key==null).count();
+        if(nrNulls>0) {
+            throw new IllegalArgumentException(String.format("Provided %s keys, %s of which were NULL",
+                    keysByType.size(), nrNulls));
+        }
     }
 
     private StoreSecretsRequest createStoreSecretsRequest(String deviceIdentification, TypedSecrets typedSecrets) {

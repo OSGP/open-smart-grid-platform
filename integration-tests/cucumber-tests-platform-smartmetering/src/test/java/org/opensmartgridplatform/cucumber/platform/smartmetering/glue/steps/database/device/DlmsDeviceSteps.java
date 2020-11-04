@@ -117,7 +117,14 @@ public class DlmsDeviceSteps {
             .setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_E_DB);
     private final SecurityKeyBuilder masterSecurityKeyBuilder = new SecurityKeyBuilder()
             .setSecurityKeyType(SecurityKeyType.E_METER_MASTER).setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_M_DB);
-
+    private final SecurityKeyBuilder passwordBuilder = new SecurityKeyBuilder()
+            .setSecurityKeyType(SecurityKeyType.PASSWORD).setKey(PlatformSmartmeteringDefaults.PASSWORD);
+    private final SecurityKeyBuilder mbusEncryptionSecurityKeyBuilder = new SecurityKeyBuilder()
+            .setSecurityKeyType(SecurityKeyType.G_METER_ENCRYPTION)
+            .setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_G_ENCRYPTION);
+    private final SecurityKeyBuilder mbusMasterSecurityKeyBuilder = new SecurityKeyBuilder()
+            .setSecurityKeyType(SecurityKeyType.G_METER_MASTER)
+            .setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_G_MASTER);
     @Given("^a dlms device$")
     public void aDlmsDevice(final Map<String, String> inputSettings) {
 
@@ -483,18 +490,36 @@ public class DlmsDeviceSteps {
         final DlmsDevice dlmsDevice = dlmsDeviceBuilder.withSettings(inputSettings).build();
         this.dlmsDeviceRepository.save(dlmsDevice);
 
-        //TODO refactor to builder pattern & specialize for device types (E/G/...)
-        this.createDlmsDeviceInSecretManagementDatabase(dlmsDevice);
+        this.createDlmsDeviceInSecretManagementDatabase(dlmsDevice, inputSettings);
     }
 
-    private void createDlmsDeviceInSecretManagementDatabase(DlmsDevice dlmsDevice) {
+    private void createDlmsDeviceInSecretManagementDatabase(DlmsDevice dlmsDevice, Map<String,String> inputSettings) {
+        final String deviceType = inputSettings.getOrDefault(PlatformSmartmeteringKeys.DEVICE_TYPE, SMART_METER_E);
+        List<SecurityKeyBuilder> secretBuilders = Arrays.asList();
+        if (inputSettings.containsKey(PlatformSmartmeteringKeys.LLS1_ACTIVE) &&
+                "true".equals(inputSettings.get(PlatformSmartmeteringKeys.LLS1_ACTIVE))) {
+            secretBuilders.add(this.passwordBuilder);
+        } else if (this.isGasSmartMeter(deviceType)) {
+            secretBuilders.add(this.mbusMasterSecurityKeyBuilder);
+            /*
+             * Don't insert a default value for the M-Bus User key. So only
+             * enable the builder if an M-Bus User key is explicitly configured
+             * in the step data.
+             */
+            if (inputSettings.containsKey(PlatformSmartmeteringKeys.MBUS_USER_KEY)) {
+                secretBuilders.add(this.mbusEncryptionSecurityKeyBuilder);
+            }
+        } else if (this.isESmartMeter(deviceType)) {
+            secretBuilders.add(this.encryptionSecurityKeyBuilder);
+            secretBuilders.add(this.masterSecurityKeyBuilder);
+            secretBuilders.add(this.authenticationSecurityKeyBuilder);
+        }
         DbEncryptionKeyReference encryptionKeyRef = this.encryptionKeyRepository
                 .findByTypeAndValid(EncryptionProviderType.JRE, new Date()).iterator().next();
-        List<SecurityKey> keys = Arrays
-                .asList(this.authenticationSecurityKeyBuilder.build(), this.encryptionSecurityKeyBuilder.build(),
-                        this.masterSecurityKeyBuilder.build());
-        keys.stream().map(key -> this.createSecretFromKey(dlmsDevice.getDeviceIdentification(), encryptionKeyRef, key))
-            .forEach(this.encryptedSecretRepository::save);
+        secretBuilders.stream()
+                      .map(SecurityKeyBuilder::build)
+                      .map(key -> this.createSecretFromKey(dlmsDevice.getDeviceIdentification(), encryptionKeyRef, key))
+                      .forEach(this.encryptedSecretRepository::save);
     }
 
     private DbEncryptedSecret createSecretFromKey(String deviceIdentification,

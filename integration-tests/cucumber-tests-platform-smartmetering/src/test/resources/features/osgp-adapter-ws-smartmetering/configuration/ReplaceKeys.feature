@@ -8,6 +8,7 @@ Feature: SmartMetering Configuration - Replace Keys
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
+  @test
   Scenario: Replace keys on a device
     When the replace keys request is received
       | DeviceIdentification | TEST1024000000001                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
@@ -20,7 +21,7 @@ Feature: SmartMetering Configuration - Replace Keys
     And the new keys are stored in the osgp_adapter_protocol_dlms database security_key table
     And the stored keys are not equal to the received keys
 
-  @ResetKeysOnDevice
+  @test @ResetKeysOnDevice
   Scenario: Replace keys with generated ones on a device
     When the generate and replace keys request is received
       | DeviceIdentification | TEST1024000000001 |

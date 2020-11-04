@@ -67,6 +67,9 @@ public class RsaEncrypter {
     }
 
     public byte[] encrypt(final byte[] secret) {
+        if(secret==null) {
+            throw new IllegalArgumentException("Can not encrypt NULL value");
+        }
         try {
             final Cipher cipher = this.getCipher();
             cipher.init(Cipher.ENCRYPT_MODE, this.getSecretEncryptionKey(Cipher.ENCRYPT_MODE));
@@ -78,6 +81,9 @@ public class RsaEncrypter {
     }
 
     public byte[] decrypt(final byte[] rsaEncrypted) {
+        if(rsaEncrypted==null) {
+            throw new IllegalArgumentException("Can not decrypt NULL value");
+        }
         try {
             final Cipher cipher = this.getCipher();
             cipher.init(Cipher.DECRYPT_MODE, this.getSecretEncryptionKey(Cipher.DECRYPT_MODE));
