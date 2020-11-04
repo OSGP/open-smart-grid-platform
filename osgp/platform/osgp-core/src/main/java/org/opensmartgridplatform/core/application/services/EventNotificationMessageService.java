@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -58,19 +59,19 @@ public class EventNotificationMessageService {
     public void handleEvent(final String deviceIdentification, final Date dateTime, final EventType eventType,
             final String description, final Integer index) throws UnknownEntityException {
 
-        // Lookup device
-        final Device device = this.eventNotificationHelperService.findDevice(deviceIdentification);
-        // If the event belongs to an existing device, then save it,
-        // otherwise don't.
-        this.eventNotificationHelperService.saveEvent(new Event(device,
+        this.eventNotificationHelperService.saveEvent(new Event(deviceIdentification,
                 dateTime != null ? dateTime : DateTime.now().toDate(), eventType, description, index));
 
         // Check if it was a switching event.
-        if (eventType.equals(EventType.LIGHT_EVENTS_LIGHT_ON) || eventType.equals(EventType.LIGHT_EVENTS_LIGHT_OFF)
-                || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_ON)
-                || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_OFF)) {
-            this.handleSwitchingEvent(device, dateTime, eventType, index);
+        if (this.isSwitchingEvent(eventType)) {
+            this.handleSwitchingEvent(deviceIdentification, dateTime, eventType, index);
         }
+    }
+
+    private boolean isSwitchingEvent(final EventType eventType) {
+        return eventType.equals(EventType.LIGHT_EVENTS_LIGHT_ON) || eventType.equals(EventType.LIGHT_EVENTS_LIGHT_OFF)
+                || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_ON)
+                || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_OFF);
     }
 
     public void handleEvent(final String deviceIdentification, final EventNotificationDto event)
@@ -109,17 +110,16 @@ public class EventNotificationMessageService {
         for (final EventNotificationDto eventNotification : eventNotifications) {
             final DateTime eventTime = eventNotification.getDateTime();
             final EventType eventType = EventType.valueOf(eventNotification.getEventType().name());
-            final Event event = new Event(device, eventTime != null ? eventTime.toDate() : DateTime.now().toDate(),
-                    eventType, eventNotification.getDescription(), eventNotification.getIndex());
+            final Event event = new Event(deviceIdentification,
+                    eventTime != null ? eventTime.toDate() : DateTime.now().toDate(), eventType,
+                    eventNotification.getDescription(), eventNotification.getIndex());
 
             LOGGER.info("Saving event for device: {} with eventType: {} eventTime: {} description: {} index: {}",
                     deviceIdentification, eventType.name(), eventTime, eventNotification.getDescription(),
                     eventNotification.getIndex());
             this.eventNotificationHelperService.saveEvent(event);
 
-            if (eventType.equals(EventType.LIGHT_EVENTS_LIGHT_ON) || eventType.equals(EventType.LIGHT_EVENTS_LIGHT_OFF)
-                    || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_ON)
-                    || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_OFF)) {
+            if (this.isSwitchingEvent(eventType)) {
                 switchDeviceEvents.add(event);
             } else if (eventType.equals(EventType.LIGHT_SENSOR_REPORTS_DARK)
                     || eventType.equals(EventType.LIGHT_SENSOR_REPORTS_LIGHT)) {
@@ -218,30 +218,29 @@ public class EventNotificationMessageService {
         }
     }
 
-    private void handleSwitchingEvent(final Device device, final Date dateTime, final EventType eventType,
+    private void handleSwitchingEvent(final String deviceIdentification, final Date dateTime, final EventType eventType,
             final int index) throws UnknownEntityException {
 
+        final Ssld ssld = this.eventNotificationHelperService.findSsld(deviceIdentification);
         // If the index == 0 handle all LIGHT relays, otherwise just handle the
         // index.
         if (index == 0) {
-            final Ssld ssld = this.eventNotificationHelperService.findSsld(device.getId());
             for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
                 if (deviceOutputSetting.getOutputType().equals(RelayType.LIGHT)) {
-                    this.updateRelayStatusForEvent(deviceOutputSetting.getExternalId(), device, dateTime, eventType);
+                    this.updateRelayStatusForEvent(deviceOutputSetting.getExternalId(), ssld, dateTime, eventType);
                 }
             }
         } else {
-            this.updateRelayStatusForEvent(index, device, dateTime, eventType);
+            this.updateRelayStatusForEvent(index, ssld, dateTime, eventType);
         }
 
-        this.eventNotificationHelperService.saveDevice(device);
+        this.eventNotificationHelperService.saveSsld(ssld);
 
-        this.sendRequestMessageToDomainCore(MessageType.RELAY_STATUS_UPDATED_EVENTS.name(),
-                device.getDeviceIdentification(), null);
+        this.sendRequestMessageToDomainCore(MessageType.RELAY_STATUS_UPDATED_EVENTS.name(), deviceIdentification, null);
     }
 
-    private void updateRelayStatusForEvent(final int index, final Device device, final Date dateTime,
-            final EventType eventType) throws UnknownEntityException {
+    private void updateRelayStatusForEvent(final int index, final Ssld ssld, final Date dateTime,
+            final EventType eventType) {
 
         final boolean isRelayOn = EventType.LIGHT_EVENTS_LIGHT_ON.equals(eventType)
                 || EventType.TARIFF_EVENTS_TARIFF_ON.equals(eventType);
@@ -249,16 +248,15 @@ public class EventNotificationMessageService {
         // Only handle the event if the relay doesn't have a status yet, or
         // if the timestamp of the event is after the timestamp of the last
         // switching event in the DB.
-        final Ssld ssld = this.eventNotificationHelperService.findSsld(device.getId());
         final RelayStatus oldRelayStatus = ssld.getRelayStatusByIndex(index);
         final Date eventTime = dateTime == null ? DateTime.now().toDate() : dateTime;
         if (oldRelayStatus == null || eventTime.after(oldRelayStatus.getLastSwitchingEventTime())) {
             LOGGER.info("Handling new event {} for device {} to update the relay status for index {} with date {}.",
-                    eventType.name(), device.getDeviceIdentification(), index, dateTime);
+                    eventType.name(), ssld.getDeviceIdentification(), index, dateTime);
 
             if (ssld.getRelayStatusByIndex(index) == null
                     || eventTime.after(ssld.getRelayStatusByIndex(index).getLastSwitchingEventTime())) {
-                final RelayStatus newRelayState = new RelayStatus.Builder(device, index)
+                final RelayStatus newRelayState = new RelayStatus.Builder(ssld, index)
                         .withLastSwitchingEventState(isRelayOn, eventTime)
                         .build();
 
@@ -329,8 +327,8 @@ public class EventNotificationMessageService {
     private void printRelayStatuses(final Map<Integer, RelayStatus> lastRelayStatusPerIndex,
             final String deviceIdentification) {
         LOGGER.info("print relay statuses for device: {}", deviceIdentification);
-        for (final Integer key : lastRelayStatusPerIndex.keySet()) {
-            LOGGER.info("key: {}, value: {}", key, lastRelayStatusPerIndex.get(key));
+        for (final Entry<Integer, RelayStatus> entry : lastRelayStatusPerIndex.entrySet()) {
+            LOGGER.info("key: {}, value: {}", entry.getKey(), entry.getValue());
         }
     }
 }

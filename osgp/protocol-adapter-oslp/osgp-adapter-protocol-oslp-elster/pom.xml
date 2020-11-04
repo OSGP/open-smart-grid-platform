@@ -20,7 +20,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-pa-oslp</artifactId>
-    <version>5.4.0</version>
+    <version>5.5.0</version>
     <relativePath>../parent-pa-oslp/pom.xml</relativePath>
   </parent>
 
@@ -208,6 +208,13 @@
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-all</artifactId>
+    </dependency>
+
+    <!-- Lombok -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <!-- Apache ActiveMQ -->
