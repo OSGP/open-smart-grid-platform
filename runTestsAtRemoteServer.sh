@@ -9,6 +9,11 @@ then
   exit 1
 fi
 
+if [ "$#" -ne 7 ]; then
+    echo "Illegal number of parameters"
+    exit -1
+fi
+
 SERVER=$1
 FOLDER=$2
 PROJECT=$3
