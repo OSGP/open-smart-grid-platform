@@ -10,7 +10,9 @@ package org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 
+import org.opensmartgridplatform.adapter.kafka.da.application.config.LocationConfig;
 import org.opensmartgridplatform.adapter.kafka.da.application.mapping.DistributionAutomationMapper;
+import org.opensmartgridplatform.adapter.kafka.da.infra.mqtt.in.ScadaMeasurementPayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,9 @@ import org.springframework.stereotype.Service;
 import com.alliander.data.scadameasurementpublishedevent.Message;
 import com.alliander.data.scadameasurementpublishedevent.ScadaMeasurementPublishedEvent;
 import com.alliander.messaging.MessageId;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class ScadaMeasurementPublishedEventProducer {
@@ -31,32 +36,59 @@ public class ScadaMeasurementPublishedEventProducer {
 
     private final DistributionAutomationMapper mapper;
 
+    private final LocationConfig locationConfig;
+
     @Autowired
     public ScadaMeasurementPublishedEventProducer(
             @Qualifier("distributionAutomationKafkaTemplate") final KafkaTemplate<String, Message> kafkaTemplate,
-            final DistributionAutomationMapper mapper) {
+            final DistributionAutomationMapper mapper, final LocationConfig locationConfig) {
         this.kafkaTemplate = kafkaTemplate;
         this.mapper = mapper;
+        this.locationConfig = locationConfig;
     }
 
     public void send(final String measurement) {
 
         LOGGER.info("ScadaMeasurementPublishedEventProducer.send is called with measurement {}", measurement);
 
-        final ScadaMeasurementPublishedEvent event = this.mapper.map(measurement, ScadaMeasurementPublishedEvent.class);
+        final ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        try {
+            final ScadaMeasurementPayload[] payloads = objectMapper.readValue(measurement,
+                    ScadaMeasurementPayload[].class);
+            if (payloads.length == 0 || payloads[0] == null) {
+                LOGGER.error("Source does not include the correct data fields. Source {}", measurement);
+                return;
+            }
 
-        LOGGER.debug("Trying to send ScadaMeasurementPublishedEventProducer {}", event);
+            final ScadaMeasurementPayload payload = this.addLocationData(payloads);
 
-        if (event != null) {
-            final MessageId messageId = new MessageId(getBytesFromUUID(UUID.randomUUID()));
-            final Message message = new Message(messageId, System.currentTimeMillis(), "GXF", null, event);
-            /*
-             * No need for callback functionality now; by default, the template
-             * is configured with a LoggingProducerListener, which logs errors
-             * and does nothing when the send is successful.
-             */
-            this.kafkaTemplate.sendDefault(message);
+            final ScadaMeasurementPublishedEvent event = this.mapper.map(payload, ScadaMeasurementPublishedEvent.class);
+
+            LOGGER.debug("Trying to send ScadaMeasurementPublishedEventProducer {}", event);
+
+            if (event != null) {
+                final MessageId messageId = new MessageId(getBytesFromUUID(UUID.randomUUID()));
+                final Message message = new Message(messageId, System.currentTimeMillis(), "GXF", null, event);
+                /*
+                 * No need for callback functionality now; by default, the
+                 * template is configured with a LoggingProducerListener, which
+                 * logs errors and does nothing when the send is successful.
+                 */
+                this.kafkaTemplate.sendDefault(message);
+            }
+        } catch (final JsonProcessingException e) {
+            LOGGER.error("Error while converting measurement to Json", e);
         }
+    }
+
+    private ScadaMeasurementPayload addLocationData(final ScadaMeasurementPayload[] payloads) {
+        final ScadaMeasurementPayload payload = payloads[0];
+        final String substationIdentification = payload.getSubstationIdentification();
+        payload.setSubstationName(this.locationConfig.getSubstationLocation(substationIdentification));
+        payload.setBayIdentification(
+                this.locationConfig.getBayIdentification(substationIdentification, payload.getFeeder()));
+        return payload;
     }
 
     private static byte[] getBytesFromUUID(final UUID uuid) {

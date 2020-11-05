@@ -9,7 +9,6 @@ package org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -25,8 +24,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.opensmartgridplatform.adapter.kafka.da.application.config.LocationConfig;
 import org.opensmartgridplatform.adapter.kafka.da.application.config.ScadaMeasurementKafkaProducerConfig;
 import org.opensmartgridplatform.adapter.kafka.da.application.mapping.DistributionAutomationMapper;
+import org.opensmartgridplatform.adapter.kafka.da.infra.mqtt.in.ScadaMeasurementPayload;
 import org.opensmartgridplatform.adapter.kafka.da.serialization.MessageDeserializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -62,6 +63,9 @@ class ScadaMeasurementPublishedEventProducerTest {
     private EmbeddedKafkaBroker embeddedKafka;
 
     @Mock
+    private LocationConfig locationconfig;
+
+    @Mock
     private DistributionAutomationMapper mapper;
 
     @Autowired
@@ -69,18 +73,22 @@ class ScadaMeasurementPublishedEventProducerTest {
 
     private ScadaMeasurementPublishedEventProducer producer;
 
+    private static final String PAYLOAD = "[{\"gisnr\":\"TST-01-L-1V1\", \"feeder\":\"8\", \"D\": \"02/10/2020 16:03:38\", "
+            + "\"uts\":\"1601647418\", \"data\": [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,"
+            + "1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1,3.2,3.3,3.4,3.5,3.6,3.7,3.8,3.9,4.0,4.1]}]";
+
     @BeforeEach
     @SuppressWarnings("unchecked")
     public void setup() {
-        when(this.mapper.map(anyString(), any(Class.class))).thenReturn(this.createEvent());
-        this.producer = new ScadaMeasurementPublishedEventProducer(this.template, this.mapper);
+        when(this.mapper.map(any(ScadaMeasurementPayload.class), any(Class.class))).thenReturn(this.createEvent());
+        this.producer = new ScadaMeasurementPublishedEventProducer(this.template, this.mapper, this.locationconfig);
     }
 
     @Test
     void sendTest() {
 
         // send a message to the kafka bus
-        this.producer.send("since we mock DistributionAutomationMapper, it doesn't matter what this string is");
+        this.producer.send(PAYLOAD);
 
         // consume the message with embeddedKafka
         final Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "true", this.embeddedKafka);
@@ -107,4 +115,5 @@ class ScadaMeasurementPublishedEventProducerTest {
         return new ScadaMeasurementPublishedEvent(measurements, powerSystemResource, createdDateTime, description,
                 mRid);
     }
+
 }

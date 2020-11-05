@@ -18,7 +18,7 @@ public class LsMeasurementMessageToAnalogList implements StringArrayToAnalogList
     public List<Analog> convertToAnalogList(final String[] values) {
 
         final int lengthOfInputArray = values.length;
-        final int expectedLength = LsPeakShavingMeasurementType.getNumberOfElements() + 1;
+        final int expectedLength = LsPeakShavingMeasurementType.getNumberOfElements();
         if (lengthOfInputArray != expectedLength) {
             throw new IllegalArgumentException(
                     "Invalid value string length " + lengthOfInputArray + ", expected " + expectedLength);
@@ -26,10 +26,9 @@ public class LsMeasurementMessageToAnalogList implements StringArrayToAnalogList
 
         final List<Analog> measurements = new ArrayList<>();
 
-        final String eanCode = values[0];
-        for (int index = 1; index < lengthOfInputArray; index++) {
+        for (int index = 0; index < lengthOfInputArray; index++) {
             final LsPeakShavingMeasurementType measurementType = LsPeakShavingMeasurementType.getMeasurementType(index);
-            final String description = eanCode + ":" + measurementType.getDescription();
+            final String description = measurementType.getDescription();
             measurements.add(this.createAnalog(description, Float.valueOf(values[index]),
                     measurementType.getUnitSymbol(), measurementType.getUnitMultiplier()));
         }
