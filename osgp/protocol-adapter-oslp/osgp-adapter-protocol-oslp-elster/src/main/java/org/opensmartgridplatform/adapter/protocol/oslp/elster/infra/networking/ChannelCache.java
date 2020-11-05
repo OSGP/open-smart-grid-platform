@@ -96,4 +96,11 @@ public class ChannelCache {
             LOGGER.debug("Number of cached channels after removal of expired entries: {}", this.channelMap.size());
         }
     }
+
+    /**
+     * @return the number of cached channels
+     */
+    public int size() {
+        return this.channelMap.size();
+    }
 }
