@@ -49,7 +49,8 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
 
     private static final DateTimeFormatter format = DateTimeFormat.forPattern("yyyyMMddHHmmss");
 
-    private final ChannelCache channelCache = new ChannelCache(24 * 60 * 60 * 1000);
+    @Autowired
+    private ChannelCache channelCache;
 
     @Autowired
     private DeviceRegistrationService deviceRegistrationService;

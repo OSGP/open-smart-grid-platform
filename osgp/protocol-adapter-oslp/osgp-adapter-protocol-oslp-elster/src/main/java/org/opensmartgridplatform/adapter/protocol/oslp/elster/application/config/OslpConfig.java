@@ -8,7 +8,10 @@
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.application.config;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking.ChannelCache;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking.OslpChannelHandlerClient;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking.OslpChannelHandlerServer;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking.OslpSecurityHandler;
@@ -42,6 +45,8 @@ public class OslpConfig extends AbstractConfig {
     private static final String PROPERTY_NAME_OSLP_TIMEOUT_CONNECT = "oslp.timeout.connect";
     private static final String PROPERTY_NAME_OSLP_CONCURRENT_CLIENT_CONNECTIONS_LIMIT_ACTIVE = "oslp.concurrent.client.connections.limit.active";
     private static final String PROPERTY_NAME_OSLP_CONCURRENT_CLIENT_CONNECTIONS_MAXIMUM = "oslp.concurrent.client.connections.maximum";
+
+    private static final String PROPERTY_NAME_OSLP_CHANNEL_CACHE_EXPIRATION_MILLIS = "oslp.channel.cache.expiration.millis";
 
     private static final String PROPERTY_NAME_OSLP_PORT_CLIENT = "oslp.port.client";
     private static final String PROPERTY_NAME_OSLP_PORT_CLIENTLOCAL = "oslp.port.clientlocal";
@@ -211,6 +216,33 @@ public class OslpConfig extends AbstractConfig {
     @Bean
     public int oslpPortServer() {
         return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_OSLP_PORT_SERVER));
+    }
+
+    @Bean
+    public ChannelCache channelCache() {
+        final long oneDayInMillis = TimeUnit.DAYS.toMillis(1);
+        final String millisText = this.environment.getProperty(PROPERTY_NAME_OSLP_CHANNEL_CACHE_EXPIRATION_MILLIS);
+        if (StringUtils.isBlank(millisText)) {
+            LOGGER.info("No configured value found for {}, ChannelCache expiration is set to 1 day",
+                    PROPERTY_NAME_OSLP_CHANNEL_CACHE_EXPIRATION_MILLIS);
+            return new ChannelCache(oneDayInMillis);
+        }
+        try {
+            final long expirationMillis = Long.parseLong(millisText);
+            final long fiveMinutesInMillis = TimeUnit.MINUTES.toMillis(5);
+            if (expirationMillis < fiveMinutesInMillis) {
+                LOGGER.warn(
+                        "Configured value for {} ({}) is less than five minutes, ChannelCache expiration is set to 5 minutes",
+                        PROPERTY_NAME_OSLP_CHANNEL_CACHE_EXPIRATION_MILLIS, millisText);
+            } else {
+                LOGGER.info("ChannelCache configured with {} milliseconds before cached channels expire", millisText);
+            }
+            return new ChannelCache(Long.max(expirationMillis, fiveMinutesInMillis));
+        } catch (final NumberFormatException e) {
+            LOGGER.error("Configured value for {} ({}) is not a long value, ChannelCache expiration is set to 1 day",
+                    PROPERTY_NAME_OSLP_CHANNEL_CACHE_EXPIRATION_MILLIS, millisText);
+            return new ChannelCache(oneDayInMillis);
+        }
     }
 
     @Bean
