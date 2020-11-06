@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.joda.time.DateTime;
 import org.opensmartgridplatform.core.domain.model.domain.DomainRequestService;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -30,8 +31,6 @@ import org.opensmartgridplatform.domain.core.valueobjects.RelayType;
 import org.opensmartgridplatform.dto.valueobjects.DomainTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.EventNotificationDto;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderTimestampService;
-import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
-import org.opensmartgridplatform.shared.exceptionhandling.NotSupportedException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.slf4j.Logger;
@@ -94,7 +93,7 @@ public class EventNotificationMessageService {
     }
 
     public void handleEvents(final String deviceIdentification, final List<EventNotificationDto> eventNotifications)
-            throws UnknownEntityException, NotSupportedException {
+            throws UnknownEntityException {
 
         LOGGER.info("handleEvents() called for device: {} with eventNotifications.size(): {}", deviceIdentification,
                 eventNotifications.size());
@@ -127,8 +126,7 @@ public class EventNotificationMessageService {
             if (this.isSwitchingEvent(eventType)) {
                 switchDeviceEvents.add(event);
             } else if (this.isLightEvent(eventType)) {
-                throw new NotSupportedException(ComponentType.OSGP_CORE,
-                        "Light events are not supported as bundled event");
+                throw new NotImplementedException("Light events are not supported as bundled events");
             }
         }
 
