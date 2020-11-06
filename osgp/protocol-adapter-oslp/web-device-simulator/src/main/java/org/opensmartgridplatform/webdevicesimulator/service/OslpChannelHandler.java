@@ -95,8 +95,6 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
     @Autowired
     private int connectionTimeout;
     @Autowired
-    private String firmwareVersion;
-    @Autowired
     private String configurationIpConfigFixedIpAddress;
     @Autowired
     private String configurationIpConfigNetmask;
@@ -534,7 +532,7 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
      * request, suppress the SonarQube check for now.
      */
     @SuppressWarnings("squid:MethodCyclomaticComplexity")
-    private Oslp.Message checkForRequest(final Oslp.Message request, final Device device) throws ParseException {
+    private Oslp.Message checkForRequest(final Oslp.Message request, final Device device) {
 
         Oslp.Message response = null;
 
@@ -562,7 +560,7 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
 
             response = createUpdateFirmwareResponse();
         } else if (request.hasGetFirmwareVersionRequest()) {
-            response = createGetFirmwareVersionResponse(this.firmwareVersion);
+            response = createGetFirmwareVersionResponse(device.getFirmwareVersion());
         } else if (request.hasSwitchFirmwareRequest()) {
             response = createSwitchFirmwareResponse();
         } else if (request.hasUpdateDeviceSslCertificationRequest()) {
