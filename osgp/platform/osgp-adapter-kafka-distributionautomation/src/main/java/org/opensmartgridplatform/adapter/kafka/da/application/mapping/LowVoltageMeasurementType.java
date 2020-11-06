@@ -7,14 +7,10 @@
  */
 package org.opensmartgridplatform.adapter.kafka.da.application.mapping;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import com.alliander.data.scadameasurementpublishedevent.UnitMultiplier;
 import com.alliander.data.scadameasurementpublishedevent.UnitSymbol;
 
-public enum LowVoltageMeasurementType {
+public enum LowVoltageMeasurementType implements LowVoltageMeasurementDefinition {
     VOLTAGE_L1(0, "U-L1-E", UnitSymbol.V),
     VOLTAGE_L2(1, "U-L2-E", UnitSymbol.V),
     VOLTAGE_L3(2, "U-L3-E", UnitSymbol.V),
@@ -57,10 +53,6 @@ public enum LowVoltageMeasurementType {
     CURRENT_HARMONIC_L2_H15(39, "I2-H15", UnitSymbol.A),
     CURRENT_HARMONIC_L3_H15(40, "I3-H15", UnitSymbol.A);
 
-    private static final Map<Integer, LowVoltageMeasurementType> MEASUREMENTS_MAP = Arrays
-            .stream(LowVoltageMeasurementType.values())
-            .collect(Collectors.toMap(LowVoltageMeasurementType::getIndex, e -> e));
-
     private int index;
     private String description;
     private UnitSymbol unitSymbol;
@@ -78,26 +70,22 @@ public enum LowVoltageMeasurementType {
         this.unitMultiplier = unitMultiplier;
     }
 
-    public static LowVoltageMeasurementType getMeasurementType(final int index) {
-        return MEASUREMENTS_MAP.get(index);
-    }
-
-    public static int getNumberOfElements() {
-        return MEASUREMENTS_MAP.size();
-    }
-
+    @Override
     public int getIndex() {
         return this.index;
     }
 
+    @Override
     public String getDescription() {
         return this.description;
     }
 
+    @Override
     public UnitSymbol getUnitSymbol() {
         return this.unitSymbol;
     }
 
+    @Override
     public UnitMultiplier getUnitMultiplier() {
         return this.unitMultiplier;
     }

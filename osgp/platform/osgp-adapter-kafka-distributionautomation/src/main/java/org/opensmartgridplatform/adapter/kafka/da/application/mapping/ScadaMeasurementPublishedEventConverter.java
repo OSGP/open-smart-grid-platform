@@ -9,13 +9,14 @@
 package org.opensmartgridplatform.adapter.kafka.da.application.mapping;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import org.opensmartgridplatform.adapter.kafka.da.infra.mqtt.in.ScadaMeasurementPayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.data.scadameasurementpublishedevent.Analog;
 import com.alliander.data.scadameasurementpublishedevent.BaseVoltage;
 import com.alliander.data.scadameasurementpublishedevent.ConductingEquipment;
 import com.alliander.data.scadameasurementpublishedevent.Name;
@@ -44,26 +45,23 @@ public class ScadaMeasurementPublishedEventConverter
             LOGGER.error("The payload is null or has no measurement values");
             return null;
         }
-        StringArrayToAnalogList stringArrayToAnalogList = null;
 
         final String[] measurementValues = source.getData();
 
-        if (measurementValues.length == LowVoltageMeasurementType.getNumberOfElements()) {
-            stringArrayToAnalogList = new LowVoltageMeasurementToAnalogList();
-        } else if (measurementValues.length == LowVoltageMetaMeasurementType.getNumberOfElements()) {
-            stringArrayToAnalogList = new LowVoltageMetaMeasurementToAnalogList();
-        } else {
+        final List<Analog> analogList;
+        try {
+            analogList = new LowVoltageMeasurementToAnalogList().convertToAnalogList(measurementValues);
+        } catch (final IllegalArgumentException e) {
             LOGGER.error(
-                    "Measurement values does not have the expected amount of fields. Expecting: {}, actual: {}. Payload: {}.",
-                    LowVoltageMeasurementType.getNumberOfElements(), measurementValues.length, source);
+                    "Measurement values does not have the expected amount of fields. Expecting: {} or {}, actual: {}. Payload: {}.",
+                    LowVoltageMeasurementType.values().length, LowVoltageMetaMeasurementType.values().length,
+                    measurementValues.length, source, e);
             return null;
         }
 
-        LOGGER.debug("Values length: {} and values: {}", measurementValues.length, Arrays.toString(measurementValues));
-
-        return new ScadaMeasurementPublishedEvent(stringArrayToAnalogList.convertToAnalogList(measurementValues),
-                this.createPowerSystemResource(source), source.getCreatedUtcSeconds() * 1000l,
-                source.getSubstationIdentification(), UUID.randomUUID().toString());
+        return new ScadaMeasurementPublishedEvent(analogList, this.createPowerSystemResource(source),
+                source.getCreatedUtcSeconds() * 1000L, source.getSubstationIdentification(),
+                UUID.randomUUID().toString());
     }
 
     private ConductingEquipment createPowerSystemResource(final ScadaMeasurementPayload source) {

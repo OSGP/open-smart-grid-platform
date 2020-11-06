@@ -7,21 +7,13 @@
  */
 package org.opensmartgridplatform.adapter.kafka.da.application.mapping;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import com.alliander.data.scadameasurementpublishedevent.UnitMultiplier;
 import com.alliander.data.scadameasurementpublishedevent.UnitSymbol;
 
-public enum LowVoltageMetaMeasurementType {
+public enum LowVoltageMetaMeasurementType implements LowVoltageMeasurementDefinition {
     FREQUENCY(0, "Frequency", UnitSymbol.Hz),
     TEMPERATURE(1, "Temperature", UnitSymbol.degC),
     IMRS(2, "IMRS-N", UnitSymbol.A);
-
-    private static final Map<Integer, LowVoltageMetaMeasurementType> MEASUREMENTS_MAP = Arrays
-            .stream(LowVoltageMetaMeasurementType.values())
-            .collect(Collectors.toMap(LowVoltageMetaMeasurementType::getIndex, e -> e));
 
     private int index;
     private String description;
@@ -40,26 +32,22 @@ public enum LowVoltageMetaMeasurementType {
         this.unitMultiplier = unitMultiplier;
     }
 
-    public static LowVoltageMetaMeasurementType getMeasurementType(final int index) {
-        return MEASUREMENTS_MAP.get(index);
-    }
-
-    public static int getNumberOfElements() {
-        return MEASUREMENTS_MAP.size();
-    }
-
+    @Override
     public int getIndex() {
         return this.index;
     }
 
+    @Override
     public String getDescription() {
         return this.description;
     }
 
+    @Override
     public UnitSymbol getUnitSymbol() {
         return this.unitSymbol;
     }
 
+    @Override
     public UnitMultiplier getUnitMultiplier() {
         return this.unitMultiplier;
     }
