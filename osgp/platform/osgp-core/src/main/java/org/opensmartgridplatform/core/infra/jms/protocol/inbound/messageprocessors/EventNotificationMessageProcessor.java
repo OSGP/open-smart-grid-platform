@@ -17,6 +17,7 @@ import org.opensmartgridplatform.core.application.services.EventNotificationMess
 import org.opensmartgridplatform.core.infra.jms.protocol.inbound.AbstractProtocolRequestMessageProcessor;
 import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
 import org.opensmartgridplatform.dto.valueobjects.EventNotificationDto;
+import org.opensmartgridplatform.shared.exceptionhandling.NotSupportedException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
@@ -56,10 +57,11 @@ public class EventNotificationMessageProcessor extends AbstractProtocolRequestMe
                 this.eventNotificationMessageService.handleEvent(metadata.getDeviceIdentification(), eventNotification);
 
             } else if (dataObject instanceof List) {
-                throw new RuntimeException("a message of type List is not accepted");
+                final List<EventNotificationDto> eventNotificationDtoList = (List<EventNotificationDto>) dataObject;
+                this.eventNotificationMessageService.handleEvents(metadata.getDeviceIdentification(), eventNotificationDtoList);
             }
 
-        } catch (final UnknownEntityException e) {
+        } catch (final UnknownEntityException | NotSupportedException e) {
             final String errorMessage = String.format("%s occurred, reason: %s", e.getClass().getName(), e.getMessage());
             LOGGER.error(errorMessage, e);
 

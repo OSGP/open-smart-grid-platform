@@ -8,6 +8,7 @@
 package org.opensmartgridplatform.core.application.services;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,8 @@ import org.opensmartgridplatform.domain.core.valueobjects.EventType;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayType;
 import org.opensmartgridplatform.dto.valueobjects.EventNotificationDto;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderTimestampService;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.exceptionhandling.NotSupportedException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.slf4j.Logger;
@@ -90,12 +93,45 @@ public class EventNotificationMessageService {
         this.handleEvent(deviceIdentification, dateTime, eventType, description, index);
     }
 
+    public void handleEvents(final String deviceIdentification, final List<EventNotificationDto> eventNotifications)
+            throws UnknownEntityException, NotSupportedException {
 
-    private void checkSwitchDeviceEvents(final Device device, final List<Event> switchDeviceEvents)
-            throws UnknownEntityException {
-        if (!switchDeviceEvents.isEmpty()) {
-            this.handleSwitchDeviceEvents(device, switchDeviceEvents);
+        LOGGER.info("handleEvents() called for device: {} with eventNotifications.size(): {}", deviceIdentification,
+                eventNotifications.size());
+        for (final EventNotificationDto event : eventNotifications) {
+            LOGGER.info("  event: {}", event);
         }
+
+        final Device device = this.eventNotificationHelperService.findDevice(deviceIdentification);
+
+        /*
+         * A list of bundled events may contain events that occurred over a
+         * period of time (and as such may contain multiple switching events per
+         * relay). Handling light switching events, only update the relay status
+         * once for the last switching in the list.
+         */
+        final List<Event> switchDeviceEvents = new ArrayList<>();
+
+        for (final EventNotificationDto eventNotification : eventNotifications) {
+            final DateTime eventTime = eventNotification.getDateTime();
+            final EventType eventType = EventType.valueOf(eventNotification.getEventType().name());
+            final Event event = new Event(deviceIdentification,
+                    eventTime != null ? eventTime.toDate() : DateTime.now().toDate(), eventType,
+                    eventNotification.getDescription(), eventNotification.getIndex());
+
+            LOGGER.info("Saving event for device: {} with eventType: {} eventTime: {} description: {} index: {}",
+                    deviceIdentification, eventType.name(), eventTime, eventNotification.getDescription(),
+                    eventNotification.getIndex());
+            this.eventNotificationHelperService.saveEvent(event);
+
+            if (this.isSwitchingEvent(eventType)) {
+                switchDeviceEvents.add(event);
+            } else if (this.isLightEvent(eventType)) {
+                throw new NotSupportedException(ComponentType.OSGP_CORE, "Light events are not supported as bundled event");
+            }
+        }
+
+        this.handleSwitchDeviceEvents(device, switchDeviceEvents);
     }
 
 
