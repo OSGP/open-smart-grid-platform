@@ -44,12 +44,14 @@ public class ScadaMeasurementPublishedEventConverter
             LOGGER.error("The payload is null or has no measurement values");
             return null;
         }
-        LsMeasurementMessageToAnalogList stringArrayToAnalogList = null;
+        StringArrayToAnalogList stringArrayToAnalogList = null;
 
         final String[] measurementValues = source.getData();
 
         if (measurementValues.length == LsPeakShavingMeasurementType.getNumberOfElements()) {
             stringArrayToAnalogList = new LsMeasurementMessageToAnalogList();
+        } else if (measurementValues.length == LsPeakShavingMetaMeasurementType.getNumberOfElements()) {
+            stringArrayToAnalogList = new LsMetaMeasurementMessageToAnalogList();
         } else {
             LOGGER.error(
                     "Measurement values does not have the expected amount of fields. Expecting: {}, actual: {}. Payload: {}.",

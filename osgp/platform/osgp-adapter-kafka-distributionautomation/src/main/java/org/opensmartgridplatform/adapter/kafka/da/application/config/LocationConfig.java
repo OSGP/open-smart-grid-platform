@@ -13,6 +13,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Configuration
 @PropertySource("classpath:location-info.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
@@ -22,10 +25,22 @@ public class LocationConfig {
     private Environment environment;
 
     public String getSubstationLocation(final String substationIdentification) {
-        return this.environment.getRequiredProperty(substationIdentification + ".location");
+        final String property = substationIdentification + ".location";
+        return this.readProperty(property);
     }
 
     public String getBayIdentification(final String substationIdentification, final String feeder) {
-        return this.environment.getRequiredProperty(substationIdentification + ".feeder." + feeder);
+        final String property = substationIdentification + ".feeder." + feeder;
+        return this.readProperty(property);
     }
+
+    private String readProperty(final String property) {
+        try {
+            return this.environment.getRequiredProperty(property);
+        } catch (final IllegalStateException e) {
+            log.error("Property {} not found, returning an empty string", property);
+            return "";
+        }
+    }
+
 }

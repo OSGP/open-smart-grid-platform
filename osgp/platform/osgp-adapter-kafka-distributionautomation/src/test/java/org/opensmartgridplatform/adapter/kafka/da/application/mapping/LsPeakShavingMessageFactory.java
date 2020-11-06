@@ -62,4 +62,13 @@ public class LsPeakShavingMessageFactory extends MessageFactory {
 
     }
 
+    public static List<Analog> expectedMetaMeasurements() {
+        final List<Analog> measurements = new ArrayList<>();
+        measurements.add(createAnalog("Frequency", 49.98f, UnitSymbol.Hz));
+        measurements.add(createAnalog("Temperature", 12.0f, UnitSymbol.degC));
+        measurements.add(createAnalog("IMRS-N", 0.11f, UnitSymbol.A));
+        return measurements;
+
+    }
+
 }

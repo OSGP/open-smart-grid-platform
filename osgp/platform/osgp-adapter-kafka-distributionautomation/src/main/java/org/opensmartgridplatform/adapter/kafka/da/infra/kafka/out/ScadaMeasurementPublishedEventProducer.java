@@ -86,8 +86,15 @@ public class ScadaMeasurementPublishedEventProducer {
         final ScadaMeasurementPayload payload = payloads[0];
         final String substationIdentification = payload.getSubstationIdentification();
         payload.setSubstationName(this.locationConfig.getSubstationLocation(substationIdentification));
-        payload.setBayIdentification(
-                this.locationConfig.getBayIdentification(substationIdentification, payload.getFeeder()));
+        final String feeder = payload.getFeeder();
+        try {
+            if (Integer.valueOf(feeder) != 100) {
+                payload.setBayIdentification(
+                        this.locationConfig.getBayIdentification(substationIdentification, feeder));
+            }
+        } catch (final NumberFormatException e) {
+            LOGGER.error("Payload contains a non-numeric value for feeder", e);
+        }
         return payload;
     }
 
