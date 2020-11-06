@@ -38,7 +38,7 @@ public class LocationConfig {
         try {
             return this.environment.getRequiredProperty(property);
         } catch (final IllegalStateException e) {
-            log.error("Property {} not found, returning an empty string", property);
+            log.error("Property {} not found, returning an empty string", property, e);
             return "";
         }
     }

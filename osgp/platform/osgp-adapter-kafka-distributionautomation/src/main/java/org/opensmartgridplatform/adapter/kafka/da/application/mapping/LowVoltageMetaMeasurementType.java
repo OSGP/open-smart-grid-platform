@@ -14,25 +14,25 @@ import java.util.stream.Collectors;
 import com.alliander.data.scadameasurementpublishedevent.UnitMultiplier;
 import com.alliander.data.scadameasurementpublishedevent.UnitSymbol;
 
-public enum LsPeakShavingMetaMeasurementType {
+public enum LowVoltageMetaMeasurementType {
     FREQUENCY(0, "Frequency", UnitSymbol.Hz),
     TEMPERATURE(1, "Temperature", UnitSymbol.degC),
     IMRS(2, "IMRS-N", UnitSymbol.A);
 
-    private static final Map<Integer, LsPeakShavingMetaMeasurementType> MEASUREMENTS_MAP = Arrays
-            .stream(LsPeakShavingMetaMeasurementType.values())
-            .collect(Collectors.toMap(LsPeakShavingMetaMeasurementType::getIndex, e -> e));
+    private static final Map<Integer, LowVoltageMetaMeasurementType> MEASUREMENTS_MAP = Arrays
+            .stream(LowVoltageMetaMeasurementType.values())
+            .collect(Collectors.toMap(LowVoltageMetaMeasurementType::getIndex, e -> e));
 
     private int index;
     private String description;
     private UnitSymbol unitSymbol;
     private UnitMultiplier unitMultiplier;
 
-    LsPeakShavingMetaMeasurementType(final int index, final String description, final UnitSymbol unitSymbol) {
+    LowVoltageMetaMeasurementType(final int index, final String description, final UnitSymbol unitSymbol) {
         this(index, description, unitSymbol, UnitMultiplier.none);
     }
 
-    LsPeakShavingMetaMeasurementType(final int index, final String description, final UnitSymbol unitSymbol,
+    LowVoltageMetaMeasurementType(final int index, final String description, final UnitSymbol unitSymbol,
             final UnitMultiplier unitMultiplier) {
         this.index = index;
         this.description = description;
@@ -40,7 +40,7 @@ public enum LsPeakShavingMetaMeasurementType {
         this.unitMultiplier = unitMultiplier;
     }
 
-    public static LsPeakShavingMetaMeasurementType getMeasurementType(final int index) {
+    public static LowVoltageMetaMeasurementType getMeasurementType(final int index) {
         return MEASUREMENTS_MAP.get(index);
     }
 

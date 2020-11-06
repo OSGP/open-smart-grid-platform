@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 import com.alliander.data.scadameasurementpublishedevent.UnitMultiplier;
 import com.alliander.data.scadameasurementpublishedevent.UnitSymbol;
 
-public enum LsPeakShavingMeasurementType {
+public enum LowVoltageMeasurementType {
     VOLTAGE_L1(0, "U-L1-E", UnitSymbol.V),
     VOLTAGE_L2(1, "U-L2-E", UnitSymbol.V),
     VOLTAGE_L3(2, "U-L3-E", UnitSymbol.V),
@@ -57,20 +57,20 @@ public enum LsPeakShavingMeasurementType {
     CURRENT_HARMONIC_L2_H15(39, "I2-H15", UnitSymbol.A),
     CURRENT_HARMONIC_L3_H15(40, "I3-H15", UnitSymbol.A);
 
-    private static final Map<Integer, LsPeakShavingMeasurementType> MEASUREMENTS_MAP = Arrays
-            .stream(LsPeakShavingMeasurementType.values())
-            .collect(Collectors.toMap(LsPeakShavingMeasurementType::getIndex, e -> e));
+    private static final Map<Integer, LowVoltageMeasurementType> MEASUREMENTS_MAP = Arrays
+            .stream(LowVoltageMeasurementType.values())
+            .collect(Collectors.toMap(LowVoltageMeasurementType::getIndex, e -> e));
 
     private int index;
     private String description;
     private UnitSymbol unitSymbol;
     private UnitMultiplier unitMultiplier;
 
-    LsPeakShavingMeasurementType(final int index, final String description, final UnitSymbol unitSymbol) {
+    LowVoltageMeasurementType(final int index, final String description, final UnitSymbol unitSymbol) {
         this(index, description, unitSymbol, UnitMultiplier.none);
     }
 
-    LsPeakShavingMeasurementType(final int index, final String description, final UnitSymbol unitSymbol,
+    LowVoltageMeasurementType(final int index, final String description, final UnitSymbol unitSymbol,
             final UnitMultiplier unitMultiplier) {
         this.index = index;
         this.description = description;
@@ -78,7 +78,7 @@ public enum LsPeakShavingMeasurementType {
         this.unitMultiplier = unitMultiplier;
     }
 
-    public static LsPeakShavingMeasurementType getMeasurementType(final int index) {
+    public static LowVoltageMeasurementType getMeasurementType(final int index) {
         return MEASUREMENTS_MAP.get(index);
     }
 

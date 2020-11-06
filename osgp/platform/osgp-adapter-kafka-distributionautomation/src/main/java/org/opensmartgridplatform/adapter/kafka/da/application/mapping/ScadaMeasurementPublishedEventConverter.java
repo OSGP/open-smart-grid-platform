@@ -48,14 +48,14 @@ public class ScadaMeasurementPublishedEventConverter
 
         final String[] measurementValues = source.getData();
 
-        if (measurementValues.length == LsPeakShavingMeasurementType.getNumberOfElements()) {
-            stringArrayToAnalogList = new LsMeasurementMessageToAnalogList();
-        } else if (measurementValues.length == LsPeakShavingMetaMeasurementType.getNumberOfElements()) {
-            stringArrayToAnalogList = new LsMetaMeasurementMessageToAnalogList();
+        if (measurementValues.length == LowVoltageMeasurementType.getNumberOfElements()) {
+            stringArrayToAnalogList = new LowVoltageMeasurementToAnalogList();
+        } else if (measurementValues.length == LowVoltageMetaMeasurementType.getNumberOfElements()) {
+            stringArrayToAnalogList = new LowVoltageMetaMeasurementToAnalogList();
         } else {
             LOGGER.error(
                     "Measurement values does not have the expected amount of fields. Expecting: {}, actual: {}. Payload: {}.",
-                    LsPeakShavingMeasurementType.getNumberOfElements(), measurementValues.length, source);
+                    LowVoltageMeasurementType.getNumberOfElements(), measurementValues.length, source);
             return null;
         }
 

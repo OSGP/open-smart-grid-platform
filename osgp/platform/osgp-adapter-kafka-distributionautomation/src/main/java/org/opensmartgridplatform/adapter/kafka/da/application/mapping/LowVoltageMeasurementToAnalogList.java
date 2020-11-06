@@ -12,13 +12,13 @@ import java.util.List;
 
 import com.alliander.data.scadameasurementpublishedevent.Analog;
 
-public class LsMetaMeasurementMessageToAnalogList implements StringArrayToAnalogList {
+public class LowVoltageMeasurementToAnalogList implements StringArrayToAnalogList {
 
     @Override
     public List<Analog> convertToAnalogList(final String[] values) {
 
         final int lengthOfInputArray = values.length;
-        final int expectedLength = LsPeakShavingMetaMeasurementType.getNumberOfElements();
+        final int expectedLength = LowVoltageMeasurementType.getNumberOfElements();
         if (lengthOfInputArray != expectedLength) {
             throw new IllegalArgumentException(
                     "Invalid value string length " + lengthOfInputArray + ", expected " + expectedLength);
@@ -27,8 +27,7 @@ public class LsMetaMeasurementMessageToAnalogList implements StringArrayToAnalog
         final List<Analog> measurements = new ArrayList<>();
 
         for (int index = 0; index < lengthOfInputArray; index++) {
-            final LsPeakShavingMetaMeasurementType measurementType = LsPeakShavingMetaMeasurementType
-                    .getMeasurementType(index);
+            final LowVoltageMeasurementType measurementType = LowVoltageMeasurementType.getMeasurementType(index);
             final String description = measurementType.getDescription();
             measurements.add(this.createAnalog(description, Float.valueOf(values[index]),
                     measurementType.getUnitSymbol(), measurementType.getUnitMultiplier()));
