@@ -27,6 +27,7 @@ import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayType;
+import org.opensmartgridplatform.dto.valueobjects.DomainTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.EventNotificationDto;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderTimestampService;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -66,7 +67,6 @@ public class EventNotificationMessageService {
         } else if (this.isLightEvent(eventType)) {
             this.handleLightMeasurementDeviceEvent(deviceIdentification, dateTime, eventType, description, index);
         }
-
     }
 
     private boolean isSwitchingEvent(final EventType eventType) {
@@ -127,13 +127,13 @@ public class EventNotificationMessageService {
             if (this.isSwitchingEvent(eventType)) {
                 switchDeviceEvents.add(event);
             } else if (this.isLightEvent(eventType)) {
-                throw new NotSupportedException(ComponentType.OSGP_CORE, "Light events are not supported as bundled event");
+                throw new NotSupportedException(ComponentType.OSGP_CORE,
+                        "Light events are not supported as bundled event");
             }
         }
 
         this.handleSwitchDeviceEvents(device, switchDeviceEvents);
     }
-
 
     private void handleSwitchDeviceEvents(final Device device, final List<Event> switchDeviceEvents)
             throws UnknownEntityException {
@@ -255,13 +255,14 @@ public class EventNotificationMessageService {
         }
     }
 
-    private void handleLightMeasurementDeviceEvent(final String deviceIdentification, final Date dateTime, final EventType eventType, final String description,
-    final int index) {
+    private void handleLightMeasurementDeviceEvent(final String deviceIdentification, final Date dateTime,
+            final EventType eventType, final String description, final int index) {
 
         try {
             final Event lightMeasurementDeviceEvent = new Event(deviceIdentification,
                     dateTime != null ? dateTime : DateTime.now().toDate(), eventType, description, index);
-            this.sendRequestMessageToDomainPublicLighting(MessageType.EVENT_NOTIFICATION.name(), deviceIdentification, lightMeasurementDeviceEvent);
+            this.sendRequestMessageToDomainPublicLighting(MessageType.EVENT_NOTIFICATION.name(), deviceIdentification,
+                    lightMeasurementDeviceEvent);
         } catch (final Exception e) {
             LOGGER.error(String.format("Unexpected exception while handling events for light measurement device: %s",
                     deviceIdentification), e);
@@ -286,14 +287,15 @@ public class EventNotificationMessageService {
     /**
      * Send a request message to OSGP-ADAPTER-DOMAIN-PUBLICLIGHTING.
      */
-    private void sendRequestMessageToDomainPublicLighting(final String messageType, final String deviceIdentification,
+    void sendRequestMessageToDomainPublicLighting(final String messageType, final String deviceIdentification,
             final Serializable dataObject) {
         final String correlationUid = this.correlationIdProviderTimestampService
                 .getCorrelationId(this.netmanagementOrganisation, deviceIdentification);
 
         final RequestMessage message = new RequestMessage(correlationUid, this.netmanagementOrganisation,
                 deviceIdentification, dataObject);
-        final DomainInfo domainInfo = this.eventNotificationHelperService.findDomainInfo("PUBLIC_LIGHTING", "1.0");
+        final DomainInfo domainInfo = this.eventNotificationHelperService
+                .findDomainInfo(DomainTypeDto.PUBLIC_LIGHTING.name(), "1.0");
 
         this.domainRequestService.send(message, messageType, domainInfo);
     }
