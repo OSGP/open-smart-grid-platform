@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Smart Society Services B.V.
+ * Copyright 2020 Alliander N.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -31,27 +31,27 @@ public enum LowVoltageMeasurementType implements LowVoltageMeasurementDefinition
     CURRENT_TOTAL_HARMONIC_DISTORTION_L1(17, "THDi-L1", UnitSymbol.PerCent),
     CURRENT_TOTAL_HARMONIC_DISTORTION_L2(18, "THDi-L2", UnitSymbol.PerCent),
     CURRENT_TOTAL_HARMONIC_DISTORTION_L3(19, "THDi-L3", UnitSymbol.PerCent),
-    CURRENT_HARMONIC_L1_H3(20, "I1-H3", UnitSymbol.A),
-    CURRENT_HARMONIC_L2_H3(21, "I2-H3", UnitSymbol.A),
-    CURRENT_HARMONIC_L3_H3(22, "I3-H3", UnitSymbol.A),
-    CURRENT_HARMONIC_L1_H5(23, "I1-H5", UnitSymbol.A),
-    CURRENT_HARMONIC_L2_H5(24, "I2-H5", UnitSymbol.A),
-    CURRENT_HARMONIC_L3_H5(25, "I3-H5", UnitSymbol.A),
-    CURRENT_HARMONIC_L1_H7(26, "I1-H7", UnitSymbol.A),
-    CURRENT_HARMONIC_L2_H7(27, "I2-H7", UnitSymbol.A),
-    CURRENT_HARMONIC_L3_H7(28, "I3-H7", UnitSymbol.A),
-    CURRENT_HARMONIC_L1_H9(29, "I1-H9", UnitSymbol.A),
-    CURRENT_HARMONIC_L2_H9(30, "I2-H9", UnitSymbol.A),
-    CURRENT_HARMONIC_L3_H9(31, "I3-H9", UnitSymbol.A),
-    CURRENT_HARMONIC_L1_H11(32, "I1-H11", UnitSymbol.A),
-    CURRENT_HARMONIC_L2_H11(33, "I2-H11", UnitSymbol.A),
-    CURRENT_HARMONIC_L3_H11(34, "I3-H11", UnitSymbol.A),
-    CURRENT_HARMONIC_L1_H13(35, "I1-H13", UnitSymbol.A),
-    CURRENT_HARMONIC_L2_H13(36, "I2-H13", UnitSymbol.A),
-    CURRENT_HARMONIC_L3_H13(37, "I3-H13", UnitSymbol.A),
-    CURRENT_HARMONIC_L1_H15(38, "I1-H15", UnitSymbol.A),
-    CURRENT_HARMONIC_L2_H15(39, "I2-H15", UnitSymbol.A),
-    CURRENT_HARMONIC_L3_H15(40, "I3-H15", UnitSymbol.A);
+    CURRENT_HARMONIC_I1_H3(20, "I1-H3", UnitSymbol.A),
+    CURRENT_HARMONIC_I2_H3(21, "I2-H3", UnitSymbol.A),
+    CURRENT_HARMONIC_I3_H3(22, "I3-H3", UnitSymbol.A),
+    CURRENT_HARMONIC_I1_H5(23, "I1-H5", UnitSymbol.A),
+    CURRENT_HARMONIC_I2_H5(24, "I2-H5", UnitSymbol.A),
+    CURRENT_HARMONIC_I3_H5(25, "I3-H5", UnitSymbol.A),
+    CURRENT_HARMONIC_I1_H7(26, "I1-H7", UnitSymbol.A),
+    CURRENT_HARMONIC_I2_H7(27, "I2-H7", UnitSymbol.A),
+    CURRENT_HARMONIC_I3_H7(28, "I3-H7", UnitSymbol.A),
+    CURRENT_HARMONIC_I1_H9(29, "I1-H9", UnitSymbol.A),
+    CURRENT_HARMONIC_I2_H9(30, "I2-H9", UnitSymbol.A),
+    CURRENT_HARMONIC_I3_H9(31, "I3-H9", UnitSymbol.A),
+    CURRENT_HARMONIC_I1_H11(32, "I1-H11", UnitSymbol.A),
+    CURRENT_HARMONIC_I2_H11(33, "I2-H11", UnitSymbol.A),
+    CURRENT_HARMONIC_I3_H11(34, "I3-H11", UnitSymbol.A),
+    CURRENT_HARMONIC_I1_H13(35, "I1-H13", UnitSymbol.A),
+    CURRENT_HARMONIC_I2_H13(36, "I2-H13", UnitSymbol.A),
+    CURRENT_HARMONIC_I3_H13(37, "I3-H13", UnitSymbol.A),
+    CURRENT_HARMONIC_I1_H15(38, "I1-H15", UnitSymbol.A),
+    CURRENT_HARMONIC_I2_H15(39, "I2-H15", UnitSymbol.A),
+    CURRENT_HARMONIC_I3_H15(40, "I3-H15", UnitSymbol.A);
 
     private int index;
     private String description;

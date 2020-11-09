@@ -32,6 +32,8 @@ public class ScadaMeasurementPublishedEventProducer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScadaMeasurementPublishedEventProducer.class);
 
+    private static final int META_MEASUREMENT_FEEDER = 100;
+
     private final KafkaTemplate<String, Message> kafkaTemplate;
 
     private final DistributionAutomationMapper mapper;
@@ -54,11 +56,16 @@ public class ScadaMeasurementPublishedEventProducer {
         final ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         try {
+
+            // we expect a list with one payload from the rtu.
             final ScadaMeasurementPayload[] payloads = objectMapper.readValue(measurement,
                     ScadaMeasurementPayload[].class);
             if (payloads.length == 0 || payloads[0] == null) {
                 LOGGER.error("Source does not include the correct data fields. Source {}", measurement);
                 return;
+            } else if (payloads.length > 1) {
+                LOGGER.info(
+                        "Source has more than one payload, we are only processing the first and ignoring the others");
             }
 
             final ScadaMeasurementPayload payload = this.addLocationData(payloads);
@@ -88,7 +95,7 @@ public class ScadaMeasurementPublishedEventProducer {
         payload.setSubstationName(this.locationConfig.getSubstationLocation(substationIdentification));
         final String feeder = payload.getFeeder();
         try {
-            if (Integer.valueOf(feeder) != 100) {
+            if (Integer.valueOf(feeder) != META_MEASUREMENT_FEEDER) {
                 payload.setBayIdentification(
                         this.locationConfig.getBayIdentification(substationIdentification, feeder));
             }

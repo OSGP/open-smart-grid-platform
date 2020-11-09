@@ -63,7 +63,7 @@ class ScadaMeasurementPublishedEventProducerTest {
     private EmbeddedKafkaBroker embeddedKafka;
 
     @Mock
-    private LocationConfig locationconfig;
+    private LocationConfig locationConfig;
 
     @Mock
     private DistributionAutomationMapper mapper;
@@ -81,7 +81,7 @@ class ScadaMeasurementPublishedEventProducerTest {
     @SuppressWarnings("unchecked")
     public void setup() {
         when(this.mapper.map(any(ScadaMeasurementPayload.class), any(Class.class))).thenReturn(this.createEvent());
-        this.producer = new ScadaMeasurementPublishedEventProducer(this.template, this.mapper, this.locationconfig);
+        this.producer = new ScadaMeasurementPublishedEventProducer(this.template, this.mapper, this.locationConfig);
     }
 
     @Test

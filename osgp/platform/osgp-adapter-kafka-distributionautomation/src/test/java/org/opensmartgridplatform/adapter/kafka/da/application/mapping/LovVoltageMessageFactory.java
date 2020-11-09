@@ -14,7 +14,7 @@ import com.alliander.data.scadameasurementpublishedevent.Analog;
 import com.alliander.data.scadameasurementpublishedevent.UnitMultiplier;
 import com.alliander.data.scadameasurementpublishedevent.UnitSymbol;
 
-public class LsPeakShavingMessageFactory extends MessageFactory {
+public class LovVoltageMessageFactory extends MessageFactory {
     public static List<Analog> expectedMeasurements() {
         final List<Analog> measurements = new ArrayList<>();
         measurements.add(createAnalog("U-L1-E", 0.1f, UnitSymbol.V));

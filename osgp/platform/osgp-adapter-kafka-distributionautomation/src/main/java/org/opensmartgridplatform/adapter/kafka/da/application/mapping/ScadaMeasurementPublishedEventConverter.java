@@ -41,7 +41,7 @@ public class ScadaMeasurementPublishedEventConverter
     public ScadaMeasurementPublishedEvent convert(final ScadaMeasurementPayload source,
             final Type<? extends ScadaMeasurementPublishedEvent> destinationType, final MappingContext mappingContext) {
 
-        if (source == null || source.getData() == null) {
+        if (source == null || source.getData() == null || source.getData().length == 0) {
             LOGGER.error("The payload is null or has no measurement values");
             return null;
         }

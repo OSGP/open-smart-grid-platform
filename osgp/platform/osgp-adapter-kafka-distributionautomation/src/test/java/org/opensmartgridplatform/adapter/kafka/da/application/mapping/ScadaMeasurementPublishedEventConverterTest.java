@@ -45,9 +45,9 @@ class ScadaMeasurementPublishedEventConverterTest {
         final ScadaMeasurementPublishedEvent event = this.mapper.map(payload, ScadaMeasurementPublishedEvent.class);
         final List<Analog> measurements = event.getMeasurements();
 
-        assertThat(event.getCreatedDateTime()).isEqualTo(utcSeconds * 1000l);
+        assertThat(event.getCreatedDateTime()).isEqualTo(utcSeconds * 1000L);
         assertThat(measurements).usingElementComparatorIgnoringFields("mRID")
-                .isEqualTo(LsPeakShavingMessageFactory.expectedMeasurements());
+                .isEqualTo(LovVoltageMessageFactory.expectedMeasurements());
 
         final List<Name> names = event.getPowerSystemResource().getNames();
         assertThat(names).containsAll(this.expectedNames(feeder));
@@ -81,14 +81,14 @@ class ScadaMeasurementPublishedEventConverterTest {
 
         assertThat(event.getCreatedDateTime()).isEqualTo(utcSeconds * 1000l);
         assertThat(measurements).usingElementComparatorIgnoringFields("mRID")
-                .isEqualTo(LsPeakShavingMessageFactory.expectedMetaMeasurements());
+                .isEqualTo(LovVoltageMessageFactory.expectedMetaMeasurements());
 
         final List<Name> names = event.getPowerSystemResource().getNames();
         assertThat(names).containsAll(this.expectedNames(feeder));
     }
 
     @Test
-    void testSomeOtherPayload() {
+    void testIncompletePayload() {
         final ScadaMeasurementPublishedEvent event = this.mapper.map(ScadaMeasurementPayload.builder().build(),
                 ScadaMeasurementPublishedEvent.class);
 
