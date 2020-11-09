@@ -18,18 +18,21 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 /**
- * @Deprecated with the introduction of secret-management, the security_key table has become obsolete.
+ * @deprecated with the introduction of secret-management, the security_key table has become obsolete.
  */
 @Deprecated
 @Repository
 public interface DlmsSecurityKeyRepository extends JpaRepository<SecurityKey, Long> {
 
+    @Deprecated
     @Query("SELECT s FROM SecurityKey s JOIN FETCH s.dlmsDevice WHERE s.securityKeyType = (:securityKeyType)")
     public List<SecurityKey> findBySecurityKeyType(@Param("securityKeyType") SecurityKeyType securityKeyType);
 
+    @Deprecated
     SecurityKey findByDlmsDeviceAndSecurityKeyTypeAndValidToIsNull(DlmsDevice dlmsDevice,
             SecurityKeyType securityKeyType);
 
+    @Deprecated
     SecurityKey findByDlmsDeviceAndSecurityKeyTypeAndValidToNotNull(DlmsDevice dlmsDevice,
             SecurityKeyType securityKeyType);
 
