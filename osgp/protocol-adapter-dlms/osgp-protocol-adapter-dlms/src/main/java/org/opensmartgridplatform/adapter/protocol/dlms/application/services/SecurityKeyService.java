@@ -17,10 +17,36 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 
 public interface SecurityKeyService {
 
+    /**
+     * TODO
+     * @param deviceIdentification
+     * @param type
+     * @return
+     */
     byte[] getKey(String deviceIdentification, SecurityKeyType type);
+
+    /**
+     * TODO
+     * @param deviceIdentification
+     * @param keyTypes
+     * @return
+     */
     Map<SecurityKeyType, byte[]> getKeys(String deviceIdentification, List<SecurityKeyType> keyTypes);
 
+    /**
+     * TODO
+     * @param deviceIdentification
+     * @param type
+     * @return
+     */
     byte[] getNewKey(String deviceIdentification, SecurityKeyType type);
+
+    /**
+     * TODO
+     * @param deviceIdentification
+     * @param keyTypes
+     * @return
+     */
     Map<SecurityKeyType, byte[]> getNewKeys(String deviceIdentification, List<SecurityKeyType> keyTypes);
 
     /**
