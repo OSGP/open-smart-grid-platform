@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.security.PrivateKey;
 import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -206,7 +208,7 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
                     final InetSocketAddress remoteAddress = (InetSocketAddress) ctx.channel().remoteAddress();
                     final InetSocketAddress clientAddress = new InetSocketAddress(remoteAddress.getAddress(),
                             PlatformPubliclightingDefaults.OSLP_ELSTER_SERVER_PORT);
-                    sendNotifications(clientAddress, message, deviceUid, deviceState);
+                    this.sendNotifications(clientAddress, message, deviceUid, deviceState);
 
                     LOGGER.debug("Sent OSLP response: {}", response.getPayloadMessage().toString().split(" ")[0]);
                 } else {
@@ -220,7 +222,6 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
         }
     }
 
-
     private void sendNotifications(final InetSocketAddress inetAddress, final OslpEnvelope message,
             final String deviceUid, final DeviceState deviceState) throws DeviceSimulatorException, IOException {
 
@@ -233,22 +234,23 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
             for (final Oslp.LightValue lightValue : lightValueList) {
                 final Oslp.Event event = lightValue.getOn() ? Oslp.Event.LIGHT_EVENTS_LIGHT_ON
                         : Oslp.Event.LIGHT_EVENTS_LIGHT_OFF;
-                final OslpEnvelope notification = buildNotification(message, deviceUid, deviceState, event,
+                final OslpEnvelope notification = this.buildNotification(message, deviceUid, deviceState, event,
                         lightValue.getIndex());
                 this.send(inetAddress, notification, deviceUid);
             }
         }
     }
 
-
     private OslpEnvelope buildNotification(final OslpEnvelope message, final String deviceUid,
             final DeviceState deviceState, final Oslp.Event event, final ByteString index) {
         this.devicesContext.getDeviceState(deviceUid).incrementSequenceNumber();
 
+        final String timestamp = DateTimeFormatter.ofPattern("YYYYMMddHHmmss").format(LocalDateTime.now());
+
         final Oslp.EventNotification.Builder eventNotificationBuilder = Oslp.EventNotification.newBuilder()
                 .setEvent(event)
                 .setDescription(event.name())
-                //.setTimestamp(PlatformDefaults.TIMESTAMP)
+                .setTimestamp(timestamp)
                 .setIndex(index);
 
         final OslpEnvelope.Builder notificationBuilder = new OslpEnvelope.Builder().withSignature(this.oslpSignature)
@@ -263,7 +265,6 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
 
         return notificationBuilder.build();
     }
-
 
     public OslpEnvelope send(final InetSocketAddress address, final OslpEnvelope request,
             final String deviceIdentification) throws IOException, DeviceSimulatorException {
