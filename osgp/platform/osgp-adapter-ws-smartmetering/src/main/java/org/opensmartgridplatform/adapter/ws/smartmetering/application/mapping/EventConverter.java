@@ -48,7 +48,7 @@ public class EventConverter extends
             event.setEventCounter(source.getEventCounter());
             event.setEventLogCategory(EventLogCategory.fromValue(source.getEventLogCategory().name()));
             event.setDuration(source.getDuration());
-            event.setStartTime(convert(source.getStartTime()));
+            event.setStartTime(this.convert(source.getStartTime()));
             return event;
         } catch (final DatatypeConfigurationException e) {
             LOGGER.error("DatatypeConfigurationException", e);
@@ -57,7 +57,7 @@ public class EventConverter extends
         return null;
     }
 
-    private XMLGregorianCalendar convert(DateTime dateTime) throws DatatypeConfigurationException {
+    private XMLGregorianCalendar convert(final DateTime dateTime) throws DatatypeConfigurationException {
         if (dateTime == null) {
             return null;
         }
