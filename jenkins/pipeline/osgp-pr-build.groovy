@@ -64,33 +64,34 @@ pipeline {
                                 jgivenPublisher(disabled: true),
                                 jacocoPublisher(disabled: true)
                         ]) {
-                    sh "mvn clean install -B -T4 -DskipTestJarWithDependenciesAssembly=false"
+                    //sh "mvn clean install -B -T4 -DskipTestJarWithDependenciesAssembly=false"
+                    sh "mvn clean install -B -T8"
                 }
 
                 // Collect all build wars and copy them to target/artifacts
-                sh "rm -rf target/artifacts && mkdir -p target/artifacts && find . -name *.war -exec cp -uf {} target/artifacts \\;"
+                //sh "rm -rf target/artifacts && mkdir -p target/artifacts && find . -name *.war -exec cp -uf {} target/artifacts \\;"
 
                 // Clone the release repository in order to deploy
-                sh "rm -rf release && git clone git@github.com:SmartSocietyServices/release.git"
+                //sh "rm -rf release && git clone git@github.com:SmartSocietyServices/release.git"
 
                 // Checkout branch for release repository
-                sh "cd release && git checkout ${branchReleaseRepo}"
+                //sh "cd release && git checkout ${branchReleaseRepo}"
 
-                script {
+                //script {
                     // Determine the actual pom version from the pom.
-                    POMVERSION = sh ( script: "grep \"<version>\" pom.xml | sed \"s#<[/]\\?version>##g;s# ##g\" | grep SNAPSHOT", returnStdout: true).trim()
-                }
-                echo "Using version ${POMVERSION} (from pom) to collect artifacts which are needed to deploy a new environment but weren't build in this job."
+                    //POMVERSION = sh ( script: "grep \"<version>\" pom.xml | sed \"s#<[/]\\?version>##g;s# ##g\" | grep SNAPSHOT", returnStdout: true).trim()
+                //}
+                //echo "Using version ${POMVERSION} (from pom) to collect artifacts which are needed to deploy a new environment but weren't build in this job."
 
                 // Download missing artifacts from artifactory for the same version
                 // - The following artifacts are not in this repository
-                sh "cd release && plays/download-artifacts.yml -e artifactstodownload='{{ configuration_artifacts }}' -e deployment_type=snapshot -e osgp_version=${POMVERSION} -e tmp_artifacts_directory=../../target/artifacts"
-                sh "cd release && plays/download-artifacts.yml -e artifactstodownload='{{ dlms_simulator_artifacts }}' -e deployment_type=snapshot -e osgp_version=${POMVERSION} -e tmp_artifacts_directory=../../target/artifacts"
+                //sh "cd release && plays/download-artifacts.yml -e artifactstodownload='{{ configuration_artifacts }}' -e deployment_type=snapshot -e osgp_version=${POMVERSION} -e tmp_artifacts_directory=../../target/artifacts"
+                //sh "cd release && plays/download-artifacts.yml -e artifactstodownload='{{ dlms_simulator_artifacts }}' -e deployment_type=snapshot -e osgp_version=${POMVERSION} -e tmp_artifacts_directory=../../target/artifacts"
                 // Make sure a standalone version of the dlms device simulator is present
-                sh "cp -p target/artifacts/dlms-device-simulator-${POMVERSION}.jar target/artifacts/dlms-device-simulator-${POMVERSION}-standalone.jar"
+                //sh "cp -p target/artifacts/dlms-device-simulator-${POMVERSION}.jar target/artifacts/dlms-device-simulator-${POMVERSION}-standalone.jar"
 
                 // Now create a new single instance (not stream specific) and put all the artifacts in /data/software/artifacts
-                sh "cd release && plays/deploy-files-to-system.yml -e osgp_version=${POMVERSION} -e deployment_name=${servername} -e directory_to_deploy=../../target/artifacts -e tomcat_restart=false -e ec2_instance_type=m4.xlarge -e ami_name=CentOS7SingleInstance -e ami_owner=self"
+                //sh "cd release && plays/deploy-files-to-system.yml -e osgp_version=${POMVERSION} -e deployment_name=${servername} -e directory_to_deploy=../../target/artifacts -e tomcat_restart=false -e ec2_instance_type=m4.xlarge -e ami_name=CentOS7SingleInstance -e ami_owner=self"
             }
         } // stage
 
@@ -98,7 +99,7 @@ pipeline {
             parallel {
                 stage ('Sonar Analysis') {
                     steps {
-                        withSonarQubeEnv('SonarQube local') {
+                        withSonarQubeEnv('sonar.osgp.cloud') {
                             withMaven(
                                 maven: 'Apache Maven',
                                 mavenLocalRepo: '.repository',
@@ -113,7 +114,7 @@ pipeline {
                                         jgivenPublisher(disabled: true),
                                         jacocoPublisher(disabled: true)
                                 ]) {
-                                sh "mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.2:sonar -B -Dmaven.test.failure.ignore=true -Dclirr=true " +
+                                sh "mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.6.0.1398:sonar -B -Dmaven.test.failure.ignore=true -Dclirr=true " +
                                   "-Dsonar.github.repository=OSGP/open-smart-grid-platform -Dsonar.analysis.mode=preview " +
                                   "-Dsonar.issuesReport.console.enable=true -Dsonar.forceUpdate=true -Dsonar.github.pullRequest=$ghprbPullId " +
                                   "${SONAR_EXTRA_PROPS}"
@@ -124,21 +125,23 @@ pipeline {
 
                 stage ('Deploy AWS System') {
                     steps {
+                        echo "Skipped"
                         // Deploy stream specific system using the local artifacts from /data/software/artifacts on the system
-                        build job: 'Deploy an AWS System', parameters: [
-                                string(name: 'SERVERNAME', value: servername),
-                                string(name: 'PLAYBOOK', value: playbook),
-                                booleanParam(name: 'INSTALL_FROM_LOCAL_DIR', value: true),
-                                string(name: 'ARTIFACT_DIRECTORY', value: "/data/software/artifacts"),
-                                string(name: 'OSGP_VERSION', value: POMVERSION),
-                                booleanParam(name: 'ARTIFACT_DIRECTORY_REMOTE_SRC', value: true),
-                                string(name: 'BRANCH', value: branchReleaseRepo)]
+                        //build job: 'Deploy an AWS System', parameters: [
+                        //        string(name: 'SERVERNAME', value: servername),
+                        //        string(name: 'PLAYBOOK', value: playbook),
+                        //        booleanParam(name: 'INSTALL_FROM_LOCAL_DIR', value: true),
+                        //        string(name: 'ARTIFACT_DIRECTORY', value: "/data/software/artifacts"),
+                        //        string(name: 'OSGP_VERSION', value: POMVERSION),
+                        //        booleanParam(name: 'ARTIFACT_DIRECTORY_REMOTE_SRC', value: true),
+                        //        string(name: 'BRANCH', value: branchReleaseRepo)]
                     }
                 } // stage
             } // parallel
         } // stage
 
         stage ('Run Tests') {
+            when { expression { return false } }
             steps {
                 sh '''echo Searching for specific Cucumber tags in git commit.
 
@@ -170,6 +173,7 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
         } // stage
 
         stage ('Collect Coverage') {
+            when { expression { return false } }
             steps {
                 withMaven(
                         maven: 'Apache Maven',
@@ -184,6 +188,7 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
         } // stage
 
         stage ('Reporting') {
+            when { expression { return false } }
             steps {
                 jacoco execPattern: '**/code-coverage/jacoco-it.exec'
                 cucumber buildStatus: 'FAILURE', fileIncludePattern: '**/cucumber.json', sortingMethod: 'ALPHABETICAL'
@@ -199,7 +204,7 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
         always {
             echo "End of pipeline"
             // Always destroy the test environment
-            build job: 'Destroy an AWS System', parameters: [string(name: 'SERVERNAME', value: servername), string(name: 'PLAYBOOK', value: playbook)]
+            //build job: 'Destroy an AWS System', parameters: [string(name: 'SERVERNAME', value: servername), string(name: 'PLAYBOOK', value: playbook)]
         }
         aborted {
             setBuildStatus("Build failed", "FAILURE")
@@ -223,7 +228,8 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
         }
         cleanup {
             // Delete workspace folder.
-            cleanWs()
+            echo "cleanWs() skipped"
+            //cleanWs()
         }
     } // post
 } // pipeline
