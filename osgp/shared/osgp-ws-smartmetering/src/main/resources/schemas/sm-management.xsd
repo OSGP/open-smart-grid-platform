@@ -284,6 +284,10 @@
                    minOccurs="0" maxOccurs="1"/>
       <xsd:element name="eventDetails" type="xsd:string"
                    minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="duration" type="xsd:unsignedInt"
+                   minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="startTime" type="xsd:dateTime"
+                   minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
   </xsd:complexType>
 
@@ -295,6 +299,7 @@
       <xsd:enumeration value="COMMUNICATION_SESSION_LOG"/>
       <xsd:enumeration value="M_BUS_EVENT_LOG"/>
       <xsd:enumeration value="POWER_QUALITY_EVENT_LOG"/>
+      <xsd:enumeration value="POWER_FAILURE_EVENT_LOG"/>
     </xsd:restriction>
   </xsd:simpleType>
 
@@ -546,6 +551,11 @@
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_248"/>
       <!-- 249 - Indicates a manufacturer specific code -->
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_249"/>
+      <!-- the following events are System Events -->
+      <xsd:enumeration value="SET_MAINTENANCE_STATE_E_SUCCESS"/>
+      <xsd:enumeration value="SET_MAINTENANCE_STATE_G_SUCCESS"/>
+      <xsd:enumeration value="SET_MAINTENANCE_STATE_E_FAILED"/>
+      <xsd:enumeration value="SET_MAINTENANCE_STATE_G_FAILED"/>
 
     </xsd:restriction>
   </xsd:simpleType>

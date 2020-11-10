@@ -23,4 +23,6 @@ public interface PendingSetScheduleRequestRepository extends JpaRepository<Pendi
 
     List<PendingSetScheduleRequest> findAllByDeviceUidAndExpiredAtIsAfter(String deviceUid, Date expiredAt);
 
+    void deleteAllByDeviceIdentificationAndExpiredAtIsBefore(String deviceIdentification, Date expireDateTime);
+
 }

@@ -26,7 +26,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.opensmartgridplatform.adapter.domain.core.application.services.TransactionalEventService;
-import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Event;
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
 import org.opensmartgridplatform.shared.utils.FileUtils;
@@ -93,8 +92,8 @@ public class EventCleanupJobTest {
     }
 
     private List<Event> createEvents() {
-        final Event event = new Event(new Device("test"), DateTime.now().minusMonths(1).toDate(),
-                EventType.DIAG_EVENTS_GENERAL, "description", 1);
+        final Event event = new Event("test", DateTime.now().minusMonths(1).toDate(), EventType.DIAG_EVENTS_GENERAL,
+                "description", 1);
         return Arrays.asList(event);
     }
 

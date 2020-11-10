@@ -51,24 +51,34 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
 
     private static final DateTimeFormatter format = DateTimeFormat.forPattern("yyyyMMddHHmmss");
     private final ConcurrentMap<String, Channel> channelMap = new ConcurrentHashMap<>();
+
     @Autowired
     private DeviceRegistrationService deviceRegistrationService;
+
     @Autowired
     private DeviceManagementService deviceManagementService;
+
     @Autowired
     private Integer sequenceNumberWindow;
+
     @Autowired
     private Integer timeZoneOffsetMinutes;
+
     @Autowired
     private Float defaultLatitude;
+
     @Autowired
     private Float defaultLongitude;
+
     @Autowired
     private OslpDeviceSettingsService oslpDeviceSettingsService;
+
     @Autowired
     private DeviceDataService deviceDataService;
+
     @Autowired
     private OslpSigningService oslpSigningService;
+
     @Autowired
     private LoggingService loggingService;
     /**
@@ -160,10 +170,6 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
         }
 
         ctx.fireChannelRead(message);
-
-        if (message.isValid() && message.getPayloadMessage().hasConfirmRegisterDeviceRequest()) {
-            this.handleSetSchedule(message.getDeviceId());
-        }
     }
 
     /**
@@ -175,7 +181,6 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
      *            DTO containing signed OslpEnvelope.
      */
     public void processSignedOslpEnvelope(final SignedOslpEnvelopeDto signedOslpEnvelopeDto) {
-
         // Try to find the channel.
         final String channelId = signedOslpEnvelopeDto.getUnsignedOslpEnvelopeDto().getCorrelationUid();
         final Channel channel = this.findChannel(channelId);
@@ -189,7 +194,21 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
         this.loggingService.logMessage(response, false);
         channel.writeAndFlush(response);
 
-        LOGGER.info("{} Send OSLP Response: {}", channelId, response.getPayloadMessage());
+        LOGGER.info("{} Sent OSLP Response: {}", channelId, response.getPayloadMessage());
+
+        this.checkResponseMessageType(response);
+    }
+
+    private void checkResponseMessageType(final OslpEnvelope response) {
+        // For the response type ConfirmRegisterDeviceResponse, check if
+        // a SetSchedueRequest is pending for a device.
+        if (response.getPayloadMessage().hasConfirmRegisterDeviceResponse()) {
+            try {
+                this.handleSetSchedule(response.getDeviceId());
+            } catch (final TechnicalException e) {
+                LOGGER.error("Caught TechnicalException", e);
+            }
+        }
     }
 
     private Oslp.Message handleRegisterDeviceRequest(final byte[] deviceUid, final byte[] sequenceNumber,
