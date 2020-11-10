@@ -48,10 +48,12 @@ public enum ClockStatusBit {
         return forClockStatus(clockStatus & 0xFF);
     }
 
-    // here returning null is independed of the actual ClockStatusBit that is later used to make the list. This meand
-    // that returning an empty list would falsly suggest that there is an empty list, where in fact there is no valid
-    // list to return
-    @SuppressWarnings("squid:S1168")
+    // SonarQube complains about the null return. SonarQube wants to see a
+    // return of an empty set. The problem is that the behavior of the code
+    // differs depending on whether the return value is null or an empty set.
+    // Trying to correct this would result in other behavior changes, making a
+    // simple fix not possible. It is still an issue though, meaning it
+    // shouldn't be suppressed.
     public static Set<ClockStatusBit> forClockStatus(final int clockStatus) {
         if (ClockStatus.STATUS_NOT_SPECIFIED == clockStatus) {
             return null;

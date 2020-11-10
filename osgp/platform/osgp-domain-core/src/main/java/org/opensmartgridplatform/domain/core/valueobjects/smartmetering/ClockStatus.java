@@ -9,6 +9,7 @@ package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Set;
 
 public class ClockStatus implements Serializable {
@@ -51,12 +52,9 @@ public class ClockStatus implements Serializable {
         return this.statusBits != null;
     }
 
-    // this is a getter, meaning it should return what the actual value is. Since it is possible that the actual
-    // value is set to null, it should also return this in that case.
-    @SuppressWarnings("squid:S1168")
     public Set<ClockStatusBit> getStatusBits() {
         if (this.statusBits == null) {
-            return null;
+            return new HashSet<ClockStatusBit>();
         }
         return EnumSet.copyOf(this.statusBits);
     }
