@@ -14,6 +14,7 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Se
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.bouncycastle.util.encoders.Hex;
@@ -82,31 +83,30 @@ public class RecoverKeyProcess implements Runnable {
 
         LOGGER.info("Attempting key recovery for device {}", this.deviceIdentification);
 
-        //FIXME why try and connect to device if you don't do anything with the result?!?
         try {
             this.findDevice();
         } catch (final Exception e) {
-            LOGGER.error("Unexpected exception", e);
+            LOGGER.error("Could not find device", e);
+            //TODO why try and connect to device if you don't do anything with the result?!?
+            //TODO return?
         }
 
         if (!this.securityKeyService.hasNewSecretOfType(this.deviceIdentification, E_METER_AUTHENTICATION)) {
-            //TODO: log something or throw error/exception?
+            LOGGER.warn("Could not recover keys: device has no new authorisation key registered in secret-mgmt module");
             return;
         }
 
         if (this.canConnectUsingNewKeys()) {
+            List<SecurityKeyType> keyTypesToActivate=Arrays.asList(E_METER_ENCRYPTION,E_METER_AUTHENTICATION);
             try {
-                this.securityKeyService.activateNewKey(this.deviceIdentification, E_METER_ENCRYPTION);
+                this.securityKeyService.activateNewKeys(this.deviceIdentification, keyTypesToActivate);
             } catch (ProtocolAdapterException e) {
+                LOGGER.error("Error activating new keys", e);
                 throw new RecoverKeyException(e.getMessage(), e);
             }
-            try {
-                this.securityKeyService.activateNewKey(this.deviceIdentification, E_METER_AUTHENTICATION);
-            } catch (ProtocolAdapterException e) {
-                throw new RecoverKeyException(e.getMessage(), e);
-            }
+        } else {
+            LOGGER.warn("Could not recover keys: could not connect to device using new keys");
         }
-        //FIXME else: throw recovery error?
     }
 
     private void findDevice() throws OsgpException {

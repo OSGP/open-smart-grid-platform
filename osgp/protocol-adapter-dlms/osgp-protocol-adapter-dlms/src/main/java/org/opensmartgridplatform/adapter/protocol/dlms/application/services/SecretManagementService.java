@@ -67,40 +67,6 @@ public class SecretManagementService implements SecurityKeyService {
         this.secretManagementClient = secretManagementClient;
     }
 
-    /**
-     * Re-encrypts the given key with a secret known only inside this protocol
-     * adapter.
-     * <p>
-     * New keys can be provided to OSGP from outside in a form encrypted with
-     * the public key from an asymmetrical key pair for the platform, which is
-     * available to external organizations.<br>
-     * Inside the DLMS protocol adapter keys are encrypted with a faster
-     * symmetrical encryption using a secret key that is not supposed to be
-     * known outside this protocol adapter.
-     *
-     * @param externallyEncryptedKey
-     *         key encrypted with the externally known public key for OSGP
-     *
-     * @return the key encrypted with the symmetrical secret key used only
-     *         inside the DLMS protocol adapter, or an empty byte array if
-     *         {@code externallyEncryptedKey == null}
-     *
-     * @throws FunctionalException
-     *         in case of a encryption/decryption errors while handling the
-     *         key
-     */
-    //@Override
-    /*public byte[] reEncryptKey(final byte[] externallyEncryptedKey) throws FunctionalException {
-
-        if (externallyEncryptedKey == null) {
-            return new byte[0];
-        }
-
-        final byte[] key = this.rsaDecrypt(externallyEncryptedKey);
-        return this.aesEncryptKey(key);
-
-    }*/
-
     @Override
     public byte[] rsaDecrypt(final byte[] externallyEncryptedKey) throws FunctionalException {
         try {
@@ -110,41 +76,6 @@ public class SecretManagementService implements SecurityKeyService {
             throw new FunctionalException(FunctionalExceptionType.DECRYPTION_EXCEPTION, ComponentType.PROTOCOL_DLMS, e);
         }
     }
-
-    //@Override
-    /*public byte[] aesEncryptKey(final byte[] key) throws FunctionalException {
-        try {
-            return this.aesEncryptionService.encrypt(key);
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during encryption", e);
-            throw new FunctionalException(FunctionalExceptionType.ENCRYPTION_EXCEPTION, ComponentType.PROTOCOL_DLMS, e);
-        }
-    }*/
-
-    /*
-     * Decrypts the given symmetrically encrypted key.
-     * <p>
-     * <strong>NB:</strong> Only decrypt keys like this at the moment they are
-     * required as part of the communication with a device.
-     *
-     * @param encryptedKey
-     *         key encrypted with the symmetrical key internal to the DLMS
-     *         protocol adapter.
-     *
-     * @return the plain key, or an empty byte array if
-     *         {@code encryptedKey == null}
-     */
-    //@Override
-    /*public byte[] aesDecryptKey(final byte[] encryptedKey) throws FunctionalException {
-        if (encryptedKey == null) {
-            throw new IllegalArgumentException("Cannot decrypt NULL key");
-        }
-        try {
-            return this.aesEncryptionService.decrypt(encryptedKey);
-        } catch (final Exception e) {
-            throw new FunctionalException(FunctionalExceptionType.ENCRYPTION_EXCEPTION, ComponentType.PROTOCOL_DLMS, e);
-        }
-    }*/
 
     @Override
     public byte[] getKey(String deviceIdentification, SecurityKeyType keyType) {
@@ -209,13 +140,6 @@ public class SecretManagementService implements SecurityKeyService {
         return request;
     }
 
-    /*@Override
-    public void aesDecryptAndStoreNewKey(String deviceIdentification, SecurityKeyType keyType, byte[] encryptedKey)
-            throws FunctionalException {
-        byte[] plainKey = this.aesDecryptKey(encryptedKey); //, keyType);
-        this.storeNewKeys(deviceIdentification, new SecurityKeyType[] { keyType }, new byte[][] { plainKey });
-    }*/
-
     @Override
     public void storeNewKey(String deviceIdentification, SecurityKeyType keyType, byte[] key) {
         Map<SecurityKeyType, byte[]> keysByType = new HashMap<>();
@@ -259,8 +183,7 @@ public class SecretManagementService implements SecurityKeyService {
     }
 
     @Override
-    public void activateNewKeys(String deviceIdentification, List<SecurityKeyType> keyTypes)
-            throws ProtocolAdapterException {
+    public void activateNewKeys(String deviceIdentification, List<SecurityKeyType> keyTypes) {
         ActivateSecretsRequest request = new ActivateSecretsRequest();
         request.setDeviceId(deviceIdentification);
         request.setSecretTypes(new SecretTypes());
