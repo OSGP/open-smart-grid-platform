@@ -147,6 +147,13 @@
       <artifactId>commons-lang3</artifactId>
     </dependency>
 
+    <!-- Lombok -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
     <!-- Orika (mapping framework) -->
     <dependency>
       <groupId>ma.glasnost.orika</groupId>
