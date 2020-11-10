@@ -114,10 +114,11 @@ pipeline {
                                         jgivenPublisher(disabled: true),
                                         jacocoPublisher(disabled: true)
                                 ]) {
-                                sh "mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.6.0.1398:sonar -B -Dmaven.test.failure.ignore=true -Dclirr=true " +
-                                  "-Dsonar.github.repository=OSGP/open-smart-grid-platform -Dsonar.analysis.mode=preview " +
-                                  "-Dsonar.issuesReport.console.enable=true -Dsonar.forceUpdate=true -Dsonar.github.pullRequest=$ghprbPullId " +
-                                  "${SONAR_EXTRA_PROPS}"
+                                //sh "mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.6.0.1398:sonar -B -Dmaven.test.failure.ignore=true -Dclirr=true " +
+                                //  "-Dsonar.github.repository=OSGP/open-smart-grid-platform -Dsonar.analysis.mode=preview " +
+                                //  "-Dsonar.issuesReport.console.enable=true -Dsonar.forceUpdate=true -Dsonar.github.pullRequest=$ghprbPullId " +
+                                //  "${SONAR_EXTRA_PROPS}"
+                                sh "mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.6.0.1398:sonar -B -Dmaven.repo.local=.repository -Dsonar.branch=osgp-development"
                             }
                         }
                     }
