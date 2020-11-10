@@ -285,7 +285,7 @@ public class EventNotificationMessageService {
     /**
      * Send a request message to OSGP-ADAPTER-DOMAIN-PUBLICLIGHTING.
      */
-    void sendRequestMessageToDomainPublicLighting(final String messageType, final String deviceIdentification,
+    private void sendRequestMessageToDomainPublicLighting(final String messageType, final String deviceIdentification,
             final Serializable dataObject) {
         final String correlationUid = this.correlationIdProviderTimestampService
                 .getCorrelationId(this.netmanagementOrganisation, deviceIdentification);

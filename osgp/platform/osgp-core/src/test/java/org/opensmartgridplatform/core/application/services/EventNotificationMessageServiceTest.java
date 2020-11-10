@@ -8,14 +8,15 @@
 
 package org.opensmartgridplatform.core.application.services;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.spy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -27,6 +28,7 @@ import org.opensmartgridplatform.dto.valueobjects.EventNotificationDto;
 import org.opensmartgridplatform.dto.valueobjects.EventTypeDto;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderTimestampService;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 
 @ExtendWith(MockitoExtension.class)
 public class EventNotificationMessageServiceTest {
@@ -54,18 +56,14 @@ public class EventNotificationMessageServiceTest {
         final EventNotificationDto eventNotificationDto = new EventNotificationDto(deviceUid, dateTime, eventTypeDto,
                 description, index);
 
-        final EventNotificationMessageService eventNotificationMessageServiceSpy = spy(
-                this.eventNotificationMessageService);
-        eventNotificationMessageServiceSpy.handleEvent(deviceIdentification, eventNotificationDto);
+        this.eventNotificationMessageService.handleEvent(deviceIdentification, eventNotificationDto);
 
-        final ArgumentCaptor<String> argMessageType = ArgumentCaptor.forClass(String.class);
-        final ArgumentCaptor<String> argDeviceIdentification = ArgumentCaptor.forClass(String.class);
-        final ArgumentCaptor<Event> argLightMeasurementDeviceEvent = ArgumentCaptor.forClass(Event.class);
+        final ArgumentMatcher<RequestMessage> matchesEventType = (
+                final RequestMessage message) -> ((Event) message.getRequest())
+                        .getEventType() == EventType.LIGHT_SENSOR_REPORTS_LIGHT;
 
-        verify(eventNotificationMessageServiceSpy).sendRequestMessageToDomainPublicLighting(argMessageType.capture(),
-                argDeviceIdentification.capture(), argLightMeasurementDeviceEvent.capture());
+        verify(this.domainRequestService).send(argThat(matchesEventType), eq(MessageType.EVENT_NOTIFICATION.name()),
+                any());
 
-        assertEquals(argMessageType.getValue(), MessageType.EVENT_NOTIFICATION.name());
-        assertEquals(argLightMeasurementDeviceEvent.getValue().getEventType(), EventType.LIGHT_SENSOR_REPORTS_LIGHT);
     }
 }
