@@ -117,7 +117,7 @@ public class SecretManagementService implements SecurityKeyService {
 
     private Map<SecurityKeyType, byte[]> convertSoapSecretsToSecretMapByType(List<TypedSecret> soapSecrets) {
         Function<TypedSecret, SecurityKeyType> convertType = ts -> SecurityKeyType.fromSecretType(ts.getType());
-        Function<TypedSecret, byte[]> convertSecret = ts -> this.decryptSoapSecret(ts);
+        Function<TypedSecret, byte[]> convertSecret = ts -> this.decryptSoapSecret(ts,false);
         return soapSecrets.stream().collect(Collectors.toMap(convertType, convertSecret));
     }
 
@@ -155,18 +155,18 @@ public class SecretManagementService implements SecurityKeyService {
         for (SecurityKeyType type : keysByType.keySet()) {
             TypedSecret ts = new TypedSecret();
             ts.setType(type.toSecretType());
-            ts.setSecret(this.encryptSoapSecret(keysByType.get(type)));
+            ts.setSecret(this.encryptSoapSecret(keysByType.get(type),true));
             typedSecretList.add(ts);
         }
         StoreSecretsRequest request = this.createStoreSecretsRequest(deviceIdentification, typedSecrets);
         this.secretManagementClient.storeSecretsRequest(request);
     }
 
-    private void validateKeys(Map<SecurityKeyType,byte[]> keysByType) {
-        long nrNulls = keysByType.values().stream().filter(key -> key==null).count();
-        if(nrNulls>0) {
-            throw new IllegalArgumentException(String.format("Provided %s keys, %s of which were NULL",
-                    keysByType.size(), nrNulls));
+    private void validateKeys(Map<SecurityKeyType, byte[]> keysByType) {
+        long nrNulls = keysByType.values().stream().filter(key -> key == null).count();
+        if (nrNulls > 0) {
+            throw new IllegalArgumentException(
+                    String.format("Provided %s keys, %s of which were NULL", keysByType.size(), nrNulls));
         }
     }
 
@@ -242,10 +242,9 @@ public class SecretManagementService implements SecurityKeyService {
             GenerateAndStoreSecretsResponse response, List<TypedSecret> typedSecretList) {
         this.validateOsgpResultAndTypedSecrets(response.getResult(), response.getTechnicalFault(),
                 response.getTypedSecrets(), keyTypes.size());
-        typedSecretList.forEach(ts-> {
-            if(ts.getSecret()==null) {
-                throw new IllegalStateException(String.format("Generated a NULL key (key_type=%s)",
-                        ts.getType()));
+        typedSecretList.forEach(ts -> {
+            if (ts.getSecret() == null) {
+                throw new IllegalStateException(String.format("Generated a NULL key (key_type=%s)", ts.getType()));
             }
         });
     }
@@ -263,7 +262,13 @@ public class SecretManagementService implements SecurityKeyService {
         }
     }
 
-    private byte[] decryptSoapSecret(TypedSecret typedSecret) {
+    private byte[] decryptSoapSecret(TypedSecret typedSecret, boolean exceptionOnNull) {
+        boolean nullValue = typedSecret.getSecret() == null || typedSecret.getSecret().isEmpty();
+        if (exceptionOnNull && nullValue) {
+            throw new IllegalArgumentException("Cannot decrypt NULL value");
+        } else if (!exceptionOnNull && nullValue) {
+            return null;
+        }
         try {
             byte[] encryptedDecodedSoapSecret = Hex.decodeHex(typedSecret.getSecret());
             return this.soapRsaEncrypter.decrypt(encryptedDecodedSoapSecret);
@@ -272,7 +277,13 @@ public class SecretManagementService implements SecurityKeyService {
         }
     }
 
-    private String encryptSoapSecret(byte[] secret) {
+    private String encryptSoapSecret(byte[] secret, boolean exceptionOnNull) {
+        boolean nullValue = secret == null || secret.length == 0;
+        if (exceptionOnNull && nullValue) {
+            throw new IllegalArgumentException("Cannot encrypt NULL value");
+        } else if (!exceptionOnNull && nullValue) {
+            return null;
+        }
         try {
             byte[] encrypted = this.soapRsaEncrypter.encrypt(secret);
             return Hex.encodeHexString(encrypted);

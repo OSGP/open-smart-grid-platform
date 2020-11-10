@@ -15,13 +15,16 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityK
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 
+/**
+ * TODO
+ */
 public interface SecurityKeyService {
 
     /**
-     * TODO
-     * @param deviceIdentification
-     * @param type
-     * @return
+     * Retrieve a key of a certain type for a specified device
+     * @param deviceIdentification the device identification string of the device
+     * @param type the requested key type
+     * @return the key
      */
     byte[] getKey(String deviceIdentification, SecurityKeyType type);
 
