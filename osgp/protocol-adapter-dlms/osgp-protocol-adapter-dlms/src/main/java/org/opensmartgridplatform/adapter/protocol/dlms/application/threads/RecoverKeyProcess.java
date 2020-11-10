@@ -87,7 +87,7 @@ public class RecoverKeyProcess implements Runnable {
             this.findDevice();
         } catch (final Exception e) {
             LOGGER.error("Could not find device", e);
-            //TODO why try and connect to device if you don't do anything with the result?!?
+            //TODO why try to find device if you don't do anything with the result?!?
             //TODO return?
         }
 
