@@ -44,7 +44,7 @@ public class EventNotificationMessageServiceTest {
     private EventNotificationMessageService eventNotificationMessageService;
 
     @Test
-    void handleLightSensorReportsLightEventTest() throws UnknownEntityException {
+    void sendsLightSensorReportsLightEventToDomainTest() throws UnknownEntityException {
         final String deviceUid = "testUid";
         final String deviceIdentification = "testIdentification";
         final DateTime dateTime = DateTime.now();
