@@ -1,9 +1,10 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform.glue.steps.ws;
 
@@ -41,8 +42,8 @@ public abstract class GenericResponseSteps {
      */
     public static void verifySoapFault(final Map<String, String> expectedResult) {
         final SoapFaultClientException soapFault = (SoapFaultClientException) ScenarioContext.current()
-                .get(PlatformKeys.RESPONSE);
-
+                                                                                             .get(PlatformKeys.RESPONSE);
+        assertThat(soapFault).isNotNull().as("Expected a Soap Fault response, but response is NULL");
         final QName qNameFaultCode = soapFault.getFaultCode();
         faultCode = qNameFaultCode.getPrefix() + ":" + qNameFaultCode.getLocalPart();
         faultString = soapFault.getFaultStringOrReason();
@@ -62,8 +63,8 @@ public abstract class GenericResponseSteps {
         }
 
         if (actualObj instanceof EnumMap) {
-            @SuppressWarnings("unchecked")
-            final Map<FaultDetailElement, String> actual = (Map<FaultDetailElement, String>) actualObj;
+            @SuppressWarnings("unchecked") final Map<FaultDetailElement, String> actual = (Map<FaultDetailElement,
+                    String>) actualObj;
             for (final Map.Entry<String, String> expectedEntry : expected.entrySet()) {
                 final String localName = expectedEntry.getKey();
                 final FaultDetailElement faultDetailElement = FaultDetailElement.forLocalName(localName);
@@ -118,8 +119,7 @@ public abstract class GenericResponseSteps {
             final Object actual, final int counter) {
 
         final Pattern pattern = Pattern.compile("('.+\\d+:.+')", Pattern.CASE_INSENSITIVE);
-        @SuppressWarnings("unchecked")
-        final String actualValue = ((List<String>) actual).get(counter);
+        @SuppressWarnings("unchecked") final String actualValue = ((List<String>) actual).get(counter);
         final Matcher matcher = pattern.matcher(actualValue);
         if (matcher.find()) {
             final String group = matcher.group(1);
