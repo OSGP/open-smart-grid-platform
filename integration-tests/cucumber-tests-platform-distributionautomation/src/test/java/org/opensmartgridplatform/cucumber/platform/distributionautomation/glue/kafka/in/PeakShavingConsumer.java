@@ -48,9 +48,7 @@ public class PeakShavingConsumer {
         assertThat(message.getMessageId()).isNotNull();
         assertThat(message.getProducerId().toString()).isEqualTo("GXF");
         final ScadaMeasurementPublishedEvent event = message.getPayload();
-        assertThat(event).isEqualToComparingOnlyGivenFields(expectedMessage, "description");
-        assertThat(event.getPowerSystemResource().getBaseVoltage()).isEqualToComparingOnlyGivenFields(
-                expectedMessage.getPowerSystemResource().getBaseVoltage(), "description");
+        assertThat(event.getPowerSystemResource()).isEqualTo(expectedMessage.getPowerSystemResource());
         assertThat(event.getMeasurements()).usingElementComparatorIgnoringFields("mRID")
                 .isEqualTo(expectedMessage.getMeasurements());
 
