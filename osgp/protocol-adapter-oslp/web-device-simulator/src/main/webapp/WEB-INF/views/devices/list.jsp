@@ -30,7 +30,7 @@ body {
     <div class="container">
         <div style="margin-bottom: 10px">
             <img src="/web-device-simulator/static/img/opensmartgridplatform_logo.png" style="height:50px;" />
-            <div class="pull-right">${project.version}-${BUILD_TAG}</div>
+            <div class="pull-right">${display.version}</div>
         </div>
 
         <!-- menu -->
@@ -301,9 +301,7 @@ body {
                     });
                 });
 
-                setInterval(refreshPage, 10000);
-
-                function refreshPage() {
+                function fetchCheckboxStates() {
                     $.ajax({
                         type : 'GET',
                         url : '/web-device-simulator/devices/deviceRegistrationCheck/json',
@@ -312,7 +310,10 @@ body {
                         async : true,
                         cache : false,
                         success : function(data) {
-                            $('#devRegistration').prop("checked" , data);
+                            $('#devRegistration').prop('checked', data);
+                        },
+                        error : function(error) {
+                            console.log(error);
                         }
                     });
                     $.ajax({
@@ -323,7 +324,7 @@ body {
                         async : true,
                         cache : false,
                         success : function(data) {
-                            $('#devReboot').prop("checked" , data);
+                            $('#devReboot').prop('checked', data);
                         }
                     });
                     $.ajax({
@@ -334,7 +335,7 @@ body {
                         async : true,
                         cache : false,
                         success : function(data) {
-                            $('#tariffSwitching').prop("checked" , data);
+                            $('#tariffSwitching').prop('checked', data);
                         }
                     });
                     $.ajax({
@@ -345,7 +346,7 @@ body {
                         async : true,
                         cache : false,
                         success : function(data) {
-                            $('#lightSwitching').prop("checked" , data);
+                            $('#lightSwitching').prop('checked', data);
                         }
                     });
                     $.ajax({
@@ -356,10 +357,17 @@ body {
                         async : true,
                         cache : false,
                         success : function(data) {
-                            $('#eventListener').prop("checked" , data);
+                            $('#eventListener').prop('checked', data);
                         }
                     });
+                }
+
+                fetchCheckboxStates();
+                setInterval(refreshPage, 10000);
+
+                function refreshPage() {
                     window.location.reload();
+                    fetchCheckboxStates();
                 }
             });
 

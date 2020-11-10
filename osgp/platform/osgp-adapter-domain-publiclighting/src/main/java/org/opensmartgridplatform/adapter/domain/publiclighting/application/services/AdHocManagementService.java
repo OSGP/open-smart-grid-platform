@@ -32,7 +32,6 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceStatusMapped;
 import org.opensmartgridplatform.domain.core.valueobjects.DomainType;
-import org.opensmartgridplatform.domain.core.valueobjects.EventMessageDataContainer;
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
 import org.opensmartgridplatform.domain.core.valueobjects.LightSensorStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.LightValue;
@@ -322,28 +321,20 @@ public class AdHocManagementService extends AbstractService {
      *
      * @param organisationIdentification
      *            Organization issuing the request.
-     * @param deviceIdentification
-     *            Light measurement device identification.
      * @param correlationUid
      *            The generated correlation UID.
-     * @param eventMessageDataContainer
-     *            List of {@link Event}s contained by
-     *            {@link EventMessageDataContainer}.
+     * @param event
+     *            The light measurement {@link Event} for which to trigger
+     *            transition messages.
      */
     public void handleLightMeasurementDeviceTransition(final String organisationIdentification,
-            final String deviceIdentification, final String correlationUid,
-            final EventMessageDataContainer eventMessageDataContainer) {
+            final String correlationUid, final Event event) {
 
-        // Check the event and the LMD.
-        final Event event = eventMessageDataContainer.getEvents().get(0);
-        if (event == null) {
-            LOGGER.error("No event received for light measurement device: {}", deviceIdentification);
-            return;
-        }
         LightMeasurementDevice lmd = this.lightMeasurementDeviceRepository
-                .findByDeviceIdentification(deviceIdentification);
+                .findByDeviceIdentification(event.getDeviceIdentification());
         if (lmd == null) {
-            LOGGER.error("No light measurement device found: {}", deviceIdentification);
+            LOGGER.error("No light measurement device found for device identification: {}",
+                    event.getDeviceIdentification());
             return;
         }
 
@@ -402,9 +393,8 @@ public class AdHocManagementService extends AbstractService {
     }
 
     private TransitionType determineTransitionTypeForEvent(final Event event) {
-        final String transitionTypeFromLightMeasurementDevice = event.getEventType().name();
-        TransitionType transitionType;
-        if (EventType.LIGHT_SENSOR_REPORTS_DARK.name().equals(transitionTypeFromLightMeasurementDevice)) {
+        final TransitionType transitionType;
+        if (EventType.LIGHT_SENSOR_REPORTS_DARK == event.getEventType()) {
             transitionType = TransitionType.DAY_NIGHT;
         } else {
             transitionType = TransitionType.NIGHT_DAY;

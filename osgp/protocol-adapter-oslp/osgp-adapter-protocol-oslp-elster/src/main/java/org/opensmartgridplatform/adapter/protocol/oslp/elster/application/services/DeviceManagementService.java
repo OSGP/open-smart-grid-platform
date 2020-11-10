@@ -103,7 +103,7 @@ public class DeviceManagementService {
                 deviceIdentification, eventType, description, timestamp);
 
         // Convert timestamp to DateTime.
-        DateTime dateTime;
+        final DateTime dateTime;
         if (StringUtils.isEmpty(timestamp)) {
             dateTime = DateTime.now();
             LOGGER.info("timestamp is empty, using DateTime.now(): {}", dateTime);
@@ -151,7 +151,7 @@ public class DeviceManagementService {
         final RequestMessage requestMessage = new RequestMessage("no-correlationUid", "no-organisation",
                 deviceIdentification, new ArrayList<>(eventNotificationDtos));
 
-        this.osgpRequestMessageSender.send(requestMessage, MessageType.ADD_EVENT_NOTIFICATION.name());
+        this.osgpRequestMessageSender.send(requestMessage, MessageType.EVENT_NOTIFICATION.name());
     }
 
     // === UPDATE KEY ===
