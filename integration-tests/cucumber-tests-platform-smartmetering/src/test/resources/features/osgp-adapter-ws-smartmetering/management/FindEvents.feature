@@ -17,7 +17,6 @@ Feature: SmartMetering Management - Find Events
     Then 0 standard events should be returned
       | DeviceIdentification | TEST1024000000001 |
 
-  @FindEvents
   Scenario: find standard events from a device within a period
     When receiving a find standard events request
       | DeviceIdentification | TEST1024000000001        |
