@@ -63,7 +63,7 @@ public class EventNotificationMessageService {
 
         if (this.isSwitchingEvent(eventType)) {
             this.handleSwitchingEvent(deviceIdentification, dateTime, eventType, index);
-        } else if (this.isLightEvent(eventType)) {
+        } else if (this.isLightMeasurementEvent(eventType)) {
             this.handleLightMeasurementDeviceEvent(deviceIdentification, dateTime, eventType, description, index);
         }
     }
@@ -74,7 +74,7 @@ public class EventNotificationMessageService {
                 || eventType.equals(EventType.TARIFF_EVENTS_TARIFF_OFF);
     }
 
-    private boolean isLightEvent(final EventType eventType) {
+    private boolean isLightMeasurementEvent(final EventType eventType) {
         return eventType.equals(EventType.LIGHT_SENSOR_REPORTS_DARK)
                 || eventType.equals(EventType.LIGHT_SENSOR_REPORTS_LIGHT);
     }
@@ -125,12 +125,13 @@ public class EventNotificationMessageService {
 
             if (this.isSwitchingEvent(eventType)) {
                 switchDeviceEvents.add(event);
-            } else if (this.isLightEvent(eventType)) {
-                throw new NotImplementedException("Light events are not supported as bundled events");
+
+                this.handleSwitchDeviceEvents(device, switchDeviceEvents);
+            } else if (this.isLightMeasurementEvent(eventType)) {
+                this.handleLightMeasurementDeviceEvents(deviceIdentification, eventNotifications);
             }
         }
 
-        this.handleSwitchDeviceEvents(device, switchDeviceEvents);
     }
 
     private void handleSwitchDeviceEvents(final Device device, final List<Event> switchDeviceEvents)
@@ -181,6 +182,22 @@ public class EventNotificationMessageService {
             this.sendRequestMessageToDomainCore(MessageType.RELAY_STATUS_UPDATED_EVENTS.name(),
                     ssld.getDeviceIdentification(), null);
         }
+    }
+
+    private void handleLightMeasurementDeviceEvents(final String deviceIdentification,
+            final List<EventNotificationDto> eventNotifications) {
+
+        if (eventNotifications.size() != 1) {
+            throw new NotImplementedException(
+                    "Only lists containing exactly one light event are supported as bundled events.");
+        }
+
+        final EventNotificationDto event = eventNotifications.get(0);
+        final EventType eventType = EventType.valueOf(event.getEventType().toString());
+
+        this.handleLightMeasurementDeviceEvent(deviceIdentification, event.getDateTime().toDate(), eventType,
+                event.getDescription(), event.getIndex());
+
     }
 
     private void handleLightSwitchingEventForIndex0(final Set<Integer> indexesLightRelays, final Device device,
