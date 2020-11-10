@@ -125,13 +125,12 @@ public class EventNotificationMessageService {
 
             if (this.isSwitchingEvent(eventType)) {
                 switchDeviceEvents.add(event);
-
-                this.handleSwitchDeviceEvents(device, switchDeviceEvents);
             } else if (this.isLightMeasurementEvent(eventType)) {
                 this.handleLightMeasurementDeviceEvents(deviceIdentification, eventNotifications);
             }
         }
-
+        
+        this.handleSwitchDeviceEvents(device, switchDeviceEvents);
     }
 
     private void handleSwitchDeviceEvents(final Device device, final List<Event> switchDeviceEvents)
