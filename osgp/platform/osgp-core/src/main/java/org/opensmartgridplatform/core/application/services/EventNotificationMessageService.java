@@ -129,7 +129,7 @@ public class EventNotificationMessageService {
                 this.handleLightMeasurementDeviceEvents(deviceIdentification, eventNotifications);
             }
         }
-        
+
         this.handleSwitchDeviceEvents(device, switchDeviceEvents);
     }
 
