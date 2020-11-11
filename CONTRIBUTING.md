@@ -10,7 +10,7 @@ Please comply with the [code of conduct](https://documentation.gxf.lfenergy.org/
 
 3. Make sure the automated test suite succeeds. They will show-up in the pull request.
 
-4. Sign the CLA using [EasyCLA](https://lfcla.com/).
+4. Sign the CLA using [EasyCLA](https://easycla.lfx.linuxfoundation.org/).
 
 5. Assign a maintainer to accept/evaluate your pull request. The current maintainer can be found in the [documentation](https://documentation.gxf.lfenergy.org/Opensourcecommunity/Governance.html).
 
