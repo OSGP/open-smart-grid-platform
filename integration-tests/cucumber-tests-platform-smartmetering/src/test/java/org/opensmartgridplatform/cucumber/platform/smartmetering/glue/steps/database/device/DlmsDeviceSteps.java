@@ -510,7 +510,15 @@ public class DlmsDeviceSteps {
                 secretBuilders.add(this.mbusEncryptionSecurityKeyBuilder);
             }
         } else if (this.isESmartMeter(deviceType)) {
-            secretBuilders.add(this.encryptionSecurityKeyBuilder);
+            inputSettings.getOrDefault(PlatformSmartmeteringKeys.DEVICE_TYPE, SMART_METER_E);
+            //TODO improve code to use provided parameters in general (also for other types)
+            if(inputSettings.containsKey(PlatformSmartmeteringKeys.SECURITY_KEY_E)) {
+                secretBuilders.add(new SecurityKeyBuilder()
+                        .setSecurityKeyType(SecurityKeyType.E_METER_ENCRYPTION)
+                        .setKey(inputSettings.get(PlatformSmartmeteringKeys.SECURITY_KEY_E)));
+            } else {
+                secretBuilders.add(this.encryptionSecurityKeyBuilder);
+            }
             secretBuilders.add(this.masterSecurityKeyBuilder);
             secretBuilders.add(this.authenticationSecurityKeyBuilder);
         }

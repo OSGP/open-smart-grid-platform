@@ -20,7 +20,6 @@ Feature: SmartMetering functional exceptions regarding encryption keys
       | Encryption_key       | abc0123456789def  |
     Then the replace keys response generating an error is received
       | DeviceIdentification | TEST1024000000001 |
-      | Result               | NOT_OK            |
     And a SOAP fault should have been returned
       | Code    |                  804 |
       | Message | DECRYPTION_EXCEPTION |

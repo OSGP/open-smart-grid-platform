@@ -16,39 +16,56 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 
 /**
- * TODO
+ * Service for storing, activating and retrieving device keys.
+ * Also performs RSA encryption/decryption operations for SOAP messaging purposes.
  */
 public interface SecurityKeyService {
 
     /**
-     * Retrieve a key of a certain type for a specified device
-     * @param deviceIdentification the device identification string of the device
-     * @param type the requested key type
-     * @return the key
+     * Retrieve an active key of a certain type for a specified device
+     *
+     * @param deviceIdentification
+     *         the device identification string of the device
+     * @param type
+     *         the requested key type
+     *
+     * @return the key or NULL if not present
      */
     byte[] getKey(String deviceIdentification, SecurityKeyType type);
 
     /**
-     * TODO
+     * Retrieves the active keys of requested types for a specified device
+     *
      * @param deviceIdentification
+     *         the device identification string of the device
      * @param keyTypes
-     * @return
+     *         the requested key types
+     *
+     * @return the requested keys in a map by key type, with value NULL if not present
      */
     Map<SecurityKeyType, byte[]> getKeys(String deviceIdentification, List<SecurityKeyType> keyTypes);
 
     /**
-     * TODO
+     * Retrieve a new (not yet activated) key of a certain type for a specified device
+     *
      * @param deviceIdentification
+     *         the device identification string of the device
      * @param type
-     * @return
+     *         the requested key type
+     *
+     * @return the key or NULL if not present
      */
     byte[] getNewKey(String deviceIdentification, SecurityKeyType type);
 
     /**
-     * TODO
+     * Retrieves the new (not yet activated) keys of requested types for a specified device
+     *
      * @param deviceIdentification
+     *         the device identification string of the device
      * @param keyTypes
-     * @return
+     *         the requested key types
+     *
+     * @return the requested keys in a map by key type, with value NULL if not present
      */
     Map<SecurityKeyType, byte[]> getNewKeys(String deviceIdentification, List<SecurityKeyType> keyTypes);
 
@@ -71,14 +88,14 @@ public interface SecurityKeyService {
      * @param deviceIdentification
      *         DLMS device id
      * @param key
-     *        key to store, unencrypted
+     *         key to store, unencrypted
      * @param keyType
      *         type of key
-     *
      *
      * @see #activateNewKey(String, SecurityKeyType)
      */
     void storeNewKey(final String deviceIdentification, final SecurityKeyType keyType, final byte[] key);
+
     void storeNewKeys(final String deviceIdentification, final Map<SecurityKeyType, byte[]> keysByType);
 
     /**
@@ -107,10 +124,12 @@ public interface SecurityKeyService {
      */
     void activateNewKey(final String deviceIdentification, final SecurityKeyType keyType)
             throws ProtocolAdapterException;
+
     void activateNewKeys(final String deviceIdentification, final List<SecurityKeyType> keyTypes)
             throws ProtocolAdapterException;
 
     byte[] generate128BitsKeyAndStoreAsNewKey(final String deviceIdentification, final SecurityKeyType keyType);
+
     Map<SecurityKeyType, byte[]> generate128BitsKeysAndStoreAsNewKeys(final String deviceIdentification,
             final List<SecurityKeyType> keyTypes);
 
