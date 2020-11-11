@@ -56,6 +56,9 @@ public class SoapClientConfig {
     @Value("${encryption.soap.rsa.private.key.resource}")
     private Resource soapRsaPrivateKeyResource;
 
+    @Value("${encryption.soap.rsa.public.key.resource}")
+    private Resource soapRsaPublicKeyResource;
+
     @Bean
     Jaxb2Marshaller soapClientJaxb2Marshaller() {
         Jaxb2Marshaller jaxb2Marshaller = new Jaxb2Marshaller();
@@ -132,9 +135,11 @@ public class SoapClientConfig {
     public RsaEncrypter rsaEncryptionProvider() {
         try {
             File privateRsaKeyFile = this.soapRsaPrivateKeyResource.getFile();
-            RsaEncrypter rsaEncryptionProvider = new RsaEncrypter();
-            rsaEncryptionProvider.setPrivateKeyStore(privateRsaKeyFile);
-            return rsaEncryptionProvider;
+            File publicRsaKeyFile = this.soapRsaPublicKeyResource.getFile();
+            RsaEncrypter rsaEncrypter= new RsaEncrypter();
+            rsaEncrypter.setPrivateKeyStore(privateRsaKeyFile);
+            rsaEncrypter.setPublicKeyStore(publicRsaKeyFile);
+            return rsaEncrypter;
         }
         catch(IOException e) {
             throw new IllegalStateException("Could not initialize RsaEncryptionProvider", e);
