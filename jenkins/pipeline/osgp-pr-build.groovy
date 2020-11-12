@@ -125,7 +125,7 @@ pipeline {
                                        -Dsonar.ws.timeout=600 \
                                        -Dsonar.pullrequest.key=$ghprbPullId \
                                        -Dsonar.pullrequest.branch=$ghprbSourceBranch \
-                                       -Dsonar.pullrequest.base=$ghprbTargetBranch                                
+                                       -Dsonar.pullrequest.base=$ghprbTargetBranch
                                    '''
                             }
                         }
