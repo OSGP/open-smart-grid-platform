@@ -20,8 +20,8 @@ insert into protocol_info(
     outgoing_responses_property_prefix,
     parallel_requests_allowed)
 values (
-    '2020-05-12 00:00:00',
-    '2020-05-12 00:00:00',
+    '2020-11-12 00:00:00',
+    '2020-11-12 00:00:00',
     0,
     'SMR_LTE_M',
     '5.1',
@@ -51,8 +51,8 @@ insert into protocol_info(
     outgoing_responses_property_prefix,
     parallel_requests_allowed)
 values (
-    '2020-05-12 00:00:00',
-    '2020-05-12 00:00:00',
+    '2020-11-12 00:00:00',
+    '2020-11-12 00:00:00',
     0,
     'SMR_LTE_M',
     '5.0.0',
@@ -82,8 +82,8 @@ insert into protocol_info(
     outgoing_responses_property_prefix,
     parallel_requests_allowed)
 values (
-    '2020-05-12 00:00:00',
-    '2020-05-12 00:00:00',
+    '2020-11-12 00:00:00',
+    '2020-11-12 00:00:00',
     0,
     'SMR_GPRS',
     '5.1',
@@ -113,8 +113,8 @@ insert into protocol_info(
     outgoing_responses_property_prefix,
     parallel_requests_allowed)
 values (
-    '2020-05-12 00:00:00',
-    '2020-05-12 00:00:00',
+    '2020-11-12 00:00:00',
+    '2020-11-12 00:00:00',
     0,
     'SMR_GPRS',
     '5.0.0',
