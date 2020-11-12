@@ -9,6 +9,8 @@ package org.opensmartgridplatform.cucumber.platform.common.support.ws.core;
 
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.AddDeviceRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.AddDeviceResponse;
+import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.AddLightMeasurementDeviceRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.AddLightMeasurementDeviceResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.FindRecentDevicesRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.FindRecentDevicesResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.GetStatusAsyncRequest;
@@ -61,6 +63,23 @@ public class CoreDeviceInstallationClient extends BaseClient {
         final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (UpdateDeviceResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public AddLightMeasurementDeviceResponse addLightMeasurementDevice(final AddLightMeasurementDeviceRequest request)
+            throws WebServiceSecurityException {
+        String organizationIdentification = (String) ScenarioContext.current()
+                .get(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION);
+        if (organizationIdentification == null) {
+            organizationIdentification = PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION;
+        }
+        return this.addLightMeasurementDevice(request, organizationIdentification);
+    }
+
+    public AddLightMeasurementDeviceResponse addLightMeasurementDevice(final AddLightMeasurementDeviceRequest request,
+            final String organizationIdentification) throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(organizationIdentification,
+                this.getUserName());
+        return (AddLightMeasurementDeviceResponse) wst.marshalSendAndReceive(request);
     }
 
     public FindRecentDevicesResponse findRecentDevices(final FindRecentDevicesRequest request)

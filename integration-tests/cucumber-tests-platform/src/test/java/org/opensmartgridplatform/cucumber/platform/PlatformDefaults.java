@@ -217,4 +217,8 @@ public class PlatformDefaults {
     public static final String DOMAIN = "DISTRIBUTION_AUTOMATION";
     public static final String DOMAIN_VERSION = "1.0";
 
+    public static final String DEFAULT_LMD_DESCRIPTION = "LmdDescription";
+    public static final String DEFAULT_LMD_CODE = "LmdCode";
+    public static final String DEFAULT_LMD_COLOR = "LmdColor";
+    public static final Short DEFAULT_LMD_DIGITAL_INPUT = 1;
 }

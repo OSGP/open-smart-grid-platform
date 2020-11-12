@@ -7,26 +7,109 @@
  */
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getFloat;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShort;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
+
 import java.net.InetAddress;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.opensmartgridplatform.cucumber.core.Wait;
+import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.LightMeasurementDevice;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
 import org.opensmartgridplatform.domain.core.repositories.LightMeasurementDeviceRepository;
+import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 
 public class LightMeasurementDeviceSteps extends BaseDeviceSteps {
 
     @Autowired
     private LightMeasurementDeviceRepository lightMeasurementDeviceRepository;
+
+    @Then("^the light measurement device exists")
+    public void theLigthMeasurementDeviceExists(final Map<String, String> settings) throws Throwable {
+        final LightMeasurementDevice lmd = Wait.untilAndReturn(() -> {
+            final LightMeasurementDevice entity = this.lightMeasurementDeviceRepository
+                    .findByDeviceIdentification(settings.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
+            if (entity == null) {
+                throw new Exception(
+                        "Device with identification [" + settings.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION) + "]");
+            }
+
+            return entity;
+        });
+
+        if (settings.containsKey(PlatformKeys.ALIAS)) {
+            assertThat(lmd.getAlias()).isEqualTo(getString(settings, PlatformKeys.ALIAS));
+        }
+        if (settings.containsKey(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION)) {
+            assertThat(lmd.getOwner().getOrganisationIdentification())
+                    .isEqualTo(getString(settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION));
+        }
+        if (settings.containsKey(PlatformKeys.CONTAINER_POSTALCODE)) {
+            assertThat(lmd.getContainerAddress().getPostalCode())
+                    .isEqualTo(getString(settings, PlatformKeys.CONTAINER_POSTALCODE));
+        }
+        if (settings.containsKey(PlatformKeys.CONTAINER_CITY)) {
+            assertThat(lmd.getContainerAddress().getCity()).isEqualTo(getString(settings, PlatformKeys.CONTAINER_CITY));
+        }
+        if (settings.containsKey(PlatformKeys.CONTAINER_STREET)) {
+            assertThat(lmd.getContainerAddress().getStreet())
+                    .isEqualTo(getString(settings, PlatformKeys.CONTAINER_STREET));
+        }
+        if (settings.containsKey(PlatformKeys.CONTAINER_NUMBER)) {
+            assertThat(lmd.getContainerAddress().getNumber())
+                    .isEqualTo(getString(settings, PlatformKeys.CONTAINER_NUMBER));
+        }
+        if (settings.containsKey(PlatformKeys.CONTAINER_MUNICIPALITY)) {
+            assertThat(lmd.getContainerAddress().getMunicipality())
+                    .isEqualTo(getString(settings, PlatformKeys.CONTAINER_MUNICIPALITY));
+        }
+        if (settings.containsKey(PlatformKeys.KEY_LATITUDE)) {
+            assertThat(lmd.getGpsCoordinates().getLatitude()).isEqualTo(getFloat(settings, PlatformKeys.KEY_LATITUDE));
+        }
+        if (settings.containsKey(PlatformKeys.KEY_LONGITUDE)) {
+            assertThat(lmd.getGpsCoordinates().getLongitude())
+                    .isEqualTo(getFloat(settings, PlatformKeys.KEY_LONGITUDE));
+        }
+        if (settings.containsKey(PlatformKeys.KEY_ACTIVATED)) {
+            assertThat(lmd.isActivated()).isEqualTo(getBoolean(settings, PlatformKeys.KEY_ACTIVATED));
+        }
+        if (settings.containsKey(PlatformKeys.KEY_DEVICE_LIFECYCLE_STATUS)) {
+            assertThat(lmd.getDeviceLifecycleStatus()).isEqualTo(
+                    getEnum(settings, PlatformKeys.KEY_DEVICE_LIFECYCLE_STATUS, DeviceLifecycleStatus.class));
+        }
+        if (settings.containsKey(PlatformKeys.KEY_DEVICE_MODEL_MODELCODE)) {
+            assertThat(lmd.getDeviceModel().getModelCode())
+                    .isEqualTo(getString(settings, PlatformKeys.KEY_DEVICE_MODEL_MODELCODE));
+        }
+        if (settings.containsKey(PlatformKeys.KEY_LMD_DESCRIPTION)) {
+            assertThat(lmd.getDescription()).isEqualTo(getString(settings, PlatformKeys.KEY_LMD_DESCRIPTION));
+        }
+        if (settings.containsKey(PlatformKeys.KEY_LMD_CODE)) {
+            assertThat(lmd.getCode()).isEqualTo(getString(settings, PlatformKeys.KEY_LMD_CODE));
+        }
+        if (settings.containsKey(PlatformKeys.KEY_LMD_COLOR)) {
+            assertThat(lmd.getColor()).isEqualTo(getString(settings, PlatformKeys.KEY_LMD_COLOR));
+        }
+        if (settings.containsKey(PlatformKeys.KEY_LMD_DIGITAL_INPUT)) {
+            assertThat(lmd.getDigitalInput()).isEqualTo(getShort(settings, PlatformKeys.KEY_LMD_DIGITAL_INPUT));
+        }
+    }
 
     @Given("^the light measurement devices$")
     @Transactional("txMgrCore")
