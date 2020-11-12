@@ -8,7 +8,10 @@
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.application.config;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking.ChannelCache;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking.OslpChannelHandlerClient;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking.OslpChannelHandlerServer;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking.OslpSecurityHandler;
@@ -30,7 +33,9 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.logging.ByteBufFormat;
 import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 
 /**
  * An application context Java configuration class.
@@ -40,6 +45,8 @@ public class OslpConfig extends AbstractConfig {
     private static final String PROPERTY_NAME_OSLP_TIMEOUT_CONNECT = "oslp.timeout.connect";
     private static final String PROPERTY_NAME_OSLP_CONCURRENT_CLIENT_CONNECTIONS_LIMIT_ACTIVE = "oslp.concurrent.client.connections.limit.active";
     private static final String PROPERTY_NAME_OSLP_CONCURRENT_CLIENT_CONNECTIONS_MAXIMUM = "oslp.concurrent.client.connections.maximum";
+
+    private static final String PROPERTY_NAME_OSLP_CHANNEL_CACHE_EXPIRATION_MILLIS = "oslp.channel.cache.expiration.millis";
 
     private static final String PROPERTY_NAME_OSLP_PORT_CLIENT = "oslp.port.client";
     private static final String PROPERTY_NAME_OSLP_PORT_CLIENTLOCAL = "oslp.port.clientlocal";
@@ -58,6 +65,9 @@ public class OslpConfig extends AbstractConfig {
 
     private static final String PROPERTY_NAME_OSLP_DEFAULT_LATITUDE = "oslp.default.latitude";
     private static final String PROPERTY_NAME_OSLP_DEFAULT_LONGITUDE = "oslp.default.longitude";
+
+    private static final String PROPERTY_NAME_OSLP_NETTY_LOG_LEVEL = "oslp.netty.log.level";
+    private static final String PROPERTY_NAME_OSLP_NETTY_BYTE_BUF_FORMAT = "oslp.netty.byte.buf.format";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OslpConfig.class);
 
@@ -123,12 +133,44 @@ public class OslpConfig extends AbstractConfig {
     }
 
     private void createChannelPipeline(final SocketChannel channel, final ChannelHandler handler) {
-        final boolean hexDump = false;
-        channel.pipeline().addLast("loggingHandler", new OslpLoggingHandler(LogLevel.INFO, hexDump));
+        channel.pipeline().addLast("loggingHandler", this.loggingHandler(this.nettyLogLevel(), this.byteBufFormat()));
         channel.pipeline().addLast("oslpEncoder", new OslpEncoder());
         channel.pipeline().addLast("oslpDecoder", new OslpDecoder(this.oslpSignature(), this.oslpSignatureProvider()));
         channel.pipeline().addLast("oslpSecurity", this.oslpSecurityHandler());
         channel.pipeline().addLast("oslpChannelHandler", handler);
+    }
+
+    @Bean
+    public LoggingHandler loggingHandler(final LogLevel nettyLogLevel, final ByteBufFormat byteBufFormat) {
+        return new LoggingHandler(nettyLogLevel, byteBufFormat);
+    }
+
+    @Bean
+    public LogLevel nettyLogLevel() {
+        final LogLevel defaultLogLevel = LogLevel.INFO;
+        final String logLevelName = this.environment.getProperty(PROPERTY_NAME_OSLP_NETTY_LOG_LEVEL,
+                defaultLogLevel.name());
+        try {
+            return LogLevel.valueOf(logLevelName);
+        } catch (final IllegalArgumentException e) {
+            LOGGER.error("Configured value for {}: \"{}\" is not a known LogLevel name; using default: {}",
+                    PROPERTY_NAME_OSLP_NETTY_LOG_LEVEL, logLevelName, defaultLogLevel, e);
+        }
+        return defaultLogLevel;
+    }
+
+    @Bean
+    public ByteBufFormat byteBufFormat() {
+        final ByteBufFormat defaultByteBufFormat = ByteBufFormat.SIMPLE;
+        final String byteBufFormatName = this.environment.getProperty(PROPERTY_NAME_OSLP_NETTY_BYTE_BUF_FORMAT,
+                defaultByteBufFormat.name());
+        try {
+            return ByteBufFormat.valueOf(byteBufFormatName);
+        } catch (final IllegalArgumentException e) {
+            LOGGER.error("Configured value for {}: \"{}\" is not a known ByteBufFormat name; using default: {}",
+                    PROPERTY_NAME_OSLP_NETTY_BYTE_BUF_FORMAT, byteBufFormatName, defaultByteBufFormat, e);
+        }
+        return defaultByteBufFormat;
     }
 
     @Bean
@@ -174,6 +216,33 @@ public class OslpConfig extends AbstractConfig {
     @Bean
     public int oslpPortServer() {
         return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_OSLP_PORT_SERVER));
+    }
+
+    @Bean
+    public ChannelCache channelCache() {
+        final long oneDayInMillis = TimeUnit.DAYS.toMillis(1);
+        final String millisText = this.environment.getProperty(PROPERTY_NAME_OSLP_CHANNEL_CACHE_EXPIRATION_MILLIS);
+        if (StringUtils.isBlank(millisText)) {
+            LOGGER.info("No configured value found for {}, ChannelCache expiration is set to 1 day",
+                    PROPERTY_NAME_OSLP_CHANNEL_CACHE_EXPIRATION_MILLIS);
+            return new ChannelCache(oneDayInMillis);
+        }
+        try {
+            final long expirationMillis = Long.parseLong(millisText);
+            final long fiveMinutesInMillis = TimeUnit.MINUTES.toMillis(5);
+            if (expirationMillis < fiveMinutesInMillis) {
+                LOGGER.warn(
+                        "Configured value for {} ({}) is less than five minutes, ChannelCache expiration is set to 5 minutes",
+                        PROPERTY_NAME_OSLP_CHANNEL_CACHE_EXPIRATION_MILLIS, millisText);
+            } else {
+                LOGGER.info("ChannelCache configured with {} milliseconds before cached channels expire", millisText);
+            }
+            return new ChannelCache(Long.max(expirationMillis, fiveMinutesInMillis));
+        } catch (final NumberFormatException e) {
+            LOGGER.error("Configured value for {} ({}) is not a long value, ChannelCache expiration is set to 1 day",
+                    PROPERTY_NAME_OSLP_CHANNEL_CACHE_EXPIRATION_MILLIS, millisText);
+            return new ChannelCache(oneDayInMillis);
+        }
     }
 
     @Bean

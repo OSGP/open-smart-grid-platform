@@ -10,8 +10,6 @@ package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.codec.binary.Base64;
 import org.joda.time.Instant;
@@ -50,7 +48,9 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(OslpChannelHandlerServer.class);
 
     private static final DateTimeFormatter format = DateTimeFormat.forPattern("yyyyMMddHHmmss");
-    private final ConcurrentMap<String, Channel> channelMap = new ConcurrentHashMap<>();
+
+    @Autowired
+    private ChannelCache channelCache;
 
     @Autowired
     private DeviceRegistrationService deviceRegistrationService;
@@ -98,14 +98,6 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
         super(LOGGER, maxConcurrentIncomingMessages);
     }
 
-    private Channel findChannel(final String channelId) {
-        return this.channelMap.get(channelId);
-    }
-
-    private void cacheChannel(final ChannelId channelId, final Channel channel) {
-        this.channelMap.put(channelId.asLongText(), channel);
-    }
-
     public void setDeviceManagementService(final DeviceManagementService deviceManagementService) {
         this.deviceManagementService = deviceManagementService;
     }
@@ -126,7 +118,7 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
     public void channelRead0(final ChannelHandlerContext ctx, final OslpEnvelope message) throws Exception {
         final ChannelId channelId = ctx.channel().id();
         if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("channelRead0 called for channel{}.", channelId.asLongText());
+            LOGGER.info("channelRead0 called for channel {}.", channelId.asLongText());
         }
 
         this.loggingService.logMessage(message, true);
@@ -135,6 +127,7 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
             if (OslpUtils.isOslpResponse(message)) {
                 LOGGER.warn("{} Received OSLP Response, which is not expected: {}", channelId,
                         message.getPayloadMessage());
+                ctx.close();
             } else {
                 LOGGER.info("{} Received OSLP Request: {}", channelId, message.getPayloadMessage());
 
@@ -153,13 +146,13 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
                             message.getPayloadMessage().getEventNotificationRequest());
                 } else {
                     LOGGER.warn("{} Received unknown payload. Received: {}.", channelId, message.getPayloadMessage());
-
+                    ctx.close();
                     // Optional extra: return error code to device.
                     return;
                 }
 
                 // Cache the channel so we can write the response to it later.
-                this.cacheChannel(channelId, ctx.channel());
+                this.channelCache.cacheChannel(ctx.channel());
 
                 // Send message to signing server to get our response signed.
                 this.oslpSigningService.buildAndSignEnvelope(message.getDeviceId(), message.getSequenceNumber(),
@@ -167,9 +160,8 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
             }
         } else {
             LOGGER.warn("{} Received message wasn't properly secured.", channelId);
+            ctx.close();
         }
-
-        ctx.fireChannelRead(message);
     }
 
     /**
@@ -182,10 +174,11 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
      */
     public void processSignedOslpEnvelope(final SignedOslpEnvelopeDto signedOslpEnvelopeDto) {
         // Try to find the channel.
-        final String channelId = signedOslpEnvelopeDto.getUnsignedOslpEnvelopeDto().getCorrelationUid();
-        final Channel channel = this.findChannel(channelId);
+        final String channelIdAsLongText = signedOslpEnvelopeDto.getUnsignedOslpEnvelopeDto().getCorrelationUid();
+        final Channel channel = this.channelCache.removeFromCache(channelIdAsLongText);
         if (channel == null) {
-            LOGGER.error("Unable to find channel for channelId: {}. Can't send response message to device.", channelId);
+            LOGGER.error("Unable to find channel for channelId: {}. Can't send response message to device.",
+                    channelIdAsLongText);
             return;
         }
 
@@ -194,14 +187,14 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
         this.loggingService.logMessage(response, false);
         channel.writeAndFlush(response);
 
-        LOGGER.info("{} Sent OSLP Response: {}", channelId, response.getPayloadMessage());
+        LOGGER.info("{} Sent OSLP Response: {}", channelIdAsLongText, response.getPayloadMessage());
 
         this.checkResponseMessageType(response);
     }
 
     private void checkResponseMessageType(final OslpEnvelope response) {
         // For the response type ConfirmRegisterDeviceResponse, check if
-        // a SetSchedueRequest is pending for a device.
+        // a SetScheduleRequest is pending for a device.
         if (response.getPayloadMessage().hasConfirmRegisterDeviceResponse()) {
             try {
                 this.handleSetSchedule(response.getDeviceId());

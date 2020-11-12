@@ -69,7 +69,7 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
     public void channelRead0(final ChannelHandlerContext ctx, final OslpEnvelope message) {
         final String channelId = ctx.channel().id().asLongText();
 
-        LOGGER.info("channelRead0 called for channel{}.", channelId);
+        LOGGER.info("channelRead0 called for channel {}.", channelId);
 
         if (message.isValid()) {
             if (OslpUtils.isOslpResponse(message)) {
@@ -121,7 +121,7 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
                 if (future.isSuccess()) {
                     try {
                         OslpChannelHandlerClient.this.write(future, address, request);
-                    } catch (IOException e) {
+                    } catch (final IOException e) {
                         responseHandler.handleException(e);
                     }
                 } else {
