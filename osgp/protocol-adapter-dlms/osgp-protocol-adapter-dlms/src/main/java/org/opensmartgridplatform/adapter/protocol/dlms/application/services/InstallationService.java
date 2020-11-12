@@ -69,10 +69,10 @@ public class InstallationService {
 
     private void storeNewKeys(final SmartMeteringDeviceDto deviceDto) throws FunctionalException {
         Map<SecurityKeyType,byte[]> keysByType = new HashMap<>();
-        keysByType.put(E_METER_MASTER,this.securityKeyService.rsaDecrypt(deviceDto.getMasterKey()));
-        keysByType.put(E_METER_AUTHENTICATION,this.securityKeyService.rsaDecrypt(deviceDto.getAuthenticationKey()));
-        keysByType.put(G_METER_ENCRYPTION,this.securityKeyService.rsaDecrypt(deviceDto.getGlobalEncryptionUnicastKey()));
-        keysByType.put(G_METER_MASTER,this.securityKeyService.rsaDecrypt(deviceDto.getMbusDefaultKey()));
+        keysByType.put(E_METER_MASTER,this.encryptionService.rsaDecrypt(deviceDto.getMasterKey()));
+        keysByType.put(E_METER_AUTHENTICATION,this.encryptionService.rsaDecrypt(deviceDto.getAuthenticationKey()));
+        keysByType.put(G_METER_ENCRYPTION,this.encryptionService.rsaDecrypt(deviceDto.getGlobalEncryptionUnicastKey()));
+        keysByType.put(G_METER_MASTER,this.encryptionService.rsaDecrypt(deviceDto.getMbusDefaultKey()));
         this.securityKeyService.storeNewKeys(deviceDto.getDeviceIdentification(), keysByType);
     }
 
