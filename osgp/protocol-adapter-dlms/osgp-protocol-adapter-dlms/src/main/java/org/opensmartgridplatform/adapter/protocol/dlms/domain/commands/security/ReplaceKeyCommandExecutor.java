@@ -14,6 +14,7 @@ import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.SecurityUtils;
 import org.openmuc.jdlms.SecurityUtils.KeyId;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.EncryptionService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecurityKeyService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
@@ -31,7 +32,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 /**
@@ -57,8 +57,10 @@ public class ReplaceKeyCommandExecutor
     private static final String WAS_SUCCESFULL = " was successful";
 
     @Autowired
-    @Qualifier("secretManagementService")
     private SecurityKeyService securityKeyService;
+
+    @Autowired
+    EncryptionService encryptionService;
 
     static class ReplaceKeyInput {
         private final byte[] bytes;
@@ -127,10 +129,9 @@ public class ReplaceKeyCommandExecutor
     }
 
     private SetKeysRequestDto decryptRsaKeys(final SetKeysRequestDto setKeysRequestDto) throws FunctionalException {
-        final byte[] reEncryptedAuthenticationKey = this.securityKeyService
-                .rsaDecrypt(setKeysRequestDto.getAuthenticationKey());
-        final byte[] reEncryptedEncryptionKey = this.securityKeyService
-                .rsaDecrypt(setKeysRequestDto.getEncryptionKey());
+        final byte[] reEncryptedAuthenticationKey =
+                this.encryptionService.rsaDecrypt(setKeysRequestDto.getAuthenticationKey());
+        final byte[] reEncryptedEncryptionKey = this.encryptionService.rsaDecrypt(setKeysRequestDto.getEncryptionKey());
 
         return new SetKeysRequestDto(reEncryptedAuthenticationKey, reEncryptedEncryptionKey);
     }

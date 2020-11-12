@@ -37,7 +37,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 public class RecoverKeyProcess implements Runnable {
 
@@ -58,7 +57,6 @@ public class RecoverKeyProcess implements Runnable {
     private String ipAddress;
 
     @Autowired
-    @Qualifier("secretManagementService")
     private SecurityKeyService securityKeyService;
 
     public RecoverKeyProcess(final DomainHelperService domainHelperService, final int responseTimeout,
