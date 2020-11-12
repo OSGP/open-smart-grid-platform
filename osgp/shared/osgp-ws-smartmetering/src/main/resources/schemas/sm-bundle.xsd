@@ -29,6 +29,13 @@
       schemaLocation="sm-installation.xsd"/>
 
   <!-- Requests and Responses -->
+  <xsd:element name="GetOutagesRequest">
+      <xsd:complexType>
+        <xsd:complexContent>
+          <xsd:extension base="smman:GetOutagesRequestData"></xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+  </xsd:element>
   <xsd:element name="FindEventsRequest">
     <xsd:complexType>
       <xsd:complexContent>
@@ -282,6 +289,7 @@
   <xsd:complexType name="Actions">
     <xsd:sequence>
       <xsd:choice maxOccurs="unbounded">
+        <xsd:element ref="tns:GetOutagesRequest"/>
         <xsd:element ref="tns:FindEventsRequest"/>
         <xsd:element ref="tns:SetSpecialDaysRequest"/>
         <xsd:element ref="tns:ReadAlarmRegisterRequest"/>

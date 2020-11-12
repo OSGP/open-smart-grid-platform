@@ -28,23 +28,12 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="GetOutagesRequest">
-    <xsd:complexType>
-      <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"
-                     minOccurs="1" maxOccurs="1"/>
-      </xsd:sequence>
-    </xsd:complexType>
-  </xsd:element>
-
-  <xsd:element name="GetOutagesResponse">
-    <xsd:complexType>
-      <xsd:sequence>
-        <xsd:element name="Outages" type="tns:Outage"
-                     maxOccurs="unbounded" minOccurs="0"/>
-      </xsd:sequence>
-    </xsd:complexType>
-  </xsd:element>
+  <xsd:complexType name="GetOutagesRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Query">
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
 
   <!-- Outage containing endTime and duration -->
   <xsd:complexType name="Outage">
