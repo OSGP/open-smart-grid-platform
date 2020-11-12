@@ -121,6 +121,8 @@ pipeline {
                                 sh '''
                                    mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.6.0.1398:sonar -B \
                                        -Dmaven.repo.local=.repository \
+                                       -Dsonar.java.source=8 \
+                                       -Dsonar.ws.timeout=600 \
                                        -Dsonar.pullrequest.key=$ghprbPullId \
                                        -Dsonar.pullrequest.branch=$ghprbSourceBranch \
                                        -Dsonar.pullrequest.base=$ghprbTargetBranch                                
