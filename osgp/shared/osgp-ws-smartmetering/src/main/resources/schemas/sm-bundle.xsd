@@ -502,6 +502,13 @@
       <xsd:field xpath="adhoc:Channel"/>
     </xsd:unique>
   </xsd:element>
+  <xsd:element name="GetOutagesResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smman:GetOutagesResponseData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
 
   <xsd:complexType name="AllResponses">
     <xsd:sequence>
@@ -527,6 +534,7 @@
         <xsd:element ref="tns:GetMbusEncryptionKeyStatusByChannelResponse"/>
         <xsd:element ref="tns:SetDeviceLifecycleStatusByChannelResponse"/>
         <xsd:element ref="tns:ScanMbusChannelsResponse"/>
+        <xsd:element ref="tns:GetOutagesResponse"/>
       </xsd:choice>
     </xsd:sequence>
   </xsd:complexType>

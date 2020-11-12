@@ -28,6 +28,45 @@
     </xsd:complexType>
   </xsd:element>
 
+  <xsd:element name="GetOutagesRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"
+                     minOccurs="1" maxOccurs="1"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="GetOutagesResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Outages" type="tns:Outage"
+                     maxOccurs="unbounded" minOccurs="0"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- Outage containing endTime and duration -->
+  <xsd:complexType name="Outage">
+    <xsd:sequence>
+      <xsd:element name="endTime" type="xsd:dateTime"
+                   minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="duration" type="xsd:unsignedInt"
+                   minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="GetOutagesResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
+        <xsd:sequence>
+          <xsd:element name="Outage" type="tns:Outage"
+                       maxOccurs="unbounded" minOccurs="0"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
   <xsd:element name="FindEventsRequest">
     <xsd:complexType>
       <xsd:sequence>
