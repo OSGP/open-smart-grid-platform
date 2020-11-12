@@ -224,6 +224,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
         return response;
     }
 
+    // suppress a warning about the string in the first catch not containing any format specifiers. The other
+    // arguments are arguments for the LOGGER.error rather than for the string that is being made.
     @SuppressWarnings("squid:S3457")
     @PayloadRoot(localPart = "EnableDebuggingAsyncRequest", namespace = NAMESPACE)
     @ResponsePayload
