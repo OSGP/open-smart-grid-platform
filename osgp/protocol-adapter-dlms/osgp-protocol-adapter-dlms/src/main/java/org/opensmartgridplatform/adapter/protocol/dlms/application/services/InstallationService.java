@@ -34,7 +34,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelEleme
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service(value = "dlmsInstallationService")
@@ -47,7 +46,9 @@ public class InstallationService {
     private InstallationMapper installationMapper;
 
     @Autowired
-    @Qualifier("secretManagementService")
+    private EncryptionService encryptionService;
+
+    @Autowired
     private SecurityKeyService securityKeyService;
 
     @Autowired

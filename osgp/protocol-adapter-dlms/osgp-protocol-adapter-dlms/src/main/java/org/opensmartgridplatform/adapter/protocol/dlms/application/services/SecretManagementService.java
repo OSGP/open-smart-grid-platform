@@ -22,12 +22,7 @@ import org.apache.commons.codec.binary.Hex;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.wsclient.SecretManagementClient;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
-import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
-import org.opensmartgridplatform.shared.security.EncryptionService;
 import org.opensmartgridplatform.shared.security.RsaEncrypter;
-import org.opensmartgridplatform.shared.security.RsaEncryptionService;
 import org.opensmartgridplatform.ws.schema.core.secret.management.ActivateSecretsRequest;
 import org.opensmartgridplatform.ws.schema.core.secret.management.GenerateAndStoreSecretsRequest;
 import org.opensmartgridplatform.ws.schema.core.secret.management.GenerateAndStoreSecretsResponse;
@@ -45,7 +40,6 @@ import org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecret;
 import org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecrets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -56,25 +50,13 @@ public class SecretManagementService implements SecurityKeyService {
     private final RsaEncrypter soapRsaEncrypter;
     private final SecretManagementClient secretManagementClient;
 
-    @Autowired
-    private RsaEncryptionService rsaEncryptionService;
 
-    @Autowired
-    private EncryptionService aesEncryptionService;
+    //@Autowired
+    //private EncryptionService aesEncryptionService;
 
     public SecretManagementService(RsaEncrypter soapRsaEncrypter, SecretManagementClient secretManagementClient) {
         this.soapRsaEncrypter = soapRsaEncrypter;
         this.secretManagementClient = secretManagementClient;
-    }
-
-    @Override
-    public byte[] rsaDecrypt(final byte[] externallyEncryptedKey) throws FunctionalException {
-        try {
-            return this.rsaEncryptionService.decrypt(externallyEncryptedKey);
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during decryption", e);
-            throw new FunctionalException(FunctionalExceptionType.DECRYPTION_EXCEPTION, ComponentType.PROTOCOL_DLMS, e);
-        }
     }
 
     @Override

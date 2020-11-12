@@ -13,7 +13,6 @@ import java.util.Map;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 
 /**
  * Service for storing, activating and retrieving device keys.
@@ -138,7 +137,7 @@ public interface SecurityKeyService {
     //        FunctionalException;
 
     //decrypt OSGP provided RSA key
-    byte[] rsaDecrypt(final byte[] externallyEncryptedKey) throws FunctionalException;
+    //byte[] rsaDecrypt(final byte[] externallyEncryptedKey) throws FunctionalException;
 
     //AES decrypt (decrypt memory storage for actual use of key)
     //byte[] aesDecryptKey(final byte[] encryptedKey) throws FunctionalException;

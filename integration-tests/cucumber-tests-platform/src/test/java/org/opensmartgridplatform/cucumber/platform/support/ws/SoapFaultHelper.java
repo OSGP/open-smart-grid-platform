@@ -37,6 +37,9 @@ public class SoapFaultHelper {
     }
 
     public static Object getFaultDetailValuesByElement(final SoapFaultClientException soapFaultClientException) {
+        LOGGER.debug("Trying to get fault detail info from fault '{}' (message={}; cause={})",
+                soapFaultClientException.getFaultStringOrReason(), soapFaultClientException.getLocalizedMessage(),
+                soapFaultClientException.getCause());
 
         if (soapFaultClientException == null || soapFaultClientException.getSoapFault() == null) {
             return Collections.emptyMap();
