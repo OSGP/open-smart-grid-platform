@@ -11,24 +11,32 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getFloat;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShort;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.cucumber.core.Wait;
+import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
+import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.LightMeasurementDevice;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
 import org.opensmartgridplatform.domain.core.repositories.LightMeasurementDeviceRepository;
+import org.opensmartgridplatform.domain.core.valueobjects.Address;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
+import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -109,6 +117,58 @@ public class LightMeasurementDeviceSteps extends BaseDeviceSteps {
         if (settings.containsKey(PlatformKeys.KEY_LMD_DIGITAL_INPUT)) {
             assertThat(lmd.getDigitalInput()).isEqualTo(getShort(settings, PlatformKeys.KEY_LMD_DIGITAL_INPUT));
         }
+    }
+
+    @Given("^a light measurement device$")
+    @Transactional("txMgrCore")
+    public LightMeasurementDevice aLightMeasurementDevice(final Map<String, String> settings) {
+        final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION);
+        final LightMeasurementDevice lmd = new LightMeasurementDevice(deviceIdentification);
+
+        final List<DeviceModel> deviceModels = this.deviceModelRepository.findByModelCode(
+                getString(settings, PlatformKeys.KEY_DEVICE_MODEL, PlatformDefaults.DEFAULT_DEVICE_MODEL_MODEL_CODE));
+        final DeviceModel deviceModel = deviceModels.get(0);
+        lmd.setDeviceModel(deviceModel);
+
+        if (settings.containsKey(PlatformKeys.KEY_DEVICE_TYPE)) {
+            InetAddress inetAddress;
+            try {
+                inetAddress = InetAddress.getByName(
+                        getString(settings, PlatformKeys.IP_ADDRESS, this.configuration.getDeviceNetworkAddress()));
+            } catch (final UnknownHostException e) {
+                inetAddress = InetAddress.getLoopbackAddress();
+            }
+            lmd.updateRegistrationData(inetAddress, getString(settings, PlatformKeys.KEY_DEVICE_TYPE));
+        }
+        lmd.updateMetaData(getString(settings, PlatformKeys.ALIAS, PlatformDefaults.DEFAULT_ALIAS), new Address(
+                getString(settings, PlatformKeys.KEY_CITY, PlatformDefaults.DEFAULT_CONTAINER_CITY),
+                getString(settings, PlatformKeys.KEY_POSTCODE, PlatformDefaults.DEFAULT_CONTAINER_POSTALCODE),
+                getString(settings, PlatformKeys.KEY_STREET, PlatformDefaults.DEFAULT_CONTAINER_STREET),
+                getInteger(settings, PlatformKeys.KEY_NUMBER, PlatformDefaults.DEFAULT_CONTAINER_NUMBER),
+                getString(settings, PlatformKeys.KEY_NUMBER_ADDITION,
+                        PlatformDefaults.DEFAULT_CONTAINER_NUMBER_ADDITION),
+                getString(settings, PlatformKeys.KEY_MUNICIPALITY, PlatformDefaults.DEFAULT_CONTAINER_MUNICIPALITY)),
+                new GpsCoordinates(settings.containsKey(PlatformKeys.KEY_LATITUDE)
+                        && StringUtils.isNotBlank(settings.get(PlatformKeys.KEY_LATITUDE))
+                                ? getFloat(settings, PlatformKeys.KEY_LATITUDE, PlatformDefaults.DEFAULT_LATITUDE)
+                                : null,
+                        settings.containsKey(PlatformKeys.KEY_LONGITUDE)
+                                && StringUtils.isNotBlank(settings.get(PlatformKeys.KEY_LONGITUDE))
+                                        ? getFloat(settings, PlatformKeys.KEY_LONGITUDE,
+                                                PlatformDefaults.DEFAULT_LONGITUDE)
+                                        : null));
+        lmd.setActivated(getBoolean(settings, PlatformKeys.KEY_ACTIVATED, PlatformDefaults.DEFAULT_ACTIVATED));
+
+        lmd.setDescription(
+                getString(settings, PlatformKeys.KEY_LMD_DESCRIPTION, PlatformDefaults.DEFAULT_LMD_DESCRIPTION));
+        lmd.setCode(getString(settings, PlatformKeys.KEY_LMD_CODE, PlatformDefaults.DEFAULT_LMD_CODE));
+        lmd.setColor(getString(settings, PlatformKeys.KEY_LMD_COLOR, PlatformDefaults.DEFAULT_LMD_COLOR));
+        lmd.setDigitalInput(
+                getShort(settings, PlatformKeys.KEY_LMD_DIGITAL_INPUT, PlatformDefaults.DEFAULT_LMD_DIGITAL_INPUT));
+
+        this.setDefaultDeviceAuthorizationForDevice(lmd);
+
+        return this.lightMeasurementDeviceRepository.findByDeviceIdentification(deviceIdentification);
     }
 
     @Given("^the light measurement devices$")

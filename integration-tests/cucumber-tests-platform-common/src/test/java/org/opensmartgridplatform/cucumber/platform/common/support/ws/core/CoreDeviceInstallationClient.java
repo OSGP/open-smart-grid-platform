@@ -27,6 +27,8 @@ import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.StopD
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.StopDeviceTestResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.UpdateDeviceRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.UpdateDeviceResponse;
+import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.UpdateLightMeasurementDeviceRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.UpdateLightMeasurementDeviceResponse;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -80,6 +82,13 @@ public class CoreDeviceInstallationClient extends BaseClient {
         final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(organizationIdentification,
                 this.getUserName());
         return (AddLightMeasurementDeviceResponse) wst.marshalSendAndReceive(request);
+    }
+
+    public UpdateLightMeasurementDeviceResponse updateLightMeasurementDevice(
+            final UpdateLightMeasurementDeviceRequest request) throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.coreDeviceInstallationWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (UpdateLightMeasurementDeviceResponse) wst.marshalSendAndReceive(request);
     }
 
     public FindRecentDevicesResponse findRecentDevices(final FindRecentDevicesRequest request)

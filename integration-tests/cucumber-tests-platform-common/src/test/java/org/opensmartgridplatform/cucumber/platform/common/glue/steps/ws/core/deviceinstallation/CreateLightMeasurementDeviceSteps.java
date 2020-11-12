@@ -19,6 +19,8 @@ import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.AddLi
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.AddLightMeasurementDeviceResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.DeviceModel;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.LightMeasurementDevice;
+import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.UpdateLightMeasurementDeviceRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.UpdateLightMeasurementDeviceResponse;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonDefaults;
@@ -48,6 +50,30 @@ public class CreateLightMeasurementDeviceSteps {
         }
     }
 
+    @When("^receiving an add light measurement device request with an unknown organization$")
+    public void receivingAnAddLightMeasurementDeviceRequestWithAnUnknownOrganization(
+            final Map<String, String> settings) {
+        ScenarioContext.current().put(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
+        this.receivingAnAddLightMeasurementDeviceRequest(settings);
+    }
+
+    @When("^receiving an update light measurement device request$")
+    public void receivingAnUpdateLightMeasurementDeviceRequest(final Map<String, String> settings) {
+        final UpdateLightMeasurementDeviceRequest request = new UpdateLightMeasurementDeviceRequest();
+        final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION);
+        request.setDeviceIdentification(deviceIdentification);
+
+        final LightMeasurementDevice lmd = this.createLightMeasurementDevice(settings);
+        request.setUpdatedLightMeasurementDevice(lmd);
+
+        try {
+            ScenarioContext.current().put(PlatformKeys.RESPONSE, this.client.updateLightMeasurementDevice(request));
+        } catch (final Exception ex) {
+            ScenarioContext.current().put(PlatformKeys.RESPONSE, ex);
+        }
+    }
+
     @Then("^the add light measurement device response is successful$")
     public void theAddLightMeasurementDeviceResponseIsSuccessful() {
         assertThat(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof AddLightMeasurementDeviceResponse)
@@ -55,7 +81,18 @@ public class CreateLightMeasurementDeviceSteps {
     }
 
     @Then("^the add light measurement device response contains soap fault$")
-    public void theAddDeviceResponseContainsSoapFault(final Map<String, String> expectedResult) {
+    public void theAddLightMeasurementDeviceResponseContainsSoapFault(final Map<String, String> expectedResult) {
+        GenericResponseSteps.verifySoapFault(expectedResult);
+    }
+
+    @Then("^the update light measurement device response is successful$")
+    public void theUpdateLightMeasurementDeviceResponseIsSuccessful() {
+        assertThat(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof UpdateLightMeasurementDeviceResponse)
+                .isTrue();
+    }
+
+    @Then("^the update light measurement device response contains soap fault$")
+    public void theUpdateLightMeasurementDeviceResponseContainsSoapFault(final Map<String, String> expectedResult) {
         GenericResponseSteps.verifySoapFault(expectedResult);
     }
 
