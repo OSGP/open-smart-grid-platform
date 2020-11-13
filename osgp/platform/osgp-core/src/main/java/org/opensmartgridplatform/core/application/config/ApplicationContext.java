@@ -43,8 +43,7 @@ public class ApplicationContext {
 
     @Bean
     ProtocolResponseService protocolResponseMessageSender() {
-        // int i = 0;
-        LOGGER.debug("Creating bean: protocolResponseMessageSender {}");
+        LOGGER.debug("Creating bean: protocolResponseMessageSender");
         return new ProtocolResponseMessageSender();
     }
 
