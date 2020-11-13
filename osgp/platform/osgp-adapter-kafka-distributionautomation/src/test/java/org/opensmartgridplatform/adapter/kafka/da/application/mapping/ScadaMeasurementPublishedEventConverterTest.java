@@ -12,18 +12,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.kafka.da.infra.mqtt.in.ScadaMeasurementPayload;
-import org.opensmartgridplatform.adapter.kafka.da.serialization.MessageSerializer;
 
 import com.alliander.data.scadameasurementpublishedevent.Analog;
-import com.alliander.data.scadameasurementpublishedevent.Message;
 import com.alliander.data.scadameasurementpublishedevent.Name;
 import com.alliander.data.scadameasurementpublishedevent.NameType;
 import com.alliander.data.scadameasurementpublishedevent.ScadaMeasurementPublishedEvent;
-import com.alliander.messaging.MessageId;
 
 class ScadaMeasurementPublishedEventConverterTest {
 
@@ -108,36 +104,6 @@ class ScadaMeasurementPublishedEventConverterTest {
                 ScadaMeasurementPublishedEvent.class);
 
         assertThat(event).isNull();
-    }
-
-    @Test
-    void testEsm() {
-        final String data = "225.007416,226.367340,225.836166,75.651413,51.895161,39.664299,28.728397,-21.124687,15.041016,8.433359,5.254024,-7.029883,-7.497344,-6.597461,0.883000,0.717000,0.586000,24.072266,30.798340,39.025879,11.637588,9.052824,7.344671,7.592461,8.989369,8.484323,10.444678,7.693087,8.416754,2.179525,2.782928,2.973004,1.479924,0.803755,0.795053,1.511317,1.063616,0.896406,0.798262,0.565046,0.184687";
-        final int feeder = 7;
-        final long utcSeconds = 1604646724;
-        final MessageSerializer serializer = new MessageSerializer();
-        final ScadaMeasurementPayload payload = ScadaMeasurementPayload.builder()
-                .substationIdentification("9016078")
-                .substationName("Veenderij")
-                .feeder(String.valueOf(feeder))
-                .createdUtcSeconds(utcSeconds)
-                .data(data.split(","))
-                .build();
-        final ScadaMeasurementPublishedEvent event = this.mapper.map(payload, ScadaMeasurementPublishedEvent.class);
-        final MessageId messageId = new MessageId(getBytesFromUUID(UUID.randomUUID()));
-        final Message message = new Message(messageId, System.currentTimeMillis(), "GXF", null, event);
-
-        final byte[] serialize = serializer.serialize("m_LvMeasurementPublishedEventGXF_dev", message);
-        System.out.println(serialize.length);
-        serializer.close();
-    }
-
-    private static byte[] getBytesFromUUID(final UUID uuid) {
-        final ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
-        bb.putLong(uuid.getMostSignificantBits());
-        bb.putLong(uuid.getLeastSignificantBits());
-
-        return bb.array();
     }
 
 }
