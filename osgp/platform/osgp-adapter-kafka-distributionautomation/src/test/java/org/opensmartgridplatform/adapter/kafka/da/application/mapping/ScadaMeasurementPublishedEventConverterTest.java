@@ -9,7 +9,6 @@ package org.opensmartgridplatform.adapter.kafka.da.application.mapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
