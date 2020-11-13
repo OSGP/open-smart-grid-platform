@@ -12,14 +12,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.opensmartgridplatform.adapter.protocol.iec61850.application.services.DeviceManagementService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.beanit.openiec61850.BdaReasonForInclusion;
 import com.beanit.openiec61850.ClientEventListener;
 import com.beanit.openiec61850.HexConverter;
 import com.beanit.openiec61850.Report;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.opensmartgridplatform.adapter.protocol.iec61850.application.services.DeviceManagementService;
 
 public abstract class Iec61850ClientBaseEventListener implements ClientEventListener {
 
@@ -31,13 +31,6 @@ public abstract class Iec61850ClientBaseEventListener implements ClientEventList
     protected final String deviceIdentification;
     protected final DeviceManagementService deviceManagementService;
     protected Integer firstNewSqNum = null;
-    /**
-     * The EntryTime from IEC61850 has timestamp values relative to 01-01-1984.
-     * TimeStamp values and Java date time values have milliseconds since
-     * 01-01-1970. The milliseconds between these representations are in the
-     * following offset.
-     */
-    protected static final long IEC61850_ENTRY_TIME_OFFSET = 441763200000L;
 
     public Iec61850ClientBaseEventListener(final String deviceIdentification,
             final DeviceManagementService deviceManagementService, final Class<?> loggerClass) {
@@ -80,10 +73,12 @@ public abstract class Iec61850ClientBaseEventListener implements ClientEventList
         sb.append("\t           EntryId:\t").append(report.getEntryId()).append(System.lineSeparator());
         if (report.getEntryId() != null) {
             sb.append("\t                   \t(")
-                    .append(new String(report.getEntryId().getValue(), Charset.forName("UTF-8"))).append(")")
+                    .append(new String(report.getEntryId().getValue(), Charset.forName("UTF-8")))
+                    .append(")")
                     .append(System.lineSeparator());
         }
-        sb.append("\tInclusionBitString:\t").append(Arrays.toString(report.getInclusionBitString()))
+        sb.append("\tInclusionBitString:\t")
+                .append(Arrays.toString(report.getInclusionBitString()))
                 .append(System.lineSeparator());
         sb.append("\tMoreSegmentsFollow:\t").append(report.isMoreSegmentsFollow()).append(System.lineSeparator());
         sb.append("\t             SqNum:\t").append(report.getSqNum()).append(System.lineSeparator());
@@ -91,8 +86,9 @@ public abstract class Iec61850ClientBaseEventListener implements ClientEventList
         sb.append("\t       TimeOfEntry:\t").append(report.getTimeOfEntry()).append(System.lineSeparator());
         if (report.getTimeOfEntry() != null) {
             sb.append("\t                   \t(")
-                    .append(new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET))
-                    .append(')').append(System.lineSeparator());
+                    .append(new DateTime(report.getTimeOfEntry().getTimestampValue()))
+                    .append(')')
+                    .append(System.lineSeparator());
         }
         final List<BdaReasonForInclusion> reasonCodes = report.getReasonCodes();
         if ((reasonCodes != null) && !reasonCodes.isEmpty()) {
@@ -101,7 +97,9 @@ public abstract class Iec61850ClientBaseEventListener implements ClientEventList
                 sb.append("\t                   \t")
                         .append(reasonCode.getReference() == null ? HexConverter.toHexString(reasonCode.getValue())
                                 : reasonCode)
-                        .append("\t(").append(new Iec61850BdaReasonForInclusionHelper(reasonCode).getInfo()).append(')')
+                        .append("\t(")
+                        .append(new Iec61850BdaReasonForInclusionHelper(reasonCode).getInfo())
+                        .append(')')
                         .append(System.lineSeparator());
             }
         }
