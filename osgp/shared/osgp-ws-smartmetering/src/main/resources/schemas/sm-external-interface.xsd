@@ -28,7 +28,7 @@
           <xsd:element ref="bun:GetPeriodicMeterReadsRequest"/>
           <xsd:element ref="bun:GetPowerQualityProfileRequest"/>
           <xsd:element ref="adm:SetMaintenanceStateRequest"/>
-          <xsd:element ref="bun:FindEventsRequest"/>
+          <xsd:element ref="bun:GetOutagesRequest"/>
         </xsd:choice>
       </xsd:sequence>
     </xsd:complexType>
