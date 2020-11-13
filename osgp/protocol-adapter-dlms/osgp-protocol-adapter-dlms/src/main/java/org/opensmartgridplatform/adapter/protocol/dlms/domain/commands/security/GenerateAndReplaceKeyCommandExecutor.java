@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecurityKeyService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
@@ -32,7 +32,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -44,8 +43,7 @@ public class GenerateAndReplaceKeyCommandExecutor extends AbstractCommandExecuto
     private ReplaceKeyCommandExecutor replaceKeyCommandExecutor;
 
     @Autowired
-    @Qualifier("secretManagementService")
-    private SecurityKeyService securityKeyService;
+    private SecretManagementService secretManagementService;
 
     public GenerateAndReplaceKeyCommandExecutor() {
         super(GenerateAndReplaceKeysRequestDataDto.class);
@@ -69,7 +67,7 @@ public class GenerateAndReplaceKeyCommandExecutor extends AbstractCommandExecuto
     private SetKeysRequestDto generateSetKeysRequest(String deviceIdentification) throws FunctionalException {
         try {
             final List<SecurityKeyType> keyTypes = Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION);
-            final Map<SecurityKeyType, byte[]> generatedKeys = this.securityKeyService
+            final Map<SecurityKeyType, byte[]> generatedKeys = this.secretManagementService
                     .generate128BitsKeysAndStoreAsNewKeys(deviceIdentification, keyTypes);
             final SetKeysRequestDto setKeysRequest = new SetKeysRequestDto(generatedKeys.get(E_METER_AUTHENTICATION),
                     generatedKeys.get(E_METER_ENCRYPTION));

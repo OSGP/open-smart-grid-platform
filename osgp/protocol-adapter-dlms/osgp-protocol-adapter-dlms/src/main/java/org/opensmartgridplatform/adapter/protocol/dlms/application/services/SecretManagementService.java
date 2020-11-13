@@ -44,7 +44,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class SecretManagementService implements SecurityKeyService {
+/**
+ * Service for storing, activating and retrieving device keys.
+ * Also performs RSA encryption/decryption operations for SOAP messaging purposes.
+ */
+public class SecretManagementService { //implements SecurityKeyService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SecretManagementService.class);
     private final RsaEncrypter soapRsaEncrypter;
@@ -59,13 +63,33 @@ public class SecretManagementService implements SecurityKeyService {
         this.secretManagementClient = secretManagementClient;
     }
 
-    @Override
+    /**
+     * Retrieve an active key of a certain type for a specified device
+     *
+     * @param deviceIdentification
+     *         the device identification string of the device
+     * @param keyType
+     *         the requested key type
+     *
+     * @return the key or NULL if not present
+     */
+    //@Override
     public byte[] getKey(String deviceIdentification, SecurityKeyType keyType) {
         LOGGER.info("Retrieving {} for device {}", keyType.name(), deviceIdentification);
         return this.getKeys(deviceIdentification, Arrays.asList(keyType)).get(keyType);
     }
 
-    @Override
+    /**
+     * Retrieves the active keys of requested types for a specified device
+     *
+     * @param deviceIdentification
+     *         the device identification string of the device
+     * @param keyTypes
+     *         the requested key types
+     *
+     * @return the requested keys in a map by key type, with value NULL if not present
+     */
+    //@Override
     public Map<SecurityKeyType, byte[]> getKeys(String deviceIdentification, List<SecurityKeyType> keyTypes) {
         GetSecretsRequest request = this.createGetSecretsRequest(deviceIdentification, keyTypes);
         GetSecretsResponse response = this.secretManagementClient.getSecretsRequest(request);
@@ -73,13 +97,33 @@ public class SecretManagementService implements SecurityKeyService {
         return this.convertSoapSecretsToSecretMapByType(response.getTypedSecrets().getTypedSecret());
     }
 
-    @Override
+    /**
+     * Retrieve a new (not yet activated) key of a certain type for a specified device
+     *
+     * @param deviceIdentification
+     *         the device identification string of the device
+     * @param keyType
+     *         the requested key type
+     *
+     * @return the key or NULL if not present
+     */
+    //@Override
     public byte[] getNewKey(String deviceIdentification, SecurityKeyType keyType) {
         LOGGER.info("Retrieving new {} for device {}", keyType.name(), deviceIdentification);
         return this.getNewKeys(deviceIdentification, Arrays.asList(keyType)).get(keyType);
     }
 
-    @Override
+    /**
+     * Retrieves the new (not yet activated) keys of requested types for a specified device
+     *
+     * @param deviceIdentification
+     *         the device identification string of the device
+     * @param keyTypes
+     *         the requested key types
+     *
+     * @return the requested keys in a map by key type, with value NULL if not present
+     */
+    //@Override
     public Map<SecurityKeyType, byte[]> getNewKeys(String deviceIdentification, List<SecurityKeyType> keyTypes) {
         GetNewSecretsRequest request = this.createGetNewSecretsRequest(deviceIdentification, keyTypes);
         GetNewSecretsResponse response = this.secretManagementClient.getNewSecretsRequest(request);
@@ -122,14 +166,39 @@ public class SecretManagementService implements SecurityKeyService {
         return request;
     }
 
-    @Override
+    /**
+     * Store new key
+     * <p>
+     * A new key is a security key with a device which status NEW.
+     * This status is used when the new key is known, but not yet set on the device.
+     * <p>
+     * <strong>CAUTION:</strong> Only call this method when a successful
+     * connection with the device has been set up (that is: a valid
+     * communication key that works is known), and you are sure any existing new
+     * key data that is not activated yet (for instance a new key stored earlier in an
+     * attempt to replace the communication key that got aborted).<br>
+     * <p>
+     * The moment the new key is known to be transferred to the device, make
+     * sure to activate it by calling
+     * {@link #activateNewKey(String, SecurityKeyType)}.
+     *
+     * @param deviceIdentification
+     *         DLMS device id
+     * @param key
+     *         key to store, unencrypted
+     * @param keyType
+     *         type of key
+     *
+     * @see #activateNewKey(String, SecurityKeyType)
+     */
+    //@Override
     public void storeNewKey(String deviceIdentification, SecurityKeyType keyType, byte[] key) {
         Map<SecurityKeyType, byte[]> keysByType = new HashMap<>();
         keysByType.put(keyType, key);
         this.storeNewKeys(deviceIdentification, keysByType);
     }
 
-    @Override
+    //@Override
     public void storeNewKeys(String deviceIdentification, Map<SecurityKeyType, byte[]> keysByType) {
         this.validateKeys(keysByType);
         TypedSecrets typedSecrets = new TypedSecrets();
@@ -159,12 +228,28 @@ public class SecretManagementService implements SecurityKeyService {
         return request;
     }
 
-    @Override
+    /**
+     * Updates the state of a new key from 'new' to 'active'
+     * <p>
+     * This method should be called to activate a new key stored with
+     * {@link #storeNewKeys(String, Map)} after it has
+     * been confirmed to be set on the device.
+     *
+     * @param deviceIdentification
+     *         DLMS device id
+     * @param keyType
+     *         type of key
+     *
+     * @throws ProtocolAdapterException
+     *         if no new key is stored with the given device
+     * @see #storeNewKeys(String, Map)
+     */
+    //@Override
     public void activateNewKey(String deviceIdentification, SecurityKeyType keyType) throws ProtocolAdapterException {
         this.activateNewKeys(deviceIdentification, Arrays.asList(keyType));
     }
 
-    @Override
+    //@Override
     public void activateNewKeys(String deviceIdentification, List<SecurityKeyType> keyTypes) {
         ActivateSecretsRequest request = new ActivateSecretsRequest();
         request.setDeviceId(deviceIdentification);
@@ -174,7 +259,7 @@ public class SecretManagementService implements SecurityKeyService {
         this.secretManagementClient.activateSecretsRequest(request);
     }
 
-    @Override
+    //@Override
     public boolean hasNewSecretOfType(String deviceIdentification, SecurityKeyType keyType) {
         HasNewSecretRequest request = new HasNewSecretRequest();
         request.setDeviceId(deviceIdentification);
@@ -183,7 +268,7 @@ public class SecretManagementService implements SecurityKeyService {
         return response.isHasNewSecret();
     }
 
-    @Override
+    //@Override
     public byte[] generate128BitsKeyAndStoreAsNewKey(String deviceIdentification, SecurityKeyType keyType) {
         return this.generate128BitsKeysAndStoreAsNewKeys(deviceIdentification, Arrays.asList(keyType)).get(keyType);
     }
@@ -197,7 +282,7 @@ public class SecretManagementService implements SecurityKeyService {
      *
      * @return a new 128bits key, unencrypted.
      */
-    @Override
+    //@Override
     public Map<SecurityKeyType, byte[]> generate128BitsKeysAndStoreAsNewKeys(String deviceIdentification,
             List<SecurityKeyType> keyTypes) {
         SecretTypes secretTypes = new SecretTypes();

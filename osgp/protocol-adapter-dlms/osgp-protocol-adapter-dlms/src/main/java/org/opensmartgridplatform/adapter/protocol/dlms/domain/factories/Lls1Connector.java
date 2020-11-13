@@ -15,7 +15,7 @@ import org.openmuc.jdlms.AuthenticationMechanism;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.SecuritySuite;
 import org.openmuc.jdlms.TcpConnectionBuilder;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecurityKeyService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
@@ -29,15 +29,13 @@ import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 public class Lls1Connector extends SecureDlmsConnector {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Lls1Connector.class);
 
     @Autowired
-    @Qualifier("secretManagementService")
-    private SecurityKeyService securityKeyService;
+    private SecretManagementService secretManagementService;
 
     public Lls1Connector(final int responseTimeout, final int logicalDeviceAddress,
             final DlmsDeviceAssociation deviceAssociation) {
@@ -74,7 +72,7 @@ public class Lls1Connector extends SecureDlmsConnector {
 
         final byte[] password;
         try {
-            password = this.securityKeyService.getKey(device.getDeviceIdentification(), SecurityKeyType.PASSWORD);
+            password = this.secretManagementService.getKey(device.getDeviceIdentification(), SecurityKeyType.PASSWORD);
         } catch (final EncrypterException e) {
             LOGGER.error("Error determining DLMS password setting up LLS1 connection", e);
             throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION,

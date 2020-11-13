@@ -24,7 +24,7 @@ import org.openmuc.jdlms.SecuritySuite;
 import org.openmuc.jdlms.SecuritySuite.EncryptionMechanism;
 import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecurityKeyService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsDeviceAssociation;
@@ -57,7 +57,7 @@ public class RecoverKeyProcess implements Runnable {
     private String ipAddress;
 
     @Autowired
-    private SecurityKeyService securityKeyService;
+    private SecretManagementService secretManagementService;
 
     public RecoverKeyProcess(final DomainHelperService domainHelperService, final int responseTimeout,
             final int logicalDeviceAddress, final DlmsDeviceAssociation deviceAssociation) {
@@ -89,7 +89,7 @@ public class RecoverKeyProcess implements Runnable {
             //TODO return?
         }
 
-        if (!this.securityKeyService.hasNewSecretOfType(this.deviceIdentification, E_METER_AUTHENTICATION)) {
+        if (!this.secretManagementService.hasNewSecretOfType(this.deviceIdentification, E_METER_AUTHENTICATION)) {
             LOGGER.warn("Could not recover keys: device has no new authorisation key registered in secret-mgmt module");
             return;
         }
@@ -97,8 +97,8 @@ public class RecoverKeyProcess implements Runnable {
         if (this.canConnectUsingNewKeys()) {
             List<SecurityKeyType> keyTypesToActivate=Arrays.asList(E_METER_ENCRYPTION,E_METER_AUTHENTICATION);
             try {
-                this.securityKeyService.activateNewKeys(this.deviceIdentification, keyTypesToActivate);
-            } catch (ProtocolAdapterException e) {
+                this.secretManagementService.activateNewKeys(this.deviceIdentification, keyTypesToActivate);
+            } catch (Exception e) {
                 LOGGER.error("Error activating new keys", e);
                 throw new RecoverKeyException(e.getMessage(), e);
             }
@@ -153,7 +153,7 @@ public class RecoverKeyProcess implements Runnable {
      *         with the device.
      */
     private DlmsConnection createConnectionUsingNewKeys() throws IOException, FunctionalException {
-        Map<SecurityKeyType, byte[]> keys = this.securityKeyService
+        Map<SecurityKeyType, byte[]> keys = this.secretManagementService
                 .getNewKeys(this.deviceIdentification, Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION));
         final byte[] authenticationKey = Hex.decode(keys.get(E_METER_AUTHENTICATION));
         final byte[] encryptionKey = Hex.decode(keys.get(E_METER_ENCRYPTION));

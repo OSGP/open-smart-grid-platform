@@ -22,7 +22,7 @@ import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.SecuritySuite;
 import org.openmuc.jdlms.SecuritySuite.EncryptionMechanism;
 import org.openmuc.jdlms.TcpConnectionBuilder;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecurityKeyService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
@@ -37,7 +37,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -50,8 +49,7 @@ public class Hls5Connector extends SecureDlmsConnector {
     private final RecoverKeyProcessInitiator recoverKeyProcessInitiator;
 
     @Autowired
-    @Qualifier("secretManagementService")
-    private SecurityKeyService securityKeyService;
+    private SecretManagementService secretManagementService;
 
     public Hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator, final int responseTimeout,
             final int logicalDeviceAddress, final DlmsDeviceAssociation deviceAssociation) {
@@ -74,7 +72,7 @@ public class Hls5Connector extends SecureDlmsConnector {
             throw new TechnicalException(ComponentType.PROTOCOL_DLMS,
                     "The IP address is not found: " + device.getIpAddress());
         } catch (final IOException e) { //Queue key recovery process
-            if(this.securityKeyService.hasNewSecretOfType(device.getDeviceIdentification(), E_METER_ENCRYPTION)) {
+            if(this.secretManagementService.hasNewSecretOfType(device.getDeviceIdentification(), E_METER_ENCRYPTION)) {
                this.recoverKeyProcessInitiator.initiate(device.getDeviceIdentification(), device.getIpAddress());
             }
 
@@ -99,7 +97,7 @@ public class Hls5Connector extends SecureDlmsConnector {
         final byte[] dlmsAuthenticationKey;
         final byte[] dlmsEncryptionKey;
         try {
-            Map<SecurityKeyType,byte[]> encryptedKeys = this.securityKeyService.getKeys(deviceIdentification,
+            Map<SecurityKeyType,byte[]> encryptedKeys = this.secretManagementService.getKeys(deviceIdentification,
                     Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION));
             dlmsAuthenticationKey = encryptedKeys.get(E_METER_AUTHENTICATION);
             dlmsEncryptionKey = encryptedKeys.get(E_METER_ENCRYPTION);

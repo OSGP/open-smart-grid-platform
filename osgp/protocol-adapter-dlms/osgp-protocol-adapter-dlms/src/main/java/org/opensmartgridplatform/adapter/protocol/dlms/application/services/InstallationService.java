@@ -49,7 +49,7 @@ public class InstallationService {
     private EncryptionService encryptionService;
 
     @Autowired
-    private SecurityKeyService securityKeyService;
+    private SecretManagementService secretManagementService;
 
     @Autowired
     private CoupleMBusDeviceCommandExecutor coupleMBusDeviceCommandExecutor;
@@ -60,7 +60,6 @@ public class InstallationService {
     @Autowired
     private CoupleMbusDeviceByChannelCommandExecutor coupleMbusDeviceByChannelCommandExecutor;
 
-    // === ADD METER ===
     public void addMeter(final SmartMeteringDeviceDto smartMeteringDevice) throws FunctionalException {
         this.storeNewKeys(smartMeteringDevice);
         final DlmsDevice dlmsDevice = this.installationMapper.map(smartMeteringDevice, DlmsDevice.class);
@@ -73,7 +72,7 @@ public class InstallationService {
         keysByType.put(E_METER_AUTHENTICATION,this.encryptionService.rsaDecrypt(deviceDto.getAuthenticationKey()));
         keysByType.put(G_METER_ENCRYPTION,this.encryptionService.rsaDecrypt(deviceDto.getGlobalEncryptionUnicastKey()));
         keysByType.put(G_METER_MASTER,this.encryptionService.rsaDecrypt(deviceDto.getMbusDefaultKey()));
-        this.securityKeyService.storeNewKeys(deviceDto.getDeviceIdentification(), keysByType);
+        this.secretManagementService.storeNewKeys(deviceDto.getDeviceIdentification(), keysByType);
     }
 
     public MbusChannelElementsResponseDto coupleMbusDevice(final DlmsConnectionManager conn, final DlmsDevice device,
