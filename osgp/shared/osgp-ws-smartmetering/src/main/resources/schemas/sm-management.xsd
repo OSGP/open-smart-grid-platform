@@ -31,6 +31,8 @@
   <xsd:complexType name="GetOutagesRequestData">
     <xsd:complexContent>
       <xsd:extension base="common:Query">
+        <xsd:sequence>
+        </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
