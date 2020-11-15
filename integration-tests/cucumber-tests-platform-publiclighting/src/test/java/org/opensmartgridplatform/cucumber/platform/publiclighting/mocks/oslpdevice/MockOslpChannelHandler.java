@@ -22,6 +22,7 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -40,6 +41,7 @@ import com.google.protobuf.ByteString;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -203,12 +205,32 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
                     // wait for the response to actually be written. This
                     // improves stability of the tests
                     final ChannelFuture future = ctx.channel().writeAndFlush(response);
-                    future.await();
 
                     final InetSocketAddress remoteAddress = (InetSocketAddress) ctx.channel().remoteAddress();
                     final InetSocketAddress clientAddress = new InetSocketAddress(remoteAddress.getAddress(),
                             PlatformPubliclightingDefaults.OSLP_ELSTER_SERVER_PORT);
-                    this.sendNotifications(clientAddress, message, deviceUid, deviceState);
+
+                    future.addListener(new ChannelFutureListener() {
+                        @Override
+                        public void operationComplete(final ChannelFuture future) throws Exception {
+                            Executors.newSingleThreadScheduledExecutor().schedule(() -> {
+
+                                try {
+                                    MockOslpChannelHandler.this.sendNotifications(clientAddress, message, deviceUid,
+                                            deviceState);
+                                } catch (DeviceSimulatorException | IOException e) {
+                                    // TODO Auto-generated catch block
+                                    e.printStackTrace();
+                                }
+                            }, 200, TimeUnit.MILLISECONDS).get();
+
+                            if (!future.isSuccess()) {
+                                future.channel().close();
+                            }
+                        }
+                    });
+
+                    future.await();
 
                     LOGGER.debug("Sent OSLP response: {}", response.getPayloadMessage().toString().split(" ")[0]);
                 } else {
