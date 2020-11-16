@@ -35,7 +35,7 @@ public abstract class GenericResponseSteps {
      * Verify the soap fault in the ScenarioContext.Current().get(Keys.RESPONSE)
      *
      * @param expected
-     *            The list with expected result.
+     *         The list with expected result.
      */
     public static void verifySoapFault(final Map<String, String> expected) {
         final SoapFaultClientException soapFault = (SoapFaultClientException) ScenarioContext.current()
@@ -92,6 +92,7 @@ public abstract class GenericResponseSteps {
     }
 
     private static void assertFaultDetailMap(Map<String, String> expected, Map<FaultDetailElement, String> actual) {
+        System.out.println(String.format("AssertFaultDetailMap(): args={expected=%s, actual=%s}", expected, actual));
         for (final Map.Entry<String, String> expectedEntry : expected.entrySet()) {
             final String localName = expectedEntry.getKey();
             final FaultDetailElement faultDetailElement = FaultDetailElement.forLocalName(localName);
