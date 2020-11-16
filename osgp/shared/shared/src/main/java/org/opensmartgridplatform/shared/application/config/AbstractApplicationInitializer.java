@@ -87,8 +87,6 @@ public abstract class AbstractApplicationInitializer {
 
             // Load specific logback configuration, otherwise fallback to
             // classpath logback.xml
-
-            this.logger.info("Working Directory = {}", System.getProperty("user.dir"));
             if (new File(customLogLocation).exists()) {
                 this.initializeLoggingContext(customLogLocation);
             } else {
