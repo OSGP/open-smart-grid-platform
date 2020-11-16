@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EncryptionService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(EncryptionService.class);
+public class EncryptionHelperService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(EncryptionHelperService.class);
 
     @Autowired
     private RsaEncryptionService rsaEncryptionService;

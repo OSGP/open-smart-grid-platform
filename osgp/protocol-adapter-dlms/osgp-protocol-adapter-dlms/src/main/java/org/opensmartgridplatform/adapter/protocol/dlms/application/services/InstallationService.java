@@ -46,7 +46,7 @@ public class InstallationService {
     private InstallationMapper installationMapper;
 
     @Autowired
-    private EncryptionService encryptionService;
+    private EncryptionHelperService encryptionService;
 
     @Autowired
     private SecretManagementService secretManagementService;

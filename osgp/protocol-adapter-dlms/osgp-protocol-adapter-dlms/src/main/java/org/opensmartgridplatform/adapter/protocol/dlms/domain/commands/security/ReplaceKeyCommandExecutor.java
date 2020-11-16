@@ -14,7 +14,7 @@ import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.SecurityUtils;
 import org.openmuc.jdlms.SecurityUtils.KeyId;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.services.EncryptionService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.EncryptionHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
@@ -60,7 +60,7 @@ public class ReplaceKeyCommandExecutor
     private SecretManagementService secretManagementService;
 
     @Autowired
-    EncryptionService encryptionService;
+    EncryptionHelperService encryptionService;
 
     static class ReplaceKeyInput {
         private final byte[] bytes;
@@ -111,11 +111,9 @@ public class ReplaceKeyCommandExecutor
         SetKeysRequestDto setKeysRequestDto = (SetKeysRequestDto) actionRequestDto;
 
         if (!setKeysRequestDto.isGeneratedKeys()) {
-            //decrypt using RSA
             setKeysRequestDto = this.decryptRsaKeys((SetKeysRequestDto) actionRequestDto);
-        } //else
-        //if isGeneratedKeys() == true, then:
-        // generated keys are unencrypted by the GenerateAndReplaceKeyCommandExecutor
+        }
+        //if keys are generated, then they are unencrypted by the GenerateAndReplaceKeyCommandExecutor
 
         final DlmsDevice devicePostSave = this.execute(conn, device, ReplaceKeyCommandExecutor
                 .wrap(setKeysRequestDto.getAuthenticationKey(), KeyId.AUTHENTICATION_KEY,
@@ -164,7 +162,7 @@ public class ReplaceKeyCommandExecutor
             final ReplaceKeyCommandExecutor.ReplaceKeyInput keyWrapper) throws ProtocolAdapterException {
 
         try {
-            final byte[] decryptedKey = keyWrapper.getBytes(); //this.securityKeyService.aesDecryptKey(keyWrapper.getBytes());
+            final byte[] decryptedKey = keyWrapper.getBytes();
             final byte[] decryptedMasterKey = this.secretManagementService
                     .getKey(deviceIdentification, SecurityKeyType.E_METER_MASTER);
 
