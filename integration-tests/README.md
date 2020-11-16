@@ -20,20 +20,20 @@ Tests are written in cucumber.
 
 First make sure that you have OSGP running. Note that you don't need to run the web-device-simulator (OSLP simulator) because it will use the same port as the mock server used within the test projects.
 
-You can run the automated tests by running 
+You can run the automated tests by running
 `mvn verify -DskipITs=false`
 from the commandline.
 
-## Open smart grid platform information and news
+## Grid eXchange Fabric information and news
 
-High-level project information and news can be found on the open smart grid platform website: 
-* [www.opensmartgridplatform.org](http://opensmartgridplatform.org/)
+High-level project information and news can be found on the Grid eXchange Fabric website:
+* [www.lfenergy.org/projects/gxf/](https://www.lfenergy.org/projects/gxf/)
 
-Open smart grid platform detailed documentation:
-* [documentation.opensmartgridplatform.org/](http://documentation.opensmartgridplatform.org/)
+Grid eXchange Fabric detailed documentation:
+* [documentation.gxf.lfenergy.org](https://documentation.gxf.lfenergy.org/)
 
-Open smart grid platform issue tracker:
-* [Open smart grid platform Jira](https://smartsocietyservices.atlassian.net/projects/OC/issues/)
+Grid eXchange Fabric issue tracker:
+* [Grid eXchange Fabric Jira](https://smartsocietyservices.atlassian.net/projects/OC/issues/)
 
 ## How to create and use the automated tests
 

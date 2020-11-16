@@ -189,7 +189,7 @@ public class LightMeasurementDeviceResponseService extends AbstractDeviceRespons
                 .withCorrelationUid(responseMetadata.getCorrelationUid())
                 .withDeviceIdentification(device.getDeviceIdentification())
                 .withDomainInfo(responseMetadata.getDomainInfo())
-                .withMessageType(MessageType.ADD_EVENT_NOTIFICATION.name())
+                .withMessageType(MessageType.EVENT_NOTIFICATION.name())
                 .withOrganisationIdentification(responseMetadata.getOrganisationIdentification())
                 .build();
 
@@ -232,7 +232,7 @@ public class LightMeasurementDeviceResponseService extends AbstractDeviceRespons
                     device.getDeviceIdentification());
         }
 
-        EventNotificationDto eventNotification;
+        final EventNotificationDto eventNotification;
         if (eventType == null || dateTime == null) {
             eventNotification = null;
         } else {

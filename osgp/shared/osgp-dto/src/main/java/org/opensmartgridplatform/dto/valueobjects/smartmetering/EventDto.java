@@ -10,40 +10,29 @@ package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
+import lombok.Getter;
+import lombok.ToString;
 import org.joda.time.DateTime;
 
+@ToString
+@Getter
 public class EventDto implements Serializable {
 
-    /**
-     * Serial Version UID.
-     */
     private static final long serialVersionUID = 5484936946786037616L;
     private final DateTime timestamp;
     private final Integer eventCode;
-    private final Integer eventCounter;
     private final String eventLogCategoryName;
+    private final Integer eventCounter;
+    private final DateTime startTime;
+    private final Long duration;
 
     public EventDto(final DateTime timestamp, final Integer eventCode, final Integer eventCounter,
-            final String eventLogCategoryName) {
+            final String eventLogCategoryName, final DateTime startTime, final Long duration) {
         this.timestamp = timestamp;
         this.eventCode = eventCode;
         this.eventCounter = eventCounter;
         this.eventLogCategoryName = eventLogCategoryName;
-    }
-
-    public DateTime getTimestamp() {
-        return this.timestamp;
-    }
-
-    public Integer getEventCode() {
-        return this.eventCode;
-    }
-
-    public Integer getEventCounter() {
-        return this.eventCounter;
-    }
-
-    public String getEventLogCategoryName() {
-        return this.eventLogCategoryName;
+        this.startTime = startTime;
+        this.duration = duration;
     }
 }

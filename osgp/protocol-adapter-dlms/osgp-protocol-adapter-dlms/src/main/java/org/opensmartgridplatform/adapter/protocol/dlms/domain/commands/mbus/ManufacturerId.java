@@ -9,7 +9,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.openmuc.jdlms.interfaceclass.attribute.MbusClientAttribute;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.MbusClientAttribute;
 
 /**
  * Represents the M-Bus Client Setup Manufacturer ID.

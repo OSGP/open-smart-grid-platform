@@ -83,6 +83,10 @@ public class MessageMetadata implements Serializable {
         return metadata;
     }
 
+    public static MessageMetadata.Builder newMessageMetadataBuilder() {
+        return new Builder();
+    }
+
     public String getDeviceIdentification() {
         return this.deviceIdentification;
     }
@@ -218,6 +222,8 @@ public class MessageMetadata implements Serializable {
             this.deviceIdentification = deviceIdentification;
             this.messageType = messageType;
         }
+
+        public Builder() { }
 
         public Builder withCorrelationUid(final String correlationUid) {
             this.correlationUid = correlationUid;

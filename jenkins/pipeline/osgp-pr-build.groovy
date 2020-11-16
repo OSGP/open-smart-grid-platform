@@ -12,8 +12,9 @@ void setBuildStatus(String message, String state) {
     step([
         $class: "GitHubCommitStatusSetter",
         reposSource: [$class: "ManuallyEnteredRepositorySource", url: "git@github.com:OSGP/open-smart-grid-platform.git"],
-        contextSource: [$class: "ManuallyEnteredCommitContextSource", context: "ci/jenkins/build-status"],
+        contextSource: [$class: "ManuallyEnteredCommitContextSource", context: "default"],
         errorHandlers: [[$class: "ChangingBuildStatusErrorHandler", result: "UNSTABLE"]],
+        commitShaSource: [$class: "ManuallyEnteredShaSource", sha:  env.ghprbActualCommit],
         statusResultSource: [ $class: "ConditionalStatusResultSource", results: [[$class: "AnyBuildResult", message: message, state: state]] ]
     ]);
 }
@@ -42,8 +43,8 @@ pipeline {
 
         stage ('Set GitHub Status') {
             steps {
-                step([$class: 'GitHubSetCommitStatusBuilder',
-                      contextSource: [$class: 'ManuallyEnteredCommitContextSource']])
+                // Set status on GitHub to PENDING.
+                setBuildStatus("Build triggered", "PENDING")
             }
         } // stage
 
@@ -63,7 +64,7 @@ pipeline {
                                 jgivenPublisher(disabled: true),
                                 jacocoPublisher(disabled: true)
                         ]) {
-                    sh "mvn clean install -B -T4 -DskipTestJarWithDependenciesAssembly=false"
+                    sh "mvn clean install -B -T1C -DskipTestJarWithDependenciesAssembly=false"
                 }
 
                 // Collect all build wars and copy them to target/artifacts
@@ -93,11 +94,11 @@ pipeline {
             }
         } // stage
 
-        stage('Parallel Stages') {
+        stage ('Parallel Stages') {
             parallel {
                 stage ('Sonar Analysis') {
                     steps {
-                        withSonarQubeEnv('SonarQube local') {
+                        withSonarQubeEnv('sonar.osgp.cloud') {
                             withMaven(
                                 maven: 'Apache Maven',
                                 mavenLocalRepo: '.repository',
@@ -112,10 +113,15 @@ pipeline {
                                         jgivenPublisher(disabled: true),
                                         jacocoPublisher(disabled: true)
                                 ]) {
-                                sh "mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.2:sonar -B -Dmaven.test.failure.ignore=true -Dclirr=true " +
-                                  "-Dsonar.github.repository=OSGP/open-smart-grid-platform -Dsonar.analysis.mode=preview " +
-                                  "-Dsonar.issuesReport.console.enable=true -Dsonar.forceUpdate=true -Dsonar.github.pullRequest=$ghprbPullId " +
-                                  "${SONAR_EXTRA_PROPS}"
+                                sh '''
+                                   mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.6.0.1398:sonar -B \
+                                       -Dmaven.repo.local=.repository \
+                                       -Dsonar.java.source=8 \
+                                       -Dsonar.ws.timeout=600 \
+                                       -Dsonar.pullrequest.key=$ghprbPullId \
+                                       -Dsonar.pullrequest.branch=$ghprbSourceBranch \
+                                       -Dsonar.pullrequest.base=$ghprbTargetBranch
+                                   '''
                             }
                         }
                     }
@@ -137,7 +143,7 @@ pipeline {
             } // parallel
         } // stage
 
-        stage('Run Tests') {
+        stage ('Run Tests') {
             steps {
                 sh '''echo Searching for specific Cucumber tags in git commit.
 
@@ -160,11 +166,11 @@ echo "$EXTRACTED_TAGS and not @NightlyBuildOnly" > "${WORKSPACE}/cucumber-tags"
 
 echo Found cucumber tags: [$EXTRACTED_TAGS]'''
                 sh "ssh-keygen -f \"$HOME/.ssh/known_hosts\" -R ${servername}-instance.dev.osgp.cloud"
-                sh "./runTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-common centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
-                sh "./runPubliclightingTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-publiclighting centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
-                sh "./runMicrogridsTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-microgrids centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
-                sh "./runSmartMeteringTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-smartmetering centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
-                sh "./runDistributionAutomationTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-distributionautomation centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
+                sh "./runTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-common centos \"OSGP Development.pem\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
+                sh "./runPubliclightingTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-publiclighting centos \"OSGP Development.pem\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
+                sh "./runMicrogridsTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-microgrids centos \"OSGP Development.pem\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
+                sh "./runSmartMeteringTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-smartmetering centos \"OSGP Development.pem\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
+                sh "./runDistributionAutomationTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-distributionautomation centos \"OSGP Development.pem\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
             }
         } // stage
 
@@ -182,10 +188,10 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
             }
         } // stage
 
-        stage('Reporting') {
+        stage ('Reporting') {
             steps {
                 jacoco execPattern: '**/code-coverage/jacoco-it.exec'
-                cucumber buildStatus: null, fileIncludePattern: '**/cucumber.json', sortingMethod: 'ALPHABETICAL'
+                cucumber buildStatus: 'FAILURE', fileIncludePattern: '**/cucumber.json', sortingMethod: 'ALPHABETICAL'
                 archiveArtifacts '**/target/*.tgz'
 
                 // Check the console log for failed tests
@@ -200,8 +206,11 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
             // Always destroy the test environment
             build job: 'Destroy an AWS System', parameters: [string(name: 'SERVERNAME', value: servername), string(name: 'PLAYBOOK', value: playbook)]
         }
-        success {
-            setBuildStatus("Build failed", "SUCCESS")
+        aborted {
+            setBuildStatus("Build failed", "FAILURE")
+        }
+        unstable {
+            setBuildStatus("Build failed", "FAILURE")
         }
         failure {
             // Mail everyone that the job failed
@@ -213,6 +222,9 @@ echo Found cucumber tags: [$EXTRACTED_TAGS]'''
                 from: '${DEFAULT_REPLYTO}')
 
             setBuildStatus("Build failed", "FAILURE")
+        }
+        success {
+            setBuildStatus("Build succeeded", "SUCCESS")
         }
         cleanup {
             // Delete workspace folder.

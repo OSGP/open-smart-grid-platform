@@ -1,4 +1,4 @@
-@PublicLighting @Platform @FirmwareManagement
+@PublicLighting @Platform @FirmwareManagement @PendingFirmwareUpdate
 Feature: FirmwareManagement pending firmware update
   As grid operator
   I want to have an updated firmware history upon registration of an SSLD after a firmware update
@@ -29,6 +29,7 @@ Feature: FirmwareManagement pending firmware update
       | Description               |                    |
       | FirmwareModuleVersionFunc | <Firmware Version> |
     And the device returns firmware version "<Firmware Version>" over "<Protocol>"
+    And the device returns firmware version "<Firmware Version>" over "<Protocol>" with deviceUid "eHW0eEFzN0R2Okd5"
     And a pending firmware update record for an ssld
       | DeviceIdentification       | TEST1024010101010  |
       | FirmwareModuleVersionFunc  | FUNCTIONAL         |
@@ -36,12 +37,16 @@ Feature: FirmwareManagement pending firmware update
       | OrganizationIdentification | TestOrganization   |
     When the device sends a register device request to the platform over "<Protocol>"
       | DeviceIdentification | TEST1024010101010 |
-      | Protocol             | <Protocol>        |
       | DeviceUid            | eHW0eEFzN0R2Okd5  |
       | IpAddress            | 127.0.0.2         |
       | DeviceType           | SSLD              |
       | HasSchedule          | false             |
     Then the register device response contains
+      | Status | OK |
+    When the device sends a confirm register device request to the platform over "<Protocol>"
+      | DeviceIdentification | TEST1024010101010 |
+      | DeviceUid            | eHW0eEFzN0R2Okd5  |
+    Then the confirm register device response contains
       | Status | OK |
     And the ssld oslp device contains
       | DeviceIdentification | TEST1024010101010 |
@@ -49,7 +54,7 @@ Feature: FirmwareManagement pending firmware update
       | DeviceUid            | eHW0eEFzN0R2Okd5  |
       | HasSchedule          | false             |
       | IpAddress            | 127.0.0.2         |
-    And a get firmware version "<Protocol>" message is sent to device "TEST1024010101010"
+    And a get firmware version "<Protocol>" message is sent to device "TEST1024010101010" with deviceUid "eHW0eEFzN0R2Okd5"
     And the device firmware file exists
       | DeviceIdentification | TEST1024010101010 |
       | FirmwareFilename     | Firmware          |

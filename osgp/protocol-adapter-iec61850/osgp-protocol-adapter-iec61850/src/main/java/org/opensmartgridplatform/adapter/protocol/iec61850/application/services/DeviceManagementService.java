@@ -114,7 +114,7 @@ public class DeviceManagementService {
         final RequestMessage requestMessage = new RequestMessage(NO_CORRELATION_UID, NO_ORGANISATION,
                 deviceIdentification, new ArrayList<>(eventNotifications));
 
-        this.osgpRequestMessageSender.send(requestMessage, MessageType.ADD_EVENT_NOTIFICATION.name());
+        this.osgpRequestMessageSender.send(requestMessage, MessageType.EVENT_NOTIFICATION.name());
     }
 
     /**

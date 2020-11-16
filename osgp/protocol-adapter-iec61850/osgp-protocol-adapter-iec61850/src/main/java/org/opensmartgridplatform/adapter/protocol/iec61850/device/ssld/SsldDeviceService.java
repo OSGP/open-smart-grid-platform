@@ -12,7 +12,6 @@ import javax.jms.JMSException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceMessageStatus;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponseHandler;
-import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.requests.GetPowerUsageHistoryDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.requests.SetConfigurationDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.requests.SetEventNotificationsDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.requests.SetLightDeviceRequest;
@@ -22,7 +21,6 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.requests.
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.requests.UpdateFirmwareDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.responses.GetConfigurationDeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.responses.GetFirmwareVersionDeviceResponse;
-import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.responses.GetPowerUsageHistoryDeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.responses.GetStatusDeviceResponse;
 import org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.EventNotificationTypeDto;
@@ -38,15 +36,6 @@ public interface SsldDeviceService {
      * callback.
      */
     void getStatus(DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler) throws JMSException;
-
-    /**
-     * Reads the {@link PowerUsageData} from the device.
-     *
-     * Returns a {@link GetPowerUsageHistoryDeviceResponse} via the
-     * deviceResponseHandler's callback.
-     */
-    void getPowerUsageHistory(GetPowerUsageHistoryDeviceRequest deviceRequest,
-            DeviceResponseHandler deviceResponseHandler) throws JMSException;
 
     /**
      * Switches the given light relays on or off, depending on the given

@@ -70,7 +70,7 @@ public class InvocationCounterManager {
     private long getInvocationCounter(final DlmsConnectionManager connectionManager) throws FunctionalException {
         return ((Number) this.dlmsHelper
                 .getAttributeValue(connectionManager, ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE).getValue())
-                .intValue();
+                .longValue();
     }
 
     public void resetInvocationCounter(final DlmsDevice device) {

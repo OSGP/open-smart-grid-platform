@@ -19,7 +19,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-platform</artifactId>
-    <version>5.3.0-SNAPSHOT</version>
+    <version>5.6.0-SNAPSHOT</version>
     <relativePath>../parent-platform/pom.xml</relativePath>
   </parent>
 
@@ -30,7 +30,6 @@
     <build.helper.maven.plugin.version>3.0.0</build.helper.maven.plugin.version>
     <apache.ws.xlmschema.version>2.0.1</apache.ws.xlmschema.version>
     <apache.jms.api.version>2.0.1</apache.jms.api.version>
-    <logback.spring.extensions.version>0.1.5</logback.spring.extensions.version>
     <wsdl4j.version>1.6.3</wsdl4j.version>
     <maven.failsafe.plugin.version>3.0.0-M4</maven.failsafe.plugin.version>
     <spring.boot.maven.plugin.version>2.2.2.RELEASE</spring.boot.maven.plugin.version>
@@ -182,11 +181,6 @@
       <groupId>org.springframework.ws</groupId>
       <artifactId>spring-ws-test</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.logback-extensions</groupId>
-      <artifactId>logback-ext-spring</artifactId>
-      <version>${logback.spring.extensions.version}</version>
     </dependency>
   </dependencies>
 </project>

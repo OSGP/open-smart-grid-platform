@@ -17,17 +17,7 @@ public class PlatformKeys extends Keys {
 
     public static final String CODE = "Code";
     public static final String SCHEDULE_CODE = "LightSchedule";
-    public static final String ACTUAL_CONSUMED_POWER = "ActualConsumedPower";
-    public static final String ACTUAL_CURRENT1 = "ActualCurrent1";
-    public static final String ACTUAL_CURRENT2 = "ActualCurrent2";
-    public static final String ACTUAL_CURRENT3 = "ActualCurrent3";
-    public static final String ACTUAL_POWER1 = "ActualPower1";
-    public static final String ACTUAL_POWER2 = "ActualPower2";
-    public static final String ACTUAL_POWER3 = "ActualPower3";
-    public static final String ALLOWED = "Allowed";
-    public static final String AVERAGE_POWER_FACTOR1 = "AveragePowerFactor1";
-    public static final String AVERAGE_POWER_FACTOR2 = "AveragePowerFactor2";
-    public static final String AVERAGE_POWER_FACTOR3 = "AveragePowerFactor3";
+
     public static final String CONTRACT_END_DATE = "ContractEndDate";
     public static final String DC_LIGHTS = "DcLights";
     public static final String DC_MAP = "DcMap";
@@ -40,7 +30,6 @@ public class PlatformKeys extends Keys {
 
     public static final String DEVICEMODEL_DESCRIPTION = "DeviceModelDescription";
     public static final String DEVICEMODEL_FILESTORAGE = "DeviceModelFileStorage";
-    public static final String DEVICEMODEL_METERED = "DeviceModelMetered";
     public static final String DEVICEMODEL_MODELCODE = "ModelCode";
     public static final String DEVICEMODEL_NAME = "DeviceModelName";
     public static final String EAN_CODE = "EanCode";
@@ -63,8 +52,6 @@ public class PlatformKeys extends Keys {
     public static final String FIRMWARE_PUSH_TO_NEW_DEVICES = "FirmwarePushToNewDevices";
     public static final String FIRMWARE_VERSION = "FirmwareVersion";
     public static final String FROM_DATE = "FromDate";
-    public static final String HISTORY_TERM_TYPE = "HistoryTermType";
-    public static final String INTERVAL_TYPE = "IntervalType";
     public static final String KEY_ACTIVATED = "Activated";
     public static final String KEY_ALIAS = "Alias";
 
@@ -127,7 +114,6 @@ public class PlatformKeys extends Keys {
     public static final String KEY_DEVICE_MODEL_DESCRIPTION = "DeviceModelDescription";
     public static final String KEY_DEVICE_MODEL_FILESTORAGE = "FileStorage";
     public static final String KEY_DEVICE_MODEL_MANUFACTURER = "Manufacturer";
-    public static final String KEY_DEVICE_MODEL_METERED = "Metered";
     public static final String KEY_DEVICE_MODEL_MODELCODE = "DeviceModelCode";
 
     public static final String KEY_DEVICE_SUPPLIER = "Supplier";
@@ -196,6 +182,8 @@ public class PlatformKeys extends Keys {
     public static final String KEY_ORGANIZATION_IDENTIFICATION = "OrganizationIdentification";
     public static final String KEY_ORGANIZATION_IDENTIFICATION_TO_FIND = "OrganizationIdentificationToFind";
     public static final String KEY_OSLP_RESULT = "OSLPResult";
+    public static final String KEY_DOMAIN = "Domain";
+    public static final String KEY_DOMAIN_VERSION = "DomainVersion";
 
     public static final String KEY_OWNER = "Owner";
     public static final String KEY_SECOND_OWNER = "SecondOwner";
@@ -252,11 +240,9 @@ public class PlatformKeys extends Keys {
 
     public static final String KEY_LAST_COMMUNICATION_TIME = "LastCommunicationTime";
     public static final String LOGIN_ATTEMPT_COUNT = "LoginAttemptCount";
-    public static final String LONG_INTERVAL = "LongInterval";
     public static final String MANUFACTURER_CODE = "ManufacturerCode";
     public static final String MANUFACTURER_NAME = "ManufacturerName";
     public static final String MANUFACTURER_USE_PREFIX = "ManufacturerUsePrefix";
-    public static final String METER_TYPE = "MeterType";
     public static final String ORGANIZATION_NAME = "Name";
     public static final String OSGP_IP_ADDRESS = "OsgpIpAddress";
     public static final String OSGP_PORT = "OsgpPort";
@@ -264,8 +250,6 @@ public class PlatformKeys extends Keys {
     public static final String PLATFORM_DOMAINS = "PlatformDomains";
     public static final String RELAY_CONF = "RelayConf";
     public static final String RC_TYPE = "RcType";
-    public static final String RECORD_TIME = "RecordTime";
-    public static final String RELAY_DATA = "RelayData";
     public static final String RESPONSE = "Response";
     public static final String SCHEDULE_ACTIONTIME = "ActionTime";
     public static final String SCHEDULE_CURRENTPAGE = "CurrentPages";
@@ -288,11 +272,8 @@ public class PlatformKeys extends Keys {
     public static final String SEPARATOR_COLON = ":";
     public static final String SEPARATOR_SPACE = " ";
     public static final String SEPARATOR_SPACE_COLON_SPACE = " : ";
-    public static final String SHORT_INTERVAL = "ShortInterval";
     public static final String START_TIME = "StartTime";
     public static final String SUPPLIER = "Supplier";
-    public static final String TOTAL_CONSUMED_ENERGY = "TotalConsumedEnergy";
-    public static final String TOTAL_LIGHTING_HOURS = "TotalLightingHours";
     public static final String UNTIL_DATE = "UntilDate";
     public static final String USE_PREFIX = "UsePrefix";
     public static final String USERNAME = "Username";

@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.opensmartgridplatform.domain.core.entities.DomainInfo;
 import org.opensmartgridplatform.domain.core.entities.RtuDevice;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,4 +25,7 @@ public interface RtuDeviceRepository extends JpaRepository<RtuDevice, Long> {
 
     List<RtuDevice> findByDeviceLifecycleStatusAndLastCommunicationTimeBefore(
             DeviceLifecycleStatus deviceLifecycleStatus, Date lastCommunicationTime);
+
+    List<RtuDevice> findByDeviceLifecycleStatusAndLastCommunicationTimeBeforeAndDomainInfo(
+            DeviceLifecycleStatus deviceLifecycleStatus, Date lastCommunicationTime, DomainInfo domainInfo);
 }

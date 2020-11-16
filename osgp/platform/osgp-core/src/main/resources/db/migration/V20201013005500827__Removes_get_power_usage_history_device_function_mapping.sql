@@ -1,0 +1,1 @@
+DELETE FROM device_function_mapping WHERE function = 'GET_POWER_USAGE_HISTORY';

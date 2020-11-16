@@ -28,6 +28,11 @@ public class RequestMessage implements Serializable {
     }
 
     public RequestMessage(final String correlationUid, final String organisationIdentification,
+            final String deviceIdentification) {
+        this(correlationUid, organisationIdentification, deviceIdentification, null, null);
+    }
+
+    public RequestMessage(final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final Serializable request) {
         this(correlationUid, organisationIdentification, deviceIdentification, null, request);
     }

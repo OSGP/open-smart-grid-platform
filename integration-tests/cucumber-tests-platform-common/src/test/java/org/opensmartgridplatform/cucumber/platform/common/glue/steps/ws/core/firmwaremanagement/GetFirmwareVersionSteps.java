@@ -74,12 +74,12 @@ public class GetFirmwareVersionSteps {
      *            The table with the expected fields in the response.
      * @apiNote The response will contain the correlation uid, so store that in
      *          the current scenario context for later use.
-     * @throws Throwable
      */
     @Then("^the get firmware version async response contains$")
-    public void theGetFirmwareVersionResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
+    public void theGetFirmwareVersionResponseContains(final Map<String, String> expectedResponseData) {
         final GetFirmwareVersionAsyncResponse asyncResponse = (GetFirmwareVersionAsyncResponse) ScenarioContext
-                .current().get(PlatformKeys.RESPONSE);
+                .current()
+                .get(PlatformKeys.RESPONSE);
 
         assertThat(asyncResponse.getAsyncResponse().getDeviceId())
                 .isEqualTo(getString(expectedResponseData, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
@@ -96,7 +96,7 @@ public class GetFirmwareVersionSteps {
 
     @Then("^the platform buffers a get firmware version response message for device \"([^\"]*)\"$")
     public void thePlatformBuffersAGetFirmwareVersionResponseMessage(final String deviceIdentification,
-            final Map<String, String> expectedResponseData) throws Throwable {
+            final Map<String, String> expectedResponseData) {
         final GetFirmwareVersionAsyncRequest request = new GetFirmwareVersionAsyncRequest();
         final AsyncRequest asyncRequest = new AsyncRequest();
         asyncRequest.setDeviceId(deviceIdentification);
@@ -124,8 +124,7 @@ public class GetFirmwareVersionSteps {
     }
 
     @Then("^the get firmware version response contains soap fault$")
-    public void theGetFirmwareVersionResponseContainsSoapFault(final Map<String, String> expectedResponseData)
-            throws Throwable {
+    public void theGetFirmwareVersionResponseContainsSoapFault(final Map<String, String> expectedResponseData) {
         GenericResponseSteps.verifySoapFault(expectedResponseData);
     }
 }

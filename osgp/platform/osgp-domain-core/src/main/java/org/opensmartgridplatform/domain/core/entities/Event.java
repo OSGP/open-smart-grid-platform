@@ -12,8 +12,6 @@ import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
@@ -27,9 +25,8 @@ public class Event extends AbstractEntity {
      */
     private static final long serialVersionUID = 5987663923796632312L;
 
-    @ManyToOne()
-    @JoinColumn(name = "device")
-    private Device device;
+    @Column(nullable = false)
+    private String deviceIdentification;
 
     @Column(nullable = false)
     private Date dateTime;
@@ -47,17 +44,17 @@ public class Event extends AbstractEntity {
         // Default constructor
     }
 
-    public Event(final Device device, final Date dateTime, final EventType eventType, final String description,
-            final Integer index) {
-        this.device = device;
+    public Event(final String deviceIdentification, final Date dateTime, final EventType eventType,
+            final String description, final Integer index) {
+        this.deviceIdentification = deviceIdentification;
         this.dateTime = dateTime;
         this.eventType = eventType;
         this.description = description;
         this.index = index;
     }
 
-    public Device getDevice() {
-        return this.device;
+    public String getDeviceIdentification() {
+        return this.deviceIdentification;
     }
 
     public Date getDateTime() {
@@ -87,7 +84,7 @@ public class Event extends AbstractEntity {
         final Event other = (Event) o;
 
         final boolean[] booleans = new boolean[5];
-        booleans[0] = Objects.equals(this.device, other.device);
+        booleans[0] = Objects.equals(this.deviceIdentification, other.deviceIdentification);
         booleans[1] = Objects.equals(this.dateTime, other.dateTime);
         booleans[2] = Objects.equals(this.eventType, other.eventType);
         booleans[3] = Objects.equals(this.description, other.description);
@@ -98,6 +95,6 @@ public class Event extends AbstractEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.device, this.dateTime, this.eventType, this.description, this.index);
+        return Objects.hash(this.deviceIdentification, this.dateTime, this.eventType, this.description, this.index);
     }
 }

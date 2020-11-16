@@ -41,6 +41,8 @@ public class ApplicationContext extends AbstractConfig {
 
     private static final String PROPERTY_NAME_LOCAL_TIME_ZONE_IDENTIFIER = "local.time.zone";
 
+    private static final String PROPERTY_NAME_DEVICE_PENDINGSETSCHEDULEREQUEST_EXPIRES_IN_MINUTES = "device.pendingsetschedulerequest.expires_in_minutes";
+
     public ApplicationContext() {
         InternalLoggerFactory.setDefaultFactory(Slf4JLoggerFactory.INSTANCE);
     }
@@ -56,6 +58,12 @@ public class ApplicationContext extends AbstractConfig {
     public FirmwareLocation firmwareLocation() {
         return new FirmwareLocation(this.environment.getProperty(PROPERTY_NAME_FIRMWARE_DOMAIN),
                 this.environment.getProperty(PROPERTY_NAME_FIRMWARE_PATH));
+    }
+
+    @Bean
+    public Integer pendingSetScheduleRequestExpiresInMinutes() {
+        return Integer.parseInt(this.environment.getRequiredProperty(
+                PROPERTY_NAME_DEVICE_PENDINGSETSCHEDULEREQUEST_EXPIRES_IN_MINUTES));
     }
 
     // === Time zone config ===

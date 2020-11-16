@@ -1,4 +1,4 @@
-[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=OSGP/open-smart-grid-platform)](https://dependabot.com) [![Build Status](https://ci.opensmartgridplatform.org/buildStatus/icon?job=OSGP_open-smart-grid-platform_development)](https://ci.opensmartgridplatform.org/job/OSGP_open-smart-grid-platform_development/)
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=OSGP/open-smart-grid-platform)](https://dependabot.com) [![Build Status](https://ci.opensmartgridplatform.org/buildStatus/icon?job=OSGP_open-smart-grid-platform_development)](https://ci.opensmartgridplatform.org/job/OSGP_open-smart-grid-platform_development/) [![Quality Gate Status](https://sonar.osgp.cloud/api/project_badges/measure?project=org.opensmartgridplatform%3Aopen-smart-grid-platform&metric=alert_status)](https://sonar.osgp.cloud/dashboard?id=org.opensmartgridplatform%3Aopen-smart-grid-platform)
 
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/4104/badge)](https://bestpractices.coreinfrastructure.org/projects/4104)
 
@@ -16,16 +16,13 @@ This repository contains all code for the Grid eXchange Fabric (GXF) project, fo
 ## Grid eXchange Fabric information and news
 
 High-level project information and news can be found on the GXF section of the LF Energy website: 
-* [www.opensmartgridplatform.org](http://opensmartgridplatform.org/)
+* [www.lfenergy.org/projects/gxf/](https://www.lfenergy.org/projects/gxf/)
 
 GXF wiki with detailed project information:
 * [LF Energy wiki](https://wiki.lfenergy.org/display/HOME/Grid+eXchange+Fabric+-+GXF)
 
-GXF detailed documentation (note: URL will change soon):
-* [documentation.opensmartgridplatform.org](http://documentation.opensmartgridplatform.org/)
+GXF detailed documentation:
+* [documentation.gxf.lfenergy.org](https://documentation.gxf.lfenergy.org/)
 
 GXF issue tracker:
 * [GXF Jira](https://smartsocietyservices.atlassian.net/projects/OC/issues/)
-
-Questions and discussions (note: URL will change soon):
-* [GXF Discourse](https://opensmartgridplatform.discourse.group/)
