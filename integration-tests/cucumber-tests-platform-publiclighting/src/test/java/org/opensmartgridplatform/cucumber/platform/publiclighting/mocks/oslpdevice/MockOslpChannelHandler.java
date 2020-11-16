@@ -210,23 +210,19 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
                     final InetSocketAddress clientAddress = new InetSocketAddress(remoteAddress.getAddress(),
                             PlatformPubliclightingDefaults.OSLP_ELSTER_SERVER_PORT);
 
-                    future.addListener(new ChannelFutureListener() {
-                        @Override
-                        public void operationComplete(final ChannelFuture future) throws Exception {
-                            Executors.newSingleThreadScheduledExecutor().schedule(() -> {
+                    future.addListener((ChannelFutureListener) ChannelFutureListener -> {
+                        Executors.newSingleThreadScheduledExecutor().schedule(() -> {
 
-                                try {
-                                    MockOslpChannelHandler.this.sendNotifications(clientAddress, message, deviceUid,
-                                            deviceState);
-                                } catch (DeviceSimulatorException | IOException e) {
-                                    // TODO Auto-generated catch block
-                                    e.printStackTrace();
-                                }
-                            }, 200, TimeUnit.MILLISECONDS).get();
-
-                            if (!future.isSuccess()) {
-                                future.channel().close();
+                            try {
+                                MockOslpChannelHandler.this.sendNotifications(clientAddress, message, deviceUid,
+                                        deviceState);
+                            } catch (final DeviceSimulatorException | IOException e) {
+                                LOGGER.info("Unable to send notifications", e);
                             }
+                        }, 200, TimeUnit.MILLISECONDS).get();
+
+                        if (!ChannelFutureListener.isSuccess()) {
+                            ChannelFutureListener.channel().close();
                         }
                     });
 
@@ -359,8 +355,7 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
         return this.handleRequest(message);
     }
 
-    public Oslp.Message handleRequest(final OslpEnvelope requestMessage)
-            throws DeviceSimulatorException, IOException, ParseException {
+    public Oslp.Message handleRequest(final OslpEnvelope requestMessage) throws DeviceSimulatorException {
         final Oslp.Message request = requestMessage.getPayloadMessage();
 
         final String deviceUid = MockOslpChannelHandler.getDeviceUid(requestMessage);
