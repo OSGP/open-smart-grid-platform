@@ -91,7 +91,13 @@ public class SecretManagementService {
         }
 
         private static EncryptedTypedSecret fromDbEncryptedSecret(DbEncryptedSecret dbEncryptedSecret) {
-            byte[] aesEncrypted = HexUtils.fromHexString(dbEncryptedSecret.getEncodedSecret());
+            byte[] aesEncrypted;
+            try {
+                aesEncrypted = HexUtils.fromHexString(dbEncryptedSecret.getEncodedSecret());
+            } catch(IllegalArgumentException iae) {
+                throw new EncrypterException(String.format("Illegal value for encoded secret: %s",
+                        dbEncryptedSecret.getEncodedSecret()), iae);
+            }
             String keyReference = dbEncryptedSecret.getEncryptionKeyReference().getReference();
             EncryptionProviderType providerType = dbEncryptedSecret.getEncryptionKeyReference()
                                                                    .getEncryptionProviderType();
