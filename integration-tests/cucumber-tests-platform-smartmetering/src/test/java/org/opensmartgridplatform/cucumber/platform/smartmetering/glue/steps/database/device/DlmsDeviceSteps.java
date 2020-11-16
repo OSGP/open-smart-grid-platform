@@ -513,7 +513,7 @@ public class DlmsDeviceSteps {
             //TODO improve code to use provided parameters in general (also for other types)
             if(inputSettings.containsKey(PlatformSmartmeteringKeys.SECURITY_KEY_E)) {
                 String inputEncryptionKey = inputSettings.get(PlatformSmartmeteringKeys.SECURITY_KEY_E);
-                if(inputEncryptionKey!=null && !inputEncryptionKey.isEmpty()) {
+                if(inputEncryptionKey!=null && !inputEncryptionKey.trim().isEmpty()) {
                     secretBuilders.add(new SecurityKeyBuilder()
                             .setSecurityKeyType(SecurityKeyType.E_METER_ENCRYPTION)
                             .setKey(inputEncryptionKey));
