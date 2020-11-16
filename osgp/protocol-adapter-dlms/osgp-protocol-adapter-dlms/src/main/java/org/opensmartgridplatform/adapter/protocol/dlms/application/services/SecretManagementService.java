@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
@@ -144,7 +143,10 @@ public class SecretManagementService { //implements SecurityKeyService {
     private Map<SecurityKeyType, byte[]> convertSoapSecretsToSecretMapByType(List<TypedSecret> soapSecrets) {
         Function<TypedSecret, SecurityKeyType> convertType = ts -> SecurityKeyType.fromSecretType(ts.getType());
         Function<TypedSecret, byte[]> convertSecret = ts -> this.decryptSoapSecret(ts,false);
-        return soapSecrets.stream().collect(Collectors.toMap(convertType, convertSecret));
+        Map<SecurityKeyType,byte[]> decryptedKeysByType = new HashMap<>();
+        soapSecrets.forEach(ts->decryptedKeysByType.put(convertType.apply(ts),convertSecret.apply(ts)));
+        return decryptedKeysByType;
+        //return soapSecrets.stream().collect(Collectors.toMap(convertType, convertSecret));
     }
 
     private GetSecretsRequest createGetSecretsRequest(String deviceIdentification, List<SecurityKeyType> keyTypes) {
