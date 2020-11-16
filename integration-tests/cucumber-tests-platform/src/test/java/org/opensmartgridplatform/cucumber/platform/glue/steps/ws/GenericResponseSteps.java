@@ -92,7 +92,6 @@ public abstract class GenericResponseSteps {
     }
 
     private static void assertFaultDetailMap(Map<String, String> expected, Map<FaultDetailElement, String> actual) {
-        System.out.println(String.format("AssertFaultDetailMap(): args={expected=%s, actual=%s}", expected, actual));
         for (final Map.Entry<String, String> expectedEntry : expected.entrySet()) {
             final String localName = expectedEntry.getKey();
             final FaultDetailElement faultDetailElement = FaultDetailElement.forLocalName(localName);
@@ -107,7 +106,8 @@ public abstract class GenericResponseSteps {
             final String expectedValue = expectedEntry.getValue();
             final String actualValue = actual.get(faultDetailElement);
 
-            assertThat(actualValue).as(localName).isEqualTo(expectedValue);
+            String test = String.format("AssertFaultDetailMap(): args={expected=%s, actual=%s}", expected, actual);
+            assertThat(actualValue).as(localName+"/"+test).isEqualTo(expectedValue);
         }
     }
 
