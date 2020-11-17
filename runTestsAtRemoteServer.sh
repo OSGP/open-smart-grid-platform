@@ -9,6 +9,11 @@ then
   exit 1
 fi
 
+if [ "$#" -ne 7 ]; then
+    echo "Illegal number of parameters"
+    exit -1
+fi
+
 SERVER=$1
 FOLDER=$2
 PROJECT=$3
@@ -65,7 +70,13 @@ CMD="ssh -oStrictHostKeyChecking=no -oTCPKeepAlive=yes -oServerAliveInterval=50 
 ${CMD}
 
 echo '- Create zip file from files from server ...'
-CMD="sudo tar zhcvf /tmp/${SERVER}-${PROJECT}.tgz /etc/osgp /etc/httpd/conf.d /usr/share/tomcat/conf /var/log/tomcat /var/log/osgp && sudo chown $USER:$USER /tmp/${SERVER}-${PROJECT}.tgz"
+CMD="sudo tar zhcvf /tmp/${SERVER}-${PROJECT}.tgz /etc/osgp /etc/httpd/conf.d /usr/share/tomcat/conf /var/log/tomcat /var/log/osgp --warning=no-file-changed"
+echo "  [${CMD}]"
+CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"cd /data/software/${PROJECT} && ${CMD}\"\""
+${CMD}
+
+echo '- Take ownership over /tmp/${SERVER}-${PROJECT}.tgz ...'
+CMD="sudo chown $USER:$USER /tmp/${SERVER}-${PROJECT}.tgz"
 echo "  [${CMD}]"
 CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"cd /data/software/${PROJECT} && ${CMD}\"\""
 ${CMD}

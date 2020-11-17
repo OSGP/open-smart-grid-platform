@@ -7,9 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.application.services;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LightMeasurementService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceResponseMessageSender;
@@ -68,7 +65,7 @@ public class Iec60870LightMeasurementService implements LightMeasurementService 
                 .deviceMessageMetadata(deviceMessageMetadata)
                 .domain(responseMetadata.getDomainInfo().getDomain())
                 .domainVersion(responseMetadata.getDomainInfo().getDomainVersion())
-                .request(new ArrayList<>(Arrays.asList(eventNotification)))
+                .request(eventNotification)
                 .build();
 
         this.osgpRequestMessageSender.send(requestMessage, responseMetadata.getMessageType());

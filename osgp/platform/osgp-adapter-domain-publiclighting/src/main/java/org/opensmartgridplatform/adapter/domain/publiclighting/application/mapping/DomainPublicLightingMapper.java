@@ -22,7 +22,6 @@ public class DomainPublicLightingMapper extends ConfigurableMapper {
 
         converterFactory.registerConverter(new LightTypeConverter());
         converterFactory.registerConverter(new LinkTypeConverter());
-        converterFactory.registerConverter(new PowerUsageDataConverter());
         converterFactory.registerConverter(new ScheduleConverter());
         converterFactory.registerConverter(new ScheduleEntryConverter());
     }

@@ -15,7 +15,6 @@ import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.Test
 import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_MESSAGE_TYPE;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -87,16 +86,13 @@ public class OsgpCoreRequestSteps {
 
         final ArgumentCaptor<RequestMessage> requestMessageCaptor = ArgumentCaptor.forClass(RequestMessage.class);
         verify(this.osgpRequestMessageSenderMock, times(1)).send(requestMessageCaptor.capture(),
-                eq(MessageType.ADD_EVENT_NOTIFICATION.name()));
+                eq(MessageType.EVENT_NOTIFICATION.name()));
         final RequestMessage requestMessage = requestMessageCaptor.getValue();
 
         assertThat(requestMessage.getDeviceIdentification()).isEqualTo(expectedDeviceIdentification);
         final Serializable request = requestMessage.getRequest();
-        assertThat(request).isInstanceOf(List.class);
-        final List<?> eventNotifications = (List<?>) request;
-        assertThat(eventNotifications).hasSize(1);
-        assertThat(eventNotifications).hasOnlyElementsOfType(EventNotificationDto.class);
-        final EventNotificationDto eventNotification = (EventNotificationDto) eventNotifications.get(0);
-        assertThat(eventNotification.getEventType().name()).isEqualTo(expectedEventType);
+        assertThat(request).isInstanceOf(EventNotificationDto.class);
+        final EventNotificationDto eventNotificationDto = (EventNotificationDto) request;
+        assertThat(eventNotificationDto.getEventType().name()).isEqualTo(expectedEventType);
     }
 }

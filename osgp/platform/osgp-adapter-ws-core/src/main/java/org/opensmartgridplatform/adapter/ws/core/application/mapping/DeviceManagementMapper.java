@@ -12,11 +12,13 @@ import java.util.Objects;
 import javax.annotation.PostConstruct;
 
 import org.opensmartgridplatform.adapter.ws.core.application.mapping.ws.EventTypeConverter;
+import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
 import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import ma.glasnost.orika.Mapper;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.ConfigurableMapper;
 
@@ -52,7 +54,6 @@ public class DeviceManagementMapper extends ConfigurableMapper {
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(org.opensmartgridplatform.domain.core.entities.Event.class,
                         org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Event.class)
-                .field("device.deviceIdentification", "deviceIdentification")
                 .field("dateTime", "timestamp")
                 .byDefault()
                 .toClassMap());
@@ -62,6 +63,24 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                         org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.ScheduledTask.class)
                 .byDefault()
                 .toClassMap());
+
+        mapperFactory.registerClassMap(mapperFactory
+                .classMap(org.opensmartgridplatform.domain.core.entities.ScheduledTaskWithoutData.class,
+                        org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.ScheduledTask.class)
+                .byDefault()
+                .toClassMap());
+
+        final Mapper<org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdatedDevice, Ssld> deviceOutputSettingsMapper = new DeviceOutputSettingsMapper();
+
+        mapperFactory
+                .classMap(org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdatedDevice.class,
+                        Ssld.class)
+                .exclude("outputSettings")
+                .field("gpsLatitude", "gpsCoordinates.latitude")
+                .field("gpsLongitude", "gpsCoordinates.longitude")
+                .byDefault()
+                .customize(deviceOutputSettingsMapper)
+                .register();
 
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
         mapperFactory.getConverterFactory().registerConverter(new EventTypeConverter());

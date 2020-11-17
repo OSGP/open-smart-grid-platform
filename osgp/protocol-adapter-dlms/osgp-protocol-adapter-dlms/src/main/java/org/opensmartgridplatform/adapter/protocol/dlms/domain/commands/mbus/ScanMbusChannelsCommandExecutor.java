@@ -15,14 +15,14 @@ import java.util.List;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
-import org.openmuc.jdlms.interfaceclass.InterfaceClass;
-import org.openmuc.jdlms.interfaceclass.attribute.MbusClientAttribute;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.MbusClientAttribute;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelShortEquipmentIdentifierDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusShortEquipmentIdentifierDto;
@@ -44,8 +44,8 @@ public class ScanMbusChannelsCommandExecutor extends AbstractCommandExecutor<Voi
      * IDs of the attributes of the M-Bus Client Setup that make up the Short
      * ID.
      *
-     * The order of the IDs should match the
-     * way attributes are used in {@link #makeAttributeAddressesShortIds()} and
+     * The order of the IDs should match the way attributes are used in
+     * {@link #makeAttributeAddressesShortIds()} and
      * {@link #channelShortIdsFromGetResults(List, Protocol)}.
      */
     private static final int[] ATTRIBUTE_IDS_SHORT_ID = new int[] {
@@ -109,8 +109,8 @@ public class ScanMbusChannelsCommandExecutor extends AbstractCommandExecutor<Voi
         LOGGER.debug("retrieving mbus info on e-meter");
         final List<GetResult> mbusShortIdResults = this.dlmsHelper.getAndCheck(conn, device,
                 "Retrieve M-Bus Short ID attributes", SHORT_ID_ATTRIBUTE_ADDRESSES);
-        final List<MbusChannelShortEquipmentIdentifierDto> channelShortIds = this.channelShortIdsFromGetResults(
-                mbusShortIdResults, Protocol.forDevice(device));
+        final List<MbusChannelShortEquipmentIdentifierDto> channelShortIds = this
+                .channelShortIdsFromGetResults(mbusShortIdResults, Protocol.forDevice(device));
         return new ScanMbusChannelsResponseDto(channelShortIds);
     }
 
@@ -130,12 +130,12 @@ public class ScanMbusChannelsCommandExecutor extends AbstractCommandExecutor<Voi
         for (short channel = 1; channel <= NUMBER_OF_CHANNELS; channel++) {
             final String identificationNumber = this.determineIdentificationNumber(mbusShortIdResults.get(index++),
                     channel, protocol);
-            final String manufacturerIdentification = this.determineManufacturerIdentification(
-                    mbusShortIdResults.get(index++), channel);
+            final String manufacturerIdentification = this
+                    .determineManufacturerIdentification(mbusShortIdResults.get(index++), channel);
             final Short versionIdentification = this.determineVersionIdentification(mbusShortIdResults.get(index++),
                     channel);
-            final Short deviceTypeIdentification = this.determineDeviceTypeIdentification(
-                    mbusShortIdResults.get(index++), channel);
+            final Short deviceTypeIdentification = this
+                    .determineDeviceTypeIdentification(mbusShortIdResults.get(index++), channel);
             final MbusShortEquipmentIdentifierDto shortId = new MbusShortEquipmentIdentifierDto(identificationNumber,
                     manufacturerIdentification, versionIdentification, deviceTypeIdentification);
             channelShortIds.add(new MbusChannelShortEquipmentIdentifierDto(channel, shortId));

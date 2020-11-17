@@ -9,6 +9,7 @@ package org.opensmartgridplatform.dto.valueobjects;
 
 public enum ScheduleMessageTypeDto {
     RETRIEVE_CONFIGURATION,
+    SET_REBOOT,
     SET_ASTRONOMICAL_OFFSETS,
     SET_SCHEDULE
 }

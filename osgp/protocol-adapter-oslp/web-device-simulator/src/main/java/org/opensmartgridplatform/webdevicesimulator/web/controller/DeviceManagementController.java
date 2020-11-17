@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -45,12 +46,11 @@ public class DeviceManagementController extends AbstractController {
 
     protected static final String DEVICES_URL = "/devices";
     protected static final String DEVICE_CREATE_URL = "/devices/create";
-    protected static final String DEVICE_EDIT_URL = "/devices/edit/{id}";
+    protected static final String DEVICE_EDIT_URL = "/devices/edit/{deviceId}";
 
     protected static final String DEVICES_VIEW = "devices/list";
     protected static final String DEVICE_CREATE_VIEW = "devices/create";
     protected static final String DEVICE_EDIT_VIEW = "devices/edit";
-    protected static final String DEVICE_REGISTRATION_VIEW = "devices/deviceRegistrationCheck";
 
     protected static final String COMMAND_REGISTER_URL = "/devices/commands/register";
     protected static final String COMMAND_REGISTER_CONFIRM_URL = "/devices/commands/register/confirm";
@@ -178,9 +178,11 @@ public class DeviceManagementController extends AbstractController {
     }
 
     @RequestMapping(value = DEVICE_REGISTRATION_CHECK_URL, method = RequestMethod.POST)
-    public void setDeviceRegistrationValue(@RequestBody final AutonomousRequest request) {
+    public ResponseEntity<String> setDeviceRegistrationValue(@RequestBody final AutonomousRequest request) {
+
         this.deviceManagementService.setdeviceRegistration(request.getAutonomousStatus());
 
+        return ResponseEntity.ok().build();
     }
 
     @RequestMapping(value = DEVICE_REGISTRATION_CHECK_JSON_URL, method = RequestMethod.GET)
@@ -190,9 +192,11 @@ public class DeviceManagementController extends AbstractController {
     }
 
     @RequestMapping(value = DEVICE_REBOOT_CHECK_URL, method = RequestMethod.POST)
-    public void getDeviceRebootValue(@RequestBody final AutonomousRequest request) {
+    public ResponseEntity<String> getDeviceRebootValue(@RequestBody final AutonomousRequest request) {
 
         this.deviceManagementService.setDeviceReboot(request.getAutonomousStatus());
+
+        return ResponseEntity.ok().build();
     }
 
     @RequestMapping(value = DEVICE_REBOOT_CHECK_JSON_URL, method = RequestMethod.GET)
@@ -202,10 +206,11 @@ public class DeviceManagementController extends AbstractController {
     }
 
     @RequestMapping(value = TARIFF_SWITCHING_CHECK_URL, method = RequestMethod.POST)
-    public void getTariffSwitchingValue(@RequestBody final AutonomousRequest request) {
+    public ResponseEntity<String> getTariffSwitchingValue(@RequestBody final AutonomousRequest request) {
 
         this.deviceManagementService.setTariffSwitching(request.getAutonomousStatus());
 
+        return ResponseEntity.ok().build();
     }
 
     @RequestMapping(value = TARIFF_SWITCHING_CHECK_JSON_URL, method = RequestMethod.GET)
@@ -215,10 +220,11 @@ public class DeviceManagementController extends AbstractController {
     }
 
     @RequestMapping(value = LIGHT_SWITCHING_CHECK_URL, method = RequestMethod.POST)
-    public void getLightSwitchingValue(@RequestBody final AutonomousRequest request) {
+    public ResponseEntity<String> getLightSwitchingValue(@RequestBody final AutonomousRequest request) {
 
         this.deviceManagementService.setLightSwitching(request.getAutonomousStatus());
 
+        return ResponseEntity.ok().build();
     }
 
     @RequestMapping(value = LIGHT_SWITCHING_CHECK_JSON_URL, method = RequestMethod.GET)
@@ -228,10 +234,11 @@ public class DeviceManagementController extends AbstractController {
     }
 
     @RequestMapping(value = EVENT_NOTIFICATION_CHECK_URL, method = RequestMethod.POST)
-    public void getEventNotificationValue(@RequestBody final AutonomousRequest request) {
+    public ResponseEntity<String> getEventNotificationValue(@RequestBody final AutonomousRequest request) {
 
         this.deviceManagementService.setEventNotification(request.getAutonomousStatus());
 
+        return ResponseEntity.ok().build();
     }
 
     @RequestMapping(value = EVENT_NOTIFICATION_CHECK_JSON_URL, method = RequestMethod.GET)
@@ -281,21 +288,22 @@ public class DeviceManagementController extends AbstractController {
     }
 
     @RequestMapping(value = DEVICE_EDIT_URL, method = RequestMethod.GET)
-    public String showEditDevice(@PathVariable final Long id, final Model model) {
-        model.addAttribute(MODEL_ATTRIBUTE_DEVICE, this.deviceManagementService.findDevice(id));
+    public String showEditDevice(@PathVariable final Long deviceId, final Model model) {
+        model.addAttribute(MODEL_ATTRIBUTE_DEVICE, this.deviceManagementService.findDevice(deviceId));
         return DEVICE_EDIT_VIEW;
     }
 
     @RequestMapping(value = DEVICE_EDIT_URL, method = RequestMethod.POST)
-    public String editDevice(@ModelAttribute(MODEL_ATTRIBUTE_DEVICE) final Device updated, @PathVariable final Long id,
-            final BindingResult bindingResult, final RedirectAttributes attributes, final Model model) {
+    public String editDevice(@ModelAttribute(MODEL_ATTRIBUTE_DEVICE) final Device updated,
+            @PathVariable final Long deviceId, final BindingResult bindingResult, final RedirectAttributes attributes,
+            final Model model) {
 
         if (bindingResult.hasErrors()) {
             return DEVICE_EDIT_VIEW;
         }
 
         // Find device
-        final Device deviceToUpdate = this.deviceManagementService.findDevice(id);
+        final Device deviceToUpdate = this.deviceManagementService.findDevice(deviceId);
         if (deviceToUpdate == null) {
             return DEVICE_EDIT_VIEW;
         }
@@ -306,6 +314,7 @@ public class DeviceManagementController extends AbstractController {
         deviceToUpdate.setActualLinkType(updated.getActualLinkType());
         deviceToUpdate.setTariffOn(updated.isTariffOn());
         deviceToUpdate.setProtocol(updated.getProtocol());
+        deviceToUpdate.setFirmwareVersion(updated.getFirmwareVersion());
 
         // Store device
         final Device device = this.deviceManagementService.updateDevice(deviceToUpdate);

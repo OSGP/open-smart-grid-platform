@@ -15,6 +15,7 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -22,11 +23,9 @@ import org.joda.time.DateTime;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
-import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Event;
 import org.opensmartgridplatform.domain.core.entities.RelayStatus;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
-import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.EventRepository;
 import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
@@ -38,9 +37,6 @@ import io.cucumber.java.en.Then;
 public class EventSteps {
 
     @Autowired
-    private DeviceRepository deviceRepository;
-
-    @Autowired
     private SsldRepository ssldRepository;
 
     @Autowired
@@ -48,13 +44,14 @@ public class EventSteps {
 
     @Given("^an event$")
     public void anEvent(final Map<String, String> data) {
-        final Device device = this.deviceRepository
-                .findByDeviceIdentification(getString(data, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
+        final String deviceIdentification = getString(data, PlatformKeys.KEY_DEVICE_IDENTIFICATION);
+        final Date date = getDateTime2(getString(data, PlatformKeys.DATE), DateTime.now()).toDate();
+        final EventType eventType = getEnum(data, PlatformKeys.EVENT_TYPE, EventType.class,
+                EventType.DIAG_EVENTS_GENERAL);
+        final String description = getString(data, PlatformKeys.KEY_DESCRIPTION, "");
+        final Integer index = getInteger(data, PlatformKeys.KEY_INDEX, PlatformDefaults.DEFAULT_INDEX);
 
-        final Event event = new Event(device, getDateTime2(getString(data, PlatformKeys.DATE), DateTime.now()).toDate(),
-                getEnum(data, PlatformKeys.EVENT_TYPE, EventType.class, EventType.DIAG_EVENTS_GENERAL),
-                getString(data, PlatformKeys.KEY_DESCRIPTION, ""),
-                getInteger(data, PlatformKeys.KEY_INDEX, PlatformDefaults.DEFAULT_INDEX));
+        final Event event = new Event(deviceIdentification, date, eventType, description, index);
 
         this.eventRepository.save(event);
     }
@@ -85,11 +82,10 @@ public class EventSteps {
 
         // Wait for the correct events to be available
         Wait.until(() -> {
-            final Device device = this.deviceRepository
-                    .findByDeviceIdentification(getString(expectedEntity, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
+            final String deviceIdentification = getString(expectedEntity, PlatformKeys.KEY_DEVICE_IDENTIFICATION);
 
             // Read the actual events received and check the desired size
-            final List<Event> actualEvents = this.eventRepository.findByDevice(device);
+            final List<Event> actualEvents = this.eventRepository.findByDeviceIdentification(deviceIdentification);
 
             // Assume default 1 expected event
             final int expectedNumberOfEvents = getInteger(expectedEntity, PlatformKeys.NUMBER_OF_EVENTS, 1);
@@ -110,8 +106,9 @@ public class EventSteps {
                         break;
                     }
                 }
-                assertThat(foundEventIndex != -1).as(
-                        "Unable to find event [" + actualEvent.getEventType() + "] with index [" + actualIndex + "]")
+                assertThat(foundEventIndex != -1)
+                        .as("Unable to find event [" + actualEvent.getEventType() + "] with index [" + actualIndex
+                                + "]")
                         .isTrue();
 
                 // Correct combination of event and index are found, remove them

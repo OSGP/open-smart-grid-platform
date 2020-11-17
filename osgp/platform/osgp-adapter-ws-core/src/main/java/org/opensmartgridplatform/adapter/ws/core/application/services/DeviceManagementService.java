@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.ws.core.application.services;
 
-import static org.opensmartgridplatform.shared.utils.SearchUtil.replaceWildcards;
+import static org.opensmartgridplatform.shared.utils.SearchUtil.replaceAndEscapeWildcards;
 import static org.springframework.data.jpa.domain.Specification.where;
 
 import java.util.ArrayList;
@@ -203,7 +203,7 @@ public class DeviceManagementService {
             final Device device = this.domainHelperService.findDevice(deviceIdentification);
             this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_EVENT_NOTIFICATIONS);
 
-            specification = where(this.eventSpecifications.isFromDevice(device));
+            specification = where(this.eventSpecifications.isFromDevice(deviceIdentification));
         } else {
             specification = where(this.eventSpecifications.isAuthorized(organisation));
         }
@@ -219,8 +219,8 @@ public class DeviceManagementService {
         }
 
         specification = specification.and(this.eventSpecifications.hasEventTypes(criteria.getEventTypes()));
-        specification = this.handleDescription(SearchUtil.replaceWildcards(criteria.getDescription()),
-                SearchUtil.replaceWildcards(criteria.getDescriptionStartsWith()), specification);
+        specification = this.handleDescription(SearchUtil.replaceAndEscapeWildcards(criteria.getDescription()),
+                SearchUtil.replaceAndEscapeWildcards(criteria.getDescriptionStartsWith()), specification);
 
         LOGGER.debug("request offset     : {}", request.getOffset());
         LOGGER.debug("        pageNumber : {}", request.getPageNumber());
@@ -412,7 +412,7 @@ public class DeviceManagementService {
         if (!StringUtils.isEmpty(deviceFilter.getFirmwareModuleVersion())) {
             specification = specification
                     .and(this.deviceSpecifications.forFirmwareModuleVersion(deviceFilter.getFirmwareModuleType(),
-                            replaceWildcards(deviceFilter.getFirmwareModuleVersion()).toUpperCase()));
+                            replaceAndEscapeWildcards(deviceFilter.getFirmwareModuleVersion()).toUpperCase()));
         }
         return specification;
     }
@@ -430,8 +430,8 @@ public class DeviceManagementService {
     private Specification<Device> doFilterOnDeviceModel(final DeviceFilter deviceFilter,
             Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getModel())) {
-            specification = specification.and(
-                    this.deviceSpecifications.forDeviceModel(replaceWildcards(deviceFilter.getModel()).toUpperCase()));
+            specification = specification.and(this.deviceSpecifications
+                    .forDeviceModel(replaceAndEscapeWildcards(deviceFilter.getModel()).toUpperCase()));
         }
         return specification;
     }
@@ -440,7 +440,7 @@ public class DeviceManagementService {
             Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getDeviceType())) {
             specification = specification.and(this.deviceSpecifications
-                    .forDeviceType(replaceWildcards(deviceFilter.getDeviceType()).toUpperCase()));
+                    .forDeviceType(replaceAndEscapeWildcards(deviceFilter.getDeviceType()).toUpperCase()));
         }
         return specification;
     }
@@ -448,8 +448,8 @@ public class DeviceManagementService {
     private Specification<Device> doFilterOnOwner(final DeviceFilter deviceFilter, Specification<Device> specification)
             throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getOwner())) {
-            specification = specification
-                    .and(this.deviceSpecifications.forOwner(replaceWildcards(deviceFilter.getOwner()).toUpperCase()));
+            specification = specification.and(this.deviceSpecifications
+                    .forOwner(replaceAndEscapeWildcards(deviceFilter.getOwner()).toUpperCase()));
         }
         return specification;
     }
@@ -495,24 +495,24 @@ public class DeviceManagementService {
     private Specification<Device> doFilterOnAddress(final DeviceFilter deviceFilter,
             Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getCity())) {
-            specification = specification
-                    .and(this.deviceSpecifications.hasCity(replaceWildcards(deviceFilter.getCity()).toUpperCase()));
+            specification = specification.and(
+                    this.deviceSpecifications.hasCity(replaceAndEscapeWildcards(deviceFilter.getCity()).toUpperCase()));
         }
         if (!StringUtils.isEmpty(deviceFilter.getPostalCode())) {
             specification = specification.and(this.deviceSpecifications
-                    .hasPostalCode(replaceWildcards(deviceFilter.getPostalCode()).toUpperCase()));
+                    .hasPostalCode(replaceAndEscapeWildcards(deviceFilter.getPostalCode()).toUpperCase()));
         }
         if (!StringUtils.isEmpty(deviceFilter.getStreet())) {
-            specification = specification
-                    .and(this.deviceSpecifications.hasStreet(replaceWildcards(deviceFilter.getStreet()).toUpperCase()));
+            specification = specification.and(this.deviceSpecifications
+                    .hasStreet(replaceAndEscapeWildcards(deviceFilter.getStreet()).toUpperCase()));
         }
         if (!StringUtils.isEmpty(deviceFilter.getNumber())) {
-            specification = specification
-                    .and(this.deviceSpecifications.hasNumber(replaceWildcards(deviceFilter.getNumber()).toUpperCase()));
+            specification = specification.and(this.deviceSpecifications
+                    .hasNumber(replaceAndEscapeWildcards(deviceFilter.getNumber()).toUpperCase()));
         }
         if (!StringUtils.isEmpty(deviceFilter.getMunicipality())) {
             specification = specification.and(this.deviceSpecifications
-                    .hasMunicipality(replaceWildcards(deviceFilter.getMunicipality()).toUpperCase()));
+                    .hasMunicipality(replaceAndEscapeWildcards(deviceFilter.getMunicipality()).toUpperCase()));
         }
         return specification;
     }
@@ -520,8 +520,8 @@ public class DeviceManagementService {
     private Specification<Device> doFilterOnDeviceAlias(final DeviceFilter deviceFilter,
             Specification<Device> specification) throws ArgumentNullOrEmptyException {
         if (!StringUtils.isEmpty(deviceFilter.getAlias())) {
-            specification = specification
-                    .and(this.deviceSpecifications.hasAlias(replaceWildcards(deviceFilter.getAlias()).toUpperCase()));
+            specification = specification.and(this.deviceSpecifications
+                    .hasAlias(replaceAndEscapeWildcards(deviceFilter.getAlias()).toUpperCase()));
         }
         return specification;
     }
@@ -532,7 +532,7 @@ public class DeviceManagementService {
             String searchString = deviceFilter.getDeviceIdentification();
 
             if (!deviceFilter.isExactMatch()) {
-                searchString = replaceWildcards(searchString).toUpperCase();
+                searchString = replaceAndEscapeWildcards(searchString).toUpperCase();
             }
 
             specification = specification
@@ -619,16 +619,16 @@ public class DeviceManagementService {
     }
 
     @Transactional(value = "writableTransactionManager")
-    public void updateDevice(@Identification final String organisationIdentification, @Valid final Ssld updateDevice)
-            throws FunctionalException {
+    public void updateDevice(@Identification final String organisationIdentification,
+            final String deviceToUpdateIdentification, @Valid final Ssld updateDevice) throws FunctionalException {
 
         final Device existingDevice = this.writableDeviceRepository
-                .findByDeviceIdentification(updateDevice.getDeviceIdentification());
+                .findByDeviceIdentification(deviceToUpdateIdentification);
         if (existingDevice == null) {
             // device does not exist
             LOGGER.info("Device does not exist, nothing to update.");
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.WS_CORE,
-                    new UnknownEntityException(Device.class, updateDevice.getDeviceIdentification()));
+                    new UnknownEntityException(Device.class, deviceToUpdateIdentification));
         }
 
         final List<DeviceAuthorization> owners = this.writableAuthorizationRepository
@@ -653,7 +653,10 @@ public class DeviceManagementService {
                 updateDevice.getGpsCoordinates());
 
         existingDevice.setActivated(updateDevice.isActivated());
-        existingDevice.setDeviceLifecycleStatus(updateDevice.getDeviceLifecycleStatus());
+
+        if (updateDevice.getDeviceLifecycleStatus() != null) {
+            existingDevice.setDeviceLifecycleStatus(updateDevice.getDeviceLifecycleStatus());
+        }
 
         if (updateDevice.getTechnicalInstallationDate() != null) {
             existingDevice.setTechnicalInstallationDate(updateDevice.getTechnicalInstallationDate());

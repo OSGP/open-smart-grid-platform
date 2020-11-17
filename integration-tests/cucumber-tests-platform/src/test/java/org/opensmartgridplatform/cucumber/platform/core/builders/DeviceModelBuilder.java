@@ -25,7 +25,6 @@ public class DeviceModelBuilder implements CucumberBuilder<DeviceModel> {
     private String modelCode = PlatformDefaults.DEFAULT_DEVICE_MODEL_MODEL_CODE;
     private String description = PlatformDefaults.DEFAULT_DEVICE_MODEL_DESCRIPTION;
     private boolean fileStorage = PlatformDefaults.DEFAULT_FILESTORAGE;
-    private boolean metered = PlatformDefaults.DEFAULT_DEVICE_MODEL_METERED;
 
     public DeviceModelBuilder withManufacturer(final Manufacturer manufacturer) {
         this.manufacturer = manufacturer;
@@ -47,15 +46,9 @@ public class DeviceModelBuilder implements CucumberBuilder<DeviceModel> {
         return this;
     }
 
-    public DeviceModelBuilder withMetered(final boolean metered) {
-        this.metered = metered;
-        return this;
-    }
-
     @Override
     public DeviceModel build() {
-        return new DeviceModel(this.manufacturer, this.modelCode, this.description,
-                this.fileStorage, this.metered);
+        return new DeviceModel(this.manufacturer, this.modelCode, this.description, this.fileStorage);
     }
 
     @Override
@@ -71,10 +64,6 @@ public class DeviceModelBuilder implements CucumberBuilder<DeviceModel> {
 
         if (inputSettings.containsKey(PlatformKeys.DEVICEMODEL_FILESTORAGE)) {
             this.withFileStorage(Boolean.parseBoolean(inputSettings.get(PlatformKeys.DEVICEMODEL_FILESTORAGE)));
-        }
-
-        if (inputSettings.containsKey(PlatformKeys.DEVICEMODEL_METERED)) {
-            this.withMetered(Boolean.parseBoolean(inputSettings.get(PlatformKeys.DEVICEMODEL_METERED)));
         }
 
         return this;

@@ -7,7 +7,6 @@
  */
 package org.opensmartgridplatform.cucumber.platform.distributionautomation.config;
 
-import org.opensmartgridplatform.adapter.kafka.da.avro.GridMeasurementPublishedEvent;
 import org.opensmartgridplatform.shared.application.config.kafka.AbstractKafkaConsumerConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -17,9 +16,11 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 
+import com.alliander.data.scadameasurementpublishedevent.Message;
+
 @Configuration
 @EnableKafka
-public class KafkaPeakShavingConsumerConfig extends AbstractKafkaConsumerConfig<String, GridMeasurementPublishedEvent> {
+public class KafkaPeakShavingConsumerConfig extends AbstractKafkaConsumerConfig<String, Message> {
 
     public KafkaPeakShavingConsumerConfig(final Environment environment,
             @Value("${peakshaving.kafka.common.properties.prefix}") final String propertiesPrefix,
@@ -32,13 +33,13 @@ public class KafkaPeakShavingConsumerConfig extends AbstractKafkaConsumerConfig<
 
     @Bean("peakShavingConsumerFactory")
     @Override
-    public ConsumerFactory<String, GridMeasurementPublishedEvent> consumerFactory() {
+    public ConsumerFactory<String, Message> consumerFactory() {
         return this.getConsumerFactory();
     }
 
     @Bean("peakShavingKafkaListenerContainerFactory")
     @Override
-    public ConcurrentKafkaListenerContainerFactory<String, GridMeasurementPublishedEvent> kafkaListenerContainerFactory() {
+    public ConcurrentKafkaListenerContainerFactory<String, Message> kafkaListenerContainerFactory() {
         return this.getKafkaListenerContainerFactory();
     }
 

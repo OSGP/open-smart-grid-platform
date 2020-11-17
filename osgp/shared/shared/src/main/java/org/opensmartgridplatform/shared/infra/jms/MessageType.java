@@ -9,7 +9,7 @@ package org.opensmartgridplatform.shared.infra.jms;
 
 public enum MessageType {
     ADD_DEVICE,
-    ADD_EVENT_NOTIFICATION,
+    EVENT_NOTIFICATION,
     ADD_METER,
     CLEAR_ALARM_REGISTER,
     CONFIGURE_DEFINABLE_LOAD_PROFILE,
@@ -43,7 +43,6 @@ public enum MessageType {
     GET_MESSAGES,
     GET_POWER_QUALITY_VALUES,
     GET_POWER_QUALITY_VALUES_PERIODIC,
-    GET_POWER_USAGE_HISTORY,
     GET_PROFILE_GENERIC_DATA,
     GET_SPECIFIC_ATTRIBUTE_VALUE,
     GET_STATUS,
@@ -96,6 +95,6 @@ public enum MessageType {
     UPDATE_DEVICE_CDMA_SETTINGS,
     UPDATE_DEVICE_SSL_CERTIFICATION,
     UPDATE_FIRMWARE,
-    UPDATE_KEY;
+    UPDATE_KEY
     // keep MessageType in alphabetical order.
 }

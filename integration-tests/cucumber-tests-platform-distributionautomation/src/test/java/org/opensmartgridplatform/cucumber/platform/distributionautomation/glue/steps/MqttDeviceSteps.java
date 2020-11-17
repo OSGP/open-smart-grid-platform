@@ -17,19 +17,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.apache.avro.util.Utf8;
-import org.opensmartgridplatform.adapter.kafka.da.avro.AccumulationKind;
-import org.opensmartgridplatform.adapter.kafka.da.avro.Analog;
-import org.opensmartgridplatform.adapter.kafka.da.avro.AnalogValue;
-import org.opensmartgridplatform.adapter.kafka.da.avro.GridMeasurementPublishedEvent;
-import org.opensmartgridplatform.adapter.kafka.da.avro.MeasuringPeriodKind;
-import org.opensmartgridplatform.adapter.kafka.da.avro.Name;
-import org.opensmartgridplatform.adapter.kafka.da.avro.PhaseCode;
-import org.opensmartgridplatform.adapter.kafka.da.avro.PowerSystemResource;
-import org.opensmartgridplatform.adapter.kafka.da.avro.UnitMultiplier;
-import org.opensmartgridplatform.adapter.kafka.da.avro.UnitSymbol;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.entities.MqttDevice;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.repositories.MqttDeviceRepository;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationDefaults;
@@ -41,6 +30,19 @@ import org.opensmartgridplatform.simulator.protocol.mqtt.spec.SimulatorSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.alliander.data.scadameasurementpublishedevent.AccumulationKind;
+import com.alliander.data.scadameasurementpublishedevent.Analog;
+import com.alliander.data.scadameasurementpublishedevent.AnalogValue;
+import com.alliander.data.scadameasurementpublishedevent.BaseVoltage;
+import com.alliander.data.scadameasurementpublishedevent.ConductingEquipment;
+import com.alliander.data.scadameasurementpublishedevent.MeasuringPeriodKind;
+import com.alliander.data.scadameasurementpublishedevent.Name;
+import com.alliander.data.scadameasurementpublishedevent.NameType;
+import com.alliander.data.scadameasurementpublishedevent.ScadaMeasurementPublishedEvent;
+import com.alliander.data.scadameasurementpublishedevent.UnitMultiplier;
+import com.alliander.data.scadameasurementpublishedevent.UnitSymbol;
+import com.alliander.data.scadameasurementpublishedevent.Voltage;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -54,6 +56,8 @@ public class MqttDeviceSteps {
     private PeakShavingConsumer consumer;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MqttDeviceSteps.class);
+
+    private static final float LOW_VOLTAGE_NOMINAL = 0.4f;
 
     @When("MQTT device {string} sends a measurement report")
     public void theDeviceSendsAMeasurementReport(final String deviceIdentification,
@@ -77,10 +81,11 @@ public class MqttDeviceSteps {
 
     @Then("a message is published to Kafka")
     public void aMessageIsPublishedToKafka(final Map<String, String> parameters) {
-        final String description = getString(parameters, PlatformDistributionAutomationKeys.DESCRIPTION);
-        final String kind = getString(parameters, PlatformDistributionAutomationKeys.KIND);
-        final PowerSystemResource powerSystemResource = new PowerSystemResource(new Utf8(description), null,
-                new ArrayList<Name>());
+
+        final Voltage voltage = new Voltage(UnitMultiplier.k, UnitSymbol.V, LOW_VOLTAGE_NOMINAL);
+
+        final ConductingEquipment powerSystemResource = new ConductingEquipment(
+                new BaseVoltage(new Utf8("LS"), voltage), this.getNames(parameters));
 
         final List<Analog> measurements = new ArrayList<>();
         for (int index = 1; index <= getInteger(parameters,
@@ -96,18 +101,32 @@ public class MqttDeviceSteps {
             final Float value = getFloat(parameters, elementStart + PlatformDistributionAutomationKeys.VALUE);
             measurements.add(this.createAnalog(elementDescription, value, unitSymbol, unitMultiplier));
         }
-        final GridMeasurementPublishedEvent expectedMessage = new GridMeasurementPublishedEvent(
-                System.currentTimeMillis(), new Utf8(description), null, new Utf8(kind), new ArrayList<Name>(),
-                powerSystemResource, measurements);
+
+        final ScadaMeasurementPublishedEvent expectedMessage = new ScadaMeasurementPublishedEvent(measurements,
+                powerSystemResource, System.currentTimeMillis(), null, null);
 
         this.consumer.checkKafkaOutput(expectedMessage);
     }
 
+    private ArrayList<Name> getNames(final Map<String, String> parameters) {
+        final String substationIdentification = getString(parameters,
+                PlatformDistributionAutomationKeys.SUBSTATION_IDENTIFICATION);
+        final String substationName = getString(parameters, PlatformDistributionAutomationKeys.SUBSTATION_NAME);
+        final String bayPosition = getString(parameters, PlatformDistributionAutomationKeys.BAY_POSITION);
+        final String bayIdentification = getString(parameters, PlatformDistributionAutomationKeys.BAY_IDENTIFICATION);
+
+        final ArrayList<Name> names = new ArrayList<>();
+        names.add(new Name(new NameType("gisbehuizingnummer"), substationIdentification));
+        names.add(new Name(new NameType("msr naam"), substationName));
+        names.add(new Name(new NameType("bay positie"), bayPosition));
+        names.add(new Name(new NameType("bay identificatie"), bayIdentification));
+        return names;
+    }
+
     private Analog createAnalog(final String description, final Float value, final UnitSymbol unitSymbol,
             final UnitMultiplier unitMultiplier) {
-        return new Analog(new Utf8(description), UUID.randomUUID().toString(), AccumulationKind.none,
-                MeasuringPeriodKind.none, PhaseCode.none, unitMultiplier, unitSymbol, new ArrayList<Name>(),
-                Arrays.asList(new AnalogValue(value, null, null)));
+        return new Analog(Arrays.asList(new AnalogValue(null, value)), AccumulationKind.none, new Utf8(description),
+                MeasuringPeriodKind.none, unitMultiplier, unitSymbol);
     }
 
 }

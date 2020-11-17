@@ -11,16 +11,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import java.nio.charset.StandardCharsets;
+import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.entities.PendingSetScheduleRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.repositories.OslpDeviceRepository;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.domain.repositories.PendingSetScheduleRequestRepository;
 import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.SsldDeviceSteps;
+import org.opensmartgridplatform.dto.valueobjects.ScheduleMessageDataContainerDto;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.cucumber.java.en.Given;
@@ -41,6 +47,9 @@ public class OslpDeviceSteps {
     @Autowired
     private SsldDeviceSteps ssldDeviceSteps;
 
+    @Autowired
+    private PendingSetScheduleRequestRepository pendingSetScheduleRequestRepository;
+
     @Given("^an ssld oslp device$")
     public void anSsldOslpDevice(final Map<String, String> settings) {
 
@@ -58,6 +67,30 @@ public class OslpDeviceSteps {
         device.setRandomPlatform(0);
         device.updatePublicKey(DEVICE_PUBLIC_KEY);
         this.oslpDeviceRepository.save(device);
+    }
+
+    @Given("^a pending set schedule request that expires within \"([^\"]*)\" minutes$")
+    public void aPendingSetScheduleRequest(final int expiresInMinutes, final Map<String, String> settings) {
+
+        final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+                PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
+        final String deviceUid = getString(settings, PlatformKeys.KEY_DEVICE_UID, PlatformDefaults.DEVICE_UID);
+        final String organisationIdentification = getString(settings, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
+                PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
+
+        final Date expireDateTime = Date.from(ZonedDateTime.now().plusMinutes(expiresInMinutes).toInstant());
+
+        // just add a dummy DeviceRequest and a dummy
+        // ScheduleMessageDataContainerDto
+        final PendingSetScheduleRequest pendingSetScheduleRequest = PendingSetScheduleRequest.builder()
+                .deviceIdentification(deviceIdentification)
+                .deviceUid(deviceUid)
+                .expiredAt(expireDateTime)
+                .deviceRequest(new DeviceRequest(organisationIdentification, deviceIdentification, null, 4))
+                .scheduleMessageDataContainerDto(new ScheduleMessageDataContainerDto.Builder(null).build())
+                .build();
+
+        this.pendingSetScheduleRequestRepository.save(pendingSetScheduleRequest);
     }
 
     @Given("^a single ssld oslp device$")
@@ -93,4 +126,5 @@ public class OslpDeviceSteps {
 
         this.ssldDeviceSteps.theSsldDeviceContains(expectedEntity);
     }
+
 }

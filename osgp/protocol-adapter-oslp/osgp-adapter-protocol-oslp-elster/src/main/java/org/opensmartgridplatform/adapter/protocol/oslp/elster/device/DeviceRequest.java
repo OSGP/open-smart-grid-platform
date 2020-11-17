@@ -7,10 +7,12 @@
  */
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.device;
 
+import java.io.Serializable;
+
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
-public class DeviceRequest {
+public class DeviceRequest implements Serializable {
 
     private final String organisationIdentification;
     private final String deviceIdentification;

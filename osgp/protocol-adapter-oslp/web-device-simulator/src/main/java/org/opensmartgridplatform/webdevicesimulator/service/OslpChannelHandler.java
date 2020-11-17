@@ -12,12 +12,9 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.security.PrivateKey;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
-import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,28 +26,16 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.codec.binary.Base64;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.Minutes;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.opensmartgridplatform.oslp.Oslp;
 import org.opensmartgridplatform.oslp.Oslp.ConfirmRegisterDeviceResponse;
 import org.opensmartgridplatform.oslp.Oslp.DaliConfiguration;
-import org.opensmartgridplatform.oslp.Oslp.GetActualPowerUsageRequest;
-import org.opensmartgridplatform.oslp.Oslp.GetActualPowerUsageResponse;
 import org.opensmartgridplatform.oslp.Oslp.GetFirmwareVersionResponse;
-import org.opensmartgridplatform.oslp.Oslp.GetPowerUsageHistoryRequest;
-import org.opensmartgridplatform.oslp.Oslp.GetPowerUsageHistoryResponse;
 import org.opensmartgridplatform.oslp.Oslp.GetStatusResponse;
-import org.opensmartgridplatform.oslp.Oslp.HistoryTermType;
 import org.opensmartgridplatform.oslp.Oslp.IndexAddressMap;
 import org.opensmartgridplatform.oslp.Oslp.LightValue;
 import org.opensmartgridplatform.oslp.Oslp.LongTermIntervalType;
 import org.opensmartgridplatform.oslp.Oslp.Message;
 import org.opensmartgridplatform.oslp.Oslp.MeterType;
-import org.opensmartgridplatform.oslp.Oslp.PageInfo;
-import org.opensmartgridplatform.oslp.Oslp.PowerUsageData;
-import org.opensmartgridplatform.oslp.Oslp.PsldData;
 import org.opensmartgridplatform.oslp.Oslp.RelayConfiguration;
 import org.opensmartgridplatform.oslp.Oslp.RelayType;
 import org.opensmartgridplatform.oslp.Oslp.SetEventNotificationsRequest;
@@ -60,7 +45,6 @@ import org.opensmartgridplatform.oslp.Oslp.SetLightResponse;
 import org.opensmartgridplatform.oslp.Oslp.SetScheduleRequest;
 import org.opensmartgridplatform.oslp.Oslp.SetScheduleResponse;
 import org.opensmartgridplatform.oslp.Oslp.SetTransitionRequest;
-import org.opensmartgridplatform.oslp.Oslp.SsldData;
 import org.opensmartgridplatform.oslp.Oslp.StartSelfTestResponse;
 import org.opensmartgridplatform.oslp.Oslp.StopSelfTestResponse;
 import org.opensmartgridplatform.oslp.Oslp.TransitionType;
@@ -96,10 +80,6 @@ import io.netty.channel.SimpleChannelInboundHandler;
 public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OslpChannelHandler.class);
-    private static final int CUMULATIVE_BURNING_MINUTES = 600;
-    private static final int INITIAL_BURNING_MINUTES = 100000;
-    private static DateTimeZone localTimeZone = DateTimeZone.forID("Europe/Paris");
-    private static int burningMinutes = INITIAL_BURNING_MINUTES;
     private final Lock lock = new ReentrantLock();
     private final ConcurrentMap<String, Callback> callbacks = new ConcurrentHashMap<>();
     private final List<OutOfSequenceEvent> outOfSequenceList = new ArrayList<>();
@@ -114,8 +94,6 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
     private String oslpSignature;
     @Autowired
     private int connectionTimeout;
-    @Autowired
-    private String firmwareVersion;
     @Autowired
     private String configurationIpConfigFixedIpAddress;
     @Autowired
@@ -215,174 +193,6 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
         return Oslp.Message.newBuilder()
                 .setSetScheduleResponse(SetScheduleResponse.newBuilder().setStatus(Oslp.Status.OK))
                 .build();
-    }
-
-    private static Message createGetActualPowerUsageResponse() {
-        // yyyyMMddhhmmss z
-        final SimpleDateFormat utcTimeFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-        utcTimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-        final Date currentDateTime = new Date();
-        final String utcTimestamp = utcTimeFormat.format(currentDateTime);
-
-        @SuppressWarnings("deprecation")
-        final int actualConsumedPower = currentDateTime.getMinutes();
-
-        return Oslp.Message.newBuilder()
-                .setGetActualPowerUsageResponse(GetActualPowerUsageResponse.newBuilder()
-                        .setPowerUsageData(PowerUsageData.newBuilder()
-                                .setRecordTime(utcTimestamp)
-                                .setMeterType(MeterType.P1)
-                                .setTotalConsumedEnergy(actualConsumedPower * 2L)
-                                .setActualConsumedPower(actualConsumedPower)
-                                .setPsldData(PsldData.newBuilder().setTotalLightingHours(actualConsumedPower * 3))
-                                .setSsldData(SsldData.newBuilder()
-                                        .setActualCurrent1(1)
-                                        .setActualCurrent2(2)
-                                        .setActualCurrent3(3)
-                                        .setActualPower1(1)
-                                        .setActualPower2(2)
-                                        .setActualPower3(3)
-                                        .setAveragePowerFactor1(1)
-                                        .setAveragePowerFactor2(2)
-                                        .setAveragePowerFactor3(3)
-                                        .addRelayData(Oslp.RelayData.newBuilder()
-                                                .setIndex(ByteString.copyFrom(new byte[] { 2 }))
-                                                .setTotalLightingMinutes(480))
-                                        .addRelayData(Oslp.RelayData.newBuilder()
-                                                .setIndex(ByteString.copyFrom(new byte[] { 3 }))
-                                                .setTotalLightingMinutes(480))
-                                        .addRelayData(Oslp.RelayData.newBuilder()
-                                                .setIndex(ByteString.copyFrom(new byte[] { 4 }))
-                                                .setTotalLightingMinutes(480))))
-                        .setStatus(Oslp.Status.OK))
-                .build();
-    }
-
-    private static Message createGetPowerUsageHistoryWithDatesResponse(
-            final GetPowerUsageHistoryRequest powerUsageHistoryRequest) {
-
-        final DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyyMMddHHmmss").withZoneUTC();
-
-        // 20140405 220000
-        final DateTime now = new DateTime();
-        final DateTime dateTimeFrom = formatter.parseDateTime(powerUsageHistoryRequest.getTimePeriod().getStartTime());
-        DateTime dateTimeUntil = formatter.parseDateTime(powerUsageHistoryRequest.getTimePeriod().getEndTime());
-
-        final int itemsPerPage = 2;
-        final int intervalMinutes = powerUsageHistoryRequest.getTermType() == HistoryTermType.Short ? 60 : 1440;
-        final int usagePerItem = powerUsageHistoryRequest.getTermType() == HistoryTermType.Short ? 2400 : 57600;
-
-        // If from in the future, return emtpy list
-        final List<PowerUsageData> powerUsageDataList = new ArrayList<>();
-        if (dateTimeFrom.isAfter(now)) {
-            return createUsageMessage(1, itemsPerPage, 1, powerUsageDataList);
-        }
-
-        // Ensure until date is not in future
-        dateTimeUntil = correctUsageUntilDate(dateTimeUntil, powerUsageHistoryRequest.getTermType());
-
-        final int queryInterval = Minutes.minutesBetween(dateTimeFrom, dateTimeUntil).getMinutes();
-        final int totalNumberOfItems = queryInterval / intervalMinutes;
-        int numberOfPages = (int) Math.ceil((double) totalNumberOfItems / (double) itemsPerPage);
-        if (numberOfPages == 0) {
-            numberOfPages = 1;
-        }
-
-        // Determine page number
-        int currentPageNumber;
-        if (powerUsageHistoryRequest.getPage() == 0) {
-            currentPageNumber = 1;
-        } else {
-            currentPageNumber = powerUsageHistoryRequest.getPage();
-        }
-
-        int page = 1;
-        int itemsToSkip = 0;
-        while (currentPageNumber != page) {
-            itemsToSkip += itemsPerPage;
-            page++;
-        }
-
-        // Advance time to correct page starting point, last to first (like real
-        // device)
-        DateTime pageStartTime = dateTimeUntil.minusMinutes(intervalMinutes * itemsToSkip)
-                .minusMinutes(intervalMinutes);
-        final int itemsOnPage = Math.min(Math.abs(totalNumberOfItems - itemsToSkip), itemsPerPage);
-
-        // Advance usage to start of page
-        int totalUsage = (totalNumberOfItems * usagePerItem) - (usagePerItem * itemsToSkip);
-
-        // Fill page with items
-        for (int i = 0; i < itemsOnPage; i++) {
-            final int range = (100) + 1;
-            final int randomCumulativeMinutes = new Random().nextInt(range) + 100;
-
-            // Increase the meter
-            final double random = usagePerItem - (usagePerItem / 50d * Math.random());
-            totalUsage -= random;
-            // Add power usage item to response
-            final PowerUsageData powerUsageData = PowerUsageData.newBuilder()
-                    .setRecordTime(pageStartTime.toString(formatter))
-                    .setMeterType(MeterType.P1)
-                    .setTotalConsumedEnergy(totalUsage)
-                    .setActualConsumedPower((int) random)
-                    .setPsldData(PsldData.newBuilder().setTotalLightingHours((int) random * 3))
-                    .setSsldData(SsldData.newBuilder()
-                            .setActualCurrent1(10)
-                            .setActualCurrent2(20)
-                            .setActualCurrent3(30)
-                            .setActualPower1(10)
-                            .setActualPower2(20)
-                            .setActualPower3(30)
-                            .setAveragePowerFactor1(10)
-                            .setAveragePowerFactor2(20)
-                            .setAveragePowerFactor3(30)
-                            .addRelayData(Oslp.RelayData.newBuilder()
-                                    .setIndex(ByteString.copyFrom(new byte[] { 2 }))
-                                    .setTotalLightingMinutes(burningMinutes - randomCumulativeMinutes))
-                            .addRelayData(Oslp.RelayData.newBuilder()
-                                    .setIndex(ByteString.copyFrom(new byte[] { 3 }))
-                                    .setTotalLightingMinutes(burningMinutes - randomCumulativeMinutes))
-                            .addRelayData(Oslp.RelayData.newBuilder()
-                                    .setIndex(ByteString.copyFrom(new byte[] { 4 }))
-                                    .setTotalLightingMinutes(burningMinutes - randomCumulativeMinutes)))
-                    .build();
-
-            powerUsageDataList.add(powerUsageData);
-            pageStartTime = pageStartTime.minusMinutes(intervalMinutes);
-
-            burningMinutes -= CUMULATIVE_BURNING_MINUTES;
-        }
-
-        return createUsageMessage(currentPageNumber, itemsPerPage, numberOfPages, powerUsageDataList);
-    }
-
-    private static DateTime correctUsageUntilDate(final DateTime dateTimeUntil, final HistoryTermType termType) {
-        final DateTime now = new DateTime();
-        if (dateTimeUntil.isAfter(now)) {
-            if (termType == HistoryTermType.Short) {
-                return now.hourOfDay().roundCeilingCopy();
-            } else {
-                return now.withZone(localTimeZone).dayOfWeek().roundCeilingCopy().withZone(DateTimeZone.UTC);
-            }
-        }
-
-        return dateTimeUntil;
-    }
-
-    private static Message createUsageMessage(final int currentPageNumber, final int itemsPerPage,
-            final int numberOfPages, final List<PowerUsageData> powerUsageDataList) {
-        return Oslp.Message.newBuilder()
-                .setGetPowerUsageHistoryResponse(GetPowerUsageHistoryResponse.newBuilder()
-                        .addAllPowerUsageData(powerUsageDataList)
-                        .setPageInfo(PageInfo.newBuilder()
-                                .setCurrentPage(currentPageNumber)
-                                .setPageSize(itemsPerPage)
-                                .setTotalPages(numberOfPages))
-                        .setStatus(Oslp.Status.OK))
-                .build();
-
     }
 
     private static Message createSwitchConfigurationResponse() {
@@ -722,7 +532,7 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
      * request, suppress the SonarQube check for now.
      */
     @SuppressWarnings("squid:MethodCyclomaticComplexity")
-    private Oslp.Message checkForRequest(final Oslp.Message request, final Device device) throws ParseException {
+    private Oslp.Message checkForRequest(final Oslp.Message request, final Device device) {
 
         Oslp.Message response = null;
 
@@ -750,7 +560,7 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
 
             response = createUpdateFirmwareResponse();
         } else if (request.hasGetFirmwareVersionRequest()) {
-            response = createGetFirmwareVersionResponse(this.firmwareVersion);
+            response = createGetFirmwareVersionResponse(device.getFirmwareVersion());
         } else if (request.hasSwitchFirmwareRequest()) {
             response = createSwitchFirmwareResponse();
         } else if (request.hasUpdateDeviceSslCertificationRequest()) {
@@ -771,14 +581,6 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
             response = this.createGetConfigurationResponse(device);
         } else if (request.hasSwitchConfigurationRequest()) {
             response = createSwitchConfigurationResponse();
-        } else if (request.hasGetActualPowerUsageRequest()) {
-            this.handleGetActualPowerUsageRequest(device, request.getGetActualPowerUsageRequest());
-
-            response = createGetActualPowerUsageResponse();
-        } else if (request.hasGetPowerUsageHistoryRequest()) {
-            this.handleGetPowerUsageHistoryRequest(device, request.getGetPowerUsageHistoryRequest());
-
-            response = createGetPowerUsageHistoryWithDatesResponse(request.getGetPowerUsageHistoryRequest());
         } else if (request.hasGetStatusRequest()) {
             response = this.createGetStatusResponse(device);
         } else if (request.hasResumeScheduleRequest()) {
@@ -1102,18 +904,6 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
 
     private void handleGetConfigurationRequest(final Device device, final Oslp.GetConfigurationRequest request) {
         LOGGER.debug("handle GetConfigurationRequest for device: {}, with serialized size of {}",
-                device.getDeviceIdentification(), request.getSerializedSize());
-        // Do nothing for now.
-    }
-
-    private void handleGetActualPowerUsageRequest(final Device device, final GetActualPowerUsageRequest request) {
-        LOGGER.debug("handle GetActualPowerUsageRequest for device: {}, with serialized size of {}",
-                device.getDeviceIdentification(), request.getSerializedSize());
-        // Do nothing for now.
-    }
-
-    private void handleGetPowerUsageHistoryRequest(final Device device, final GetPowerUsageHistoryRequest request) {
-        LOGGER.debug("handle GetPowerUsageHistoryRequest for device: {}, with serialized size of {}",
                 device.getDeviceIdentification(), request.getSerializedSize());
         // Do nothing for now.
     }
