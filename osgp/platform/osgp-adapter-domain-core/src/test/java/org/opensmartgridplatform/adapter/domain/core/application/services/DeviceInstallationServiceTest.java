@@ -1,3 +1,12 @@
+/**
+ * Copyright 2020 Alliander N.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
+
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,15 +50,6 @@ import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-
-/**
- * Copyright 2020 Alliander N.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
 
 @ExtendWith(MockitoExtension.class)
 public class DeviceInstallationServiceTest {
@@ -145,8 +145,8 @@ public class DeviceInstallationServiceTest {
                 MESSAGE_PRIORITY, ResponseMessageResultType.NOT_OK, null);
 
         verify(this.webServiceResponseMessageSender).send(this.argumentResponseMessage.capture());
-        assertThat(this.argumentResponseMessage.getValue()).usingRecursiveComparison().isEqualTo(
-                this.createNewResponseMessage(ResponseMessageResultType.NOT_OK, null, null));
+        assertThat(this.argumentResponseMessage.getValue()).usingRecursiveComparison()
+                .isEqualTo(this.createNewResponseMessage(ResponseMessageResultType.NOT_OK, null, null));
     }
 
     @Test
@@ -154,9 +154,9 @@ public class DeviceInstallationServiceTest {
         final TariffValue editedTariffValue = new TariffValue();
         editedTariffValue.setHigh(true);
         editedTariffValue.setIndex(10);
-        final DeviceStatusMapped deviceStatus = new DeviceStatusMapped(null,
-                Arrays.asList(new LightValue(0, true, 50), new LightValue(MESSAGE_PRIORITY, true, 75),
-                        new LightValue(2, false, 0)), LinkType.ETHERNET, LinkType.GPRS, LightType.ONE_TO_TEN_VOLT, 0);
+        final DeviceStatusMapped deviceStatus = new DeviceStatusMapped(null, Arrays.asList(new LightValue(0, true, 50),
+                new LightValue(MESSAGE_PRIORITY, true, 75), new LightValue(2, false, 0)), LinkType.ETHERNET,
+                LinkType.GPRS, LightType.ONE_TO_TEN_VOLT, 0);
         when(this.domainCoreMapper.map(null, DeviceStatus.class)).thenReturn(deviceStatus);
 
         final Device mockedDevice = Mockito.mock(Device.class);
@@ -167,8 +167,8 @@ public class DeviceInstallationServiceTest {
                 MESSAGE_PRIORITY, ResponseMessageResultType.OK, null);
 
         verify(this.webServiceResponseMessageSender).send(this.argumentResponseMessage.capture());
-        assertThat(this.argumentResponseMessage.getValue()).usingRecursiveComparison().isEqualTo(
-                this.createNewResponseMessage(ResponseMessageResultType.OK, null, deviceStatus));
+        assertThat(this.argumentResponseMessage.getValue()).usingRecursiveComparison()
+                .isEqualTo(this.createNewResponseMessage(ResponseMessageResultType.OK, null, deviceStatus));
     }
 
     @Test
@@ -183,11 +183,12 @@ public class DeviceInstallationServiceTest {
                 MESSAGE_PRIORITY, ResponseMessageResultType.OK, null);
 
         verify(this.webServiceResponseMessageSender).send(this.argumentResponseMessage.capture());
-        assertThat(this.argumentResponseMessage.getValue()).usingRecursiveComparison().isEqualTo(
-                this.createNewResponseMessage(ResponseMessageResultType.NOT_OK,
+        assertThat(this.argumentResponseMessage.getValue()).usingRecursiveComparison()
+                .isEqualTo(this.createNewResponseMessage(ResponseMessageResultType.NOT_OK,
                         new TechnicalException(ComponentType.DOMAIN_CORE,
                                 "Light measurement device was not able to report light sensor status",
-                                new NoDeviceResponseException()), null));
+                                new NoDeviceResponseException()),
+                        null));
     }
 
     @Test
@@ -206,8 +207,9 @@ public class DeviceInstallationServiceTest {
                 MESSAGE_PRIORITY, ResponseMessageResultType.OK, null);
 
         verify(this.webServiceResponseMessageSender).send(this.argumentResponseMessage.capture());
-        assertThat(this.argumentResponseMessage.getValue()).usingRecursiveComparison().ignoringFields(
-                "dataObject").isEqualTo(this.createNewResponseMessage(ResponseMessageResultType.OK, null, null));
+        assertThat(this.argumentResponseMessage.getValue()).usingRecursiveComparison()
+                .ignoringFields("dataObject")
+                .isEqualTo(this.createNewResponseMessage(ResponseMessageResultType.OK, null, null));
     }
 
     @Test
@@ -224,10 +226,13 @@ public class DeviceInstallationServiceTest {
                 MESSAGE_PRIORITY, ResponseMessageResultType.OK, null);
 
         verify(this.webServiceResponseMessageSender).send(this.argumentResponseMessage.capture());
-        assertThat(this.argumentResponseMessage.getValue()).usingRecursiveComparison().ignoringFields(
-                "dataObject").isEqualTo(this.createNewResponseMessage(ResponseMessageResultType.NOT_OK,
-                new TechnicalException(ComponentType.DOMAIN_CORE, "SSLD was not able to report relay status",
-                        new NoDeviceResponseException()), null));
+        assertThat(this.argumentResponseMessage.getValue()).usingRecursiveComparison()
+                .ignoringFields("dataObject")
+                .isEqualTo(
+                        this.createNewResponseMessage(ResponseMessageResultType.NOT_OK,
+                                new TechnicalException(ComponentType.DOMAIN_CORE,
+                                        "SSLD was not able to report relay status", new NoDeviceResponseException()),
+                                null));
     }
 
     @Test
@@ -268,8 +273,12 @@ public class DeviceInstallationServiceTest {
 
     private ResponseMessage createNewResponseMessage(final ResponseMessageResultType resultType,
             final OsgpException exception, final Serializable dataObject) {
-        return ResponseMessage.newResponseMessageBuilder().withIds(CORRELATION_IDS).withResult(
-                resultType).withOsgpException(exception).withDataObject(dataObject).withMessagePriority(
-                MESSAGE_PRIORITY).build();
+        return ResponseMessage.newResponseMessageBuilder()
+                .withIds(CORRELATION_IDS)
+                .withResult(resultType)
+                .withOsgpException(exception)
+                .withDataObject(dataObject)
+                .withMessagePriority(MESSAGE_PRIORITY)
+                .build();
     }
 }
