@@ -1,10 +1,11 @@
 /**
- * Copyright 2020 Smart Society Services B.V.
+ * Copyright 2020 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
@@ -26,7 +27,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetOutagesRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.OutageDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.OutageMessageDataResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetOutagesResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,7 @@ public class GetOutagesCommandExecutor extends AbstractCommandExecutor<GetOutage
 
     @Override
     public ActionResponseDto asBundleResponse(final List<OutageDto> executionResult) throws ProtocolAdapterException {
-        return new OutageMessageDataResponseDto(executionResult);
+        return new GetOutagesResponseDto(executionResult);
     }
 
     @Override

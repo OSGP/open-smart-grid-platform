@@ -7,7 +7,7 @@
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  */
-package org.opensmartgridplatform.dto.valueobjects.smartmetering;
+package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
@@ -17,15 +17,15 @@ import org.joda.time.DateTime;
 
 @ToString
 @Getter
-public class OutageDto implements Serializable {
+public class Outage implements Serializable {
 
     private static final long serialVersionUID = 3450617767283546874L;
 
-    private final DateTime timestamp;
+    private final DateTime endTime;
     private final Long duration;
 
-    public OutageDto(final DateTime timestamp, final Long duration) {
-        this.timestamp = timestamp;
+    public Outage(final DateTime endTime, final Long duration) {
+        this.endTime = endTime;
         this.duration = duration;
     }
 }

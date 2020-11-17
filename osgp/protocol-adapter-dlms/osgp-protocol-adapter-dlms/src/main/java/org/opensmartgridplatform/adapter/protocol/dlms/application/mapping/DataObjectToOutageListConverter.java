@@ -1,10 +1,11 @@
 /**
- * Copyright 2020 Smart Society Services B.V.
+ * Copyright 2020 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.mapping;
 
@@ -66,9 +67,8 @@ public class DataObjectToOutageListConverter {
 
         final DateTime endTime = this.extractDateTime(outageData);
         final Long duration = this.extractEventDuration(outageData);
-        final String eventLogCategoryName = EventLogCategoryDto.POWER_FAILURE_EVENT_LOG.name();
 
-        OutageDto outage = new OutageDto(endTime, 1, eventLogCategoryName, duration);
+        OutageDto outage = new OutageDto(endTime, duration);
 
         log.info("Converted dataObject to outage: {}", outage);
         return outage;

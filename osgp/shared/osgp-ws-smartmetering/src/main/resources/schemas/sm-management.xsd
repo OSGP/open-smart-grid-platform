@@ -51,7 +51,7 @@
     <xsd:complexContent>
       <xsd:extension base="common:Response">
         <xsd:sequence>
-          <xsd:element name="Outage" type="tns:Outage"
+          <xsd:element name="Outages" type="tns:Outage"
                        maxOccurs="unbounded" minOccurs="0"/>
         </xsd:sequence>
       </xsd:extension>

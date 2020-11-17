@@ -25,7 +25,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.FindEventsReques
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetOutagesRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetOutagesRequestList;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.OutageDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.OutageMessageDataResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetOutagesResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceCommunicationSettingsRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceCommunicationSettingsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelRequestDataDto;
@@ -75,7 +75,7 @@ public class ManagementService {
     }
 
     // === GET OUTAGES ===
-    public OutageMessageDataResponseDto getOutages(DlmsConnectionManager conn, DlmsDevice device,
+    public GetOutagesResponseDto getOutages(DlmsConnectionManager conn, DlmsDevice device,
             GetOutagesRequestList getOutagesRequestList) throws ProtocolAdapterException {
         
         final List<OutageDto> outages = new ArrayList<>();
@@ -90,7 +90,7 @@ public class ManagementService {
             outages.addAll(this.getOutagesCommandExecutor.execute(conn, device, getOutagesRequestDto));
         }
 
-        return new OutageMessageDataResponseDto(outages);
+        return new GetOutagesResponseDto(outages);
     }
     
     public void changeInDebugMode(final DlmsDevice device, final boolean debugMode) {
