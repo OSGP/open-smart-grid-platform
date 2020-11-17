@@ -16,4 +16,5 @@ public interface EncryptionDelegate {
     byte[] decrypt(EncryptedSecret secret, String keyReference) throws EncrypterException;
     byte[] generateAes128BitsSecret(EncryptionProviderType encryptionProviderType, String keyReference)
             throws EncrypterException;
+    int getSecretByteLength(EncryptionProviderType encryptionProviderType);
 }

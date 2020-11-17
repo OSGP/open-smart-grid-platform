@@ -49,5 +49,10 @@ public class DefaultEncryptionDelegate implements EncryptionDelegate {
             final String keyReference) {
         return this.getEncryptionProvider(encryptionProviderType).generateAes128BitsSecret(keyReference);
     }
+
+    @Override
+    public int getSecretByteLength(EncryptionProviderType encryptionProviderType) {
+        return this.getEncryptionProvider(encryptionProviderType).getSecretByteLength();
+    }
 }
 

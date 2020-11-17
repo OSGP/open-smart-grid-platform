@@ -74,16 +74,17 @@ public class SecretManagementServiceTest {
         final DbEncryptedSecret secret = new DbEncryptedSecret();
         secret.setSecretType(SecretType.E_METER_MASTER_KEY);
         secret.setEncryptionKeyReference(keyReference);
-        secret.setEncodedSecret("ABCDEF0123456789");
+        secret.setEncodedSecret("ABCDEF01234567890123456789ABCDEF");
         final List<DbEncryptedSecret> secretList = Arrays.asList(secret);
-        final byte[] decryptedSecret = "secret".getBytes();
-        final byte[] rsaSecret = "terces".getBytes();
+        final byte[] decryptedSecret = "secret0000000001".getBytes();
+        final byte[] rsaSecret = "1000000000terces".getBytes();
 
         //WHEN
         when(this.secretRepository.findSecrets(SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.ACTIVE))
                 .thenReturn(secretList);
         when(this.encryptionDelegate.decrypt(any(), any())).thenReturn(decryptedSecret);
         when(this.rsaEncryptionProvider.encrypt(any())).thenReturn(rsaSecret);
+        //when(this.encryptionDelegate.getSecretByteLength(any())).thenReturn(16);
         final List<TypedSecret> typedSecrets = this.service
                 .retrieveSecrets(SOME_DEVICE, Arrays.asList(SecretType.E_METER_MASTER_KEY));
 
@@ -104,12 +105,13 @@ public class SecretManagementServiceTest {
         final DbEncryptedSecret secret = new DbEncryptedSecret();
         secret.setSecretType(SecretType.E_METER_MASTER_KEY);
         secret.setEncryptionKeyReference(keyReference);
-        secret.setEncodedSecret("0123456789ABCDEF");
+        secret.setEncodedSecret("0123456789ABCDEF0123456789ABCDEF");
         final List<DbEncryptedSecret> secretPage = Arrays.asList(secret);
 
         //WHEN
         when(this.secretRepository.findSecrets(SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.ACTIVE))
                 .thenReturn(secretPage);
+        //when(this.encryptionDelegate.getSecretByteLength(any())).thenReturn(16);
         when(this.encryptionDelegate.decrypt(any(), any())).thenThrow(new EncrypterException("Decryption error"));
 
         //THEN
@@ -141,11 +143,12 @@ public class SecretManagementServiceTest {
     @Test
     public void storeSecrets() throws Exception {
         //GIVEN
-        final TypedSecret typedSecret = new TypedSecret("rsaSecret".getBytes(), SecretType.E_METER_MASTER_KEY);
+        final TypedSecret typedSecret = new TypedSecret("rsaSecret00000001".getBytes(), SecretType.E_METER_MASTER_KEY);
         final DbEncryptionKeyReference keyReference = new DbEncryptionKeyReference();
         keyReference.setEncryptionProviderType(ENCRYPTION_PROVIDER_TYPE);
         keyReference.setReference("1");
-        final EncryptedSecret encryptedSecret = new EncryptedSecret(ENCRYPTION_PROVIDER_TYPE, "aesSecret".getBytes());
+        final EncryptedSecret encryptedSecret = new EncryptedSecret(ENCRYPTION_PROVIDER_TYPE,
+                "aesSecret0000001".getBytes());
 
         //WHEN
         when(this.secretRepository.getSecretCount(SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.NEW))
@@ -153,6 +156,7 @@ public class SecretManagementServiceTest {
         when(this.keyRepository.findByTypeAndValid(any(), any())).thenReturn(Arrays.asList(keyReference));
         when(this.keyRepository.findByTypeAndReference(ENCRYPTION_PROVIDER_TYPE, "1")).thenReturn(keyReference);
         when(this.encryptionDelegate.encrypt(any(), any(), anyString())).thenReturn(encryptedSecret);
+        //when(this.encryptionDelegate.getSecretByteLength(any())).thenReturn(16);
         this.service.storeSecrets("SOME_DEVICE", Arrays.asList(typedSecret));
         //THEN
         final ArgumentCaptor<List<DbEncryptedSecret>> secretListArgumentCaptor =
@@ -178,8 +182,6 @@ public class SecretManagementServiceTest {
         keyReference.setEncryptionProviderType(ENCRYPTION_PROVIDER_TYPE);
         keyReference.setReference("1");
         //WHEN
-        when(this.keyRepository.findByTypeAndValid(any(), any())).thenReturn(Arrays.asList(keyReference));
-        when(this.encryptionDelegate.encrypt(any(), any(), anyString())).thenReturn(encryptedSecret);
         when(this.secretRepository.getSecretCount(SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.NEW))
                 .thenReturn(1);
         //THEN
@@ -251,11 +253,12 @@ public class SecretManagementServiceTest {
     @Test
     public void storeSecrets_existingSecret() throws Exception {
         //GIVEN
-        final TypedSecret typedSecret = new TypedSecret("$3cr3t".getBytes(), SecretType.E_METER_MASTER_KEY);
+        final TypedSecret typedSecret = new TypedSecret("n3w$3cr3t0000001".getBytes(), SecretType.E_METER_MASTER_KEY);
         final DbEncryptionKeyReference keyReference = new DbEncryptionKeyReference();
         keyReference.setEncryptionProviderType(ENCRYPTION_PROVIDER_TYPE);
         keyReference.setReference("1");
-        final EncryptedSecret encryptedSecret = new EncryptedSecret(ENCRYPTION_PROVIDER_TYPE, "$3cr3t".getBytes());
+        final EncryptedSecret encryptedSecret = new EncryptedSecret(ENCRYPTION_PROVIDER_TYPE,
+                "n3w$3cr3t0000001".getBytes());
         final DbEncryptedSecret existingDbSecret = new DbEncryptedSecret();
         existingDbSecret.setCreationTime(new Date());
         existingDbSecret.setSecretType(SecretType.E_METER_MASTER_KEY);
@@ -270,6 +273,7 @@ public class SecretManagementServiceTest {
         when(this.keyRepository.findByTypeAndReference(ENCRYPTION_PROVIDER_TYPE, "1")).thenReturn(keyReference);
         when(this.encryptionDelegate.encrypt(any(), any(), anyString()))
                 .thenReturn(encryptedSecret);   //encrypt new DB secret
+        //when(this.encryptionDelegate.getSecretByteLength(any())).thenReturn(16);
         this.service.storeSecrets("SOME_DEVICE", Arrays.asList(typedSecret));
         //THEN
         final ArgumentCaptor<List<DbEncryptedSecret>> secretListArgumentCaptor =
@@ -370,6 +374,7 @@ public class SecretManagementServiceTest {
         when(this.encryptionDelegate.generateAes128BitsSecret(ENCRYPTION_PROVIDER_TYPE, reference))
                 .thenReturn(aesSecret);
         when(this.encryptionDelegate.decrypt(any(), any())).thenReturn(secret);
+        //when(this.encryptionDelegate.getSecretByteLength(any())).thenReturn(16);
         when(this.rsaEncryptionProvider.encrypt(any())).thenReturn(rsaSecret);
         List<TypedSecret> secrets = this.service
                 .generateAndStoreSecrets(SOME_DEVICE, Arrays.asList(SecretType.E_METER_AUTHENTICATION_KEY));

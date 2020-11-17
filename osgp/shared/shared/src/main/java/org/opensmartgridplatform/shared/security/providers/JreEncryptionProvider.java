@@ -34,6 +34,7 @@ public class JreEncryptionProvider extends AbstractEncryptionProvider implements
     private static final String PROVIDER = "SunJCE";
     private static final String FORMAT = "RAW";
     private static final byte[] IV = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+    private static final int KEY_LENGTH = 16;
 
     private final byte[] key;
 
@@ -91,7 +92,7 @@ public class JreEncryptionProvider extends AbstractEncryptionProvider implements
     public byte[] generateAes128BitsSecret(String keyReference) throws EncrypterException {
         try {
             KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
-            keyGenerator.init(128);
+            keyGenerator.init(KEY_LENGTH*8);
             return this.encrypt(keyGenerator.generateKey().getEncoded(),keyReference).getSecret();
         } catch (NoSuchAlgorithmException exc) {
             throw new EncrypterException("Could not generate secret", exc);
@@ -101,5 +102,10 @@ public class JreEncryptionProvider extends AbstractEncryptionProvider implements
     @Override
     public EncryptionProviderType getType() {
         return EncryptionProviderType.JRE;
+    }
+
+    @Override
+    public int getSecretByteLength() {
+        return KEY_LENGTH;
     }
 }

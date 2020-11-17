@@ -194,12 +194,9 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
         final Key secretkeySpec = new SecretKeySpec(mbusDefaultKey, "AES");
 
         try {
-
             final Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
-
             final IvParameterSpec params = new IvParameterSpec(new byte[16]);
             cipher.init(Cipher.ENCRYPT_MODE, secretkeySpec, params);
-
             return cipher.doFinal(mbusUserKey);
 
         } catch (final NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {

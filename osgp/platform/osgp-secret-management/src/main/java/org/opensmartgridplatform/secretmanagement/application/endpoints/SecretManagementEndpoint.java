@@ -47,6 +47,8 @@ public class SecretManagementEndpoint {
 
     private static final String NAMESPACE_URI =
             "http://www.opensmartgridplatform" + ".org/schemas/security/secretmanagement";
+    private static final String STR_MISSING_SECRET_TYPES = "Missing input: secret types";
+    private static final String STR_MISSING_TYPED_SECRETS = "Missing input: typed secrets";
 
     private final SecretManagementService secretManagementService;
     private final SoapEndpointDataTypeConverter converter;
@@ -67,7 +69,7 @@ public class SecretManagementEndpoint {
         final GetSecretsResponse response = new GetSecretsResponse();
         final SecretTypes soapSecretTypes = request.getSecretTypes();
         if (soapSecretTypes == null) {
-            throw new TechnicalException("Missing input: secret types");
+            throw new TechnicalException(STR_MISSING_SECRET_TYPES);
         }
         final List<SecretType> secretTypeList = this.converter.convertToSecretTypes(soapSecretTypes);
         final List<TypedSecret> typedSecrets = this.secretManagementService.retrieveSecrets(request.getDeviceId(),
@@ -89,7 +91,7 @@ public class SecretManagementEndpoint {
         final GetNewSecretsResponse response = new GetNewSecretsResponse();
         final SecretTypes soapSecretTypes = request.getSecretTypes();
         if (soapSecretTypes == null) {
-            throw new TechnicalException("Missing input: secret types");
+            throw new TechnicalException(STR_MISSING_SECRET_TYPES);
         }
         final List<SecretType> secretTypeList = this.converter.convertToSecretTypes(soapSecretTypes);
         final List<TypedSecret> typedSecrets = this.secretManagementService.retrieveNewSecrets(request.getDeviceId(),
@@ -112,7 +114,7 @@ public class SecretManagementEndpoint {
         final StoreSecretsResponse response = new StoreSecretsResponse();
         final TypedSecrets soapTypedSecrets = request.getTypedSecrets();
         if (soapTypedSecrets == null) {
-            throw new TechnicalException("Missing input: typed secrets");
+            throw new TechnicalException(STR_MISSING_TYPED_SECRETS);
         }
         final List<TypedSecret> typedSecretList = this.converter.convertToTypedSecrets(soapTypedSecrets);
         this.secretManagementService.storeSecrets(request.getDeviceId(), typedSecretList);
@@ -133,7 +135,7 @@ public class SecretManagementEndpoint {
         final GenerateAndStoreSecretsResponse response = new GenerateAndStoreSecretsResponse();
         final SecretTypes soapSecretTypes = request.getSecretTypes();
         if (soapSecretTypes == null) {
-            throw new TechnicalException("Missing input: typed secrets");
+            throw new TechnicalException(STR_MISSING_SECRET_TYPES);
         }
         final List<SecretType> secretTypeList = this.converter.convertToSecretTypes(soapSecretTypes);
         List<TypedSecret> typedSecretList = this.secretManagementService.generateAndStoreSecrets(request.getDeviceId(),
@@ -168,7 +170,7 @@ public class SecretManagementEndpoint {
         final ActivateSecretsResponse response = new ActivateSecretsResponse();
         final SecretTypes soapSecretTypes = request.getSecretTypes();
         if (soapSecretTypes == null) {
-            throw new TechnicalException("Missing input: typed secrets");
+            throw new TechnicalException(STR_MISSING_SECRET_TYPES);
         }
         try {
             this.secretManagementService.activateNewSecrets(request.getDeviceId(),

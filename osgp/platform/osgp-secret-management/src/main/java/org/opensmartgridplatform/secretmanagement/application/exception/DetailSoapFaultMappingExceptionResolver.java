@@ -26,7 +26,9 @@ public class DetailSoapFaultMappingExceptionResolver extends SoapFaultMappingExc
     protected void customizeFault(Object endpoint, Exception ex, SoapFault fault) {
         log.error("Exception occured during SOAP request processing", ex);
         SoapFaultDetail detail = fault.addFaultDetail();
-
+        if(ex instanceof ExceptionWrapper) {
+            this.customizeFault(endpoint, (Exception) ex.getCause(), fault);
+        }
         if (ex.getMessage() != null) {
             String messageText = ex.getMessage();
             if (ex.getCause() != null) {

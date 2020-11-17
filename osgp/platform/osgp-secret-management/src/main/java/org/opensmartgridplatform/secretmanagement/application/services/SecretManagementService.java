@@ -26,9 +26,13 @@ import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptio
 import org.opensmartgridplatform.secretmanagement.application.domain.SecretStatus;
 import org.opensmartgridplatform.secretmanagement.application.domain.SecretType;
 import org.opensmartgridplatform.secretmanagement.application.domain.TypedSecret;
+import org.opensmartgridplatform.secretmanagement.application.exception.ExceptionWrapper;
 import org.opensmartgridplatform.secretmanagement.application.repository.DbEncryptedSecretRepository;
 import org.opensmartgridplatform.secretmanagement.application.repository.DbEncryptionKeyRepository;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.security.EncryptedSecret;
 import org.opensmartgridplatform.shared.security.EncryptionDelegate;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
@@ -90,13 +94,14 @@ public class SecretManagementService {
             return new EncryptedTypedSecret(type);
         }
 
-        private static EncryptedTypedSecret fromDbEncryptedSecret(DbEncryptedSecret dbEncryptedSecret) {
+        private static EncryptedTypedSecret fromDbEncryptedSecret(DbEncryptedSecret dbEncryptedSecret)
+                throws FunctionalException {
             byte[] aesEncrypted;
             try {
                 aesEncrypted = HexUtils.fromHexString(dbEncryptedSecret.getEncodedSecret());
-            } catch(IllegalArgumentException iae) {
-                throw new EncrypterException(String.format("Illegal value for encoded secret: %s",
-                        dbEncryptedSecret.getEncodedSecret()), iae);
+            } catch (IllegalArgumentException iae) {
+                throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT,
+                        ComponentType.SECRET_MANAGEMENT, iae);
             }
             String keyReference = dbEncryptedSecret.getEncryptionKeyReference().getReference();
             EncryptionProviderType providerType = dbEncryptedSecret.getEncryptionKeyReference()
@@ -130,7 +135,8 @@ public class SecretManagementService {
         if (keyRefs.size() > 1) {
             throw new IllegalStateException("Multiple encryption keys found that are valid at " + now);
         } else if (keyRefs.size() == 0) {
-            throw new NoSuchElementException("No encryption key of type "+this.encryptionProviderType+" found that is valid at " + now);
+            throw new NoSuchElementException(
+                    "No encryption key of type " + this.encryptionProviderType + " found that is valid at " + now);
         }
         return keyRefs.get(0);
     }
@@ -141,9 +147,9 @@ public class SecretManagementService {
 
     private EncryptedTypedSecret validateNewSecret(final String deviceIdentification,
             final EncryptedTypedSecret secret) {
-        this.checkNrNewSecretsOfType(deviceIdentification, secret.type, 0);
         if (secret.hasNullSecret()) {
-            throw new IllegalArgumentException("No secret string set");
+            FunctionalExceptionType excType = FunctionalExceptionType.KEY_NOT_PRESENT;
+            throw new ExceptionWrapper(new FunctionalException(excType, ComponentType.SECRET_MANAGEMENT));
         }
         return secret;
     }
@@ -192,7 +198,11 @@ public class SecretManagementService {
         final Optional<DbEncryptedSecret> optional = this
                 .getSingleDbEncryptedSecret(deviceIdentification, secretType, status);
         if (optional.isPresent()) {
-            return EncryptedTypedSecret.fromDbEncryptedSecret(optional.get());
+            try {
+                return EncryptedTypedSecret.fromDbEncryptedSecret(optional.get());
+            } catch (FunctionalException e) {
+                throw new ExceptionWrapper(e);
+            }
         } else {
             return EncryptedTypedSecret.getNullInstance(secretType);
         }
@@ -215,6 +225,7 @@ public class SecretManagementService {
     }
 
     public synchronized void storeSecrets(final String deviceIdentification, final List<TypedSecret> secrets) {
+        secrets.forEach(s->this.checkNrNewSecretsOfType(deviceIdentification,s.getSecretType(),0));
         List<EncryptedTypedSecret> aesSecrets = secrets.stream().map(ts -> new EncryptedTypedSecret(ts.getSecret(),
                 ts.getSecretType())).map(this::reencryptRsa2Aes).collect(toList());
         this.storeAesSecrets(deviceIdentification, aesSecrets);
@@ -265,6 +276,7 @@ public class SecretManagementService {
 
     public synchronized List<TypedSecret> generateAndStoreSecrets(String deviceIdentification,
             final List<SecretType> secretTypes) {
+        secretTypes.forEach(st->this.checkNrNewSecretsOfType(deviceIdentification,st,0));
         List<EncryptedTypedSecret> encryptedTypedSecrets = secretTypes.stream().map(this::generateAes128BitsSecret)
                                                                       .collect(Collectors.toList());
         this.storeAesSecrets(deviceIdentification, encryptedTypedSecrets);
@@ -304,16 +316,26 @@ public class SecretManagementService {
     private byte[] reencryptRsa2Aes(byte[] rsa) {
         //Incoming new secret, so use current key
         String keyReference = this.getCurrentKey().getReference();
+        byte[] aes;
         try {
-            return this.encryptionDelegate
+            aes = this.encryptionDelegate
                     .encrypt(this.encryptionProviderType, this.rsaEncrypter.decrypt(rsa), keyReference).getSecret();
         } catch (final EncrypterException ee) {
             throw new IllegalStateException("Could not reencrypt secret from RSA to AES: " + ee.toString(), ee);
         }
+        //if (aes.length != this.encryptionDelegate.getSecretByteLength(this.encryptionProviderType)) {
+        //    throw new ExceptionWrapper(new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT,
+        //            ComponentType.SECRET_MANAGEMENT));
+        //}
+        return aes;
     }
 
     private byte[] reencryptAes2Rsa(byte[] aes, String keyReference, EncryptionProviderType encryptionProviderType) {
-        //Outgoing existing secret, so use AES key provided by parameter for decrypting aes
+        //Outgoing existing secret, so use AES key referenceprovided by parameter for decrypting aes
+        //if (aes.length != this.encryptionDelegate.getSecretByteLength(encryptionProviderType)) {
+        //    throw new ExceptionWrapper(new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT,
+        //            ComponentType.SECRET_MANAGEMENT));
+        //}
         try {
             return this.rsaEncrypter.encrypt(
                     this.encryptionDelegate.decrypt(new EncryptedSecret(encryptionProviderType, aes), keyReference));

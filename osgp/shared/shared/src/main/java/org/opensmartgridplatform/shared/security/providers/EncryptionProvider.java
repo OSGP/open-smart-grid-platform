@@ -25,6 +25,7 @@ public interface EncryptionProvider {
      * goes wrong
      */
     byte[] generateAes128BitsSecret(String keyReference) throws EncrypterException;
+    int getSecretByteLength();
     EncryptionProviderType getType();
 }
 

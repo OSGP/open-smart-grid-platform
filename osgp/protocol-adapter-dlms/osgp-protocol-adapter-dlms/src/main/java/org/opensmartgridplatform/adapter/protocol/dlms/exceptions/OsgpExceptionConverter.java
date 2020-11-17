@@ -1,19 +1,19 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.exceptions;
-
-import org.springframework.stereotype.Component;
 
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.springframework.stereotype.Component;
 
 /**
  * OsgpExceptionConverter
@@ -41,19 +41,18 @@ public class OsgpExceptionConverter {
      */
     public OsgpException ensureOsgpOrTechnicalException(final Exception e) {
 
-        final boolean osgpExceptionNotSupportedByShared = e instanceof ImageTransferException
-                || e instanceof ProtocolAdapterException;
+        final boolean osgpExceptionNotSupportedByShared =
+                e instanceof ImageTransferException || e instanceof ProtocolAdapterException;
 
         if (e instanceof OsgpException && !osgpExceptionNotSupportedByShared) {
             return (OsgpException) e;
-        }
-        if (e instanceof ConnectionException) {
+        } else if (e instanceof ConnectionException) {
             return new FunctionalException(FunctionalExceptionType.CONNECTION_ERROR, ComponentType.PROTOCOL_DLMS,
                     new OsgpException(ComponentType.PROTOCOL_DLMS, e.getMessage()));
+        } else {
+            return new TechnicalException(ComponentType.PROTOCOL_DLMS,
+                    "Unexpected exception while handling protocol request/response message",
+                    new OsgpException(ComponentType.PROTOCOL_DLMS, e.getMessage()));
         }
-
-        return new TechnicalException(ComponentType.PROTOCOL_DLMS,
-                "Unexpected exception while handling protocol request/response message",
-                new OsgpException(ComponentType.PROTOCOL_DLMS, e.getMessage()));
     }
 }

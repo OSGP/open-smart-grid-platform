@@ -233,7 +233,7 @@ public class SoapServiceSecretManagementIT {
     }
 
     @Test
-    public void setSecretsRequest_noSecrets() {
+    public void storeSecretsRequest_noSecrets() {
 
         /**
          * Note that the output depends, besides the value of the keys, also on both the db key and the soap key.

@@ -79,6 +79,11 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
     }
 
     @Override
+    public int getSecretByteLength() {
+        return KEY_LENGTH;
+    }
+
+    @Override
     protected Cipher getCipher() throws EncrypterException {
         try {
             return Cipher.getInstance(ALGORITHM, PROVIDER);
