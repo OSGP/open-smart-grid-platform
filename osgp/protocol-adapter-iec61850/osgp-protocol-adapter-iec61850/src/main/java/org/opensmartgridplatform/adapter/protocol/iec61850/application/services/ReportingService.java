@@ -10,7 +10,8 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.application.services
 import java.util.Date;
 import java.util.Objects;
 
-import com.beanit.openiec61850.Report;
+import org.opensmartgridplatform.adapter.protocol.iec61850.domain.entities.Iec61850ReportEntry;
+import org.opensmartgridplatform.adapter.protocol.iec61850.domain.repositories.Iec61850ReportEntryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +19,12 @@ import org.springframework.orm.jpa.JpaOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import org.opensmartgridplatform.adapter.protocol.iec61850.domain.entities.Iec61850ReportEntry;
-import org.opensmartgridplatform.adapter.protocol.iec61850.domain.repositories.Iec61850ReportEntryRepository;
+import com.beanit.openiec61850.Report;
 
 @Service(value = "iec61850ReportingService")
 public class ReportingService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReportingService.class);
-    private static final long IEC61850_ENTRY_TIME_OFFSET = 441763200000L;
 
     @Autowired
     private Iec61850ReportEntryRepository iec61850ReportEntryRepository;
@@ -47,12 +46,11 @@ public class ReportingService {
                 .findByDeviceIdentificationAndReportId(deviceIdentification, report.getRptId());
         if (reportEntry == null) {
             reportEntry = new Iec61850ReportEntry(deviceIdentification, report.getRptId(),
-                    report.getEntryId().getValue(),
-                    new Date(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET));
+                    report.getEntryId().getValue(), new Date(report.getTimeOfEntry().getTimestampValue()));
             LOGGER.info("Store new last report entry: {}", reportEntry);
         } else {
             reportEntry.updateLastReportEntry(report.getEntryId().getValue(),
-                    new Date(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET));
+                    new Date(report.getTimeOfEntry().getTimestampValue()));
             LOGGER.info("Store updated last report entry: {}", reportEntry);
         }
         try {

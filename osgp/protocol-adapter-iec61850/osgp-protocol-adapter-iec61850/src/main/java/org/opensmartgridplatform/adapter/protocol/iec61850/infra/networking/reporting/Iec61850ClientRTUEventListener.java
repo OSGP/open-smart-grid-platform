@@ -18,10 +18,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.joda.time.DateTime;
-import com.beanit.openiec61850.FcModelNode;
-import com.beanit.openiec61850.Report;
-import org.springframework.util.CollectionUtils;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.application.config.BeanUtil;
 import org.opensmartgridplatform.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import org.opensmartgridplatform.adapter.protocol.iec61850.application.services.ReportingService;
@@ -33,6 +29,10 @@ import org.opensmartgridplatform.dto.valueobjects.microgrids.GetDataResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.GetDataSystemIdentifierDto;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.MeasurementDto;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.ReportDto;
+import org.springframework.util.CollectionUtils;
+
+import com.beanit.openiec61850.FcModelNode;
+import com.beanit.openiec61850.Report;
 
 public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListener {
 
@@ -102,7 +102,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
     public void newReport(final Report report) {
 
         final DateTime timeOfEntry = report.getTimeOfEntry() == null ? null
-                : new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET);
+                : new DateTime(report.getTimeOfEntry().getTimestampValue());
 
         final String reportDescription = this.getReportDescription(report, timeOfEntry);
 
@@ -153,8 +153,7 @@ public class Iec61850ClientRTUEventListener extends Iec61850ClientBaseEventListe
         systems.add(systemResult);
 
         final ReportDto reportDto = new ReportDto(report.getSqNum(),
-                new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET),
-                report.getRptId());
+                new DateTime(report.getTimeOfEntry().getTimestampValue()), report.getRptId());
 
         this.deviceManagementService.sendMeasurements(this.deviceIdentification,
                 new GetDataResponseDto(systems, reportDto));
