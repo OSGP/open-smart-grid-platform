@@ -1,9 +1,10 @@
-/**
- * Copyright 2019 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
+/*
+  Copyright 2019 Smart Society Services B.V.
+
+  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
@@ -83,13 +84,13 @@ class FirmwareManagementServiceTest {
     private static final String VERSION_2 = "R02";
     private static final String VERSION_3 = "R03";
 
-    private final String organisationIdentification = "test-org";
-    private final String deviceIdentification = "device-identification";
-    private final String correlationUid = "correlation-uid";
-    private final CorrelationIds correlationIds = new CorrelationIds(this.organisationIdentification,
-            this.deviceIdentification, this.correlationUid);
+    private static final String ORGANISATION_IDENTIFICATION = "test-org";
+    private static final String DEVICE_IDENTIFICATION = "device-identification";
+    private static final String CORRELATION_UID = "correlation-uid";
+    private static final CorrelationIds CORRELATION_IDS = new CorrelationIds(ORGANISATION_IDENTIFICATION,
+            DEVICE_IDENTIFICATION, CORRELATION_UID);
 
-    private final OsgpException defaultException = new OsgpException(ComponentType.DOMAIN_CORE, "test");
+    private static final OsgpException DEFAULT_EXCEPTION = new OsgpException(ComponentType.DOMAIN_CORE, "test");
 
     @Captor
     ArgumentCaptor<RequestMessage> requestMessageCaptor;
@@ -248,7 +249,7 @@ class FirmwareManagementServiceTest {
     @Test
     void testHandleGetFirmwareVersionResponseVersionNotInHistoryButNoCorrespondingFirmwareFile() {
         // Arrange
-        // Mock that FUNCTIONAL VERSION 3 and SECURTY VERSION 1 is now
+        // Mock that FUNCTIONAL VERSION 3 and SECURITY VERSION 1 is now
         // installed,
         // no firmware file will hold this combination, so it will fail to save
         final FirmwareVersionDto firmwareVersionDto1 = new FirmwareVersionDto(
@@ -367,8 +368,8 @@ class FirmwareManagementServiceTest {
         firmwareFile.addFirmwareModule(firmwareModule, VERSION_2);
         when(this.firmwareFileRepository.findByDeviceModel(any(DeviceModel.class)))
                 .thenReturn(Collections.singletonList(firmwareFile));
-        final List<FirmwareVersion> firmwareVersions = Collections.singletonList(
-                new FirmwareVersion(FirmwareModuleType.SECURITY, VERSION_2));
+        final List<FirmwareVersion> firmwareVersions = Collections
+                .singletonList(new FirmwareVersion(FirmwareModuleType.SECURITY, VERSION_2));
 
         // Act
         this.firmwareManagementService.tryToAddDeviceFirmwareFile("DVC", firmwareVersions);
@@ -387,8 +388,8 @@ class FirmwareManagementServiceTest {
                 .build();
         when(this.firmwareFileRepository.findByDeviceModel(any(DeviceModel.class)))
                 .thenReturn(Collections.singletonList(firmwareFile));
-        final List<FirmwareVersion> firmwareVersions = Collections.singletonList(
-                new FirmwareVersion(FirmwareModuleType.SECURITY, VERSION_2));
+        final List<FirmwareVersion> firmwareVersions = Collections
+                .singletonList(new FirmwareVersion(FirmwareModuleType.SECURITY, VERSION_2));
 
         // Act
         this.firmwareManagementService.tryToAddDeviceFirmwareFile("DVC", firmwareVersions);
@@ -516,7 +517,7 @@ class FirmwareManagementServiceTest {
         final FirmwareModuleType firmwareModuleType = FirmwareModuleType.FUNCTIONAL;
         final String firmwareVersion = "test-version";
         final SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate = new SsldPendingFirmwareUpdate(deviceIdentification,
-                firmwareModuleType, firmwareVersion, this.organisationIdentification, correlationUid);
+                firmwareModuleType, firmwareVersion, ORGANISATION_IDENTIFICATION, correlationUid);
         ReflectionTestUtils.setField(ssldPendingFirmwareUpdate, "id", id, Long.class);
         ReflectionTestUtils.setField(ssldPendingFirmwareUpdate, "creationTime", creationTime, Date.class);
         return ssldPendingFirmwareUpdate;
@@ -525,10 +526,11 @@ class FirmwareManagementServiceTest {
     @Test
     void checkSsldPendingFirmwareUpdateReturnsFalseIfThereAreNoPendingUpdates() {
         final String correlationUid = "correlation-uid-no-pending-updates";
-        final CorrelationIds ids = new CorrelationIds(this.organisationIdentification, this.deviceIdentification, correlationUid);
+        final CorrelationIds ids = new CorrelationIds(ORGANISATION_IDENTIFICATION, DEVICE_IDENTIFICATION,
+                correlationUid);
         final List<FirmwareVersion> firmwareVersions = Collections
                 .singletonList(new FirmwareVersion(FirmwareModuleType.FUNCTIONAL, VERSION_3));
-        when(this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification(this.deviceIdentification))
+        when(this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION))
                 .thenReturn(Collections.emptyList());
 
         final boolean hasPendingFirmwareUpdate = this.firmwareManagementService.checkSsldPendingFirmwareUpdate(ids,
@@ -536,44 +538,46 @@ class FirmwareManagementServiceTest {
 
         assertThat(hasPendingFirmwareUpdate).isFalse();
 
-        verify(this.ssldPendingFirmwareUpdateRepository).findByDeviceIdentification(this.deviceIdentification);
+        verify(this.ssldPendingFirmwareUpdateRepository).findByDeviceIdentification(DEVICE_IDENTIFICATION);
         verifyNoMoreInteractions(this.ssldPendingFirmwareUpdateRepository);
     }
 
     @Test
     void checkSsldPendingFirmwareUpdateReturnsFalseIfPendingUpdatesAreForDifferentCorrelationUids() {
         final String correlationUid = "correlation-uid-not-with-pending-updates";
-        final CorrelationIds ids = new CorrelationIds(this.organisationIdentification, this.deviceIdentification, correlationUid);
+        final CorrelationIds ids = new CorrelationIds(ORGANISATION_IDENTIFICATION, DEVICE_IDENTIFICATION,
+                correlationUid);
         final List<FirmwareVersion> firmwareVersions = Arrays.asList(
                 new FirmwareVersion(FirmwareModuleType.SECURITY, VERSION_2),
                 new FirmwareVersion(FirmwareModuleType.FUNCTIONAL, VERSION_1));
-        when(this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification(this.deviceIdentification))
+        when(this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION))
                 .thenReturn(Collections.singletonList(this.anSsldPendingFirmwareUpdate(4579L, new Date(),
-                        this.deviceIdentification, "some-other-correlation-uid")));
+                        DEVICE_IDENTIFICATION, "some-other-correlation-uid")));
 
         final boolean hasPendingFirmwareUpdate = this.firmwareManagementService.checkSsldPendingFirmwareUpdate(ids,
                 firmwareVersions);
 
         assertThat(hasPendingFirmwareUpdate).isFalse();
 
-        verify(this.ssldPendingFirmwareUpdateRepository).findByDeviceIdentification(this.deviceIdentification);
+        verify(this.ssldPendingFirmwareUpdateRepository).findByDeviceIdentification(DEVICE_IDENTIFICATION);
         verifyNoMoreInteractions(this.ssldPendingFirmwareUpdateRepository);
     }
 
     @Test
     void checkSsldPendingFirmwareUpdateReturnsTrueAndDeletesPendingUpdateWithMatchingCorrelationUid() {
         final String correlationUid = "correlation-uid-matching-pending-update";
-        final CorrelationIds ids = new CorrelationIds(this.organisationIdentification, this.deviceIdentification, correlationUid);
+        final CorrelationIds ids = new CorrelationIds(ORGANISATION_IDENTIFICATION, DEVICE_IDENTIFICATION,
+                correlationUid);
         final List<FirmwareVersion> firmwareVersions = Collections
                 .singletonList(new FirmwareVersion(FirmwareModuleType.FUNCTIONAL, VERSION_2));
         final SsldPendingFirmwareUpdate matchingPendingFirmwareUpdate = this.anSsldPendingFirmwareUpdate(437L,
-                new Date(), this.deviceIdentification, correlationUid);
-        when(this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification(this.deviceIdentification))
+                new Date(), DEVICE_IDENTIFICATION, correlationUid);
+        when(this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION))
                 .thenReturn(Arrays.asList(
-                        this.anSsldPendingFirmwareUpdate(457198L, new Date(), this.deviceIdentification,
+                        this.anSsldPendingFirmwareUpdate(457198L, new Date(), DEVICE_IDENTIFICATION,
                                 "some-other-correlation-uid"),
                         matchingPendingFirmwareUpdate, this.anSsldPendingFirmwareUpdate(94085089L, new Date(),
-                                this.deviceIdentification, "yet-another-correlation-uid")));
+                                DEVICE_IDENTIFICATION, "yet-another-correlation-uid")));
 
         final boolean hasPendingFirmwareUpdate = this.firmwareManagementService.checkSsldPendingFirmwareUpdate(ids,
                 firmwareVersions);
@@ -597,21 +601,23 @@ class FirmwareManagementServiceTest {
         final Device device = this.getMockDevice(Device.class);
 
         when(this.firmwareUpdateMessageDataContainer.getFirmwareUrl()).thenReturn("/firmware-test");
-        when(this.deviceDomainService.searchActiveDevice(this.correlationIds.getDeviceIdentification(), ComponentType.DOMAIN_CORE))
-            .thenReturn(device);
+        when(this.deviceDomainService.searchActiveDevice(CORRELATION_IDS.getDeviceIdentification(),
+                ComponentType.DOMAIN_CORE)).thenReturn(device);
 
-        this.firmwareManagementService.updateFirmware(this.correlationIds, this.firmwareUpdateMessageDataContainer, 0L, "", 0);
+        this.firmwareManagementService.updateFirmware(CORRELATION_IDS, this.firmwareUpdateMessageDataContainer, 0L, "",
+                0);
 
         verify(this.osgpCoreRequestMessageSender).sendWithScheduledTime(this.requestMessageCaptor.capture(),
                 this.messageTypeCaptor.capture(), this.messagePriorityCaptor.capture(), this.ipAddressCaptor.capture(),
                 this.scheduledTimeCaptor.capture());
 
         final RequestMessage requestMessage = this.requestMessageCaptor.getValue();
-        final RequestMessage expectedRequestMessage = new RequestMessage(this.correlationUid,
-                this.organisationIdentification,
-                this.deviceIdentification, null);
+        final RequestMessage expectedRequestMessage = new RequestMessage(CORRELATION_UID, ORGANISATION_IDENTIFICATION,
+                DEVICE_IDENTIFICATION, null);
 
-        assertThat(requestMessage).usingRecursiveComparison().ignoringFields("request").isEqualTo(expectedRequestMessage);
+        assertThat(requestMessage).usingRecursiveComparison()
+                .ignoringFields("request")
+                .isEqualTo(expectedRequestMessage);
     }
 
     @Test
@@ -621,19 +627,21 @@ class FirmwareManagementServiceTest {
         firmwareFile.addFirmwareModule(new FirmwareModule("functional"), VERSION_1);
 
         when(this.firmwareUpdateMessageDataContainer.getFirmwareUrl()).thenReturn("/firmware-test");
-        when(this.deviceDomainService.searchActiveDevice(this.correlationIds.getDeviceIdentification(), ComponentType.DOMAIN_CORE))
-            .thenReturn(device);
-        when(this.firmwareFileRepository.findByFilename("firmware-test")).thenReturn(Arrays.asList(firmwareFile));
+        when(this.deviceDomainService.searchActiveDevice(CORRELATION_IDS.getDeviceIdentification(),
+                ComponentType.DOMAIN_CORE)).thenReturn(device);
+        when(this.firmwareFileRepository.findByFilename("firmware-test"))
+                .thenReturn(Collections.singletonList(firmwareFile));
 
-        this.firmwareManagementService.updateFirmware(this.correlationIds, this.firmwareUpdateMessageDataContainer, 0L, "", 0);
+        this.firmwareManagementService.updateFirmware(CORRELATION_IDS, this.firmwareUpdateMessageDataContainer, 0L, "",
+                0);
 
         verify(this.ssldPendingFirmwareUpdateRepository).save(this.ssldPendingFirmwareUpdateArgumentCaptor.capture());
 
-        final SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate =
-                this.ssldPendingFirmwareUpdateArgumentCaptor.getValue();
+        final SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate = this.ssldPendingFirmwareUpdateArgumentCaptor
+                .getValue();
         final SsldPendingFirmwareUpdate expectedSsldPendingFirmwareUpdate = new SsldPendingFirmwareUpdate(
-                this.deviceIdentification, FirmwareModuleType.FUNCTIONAL, VERSION_1, this.organisationIdentification, this.correlationUid
-        );
+                DEVICE_IDENTIFICATION, FirmwareModuleType.FUNCTIONAL, VERSION_1, ORGANISATION_IDENTIFICATION,
+                CORRELATION_UID);
 
         assertThat(ssldPendingFirmwareUpdate).isEqualTo(expectedSsldPendingFirmwareUpdate);
     }
@@ -643,11 +651,11 @@ class FirmwareManagementServiceTest {
         final Device device = this.getMockDevice(Ssld.class);
 
         when(this.firmwareUpdateMessageDataContainer.getFirmwareUrl()).thenReturn("/firmware-test");
-        when(this.deviceDomainService.searchActiveDevice(any(), eq(ComponentType.DOMAIN_CORE)))
-            .thenReturn(device);
+        when(this.deviceDomainService.searchActiveDevice(any(), eq(ComponentType.DOMAIN_CORE))).thenReturn(device);
         when(this.firmwareFileRepository.findByFilename("firmware-test")).thenReturn(Collections.emptyList());
 
-        this.firmwareManagementService.updateFirmware(this.correlationIds, this.firmwareUpdateMessageDataContainer, 0L, "", 0);
+        this.firmwareManagementService.updateFirmware(CORRELATION_IDS, this.firmwareUpdateMessageDataContainer, 0L, "",
+                0);
 
         verifyNoInteractions(this.ssldPendingFirmwareUpdateRepository);
     }
@@ -659,12 +667,13 @@ class FirmwareManagementServiceTest {
         firmwareFile.addFirmwareModule(new FirmwareModule("functional"), VERSION_1);
 
         when(this.firmwareUpdateMessageDataContainer.getFirmwareUrl()).thenReturn("/firmware-test");
-        when(this.deviceDomainService.searchActiveDevice(any(), eq(ComponentType.DOMAIN_CORE)))
-            .thenReturn(device);
-        when(this.firmwareFileRepository.findByFilename("firmware-test")).thenReturn(Arrays.asList(firmwareFile));
+        when(this.deviceDomainService.searchActiveDevice(any(), eq(ComponentType.DOMAIN_CORE))).thenReturn(device);
+        when(this.firmwareFileRepository.findByFilename("firmware-test"))
+                .thenReturn(Collections.singletonList(firmwareFile));
         when(firmwareFile.getModuleVersions()).thenReturn(new HashMap<>());
 
-        this.firmwareManagementService.updateFirmware(this.correlationIds, this.firmwareUpdateMessageDataContainer, 0L, "", 0);
+        this.firmwareManagementService.updateFirmware(CORRELATION_IDS, this.firmwareUpdateMessageDataContainer, 0L, "",
+                0);
 
         verifyNoInteractions(this.ssldPendingFirmwareUpdateRepository);
     }
@@ -676,32 +685,32 @@ class FirmwareManagementServiceTest {
         firmwareFile.addFirmwareModule(new FirmwareModule("functional"), VERSION_1);
 
         when(this.firmwareUpdateMessageDataContainer.getFirmwareUrl()).thenReturn("/");
-        when(this.deviceDomainService.searchActiveDevice(any(), eq(ComponentType.DOMAIN_CORE)))
-            .thenReturn(device);
+        when(this.deviceDomainService.searchActiveDevice(any(), eq(ComponentType.DOMAIN_CORE))).thenReturn(device);
 
-        this.firmwareManagementService.updateFirmware(this.correlationIds, this.firmwareUpdateMessageDataContainer, 0L, "", 0);
+        this.firmwareManagementService.updateFirmware(CORRELATION_IDS, this.firmwareUpdateMessageDataContainer, 0L, "",
+                0);
 
         verifyNoInteractions(this.ssldPendingFirmwareUpdateRepository);
     }
 
     @Test
     void testHandleGetFirmwareVersionWithMatchingFirmwareVersion() {
-        final List<FirmwareVersionDto> firmwareVersionDtos = Arrays.asList();
+        final List<FirmwareVersionDto> firmwareVersionDtos = Collections.emptyList();
 
         final SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate = Mockito.mock(SsldPendingFirmwareUpdate.class);
-        final List<SsldPendingFirmwareUpdate> ssldPendingFirmwareUpdates = Arrays.asList(ssldPendingFirmwareUpdate);
+        final List<SsldPendingFirmwareUpdate> ssldPendingFirmwareUpdates = Collections
+                .singletonList(ssldPendingFirmwareUpdate);
 
         when(this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification(any(String.class)))
-            .thenReturn(ssldPendingFirmwareUpdates);
-        when(ssldPendingFirmwareUpdate.getCorrelationUid()).thenReturn(this.correlationIds.getCorrelationUid());
+                .thenReturn(ssldPendingFirmwareUpdates);
+        when(ssldPendingFirmwareUpdate.getCorrelationUid()).thenReturn(CORRELATION_IDS.getCorrelationUid());
         when(ssldPendingFirmwareUpdate.getFirmwareModuleType()).thenReturn(FirmwareModuleType.SECURITY);
         when(ssldPendingFirmwareUpdate.getFirmwareVersion()).thenReturn(VERSION_1);
-        when(this.domainCoreMapper.mapAsList(firmwareVersionDtos, FirmwareVersion.class)).thenReturn(
-            Arrays.asList(new FirmwareVersion(FirmwareModuleType.SECURITY, VERSION_1))
-        );
+        when(this.domainCoreMapper.mapAsList(firmwareVersionDtos, FirmwareVersion.class))
+                .thenReturn(Collections.singletonList(new FirmwareVersion(FirmwareModuleType.SECURITY, VERSION_1)));
 
-        this.firmwareManagementService.handleGetFirmwareVersionResponse(firmwareVersionDtos, this.correlationIds, "messageType", 1,
-                ResponseMessageResultType.OK, null);
+        this.firmwareManagementService.handleGetFirmwareVersionResponse(firmwareVersionDtos, CORRELATION_IDS,
+                "messageType", 1, ResponseMessageResultType.OK, null);
 
         verifyNoInteractions(this.webServiceResponseMessageSender);
         verify(this.ssldPendingFirmwareUpdateRepository).delete(any());
@@ -711,8 +720,8 @@ class FirmwareManagementServiceTest {
     void testHandleGetFirmwareVersionResponseNotOk() {
         final List<FirmwareVersionDto> versionsOnDevice = new ArrayList<>();
 
-        this.firmwareManagementService.handleGetFirmwareVersionResponse(versionsOnDevice, this.correlationIds, "messageType", 1,
-                ResponseMessageResultType.NOT_OK, null);
+        this.firmwareManagementService.handleGetFirmwareVersionResponse(versionsOnDevice, CORRELATION_IDS,
+                "messageType", 1, ResponseMessageResultType.NOT_OK, null);
 
         verify(this.webServiceResponseMessageSender).send(this.responseMessageCaptor.capture());
 
@@ -727,21 +736,23 @@ class FirmwareManagementServiceTest {
     void testHandleGetFirmwareVersionErrorNotNull() {
         final List<FirmwareVersionDto> versionsOnDevice = new ArrayList<>();
 
-        this.firmwareManagementService.handleGetFirmwareVersionResponse(versionsOnDevice, this.correlationIds, "messageType", 1,
-            ResponseMessageResultType.OK, this.defaultException);
+        this.firmwareManagementService.handleGetFirmwareVersionResponse(versionsOnDevice, CORRELATION_IDS,
+                "messageType", 1, ResponseMessageResultType.OK, DEFAULT_EXCEPTION);
 
         verify(this.webServiceResponseMessageSender).send(this.responseMessageCaptor.capture());
         verify(this.ssldPendingFirmwareUpdateRepository, never()).delete(any());
 
         final ResponseMessage responseMessage = this.responseMessageCaptor.getValue();
         final ResponseMessage expectedResponseMessage = ResponseMessage.newResponseMessageBuilder()
-            .withIds(this.correlationIds)
-            .withResult(ResponseMessageResultType.NOT_OK)
-            .withOsgpException(new TechnicalException("Exception occurred while getting device firmware version"))
-            .withMessagePriority(1)
-            .build();
+                .withIds(CORRELATION_IDS)
+                .withResult(ResponseMessageResultType.NOT_OK)
+                .withOsgpException(new TechnicalException("Exception occurred while getting device firmware version"))
+                .withMessagePriority(1)
+                .build();
 
-        assertThat(responseMessage).usingRecursiveComparison().ignoringFields("dataObject").isEqualTo(expectedResponseMessage);
+        assertThat(responseMessage).usingRecursiveComparison()
+                .ignoringFields("dataObject")
+                .isEqualTo(expectedResponseMessage);
     }
 
     @Test
@@ -751,8 +762,8 @@ class FirmwareManagementServiceTest {
         when(this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification(any())).thenReturn(null);
 
         assertThatExceptionOfType(NullPointerException.class).isThrownBy(() -> {
-            this.firmwareManagementService.handleGetFirmwareVersionResponse(versionsOnDevice, this.correlationIds, "messageType", 1,
-                    ResponseMessageResultType.OK, null);
+            this.firmwareManagementService.handleGetFirmwareVersionResponse(versionsOnDevice, CORRELATION_IDS,
+                    "messageType", 1, ResponseMessageResultType.OK, null);
         });
     }
 
@@ -760,24 +771,27 @@ class FirmwareManagementServiceTest {
     void testHandleGetFirmwareVersionWithNonMatchingCorrelationUid() {
         final List<FirmwareVersionDto> versionsOnDevice = new ArrayList<>();
         final SsldPendingFirmwareUpdate ssldPendingFirmwareUpdate = Mockito.mock(SsldPendingFirmwareUpdate.class);
-        final List<SsldPendingFirmwareUpdate> ssldPendingFirmwareUpdates = Arrays.asList(ssldPendingFirmwareUpdate);
+        final List<SsldPendingFirmwareUpdate> ssldPendingFirmwareUpdates = Collections
+                .singletonList(ssldPendingFirmwareUpdate);
 
         when(this.ssldPendingFirmwareUpdateRepository.findByDeviceIdentification(any()))
-            .thenReturn(ssldPendingFirmwareUpdates);
+                .thenReturn(ssldPendingFirmwareUpdates);
         when(ssldPendingFirmwareUpdate.getCorrelationUid()).thenReturn("differentUid");
 
-        this.firmwareManagementService.handleGetFirmwareVersionResponse(versionsOnDevice, this.correlationIds, "messageType", 1,
-            ResponseMessageResultType.OK, null);
+        this.firmwareManagementService.handleGetFirmwareVersionResponse(versionsOnDevice, CORRELATION_IDS,
+                "messageType", 1, ResponseMessageResultType.OK, null);
 
         verify(this.webServiceResponseMessageSender).send(this.responseMessageCaptor.capture());
 
         final ResponseMessage responseMessage = this.responseMessageCaptor.getValue();
         final ResponseMessage expectedResponseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withIds(this.correlationIds)
+                .withIds(CORRELATION_IDS)
                 .withResult(ResponseMessageResultType.OK)
                 .withMessagePriority(1)
                 .build();
 
-        assertThat(responseMessage).usingRecursiveComparison().ignoringFields("dataObject").isEqualTo(expectedResponseMessage);
+        assertThat(responseMessage).usingRecursiveComparison()
+                .ignoringFields("dataObject")
+                .isEqualTo(expectedResponseMessage);
     }
 }
