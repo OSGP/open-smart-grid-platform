@@ -10,9 +10,9 @@ package org.opensmartgridplatform.core.application.config.messaging;
 import javax.net.ssl.SSLException;
 
 import org.apache.activemq.pool.PooledConnectionFactory;
-import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationNames;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
+import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationNames;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;

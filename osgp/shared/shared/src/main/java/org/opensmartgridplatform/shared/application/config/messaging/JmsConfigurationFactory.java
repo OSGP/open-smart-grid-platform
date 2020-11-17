@@ -7,12 +7,41 @@
  */
 package org.opensmartgridplatform.shared.application.config.messaging;
 
-import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.*;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_BACK_OFF_MULTIPLIER;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_BROKER_CLIENT_KEY_STORE;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_BROKER_CLIENT_KEY_STORE_SECRET;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_BROKER_CLIENT_TRUST_STORE;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_BROKER_CLIENT_TRUST_STORE_SECRET;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_BROKER_SECRET;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_BROKER_URL;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_BROKER_USERNAME;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_CONCURRENT_CONSUMERS;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_CONNECTION_POOL_BLOCK_IF_SESSION_POOL_IS_FULL;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_CONNECTION_POOL_BLOCK_IF_SESSION_POOL_IS_FULL_TIMEOUT;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_CONNECTION_POOL_EXPIRY_TIMEOUT;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_CONNECTION_POOL_IDLE_TIMEOUT;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_CONNECTION_POOL_MAX_ACTIVE_SESSIONS;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_CONNECTION_POOL_SIZE;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_CONNECTION_POOL_TIME_BETWEEN_EXPIRATION_CHECK_MILLIS;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_CONNECTION_QUEUE_PREFETCH;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_CONNECTION_SEND_TIMEOUT;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_DELIVERY_PERSISTENT;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_EXPLICIT_QOS_ENABLED;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_INITIAL_REDELIVERY_DELAY;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_MAXIMUM_REDELIVERIES;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_MAXIMUM_REDELIVERY_DELAY;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_MAX_CONCURRENT_CONSUMERS;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_MAX_THREAD_POOL_SIZE;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_QUEUE;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_REDELIVERY_DELAY;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_TIME_TO_LIVE;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_TRUSTED_PACKAGES;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_TRUST_ALL_PACKAGES;
+import static org.opensmartgridplatform.shared.application.config.messaging.JmsPropertyNames.PROPERTY_NAME_USE_EXPONENTIAL_BACK_OFF;
 
 import java.util.Arrays;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.net.ssl.SSLException;
 
@@ -24,14 +53,12 @@ import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.commons.lang3.StringUtils;
-import org.opensmartgridplatform.shared.application.config.jms.JmsBrokerSslSettings;
 import org.opensmartgridplatform.shared.infra.jms.OsgpJmsTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
-import org.springframework.jms.listener.SessionAwareMessageListener;
 
 /**
  * This class provides the basic components used for JMS messaging.
@@ -88,25 +115,6 @@ public class JmsConfigurationFactory {
 
     public DefaultMessageListenerContainer initMessageListenerContainer(final MessageListener messageListener,
             final ActiveMQDestination destination) {
-        LOGGER.debug("Initializing message listener container for message listener: {}, and destination {}.",
-                messageListener, destination);
-
-        final DefaultMessageListenerContainer messageListenerContainer = this.initMessageListenerContainer();
-        messageListenerContainer.setDestination(destination);
-        messageListenerContainer.setMessageListener(messageListener);
-        return messageListenerContainer;
-    }
-
-    public DefaultMessageListenerContainer initMessageListenerContainer(
-            final SessionAwareMessageListener<Message> messageListener) {
-        LOGGER.debug("Initializing message listener container for message listener: {}.", messageListener);
-        final ActiveMQDestination destination = new ActiveMQQueue(
-                this.propertyReader.get(PROPERTY_NAME_QUEUE, String.class));
-        return this.initMessageListenerContainer(messageListener, destination);
-    }
-
-    public DefaultMessageListenerContainer initMessageListenerContainer(
-            final SessionAwareMessageListener<Message> messageListener, final ActiveMQDestination destination) {
         LOGGER.debug("Initializing message listener container for message listener: {}, and destination {}.",
                 messageListener, destination);
 

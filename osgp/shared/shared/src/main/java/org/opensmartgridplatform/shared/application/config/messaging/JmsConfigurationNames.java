@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.shared.application.config.jms;
+package org.opensmartgridplatform.shared.application.config.messaging;
 
 /**
  * Names of JMS configurations. See {@link JmsConfigurationFactory}.
