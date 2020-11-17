@@ -9,7 +9,6 @@ package org.opensmartgridplatform.shared.infra.jms;
 
 public enum MessageType {
     ADD_DEVICE,
-    EVENT_NOTIFICATION,
     ADD_METER,
     CLEAR_ALARM_REGISTER,
     CONFIGURE_DEFINABLE_LOAD_PROFILE,
@@ -20,6 +19,7 @@ public enum MessageType {
     DEVICE_REGISTRATION_COMPLETED,
     DISABLE_DEBUGGING,
     ENABLE_DEBUGGING,
+    EVENT_NOTIFICATION,
     FIND_EVENTS,
     FIND_SCHEDULED_TASKS,
     GENERATE_AND_REPLACE_KEYS,
