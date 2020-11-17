@@ -111,15 +111,15 @@ public class DeviceManagementServiceTest {
         when(device.getIpAddress()).thenReturn(TEST_IP);
         when(this.deviceDomainService.searchActiveDevice(TEST_DEVICE, ComponentType.DOMAIN_CORE)).thenReturn(device);
 
-        this.deviceManagementService.setEventNotifications(TEST_ORGANISATION, TEST_DEVICE, TEST_UID,
-                eventNotifications, TEST_MESSAGE_TYPE, TEST_PRIORITY);
+        this.deviceManagementService.setEventNotifications(TEST_ORGANISATION, TEST_DEVICE, TEST_UID, eventNotifications,
+                TEST_MESSAGE_TYPE, TEST_PRIORITY);
 
         verify(this.osgpCoreRequestManager).send(this.argumentRequestMessage.capture(),
                 this.argumentMessageType.capture(), this.argumentPriority.capture(), this.argumentIpAddress.capture());
 
-        final RequestMessage expectedRequestMessage = this.createNewRequestMessage(
-                new EventNotificationMessageDataContainerDto(this.domainCoreMapper.mapAsList(eventNotifications,
-                        EventNotificationTypeDto.class)));
+        final RequestMessage expectedRequestMessage = this
+                .createNewRequestMessage(new EventNotificationMessageDataContainerDto(
+                        this.domainCoreMapper.mapAsList(eventNotifications, EventNotificationTypeDto.class)));
 
         assertThat(this.argumentRequestMessage.getValue()).usingRecursiveComparison().isEqualTo(expectedRequestMessage);
         assertThat(this.argumentMessageType.getValue()).isEqualTo(TEST_MESSAGE_TYPE);
@@ -132,7 +132,8 @@ public class DeviceManagementServiceTest {
         this.deviceManagementService.updateDeviceSslCertification(TEST_ORGANISATION, TEST_DEVICE, TEST_UID, null,
                 TEST_MESSAGE_TYPE, TEST_PRIORITY);
 
-        //This method is not called since it comes after the check of the certificate
+        // This method is not called since it comes after the check of the
+        // certificate
         verifyNoInteractions(this.domainCoreMapper);
     }
 
@@ -149,8 +150,8 @@ public class DeviceManagementServiceTest {
         verify(this.osgpCoreRequestManager).send(this.argumentRequestMessage.capture(),
                 this.argumentMessageType.capture(), this.argumentPriority.capture(), this.argumentIpAddress.capture());
 
-        final RequestMessage expectedRequestMessage = this.createNewRequestMessage(this.domainCoreMapper.map(certification,
-                CertificationDto.class));
+        final RequestMessage expectedRequestMessage = this
+                .createNewRequestMessage(this.domainCoreMapper.map(certification, CertificationDto.class));
 
         assertThat(this.argumentRequestMessage.getValue()).usingRecursiveComparison().isEqualTo(expectedRequestMessage);
         assertThat(this.argumentMessageType.getValue()).isEqualTo(TEST_MESSAGE_TYPE);
@@ -163,7 +164,8 @@ public class DeviceManagementServiceTest {
         this.deviceManagementService.setDeviceVerificationKey(TEST_ORGANISATION, TEST_DEVICE, TEST_UID, null,
                 TEST_MESSAGE_TYPE, TEST_PRIORITY);
 
-        //This method is not called since it comes after the check of the verification
+        // This method is not called since it comes after the check of the
+        // verification
         verifyNoInteractions(this.osgpCoreRequestManager);
     }
 
@@ -191,27 +193,30 @@ public class DeviceManagementServiceTest {
         this.deviceManagementService.setDeviceLifecycleStatus(TEST_ORGANISATION, TEST_DEVICE, TEST_UID,
                 DeviceLifecycleStatus.UNDER_TEST);
 
-        final ArgumentCaptor<DeviceLifecycleStatus> argumentDeviceLifecycleStatus = ArgumentCaptor.forClass(
-                DeviceLifecycleStatus.class);
+        final ArgumentCaptor<DeviceLifecycleStatus> argumentDeviceLifecycleStatus = ArgumentCaptor
+                .forClass(DeviceLifecycleStatus.class);
 
         verify(this.transactionalDeviceService).updateDeviceLifecycleStatus(this.argumentDeviceIdentification.capture(),
                 argumentDeviceLifecycleStatus.capture());
         verify(this.webServiceResponseMessageSender).send(this.argumentResponseMessage.capture());
 
-        final ResponseMessage expectedResponseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
-                TEST_UID).withOrganisationIdentification(TEST_ORGANISATION).withDeviceIdentification(TEST_DEVICE).withResult(ResponseMessageResultType.OK).build();
+        final ResponseMessage expectedResponseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(TEST_UID)
+                .withOrganisationIdentification(TEST_ORGANISATION)
+                .withDeviceIdentification(TEST_DEVICE)
+                .withResult(ResponseMessageResultType.OK)
+                .build();
 
         assertThat(this.argumentDeviceIdentification.getValue()).isEqualTo(TEST_DEVICE);
         assertThat(argumentDeviceLifecycleStatus.getValue()).isEqualTo(DeviceLifecycleStatus.UNDER_TEST);
-        assertThat(this.argumentResponseMessage.getValue()).usingRecursiveComparison().isEqualTo(
-                expectedResponseMessage);
+        assertThat(this.argumentResponseMessage.getValue()).usingRecursiveComparison()
+                .isEqualTo(expectedResponseMessage);
     }
 
     @Test
     public void testUpdateDeviceCdmaSettings() throws FunctionalException {
         final CdmaSettings cdmaSettings = new CdmaSettings("testSettings", (short) 1);
-        this.deviceManagementService.updateDeviceCdmaSettings(TEST_ORGANISATION, TEST_DEVICE, TEST_UID,
-                cdmaSettings);
+        this.deviceManagementService.updateDeviceCdmaSettings(TEST_ORGANISATION, TEST_DEVICE, TEST_UID, cdmaSettings);
 
         final ArgumentCaptor<CdmaSettings> argumentCdmaSettings = ArgumentCaptor.forClass(CdmaSettings.class);
 
@@ -219,13 +224,17 @@ public class DeviceManagementServiceTest {
                 argumentCdmaSettings.capture());
         verify(this.webServiceResponseMessageSender).send(this.argumentResponseMessage.capture());
 
-        final ResponseMessage expectedResponseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
-                TEST_UID).withOrganisationIdentification(TEST_ORGANISATION).withDeviceIdentification(TEST_DEVICE).withResult(ResponseMessageResultType.OK).build();
+        final ResponseMessage expectedResponseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(TEST_UID)
+                .withOrganisationIdentification(TEST_ORGANISATION)
+                .withDeviceIdentification(TEST_DEVICE)
+                .withResult(ResponseMessageResultType.OK)
+                .build();
 
         assertThat(this.argumentDeviceIdentification.getValue()).isEqualTo(TEST_DEVICE);
         assertThat(argumentCdmaSettings.getValue()).isEqualTo(cdmaSettings);
-        assertThat(this.argumentResponseMessage.getValue()).usingRecursiveComparison().isEqualTo(
-                expectedResponseMessage);
+        assertThat(this.argumentResponseMessage.getValue()).usingRecursiveComparison()
+                .isEqualTo(expectedResponseMessage);
     }
 
     private RequestMessage createNewRequestMessage(final Serializable request) {
