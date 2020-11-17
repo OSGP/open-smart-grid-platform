@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.FindEventsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetOutagesCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.SetDeviceLifecycleStatusByChannelCommandExecutor;
@@ -24,22 +25,19 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.FindEventsReques
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FindEventsRequestList;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetOutagesRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetOutagesRequestList;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.OutageDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetOutagesResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.OutageDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceCommunicationSettingsRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceCommunicationSettingsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service(value = "dlmsManagementService")
 public class ManagementService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ManagementService.class);
 
     @Autowired
     private FindEventsCommandExecutor findEventsCommandExecutor;
@@ -60,11 +58,11 @@ public class ManagementService {
 
         final List<EventDto> events = new ArrayList<>();
 
-        LOGGER.info("findEvents setting up connection with meter {}", device.getDeviceIdentification());
+        log.info("findEvents setting up connection with meter {}", device.getDeviceIdentification());
 
         for (final FindEventsRequestDto findEventsQuery :
                 findEventsQueryMessageDataContainer.getFindEventsQueryList()) {
-            LOGGER.info("findEventsQuery.eventLogCategory: {}, findEventsQuery.from: {}, findEventsQuery.until: {}",
+            log.info("findEventsQuery.eventLogCategory: {}, findEventsQuery.from: {}, findEventsQuery.until: {}",
                     findEventsQuery.getEventLogCategory().toString(), findEventsQuery.getFrom(),
                     findEventsQuery.getUntil());
 
@@ -77,22 +75,18 @@ public class ManagementService {
     // === GET OUTAGES ===
     public GetOutagesResponseDto getOutages(DlmsConnectionManager conn, DlmsDevice device,
             GetOutagesRequestList getOutagesRequestList) throws ProtocolAdapterException {
-        
+
         final List<OutageDto> outages = new ArrayList<>();
 
-        LOGGER.info("getOutages setting up connection with meter {}", device.getDeviceIdentification());
+        log.info("getOutages setting up connection with meter {}", device.getDeviceIdentification());
 
-        for (final GetOutagesRequestDto getOutagesRequestDto :
-            getOutagesRequestList.getGetOutagesRequestList()) {
-            LOGGER.info("getOutagesRequest: {}",
-                    getOutagesRequestDto.getEventLogCategory().name());
-
+        for (final GetOutagesRequestDto getOutagesRequestDto : getOutagesRequestList.getGetOutagesRequestList()) {
             outages.addAll(this.getOutagesCommandExecutor.execute(conn, device, getOutagesRequestDto));
         }
 
         return new GetOutagesResponseDto(outages);
     }
-    
+
     public void changeInDebugMode(final DlmsDevice device, final boolean debugMode) {
         device.setInDebugMode(debugMode);
         this.dlmsDeviceRepository.save(device);

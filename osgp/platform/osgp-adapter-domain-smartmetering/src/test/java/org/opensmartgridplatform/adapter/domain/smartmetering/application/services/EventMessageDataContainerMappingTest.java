@@ -55,9 +55,7 @@ public class EventMessageDataContainerMappingTest {
     @Test
     public void testWithFilledList() {
         // build test data
-        final EventDto event = new EventDto(new DateTime(), new Integer(1), new Integer(2), "STANDARD_EVENT_LOG",
-                new DateTime(), new Long(3));
-
+        final EventDto event = new EventDto(new DateTime(), new Integer(1), new Integer(2), "STANDARD_EVENT_LOG");
         final ArrayList<EventDto> events = new ArrayList<>();
         events.add(event);
         final EventMessageDataResponseDto containerDto = new EventMessageDataResponseDto(events);
@@ -66,14 +64,12 @@ public class EventMessageDataContainerMappingTest {
         // test mapping
         assertThat(container).isNotNull();
         assertThat(container.getEvents()).isNotNull();
-        assertThat(container.getEvents().get(0).getTimestamp()).isEqualTo(
-                containerDto.getEvents().get(0).getTimestamp());
-        assertThat(container.getEvents().get(0).getEventCode()).isEqualTo(
-                containerDto.getEvents().get(0).getEventCode());
-        assertThat(container.getEvents().get(0).getEventCounter()).isEqualTo(
-                containerDto.getEvents().get(0).getEventCounter());
-        assertThat(container.getEvents().get(0).getStartTime()).isEqualTo(
-                containerDto.getEvents().get(0).getStartTime());
-        assertThat(container.getEvents().get(0).getDuration()).isEqualTo(containerDto.getEvents().get(0).getDuration());
+        assertThat(container.getEvents().get(0).getTimestamp())
+                .isEqualTo(containerDto.getEvents().get(0).getTimestamp());
+        assertThat(container.getEvents().get(0).getEventCode())
+                .isEqualTo(containerDto.getEvents().get(0).getEventCode());
+        assertThat(container.getEvents().get(0).getEventCounter())
+                .isEqualTo(containerDto.getEvents().get(0).getEventCounter());
     }
+
 }

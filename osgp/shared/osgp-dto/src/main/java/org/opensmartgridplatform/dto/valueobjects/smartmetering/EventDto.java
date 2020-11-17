@@ -21,18 +21,14 @@ public class EventDto implements Serializable {
     private static final long serialVersionUID = 5484936946786037616L;
     private final DateTime timestamp;
     private final Integer eventCode;
-    private final String eventLogCategoryName;
     private final Integer eventCounter;
-    private final DateTime startTime;
-    private final Long duration;
+    private final String eventLogCategoryName;
 
     public EventDto(final DateTime timestamp, final Integer eventCode, final Integer eventCounter,
-            final String eventLogCategoryName, final DateTime startTime, final Long duration) {
+            final String eventLogCategoryName) {
         this.timestamp = timestamp;
         this.eventCode = eventCode;
         this.eventCounter = eventCounter;
         this.eventLogCategoryName = eventLogCategoryName;
-        this.startTime = startTime;
-        this.duration = duration;
     }
 }

@@ -4,8 +4,7 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.mapping;
 
@@ -17,7 +16,6 @@ import org.joda.time.DateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventLogCategoryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetOutagesRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.OutageDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +25,8 @@ import org.springframework.stereotype.Component;
 @Component(value = "dataObjectToOutageListConverter")
 public class DataObjectToOutageListConverter {
 
-    public static final String EVENT_DATA_VALUE_IS_NOT_A_NUMBER = "eventData value is not a number";
+    private static final String EVENT_DATA_VALUE_IS_NOT_A_NUMBER = "eventData value is not a number";
+    private static final int NUMBER_OF_ELEMENTS = 2;
     private final DlmsHelper dlmsHelper;
 
     @Autowired
@@ -51,8 +50,7 @@ public class DataObjectToOutageListConverter {
 
     }
 
-    private OutageDto getOutageDto(final DataObject outageDataObject)
-            throws ProtocolAdapterException {
+    private OutageDto getOutageDto(final DataObject outageDataObject) throws ProtocolAdapterException {
 
         final List<DataObject> outageData = outageDataObject.getValue();
 
@@ -60,9 +58,8 @@ public class DataObjectToOutageListConverter {
             throw new ProtocolAdapterException("outageData DataObject should not be null");
         }
 
-        if (outageData.size() != EventLogCategoryDto.POWER_FAILURE_EVENT_LOG.getNumberOfEventElements()) {
-            throw new ProtocolAdapterException(
-                    "outageData size should be " + EventLogCategoryDto.POWER_FAILURE_EVENT_LOG.getNumberOfEventElements());
+        if (outageData.size() != NUMBER_OF_ELEMENTS) {
+            throw new ProtocolAdapterException("outageData size should be " + NUMBER_OF_ELEMENTS);
         }
 
         final DateTime endTime = this.extractDateTime(outageData);
@@ -84,8 +81,7 @@ public class DataObjectToOutageListConverter {
         return dateTime;
     }
 
-    private Long extractEventDuration(final List<DataObject> eventData)
-            throws ProtocolAdapterException {
+    private Long extractEventDuration(final List<DataObject> eventData) throws ProtocolAdapterException {
         if (!eventData.get(1).isNumber()) {
             throw new ProtocolAdapterException(EVENT_DATA_VALUE_IS_NOT_A_NUMBER);
         }

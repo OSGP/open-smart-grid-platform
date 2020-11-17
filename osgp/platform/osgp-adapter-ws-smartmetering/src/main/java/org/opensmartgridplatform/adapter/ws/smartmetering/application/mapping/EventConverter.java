@@ -39,29 +39,20 @@ public class EventConverter extends
             final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventType eventType =
                     org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventType.getByEventCode(
                     source.getEventCode());
-            final XMLGregorianCalendar timestamp = convert(source.getTimestamp());
+            final XMLGregorianCalendar timestamp = DatatypeFactory.newInstance().newXMLGregorianCalendar(
+                    source.getTimestamp().toGregorianCalendar());
             final org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event event =
                     new org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event();
             event.setEventType(EventType.fromValue(eventType.toString()));
             event.setTimestamp(timestamp);
             event.setEventCounter(source.getEventCounter());
             event.setEventLogCategory(EventLogCategory.fromValue(source.getEventLogCategory().name()));
-            event.setDuration(source.getDuration());
-            event.setStartTime(this.convert(source.getStartTime()));
             return event;
         } catch (final DatatypeConfigurationException e) {
             LOGGER.error("DatatypeConfigurationException", e);
         }
 
         return null;
-    }
-
-    private XMLGregorianCalendar convert(final DateTime dateTime) throws DatatypeConfigurationException {
-        if (dateTime == null) {
-            return null;
-        }
-
-        return DatatypeFactory.newInstance().newXMLGregorianCalendar(dateTime.toGregorianCalendar());
     }
 
     @Override
@@ -77,12 +68,6 @@ public class EventConverter extends
         final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventLogCategory eventLogCategory =
                 org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventLogCategory.fromValue(
                 source.getEventLogCategory().value());
-        DateTime startTime = null;
-        if (source.getStartTime() != null) {
-            startTime = new DateTime(source.getStartTime().toGregorianCalendar().getTime());
-        }
-
-        return new Event(timestamp, eventCode, source.getEventCounter(), eventLogCategory,
-                startTime, source.getDuration());
+        return new Event(timestamp, eventCode, source.getEventCounter(), eventLogCategory);
     }
 }

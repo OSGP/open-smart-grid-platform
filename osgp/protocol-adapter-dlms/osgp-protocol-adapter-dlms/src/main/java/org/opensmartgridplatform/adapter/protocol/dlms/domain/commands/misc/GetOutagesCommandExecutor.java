@@ -12,6 +12,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 import java.io.IOException;
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -33,10 +34,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component()
+@Slf4j
+@Component
 public class GetOutagesCommandExecutor extends AbstractCommandExecutor<GetOutagesRequestDto, List<OutageDto>> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetOutagesCommandExecutor.class);
 
     private static final int CLASS_ID = 7;
     private static final int ATTRIBUTE_ID = 2;
@@ -63,8 +63,7 @@ public class GetOutagesCommandExecutor extends AbstractCommandExecutor<GetOutage
         final AttributeAddress eventLogBuffer = new AttributeAddress(CLASS_ID, new ObisCode(OBIS_CODE), ATTRIBUTE_ID);
 
         conn.getDlmsMessageListener().setDescription(
-                "RetrieveEvents for " + getOutagesRequestDto.getEventLogCategory() + 
-                ", retrieve attribute: " + JdlmsObjectToStringUtil.describeAttributes(eventLogBuffer));
+                "RetrieveOutages, retrieve attribute: " + JdlmsObjectToStringUtil.describeAttributes(eventLogBuffer));
 
         final GetResult getResult;
         try {
@@ -74,15 +73,13 @@ public class GetOutagesCommandExecutor extends AbstractCommandExecutor<GetOutage
         }
 
         if (getResult == null) {
-            throw new ProtocolAdapterException(
-                    "No GetResult received while retrieving event register " + getOutagesRequestDto.getEventLogCategory());
+            throw new ProtocolAdapterException("No GetResult received while retrieving event register POWER_FAILURE_EVENT_LOG");
         }
 
         if (!AccessResultCode.SUCCESS.equals(getResult.getResultCode())) {
-            LOGGER.info("Result of getting events for {} is {}", getOutagesRequestDto.getEventLogCategory(),
-                    getResult.getResultCode());
+            log.info("Result of getting events for POWER_FAILURE_EVENT_LOG is {}", getResult.getResultCode());
             throw new ProtocolAdapterException(
-                    "Getting the events for  " + getOutagesRequestDto.getEventLogCategory() + " from the meter resulted in: "
+                    "Getting the outages from POWER_FAILURE_EVENT_LOG from the meter resulted in: "
                             + getResult.getResultCode());
         }
 

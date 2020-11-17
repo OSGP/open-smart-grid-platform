@@ -26,6 +26,7 @@ import org.springframework.stereotype.Component;
 public class DataObjectToEventListConverter {
 
     public static final String EVENT_DATA_VALUE_IS_NOT_A_NUMBER = "eventData value is not a number";
+
     private final DlmsHelper dlmsHelper;
 
     @Autowired
@@ -42,14 +43,14 @@ public class DataObjectToEventListConverter {
 
         final List<DataObject> listOfEvents = source.getValue();
         for (final DataObject eventDataObject : listOfEvents) {
-            eventList.add(this.getDefaultEvent(eventDataObject, eventLogCategory));
+            eventList.add(this.getEvent(eventDataObject, eventLogCategory));
         }
 
         return eventList;
 
     }
 
-    private EventDto getDefaultEvent(final DataObject eventDataObject, final EventLogCategoryDto eventLogCategory)
+    private EventDto getEvent(final DataObject eventDataObject, final EventLogCategoryDto eventLogCategory)
             throws ProtocolAdapterException {
 
         final List<DataObject> eventData = eventDataObject.getValue();
@@ -63,64 +64,30 @@ public class DataObjectToEventListConverter {
                     "eventData size should be " + eventLogCategory.getNumberOfEventElements());
         }
 
-        EventDto event = null;
-
-        if (eventLogCategory == EventLogCategoryDto.POWER_FAILURE_EVENT_LOG) {
-            event = this.getPowerFailureEvent(eventData, eventLogCategory);
-        } else {
-            event = this.getDefaultEvent(eventData, eventLogCategory);
-        }
-
-        log.info("Converted dataObject to event: {}", event);
-        return event;
-    }
-
-    private EventDto getDefaultEvent(final List<DataObject> eventData, final EventLogCategoryDto eventLogCategory)
-            throws ProtocolAdapterException {
         // extract values from List<DataObject> eventData.
         final DateTime dateTime = this.extractDateTime(eventData);
         final Short code = this.extractCode(eventData);
         final Integer eventCounter = this.extractEventCounter(eventLogCategory, eventData);
         final String eventLogCategoryName = eventLogCategory.name();
 
+        log.info("Event time is {}, event code is {}, event category is {} and event counter is {}", dateTime, code,
+                eventLogCategoryName, eventCounter);
+
         // build a new EventDto with those values.
-        return new EventDto(dateTime, code.intValue(), eventCounter, eventLogCategoryName, null, null);
-    }
-
-    private EventDto getPowerFailureEvent(final List<DataObject> eventData, final EventLogCategoryDto eventLogCategory)
-            throws ProtocolAdapterException {
-        final DateTime endTime = this.extractDateTime(eventData);
-        final Long duration = this.extractEventDuration(eventData);
-        final String eventLogCategoryName = eventLogCategory.name();
-        final DateTime startTime = this.calculatePowerFailureStartTime(endTime, duration);
-
-        return new EventDto(endTime, 1, null, eventLogCategoryName, startTime, duration);
+        return new EventDto(dateTime, code.intValue(), eventCounter, eventLogCategoryName);
     }
 
     private DateTime extractDateTime(final List<DataObject> eventData) throws ProtocolAdapterException {
-        final DateTime dateTime = this.dlmsHelper.convertDataObjectToDateTime(eventData.get(0)).asDateTime();
 
+        final DateTime dateTime = this.dlmsHelper.convertDataObjectToDateTime(eventData.get(0)).asDateTime();
         if (dateTime == null) {
             throw new ProtocolAdapterException("eventData time is null/unspecified");
         }
-
         return dateTime;
     }
 
-    private Long extractEventDuration(final List<DataObject> eventData)
-            throws ProtocolAdapterException {
-        if (!eventData.get(1).isNumber()) {
-            throw new ProtocolAdapterException(EVENT_DATA_VALUE_IS_NOT_A_NUMBER);
-        }
-
-        return eventData.get(1).getValue();
-    }
-
-    private DateTime calculatePowerFailureStartTime(final DateTime endTime, final Long duration) {
-        return endTime.minusSeconds(duration.intValue());
-    }
-
     private Short extractCode(final List<DataObject> eventData) throws ProtocolAdapterException {
+
         if (!eventData.get(1).isNumber()) {
             throw new ProtocolAdapterException(EVENT_DATA_VALUE_IS_NOT_A_NUMBER);
         }

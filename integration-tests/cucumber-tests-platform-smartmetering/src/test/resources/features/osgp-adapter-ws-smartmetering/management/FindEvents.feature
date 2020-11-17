@@ -48,11 +48,3 @@ Feature: SmartMetering Management - Find Events
       | EndDate              | 2015-09-05T00:00:00.000Z |
     Then 29 mbus events should be returned
       | DeviceIdentification | TEST1024000000001 |
-
-  Scenario: find power failure events from a device
-    When receiving a find power failure events request
-      | DeviceIdentification | TEST1024000000001        |
-      | BeginDate            | 1970-01-01T00:00:00.000Z |
-      | EndDate              | 2015-09-03T00:00:00.000Z |
-    Then 10 power failure events should be returned
-      | DeviceIdentification | TEST1024000000001 |

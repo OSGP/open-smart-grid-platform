@@ -10,14 +10,4 @@ package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 public class GetOutagesRequestDto implements ActionRequestDto {
 
     private static final long serialVersionUID = -5473436699402023669L;
-
-    private final EventLogCategoryDto eventLogCategory = EventLogCategoryDto.POWER_FAILURE_EVENT_LOG;
-
-    public GetOutagesRequestDto() {
-    }
-
-    public EventLogCategoryDto getEventLogCategory() {
-        return this.eventLogCategory;
-    }
-
 }
