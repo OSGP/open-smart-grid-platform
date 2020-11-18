@@ -246,7 +246,7 @@ public class DlmsDeviceSteps {
         assertThat(numberOfEncryptionKeys > 1).as("Number of encryption keys > 1").isTrue();
     }
 
-    @Then("^the keys are not changed in the osgp_adapter_protocol_dlms database security_key table$")
+    @Then("^the keys are not changed in the secret_management database encrypted_secret table$")
     public void theKeysAreNotChangedInTheOsgpAdapterProtocolDlmsDatabaseSecurityKeyTable() {
         final String keyDeviceIdentification = PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION;
         final String deviceIdentification = (String) ScenarioContext.current().get(keyDeviceIdentification);

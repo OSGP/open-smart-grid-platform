@@ -23,7 +23,7 @@ Feature: SmartMetering functional exceptions regarding encryption keys
     And a SOAP fault should have been returned
       | Code    |                  804 |
       | Message | DECRYPTION_EXCEPTION |
-    And the keys are not changed in the osgp_adapter_protocol_dlms database security_key table
+    And the keys are not changed in the secret_management database encrypted_secret table
   Scenario: HLS5 connect without an encryption key
     Given a dlms device
       | DeviceIdentification  | TEST1024000000001 |
