@@ -31,13 +31,13 @@ public abstract class AbstractEncryptionProvider {
 
     protected abstract AlgorithmParameterSpec getAlgorithmParameterSpec();
 
-    protected abstract Key getSecretEncryptionKey(String keyReference, int cipherMode) throws EncrypterException;
+    protected abstract Key getSecretEncryptionKey(String keyReference, int cipherMode);
 
     protected void setKeyFile(final File keyFile) {
         this.keyFile = keyFile;
     }
 
-    public EncryptedSecret encrypt(final byte[] secret, final String keyReference) throws EncrypterException {
+    public EncryptedSecret encrypt(final byte[] secret, final String keyReference) {
         try {
             final Cipher cipher = this.getCipher();
             cipher.init(Cipher.ENCRYPT_MODE, this.getSecretEncryptionKey(keyReference, Cipher.ENCRYPT_MODE),
@@ -48,7 +48,7 @@ public abstract class AbstractEncryptionProvider {
         }
     }
 
-    public byte[] decrypt(final EncryptedSecret secret, final String keyReference) throws EncrypterException {
+    public byte[] decrypt(final EncryptedSecret secret, final String keyReference) {
 
         if (secret.getType() != this.getType()) {
             throw new EncrypterException(

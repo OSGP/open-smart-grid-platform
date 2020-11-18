@@ -34,7 +34,7 @@ public class RsaEncrypter {
     private Key publicKey;
     private Key privateKey;
 
-    public void setPrivateKeyStore(File privateKeyStoreFile) throws EncrypterException {
+    public void setPrivateKeyStore(File privateKeyStoreFile) {
         try {
             byte[] keyData = Files.readAllBytes(privateKeyStoreFile.toPath());
             PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(keyData);
@@ -54,6 +54,7 @@ public class RsaEncrypter {
         }
     }
 
+    //Afgestemd met Paul Houtman: totdat Netinium is uitgefaseerd moeten we compatibel blijven
     @SuppressWarnings("squid:S5542")
     protected Cipher getCipher() {
         try {
@@ -74,8 +75,7 @@ public class RsaEncrypter {
         try {
             final Cipher cipher = this.getCipher();
             cipher.init(Cipher.ENCRYPT_MODE, this.getSecretEncryptionKey(Cipher.ENCRYPT_MODE));
-            byte[] rsa = cipher.doFinal(secret);
-            return rsa;
+            return cipher.doFinal(secret);
         } catch (final Exception e) {
             throw new EncrypterException("Could not encrypt secret", e);
         }

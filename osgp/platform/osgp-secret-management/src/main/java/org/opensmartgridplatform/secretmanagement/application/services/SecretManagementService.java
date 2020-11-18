@@ -134,7 +134,7 @@ public class SecretManagementService {
                 .findByTypeAndValid(this.encryptionProviderType, now);
         if (keyRefs.size() > 1) {
             throw new IllegalStateException("Multiple encryption keys found that are valid at " + now);
-        } else if (keyRefs.size() == 0) {
+        } else if (keyRefs.isEmpty()) {
             throw new NoSuchElementException(
                     "No encryption key of type " + this.encryptionProviderType + " found that is valid at " + now);
         }
@@ -145,8 +145,7 @@ public class SecretManagementService {
         return this.keyRepository.findByTypeAndReference(this.encryptionProviderType, reference);
     }
 
-    private EncryptedTypedSecret validateNewSecret(final String deviceIdentification,
-            final EncryptedTypedSecret secret) {
+    private EncryptedTypedSecret validateAndReturnNewSecret(final EncryptedTypedSecret secret) {
         if (secret.hasNullSecret()) {
             FunctionalExceptionType excType = FunctionalExceptionType.KEY_NOT_PRESENT;
             throw new ExceptionWrapper(new FunctionalException(excType, ComponentType.SECRET_MANAGEMENT));
@@ -214,7 +213,7 @@ public class SecretManagementService {
                 .findSecrets(deviceIdentification, secretType, secretStatus);
         boolean onlySingleSecretAllowed =
                 SecretStatus.NEW.equals(secretStatus) || SecretStatus.ACTIVE.equals(secretStatus);
-        if (secretsList.size() == 0) {
+        if (secretsList.isEmpty()) {
             return Optional.empty();
         } else if (secretsList.size() > 1 && onlySingleSecretAllowed) {
             String msgFormat = "Only 1 instance allowed with status %s, but found %s for device %s, secret type %s";
@@ -232,7 +231,7 @@ public class SecretManagementService {
     }
 
     private void storeAesSecrets(final String deviceIdentification, final List<EncryptedTypedSecret> secrets) {
-        secrets.stream().map(ets -> this.validateNewSecret(deviceIdentification, ets)).map(ets -> this
+        secrets.stream().map(this::validateAndReturnNewSecret).map(ets -> this
                 .createDbEncrypted(deviceIdentification, ets, this.getKeyByReference(ets.encryptionKeyReference)))
                .collect(collectingAndThen(toList(), this.secretRepository::saveAll));
     }
@@ -327,19 +326,10 @@ public class SecretManagementService {
         } catch (final EncrypterException ee) {
             throw new IllegalStateException("Could not reencrypt secret from RSA to AES: " + ee.toString(), ee);
         }
-        //if (aes.length != this.encryptionDelegate.getSecretByteLength(this.encryptionProviderType)) {
-        //    throw new ExceptionWrapper(new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT,
-        //            ComponentType.SECRET_MANAGEMENT));
-        //}
         return aes;
     }
 
     private byte[] reencryptAes2Rsa(byte[] aes, String keyReference, EncryptionProviderType encryptionProviderType) {
-        //Outgoing existing secret, so use AES key referenceprovided by parameter for decrypting aes
-        //if (aes.length != this.encryptionDelegate.getSecretByteLength(encryptionProviderType)) {
-        //    throw new ExceptionWrapper(new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT,
-        //            ComponentType.SECRET_MANAGEMENT));
-        //}
         try {
             return this.rsaEncrypter.encrypt(
                     this.encryptionDelegate.decrypt(new EncryptedSecret(encryptionProviderType, aes), keyReference));

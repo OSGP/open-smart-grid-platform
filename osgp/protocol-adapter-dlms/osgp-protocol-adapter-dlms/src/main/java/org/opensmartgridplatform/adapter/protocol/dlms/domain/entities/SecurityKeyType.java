@@ -55,18 +55,22 @@ public enum SecurityKeyType {
         public B get1() {
             return this.b;
         }
+
+        public static <A,B> Pair<A,B> from(A a, B b) {
+            return new Pair<>(a, b);
+        }
     }
 
     private static final List<Pair<SecurityKeyType,SecretType>> typeMapping;
 
     static {
         typeMapping = Arrays.asList(
-                new Pair(E_METER_ENCRYPTION, SecretType.E_METER_ENCRYPTION_KEY_UNICAST),
-                new Pair(E_METER_AUTHENTICATION, SecretType.E_METER_AUTHENTICATION_KEY),
-                new Pair(E_METER_MASTER, SecretType.E_METER_MASTER_KEY),
-                new Pair(G_METER_ENCRYPTION, SecretType.G_METER_ENCRYPTION_KEY),
-                new Pair(G_METER_MASTER, SecretType.G_METER_MASTER_KEY),
-                new Pair(PASSWORD, SecretType.PPP_PASSWORD));
+                Pair.from(E_METER_ENCRYPTION, SecretType.E_METER_ENCRYPTION_KEY_UNICAST),
+                Pair.from(E_METER_AUTHENTICATION, SecretType.E_METER_AUTHENTICATION_KEY),
+                Pair.from(E_METER_MASTER, SecretType.E_METER_MASTER_KEY),
+                Pair.from(G_METER_ENCRYPTION, SecretType.G_METER_ENCRYPTION_KEY),
+                Pair.from(G_METER_MASTER, SecretType.G_METER_MASTER_KEY),
+                Pair.from(PASSWORD, SecretType.PPP_PASSWORD));
     }
 
     public SecretType toSecretType() {

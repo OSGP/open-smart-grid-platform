@@ -13,7 +13,7 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Se
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.G_METER_ENCRYPTION;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.G_METER_MASTER;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.InstallationMapper;
@@ -67,7 +67,7 @@ public class InstallationService {
     }
 
     private void storeNewKeys(final SmartMeteringDeviceDto deviceDto) throws FunctionalException {
-        Map<SecurityKeyType,byte[]> keysByType = new HashMap<>();
+        Map<SecurityKeyType,byte[]> keysByType = new EnumMap<>(SecurityKeyType.class);
         keysByType.put(E_METER_MASTER,this.encryptionService.rsaDecrypt(deviceDto.getMasterKey()));
         keysByType.put(E_METER_AUTHENTICATION,this.encryptionService.rsaDecrypt(deviceDto.getAuthenticationKey()));
         keysByType.put(G_METER_ENCRYPTION,this.encryptionService.rsaDecrypt(deviceDto.getGlobalEncryptionUnicastKey()));

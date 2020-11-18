@@ -11,9 +11,10 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 import static java.util.stream.Collectors.toList;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 import lombok.extern.slf4j.Slf4j;
@@ -47,15 +48,12 @@ import org.springframework.stereotype.Service;
  * Service for storing, activating and retrieving device keys.
  * Also performs RSA encryption/decryption operations for SOAP messaging purposes.
  */
-public class SecretManagementService { //implements SecurityKeyService {
+public class SecretManagementService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SecretManagementService.class);
     private final RsaEncrypter soapRsaEncrypter;
     private final SecretManagementClient secretManagementClient;
 
-
-    //@Autowired
-    //private EncryptionService aesEncryptionService;
 
     public SecretManagementService(RsaEncrypter soapRsaEncrypter, SecretManagementClient secretManagementClient) {
         this.soapRsaEncrypter = soapRsaEncrypter;
@@ -72,7 +70,6 @@ public class SecretManagementService { //implements SecurityKeyService {
      *
      * @return the key or NULL if not present
      */
-    //@Override
     public byte[] getKey(String deviceIdentification, SecurityKeyType keyType) {
         LOGGER.info("Retrieving {} for device {}", keyType.name(), deviceIdentification);
         return this.getKeys(deviceIdentification, Arrays.asList(keyType)).get(keyType);
@@ -88,7 +85,6 @@ public class SecretManagementService { //implements SecurityKeyService {
      *
      * @return the requested keys in a map by key type, with value NULL if not present
      */
-    //@Override
     public Map<SecurityKeyType, byte[]> getKeys(String deviceIdentification, List<SecurityKeyType> keyTypes) {
         GetSecretsRequest request = this.createGetSecretsRequest(deviceIdentification, keyTypes);
         GetSecretsResponse response = this.secretManagementClient.getSecretsRequest(request);
@@ -106,7 +102,6 @@ public class SecretManagementService { //implements SecurityKeyService {
      *
      * @return the key or NULL if not present
      */
-    //@Override
     public byte[] getNewKey(String deviceIdentification, SecurityKeyType keyType) {
         LOGGER.info("Retrieving new {} for device {}", keyType.name(), deviceIdentification);
         return this.getNewKeys(deviceIdentification, Arrays.asList(keyType)).get(keyType);
@@ -122,7 +117,6 @@ public class SecretManagementService { //implements SecurityKeyService {
      *
      * @return the requested keys in a map by key type, with value NULL if not present
      */
-    //@Override
     public Map<SecurityKeyType, byte[]> getNewKeys(String deviceIdentification, List<SecurityKeyType> keyTypes) {
         GetNewSecretsRequest request = this.createGetNewSecretsRequest(deviceIdentification, keyTypes);
         GetNewSecretsResponse response = this.secretManagementClient.getNewSecretsRequest(request);
@@ -143,10 +137,9 @@ public class SecretManagementService { //implements SecurityKeyService {
     private Map<SecurityKeyType, byte[]> convertSoapSecretsToSecretMapByType(List<TypedSecret> soapSecrets) {
         Function<TypedSecret, SecurityKeyType> convertType = ts -> SecurityKeyType.fromSecretType(ts.getType());
         Function<TypedSecret, byte[]> convertSecret = ts -> this.decryptSoapSecret(ts,false);
-        Map<SecurityKeyType,byte[]> decryptedKeysByType = new HashMap<>();
+        Map<SecurityKeyType,byte[]> decryptedKeysByType = new EnumMap<>(SecurityKeyType.class);
         soapSecrets.forEach(ts->decryptedKeysByType.put(convertType.apply(ts),convertSecret.apply(ts)));
         return decryptedKeysByType;
-        //return soapSecrets.stream().collect(Collectors.toMap(convertType, convertSecret));
     }
 
     private GetSecretsRequest createGetSecretsRequest(String deviceIdentification, List<SecurityKeyType> keyTypes) {
@@ -193,22 +186,20 @@ public class SecretManagementService { //implements SecurityKeyService {
      *
      * @see #activateNewKey(String, SecurityKeyType)
      */
-    //@Override
     public void storeNewKey(String deviceIdentification, SecurityKeyType keyType, byte[] key) {
-        Map<SecurityKeyType, byte[]> keysByType = new HashMap<>();
+        Map<SecurityKeyType, byte[]> keysByType = new EnumMap<>(SecurityKeyType.class);
         keysByType.put(keyType, key);
         this.storeNewKeys(deviceIdentification, keysByType);
     }
 
-    //@Override
     public void storeNewKeys(String deviceIdentification, Map<SecurityKeyType, byte[]> keysByType) {
         this.validateKeys(keysByType);
         TypedSecrets typedSecrets = new TypedSecrets();
         List<TypedSecret> typedSecretList = typedSecrets.getTypedSecret();
-        for (SecurityKeyType type : keysByType.keySet()) {
+        for (Map.Entry<SecurityKeyType,byte[]> entry : keysByType.entrySet()) {
             TypedSecret ts = new TypedSecret();
-            ts.setType(type.toSecretType());
-            ts.setSecret(this.encryptSoapSecret(keysByType.get(type),true));
+            ts.setType(entry.getKey().toSecretType());
+            ts.setSecret(this.encryptSoapSecret(entry.getValue(),true));
             typedSecretList.add(ts);
         }
         StoreSecretsRequest request = this.createStoreSecretsRequest(deviceIdentification, typedSecrets);
@@ -216,7 +207,7 @@ public class SecretManagementService { //implements SecurityKeyService {
     }
 
     private void validateKeys(Map<SecurityKeyType, byte[]> keysByType) {
-        long nrNulls = keysByType.values().stream().filter(key -> key == null).count();
+        long nrNulls = keysByType.values().stream().filter(Objects::isNull).count();
         if (nrNulls > 0) {
             throw new IllegalArgumentException(
                     String.format("Provided %s keys, %s of which were NULL", keysByType.size(), nrNulls));
@@ -246,12 +237,10 @@ public class SecretManagementService { //implements SecurityKeyService {
      *         if no new key is stored with the given device
      * @see #storeNewKeys(String, Map)
      */
-    //@Override
     public void activateNewKey(String deviceIdentification, SecurityKeyType keyType) throws ProtocolAdapterException {
         this.activateNewKeys(deviceIdentification, Arrays.asList(keyType));
     }
 
-    //@Override
     public void activateNewKeys(String deviceIdentification, List<SecurityKeyType> keyTypes) {
         ActivateSecretsRequest request = new ActivateSecretsRequest();
         request.setDeviceId(deviceIdentification);
@@ -261,7 +250,6 @@ public class SecretManagementService { //implements SecurityKeyService {
         this.secretManagementClient.activateSecretsRequest(request);
     }
 
-    //@Override
     public boolean hasNewSecretOfType(String deviceIdentification, SecurityKeyType keyType) {
         HasNewSecretRequest request = new HasNewSecretRequest();
         request.setDeviceId(deviceIdentification);
@@ -270,7 +258,6 @@ public class SecretManagementService { //implements SecurityKeyService {
         return response.isHasNewSecret();
     }
 
-    //@Override
     public byte[] generate128BitsKeyAndStoreAsNewKey(String deviceIdentification, SecurityKeyType keyType) {
         return this.generate128BitsKeysAndStoreAsNewKeys(deviceIdentification, Arrays.asList(keyType)).get(keyType);
     }
@@ -284,7 +271,6 @@ public class SecretManagementService { //implements SecurityKeyService {
      *
      * @return a new 128bits key, unencrypted.
      */
-    //@Override
     public Map<SecurityKeyType, byte[]> generate128BitsKeysAndStoreAsNewKeys(String deviceIdentification,
             List<SecurityKeyType> keyTypes) {
         SecretTypes secretTypes = new SecretTypes();

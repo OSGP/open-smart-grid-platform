@@ -8,13 +8,9 @@
  */
 package org.opensmartgridplatform.shared.security;
 
-import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
-
 public interface EncryptionDelegate {
-    EncryptedSecret encrypt(EncryptionProviderType encryptionProviderType, byte[] secret, String keyReference)
-            throws EncrypterException;
-    byte[] decrypt(EncryptedSecret secret, String keyReference) throws EncrypterException;
-    byte[] generateAes128BitsSecret(EncryptionProviderType encryptionProviderType, String keyReference)
-            throws EncrypterException;
+    EncryptedSecret encrypt(EncryptionProviderType encryptionProviderType, byte[] secret, String keyReference);
+    byte[] decrypt(EncryptedSecret secret, String keyReference);
+    byte[] generateAes128BitsSecret(EncryptionProviderType encryptionProviderType, String keyReference);
     int getSecretByteLength(EncryptionProviderType encryptionProviderType);
 }

@@ -99,11 +99,11 @@ public class RecoverKeyProcess implements Runnable {
             try {
                 this.secretManagementService.activateNewKeys(this.deviceIdentification, keyTypesToActivate);
             } catch (Exception e) {
-                LOGGER.error("Error activating new keys", e);
                 throw new RecoverKeyException(e.getMessage(), e);
             }
         } else {
             LOGGER.warn("Could not recover keys: could not connect to device using new keys");
+            //TODO try to connect using 'old' keys? send key change to device again?
         }
     }
 

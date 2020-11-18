@@ -45,7 +45,7 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
 
     private final KeyStore keyStore;
 
-    public HsmEncryptionProvider(final File keyStoreFile) throws EncrypterException {
+    public HsmEncryptionProvider(final File keyStoreFile) {
         try {
             super.setKeyFile(keyStoreFile);
             this.keyStore = KeyStore.getInstance(TYPE, PROVIDER);
@@ -57,7 +57,7 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
     }
 
     @Override
-    public byte[] decrypt(final EncryptedSecret secret, final String keyReference) throws EncrypterException {
+    public byte[] decrypt(final EncryptedSecret secret, final String keyReference) {
         byte[] decryptedSecret = super.decrypt(secret, keyReference);
         if (decryptedSecret.length > KEY_LENGTH) {
             final byte[] truncatedDecryptedSecretBytes = Arrays.copyOfRange(decryptedSecret, 0,
@@ -70,7 +70,7 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
     }
 
     @Override
-    public byte[] generateAes128BitsSecret(String keyReference) throws EncrypterException {
+    public byte[] generateAes128BitsSecret(String keyReference) {
         try {
             return this.encrypt(KeyGenerator.getInstance("AES").generateKey().getEncoded(),keyReference).getSecret();
         } catch (NoSuchAlgorithmException exc) {
@@ -84,7 +84,7 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
     }
 
     @Override
-    protected Cipher getCipher() throws EncrypterException {
+    protected Cipher getCipher() {
         try {
             return Cipher.getInstance(ALGORITHM, PROVIDER);
         } catch (final NoSuchPaddingException | NoSuchAlgorithmException | NoSuchProviderException e) {
@@ -98,7 +98,7 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
      * @return the key that must be used for encryption/decryption
      */
     @Override
-    protected Key getSecretEncryptionKey(final String keyReference, final int cipherMode) throws EncrypterException {
+    protected Key getSecretEncryptionKey(final String keyReference, final int cipherMode) {
         try {
             return this.keyStore.getKey(keyReference, null);
         } catch (final UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {

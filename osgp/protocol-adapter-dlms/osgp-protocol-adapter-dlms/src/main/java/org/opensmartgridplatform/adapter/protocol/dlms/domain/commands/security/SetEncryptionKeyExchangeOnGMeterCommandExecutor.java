@@ -141,7 +141,7 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
     }
 
     private MethodParameter getTransferKeyMethodParameter(String mbusDeviceIdentification, int channel,
-            byte[] gMeterUserKey) throws ProtocolAdapterException, FunctionalException {
+            byte[] gMeterUserKey) throws ProtocolAdapterException {
         DlmsDevice mbusDevice = this.dlmsDeviceRepository.findByDeviceIdentification(mbusDeviceIdentification);
         if (mbusDevice == null) {
             throw new ProtocolAdapterException("Unknown M-Bus device: " + mbusDeviceIdentification);

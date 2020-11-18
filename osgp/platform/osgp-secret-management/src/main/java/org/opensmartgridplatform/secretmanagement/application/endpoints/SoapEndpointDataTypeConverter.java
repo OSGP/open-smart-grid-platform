@@ -23,38 +23,30 @@ import org.springframework.stereotype.Component;
 @Component
 public class SoapEndpointDataTypeConverter {
     public List<SecretType> convertToSecretTypes(final SecretTypes soapSecretTypes) {
-
         final List<org.opensmartgridplatform.ws.schema.core.secret.management.SecretType> soapSecretTypeList = soapSecretTypes.getSecretType();
-
-        return soapSecretTypeList.stream().map(soapSecretType -> this.convertToSecretType(soapSecretType)).collect(
+        return soapSecretTypeList.stream().map(this::convertToSecretType).collect(
                 Collectors.toList());
     }
 
     public List<TypedSecret> convertToTypedSecrets(final TypedSecrets soapTypedSecrets) throws OsgpException {
-
         if (soapTypedSecrets == null) {
             throw new TechnicalException("Missing input: typed secrets");
         }
-
         final List<org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecret> soapTypedSecretsList =
                 soapTypedSecrets.getTypedSecret();
-
         return soapTypedSecretsList.stream().map(
                 soapTypedSecret -> this.decryptAndConvertSoapTypedSecret(soapTypedSecret)).collect(Collectors.toList());
     }
 
     public TypedSecrets convertToSoapTypedSecrets(final List<TypedSecret> typedSecrets) {
         final TypedSecrets soapTypedSecrets = new TypedSecrets();
-
         final List<org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecret> soapTypedSecretList =
                 soapTypedSecrets.getTypedSecret();
-
         for (final TypedSecret typedSecret : typedSecrets) {
             final org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecret soapTypedSecret = this.encryptAndConvertSoapTypedSecret(
                     typedSecret);
             soapTypedSecretList.add(soapTypedSecret);
         }
-
         return soapTypedSecrets;
     }
 
