@@ -57,7 +57,7 @@
     <spring.wscore.version>3.0.9.RELEASE</spring.wscore.version>
     <spring.wssecurity.version>3.0.9.RELEASE</spring.wssecurity.version>
     <spring.wssupport.version>3.0.9.RELEASE</spring.wssupport.version>
-    <spring.ws.version>3.0.9.RELEASE</spring.ws.version>
+    <spring.ws.version>3.0.10.RELEASE</spring.ws.version>
     <assertj.version>3.16.1</assertj.version>
     <xmlunit.version>1.6</xmlunit.version>
     <mockito.core.version>3.3.3</mockito.core.version>
