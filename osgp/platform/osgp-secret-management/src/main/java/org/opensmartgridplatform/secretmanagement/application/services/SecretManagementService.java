@@ -225,7 +225,7 @@ public class SecretManagementService {
     }
 
     public synchronized void storeSecrets(final String deviceIdentification, final List<TypedSecret> secrets) {
-        secrets.forEach(s->this.checkNrNewSecretsOfType(deviceIdentification,s.getSecretType(),0));
+        secrets.forEach(s -> this.checkNrNewSecretsOfType(deviceIdentification, s.getSecretType(), 0));
         List<EncryptedTypedSecret> aesSecrets = secrets.stream().map(ts -> new EncryptedTypedSecret(ts.getSecret(),
                 ts.getSecretType())).map(this::reencryptRsa2Aes).collect(toList());
         this.storeAesSecrets(deviceIdentification, aesSecrets);
@@ -257,12 +257,16 @@ public class SecretManagementService {
             currentSecret.setSecretStatus(SecretStatus.EXPIRED);
             updatedSecrets.add(currentSecret);
         }
-        final DbEncryptedSecret newSecret = this
-                .getSingleDbEncryptedSecret(deviceIdentification, secretType, SecretStatus.NEW)
-                .get(); //We have checked nr of new secrets already in activateNewSecrets
-        newSecret.setSecretStatus(SecretStatus.ACTIVE);
-        updatedSecrets.add(newSecret);
-        return updatedSecrets;
+        Optional<DbEncryptedSecret> newSecretOptional = this
+                .getSingleDbEncryptedSecret(deviceIdentification, secretType, SecretStatus.NEW);
+        if (newSecretOptional.isPresent()) {
+            final DbEncryptedSecret newSecret = newSecretOptional.get();
+            newSecret.setSecretStatus(SecretStatus.ACTIVE);
+            updatedSecrets.add(newSecret);
+            return updatedSecrets;
+        } else {
+            throw new IllegalStateException("Cannot activate new secret: no new secret present");
+        }
     }
 
     private void checkNrNewSecretsOfType(final String deviceIdentification, final SecretType t, final int expectedNr) {
@@ -276,7 +280,7 @@ public class SecretManagementService {
 
     public synchronized List<TypedSecret> generateAndStoreSecrets(String deviceIdentification,
             final List<SecretType> secretTypes) {
-        secretTypes.forEach(st->this.checkNrNewSecretsOfType(deviceIdentification,st,0));
+        secretTypes.forEach(st -> this.checkNrNewSecretsOfType(deviceIdentification, st, 0));
         List<EncryptedTypedSecret> encryptedTypedSecrets = secretTypes.stream().map(this::generateAes128BitsSecret)
                                                                       .collect(Collectors.toList());
         this.storeAesSecrets(deviceIdentification, encryptedTypedSecrets);

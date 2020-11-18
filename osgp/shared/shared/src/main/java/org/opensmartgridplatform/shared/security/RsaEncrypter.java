@@ -54,6 +54,7 @@ public class RsaEncrypter {
         }
     }
 
+    @SuppressWarnings("squid:S5542")
     protected Cipher getCipher() {
         try {
             return Cipher.getInstance(ALGORITHM);
