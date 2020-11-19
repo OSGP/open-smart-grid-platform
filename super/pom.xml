@@ -116,7 +116,7 @@
     <cxf.version>3.3.6</cxf.version>
     <quartz.version>2.3.2</quartz.version>
     <hikaricp.version>3.4.5</hikaricp.version>
-    <micrometer.version>1.5.1</micrometer.version>
+    <micrometer.version>1.6.1</micrometer.version>
     <protobuf.version>2.4.1</protobuf.version>
     <protobuf.maven.plugin>0.6.5</protobuf.maven.plugin>
     <guava.version>29.0-jre</guava.version>
