@@ -30,24 +30,78 @@ import org.springframework.data.jpa.domain.Specification;
 @ExtendWith(MockitoExtension.class)
 class DeviceManagementServiceTest {
     @Mock
-    private Page<String> page;
+    private SearchEventsCriteria criteria;
     @Mock
-    private EventRepository eventRepository;
+    private Specification<Event> descriptionSpecification;
+    @InjectMocks
+    private DeviceManagementService deviceManagementService;
     @Mock
     private DomainHelperService domainHelperService;
     @Mock
-    private SearchEventsCriteria criteria;
+    private EventRepository eventRepository;
+    @Mock
+    private EventSpecifications eventSpecifications;
+    @Mock
+    private Page<String> page;
     @Mock
     private PagingSettings pagingSettings;
     @Mock
-    private EventSpecifications eventSpecifications;
-    @InjectMocks
-    private DeviceManagementService deviceManagementService;
+    private Specification<Event> specification;
+
+    @Test
+    void findEventsTest() throws FunctionalException {
+        when(this.criteria.getOrganisationIdentification()).thenReturn("orgIdentification");
+        when(this.criteria.getDeviceIdentification()).thenReturn("deviceIdentification");
+        when(this.criteria.getDescriptionStartsWith()).thenReturn("descriptionStartValue");
+        when(this.criteria.getDescription()).thenReturn("description");
+        when(this.domainHelperService.findOrganisation(any())).thenReturn(new Organisation());
+        doNothing().when(this.pagingSettings).updatePagingSettings(any());
+        when(this.domainHelperService.findDevice(any())).thenReturn(new Device());
+        doNothing().when(this.domainHelperService).isAllowed(any(), any(), any());
+        when(this.eventSpecifications.isFromDevice(any())).thenReturn(this.specification);
+        when(this.eventSpecifications.withDescription(any())).thenReturn(this.descriptionSpecification);
+        when(this.pagingSettings.getPageNumber()).thenReturn(1);
+        when(this.pagingSettings.getPageSize()).thenReturn(1);
+        when(this.eventRepository.findAll((Specification<Event>) any(), any(Pageable.class))).thenReturn(null);
+        when(this.specification.and(any())).thenReturn(this.specification);
+        when(this.descriptionSpecification.or(any())).thenReturn(this.descriptionSpecification);
+
+        final Page<Event> resultPage = this.deviceManagementService.findEvents(this.criteria);
+
+        Assertions.assertThat(resultPage).isNull();
+    }
 
     @Test
     void findEventsWithNoDescriptionStartsWithTest() throws FunctionalException {
         when(this.criteria.getOrganisationIdentification()).thenReturn("orgIdentification");
         when(this.criteria.getDeviceIdentification()).thenReturn("deviceIdentification");
+        when(this.domainHelperService.findOrganisation(any())).thenReturn(new Organisation());
+        doNothing().when(this.pagingSettings).updatePagingSettings(any());
+        when(this.domainHelperService.findDevice(any())).thenReturn(new Device());
+        doNothing().when(this.domainHelperService).isAllowed(any(), any(), any());
+        when(this.eventSpecifications.isFromDevice(any())).thenReturn(new Specification<Event>() {
+            private static final long serialVersionUID = 2946693984484298490L;
+
+            @Override
+            public Predicate toPredicate(final Root<Event> root, final CriteriaQuery<?> criteriaQuery,
+                    final CriteriaBuilder criteriaBuilder) {
+                return null;
+            }
+        });
+        when(this.pagingSettings.getPageNumber()).thenReturn(1);
+        when(this.pagingSettings.getPageSize()).thenReturn(1);
+        when(this.eventRepository.findAll((Specification<Event>) any(), any(Pageable.class))).thenReturn(null);
+
+        final Page<Event> resultPage = this.deviceManagementService.findEvents(this.criteria);
+
+        Assertions.assertThat(resultPage).isNull();
+    }
+
+    @Test
+    void findEventsWithNoDescriptionTest() throws FunctionalException {
+        when(this.criteria.getOrganisationIdentification()).thenReturn("orgIdentification");
+        when(this.criteria.getDeviceIdentification()).thenReturn("deviceIdentification");
+        when(this.criteria.getDescriptionStartsWith()).thenReturn("descriptionStartValue");
         when(this.domainHelperService.findOrganisation(any())).thenReturn(new Organisation());
         doNothing().when(this.pagingSettings).updatePagingSettings(any());
         when(this.domainHelperService.findDevice(any())).thenReturn(new Device());
