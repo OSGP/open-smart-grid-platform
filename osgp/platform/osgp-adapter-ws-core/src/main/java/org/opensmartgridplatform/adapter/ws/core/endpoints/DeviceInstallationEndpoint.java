@@ -57,10 +57,6 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
-// suppress warnings about logging an exception and then rethrowing it. The error is being logged in order to see the
-// original exception and location, and then rethrown as a different exception with more information. Without knowledge of
-// the class that calls the methods it is impossible to judge the importance of logging the exception here.
-@SuppressWarnings("squid:S2139")
 @Endpoint
 public class DeviceInstallationEndpoint {
 
@@ -155,13 +151,9 @@ public class DeviceInstallationEndpoint {
             this.deviceInstallationService.addDevice(organisationIdentification, device,
                     ownerOrganisationIdentification);
         } catch (final ConstraintViolationException e) {
-            LOGGER.error(EXCEPTION_WHILE_ADDING_DEVICE, e.getMessage(), request.getDevice().getDeviceIdentification(),
-                    organisationIdentification, e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final AssertionError e) {
-            LOGGER.error(EXCEPTION_WHILE_ADDING_DEVICE, e.getMessage(), request.getDevice().getDeviceIdentification(),
-                    organisationIdentification, e);
             throw new TechnicalException(COMPONENT_WS_CORE, e);
         } catch (final Exception e) {
             LOGGER.error(EXCEPTION_WHILE_ADDING_DEVICE, e.getMessage(), request.getDevice().getDeviceIdentification(),
@@ -185,7 +177,6 @@ public class DeviceInstallationEndpoint {
             this.deviceInstallationService.updateDevice(organisationIdentification, device);
 
         } catch (final ConstraintViolationException e) {
-            LOGGER.error("Exception update Device: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -220,7 +211,6 @@ public class DeviceInstallationEndpoint {
             response.getDevices().addAll(this.deviceInstallationMapper.mapAsList(recentDevices,
                     org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.Device.class));
         } catch (final ConstraintViolationException e) {
-            LOGGER.error("Exception find recent device: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -255,7 +245,6 @@ public class DeviceInstallationEndpoint {
             response.setAsyncResponse(asyncResponse);
 
         } catch (final ConstraintViolationException e) {
-            LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -313,7 +302,6 @@ public class DeviceInstallationEndpoint {
             response.setAsyncResponse(asyncResponse);
 
         } catch (final ConstraintViolationException e) {
-            LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {

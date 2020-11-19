@@ -60,10 +60,6 @@ public class TariffSwitchingAdHocManagementEndpoint {
         this.adHocManagementMapper = adHocManagementMapper;
     }
 
-    // suppress warnings about logging an exception and then rethrowing it. The error is being logged in order to see the
-    // original exception and location, and then rethrown as a different exception with more information. Without knowledge of
-    // the class that calls the methods it is impossible to judge the importance of logging the exception here.
-    @SuppressWarnings("squid:S2139")
     @PayloadRoot(localPart = "GetDevicesRequest", namespace = NAMESPACE)
     @ResponsePayload
     public GetDevicesResponse getDevices(@OrganisationIdentification final String organisationIdentification,
@@ -83,7 +79,6 @@ public class TariffSwitchingAdHocManagementEndpoint {
                     org.opensmartgridplatform.adapter.ws.schema.tariffswitching.adhocmanagement.Device.class));
             response.setDevicePage(devicePage);
         } catch (final ConstraintViolationException e) {
-            LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_WS_TARIFF_SWITCHING,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {

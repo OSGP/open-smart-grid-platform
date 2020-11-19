@@ -91,10 +91,6 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 /**
  * Device Management Endpoint class
  */
-// suppress warnings about logging an exception and then rethrowing it. The error is being logged in order to see the
-// original exception and location, and then rethrown as a different exception with more information. Without knowledge of
-// the class that calls the methods it is impossible to judge the importance of logging the exception here.
-@SuppressWarnings("squid:S2139")
 @Endpoint(value = "coreDeviceManagementEndpoint")
 public class DeviceManagementEndpoint {
 
@@ -138,7 +134,6 @@ public class DeviceManagementEndpoint {
             response.setOrganisation(this.deviceManagementMapper.map(organisation,
                     org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Organisation.class));
         } catch (final ConstraintViolationException e) {
-            LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -165,7 +160,6 @@ public class DeviceManagementEndpoint {
                     .addAll(this.deviceManagementMapper.mapAsList(organisations,
                             org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Organisation.class));
         } catch (final ConstraintViolationException e) {
-            LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -272,7 +266,6 @@ public class DeviceManagementEndpoint {
             response.getPage().setTotalPages(result.getTotalPages());
             response.getPage().setCurrentPage(result.getNumber());
         } catch (final ConstraintViolationException e) {
-            LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -319,7 +312,6 @@ public class DeviceManagementEndpoint {
                 }
             }
         } catch (final ConstraintViolationException e) {
-            LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -363,7 +355,6 @@ public class DeviceManagementEndpoint {
                     .addAll(this.deviceManagementMapper.mapAsList(scheduledTasks,
                             org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.ScheduledTask.class));
         } catch (final ConstraintViolationException e) {
-            LOGGER.error("Exception find Scheduled tasks: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -389,7 +380,6 @@ public class DeviceManagementEndpoint {
 
             this.deviceManagementService.updateDevice(organisationIdentification, deviceToUpdateIdentification, ssld);
         } catch (final ConstraintViolationException e) {
-            LOGGER.error("Exception update Device: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -431,7 +421,6 @@ public class DeviceManagementEndpoint {
             this.deviceManagementService.setDeviceAlias(organisationIdentification, request.getDeviceIdentification(),
                     request.getDeviceAlias(), request.getDeviceOutputSettings());
         } catch (final ConstraintViolationException e) {
-            LOGGER.error("Exception setting alias Device: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -473,7 +462,6 @@ public class DeviceManagementEndpoint {
             this.deviceManagementService.setMaintenanceStatus(organisationIdentification,
                     request.getDeviceIdentification(), request.isStatus());
         } catch (final ConstraintViolationException e) {
-            LOGGER.error("Exception update Device: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -522,7 +510,6 @@ public class DeviceManagementEndpoint {
             response.setAsyncResponse(asyncResponse);
 
         } catch (final ConstraintViolationException e) {
-            LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -582,7 +569,6 @@ public class DeviceManagementEndpoint {
             response.setAsyncResponse(asyncResponse);
 
         } catch (final ConstraintViolationException e) {
-            LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
