@@ -33,55 +33,60 @@ import org.springframework.scheduling.support.CronTrigger;
 @PropertySource(value = "file:${osgp/AdapterDomainMicrogrids/config}", ignoreResourceNotFound = true)
 public class CommunicationMonitoringConfig extends AbstractConfig {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommunicationMonitoringConfig.class);
-
-    private static final String PROPERTY_NAME_COMMUNICATION_MONITORING_ENABLED = "communication.monitoring.enabled";
-    private static final String PROPERTY_NAME_MINIMUM_TIME_BETWEEN_RUNS = "communication.monitoring.minimum.time.between.runs";
-    private static final String PROPERTY_NAME_CRON_EXPRESSION = "communication.monitoring.cron.expression";
-    private static final String PROPERTY_NAME_SCHEDULER_POOL_SIZE = "communication.monitoring.scheduler.pool.size";
-    private static final String PROPERTY_NAME_SCHEDULER_THREAD_NAME_PREFIX = "communication.monitoring.scheduler.thread.name.prefix";
-    private static final String PROPERTY_NAME_MAXIMUM_TIME_WITHOUT_COMMUNICATION = "communication.monitoring.maximum.time.without.communication";
-    private static final String PROPERTY_NAME_LAST_COMMUNICATION_UPDATE_INTERVAL = "communication.monitoring.last.communication.update.interval";
-    private static final String PROPERTY_NAME_INITIAL_DELAY = "communication.monitoring.initial.delay";
+    private static final Integer DEFAULT_AWAIT_TERMINATION_SECONDS = 10;
 
     private static final Boolean DEFAULT_COMMUNICATION_MONITORING_ENABLED = true;
-    private static final Integer DEFAULT_MINIMUM_TIME_BETWEEN_RUNS = 2;
     private static final String DEFAULT_CRON_EXPRESSION = "0 */5 * * * *";
+    // Default initial delay of 5 minutes
+    private static final Long DEFAULT_INITIAL_DELAY = 5L;
+    // Default last communication update interval in seconds
+    private static final Integer DEFAULT_LAST_COMMUNICATION_UPDATE_INTERVAL = 30;
+    // Default maximum time without communication in minutes
+    private static final Integer DEFAULT_MAXIMUM_TIME_WITHOUT_COMMUNICATION = 15;
+    private static final Integer DEFAULT_MINIMUM_TIME_BETWEEN_RUNS = 2;
     private static final Integer DEFAULT_POOL_SIZE = 1;
     private static final String DEFAULT_THREAD_NAME_PREFIX = "microgrids-communication-monitoring-";
 
-    // Default maximum time without communication in minutes
-    private static final Integer DEFAULT_MAXIMUM_TIME_WITHOUT_COMMUNICATION = 15;
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommunicationMonitoringConfig.class);
+    private static final String PROPERTY_NAME_COMMUNICATION_MONITORING_ENABLED = "communication.monitoring.enabled";
+    private static final String PROPERTY_NAME_CRON_EXPRESSION = "communication.monitoring.cron.expression";
+    private static final String PROPERTY_NAME_INITIAL_DELAY = "communication.monitoring.initial.delay";
+    private static final String PROPERTY_NAME_LAST_COMMUNICATION_UPDATE_INTERVAL = "communication.monitoring.last.communication.update.interval";
 
-    private static final Integer DEFAULT_AWAIT_TERMINATION_SECONDS = 10;
+    private static final String PROPERTY_NAME_MAXIMUM_TIME_WITHOUT_COMMUNICATION = "communication.monitoring.maximum.time.without.communication";
 
-    // Default last communication update interval in seconds
-    private static final Integer DEFAULT_LAST_COMMUNICATION_UPDATE_INTERVAL = 30;
+    private static final String PROPERTY_NAME_MINIMUM_TIME_BETWEEN_RUNS = "communication.monitoring.minimum.time.between.runs";
 
-    // Default initial delay of 5 minutes
-    private static final Long DEFAULT_INITIAL_DELAY = 5L;
+    private static final String PROPERTY_NAME_SCHEDULER_POOL_SIZE = "communication.monitoring.scheduler.pool.size";
+
+    private static final String PROPERTY_NAME_SCHEDULER_THREAD_NAME_PREFIX = "communication.monitoring.scheduler.thread.name.prefix";
 
     @Resource
     private Environment environment;
 
-    // suppress warning about field being autowired for class rather than the method it is used in. The calling of
-    // the method might not be able to provide CommunicationMonitoringTask as parameter.
-    @SuppressWarnings("squid:3305")
-    @Autowired
-    private Runnable communicationMonitoringTask;
+    private Boolean communicationMonitoringEnabled() {
+        final String value = this.environment.getProperty(PROPERTY_NAME_COMMUNICATION_MONITORING_ENABLED);
+        if (StringUtils.isNotBlank(value)) {
+            LOGGER.info("Using value {} for communication monitoring enabled.", value);
+            return Boolean.parseBoolean(value);
+        } else {
+            LOGGER.info("Using default value {} for communication monitoring enabled.",
+                    DEFAULT_COMMUNICATION_MONITORING_ENABLED);
+            return DEFAULT_COMMUNICATION_MONITORING_ENABLED;
+        }
+    }
 
-    // suppress warning concerning the string in the LOGGER.info. The this.cronExpression() expression is not very
-    // complex, making it not necessary to check before calling it.
-    @SuppressWarnings("squid:S2629")
     @Bean
     public CronTrigger communicationMonitoringTaskCronTrigger() {
         LOGGER.info("Initializing Cron Trigger bean with cron expression {}.", this.cronExpression());
         return new CronTrigger(this.cronExpression());
     }
 
-    // runnable set in method call rather than in @Autowired. This method is the only one that uses it.
+    // runnable set in method call rather than in @Autowired. This method is the
+    // only one that uses it.
+    @Autowired
     @Bean(destroyMethod = "shutdown")
-    public TaskScheduler communicationMonitoringTaskScheduler() {
+    public TaskScheduler communicationMonitoringTaskScheduler(final Runnable communicationMonitoringTask) {
         LOGGER.info("Initializing Communication Monitoring Task Scheduler bean");
         final ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
 
@@ -99,30 +104,28 @@ public class CommunicationMonitoringConfig extends AbstractConfig {
         return taskScheduler;
     }
 
-    @Bean
-    public Integer minimumTimeBetweenRuns() {
-        LOGGER.info("Initializing Minimum Time Between Runs bean.");
-        final String value = this.environment.getProperty(PROPERTY_NAME_MINIMUM_TIME_BETWEEN_RUNS);
-        if (StringUtils.isNotBlank(value) && StringUtils.isNumeric(value)) {
-            LOGGER.info("Using value {} for minimum time between runs.", value);
-            return Integer.parseInt(value);
+    private String cronExpression() {
+        final String value = this.environment.getProperty(PROPERTY_NAME_CRON_EXPRESSION);
+        if (StringUtils.isNotBlank(value)) {
+            LOGGER.info("Using value {} for cron expression.", value);
+            return value;
         } else {
-            LOGGER.info("Using default value {} for minimum time between runs.", DEFAULT_MINIMUM_TIME_BETWEEN_RUNS);
-            return DEFAULT_MINIMUM_TIME_BETWEEN_RUNS;
+            LOGGER.info("Using default value {} for cron expression.", DEFAULT_CRON_EXPRESSION);
+            return DEFAULT_CRON_EXPRESSION;
         }
     }
 
     @Bean
-    public Integer maximumTimeWithoutCommunication() {
-        LOGGER.info("Initializing Maximum Time Without Communication bean.");
-        final String value = this.environment.getProperty(PROPERTY_NAME_MAXIMUM_TIME_WITHOUT_COMMUNICATION);
+    public Long initialDelay() {
+        LOGGER.info("Initializing Initial Delay bean.");
+        final String value = this.environment.getProperty(PROPERTY_NAME_INITIAL_DELAY);
         if (StringUtils.isNotBlank(value) && StringUtils.isNumeric(value)) {
-            LOGGER.info("Using value {} for maximum time without communication.", value);
-            return Integer.parseInt(value);
+            LOGGER.info("Using value {} for initial delay.", value);
+            final Long minutes = Long.parseLong(value);
+            return this.minutesToMilliseconds(minutes);
         } else {
-            LOGGER.info("Using default value {} for maximum time without communication.",
-                    DEFAULT_MAXIMUM_TIME_WITHOUT_COMMUNICATION);
-            return DEFAULT_MAXIMUM_TIME_WITHOUT_COMMUNICATION;
+            LOGGER.info("Using default value {} for initial delay.", DEFAULT_INITIAL_DELAY);
+            return this.minutesToMilliseconds(DEFAULT_INITIAL_DELAY);
         }
     }
 
@@ -141,44 +144,34 @@ public class CommunicationMonitoringConfig extends AbstractConfig {
     }
 
     @Bean
-    public Long initialDelay() {
-        LOGGER.info("Initializing Initial Delay bean.");
-        final String value = this.environment.getProperty(PROPERTY_NAME_INITIAL_DELAY);
+    public Integer maximumTimeWithoutCommunication() {
+        LOGGER.info("Initializing Maximum Time Without Communication bean.");
+        final String value = this.environment.getProperty(PROPERTY_NAME_MAXIMUM_TIME_WITHOUT_COMMUNICATION);
         if (StringUtils.isNotBlank(value) && StringUtils.isNumeric(value)) {
-            LOGGER.info("Using value {} for initial delay.", value);
-            final Long minutes = Long.parseLong(value);
-            return this.minutesToMilliseconds(minutes);
+            LOGGER.info("Using value {} for maximum time without communication.", value);
+            return Integer.parseInt(value);
         } else {
-            LOGGER.info("Using default value {} for initial delay.", DEFAULT_INITIAL_DELAY);
-            return this.minutesToMilliseconds(DEFAULT_INITIAL_DELAY);
+            LOGGER.info("Using default value {} for maximum time without communication.",
+                    DEFAULT_MAXIMUM_TIME_WITHOUT_COMMUNICATION);
+            return DEFAULT_MAXIMUM_TIME_WITHOUT_COMMUNICATION;
+        }
+    }
+
+    @Bean
+    public Integer minimumTimeBetweenRuns() {
+        LOGGER.info("Initializing Minimum Time Between Runs bean.");
+        final String value = this.environment.getProperty(PROPERTY_NAME_MINIMUM_TIME_BETWEEN_RUNS);
+        if (StringUtils.isNotBlank(value) && StringUtils.isNumeric(value)) {
+            LOGGER.info("Using value {} for minimum time between runs.", value);
+            return Integer.parseInt(value);
+        } else {
+            LOGGER.info("Using default value {} for minimum time between runs.", DEFAULT_MINIMUM_TIME_BETWEEN_RUNS);
+            return DEFAULT_MINIMUM_TIME_BETWEEN_RUNS;
         }
     }
 
     private Long minutesToMilliseconds(final Long minutes) {
         return minutes * 60 * 1000;
-    }
-
-    private Boolean communicationMonitoringEnabled() {
-        final String value = this.environment.getProperty(PROPERTY_NAME_COMMUNICATION_MONITORING_ENABLED);
-        if (StringUtils.isNotBlank(value)) {
-            LOGGER.info("Using value {} for communication monitoring enabled.", value);
-            return Boolean.parseBoolean(value);
-        } else {
-            LOGGER.info("Using default value {} for communication monitoring enabled.",
-                    DEFAULT_COMMUNICATION_MONITORING_ENABLED);
-            return DEFAULT_COMMUNICATION_MONITORING_ENABLED;
-        }
-    }
-
-    private String cronExpression() {
-        final String value = this.environment.getProperty(PROPERTY_NAME_CRON_EXPRESSION);
-        if (StringUtils.isNotBlank(value)) {
-            LOGGER.info("Using value {} for cron expression.", value);
-            return value;
-        } else {
-            LOGGER.info("Using default value {} for cron expression.", DEFAULT_CRON_EXPRESSION);
-            return DEFAULT_CRON_EXPRESSION;
-        }
     }
 
     private Integer schedulerPoolSize() {

@@ -10,39 +10,19 @@ package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 import java.util.EnumSet;
 import java.util.Set;
 
-// suppress warning for duplicate string at reserved (line 21,22,23) The duplicate part is a single string in the
-// description of an enum value.
+// suppress warning for duplicate string at reserved (line 21,22,23). The way it
+// is currently done is according to the blue book 12th edition at paragraph 4.1.6.1
 @SuppressWarnings("squid:S1192")
 public enum ClockStatusBit {
 
-    INVALID_VALUE("invalid value"),
-    DOUBTFUL_VALUE("doubtful value"),
+    DAYLIGHT_SAVING_ACTIVE("daylight saving active"),
     DIFFERENT_CLOCK_BASE("different clock base"),
+    DOUBTFUL_VALUE("doubtful value"),
     INVALID_CLOCK_STATUS("invalid clock status"),
+    INVALID_VALUE("invalid value"),
     RESERVED_1("reserved"),
     RESERVED_2("reserved"),
-    RESERVED_3("reserved"),
-    DAYLIGHT_SAVING_ACTIVE("daylight saving active");
-
-    private final String description;
-
-    ClockStatusBit(final String description) {
-        this.description = description;
-    }
-
-    public String getDescription() {
-        return this.description;
-    }
-
-    public boolean isSet(final int clockStatus) {
-        final int mask = 1 << this.ordinal();
-        return mask == (mask & clockStatus);
-    }
-
-    @Override
-    public String toString() {
-        return this.description;
-    }
+    RESERVED_3("reserved");
 
     public static Set<ClockStatusBit> forClockStatus(final byte clockStatus) {
         return forClockStatus(clockStatus & 0xFF);
@@ -79,6 +59,26 @@ public enum ClockStatusBit {
             status |= (1 << statusBit.ordinal());
         }
         return status;
+    }
+
+    private final String description;
+
+    ClockStatusBit(final String description) {
+        this.description = description;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public boolean isSet(final int clockStatus) {
+        final int mask = 1 << this.ordinal();
+        return mask == (mask & clockStatus);
+    }
+
+    @Override
+    public String toString() {
+        return this.description;
     }
 
 }
