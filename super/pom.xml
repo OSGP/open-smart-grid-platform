@@ -113,7 +113,7 @@
     <license.maven.plugin>3.0</license.maven.plugin>
     <jackson.version>2.11.0</jackson.version>
     <jackson-databind.version>2.10.3</jackson-databind.version>
-    <cxf.version>3.3.6</cxf.version>
+    <cxf.version>3.4.1</cxf.version>
     <quartz.version>2.3.2</quartz.version>
     <hikaricp.version>3.4.5</hikaricp.version>
     <micrometer.version>1.5.1</micrometer.version>
