@@ -222,8 +222,7 @@ public class DaylightSavingTimeTransition {
                 if (timeSeparatorPos == -1) {
                     return true;
                 }
-                return transition.length() > timeSeparatorPos
-                        && this.isValidTime(transition.substring(timeSeparatorPos + 1));
+                return this.isValidTime(transition.substring(timeSeparatorPos + 1));
             }
 
             @Override
@@ -383,10 +382,13 @@ public class DaylightSavingTimeTransition {
     }
 
     public DateTime getDateTimeForNextTransition() {
-        final DateTime now = DateTime.now(this.dateTimeZone);
-        final DateTime thisYearsTransition = this.getDateTimeForYear(now.getYear());
-        if (now.isAfter(thisYearsTransition)) {
-            return this.getDateTimeForYear(now.getYear() + 1);
+        return this.getDateTimeForNextTransition(DateTime.now(this.dateTimeZone));
+    }
+
+    public DateTime getDateTimeForNextTransition(final DateTime dateTime) {
+        final DateTime thisYearsTransition = this.getDateTimeForYear(dateTime.getYear());
+        if (dateTime.isAfter(thisYearsTransition)) {
+            return this.getDateTimeForYear(dateTime.getYear() + 1);
         }
         return thisYearsTransition;
     }
