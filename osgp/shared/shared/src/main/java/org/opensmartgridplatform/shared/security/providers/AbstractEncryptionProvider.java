@@ -27,7 +27,7 @@ public abstract class AbstractEncryptionProvider {
 
     public abstract EncryptionProviderType getType();
 
-    protected abstract Cipher getCipher() throws EncrypterException;
+    protected abstract Cipher getCipher();
 
     protected abstract AlgorithmParameterSpec getAlgorithmParameterSpec();
 
