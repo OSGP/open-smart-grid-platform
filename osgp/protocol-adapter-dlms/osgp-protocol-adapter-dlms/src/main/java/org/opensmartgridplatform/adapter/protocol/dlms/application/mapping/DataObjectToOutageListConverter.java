@@ -16,7 +16,6 @@ import org.joda.time.DateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetOutagesRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.OutageDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -34,9 +33,8 @@ public class DataObjectToOutageListConverter {
         this.dlmsHelper = dlmsHelper;
     }
 
-    public List<OutageDto> convert(final DataObject source, final GetOutagesRequestDto getOutagesRequestDto)
-            throws ProtocolAdapterException {
-        final List<OutageDto> eventList = new ArrayList<OutageDto>();
+    public List<OutageDto> convert(final DataObject source) throws ProtocolAdapterException {
+        final List<OutageDto> eventList = new ArrayList<>();
         if (source == null) {
             throw new ProtocolAdapterException("DataObject should not be null");
         }

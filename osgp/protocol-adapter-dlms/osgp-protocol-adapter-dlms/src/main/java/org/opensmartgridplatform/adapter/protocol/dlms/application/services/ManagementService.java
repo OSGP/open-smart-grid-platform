@@ -13,7 +13,6 @@ import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.FindEventsCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetOutagesCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.SetDeviceLifecycleStatusByChannelCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -23,10 +22,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FindEventsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FindEventsRequestList;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetOutagesRequestDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetOutagesRequestList;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetOutagesResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.OutageDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceCommunicationSettingsRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceCommunicationSettingsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelRequestDataDto;
@@ -41,9 +36,6 @@ public class ManagementService {
 
     @Autowired
     private FindEventsCommandExecutor findEventsCommandExecutor;
-
-    @Autowired
-    private GetOutagesCommandExecutor getOutagesCommandExecutor;
 
     @Autowired
     private SetDeviceLifecycleStatusByChannelCommandExecutor setDeviceLifecycleStatusByChannelCommandExecutor;
@@ -70,21 +62,6 @@ public class ManagementService {
         }
 
         return new EventMessageDataResponseDto(events);
-    }
-
-    // === GET OUTAGES ===
-    public GetOutagesResponseDto getOutages(DlmsConnectionManager conn, DlmsDevice device,
-            GetOutagesRequestList getOutagesRequestList) throws ProtocolAdapterException {
-
-        final List<OutageDto> outages = new ArrayList<>();
-
-        log.info("getOutages setting up connection with meter {}", device.getDeviceIdentification());
-
-        for (final GetOutagesRequestDto getOutagesRequestDto : getOutagesRequestList.getGetOutagesRequestList()) {
-            outages.addAll(this.getOutagesCommandExecutor.execute(conn, device, getOutagesRequestDto));
-        }
-
-        return new GetOutagesResponseDto(outages);
     }
 
     public void changeInDebugMode(final DlmsDevice device, final boolean debugMode) {

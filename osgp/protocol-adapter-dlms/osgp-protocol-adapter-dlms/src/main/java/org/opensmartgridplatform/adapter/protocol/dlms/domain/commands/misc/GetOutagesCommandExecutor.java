@@ -4,8 +4,7 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
@@ -27,10 +26,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionExce
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetOutagesRequestDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.OutageDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetOutagesResponseDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.OutageDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -40,10 +37,8 @@ public class GetOutagesCommandExecutor extends AbstractCommandExecutor<GetOutage
 
     private static final int CLASS_ID = 7;
     private static final int ATTRIBUTE_ID = 2;
-
-    private final DataObjectToOutageListConverter dataObjectToOutageListConverter;
-
     private static final String OBIS_CODE = "1.0.99.97.0.255";
+    private final DataObjectToOutageListConverter dataObjectToOutageListConverter;
 
     @Autowired
     public GetOutagesCommandExecutor(final DataObjectToOutageListConverter dataObjectToOutageListConverter) {
@@ -73,7 +68,8 @@ public class GetOutagesCommandExecutor extends AbstractCommandExecutor<GetOutage
         }
 
         if (getResult == null) {
-            throw new ProtocolAdapterException("No GetResult received while retrieving event register POWER_FAILURE_EVENT_LOG");
+            throw new ProtocolAdapterException(
+                    "No GetResult received while retrieving event register POWER_FAILURE_EVENT_LOG");
         }
 
         if (!AccessResultCode.SUCCESS.equals(getResult.getResultCode())) {
@@ -84,7 +80,7 @@ public class GetOutagesCommandExecutor extends AbstractCommandExecutor<GetOutage
         }
 
         final DataObject resultData = getResult.getResultData();
-        return this.dataObjectToOutageListConverter.convert(resultData, getOutagesRequestDto);
+        return this.dataObjectToOutageListConverter.convert(resultData);
     }
 
 }
