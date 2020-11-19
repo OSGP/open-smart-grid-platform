@@ -61,24 +61,18 @@ public class CommunicationMonitoringConfig extends AbstractConfig {
     @Resource
     private Environment environment;
 
-    // suppress warning about field being autowired for class rather than the method it is used in. The calling of
-    // the method might not be able to provide CommunicationMonitoringTask as parameter.
-    @SuppressWarnings("squid:S3305")
-    @Autowired
-    private CommunicationMonitoringTask communicationMonitoringTask;
-
     // suppress warning concerning the string in the LOGGER.info. The this.cronExpression() expression is not very
     // complex, making it not necessary to check before calling it.
     @SuppressWarnings("squid:S2629")
     @Bean
     public CronTrigger communicationMonitoringTaskCronTrigger() {
-
         LOGGER.info("Initializing Cron Trigger bean with cron expression {}.", this.cronExpression());
         return new CronTrigger(this.cronExpression());
     }
 
+    @Autowired
     @Bean(destroyMethod = "shutdown")
-    public TaskScheduler communicationMonitoringTaskScheduler() {
+    public TaskScheduler communicationMonitoringTaskScheduler(final CommunicationMonitoringTask communicationMonitoringTask) {
         LOGGER.info("Initializing Communication Monitoring Task Scheduler bean");
         final ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
 
@@ -89,7 +83,7 @@ public class CommunicationMonitoringConfig extends AbstractConfig {
             taskScheduler.setWaitForTasksToCompleteOnShutdown(false);
             taskScheduler.setAwaitTerminationSeconds(DEFAULT_AWAIT_TERMINATION_SECONDS);
             taskScheduler.initialize();
-            taskScheduler.schedule(this.communicationMonitoringTask, this.communicationMonitoringTaskCronTrigger());
+            taskScheduler.schedule(communicationMonitoringTask, this.communicationMonitoringTaskCronTrigger());
         } else {
             LOGGER.info("Communication Monitoring not enabled, skipping task scheduler initialization.");
         }
