@@ -28,7 +28,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 @ExtendWith(MockitoExtension.class)
-public class DeviceManagementServiceTest {
+class DeviceManagementServiceTest {
     @Mock
     private Page<String> page;
     @Mock
@@ -45,7 +45,7 @@ public class DeviceManagementServiceTest {
     private DeviceManagementService deviceManagementService;
 
     @Test
-    public void findEventsWithNoDescriptionStartsWithTest() throws FunctionalException {
+    void findEventsWithNoDescriptionStartsWithTest() throws FunctionalException {
         when(this.criteria.getOrganisationIdentification()).thenReturn("orgIdentification");
         when(this.criteria.getDeviceIdentification()).thenReturn("deviceIdentification");
         when(this.domainHelperService.findOrganisation(any())).thenReturn(new Organisation());
