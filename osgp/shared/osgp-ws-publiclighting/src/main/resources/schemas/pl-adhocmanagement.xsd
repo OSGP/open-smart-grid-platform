@@ -250,9 +250,31 @@
         minOccurs="0" />
       <xsd:element name="DeviceType" type="xsd:string" />
       <xsd:element name="Activated" type="xsd:boolean" />
-      <xsd:element name="HasSchedule" type="xsd:boolean" />
-      <xsd:element name="PublicKeyPresent" type="xsd:boolean" />
     </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Ssld">
+    <xsd:complexContent>
+      <xsd:extension base="tns:Device">
+        <xsd:sequence>
+          <xsd:element name="HasSchedule" type="xsd:boolean" />
+          <xsd:element name="PublicKeyPresent" type="xsd:boolean" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="LightMeasurementDevice">
+    <xsd:complexContent>
+      <xsd:extension base="tns:Device">
+        <xsd:sequence>
+          <xsd:element name="Description" type="xsd:string" minOccurs="0" />
+          <xsd:element name="Code" type="xsd:string" minOccurs="0" />
+          <xsd:element name="Color" type="xsd:string" minOccurs="0" />
+          <xsd:element name="DigitalInput" type="xsd:short" minOccurs="0" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
   </xsd:complexType>
 
   <xsd:complexType name="DevicePage">
