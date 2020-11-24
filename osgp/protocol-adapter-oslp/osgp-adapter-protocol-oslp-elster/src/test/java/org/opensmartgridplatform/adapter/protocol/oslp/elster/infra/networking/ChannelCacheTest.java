@@ -9,10 +9,9 @@ package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
@@ -23,7 +22,8 @@ class ChannelCacheTest {
 
     private static final int EXPIRATION_MILLIS = 100;
 
-    private ChannelCache channelCache = new ChannelCache(EXPIRATION_MILLIS);
+    private ControlledClock clock = new ControlledClock(ZoneOffset.UTC, System.currentTimeMillis());
+    private ChannelCache channelCache = new ChannelCache(EXPIRATION_MILLIS, this.clock);
 
     private AtomicInteger channelIdCounter = new AtomicInteger(0);
 
@@ -61,10 +61,9 @@ class ChannelCacheTest {
         final Channel channel1 = this.newChannel();
         final Channel channel2 = this.newChannel();
 
-        this.channelCache.cacheChannel(channel1);
-        Executors.newSingleThreadScheduledExecutor().schedule(() -> {
-            this.channelCache.cacheChannel(channel2);
-        }, EXPIRATION_MILLIS, TimeUnit.MILLISECONDS).get();
+        this.whenAChannelIsCached(channel1);
+        this.whenMoreTimePassesThanTheExpirationTime();
+        this.whenAChannelIsCached(channel2);
 
         final Channel fromCache = this.channelCache.removeFromCache(channel1.id().asLongText());
         assertThat(fromCache).isNull();
@@ -75,13 +74,12 @@ class ChannelCacheTest {
         final List<Channel> channels = Arrays.asList(this.newChannel(), this.newChannel(), this.newChannel(),
                 this.newChannel());
         for (final Channel channel : channels) {
-            this.channelCache.cacheChannel(channel);
+            this.whenAChannelIsCached(channel);
         }
 
         final Channel remainingChannel = this.newChannel();
-        Executors.newSingleThreadScheduledExecutor().schedule(() -> {
-            this.channelCache.cacheChannel(remainingChannel);
-        }, EXPIRATION_MILLIS, TimeUnit.MILLISECONDS).get();
+        this.whenMoreTimePassesThanTheExpirationTime();
+        this.whenAChannelIsCached(remainingChannel);
 
         assertThat(this.channelCache.removeFromCache(remainingChannel.id().asLongText())).isNotNull();
         assertThat(this.channelCache.size()).isZero();
@@ -92,11 +90,10 @@ class ChannelCacheTest {
         final Channel channel1 = this.newChannel();
         final Channel channel2 = this.newChannel();
 
-        this.channelCache.cacheChannel(channel1);
-        this.channelCache.cacheChannel(channel2);
-        Executors.newSingleThreadScheduledExecutor().schedule(() -> {
-            this.channelCache.cacheChannel(channel1);
-        }, EXPIRATION_MILLIS, TimeUnit.MILLISECONDS).get();
+        this.whenAChannelIsCached(channel1);
+        this.whenAChannelIsCached(channel2);
+        this.whenMoreTimePassesThanTheExpirationTime();
+        this.whenAChannelIsCached(channel1);
 
         assertThat(this.channelCache.removeFromCache(channel2.id().asLongText()))
                 .as("channel2 should no longer be cached")
@@ -134,5 +131,14 @@ class ChannelCacheTest {
         final int counter = this.channelIdCounter.incrementAndGet();
         return new TestableChannel(null,
                 TestableChannel.id(String.valueOf(counter), String.format("channel-%d", counter)));
+    }
+
+    private void whenAChannelIsCached(final Channel channel) {
+        this.channelCache.cacheChannel(channel);
+        this.clock.tick();
+    }
+
+    private void whenMoreTimePassesThanTheExpirationTime() {
+        this.clock.advanceMillis(EXPIRATION_MILLIS + 1);
     }
 }
