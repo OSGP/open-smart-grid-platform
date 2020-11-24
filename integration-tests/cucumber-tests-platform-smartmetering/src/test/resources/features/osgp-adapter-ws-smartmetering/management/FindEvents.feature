@@ -49,6 +49,7 @@ Feature: SmartMetering Management - Find Events
     Then 29 mbus events should be returned
       | DeviceIdentification | TEST1024000000001 |
 
+  @Skip
   Scenario: find power failure events from a device
     When receiving a find power failure events request
       | DeviceIdentification | TEST1024000000001        |
