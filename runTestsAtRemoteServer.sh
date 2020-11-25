@@ -98,9 +98,9 @@ CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} -r ${USER}@${SERVER}:/tmp/${
 echo "  [${CMD}]"
 ${CMD}
 
-echo "- Clean logging for next tests on ${SERVER} ..."
-CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"sudo truncate -s 0 /var/log/tomcat/catalina.out && sudo find /var/log/osgp/logs/ -name 'osgp*.log' -exec truncate -s 0 {} \; && sudo find /var/log/osp/logs/ -name 'web*.log' -exec truncate -s0 {} \; \"\""
-echo "  [${CMD}]"
-${CMD}
+#echo "- Clean logging for next tests on ${SERVER} ..."
+#CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"sudo truncate -s 0 /var/log/tomcat/catalina.out && sudo find /var/log/osgp/logs/ -name 'osgp*.log' -exec truncate -s 0 {} \; && sudo find /var/log/osp/logs/ -name 'web*.log' -exec truncate -s0 {} \; \"\""
+#echo "  [${CMD}]"
+#${CMD}
 
 echo "Done."
