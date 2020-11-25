@@ -26,3 +26,4 @@ Grid eXchange Fabric issue tracker:
 
 Questions and discussions:
 * [Open smart grid platform Discourse](https://opensmartgridplatform.discourse.group/)
+
