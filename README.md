@@ -1,12 +1,12 @@
-[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=OSGP/open-smart-grid-platform)](https://dependabot.com) [![Build Status](https://ci.opensmartgridplatform.org/buildStatus/icon?job=OSGP_open-smart-grid-platform_development)](https://ci.opensmartgridplatform.org/job/OSGP_open-smart-grid-platform_development/)
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=OSGP/open-smart-grid-platform)](https://dependabot.com) [![Build Status](https://ci.opensmartgridplatform.org/buildStatus/icon?job=OSGP_open-smart-grid-platform_development)](https://ci.opensmartgridplatform.org/job/OSGP_open-smart-grid-platform_development/) [![Quality Gate Status](https://sonar.osgp.cloud/api/project_badges/measure?project=org.opensmartgridplatform%3Aopen-smart-grid-platform&metric=alert_status)](https://sonar.osgp.cloud/dashboard?id=org.opensmartgridplatform%3Aopen-smart-grid-platform)
 
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/4104/badge)](https://bestpractices.coreinfrastructure.org/projects/4104)
 
-# Code for Open Smart Grid Platform
+# Code for Grid eXchange Fabric (GXF)
 
 ### Project Description
 
-This repository contains all code for the Open Smart Grid Platform.
+This repository contains all code for the Grid eXchange Fabric (GXF) project, formerly known as Open Smart Grid Platform (OSGP). The name OSGP has been deprecated.
 
 - osgp. This project contains all code components needed to build the platform.
 - integration-tests. This project contains all the tests to verify the platform.
@@ -15,15 +15,14 @@ This repository contains all code for the Open Smart Grid Platform.
 
 ## Grid eXchange Fabric information and news
 
-High-level project information and news can be found on the Grid eXchange Fabric website:
+High-level project information and news can be found on the GXF section of the LF Energy website: 
 * [www.lfenergy.org/projects/gxf/](https://www.lfenergy.org/projects/gxf/)
 
-Grid eXchange Fabric detailed documentation:
+GXF wiki with detailed project information:
+* [LF Energy wiki](https://wiki.lfenergy.org/display/HOME/Grid+eXchange+Fabric+-+GXF)
+
+GXF detailed documentation:
 * [documentation.gxf.lfenergy.org](https://documentation.gxf.lfenergy.org/)
 
-Grid eXchange Fabric issue tracker:
-* [Grid eXchange Fabric Jira](https://smartsocietyservices.atlassian.net/projects/OC/issues/)
-
-Questions and discussions:
-* [Open smart grid platform Discourse](https://opensmartgridplatform.discourse.group/)
-
+GXF issue tracker:
+* [GXF Jira](https://smartsocietyservices.atlassian.net/projects/OC/issues/)

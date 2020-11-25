@@ -50,14 +50,14 @@
     <osgp.dlms.version>5.6.0-SNAPSHOT</osgp.dlms.version>
     <osgp.shared.version>5.6.0-SNAPSHOT</osgp.shared.version>
     <osgp.jasper-interface.version>5.6.0-SNAPSHOT</osgp.jasper-interface.version>
-    <spring.version>5.2.6.RELEASE</spring.version>
+    <spring.version>5.3.1</spring.version>
     <spring.data.version>2.2.3.RELEASE</spring.data.version>
     <spring.data.commons.version>2.2.3.RELEASE</spring.data.commons.version>
-    <spring.security.version>5.3.3.RELEASE</spring.security.version>
+    <spring.security.version>5.4.1</spring.security.version>
     <spring.wscore.version>3.0.9.RELEASE</spring.wscore.version>
     <spring.wssecurity.version>3.0.9.RELEASE</spring.wssecurity.version>
     <spring.wssupport.version>3.0.9.RELEASE</spring.wssupport.version>
-    <spring.ws.version>3.0.9.RELEASE</spring.ws.version>
+    <spring.ws.version>3.0.10.RELEASE</spring.ws.version>
     <assertj.version>3.16.1</assertj.version>
     <xmlunit.version>1.6</xmlunit.version>
     <mockito.core.version>3.3.3</mockito.core.version>
@@ -68,9 +68,9 @@
     <hibernate.validator.version>6.1.5.Final</hibernate.validator.version>
     <hibernate.jpa.version>1.0.2.Final</hibernate.jpa.version>
     <javax.validation.api.version>2.0.1.Final</javax.validation.api.version>
-    <junit.version>5.6.2</junit.version>
+    <junit.version>5.7.0</junit.version>
     <junit.platform.launcher.version>1.6.2</junit.platform.launcher.version>
-    <byte.buddy.version>1.10.10</byte.buddy.version>
+    <byte.buddy.version>1.10.18</byte.buddy.version>
     <joda.version>2.10.6</joda.version>
     <flyway.version>6.4.1</flyway.version>
     <slf4j.version>1.7.30</slf4j.version>
@@ -87,7 +87,7 @@
     <maven.jar.plugin.version>3.2.0</maven.jar.plugin.version>
     <maven.war.plugin.version>3.2.3</maven.war.plugin.version>
     <maven.surefire.plugin.version>3.0.0-M4</maven.surefire.plugin.version>
-    <maven.failsafe.plugin.version>3.0.0-M4</maven.failsafe.plugin.version>
+    <maven.failsafe.plugin.version>3.0.0-M5</maven.failsafe.plugin.version>
     <maven.assembly.plugin.version>3.3.0</maven.assembly.plugin.version>
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
     <maven.exec.plugin.version>1.6.0</maven.exec.plugin.version>
@@ -113,7 +113,7 @@
     <license.maven.plugin>3.0</license.maven.plugin>
     <jackson.version>2.11.0</jackson.version>
     <jackson-databind.version>2.10.3</jackson-databind.version>
-    <cxf.version>3.3.6</cxf.version>
+    <cxf.version>3.4.1</cxf.version>
     <quartz.version>2.3.2</quartz.version>
     <hikaricp.version>3.4.5</hikaricp.version>
     <micrometer.version>1.5.1</micrometer.version>

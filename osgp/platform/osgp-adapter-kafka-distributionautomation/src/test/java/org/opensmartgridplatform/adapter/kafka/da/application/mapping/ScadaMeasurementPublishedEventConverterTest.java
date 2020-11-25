@@ -50,7 +50,7 @@ class ScadaMeasurementPublishedEventConverterTest {
                 .isEqualTo(LovVoltageMessageFactory.expectedMeasurements());
 
         final List<Name> names = event.getPowerSystemResource().getNames();
-        assertThat(names).containsAll(this.expectedNames(feeder));
+        assertThat(names).containsExactlyElementsOf(this.expectedNames(feeder));
     }
 
     private List<Name> expectedNames(final int feeder) {
@@ -84,7 +84,7 @@ class ScadaMeasurementPublishedEventConverterTest {
                 .isEqualTo(LovVoltageMessageFactory.expectedMetaMeasurements());
 
         final List<Name> names = event.getPowerSystemResource().getNames();
-        assertThat(names).containsAll(this.expectedNames(feeder));
+        assertThat(names).containsExactlyElementsOf(this.expectedNames(feeder));
     }
 
     @Test

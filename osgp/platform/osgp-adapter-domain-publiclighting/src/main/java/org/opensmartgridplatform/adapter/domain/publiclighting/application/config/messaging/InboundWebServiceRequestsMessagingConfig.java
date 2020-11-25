@@ -11,9 +11,9 @@ import javax.jms.ConnectionFactory;
 import javax.net.ssl.SSLException;
 
 import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.WebServiceRequestMessageListener;
-import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationNames;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
+import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationNames;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.slf4j.Logger;
