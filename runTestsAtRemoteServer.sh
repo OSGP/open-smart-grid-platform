@@ -69,13 +69,13 @@ echo "  [${CMD}]"
 CMD="ssh -oStrictHostKeyChecking=no -oTCPKeepAlive=yes -oServerAliveInterval=50 ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"cd /data/software/${PROJECT} && ${CMD}\"\""
 ${CMD}
 
-echo '- Create zip file from files from server ...'
+echo "- Create zip file from files from server ..."
 CMD="sudo tar zhcf /tmp/${SERVER}-${PROJECT}.tgz /etc/osgp /etc/httpd/conf.d /usr/share/tomcat/conf /var/log/tomcat /var/log/osgp --warning=no-file-changed --verbose --verbose"
 echo "  [${CMD}]"
 CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"cd /data/software/${PROJECT} && ${CMD}\"\""
 ${CMD}
 
-echo '- Take ownership over /tmp/${SERVER}-${PROJECT}.tgz ...'
+echo "- Take ownership over /tmp/${SERVER}-${PROJECT}.tgz ..."
 CMD="sudo chown $USER:$USER /tmp/${SERVER}-${PROJECT}.tgz"
 echo "  [${CMD}]"
 CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"cd /data/software/${PROJECT} && ${CMD}\"\""
