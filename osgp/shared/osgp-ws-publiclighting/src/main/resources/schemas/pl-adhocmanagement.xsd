@@ -19,6 +19,8 @@
   <xsd:element name="FindAllDevicesRequest">
     <xsd:complexType>
       <xsd:sequence>
+        <xsd:element name="PageSize" type="xsd:int"
+          minOccurs="0" />
         <xsd:element name="Page" type="xsd:int" />
       </xsd:sequence>
     </xsd:complexType>
@@ -279,9 +281,9 @@
 
   <xsd:complexType name="DevicePage">
     <xsd:sequence>
-      <xsd:element name="TotalPages" type="xsd:int" />
       <xsd:element maxOccurs="unbounded" name="Devices"
         type="tns:Device" />
+      <xsd:element name="Page" type="common:Page" />
     </xsd:sequence>
   </xsd:complexType>
 

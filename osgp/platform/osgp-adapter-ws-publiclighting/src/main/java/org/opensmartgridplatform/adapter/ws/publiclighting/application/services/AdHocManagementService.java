@@ -23,6 +23,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.LightValue;
 import org.opensmartgridplatform.domain.core.valueobjects.LightValueMessageDataContainer;
 import org.opensmartgridplatform.domain.core.valueobjects.ResumeScheduleData;
 import org.opensmartgridplatform.domain.core.valueobjects.TransitionMessageDataContainer;
+import org.opensmartgridplatform.shared.application.config.PageSpecifier;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -45,8 +46,6 @@ import org.springframework.validation.annotation.Validated;
 @Transactional(value = "transactionManager")
 @Validated
 public class AdHocManagementService {
-
-    private static final int PAGE_SIZE = 30;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdHocManagementService.class);
 
@@ -71,14 +70,15 @@ public class AdHocManagementService {
         // Parameterless constructor required for transactions
     }
 
-    public Page<Device> findAllDevices(@Identification final String organisationIdentification, final int pageNumber)
-            throws FunctionalException {
-        LOGGER.debug("findAllDevices called with organisation {} and pageNumber {}", organisationIdentification,
-                pageNumber);
+    public Page<Device> findAllDevices(@Identification final String organisationIdentification,
+            final PageSpecifier pageSpecifier) throws FunctionalException {
+        LOGGER.debug("findAllDevices called with organisation {}, pageSize {} and pageNumber {}",
+                organisationIdentification, pageSpecifier.getPageSize(), pageSpecifier.getPageNumber());
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
 
-        final PageRequest request = PageRequest.of(pageNumber, PAGE_SIZE, Sort.Direction.DESC, "deviceIdentification");
+        final PageRequest request = PageRequest.of(pageSpecifier.getPageNumber(), pageSpecifier.getPageSize(),
+                Sort.Direction.DESC, "deviceIdentification");
         return this.deviceRepository.findAllAuthorized(organisation, request);
     }
 

@@ -48,6 +48,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.LightValue;
 import org.opensmartgridplatform.domain.core.valueobjects.ResumeScheduleData;
 import org.opensmartgridplatform.domain.core.valueobjects.TransitionMessageDataContainer;
+import org.opensmartgridplatform.shared.application.config.PageSpecifier;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -74,6 +75,8 @@ public class PublicLightingAdHocManagementEndpoint {
 
     private static final String EXCEPTION_OCCURRED = "Exception Occurred";
 
+    private static final int PAGE_SIZE = 30;
+
     private final AdHocManagementService adHocManagementService;
     private final AdHocManagementMapper adHocManagementMapper;
 
@@ -95,23 +98,34 @@ public class PublicLightingAdHocManagementEndpoint {
         final FindAllDevicesResponse response = new FindAllDevicesResponse();
 
         try {
+            PageSpecifier pageSpecifier;
+            if (request.getPageSize() == null) {
+                pageSpecifier = new PageSpecifier(PAGE_SIZE, request.getPage());
+            } else {
+                pageSpecifier = new PageSpecifier(request.getPageSize(), request.getPage());
+            }
             final Page<Device> page = this.adHocManagementService.findAllDevices(organisationIdentification,
-                    request.getPage());
+                    pageSpecifier);
 
-            final List<Ssld> sslds = page.filter(d -> d instanceof Ssld).map(d -> (Ssld) d).toList();
-            final List<LightMeasurementDevice> lmds = page.filter(d -> d instanceof LightMeasurementDevice)
-                    .map(d -> (LightMeasurementDevice) d)
-                    .toList();
+            if (page != null) {
+                final List<Ssld> sslds = page.filter(d -> d instanceof Ssld).map(d -> (Ssld) d).toList();
+                final List<LightMeasurementDevice> lmds = page.filter(d -> d instanceof LightMeasurementDevice)
+                        .map(d -> (LightMeasurementDevice) d)
+                        .toList();
 
-            final DevicePage devicePage = new DevicePage();
-            devicePage.setTotalPages(page.getTotalPages());
-            devicePage.getDevices()
-                    .addAll(this.adHocManagementMapper.mapAsList(sslds,
-                            org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Ssld.class));
-            devicePage.getDevices()
-                    .addAll(this.adHocManagementMapper.mapAsList(lmds,
-                            org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.LightMeasurementDevice.class));
-            response.setDevicePage(devicePage);
+                final DevicePage devicePage = new DevicePage();
+                devicePage.setPage(new org.opensmartgridplatform.adapter.ws.schema.publiclighting.common.Page());
+                devicePage.getPage().setPageSize(page.getSize());
+                devicePage.getPage().setTotalPages(page.getTotalPages());
+                devicePage.getPage().setCurrentPage(page.getNumber());
+                devicePage.getDevices()
+                        .addAll(this.adHocManagementMapper.mapAsList(sslds,
+                                org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Ssld.class));
+                devicePage.getDevices()
+                        .addAll(this.adHocManagementMapper.mapAsList(lmds,
+                                org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.LightMeasurementDevice.class));
+                response.setDevicePage(devicePage);
+            }
         } catch (final ConstraintViolationException e) {
             LOGGER.error(EXCEPTION_OCCURRED, e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_WS_PUBLIC_LIGHTING,

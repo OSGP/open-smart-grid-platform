@@ -41,6 +41,9 @@ public class FindAllDevicesSteps {
     public void receivingAFindAllDevicesRequest(final Map<String, String> requestParameters) throws Throwable {
         final FindAllDevicesRequest request = new FindAllDevicesRequest();
 
+        if (requestParameters.containsKey(PlatformKeys.KEY_PAGE_SIZE)) {
+            request.setPageSize(getInteger(requestParameters, PlatformKeys.KEY_PAGE_SIZE));
+        }
         if (requestParameters.containsKey(PlatformKeys.KEY_PAGE)) {
             request.setPage(getInteger(requestParameters, PlatformKeys.KEY_PAGE));
         }
