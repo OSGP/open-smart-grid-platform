@@ -12,8 +12,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.net.ConnectException;
-
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
@@ -23,8 +21,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.BundleService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
@@ -32,7 +28,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
@@ -44,7 +39,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class BundleMessageProcessorTest {
 
     @Mock
@@ -77,23 +71,26 @@ class BundleMessageProcessorTest {
     @Mock
     private DlmsMessageListener messageListener;
 
+    private DlmsDevice dlmsDevice;
+    private BundleMessagesRequestDto requestDto;
+
     @InjectMocks
     private BundleMessageProcessor messageProcessor;
 
-    private DlmsDevice dlmsDevice = new DlmsDeviceBuilder().withHls5Active(true).build();
-    private BundleMessagesRequestDto requestDto = new BundleMessagesRequestDto(null);
-
     @BeforeEach
     public void setUp() throws JMSException, OsgpException {
+        dlmsDevice = new DlmsDeviceBuilder().withHls5Active(true).build();
+        requestDto = new BundleMessagesRequestDto(null);
+
         when(message.getJMSType()).thenReturn(MessageType.FIND_EVENTS.name());
         when(message.getObject()).thenReturn(requestDto);
         when(domainHelperService.findDlmsDevice(any(MessageMetadata.class))).thenReturn(dlmsDevice);
-        when(dlmsConnectionManager.getDlmsMessageListener()).thenReturn(messageListener);
-        when(bundleService.callExecutors(dlmsConnectionManager, dlmsDevice, requestDto)).thenReturn(requestDto);
     }
 
     @Test
     public void shouldSetEmptyHeaderOnSuccessfulOperation() throws OsgpException, JMSException {
+        when(dlmsConnectionManager.getDlmsMessageListener()).thenReturn(messageListener);
+        when(bundleService.callExecutors(dlmsConnectionManager, dlmsDevice, requestDto)).thenReturn(requestDto);
         when(dlmsConnectionHelper.createConnectionForDevice(dlmsDevice, null)).thenReturn(dlmsConnectionManager);
 
         messageProcessor.processMessage(message);
@@ -112,8 +109,8 @@ class BundleMessageProcessorTest {
 
     @Test
     public void shouldSetRetryHeaderOnOsgpException() throws OsgpException, JMSException {
-        when(dlmsConnectionHelper.createConnectionForDevice(dlmsDevice, null)).thenThrow(new OsgpException(
-                ComponentType.PROTOCOL_DLMS, ""));
+        when(dlmsConnectionHelper.createConnectionForDevice(dlmsDevice, null)).thenThrow(
+                new OsgpException(ComponentType.PROTOCOL_DLMS, ""));
 
         messageProcessor.processMessage(message);
 
