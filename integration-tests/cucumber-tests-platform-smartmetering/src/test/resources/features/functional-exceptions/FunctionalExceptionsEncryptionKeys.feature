@@ -24,6 +24,7 @@ Feature: SmartMetering functional exceptions regarding encryption keys
       | Code    |                  804 |
       | Message | DECRYPTION_EXCEPTION |
     And the keys are not changed in the secret_management database encrypted_secret table
+
   Scenario: HLS5 connect without an encryption key
     Given a dlms device
       | DeviceIdentification  | TEST1024000000001 |

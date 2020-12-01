@@ -80,14 +80,14 @@ public class DlmsDatabase {
 
         this.secretRepository.deleteAllInBatch();
         this.encryptionKeyRepository.deleteAllInBatch();
-        DbEncryptionKeyReference jreEncryptionKey = this.getJreEncryptionKey(new Date());
+        final DbEncryptionKeyReference jreEncryptionKey = this.getJreEncryptionKey(new Date());
         this.encryptionKeyRepository.save(jreEncryptionKey);
 
         this.insertDefaultData();
     }
 
     private DbEncryptionKeyReference getJreEncryptionKey(Date now) {
-        DbEncryptionKeyReference jreEncryptionKey = new DbEncryptionKeyReference();
+        final DbEncryptionKeyReference jreEncryptionKey = new DbEncryptionKeyReference();
         jreEncryptionKey.setEncryptionProviderType(EncryptionProviderType.JRE);
         jreEncryptionKey.setReference("1");
         jreEncryptionKey.setValidFrom(now);

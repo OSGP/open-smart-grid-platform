@@ -99,7 +99,7 @@ public class RecoverKeyProcess implements Runnable {
             try {
                 this.secretManagementService.activateNewKeys(this.deviceIdentification, keyTypesToActivate);
             } catch (Exception e) {
-                throw new RecoverKeyException(e.getMessage(), e);
+                throw new RecoverKeyException(e);
             }
         } else {
             LOGGER.warn("Could not recover keys: could not connect to device using new keys");
@@ -111,7 +111,7 @@ public class RecoverKeyProcess implements Runnable {
         try {
             this.device = this.domainHelperService.findDlmsDevice(this.deviceIdentification, this.ipAddress);
         } catch (final ProtocolAdapterException e) { // Thread can not recover from these exceptions.
-            throw new RecoverKeyException(e.getMessage(), e);
+            throw new RecoverKeyException(e);
         }
     }
 

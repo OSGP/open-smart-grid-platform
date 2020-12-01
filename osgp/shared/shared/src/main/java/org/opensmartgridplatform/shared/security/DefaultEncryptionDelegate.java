@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.shared.security;
 
+import java.util.EnumMap;
 import java.util.List;
 
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
@@ -21,16 +22,18 @@ import org.springframework.stereotype.Component;
 public class DefaultEncryptionDelegate implements EncryptionDelegate {
 
     private static final String ERROR_NO_PROVIDER = "Could not find a provider of type %s; available providers are %s";
-    private final List<EncryptionProvider> providers;
+    private final EnumMap<EncryptionProviderType, EncryptionProvider> encryptionProviders;
 
     public DefaultEncryptionDelegate(final List<EncryptionProvider> encryptionProviders) {
-        this.providers = encryptionProviders;
+        this.encryptionProviders = new EnumMap<>(EncryptionProviderType.class);
+        encryptionProviders.stream().forEach(p -> this.encryptionProviders.put(p.getType(), p));
     }
 
     private EncryptionProvider getEncryptionProvider(EncryptionProviderType type) {
-        return this.providers.stream().filter(provider -> provider.getType().equals(type)).findFirst()
-                             .orElseThrow(() -> new EncrypterException(String.format(ERROR_NO_PROVIDER, type,
-                                     this.providers)));
+        if (!this.encryptionProviders.containsKey(type)) {
+            throw new EncrypterException(String.format(ERROR_NO_PROVIDER, type, this.encryptionProviders));
+        }
+        return this.encryptionProviders.get(type);
     }
 
     @Override

@@ -90,7 +90,7 @@ public class SoapClientConfig {
         // set the key store(s)
         httpsUrlConnectionMessageSender.setKeyManagers(this.keyManagersFactoryBean().getObject());
 
-        if (Boolean.parseBoolean(this.useHostNameVerifier) == false) {
+        if (!Boolean.parseBoolean(this.useHostNameVerifier)) {
             httpsUrlConnectionMessageSender.setHostnameVerifier(new NoopHostnameVerifier());
         }
 
@@ -132,7 +132,7 @@ public class SoapClientConfig {
     }
 
     @Bean
-    public RsaEncrypter rsaEncryptionProvider() {
+    public RsaEncrypter rsaEncrypter() {
         try {
             File privateRsaKeyFile = this.soapRsaPrivateKeyResource.getFile();
             File publicRsaKeyFile = this.soapRsaPublicKeyResource.getFile();
@@ -142,7 +142,7 @@ public class SoapClientConfig {
             return rsaEncrypter;
         }
         catch(IOException e) {
-            throw new IllegalStateException("Could not initialize RsaEncryptionProvider", e);
+            throw new IllegalStateException("Could not initialize RsaEncrypter", e);
         }
     }
 }

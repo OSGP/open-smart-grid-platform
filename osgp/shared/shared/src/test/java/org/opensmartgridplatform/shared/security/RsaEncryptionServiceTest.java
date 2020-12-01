@@ -9,7 +9,6 @@
 package org.opensmartgridplatform.shared.security;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,7 +18,6 @@ import java.util.Random;
 
 import org.apache.commons.codec.binary.Hex;
 import org.junit.jupiter.api.Test;
-import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 
 public class RsaEncryptionServiceTest {
 
@@ -100,19 +98,16 @@ public class RsaEncryptionServiceTest {
 
     @Test
     public void testEncryptDecryptReturnsInput() {
-        try {
-            final KeyPair freshKeyPair = RsaEncryptionService.createKeyPair(KEYSIZE);
-            final RsaEncryptionService rsaEncryptionService = new RsaEncryptionService(freshKeyPair);
-            final byte[] input = this.createRandomInput();
-            final byte[] encrypted = rsaEncryptionService.encrypt(input);
-            final byte[] decrypted = rsaEncryptionService.decrypt(encrypted);
-            assertThat(decrypted).withFailMessage("decrypted bytes after encryption").isEqualTo(input);
-        } catch (EncrypterException ee) {
-            fail("Encryption failure", ee);
-        }
+        final KeyPair freshKeyPair = RsaEncryptionService.createKeyPair(KEYSIZE);
+        final RsaEncryptionService rsaEncryptionService = new RsaEncryptionService(freshKeyPair);
+        final byte[] input = this.createRandomInput();
+        final byte[] encrypted = rsaEncryptionService.encrypt(input);
+        final byte[] decrypted = rsaEncryptionService.decrypt(encrypted);
+        assertThat(decrypted).withFailMessage("decrypted bytes after encryption").isEqualTo(input);
+
     }
 
-    private RsaEncryptionService createRsaEncryptionServiceFromStoredKeys() throws EncrypterException {
+    private RsaEncryptionService createRsaEncryptionServiceFromStoredKeys() {
         final KeyPair keyPair = new KeyPair(RsaEncryptionService.readPublicKeyFromFile(PUBLIC_KEY_PATH),
                 RsaEncryptionService.readPrivateKeyFromFile(PRIVATE_KEY_PATH));
         return new RsaEncryptionService(keyPair);
@@ -126,7 +121,7 @@ public class RsaEncryptionServiceTest {
         return randomBytes;
     }
 
-    public static void createNewKeysForTests() throws IOException, EncrypterException {
+    public static void createNewKeysForTests() throws IOException {
         final KeyPair keyPair = RsaEncryptionService.createKeyPair(KEYSIZE);
         RsaEncryptionService.saveKeyToFile(keyPair.getPrivate(), PRIVATE_KEY_PATH);
         RsaEncryptionService.saveKeyToFile(keyPair.getPublic(), PUBLIC_KEY_PATH);

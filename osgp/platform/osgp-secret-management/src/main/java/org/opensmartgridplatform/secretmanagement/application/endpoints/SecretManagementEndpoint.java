@@ -46,7 +46,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 public class SecretManagementEndpoint {
 
     private static final String NAMESPACE_URI =
-            "http://www.opensmartgridplatform" + ".org/schemas/security/secretmanagement";
+            "http://www.opensmartgridplatform.org/schemas/security/secretmanagement";
     private static final String STR_MISSING_SECRET_TYPES = "Missing input: secret types";
     private static final String STR_MISSING_TYPED_SECRETS = "Missing input: typed secrets";
 
@@ -68,6 +68,7 @@ public class SecretManagementEndpoint {
         }
         final GetSecretsResponse response = new GetSecretsResponse();
         final SecretTypes soapSecretTypes = request.getSecretTypes();
+        //TODO see if a PayloadValidatingInterceptor can be used
         if (soapSecretTypes == null) {
             throw new TechnicalException(STR_MISSING_SECRET_TYPES);
         }
@@ -154,7 +155,8 @@ public class SecretManagementEndpoint {
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             marshaller.marshal(request, baos);
         } catch (final JAXBException e) {
-            log.error("Could not serialize GetSecretsRequest", e);
+            String logFormat = "Could not serialize request of type %s";
+            log.error(String.format(logFormat,request.getClass()), e);
         }
         return baos.toString();
     }

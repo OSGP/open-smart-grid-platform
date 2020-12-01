@@ -127,7 +127,6 @@ public class SoapServiceSecretManagementIT {
                 final OutputStream outStream = new ByteArrayOutputStream();
                 response.writeTo(outStream);
                 final String outputString = outStream.toString();
-                //System.out.println(outputString);
                 assertThat(outputString.contains("<ns2:Result>OK</ns2:Result>")).isTrue();
                 assertThat(outputString.contains("E_METER_AUTHENTICATION")).isTrue();
                 assertThat(outputString.contains("E_METER_MASTER")).isTrue();
@@ -194,7 +193,6 @@ public class SoapServiceSecretManagementIT {
         this.mockWebServiceClient.sendRequest(withPayload(storeRequest)).andExpect(ResponseMatchers.noFault())
                                  .andExpect(ResponseMatchers.payload(expectedStoreResponse));
         this.mockWebServiceClient.sendRequest(withPayload(activateRequest))
-                                 //.andExpect((request, response) -> response.writeTo(System.out))
                                  .andExpect(ResponseMatchers.noFault())
                                  .andExpect(ResponseMatchers.payload(expectedActivateResponse));
     }

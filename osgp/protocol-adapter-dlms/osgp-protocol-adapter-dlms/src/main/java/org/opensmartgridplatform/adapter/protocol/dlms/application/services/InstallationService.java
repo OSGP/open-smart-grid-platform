@@ -13,9 +13,13 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Se
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.G_METER_ENCRYPTION;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.G_METER_MASTER;
 
+import java.util.Arrays;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.InstallationMapper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.CoupleMBusDeviceCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.CoupleMbusDeviceByChannelCommandExecutor;
@@ -67,12 +71,33 @@ public class InstallationService {
     }
 
     private void storeNewKeys(final SmartMeteringDeviceDto deviceDto) throws FunctionalException {
-        Map<SecurityKeyType,byte[]> keysByType = new EnumMap<>(SecurityKeyType.class);
-        keysByType.put(E_METER_MASTER,this.encryptionService.rsaDecrypt(deviceDto.getMasterKey()));
-        keysByType.put(E_METER_AUTHENTICATION,this.encryptionService.rsaDecrypt(deviceDto.getAuthenticationKey()));
-        keysByType.put(G_METER_ENCRYPTION,this.encryptionService.rsaDecrypt(deviceDto.getGlobalEncryptionUnicastKey()));
-        keysByType.put(G_METER_MASTER,this.encryptionService.rsaDecrypt(deviceDto.getMbusDefaultKey()));
+        Map<SecurityKeyType, byte[]> keysByType = new EnumMap<>(SecurityKeyType.class);
+        List<SecurityKeyType> keyTypesToStore=Arrays.asList(E_METER_MASTER,E_METER_AUTHENTICATION,G_METER_MASTER,
+                G_METER_ENCRYPTION);
+        keyTypesToStore.stream().forEach(kt-> {
+            byte[] key = this.getKeyFromDeviceDto(deviceDto, kt);
+            if(key!=null && ArrayUtils.isNotEmpty(key)) {
+                keysByType.put(kt,key);
+            } else {
+                throw new NoSuchElementException("Device DTO contains no/empty key for type "+kt);
+            }
+        });
         this.secretManagementService.storeNewKeys(deviceDto.getDeviceIdentification(), keysByType);
+    }
+
+    private byte[] getKeyFromDeviceDto(SmartMeteringDeviceDto deviceDto, SecurityKeyType keyType) {
+        switch (keyType) {
+        case E_METER_MASTER:
+            return deviceDto.getMasterKey();
+        case E_METER_AUTHENTICATION:
+            return deviceDto.getAuthenticationKey();
+        case G_METER_ENCRYPTION:
+            return deviceDto.getGlobalEncryptionUnicastKey();
+        case G_METER_MASTER:
+            return deviceDto.getMbusDefaultKey();
+        default:
+            throw new IllegalArgumentException("Unknown type " + keyType);
+        }
     }
 
     public MbusChannelElementsResponseDto coupleMbusDevice(final DlmsConnectionManager conn, final DlmsDevice device,

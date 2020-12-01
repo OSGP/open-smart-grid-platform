@@ -56,7 +56,7 @@ public class ActualMeterReadsSteps {
         assertThat(actualMeterReadsAsyncRequest).as("ActualMeterReadsAsyncRequest should not be null").isNotNull();
 
         try {
-            ActualMeterReadsResponse response = this.responseClient.getResponse(actualMeterReadsAsyncRequest);
+            final ActualMeterReadsResponse response = this.responseClient.getResponse(actualMeterReadsAsyncRequest);
             fail("Expected exception, but got a response: %s", response.toString());
         } catch (final Exception exception) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, exception);

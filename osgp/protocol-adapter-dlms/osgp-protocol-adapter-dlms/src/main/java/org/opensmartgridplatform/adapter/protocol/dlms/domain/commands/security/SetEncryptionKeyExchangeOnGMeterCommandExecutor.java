@@ -43,7 +43,6 @@ import org.opensmartgridplatform.dlms.interfaceclass.method.MBusClientMethod;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GMeterInfoDto;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
-import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,25 +111,21 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
         } catch (final EncrypterException e) {
             throw new ProtocolAdapterException(
                     "Unexpected exception during decryption of security keys, reason = " + e.getMessage(), e);
-        } catch (final FunctionalException e) {
-            throw new ProtocolAdapterException("Unexpected exception: " + e.toString(), e);
         }
     }
 
     private MethodResult setEncryptionKey(DlmsConnectionManager conn, int channel, byte[] encryptionKey)
             throws IOException {
-        MethodResult methodResultCode;
         final MethodParameter methodSetEncryptionKey = this
                 .getSetEncryptionKeyMethodParameter(OBIS_HASHMAP.get(channel), encryptionKey);
         conn.getDlmsMessageListener().setDescription("SetEncryptionKeyExchangeOnGMeter for channel " + channel
                 + ", call M-Bus Setup set_encryption_key method: " + JdlmsObjectToStringUtil
                 .describeMethod(methodSetEncryptionKey));
-        methodResultCode = conn.getConnection().action(methodSetEncryptionKey);
-        return methodResultCode;
+        return conn.getConnection().action(methodSetEncryptionKey);
     }
 
     private MethodResult transferKey(DlmsConnectionManager conn, String mbusDeviceIdentification, int channel,
-            byte[] encryptionKey) throws ProtocolAdapterException, IOException, FunctionalException {
+            byte[] encryptionKey) throws ProtocolAdapterException, IOException {
         final MethodParameter methodTransferKey = this
                 .getTransferKeyMethodParameter(mbusDeviceIdentification, channel, encryptionKey);
         conn.getDlmsMessageListener().setDescription(

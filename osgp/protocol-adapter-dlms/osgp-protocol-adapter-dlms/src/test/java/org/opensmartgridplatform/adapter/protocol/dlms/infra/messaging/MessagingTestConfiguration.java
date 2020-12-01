@@ -133,7 +133,7 @@ public class MessagingTestConfiguration extends AbstractConfig {
     }
 
     @Bean
-    public SecretManagementService securityKeyService() {
+    public SecretManagementService secretManagementService() {
         return Mockito.mock(SecretManagementService.class);
     }
 

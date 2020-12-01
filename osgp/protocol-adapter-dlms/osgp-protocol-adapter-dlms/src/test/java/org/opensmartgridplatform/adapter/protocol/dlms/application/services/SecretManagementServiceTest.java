@@ -1,3 +1,11 @@
+/**
+ * Copyright 2020 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,7 +52,6 @@ public class SecretManagementServiceTest {
     private static final String DEVICE_IDENTIFICATION = "E000123456789";
     private static final SecurityKeyType KEY_TYPE = SecurityKeyType.E_METER_ENCRYPTION;
     private static final byte[] UNENCRYPTED_SECRET = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
-    private static final byte[] AES_SECRET = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
     private static final byte[] SOAP_SECRET = {15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0};
     private static final String HEX_SOAP_SECRET = Hex.encodeHexString(SOAP_SECRET);
     private static final TypedSecret TYPED_SECRET = new TypedSecret();

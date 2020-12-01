@@ -9,8 +9,6 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.entities;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 
 import org.opensmartgridplatform.ws.schema.core.secret.management.SecretType;
 
@@ -18,78 +16,41 @@ public enum SecurityKeyType {
     /**
      * DLMS master key (Key Encryption Key)
      */
-    E_METER_MASTER,
+    E_METER_MASTER(SecretType.E_METER_MASTER_KEY),
     /**
      * DLMS authentication key
      */
-    E_METER_AUTHENTICATION,
+    E_METER_AUTHENTICATION(SecretType.E_METER_AUTHENTICATION_KEY),
     /**
      * DLMS global unicast encryption key
      */
-    E_METER_ENCRYPTION,
+    E_METER_ENCRYPTION(SecretType.E_METER_ENCRYPTION_KEY_UNICAST),
     /**
      * M-Bus Default key
      */
-    G_METER_MASTER,
+    G_METER_MASTER(SecretType.G_METER_MASTER_KEY),
     /**
      * M-Bus User key
      */
-    G_METER_ENCRYPTION,
+    G_METER_ENCRYPTION(SecretType.G_METER_ENCRYPTION_KEY),
     /**
      * Password (e.g. used as DLMS Low Level Security secret)
      */
-    PASSWORD;
+    PASSWORD(SecretType.PPP_PASSWORD);
 
-    private static class Pair<A,B> {
-        A a;
-        B b;
+    private final SecretType secretType;
 
-        public Pair(A a, B b) {
-            this.a=a;
-            this.b=b;
-        }
-
-        public A get0() {
-            return this.a;
-        }
-        public B get1() {
-            return this.b;
-        }
-
-        public static <A,B> Pair<A,B> from(A a, B b) {
-            return new Pair<>(a, b);
-        }
-    }
-
-    private static final List<Pair<SecurityKeyType,SecretType>> typeMapping;
-
-    static {
-        typeMapping = Arrays.asList(
-                Pair.from(E_METER_ENCRYPTION, SecretType.E_METER_ENCRYPTION_KEY_UNICAST),
-                Pair.from(E_METER_AUTHENTICATION, SecretType.E_METER_AUTHENTICATION_KEY),
-                Pair.from(E_METER_MASTER, SecretType.E_METER_MASTER_KEY),
-                Pair.from(G_METER_ENCRYPTION, SecretType.G_METER_ENCRYPTION_KEY),
-                Pair.from(G_METER_MASTER, SecretType.G_METER_MASTER_KEY),
-                Pair.from(PASSWORD, SecretType.PPP_PASSWORD));
+    SecurityKeyType(SecretType secretType) {
+        this.secretType = secretType;
     }
 
     public SecretType toSecretType() {
-        Optional<Pair<SecurityKeyType,SecretType>> typePair =
-                typeMapping.stream().filter(tp -> tp.get0().equals(this)).findFirst();
-        if(typePair.isPresent()) {
-            return typePair.get().get1();
-        } else {
-            throw new IllegalArgumentException("Could not get secret type of value " + this);
-        }
+        return this.secretType;
     }
 
     public static SecurityKeyType fromSecretType(SecretType secretType) {
-        Optional<Pair<SecurityKeyType,SecretType>> typePair =
-                typeMapping.stream().filter(tp -> tp.get1().equals(secretType)).findFirst();
-        if(typePair.isPresent()) {
-            return typePair.get().get0();
-        } else {
-            throw new IllegalArgumentException("Could not get value from secret type " + secretType);
-        }
+        return Arrays.stream(SecurityKeyType.values()).filter(skt -> skt.secretType.equals(secretType)).findFirst()
+                     .orElseThrow(
+                             () -> new IllegalArgumentException("Could not get value from secret type " + secretType));
     }
 }

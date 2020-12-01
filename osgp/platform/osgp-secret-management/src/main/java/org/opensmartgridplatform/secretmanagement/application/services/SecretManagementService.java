@@ -100,7 +100,7 @@ public class SecretManagementService {
             try {
                 aesEncrypted = HexUtils.fromHexString(dbEncryptedSecret.getEncodedSecret());
             } catch (IllegalArgumentException iae) {
-                throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT,
+                throw new FunctionalException(FunctionalExceptionType.INVALID_KEY_FORMAT,
                         ComponentType.SECRET_MANAGEMENT, iae);
             }
             String keyReference = dbEncryptedSecret.getEncryptionKeyReference().getReference();
@@ -133,10 +133,11 @@ public class SecretManagementService {
         final List<DbEncryptionKeyReference> keyRefs = this.keyRepository
                 .findByTypeAndValid(this.encryptionProviderType, now);
         if (keyRefs.size() > 1) {
-            throw new IllegalStateException("Multiple encryption keys found that are valid at " + now);
+            String messageFormat = "Multiple encryption keys found of type %s that are valid at %s";
+            throw new IllegalStateException(String.format(messageFormat, this.encryptionProviderType, now));
         } else if (keyRefs.isEmpty()) {
-            throw new NoSuchElementException(
-                    "No encryption key of type " + this.encryptionProviderType + " found that is valid at " + now);
+            String messageFormat = "No encryption key of type %s found that is valid at %s";
+            throw new NoSuchElementException(String.format(messageFormat, this.encryptionProviderType, now));
         }
         return keyRefs.get(0);
     }

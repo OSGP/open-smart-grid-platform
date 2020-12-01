@@ -127,11 +127,11 @@ public class ReplaceKeyCommandExecutor
     }
 
     private SetKeysRequestDto decryptRsaKeys(final SetKeysRequestDto setKeysRequestDto) throws FunctionalException {
-        final byte[] reEncryptedAuthenticationKey =
+        final byte[] authenticationKey =
                 this.encryptionService.rsaDecrypt(setKeysRequestDto.getAuthenticationKey());
-        final byte[] reEncryptedEncryptionKey = this.encryptionService.rsaDecrypt(setKeysRequestDto.getEncryptionKey());
+        final byte[] encryptionKey = this.encryptionService.rsaDecrypt(setKeysRequestDto.getEncryptionKey());
 
-        return new SetKeysRequestDto(reEncryptedAuthenticationKey, reEncryptedEncryptionKey);
+        return new SetKeysRequestDto(authenticationKey, encryptionKey);
     }
 
     @Override

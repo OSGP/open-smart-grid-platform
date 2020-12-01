@@ -59,12 +59,13 @@ public class DbEncryptedSecretRepositoryIT extends AbstractRepositoryIT {
         assertThat(activeCount).isEqualTo(1);
     }
 
-    @Test void findSecrets() {
+    @Test
+    public void findSecrets() {
         assertThat(this.repository.count()).isEqualTo(1);
         final List<DbEncryptedSecret> secretsList =
                 this.repository.findSecrets(this.dbEncryptedSecret.getDeviceIdentification(),
                 this.dbEncryptedSecret.getSecretType(), SecretStatus.ACTIVE);
-        assertThat(secretsList.size()).isEqualTo(1);
+        assertThat(secretsList).hasSize(1);
         assertThat(secretsList.iterator().next().getId()).isEqualTo(this.dbEncryptedSecret.getId());
     }
 

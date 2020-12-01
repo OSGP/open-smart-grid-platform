@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Smart Society Services B.V.
+ * Copyright 2020 Alliander N.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
@@ -54,7 +54,8 @@ public class RsaEncrypter {
         }
     }
 
-    //Afgestemd met Paul Houtman: totdat Netinium is uitgefaseerd moeten we compatibel blijven
+    //Suppress warning regarding algorithm security risks, because this particular algorithm is
+    // required to succesfully communicate with other system components
     @SuppressWarnings("squid:S5542")
     protected Cipher getCipher() {
         try {
@@ -69,7 +70,7 @@ public class RsaEncrypter {
     }
 
     public byte[] encrypt(final byte[] secret) {
-        if(secret==null) {
+        if (secret == null) {
             throw new IllegalArgumentException("Can not encrypt NULL value");
         }
         try {
@@ -82,7 +83,7 @@ public class RsaEncrypter {
     }
 
     public byte[] decrypt(final byte[] rsaEncrypted) {
-        if(rsaEncrypted==null) {
+        if (rsaEncrypted == null) {
             throw new IllegalArgumentException("Can not decrypt NULL value");
         }
         try {

@@ -17,11 +17,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.wsclient.SecretManagementClient;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.shared.security.RsaEncrypter;
 import org.opensmartgridplatform.ws.schema.core.secret.management.ActivateSecretsRequest;
 import org.opensmartgridplatform.ws.schema.core.secret.management.GenerateAndStoreSecretsRequest;
@@ -43,7 +41,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-@Slf4j
 /**
  * Service for storing, activating and retrieving device keys.
  * Also performs RSA encryption/decryption operations for SOAP messaging purposes.
@@ -71,7 +68,9 @@ public class SecretManagementService {
      * @return the key or NULL if not present
      */
     public byte[] getKey(String deviceIdentification, SecurityKeyType keyType) {
-        LOGGER.info("Retrieving {} for device {}", keyType.name(), deviceIdentification);
+        if(LOGGER.isInfoEnabled()) {
+            LOGGER.info("Retrieving {} for device {}", keyType.name(), deviceIdentification);
+        }
         return this.getKeys(deviceIdentification, Arrays.asList(keyType)).get(keyType);
     }
 
@@ -103,7 +102,9 @@ public class SecretManagementService {
      * @return the key or NULL if not present
      */
     public byte[] getNewKey(String deviceIdentification, SecurityKeyType keyType) {
-        LOGGER.info("Retrieving new {} for device {}", keyType.name(), deviceIdentification);
+        if(LOGGER.isInfoEnabled()) {
+            LOGGER.info("Retrieving new {} for device {}", keyType.name(), deviceIdentification);
+        }
         return this.getNewKeys(deviceIdentification, Arrays.asList(keyType)).get(keyType);
     }
 
@@ -233,11 +234,9 @@ public class SecretManagementService {
      * @param keyType
      *         type of key
      *
-     * @throws ProtocolAdapterException
-     *         if no new key is stored with the given device
      * @see #storeNewKeys(String, Map)
      */
-    public void activateNewKey(String deviceIdentification, SecurityKeyType keyType) throws ProtocolAdapterException {
+    public void activateNewKey(String deviceIdentification, SecurityKeyType keyType) {
         this.activateNewKeys(deviceIdentification, Arrays.asList(keyType));
     }
 
@@ -307,12 +306,12 @@ public class SecretManagementService {
     private void validateOsgpResultAndTypedSecrets(OsgpResultType result, Object fault, TypedSecrets typedSecrets,
             int expectedNrKeys) {
         if (!OsgpResultType.OK.equals(result)) {
-            throw new IllegalStateException("Could not generate and store keys in secret-mgmt: " + fault.toString());
+            throw new IllegalStateException("Could not process keys in secret-mgmt: " + fault);
         } else if (typedSecrets == null || typedSecrets.getTypedSecret() == null) {
             throw new IllegalStateException("No secrets in response");
         } else if (expectedNrKeys != typedSecrets.getTypedSecret().size()) {
             throw new IllegalStateException(
-                    String.format("Unexpected number of secrets in response: expected %s but " + "found %s",
+                    String.format("Unexpected number of secrets in response: expected %s but found %s",
                             expectedNrKeys, typedSecrets.getTypedSecret().size()));
         }
     }
