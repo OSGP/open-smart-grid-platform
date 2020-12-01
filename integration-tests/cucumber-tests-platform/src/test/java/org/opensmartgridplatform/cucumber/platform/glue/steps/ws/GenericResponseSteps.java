@@ -13,13 +13,16 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.xml.namespace.QName;
 
+import org.assertj.core.api.SoftAssertions;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.support.ws.FaultDetailElement;
@@ -91,7 +94,7 @@ public abstract class GenericResponseSteps {
         }
     }
 
-    private static void assertFaultDetailMap(Map<String, String> expected, Map<FaultDetailElement, String> actual) {
+    /*private static void assertFaultDetailMap(Map<String, String> expected, Map<FaultDetailElement, String> actual) {
         for (final Map.Entry<String, String> expectedEntry : expected.entrySet()) {
             final String localName = expectedEntry.getKey();
             final FaultDetailElement faultDetailElement = FaultDetailElement.forLocalName(localName);
@@ -99,15 +102,37 @@ public abstract class GenericResponseSteps {
                 /*
                  * Specified response parameter is not a FaultDetailElement
                  * (e.g. DeviceIdentification), skip it for the assertions.
-                 */
+                 *
                 continue;
             }
 
             final String expectedValue = expectedEntry.getValue();
             final String actualValue = actual.get(faultDetailElement);
 
-            assertThat(actualValue).as(localName+"; all actual values: "+actual.toString()).isEqualTo(expectedValue);
+            assertThat(actualValue).as(localName + "; all actual values: " + actual.toString())
+                                   .isEqualTo(expectedValue);
         }
+    }*/
+
+    private static void assertFaultDetailMap(Map<String, String> expected, Map<FaultDetailElement, String> actual) {
+        Map<String,String> actualByName = new HashMap<>();
+        for(Map.Entry<FaultDetailElement,String> entry: actual.entrySet()) {
+            actualByName.put(entry.getKey().getLocalName(),entry.getValue());
+        }
+        SoftAssertions soft = new SoftAssertions();
+        soft.assertThat(actualByName.keySet()).as("Actual fault fields").contains(expected.keySet().toArray(new String[0]));
+        List<Map.Entry<String,String>> unexpectedFields =
+                actualByName.entrySet()
+                            .stream()
+                            .filter(actualEntry->expected.containsKey(actualEntry.getKey()))
+                            .collect(Collectors.toList());
+        soft.assertThat(unexpectedFields).as(actualByName.toString()).isEmpty();
+        for(Map.Entry<String,String> expectedEntry:expected.entrySet()) {
+            String expectedValue = expectedEntry.getValue();
+            String actualValue = actualByName.get(expectedEntry.getKey());
+            soft.assertThat(actualValue).as(expectedEntry.getKey()).isEqualTo(expectedValue);
+        }
+        soft.assertAll();
     }
 
     private static void assertExpectedAndActualValues(final String localName,
