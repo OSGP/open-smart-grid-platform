@@ -279,12 +279,16 @@ public class RsaEncryptionService {
         }
         try {
             final byte[] publicKeyBytes = Files.readAllBytes(Paths.get(filename));
-            final X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
-            return getKeyFactory().generatePublic(publicKeySpec);
+            return generatePublicKey(publicKeyBytes);
         } catch (final IOException | InvalidKeySpecException e) {
             LOGGER.error(UNEXPECTED_EXCEPTION_WHEN_READING_PUBLIC_KEY, e);
             throw new EncrypterException(UNEXPECTED_EXCEPTION_WHEN_READING_PUBLIC_KEY, e);
         }
+    }
+
+    private static PublicKey generatePublicKey(byte[] publicKeyBytes) throws InvalidKeySpecException {
+        final X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
+        return getKeyFactory().generatePublic(publicKeySpec);
     }
 
     /**
@@ -309,15 +313,14 @@ public class RsaEncryptionService {
         }
         try {
             final byte[] privateKeyBytes = Files.readAllBytes(Paths.get(filename));
-            final PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
-            return getKeyFactory().generatePrivate(privateKeySpec);
+            return generatePrivateKey(privateKeyBytes);
         } catch (final IOException | InvalidKeySpecException e) {
             LOGGER.error(UNEXPECTED_EXCEPTION_WHEN_READING_PRIVATE_KEY, e);
             throw new EncrypterException(UNEXPECTED_EXCEPTION_WHEN_READING_PRIVATE_KEY, e);
         }
     }
 
-    public static PrivateKey readPrivateKeyFromResource(final Resource resource) {
+    private static PrivateKey readPrivateKeyFromResource(final Resource resource) {
 
         if (resource == null) {
             return null;
@@ -325,21 +328,23 @@ public class RsaEncryptionService {
 
         try {
             final byte[] privateKeyBytes = StreamUtils.copyToByteArray(resource.getInputStream());
-            final PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
-            return getKeyFactory().generatePrivate(privateKeySpec);
+            return generatePrivateKey(privateKeyBytes);
         } catch (final IOException | InvalidKeySpecException e) {
             LOGGER.error(UNEXPECTED_EXCEPTION_WHEN_READING_PRIVATE_KEY, e);
             throw new EncrypterException(UNEXPECTED_EXCEPTION_WHEN_READING_PRIVATE_KEY, e);
         }
     }
 
+    private static PrivateKey generatePrivateKey(byte[] privateKeyBytes) throws InvalidKeySpecException {
+        final PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
+        return getKeyFactory().generatePrivate(privateKeySpec);
+    }
+
     private static PublicKey readPublicKeyFromResource(final Resource resource) {
 
         try {
-
             final byte[] publicKeyBytes = StreamUtils.copyToByteArray(resource.getInputStream());
-            final X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
-            return getKeyFactory().generatePublic(publicKeySpec);
+            return generatePublicKey(publicKeyBytes);
         } catch (final IOException | InvalidKeySpecException e) {
             LOGGER.error(UNEXPECTED_EXCEPTION_WHEN_READING_PUBLIC_KEY, e);
             throw new EncrypterException(UNEXPECTED_EXCEPTION_WHEN_READING_PUBLIC_KEY, e);
