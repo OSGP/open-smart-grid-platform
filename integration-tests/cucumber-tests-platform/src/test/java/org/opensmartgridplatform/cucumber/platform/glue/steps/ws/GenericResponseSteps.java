@@ -106,7 +106,7 @@ public abstract class GenericResponseSteps {
             final String expectedValue = expectedEntry.getValue();
             final String actualValue = actual.get(faultDetailElement);
 
-            assertThat(actualValue).as(localName).isEqualTo(expectedValue);
+            assertThat(actualValue).as(localName+"; all actual values: "+actual.toString()).isEqualTo(expectedValue);
         }
     }
 
