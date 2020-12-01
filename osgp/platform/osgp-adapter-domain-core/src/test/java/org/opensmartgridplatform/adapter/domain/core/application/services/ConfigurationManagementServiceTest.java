@@ -127,7 +127,7 @@ class ConfigurationManagementServiceTest {
         this.injectionUsingReflection("ssldRepository", this.configurationManagementService,
                 this.ssldRepository);
 
-        System.setOut(new PrintStream(this.OUT_CONTENT));
+        System.setOut(new PrintStream(OUT_CONTENT));
     }
 
     @Test
