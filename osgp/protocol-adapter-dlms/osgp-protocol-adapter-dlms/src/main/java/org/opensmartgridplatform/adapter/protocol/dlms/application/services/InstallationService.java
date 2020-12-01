@@ -36,7 +36,9 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDevi
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -72,16 +74,18 @@ public class InstallationService {
 
     private void storeNewKeys(final SmartMeteringDeviceDto deviceDto) throws FunctionalException {
         Map<SecurityKeyType, byte[]> keysByType = new EnumMap<>(SecurityKeyType.class);
-        List<SecurityKeyType> keyTypesToStore=Arrays.asList(E_METER_MASTER,E_METER_AUTHENTICATION,G_METER_MASTER,
-                G_METER_ENCRYPTION);
-        keyTypesToStore.stream().forEach(kt-> {
-            byte[] key = this.getKeyFromDeviceDto(deviceDto, kt);
-            if(key!=null && ArrayUtils.isNotEmpty(key)) {
-                keysByType.put(kt,key);
+        List<SecurityKeyType> keyTypesToStore = Arrays
+                .asList(E_METER_MASTER, E_METER_AUTHENTICATION, G_METER_MASTER, G_METER_ENCRYPTION);
+        for (SecurityKeyType keyType : keyTypesToStore) {
+            byte[] key = this.getKeyFromDeviceDto(deviceDto, keyType);
+            if (key != null && ArrayUtils.isNotEmpty(key)) {
+                keysByType.put(keyType, this.encryptionService.rsaDecrypt(key));
             } else {
-                throw new NoSuchElementException("Device DTO contains no/empty key for type "+kt);
+                Exception rootCause = new NoSuchElementException(keyType.name());
+                throw new FunctionalException(FunctionalExceptionType.KEY_NOT_PRESENT, ComponentType.PROTOCOL_DLMS,
+                        rootCause);
             }
-        });
+        }
         this.secretManagementService.storeNewKeys(deviceDto.getDeviceIdentification(), keysByType);
     }
 
