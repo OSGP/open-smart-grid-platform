@@ -531,6 +531,7 @@ public class DlmsDeviceSteps {
 
     private DbEncryptedSecret setSecretDefaultProperties(final String deviceIdentification,
             final DbEncryptionKeyReference encryptionKeyRef, final DbEncryptedSecret secret) {
+        secret.setDeviceIdentification(deviceIdentification);
         secret.setCreationTime(new Date());
         secret.setSecretStatus(SecretStatus.ACTIVE);
         secret.setEncryptionKeyReference(encryptionKeyRef);
