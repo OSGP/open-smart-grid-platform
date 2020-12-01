@@ -16,7 +16,7 @@ import static org.mockito.Mockito.when;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -52,7 +52,7 @@ import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 @ExtendWith(MockitoExtension.class)
-public class ConfigurationManagementServiceTest {
+class ConfigurationManagementServiceTest {
     @Mock
     private WebServiceResponseMessageSender webServiceResponseMessageSender;
     @Mock
@@ -131,9 +131,9 @@ public class ConfigurationManagementServiceTest {
     }
 
     @Test
-    public void testTrySetConfiguration() throws FunctionalException, UnknownEntityException {
+    void testTrySetConfiguration() throws FunctionalException, UnknownEntityException {
         final RelayMap relayMap = new RelayMap(1, 1, RelayType.LIGHT, "1");
-        final List<RelayMap> relayMapList = Arrays.asList(relayMap);
+        final List<RelayMap> relayMapList = Collections.singletonList(relayMap);
 
         when(this.organisationDomainService.searchOrganisation(any(String.class))).thenReturn(TEST_ORGANISATION);
         when(this.deviceDomainService.searchActiveDevice(any(), any())).thenReturn(this.device);
@@ -158,15 +158,15 @@ public class ConfigurationManagementServiceTest {
     }
 
     @Test
-    public void testTrySetConfigurationWithNoConfiguration() throws Exception {
+    void testTrySetConfigurationWithNoConfiguration() throws Exception {
         this.configurationManagementService.setConfiguration(this.correlationIds, null, SCHEDULE_TIME, MESSAGE_TYPE,
                 MESSAGE_PRIORITY);
 
-        assertThat(this.OUT_CONTENT.toString()).contains("Configuration is empty, skip sending a request to device");
+        assertThat(OUT_CONTENT.toString()).contains("Configuration is empty, skip sending a request to device");
     }
 
     @Test
-    public void testTrySetConfigurationWithNullRelayConfiguration() throws UnknownEntityException, FunctionalException {
+    void testTrySetConfigurationWithNullRelayConfiguration() throws UnknownEntityException, FunctionalException {
         final Organisation testOrganisation = new Organisation();
         when(this.organisationDomainService.searchOrganisation(any(String.class))).thenReturn(testOrganisation);
         when(this.deviceDomainService.searchActiveDevice(any(), any())).thenReturn(new Device());
@@ -182,11 +182,11 @@ public class ConfigurationManagementServiceTest {
         this.checkRequestMessageArgumentCaptor();
         assertThat(this.messageTypeArgumentCaptor.getValue()).isEqualTo(MESSAGE_TYPE);
         assertThat(this.messagePriorityArgumentCaptor.getValue()).isEqualTo(MESSAGE_PRIORITY);
-        assertThat(this.ipAddressArgumentCaptor.getValue()).isEqualTo(null);
+        assertThat(this.ipAddressArgumentCaptor.getValue()).isNull();
         assertThat(this.scheduledTimeArgumentCaptor.getValue()).isEqualTo(SCHEDULE_TIME);    }
 
     @Test
-    public void testGetConfiguration() throws UnknownEntityException, FunctionalException {
+    void testGetConfiguration() throws UnknownEntityException, FunctionalException {
         when(this.organisationDomainService.searchOrganisation(any(String.class))).thenReturn(new Organisation());
         when(this.deviceDomainService.searchActiveDevice(any(), any())).thenReturn(this.device);
         when(this.device.getIpAddress()).thenReturn(IP_ADDRESS);
@@ -205,7 +205,7 @@ public class ConfigurationManagementServiceTest {
     }
 
     @Test
-    public void testHandleGetConfigurationResponse() {
+    void testHandleGetConfigurationResponse() {
         this.exception = null;
 
         when(this.ssldRepository.findByDeviceIdentification("deviceIdentification")).thenReturn(new Ssld());
@@ -221,13 +221,13 @@ public class ConfigurationManagementServiceTest {
     }
 
     @Test
-    public void testHandleGetConfigurationResponseWithException() {
+    void testHandleGetConfigurationResponseWithException() {
         this.exception = new OsgpException(ComponentType.DOMAIN_ADMIN, "orgIdentification");
 
         this.configurationManagementService.handleGetConfigurationResponse(this.configurationDto, this.correlationIds,
                 MESSAGE_TYPE, MESSAGE_PRIORITY, ResponseMessageResultType.OK, this.exception);
 
-        assertThat(this.OUT_CONTENT.toString()).contains("Unexpected Exception for messageType:");
+        assertThat(OUT_CONTENT.toString()).contains("Unexpected Exception for messageType:");
 
         verify(this.webServiceResponseMessageSender).send(this.responseMessageArgumentCaptor.capture());
 
@@ -236,7 +236,7 @@ public class ConfigurationManagementServiceTest {
     }
 
     @Test
-    public void testswitchConfiguration() throws UnknownEntityException, FunctionalException {
+    void testswitchConfiguration() throws UnknownEntityException, FunctionalException {
         when(this.organisationDomainService.searchOrganisation(any(String.class))).thenReturn(new Organisation());
         when(this.deviceDomainService.searchActiveDevice(any(), any())).thenReturn(this.device);
         when(this.device.getIpAddress()).thenReturn(IP_ADDRESS);
