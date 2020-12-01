@@ -335,10 +335,6 @@ public class RsaEncryptionService {
 
     private static PublicKey readPublicKeyFromResource(final Resource resource) {
 
-        if (resource == null) {
-            return null;
-        }
-
         try {
 
             final byte[] publicKeyBytes = StreamUtils.copyToByteArray(resource.getInputStream());
