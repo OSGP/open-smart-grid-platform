@@ -193,6 +193,12 @@
       <artifactId>logback-core</artifactId>
     </dependency>
 
+    <!-- Utils -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+    </dependency>
+
     <!-- Servlet API 3.0 -->
     <dependency>
       <groupId>javax.servlet</groupId>

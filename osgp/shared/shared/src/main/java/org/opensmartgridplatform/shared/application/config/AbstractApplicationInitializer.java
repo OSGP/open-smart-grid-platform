@@ -78,35 +78,36 @@ public abstract class AbstractApplicationInitializer {
 
     private void initializeLogging() throws ServletException {
         Context initialContext;
-        String logLocation;
+        String customLogLocation;
+        final String defaultLogLocation = "classpath:logback-config.xml";
 
         try {
             initialContext = new InitialContext();
-            logLocation = (String) initialContext.lookup(this.logConfig);
+            customLogLocation = (String) initialContext.lookup(this.logConfig);
 
             // Load specific logback configuration, otherwise fallback to
             // classpath logback.xml
-
-            if (new File(logLocation).exists()) {
-                final LoggerContext loggerContext = (LoggerContext) StaticLoggerBinder.getSingleton()
-                        .getLoggerFactory();
-
-                // in the current version logback automatically configures at
-                // startup the context, so we have to reset it
-                loggerContext.reset();
-
-                // reinitialize the logger context. calling this method allows
-                // configuration through groovy or xml
-                new ContextInitializer(loggerContext).configureByResource(ResourceUtils.getURL(logLocation));
-
-                this.logger.info("Initialized logging using {} ({})", this.logConfig, logLocation);
-
+            if (new File(customLogLocation).exists()) {
+                this.initializeLoggingContext(customLogLocation);
             } else {
-                this.logger.info("{} not found, falling back to default logback initialization", logLocation);
+                this.initializeLoggingContext(defaultLogLocation);
             }
         } catch (final NamingException | FileNotFoundException | JoranException e) {
-            this.logger.info("Failed to initialize logging using {}", this.logConfig, e);
+            this.logger.info("Failed to initialize logging using {} or {}", this.logConfig, defaultLogLocation, e);
             throw new ServletException(e);
         }
+    }
+
+    private void initializeLoggingContext(final String location) throws FileNotFoundException, JoranException {
+        final LoggerContext loggerContext = (LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory();
+
+        // in the current version logback automatically configures at
+        // startup the context, so we have to reset it
+        loggerContext.reset();
+
+        // reinitialize the logger context. calling this method allows
+        // configuration through groovy or xml
+        new ContextInitializer(loggerContext).configureByResource(ResourceUtils.getURL(location));
+        this.logger.info("Initialized logging using {}", location);
     }
 }
