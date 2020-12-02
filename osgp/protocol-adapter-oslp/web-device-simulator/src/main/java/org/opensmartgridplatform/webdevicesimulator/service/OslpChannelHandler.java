@@ -639,6 +639,7 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
             return DeviceMessageStatus.FAILURE;
         }
 
+
         final String deviceIdentification = device.getDeviceIdentification();
         if (!StringUtils.hasText(deviceIdentification)) {
             return DeviceMessageStatus.FAILURE;
@@ -646,6 +647,8 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
 
         try {
             LOGGER.info("Sending DeviceRegistrationRequest for device: {}", deviceIdentification);
+
+            this.finishRebooting(device.getDeviceUid());
             final DeviceMessageStatus deviceMessageStatus = OslpChannelHandler.this.registerDevice
                     .sendRegisterDeviceCommand(device.getId(), true);
             if (DeviceMessageStatus.OK.equals(deviceMessageStatus)) {
