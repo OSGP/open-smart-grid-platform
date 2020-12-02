@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.xml.namespace.QName;
 
@@ -121,12 +120,10 @@ public abstract class GenericResponseSteps {
         }
         SoftAssertions soft = new SoftAssertions();
         soft.assertThat(actualByName.keySet()).as("Actual fault fields").contains(expected.keySet().toArray(new String[0]));
-        List<Map.Entry<String,String>> unexpectedFields =
-                actualByName.entrySet()
-                            .stream()
-                            .filter(actualEntry->expected.containsKey(actualEntry.getKey()))
-                            .collect(Collectors.toList());
-        soft.assertThat(unexpectedFields).as(actualByName.toString()).isEmpty();
+        if(!actualByName.keySet().contains(expected.keySet())) {
+            //Not all expected fields are there: fail with message containing full response
+            soft.fail("Not all expected fields are present; expected=%s, actualByFaultDetail=%s", expected, actual);
+        }
         for(Map.Entry<String,String> expectedEntry:expected.entrySet()) {
             String expectedValue = expectedEntry.getValue();
             String actualValue = actualByName.get(expectedEntry.getKey());
