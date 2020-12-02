@@ -125,8 +125,8 @@ public abstract class GenericResponseSteps {
             }
         }
         SoftAssertions soft = new SoftAssertions();
-        soft.assertThat(actualByName.keySet()).as("Actual fault fields").contains(expectedFaults.keySet().toArray(new String[0]));
-        if(!actualByName.keySet().contains(expectedFaults.keySet())) {
+        soft.assertThat(actualByName.keySet()).as("Actual fault fields").containsAll(expectedFaults.keySet());
+        if(!actualByName.keySet().containsAll(expectedFaults.keySet())) {
             //Not all expected fields are there: fail with message containing full response
             soft.fail("Not all expected fields are present; expectedFaults=%s, actualFaultDetailElements=%s",
                     expectedFaults,
