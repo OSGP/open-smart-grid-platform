@@ -114,19 +114,27 @@ public abstract class GenericResponseSteps {
     }*/
 
     private static void assertFaultDetailMap(Map<String, String> expected, Map<FaultDetailElement, String> actual) {
-        Map<String,String> actualByName = new HashMap<>();
+        final Map<String,String> actualByName = new HashMap<>();
         for(Map.Entry<FaultDetailElement,String> entry: actual.entrySet()) {
             actualByName.put(entry.getKey().getLocalName(),entry.getValue());
         }
-        SoftAssertions soft = new SoftAssertions();
-        soft.assertThat(actualByName.keySet()).as("Actual fault fields").contains(expected.keySet().toArray(new String[0]));
-        if(!actualByName.keySet().contains(expected.keySet())) {
-            //Not all expected fields are there: fail with message containing full response
-            soft.fail("Not all expected fields are present; expected=%s, actualByFaultDetail=%s", expected, actual);
+        final Map<String,String> expectedFaults = new HashMap<>();
+        for(Map.Entry<String,String> entry: expected.entrySet()) {
+            if(FaultDetailElement.forLocalName(entry.getKey())!=null) {
+                expectedFaults.put(entry.getKey(),entry.getValue());
+            }
         }
-        for(Map.Entry<String,String> expectedEntry:expected.entrySet()) {
-            String expectedValue = expectedEntry.getValue();
-            String actualValue = actualByName.get(expectedEntry.getKey());
+        SoftAssertions soft = new SoftAssertions();
+        soft.assertThat(actualByName.keySet()).as("Actual fault fields").contains(expectedFaults.keySet().toArray(new String[0]));
+        if(!actualByName.keySet().contains(expectedFaults.keySet())) {
+            //Not all expected fields are there: fail with message containing full response
+            soft.fail("Not all expected fields are present; expectedFaults=%s, actualFaultDetailElements=%s",
+                    expectedFaults,
+                    actual);
+        }
+        for(Map.Entry<String,String> expectedEntry:expectedFaults.entrySet()) {
+            final String expectedValue = expectedEntry.getValue();
+            final String actualValue = actualByName.get(expectedEntry.getKey());
             soft.assertThat(actualValue).as(expectedEntry.getKey()).isEqualTo(expectedValue);
         }
         soft.assertAll();
