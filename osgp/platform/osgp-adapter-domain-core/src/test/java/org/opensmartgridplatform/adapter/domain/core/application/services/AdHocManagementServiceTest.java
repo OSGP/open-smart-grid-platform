@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2020 Alliander N.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -76,8 +76,8 @@ public class AdHocManagementServiceTest {
 
         final RequestMessage message = messageCaptor.getValue();
 
-        assertThat(CORRELATION_UUID).isEqualTo(message.getCorrelationUid());
-        assertThat(ORGANISATION_IDENTIFICATION).isEqualTo(message.getOrganisationIdentification());
+        assertThat(message.getCorrelationUid()).isEqualTo(CORRELATION_UUID);
+        assertThat(message.getOrganisationIdentification()).isEqualTo(ORGANISATION_IDENTIFICATION);
     }
 
     @Test
