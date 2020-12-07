@@ -1,9 +1,11 @@
 /**
- * Copyright 2017 Smart Society Services B.V.
+ * Copyright 2020 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.deviceinstallation;
 
@@ -76,8 +78,8 @@ public class CreateLightMeasurementDeviceSteps {
 
     @Then("^the add light measurement device response is successful$")
     public void theAddLightMeasurementDeviceResponseIsSuccessful() {
-        assertThat(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof AddLightMeasurementDeviceResponse)
-                .isTrue();
+        assertThat(ScenarioContext.current().get(PlatformKeys.RESPONSE))
+                .isInstanceOf(AddLightMeasurementDeviceResponse.class);
     }
 
     @Then("^the add light measurement device response contains soap fault$")
@@ -87,8 +89,8 @@ public class CreateLightMeasurementDeviceSteps {
 
     @Then("^the update light measurement device response is successful$")
     public void theUpdateLightMeasurementDeviceResponseIsSuccessful() {
-        assertThat(ScenarioContext.current().get(PlatformKeys.RESPONSE) instanceof UpdateLightMeasurementDeviceResponse)
-                .isTrue();
+        assertThat(ScenarioContext.current().get(PlatformKeys.RESPONSE))
+                .isInstanceOf(UpdateLightMeasurementDeviceResponse.class);
     }
 
     @Then("^the update light measurement device response contains soap fault$")

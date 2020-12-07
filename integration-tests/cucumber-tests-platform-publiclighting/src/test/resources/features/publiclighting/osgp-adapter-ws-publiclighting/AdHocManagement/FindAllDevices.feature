@@ -24,10 +24,10 @@ Feature: PublicLightingAdhocManagement FindAllDevices
       | DeviceType                 | SSLD              |
       | PublicKeyPresent           | false             |
       | HasSchedule                | false             |
-    When receiving a find all devices request
+    When receiving a find all device request
       | Page                       |                 0 |
-    Then the find all devices response contains "1" devices
-    And the find all devices response contains at index "1"
+    Then the find all device response contains "1" devices
+    And the find all device response contains at index "1"
       | DeviceIdentification       | TEST1024000000001 |
       | containerPostalCode        | 1234AA            |
       | containerCity              | Maastricht        |
@@ -62,10 +62,10 @@ Feature: PublicLightingAdhocManagement FindAllDevices
       | Code                       | E-01              |
       | Color                      | #eec9c9           |
       | DigitalInput               |                 1 |
-    When receiving a find all devices request
+    When receiving a find all device request
       | Page                       |                 0 |
-    Then the find all devices response contains "1" devices
-    And the find all devices response contains at index "1"
+    Then the find all device response contains "1" devices
+    And the find all device response contains at index "1"
       | DeviceIdentification       | TEST1024000000002 |
       | containerPostalCode        | 1234AB            |
       | containerCity              | Maastricht        |
@@ -118,10 +118,10 @@ Feature: PublicLightingAdhocManagement FindAllDevices
       | Code                       | E-01              |
       | Color                      | #eec9c9           |
       | DigitalInput               |                 1 |
-    When receiving a find all devices request
+    When receiving a find all device request
       | Page                       |                 0 |
-    Then the find all devices response contains "2" devices
-    And the find all devices response contains at index "1"
+    Then the find all device response contains "2" devices
+    And the find all device response contains at index "1"
       | DeviceIdentification       | TEST1024000000001 |
       | containerPostalCode        | 1234AA            |
       | containerCity              | Maastricht        |
@@ -133,7 +133,7 @@ Feature: PublicLightingAdhocManagement FindAllDevices
       | Activated                  | false             |
       | PublicKeyPresent           | false             |
       | HasSchedule                | false             |
-    And the find all devices response contains at index "2"
+    And the find all device response contains at index "2"
       | DeviceIdentification       | TEST1024000000002 |
       | containerPostalCode        | 1234AB            |
       | containerCity              | Maastricht        |

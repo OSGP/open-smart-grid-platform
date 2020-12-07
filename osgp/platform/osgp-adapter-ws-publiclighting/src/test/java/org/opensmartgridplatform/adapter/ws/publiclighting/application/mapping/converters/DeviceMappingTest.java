@@ -1,9 +1,11 @@
 /**
- * Copyright 2020 Smart Society Services B.V.
+ * Copyright 2020 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.publiclighting.application.mapping.converters;
 
@@ -26,6 +28,10 @@ class DeviceMappingTest {
     private static final String CONTAINER_STREET = "some-street";
     private static final Float GPS_LATITUDE = 51.0f;
     private static final Float GPS_LONGITUDE = 5.0f;
+    private static final String LMD_DESCRIPTION = "LmdDesciption";
+    private static final String LMD_CODE = "LmdCode";
+    private static final String LMD_COLOR = "LmdColor";
+    private static final Short LMD_DIGITAL_INPUT = 1;
     private static final AdHocManagementMapper mapper = new AdHocManagementMapper();
 
     @Test
@@ -90,10 +96,10 @@ class DeviceMappingTest {
         lmd.setGpsLongitude(GPS_LONGITUDE);
         lmd.setDeviceType(DEVICE_TYPE);
         lmd.setActivated(true);
-        lmd.setDescription("LmdDesciption");
-        lmd.setCode("LmdCode");
-        lmd.setColor("LmdColor");
-        lmd.setDigitalInput((short) 1);
+        lmd.setDescription(LMD_DESCRIPTION);
+        lmd.setCode(LMD_CODE);
+        lmd.setColor(LMD_COLOR);
+        lmd.setDigitalInput(LMD_DIGITAL_INPUT);
         return lmd;
     }
 
@@ -109,10 +115,10 @@ class DeviceMappingTest {
         final LightMeasurementDevice lmd = new LightMeasurementDevice(DEVICE_IDENTIFICATION, null, this.address(),
                 this.gpsCoordinates(), null);
         lmd.updateRegistrationData(null, DEVICE_TYPE);
-        lmd.setDescription("LmdDesciption");
-        lmd.setCode("LmdCode");
-        lmd.setColor("LmdColor");
-        lmd.setDigitalInput((short) 1);
+        lmd.setDescription(LMD_DESCRIPTION);
+        lmd.setCode(LMD_CODE);
+        lmd.setColor(LMD_COLOR);
+        lmd.setDigitalInput(LMD_DIGITAL_INPUT);
         return lmd;
     }
 

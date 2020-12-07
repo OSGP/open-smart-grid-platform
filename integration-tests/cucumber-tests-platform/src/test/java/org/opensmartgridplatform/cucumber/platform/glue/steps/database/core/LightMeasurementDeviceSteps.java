@@ -1,9 +1,11 @@
 /**
- * Copyright 2017 Smart Society Services B.V.
+ * Copyright 2020 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
@@ -49,7 +51,7 @@ public class LightMeasurementDeviceSteps extends BaseDeviceSteps {
     private LightMeasurementDeviceRepository lightMeasurementDeviceRepository;
 
     @Then("^the light measurement device exists")
-    public void theLigthMeasurementDeviceExists(final Map<String, String> settings) throws Throwable {
+    public void theLightMeasurementDeviceExists(final Map<String, String> settings) throws Throwable {
         final LightMeasurementDevice lmd = Wait.untilAndReturn(() -> {
             final LightMeasurementDevice entity = this.lightMeasurementDeviceRepository
                     .findByDeviceIdentification(settings.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
@@ -81,7 +83,7 @@ public class LightMeasurementDeviceSteps extends BaseDeviceSteps {
         }
         if (settings.containsKey(PlatformKeys.CONTAINER_NUMBER)) {
             assertThat(lmd.getContainerAddress().getNumber())
-                    .isEqualTo(getString(settings, PlatformKeys.CONTAINER_NUMBER));
+                    .isEqualTo(getInteger(settings, PlatformKeys.CONTAINER_NUMBER));
         }
         if (settings.containsKey(PlatformKeys.CONTAINER_MUNICIPALITY)) {
             assertThat(lmd.getContainerAddress().getMunicipality())

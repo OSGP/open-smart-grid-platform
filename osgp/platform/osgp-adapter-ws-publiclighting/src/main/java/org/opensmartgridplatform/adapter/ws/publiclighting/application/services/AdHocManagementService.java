@@ -1,9 +1,11 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2020 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.publiclighting.application.services;
 
@@ -24,6 +26,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.LightValueMessageDataC
 import org.opensmartgridplatform.domain.core.valueobjects.ResumeScheduleData;
 import org.opensmartgridplatform.domain.core.valueobjects.TransitionMessageDataContainer;
 import org.opensmartgridplatform.shared.application.config.PageSpecifier;
+import org.opensmartgridplatform.shared.application.config.PagingSettings;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -66,6 +69,9 @@ public class AdHocManagementService {
     @Qualifier("wsPublicLightingInboundDomainResponsesMessageFinder")
     private PublicLightingResponseMessageFinder messageFinder;
 
+    @Autowired
+    private PagingSettings pagingSettings;
+
     public AdHocManagementService() {
         // Parameterless constructor required for transactions
     }
@@ -77,8 +83,10 @@ public class AdHocManagementService {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
 
-        final PageRequest request = PageRequest.of(pageSpecifier.getPageNumber(), pageSpecifier.getPageSize(),
-                Sort.Direction.DESC, "deviceIdentification");
+        this.pagingSettings.updatePagingSettings(pageSpecifier);
+
+        final PageRequest request = PageRequest.of(this.pagingSettings.getPageNumber(),
+                this.pagingSettings.getPageSize(), Sort.Direction.DESC, "deviceIdentification");
         return this.deviceRepository.findAllAuthorized(organisation, request);
     }
 

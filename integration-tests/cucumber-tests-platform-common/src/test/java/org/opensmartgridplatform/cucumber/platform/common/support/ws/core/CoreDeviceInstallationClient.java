@@ -1,9 +1,11 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2020 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform.common.support.ws.core;
 
@@ -29,9 +31,6 @@ import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.Updat
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.UpdateDeviceResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.UpdateLightMeasurementDeviceRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.UpdateLightMeasurementDeviceResponse;
-import org.opensmartgridplatform.cucumber.core.ScenarioContext;
-import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
-import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.support.ws.BaseClient;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.opensmartgridplatform.shared.infra.ws.DefaultWebServiceTemplateFactory;
@@ -46,12 +45,7 @@ public class CoreDeviceInstallationClient extends BaseClient {
     private DefaultWebServiceTemplateFactory coreDeviceInstallationWstf;
 
     public AddDeviceResponse addDevice(final AddDeviceRequest request) throws WebServiceSecurityException {
-        String organizationIdentification = (String) ScenarioContext.current()
-                .get(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION);
-        if (organizationIdentification == null) {
-            organizationIdentification = PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION;
-        }
-        return this.addDevice(request, organizationIdentification);
+        return this.addDevice(request, this.getOrganizationIdentification());
     }
 
     public AddDeviceResponse addDevice(final AddDeviceRequest request, final String organizationIdentification)
@@ -69,12 +63,7 @@ public class CoreDeviceInstallationClient extends BaseClient {
 
     public AddLightMeasurementDeviceResponse addLightMeasurementDevice(final AddLightMeasurementDeviceRequest request)
             throws WebServiceSecurityException {
-        String organizationIdentification = (String) ScenarioContext.current()
-                .get(PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION);
-        if (organizationIdentification == null) {
-            organizationIdentification = PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION;
-        }
-        return this.addLightMeasurementDevice(request, organizationIdentification);
+        return this.addLightMeasurementDevice(request, this.getOrganizationIdentification());
     }
 
     public AddLightMeasurementDeviceResponse addLightMeasurementDevice(final AddLightMeasurementDeviceRequest request,

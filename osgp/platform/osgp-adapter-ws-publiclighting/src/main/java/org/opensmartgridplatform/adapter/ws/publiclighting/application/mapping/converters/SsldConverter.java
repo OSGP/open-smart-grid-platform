@@ -1,9 +1,11 @@
 /**
- * Copyright 2017 Smart Society Services B.V.
+ * Copyright 2020 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.publiclighting.application.mapping.converters;
 
@@ -32,7 +34,9 @@ public class SsldConverter extends BidirectionalConverter<org.opensmartgridplatf
             ssld.setContainerPostalCode(containerAddress.getPostalCode());
             ssld.setContainerCity(containerAddress.getCity());
             ssld.setContainerStreet(containerAddress.getStreet());
-            ssld.setContainerNumber(containerAddress.getNumber().toString());
+            if (containerAddress.getNumber() != null) {
+                ssld.setContainerNumber(containerAddress.getNumber().toString());
+            }
         }
         final GpsCoordinates gpsCoordinates = source.getGpsCoordinates();
         if (gpsCoordinates != null) {
@@ -51,8 +55,10 @@ public class SsldConverter extends BidirectionalConverter<org.opensmartgridplatf
             final Type<org.opensmartgridplatform.domain.core.entities.Ssld> destinationType,
             final MappingContext mappingContext) {
         final String deviceIdentification = source.getDeviceIdentification();
+        final Integer containerNumber = source.getContainerNumber() == null ? null
+                : Integer.valueOf(source.getContainerNumber());
         final Address containerAddress = new Address(source.getContainerCity(), source.getContainerPostalCode(),
-                source.getContainerStreet(), Integer.valueOf(source.getContainerNumber()), null, null);
+                source.getContainerStreet(), containerNumber, null, null);
         final GpsCoordinates gpsCoordinates = new GpsCoordinates(source.getGpsLatitude(), source.getGpsLongitude());
         final org.opensmartgridplatform.domain.core.entities.Ssld ssld = new org.opensmartgridplatform.domain.core.entities.Ssld(
                 deviceIdentification, null, containerAddress, gpsCoordinates, null);

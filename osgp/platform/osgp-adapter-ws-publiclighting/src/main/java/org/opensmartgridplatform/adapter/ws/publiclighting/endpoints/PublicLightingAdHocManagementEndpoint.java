@@ -1,9 +1,11 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2020 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.publiclighting.endpoints;
 
@@ -75,8 +77,6 @@ public class PublicLightingAdHocManagementEndpoint {
 
     private static final String EXCEPTION_OCCURRED = "Exception Occurred";
 
-    private static final int PAGE_SIZE = 30;
-
     private final AdHocManagementService adHocManagementService;
     private final AdHocManagementMapper adHocManagementMapper;
 
@@ -98,16 +98,11 @@ public class PublicLightingAdHocManagementEndpoint {
         final FindAllDevicesResponse response = new FindAllDevicesResponse();
 
         try {
-            PageSpecifier pageSpecifier;
-            if (request.getPageSize() == null) {
-                pageSpecifier = new PageSpecifier(PAGE_SIZE, request.getPage());
-            } else {
-                pageSpecifier = new PageSpecifier(request.getPageSize(), request.getPage());
-            }
+            final PageSpecifier pageSpecifier = new PageSpecifier(request.getPageSize(), request.getPage());
             final Page<Device> page = this.adHocManagementService.findAllDevices(organisationIdentification,
                     pageSpecifier);
 
-            if (page != null) {
+            if (page != null && !page.isEmpty()) {
                 final List<Ssld> sslds = page.filter(d -> d instanceof Ssld).map(d -> (Ssld) d).toList();
                 final List<LightMeasurementDevice> lmds = page.filter(d -> d instanceof LightMeasurementDevice)
                         .map(d -> (LightMeasurementDevice) d)

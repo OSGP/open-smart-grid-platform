@@ -1,9 +1,11 @@
 /**
- * Copyright 2017 Smart Society Services B.V.
+ * Copyright 2020 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.ws.publiclighting.adhocmanagement;
 
@@ -37,7 +39,7 @@ public class FindAllDevicesSteps {
     @Autowired
     private PublicLightingAdHocManagementClient publicLightingClient;
 
-    @When("^receiving a find all devices request$")
+    @When("^receiving a find all device request$")
     public void receivingAFindAllDevicesRequest(final Map<String, String> requestParameters) throws Throwable {
         final FindAllDevicesRequest request = new FindAllDevicesRequest();
 
@@ -56,21 +58,21 @@ public class FindAllDevicesSteps {
         }
     }
 
-    @Then("the find all devices response contains \"{int}\" device(s)")
-    public void theFindAllDevicesResponseContainsDevices(final Integer numberOfDevices) throws Throwable {
+    @Then("the find all device response contains {string} device(s)")
+    public void theFindAllDevicesResponseContainsDevices(final String numberOfDevices) throws Throwable {
         final FindAllDevicesResponse response = (FindAllDevicesResponse) ScenarioContext.current()
                 .get(PlatformCommonKeys.RESPONSE);
 
-        assertThat(response.getDevicePage().getDevices().size()).isEqualTo((int) numberOfDevices);
+        assertThat(response.getDevicePage().getDevices().size()).isEqualTo(Integer.valueOf(numberOfDevices));
     }
 
-    @Then("the find all devices response contains at index \"{int}\"")
-    public void theFindAllDevicesResponseContainsAtIndex(final Integer index, final Map<String, String> expectedDevice)
+    @Then("the find all device response contains at index {string}")
+    public void theFindAllDevicesResponseContainsAtIndex(final String index, final Map<String, String> expectedDevice)
             throws Throwable {
         final FindAllDevicesResponse response = (FindAllDevicesResponse) ScenarioContext.current()
                 .get(PlatformCommonKeys.RESPONSE);
 
-        final Device actualDevice = response.getDevicePage().getDevices().get(index - 1);
+        final Device actualDevice = response.getDevicePage().getDevices().get(Integer.valueOf(index) - 1);
 
         if (expectedDevice.containsKey(PlatformKeys.KEY_DEVICE_UID)) {
             assertThat(actualDevice.getDeviceUid()).isEqualTo(getString(expectedDevice, PlatformKeys.KEY_DEVICE_UID));

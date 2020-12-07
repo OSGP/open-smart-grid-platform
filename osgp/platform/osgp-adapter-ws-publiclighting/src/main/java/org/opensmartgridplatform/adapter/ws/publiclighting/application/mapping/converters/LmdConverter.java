@@ -1,3 +1,12 @@
+/**
+ * Copyright 2020 Alliander N.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.adapter.ws.publiclighting.application.mapping.converters;
 
 import java.nio.charset.StandardCharsets;
@@ -27,7 +36,9 @@ public class LmdConverter extends
             lmd.setContainerPostalCode(containerAddress.getPostalCode());
             lmd.setContainerCity(containerAddress.getCity());
             lmd.setContainerStreet(containerAddress.getStreet());
-            lmd.setContainerNumber(containerAddress.getNumber().toString());
+            if (containerAddress.getNumber() != null) {
+                lmd.setContainerNumber(containerAddress.getNumber().toString());
+            }
         }
         final GpsCoordinates gpsCoordinates = source.getGpsCoordinates();
         if (gpsCoordinates != null) {
@@ -49,8 +60,10 @@ public class LmdConverter extends
             final Type<org.opensmartgridplatform.domain.core.entities.LightMeasurementDevice> destinationType,
             final MappingContext mappingContext) {
         final String deviceIdentification = source.getDeviceIdentification();
+        final Integer containerNumber = source.getContainerNumber() == null ? null
+                : Integer.valueOf(source.getContainerNumber());
         final Address containerAddress = new Address(source.getContainerCity(), source.getContainerPostalCode(),
-                source.getContainerStreet(), Integer.valueOf(source.getContainerNumber()), null, null);
+                source.getContainerStreet(), containerNumber, null, null);
         final GpsCoordinates gpsCoordinates = new GpsCoordinates(source.getGpsLatitude(), source.getGpsLongitude());
         final org.opensmartgridplatform.domain.core.entities.LightMeasurementDevice lmd = new org.opensmartgridplatform.domain.core.entities.LightMeasurementDevice(
                 deviceIdentification, null, containerAddress, gpsCoordinates, null);
