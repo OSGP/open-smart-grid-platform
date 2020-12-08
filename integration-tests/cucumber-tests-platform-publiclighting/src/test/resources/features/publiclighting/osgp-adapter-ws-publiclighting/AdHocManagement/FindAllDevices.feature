@@ -147,3 +147,11 @@ Feature: PublicLightingAdhocManagement FindAllDevices
       | Code                       | E-01              |
       | Color                      | #eec9c9           |
       | DigitalInput               |                 1 |
+
+  Scenario: Find all devices, no devices present
+    Given a device model
+      | ModelCode    | Test Model |
+      | Manufacturer | Test       |
+    When receiving a find all device request
+      | Page                       |                 0 |
+    Then the find all device response contains "0" devices

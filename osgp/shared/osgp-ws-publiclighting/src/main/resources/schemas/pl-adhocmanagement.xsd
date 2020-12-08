@@ -185,7 +185,7 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
-  
+
   <xsd:element name="SetLightMeasurementDeviceRequest">
     <xsd:complexType>
       <xsd:sequence>
@@ -281,7 +281,7 @@
 
   <xsd:complexType name="DevicePage">
     <xsd:sequence>
-      <xsd:element maxOccurs="unbounded" name="Devices"
+      <xsd:element minOccurs="0" maxOccurs="unbounded" name="Devices"
         type="tns:Device" />
       <xsd:element name="Page" type="common:Page" />
     </xsd:sequence>

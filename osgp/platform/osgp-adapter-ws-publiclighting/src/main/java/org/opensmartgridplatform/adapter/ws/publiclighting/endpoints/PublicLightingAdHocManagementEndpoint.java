@@ -118,6 +118,13 @@ public class PublicLightingAdHocManagementEndpoint {
                         .addAll(this.adHocManagementMapper.mapAsList(lmds,
                                 org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.LightMeasurementDevice.class));
                 response.setDevicePage(devicePage);
+            } else {
+                final DevicePage devicePage = new DevicePage();
+                devicePage.setPage(new org.opensmartgridplatform.adapter.ws.schema.publiclighting.common.Page());
+                devicePage.getPage().setCurrentPage(0);
+                devicePage.getPage().setPageSize(request.getPageSize() == null ? 0 : request.getPageSize());
+                devicePage.getPage().setTotalPages(0);
+                response.setDevicePage(devicePage);
             }
         } catch (final ConstraintViolationException e) {
             LOGGER.error(EXCEPTION_OCCURRED, e);
