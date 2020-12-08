@@ -21,34 +21,14 @@ public class Event implements Serializable {
     private static final long serialVersionUID = 4482313912422705642L;
     private final DateTime timestamp;
     private final Integer eventCode;
-    private final EventLogCategory eventLogCategory;
     private final Integer eventCounter;
-    private final DateTime startTime;
-    private final Long duration;
+    private final EventLogCategory eventLogCategory;
 
     public Event(final DateTime timestamp, final Integer eventCode, final Integer eventCounter,
-            final EventLogCategory eventLogCategory, final DateTime startTime, final Long duration) {
+            final EventLogCategory eventLogCategory) {
         this.timestamp = timestamp;
         this.eventCode = eventCode;
         this.eventCounter = eventCounter;
         this.eventLogCategory = eventLogCategory;
-        this.startTime = startTime;
-        this.duration = duration;
-    }
-
-    public DateTime getTimestamp() {
-        return this.timestamp;
-    }
-
-    public Integer getEventCode() {
-        return this.eventCode;
-    }
-
-    public Integer getEventCounter() {
-        return this.eventCounter;
-    }
-
-    public EventLogCategory getEventLogCategory() {
-        return this.eventLogCategory;
     }
 }

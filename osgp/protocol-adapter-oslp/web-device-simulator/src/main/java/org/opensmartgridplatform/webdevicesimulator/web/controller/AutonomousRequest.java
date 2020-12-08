@@ -21,4 +21,9 @@ public class AutonomousRequest {
     public Boolean getAutonomousStatus() {
         return this.autonomousStatus;
     }
+
+    @Override
+    public String toString() {
+        return String.format("AutonomousRequest[autonomousStatus=%s]", this.autonomousStatus);
+    }
 }

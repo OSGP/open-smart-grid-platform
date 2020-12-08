@@ -219,7 +219,7 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
                             } catch (final DeviceSimulatorException | IOException e) {
                                 LOGGER.info("Unable to send notifications", e);
                             }
-                        }, 200, TimeUnit.MILLISECONDS).get();
+                        }, 1000, TimeUnit.MILLISECONDS).get();
 
                         if (!ChannelFutureListener.isSuccess()) {
                             ChannelFutureListener.channel().close();

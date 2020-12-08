@@ -73,16 +73,18 @@ body {
                             <spring:message code="device.list.page.title" />
                         </h1>
                         <a href="/web-device-simulator/devices/create" class="btn btn-primary"><spring:message code="device.create.link.label" /></a>
-                            <spring:message code="device.edit.page.device.registration" />
-                            <input id="devRegistration" name="devRegistration" type="checkbox"/>
-                            <spring:message code="device.edit.page.device.reboot" />
-                            <input id="devReboot" name="devReboot" type="checkbox"/>
-                            <spring:message code="device.edit.page.device.tariff.switching" />
-                            <input id="tariffSwitching" name="tariffSwitching" type="checkbox"/>
-                            <spring:message code="device.edit.page.device.light.switching" />
-                            <input id="lightSwitching" name="lightSwitching" type="checkbox"/>
-                            <spring:message code="device.edit.page.device.event.notification" />
-                            <input id="eventListener" name="eventListener" type="checkbox"/>
+                        <label for="devRegistration" style="display: inline; margin-left: .5em;"><spring:message code="device.edit.page.device.registration" /></label>
+                        <input id="devRegistration" name="devRegistration" type="checkbox" style="display: inline;" />
+                        <label for="devReboot" style="display: inline; margin-left: .5em;"><spring:message code="device.edit.page.device.reboot" /></label>
+                        <input id="devReboot" name="devReboot" type="checkbox" style="display: inline;" />
+                        <label for="tariffSwitching" style="display: inline; margin-left: .5em;"><spring:message code="device.edit.page.device.tariff.switching" /></label>
+                        <input id="tariffSwitching" name="tariffSwitching" type="checkbox" style="display: inline;" />
+                        <label for="lightSwitching" style="display: inline; margin-left: .5em;"><spring:message code="device.edit.page.device.light.switching" /></label>
+                        <input id="lightSwitching" name="lightSwitching" type="checkbox" style="display: inline;" />
+                        <label for="eventListener" style="display: inline; margin-left: .5em;"><spring:message code="device.edit.page.device.event.notification" /></label>
+                        <input id="eventListener" name="eventListener" type="checkbox" style="display: inline;" />
+                        <label for="rebootDelay" style="display: inline; margin-left: .5em;"><spring:message code="device.edit.page.device.reboot.delay" /></label>
+                        <input id="rebootDelay" name="rebootDelay" type="text" style="display: inline; width: 3em;" />
                     </div>
                 </div>
                 <div class="row" style="margin-top: 25px">
@@ -218,7 +220,7 @@ body {
                         </c:choose>
                     </ul>
                 </div>
-                
+
             </div>
         </div>
 
@@ -232,8 +234,7 @@ body {
             function() {
 
                 $('#devRegistration').change(function() {
-                    var request = new Object();
-                    request.autonomousStatus = $('#devRegistration').prop('checked');
+                    var request = { autonomousStatus: $('#devRegistration').prop('checked') };
 
                     $.ajax({
                         type : 'POST',
@@ -246,8 +247,7 @@ body {
                 });
 
                 $('#devReboot').change(function() {
-                    var request = new Object();
-                    request.autonomousStatus = $('#devReboot').prop('checked');
+                    var request = { autonomousStatus: $('#devReboot').prop('checked') };
 
                     $.ajax({
                         type : 'POST',
@@ -258,10 +258,9 @@ body {
                         async : true
                     });
                 });
-                
+
                 $('#tariffSwitching').change(function() {
-                    var request = new Object();
-                    request.autonomousStatus = $('#tariffSwitching').prop('checked');
+                    var request = { autonomousStatus: $('#tariffSwitching').prop('checked') };
 
                     $.ajax({
                         type : 'POST',
@@ -274,8 +273,7 @@ body {
                 });
 
                 $('#lightSwitching').change(function() {
-                    var request = new Object();
-                    request.autonomousStatus = $('#lightSwitching').prop('checked');
+                    var request = { autonomousStatus: $('#lightSwitching').prop('checked') };
 
                     $.ajax({
                         type : 'POST',
@@ -288,12 +286,24 @@ body {
                 });
 
                 $('#eventListener').change(function() {
-                    var request = new Object();
-                    request.autonomousStatus = $('#eventListener').prop('checked');
+                    var request = { autonomousStatus: $('#eventListener').prop('checked') };
 
                     $.ajax({
                         type : 'POST',
                         url : '/web-device-simulator/devices/eventNotificationCheck',
+                        contentType : 'application/json',
+                        dataType : 'json',
+                        data : JSON.stringify(request),
+                        async : true
+                    });
+                });
+
+                document.getElementById('rebootDelay').addEventListener('input', function(e) {
+                    var request = { delay: Math.abs(e.target.value.replace(/\D/g, '')) };
+
+                    $.ajax({
+                        type : 'POST',
+                        url : '/web-device-simulator/devices/rebootDelaySeconds',
                         contentType : 'application/json',
                         dataType : 'json',
                         data : JSON.stringify(request),
@@ -362,12 +372,28 @@ body {
                     });
                 }
 
+                function fetchDelaySeconds() {
+                    $.ajax({
+                        type : 'GET',
+                        url : '/web-device-simulator/devices/rebootDelaySeconds/json',
+                        dataType : 'json',
+                        contentType : 'application/json',
+                        async : true,
+                        cache : false,
+                        success : function(data) {
+                            $('#rebootDelay').prop('value', data);
+                        }
+                    });
+                }
+
                 fetchCheckboxStates();
+                fetchDelaySeconds();
                 setInterval(refreshPage, 10000);
 
                 function refreshPage() {
                     window.location.reload();
                     fetchCheckboxStates();
+                    fetchDelaySeconds();
                 }
             });
 
@@ -386,7 +412,7 @@ body {
         });
 
         // a list of illegal tokens
-        var illegalTokens = ['~', '`', '!', '@', '#', '$', '¤', '€', '%', '^', '&', '*', '(', ')', '=', '+', 
+        var illegalTokens = ['~', '`', '!', '@', '#', '$', '¤', '€', '%', '^', '&', '*', '(', ')', '=', '+',
                              '{', '}', '[', ']', '|', '\\', ':',
                              ';', '\'', '"', '<', '>', ',', '.', '?', '/', ' '];
         // check if 'input' contains the 'token'
@@ -397,7 +423,7 @@ body {
         $('#setFilter').click(function() {
             // get the filter criteria entered by the user
             var devId = $('#deviceIdentification').val();
-            
+
             // check if the filter criteria is present
             if (devId) {
                 // loop through the list of illegal token
@@ -406,7 +432,7 @@ body {
                     // check if the illegal token is present in the filter criteria
                     if (contains(devId, token)) {
                         //alert('Dit teken mag niet worden gebruikt voor een deviceId: ' + token);
-                        
+
                         // preset the user with a clear error message
                         var messageToken = token === ' ' ? 'spatie' : token;
                         $('#errorMessage').html('Dit teken mag niet worden gebruikt voor een apparaat identificatie: ' + messageToken);
@@ -465,7 +491,7 @@ body {
             var page = '';
             var size = '';
             var sort = '';
-            
+
             if (devId) {
                 deviceIdentification = '/' + devId;
             }
@@ -476,7 +502,7 @@ body {
                 size = '?devicesPerPage=' + pageSize;
             }
             if (sortDirection) {
-                sort = '&sort=' + sortDirection; 
+                sort = '&sort=' + sortDirection;
             }
 
             window.location.href = '<c:url value="/devices"/>' + deviceIdentification + page + size + sort;
