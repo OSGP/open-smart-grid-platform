@@ -29,9 +29,6 @@ import org.springframework.ws.transport.http.HttpServletConnection;
  */
 public class X509CertificateRdnAttributeValueEndpointInterceptor extends EndpointInterceptorAdapter {
 
-    // Suppress warning that LOGGER is similar to logger from EndpointInterceptorAdapter. LOGGER is a conventional
-    // name and therefor shouldn't be changed
-    @SuppressWarnings("squid:S1845")
     private static final Logger LOGGER = LoggerFactory
             .getLogger(X509CertificateRdnAttributeValueEndpointInterceptor.class);
     private final String attributeId;

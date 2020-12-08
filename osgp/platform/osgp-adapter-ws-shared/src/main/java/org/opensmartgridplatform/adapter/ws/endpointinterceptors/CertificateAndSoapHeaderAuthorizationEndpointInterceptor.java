@@ -11,12 +11,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.commons.lang3.StringUtils;
+import org.opensmartgridplatform.domain.core.exceptions.CertificateInvalidException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.server.endpoint.interceptor.EndpointInterceptorAdapter;
-
-import org.opensmartgridplatform.domain.core.exceptions.CertificateInvalidException;
 
 /**
  * {@link EndpointInterceptorAdapter} which authorizes requests based on a
@@ -25,9 +24,6 @@ import org.opensmartgridplatform.domain.core.exceptions.CertificateInvalidExcept
  */
 public class CertificateAndSoapHeaderAuthorizationEndpointInterceptor extends EndpointInterceptorAdapter {
 
-    // LOGGER has a similar name to logger in the extended class. LOGGER, however is a conventional name and it is
-    // not an issue to have it similar to another name
-    @SuppressWarnings("squid:S1845")
     private static final Logger LOGGER = LoggerFactory
             .getLogger(CertificateAndSoapHeaderAuthorizationEndpointInterceptor.class);
     private final String rdnAttributeValuesPropertyName;
