@@ -7,9 +7,10 @@
  */
 package org.opensmartgridplatform.adapter.domain.microgrids.application.services;
 
+import java.time.Instant;
+
 import javax.persistence.OptimisticLockException;
 
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.domain.microgrids.application.mapping.DomainMicrogridsMapper;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.RtuDevice;
@@ -192,8 +193,8 @@ public class AdHocManagementService extends BaseService {
     }
 
     private boolean shouldUpdateCommunicationTime(final RtuDevice device) {
-        final DateTime timeToCheck = DateTime.now().minusSeconds(this.lastCommunicationUpdateInterval);
-        final DateTime timeOfLastCommunication = new DateTime(device.getLastCommunicationTime());
+        final Instant timeToCheck = Instant.now().minusSeconds(this.lastCommunicationUpdateInterval);
+        final Instant timeOfLastCommunication = device.getLastCommunicationTime();
         return timeOfLastCommunication.isBefore(timeToCheck);
     }
 }

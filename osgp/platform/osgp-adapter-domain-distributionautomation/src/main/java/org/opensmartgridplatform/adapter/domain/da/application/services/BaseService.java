@@ -9,12 +9,12 @@
  */
 package org.opensmartgridplatform.adapter.domain.da.application.services;
 
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
 import javax.persistence.OptimisticLockException;
 
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.domain.da.application.mapping.DomainDistributionAutomationMapper;
 import org.opensmartgridplatform.adapter.domain.da.application.routing.ResponseMessageRouter;
 import org.opensmartgridplatform.adapter.domain.da.infra.jms.core.OsgpCoreRequestMessageSender;
@@ -107,8 +107,8 @@ public class BaseService {
     }
 
     protected boolean shouldUpdateCommunicationTime(final RtuDevice device, final int lastCommunicationUpdateInterval) {
-        final DateTime timeToCheck = DateTime.now().minusSeconds(lastCommunicationUpdateInterval);
-        final DateTime timeOfLastCommunication = new DateTime(device.getLastCommunicationTime());
+        final Instant timeToCheck = Instant.now().minusSeconds(lastCommunicationUpdateInterval);
+        final Instant timeOfLastCommunication = device.getLastCommunicationTime();
         return timeOfLastCommunication.isBefore(timeToCheck);
     }
 
