@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.ws.core.application.mapping;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -158,7 +159,7 @@ class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.enti
             destinationLmd.setColor(sourceLmd.getColor());
             destinationLmd.setDigitalInput(sourceLmd.getDigitalInput());
             destinationLmd.setLastCommunicationTime(
-                    this.convertDateToXMLGregorianCalendar(sourceLmd.getLastCommunicationTime()));
+                    this.convertInstantToXMLGregorianCalendar(sourceLmd.getLastCommunicationTime()));
             destination.setLightMeasurementDevice(destinationLmd);
         }
 
@@ -178,6 +179,14 @@ class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.enti
         }
 
         return xmlCalendar;
+    }
+
+    public XMLGregorianCalendar convertInstantToXMLGregorianCalendar(final Instant instant) {
+        if (instant == null) {
+            return null;
+        } else {
+            return this.convertDateToXMLGregorianCalendar(Date.from(instant));
+        }
     }
 
 }

@@ -7,8 +7,12 @@
  */
 package org.opensmartgridplatform.adapter.domain.da.application.config;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -18,7 +22,18 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @ComponentScan(basePackages = { "org.opensmartgridplatform.shared.domain.services",
         "org.opensmartgridplatform.domain.core", "org.opensmartgridplatform.adapter.domain.da" })
+@PropertySource("classpath:osgp-adapter-domain-distributionautomation.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterDomainDistributionAutomation/config}", ignoreResourceNotFound = true)
+@Import({ MessagingConfig.class, OsgpSchedulerConfig.class, PersistenceConfig.class })
 @EnableTransactionManagement
 public class ApplicationContext {
 
+    @Value("${communication.monitoring.last.communication.update.interval:30}")
+    private int lastCommunicationUpdateInterval;
+
+    @Bean
+    public Integer lastCommunicationUpdateInterval() {
+        return this.lastCommunicationUpdateInterval;
+    }
 }

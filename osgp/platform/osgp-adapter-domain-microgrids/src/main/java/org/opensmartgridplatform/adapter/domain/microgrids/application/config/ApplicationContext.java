@@ -7,8 +7,11 @@
  */
 package org.opensmartgridplatform.adapter.domain.microgrids.application.config;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -16,9 +19,20 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * configuration requires Spring Framework 3.0
  */
 @Configuration
-@ComponentScan(basePackages = { "org.opensmartgridplatform.shared.domain.services",
-        "org.opensmartgridplatform.domain.core", "org.opensmartgridplatform.adapter.domain.microgrids" })
+@ComponentScan(basePackages = { "org.opensmartgridplatform.shared.domain.services" })
+@ComponentScan(basePackages = { "org.opensmartgridplatform.domain.core" })
+@ComponentScan(basePackages = { "org.opensmartgridplatform.adapter.domain.microgrids" })
+@PropertySource("classpath:osgp-adapter-domain-microgrids.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterDomainMicrogrids/config}", ignoreResourceNotFound = true)
 @EnableTransactionManagement
 public class ApplicationContext {
 
+    @Value("${communication.monitoring.last.communication.update.interval:30}")
+    private int lastCommunicationUpdateInterval;
+
+    @Bean
+    public Integer lastCommunicationUpdateInterval() {
+        return this.lastCommunicationUpdateInterval;
+    }
 }

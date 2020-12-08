@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.services;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -152,10 +153,10 @@ public class AdHocManagementService extends AbstractService {
             return;
         }
         final Device gateway = lightMeasurementDevice.getGatewayDevice();
-        final Date lastCommunicationTime = this.updateLmdLastCommunicationTime(lightMeasurementDevice)
+        final Instant lastCommunicationTime = this.updateLmdLastCommunicationTime(lightMeasurementDevice)
                 .getLastCommunicationTime();
         if (gateway != null) {
-            gateway.setLastSuccessfulConnectionTimestamp(lastCommunicationTime);
+            gateway.setLastSuccessfulConnectionTimestamp(Date.from(lastCommunicationTime));
             this.rtuDeviceRepository.findById(gateway.getId())
                     .ifPresent(rtu -> rtu.messageReceived(lastCommunicationTime));
         }
@@ -376,7 +377,7 @@ public class AdHocManagementService extends AbstractService {
         final DateTime now = DateTime.now();
         LOGGER.info("Trying to update lastCommunicationTime for light measurement device: {} with dateTime: {}",
                 lmd.getDeviceIdentification(), now);
-        lmd.setLastCommunicationTime(now.toDate());
+        lmd.setLastCommunicationTime(Instant.now());
         return this.lightMeasurementDeviceRepository.save(lmd);
     }
 
