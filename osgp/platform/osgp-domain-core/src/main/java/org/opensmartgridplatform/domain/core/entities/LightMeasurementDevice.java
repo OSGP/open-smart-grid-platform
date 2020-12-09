@@ -19,6 +19,9 @@ import javax.persistence.PrimaryKeyJoinColumn;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import org.opensmartgridplatform.domain.core.valueobjects.Address;
+import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
+import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 
 @Entity
 @PrimaryKeyJoinColumn(name = "id")
@@ -59,6 +62,11 @@ public class LightMeasurementDevice extends Device {
 
     public LightMeasurementDevice(final String deviceIdentification) {
         super(deviceIdentification);
+    }
+
+    public LightMeasurementDevice(final String deviceIdentification, final String alias, final Address containerAddress,
+            final GpsCoordinates gpsCoordinates, final CdmaSettings cdmaSettings) {
+        super(deviceIdentification, alias, containerAddress, gpsCoordinates, cdmaSettings);
     }
 
     public String getDescription() {

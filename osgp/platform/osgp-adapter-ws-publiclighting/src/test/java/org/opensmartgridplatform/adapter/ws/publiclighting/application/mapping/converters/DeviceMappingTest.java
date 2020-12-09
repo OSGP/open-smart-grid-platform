@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.publiclighting.application.mapping.AdHocManagementMapper;
-import org.opensmartgridplatform.domain.core.entities.Device;
+import org.opensmartgridplatform.domain.core.entities.LightMeasurementDevice;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.valueobjects.Address;
 import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
@@ -26,57 +26,98 @@ class DeviceMappingTest {
     private static final String CONTAINER_STREET = "some-street";
     private static final Float GPS_LATITUDE = 51.0f;
     private static final Float GPS_LONGITUDE = 5.0f;
+    private static final String LMD_DESCRIPTION = "LmdDesciption";
+    private static final String LMD_CODE = "LmdCode";
+    private static final String LMD_COLOR = "LmdColor";
+    private static final Short LMD_DIGITAL_INPUT = 1;
     private static final AdHocManagementMapper mapper = new AdHocManagementMapper();
 
     @Test
-    void testConvertToCore() {
-        final Device device = mapper.map(this.adhocManagementDevice(), Device.class);
+    void testConvertSsldToCore() {
+        final Ssld ssld = mapper.map(this.adhocManagementSsld(), Ssld.class);
 
-        assertThat(device).usingRecursiveComparison()
+        assertThat(ssld).usingRecursiveComparison()
                 .ignoringFields("creationTime", "modificationTime")
-                .isEqualTo(this.coreDevice());
+                .isEqualTo(this.coreSsld());
     }
 
     @Test
-    void testConvertToAdHocMananagement() {
-        final org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Device device = mapper.map(
-                this.coreDevice(),
-                org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Device.class);
+    void testConvertLmdToCore() {
+        final LightMeasurementDevice lmd = mapper.map(this.adhocManagementLmd(), LightMeasurementDevice.class);
 
-        assertThat(device).usingRecursiveComparison()
-                .ignoringFields("deviceUid")
-                .isEqualTo(this.adhocManagementDevice());
+        assertThat(lmd).usingRecursiveComparison()
+                .ignoringFields("creationTime", "modificationTime")
+                .isEqualTo(this.coreLmd());
     }
 
     @Test
     void testConvertSsldToAdHocMananagement() {
-        final org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Device device = mapper.map(
-                this.ssld(), org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Device.class);
+        final org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Ssld device = mapper.map(
+                this.coreSsld(), org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Ssld.class);
 
-        assertThat(device).usingRecursiveComparison()
-                .ignoringFields("deviceUid")
-                .isEqualTo(this.adhocManagementDevice());
+        assertThat(device).usingRecursiveComparison().ignoringFields("deviceUid").isEqualTo(this.adhocManagementSsld());
     }
 
-    private org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Device adhocManagementDevice() {
-        final org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Device device = new org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Device();
-        device.setDeviceIdentification(DEVICE_IDENTIFICATION);
-        device.setContainerPostalCode(CONTAINER_POSTAL_CODE);
-        device.setContainerCity(CONTAINER_CITY);
-        device.setContainerStreet(CONTAINER_STREET);
-        device.setContainerNumber(CONTAINER_NUMBER.toString());
-        device.setGpsLatitude(GPS_LATITUDE);
-        device.setGpsLongitude(GPS_LONGITUDE);
-        device.setDeviceType(DEVICE_TYPE);
-        device.setActivated(true);
+    @Test
+    void testConvertLmdToAdHocMananagement() {
+        final org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.LightMeasurementDevice lmd = mapper
+                .map(this.coreLmd(),
+                        org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.LightMeasurementDevice.class);
 
-        return device;
+        assertThat(lmd).usingRecursiveComparison().ignoringFields("deviceUid").isEqualTo(this.adhocManagementLmd());
     }
 
-    private Device coreDevice() {
-        final Device device = new Device(DEVICE_IDENTIFICATION, null, this.address(), this.gpsCoordinates(), null);
-        device.updateRegistrationData(null, DEVICE_TYPE);
-        return device;
+    private org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Ssld adhocManagementSsld() {
+        final org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Ssld ssld = new org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Ssld();
+        ssld.setDeviceIdentification(DEVICE_IDENTIFICATION);
+        ssld.setContainerPostalCode(CONTAINER_POSTAL_CODE);
+        ssld.setContainerCity(CONTAINER_CITY);
+        ssld.setContainerStreet(CONTAINER_STREET);
+        ssld.setContainerNumber(CONTAINER_NUMBER.toString());
+        ssld.setGpsLatitude(GPS_LATITUDE);
+        ssld.setGpsLongitude(GPS_LONGITUDE);
+        ssld.setDeviceType(DEVICE_TYPE);
+        ssld.setActivated(true);
+        ssld.setHasSchedule(false);
+        ssld.setPublicKeyPresent(false);
+        return ssld;
+    }
+
+    private org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.LightMeasurementDevice adhocManagementLmd() {
+        final org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.LightMeasurementDevice lmd = new org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.LightMeasurementDevice();
+        lmd.setDeviceIdentification(DEVICE_IDENTIFICATION);
+        lmd.setContainerPostalCode(CONTAINER_POSTAL_CODE);
+        lmd.setContainerCity(CONTAINER_CITY);
+        lmd.setContainerStreet(CONTAINER_STREET);
+        lmd.setContainerNumber(CONTAINER_NUMBER.toString());
+        lmd.setGpsLatitude(GPS_LATITUDE);
+        lmd.setGpsLongitude(GPS_LONGITUDE);
+        lmd.setDeviceType(DEVICE_TYPE);
+        lmd.setActivated(true);
+        lmd.setDescription(LMD_DESCRIPTION);
+        lmd.setCode(LMD_CODE);
+        lmd.setColor(LMD_COLOR);
+        lmd.setDigitalInput(LMD_DIGITAL_INPUT);
+        return lmd;
+    }
+
+    private Ssld coreSsld() {
+        final Ssld ssld = new Ssld(DEVICE_IDENTIFICATION, null, this.address(), this.gpsCoordinates(), null);
+        ssld.updateRegistrationData(null, DEVICE_TYPE);
+        ssld.setHasSchedule(false);
+        ssld.setPublicKeyPresent(false);
+        return ssld;
+    }
+
+    private LightMeasurementDevice coreLmd() {
+        final LightMeasurementDevice lmd = new LightMeasurementDevice(DEVICE_IDENTIFICATION, null, this.address(),
+                this.gpsCoordinates(), null);
+        lmd.updateRegistrationData(null, DEVICE_TYPE);
+        lmd.setDescription(LMD_DESCRIPTION);
+        lmd.setCode(LMD_CODE);
+        lmd.setColor(LMD_COLOR);
+        lmd.setDigitalInput(LMD_DIGITAL_INPUT);
+        return lmd;
     }
 
     private GpsCoordinates gpsCoordinates() {
@@ -85,11 +126,5 @@ class DeviceMappingTest {
 
     private Address address() {
         return new Address(CONTAINER_CITY, CONTAINER_POSTAL_CODE, CONTAINER_STREET, CONTAINER_NUMBER, null, null);
-    }
-
-    private Ssld ssld() {
-        final Ssld ssld = new Ssld(DEVICE_IDENTIFICATION, null, this.address(), this.gpsCoordinates(), null);
-        ssld.updateRegistrationData(null, DEVICE_TYPE);
-        return ssld;
     }
 }
