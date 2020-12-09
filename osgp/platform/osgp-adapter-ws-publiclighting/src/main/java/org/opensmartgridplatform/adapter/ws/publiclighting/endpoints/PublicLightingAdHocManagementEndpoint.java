@@ -13,16 +13,6 @@ import java.util.List;
 import javax.validation.ConstraintViolationException;
 
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.Page;
-import org.springframework.ws.server.endpoint.annotation.Endpoint;
-import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
-import org.springframework.ws.server.endpoint.annotation.RequestPayload;
-import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
-
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.publiclighting.application.mapping.AdHocManagementMapper;
@@ -51,11 +41,14 @@ import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagemen
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.common.AsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.common.OsgpResultType;
 import org.opensmartgridplatform.domain.core.entities.Device;
+import org.opensmartgridplatform.domain.core.entities.LightMeasurementDevice;
+import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.LightValue;
 import org.opensmartgridplatform.domain.core.valueobjects.ResumeScheduleData;
 import org.opensmartgridplatform.domain.core.valueobjects.TransitionMessageDataContainer;
+import org.opensmartgridplatform.shared.application.config.PageSpecifier;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -63,6 +56,15 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 @Endpoint
 public class PublicLightingAdHocManagementEndpoint {
@@ -94,14 +96,36 @@ public class PublicLightingAdHocManagementEndpoint {
         final FindAllDevicesResponse response = new FindAllDevicesResponse();
 
         try {
+            final PageSpecifier pageSpecifier = new PageSpecifier(request.getPageSize(), request.getPage());
             final Page<Device> page = this.adHocManagementService.findAllDevices(organisationIdentification,
-                    request.getPage());
+                    pageSpecifier);
 
-            final DevicePage devicePage = new DevicePage();
-            devicePage.setTotalPages(page.getTotalPages());
-            devicePage.getDevices().addAll(this.adHocManagementMapper.mapAsList(page.getContent(),
-                    org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Device.class));
-            response.setDevicePage(devicePage);
+            if (page != null && !page.isEmpty()) {
+                final List<Ssld> sslds = page.filter(d -> d instanceof Ssld).map(d -> (Ssld) d).toList();
+                final List<LightMeasurementDevice> lmds = page.filter(d -> d instanceof LightMeasurementDevice)
+                        .map(d -> (LightMeasurementDevice) d)
+                        .toList();
+
+                final DevicePage devicePage = new DevicePage();
+                devicePage.setPage(new org.opensmartgridplatform.adapter.ws.schema.publiclighting.common.Page());
+                devicePage.getPage().setPageSize(page.getSize());
+                devicePage.getPage().setTotalPages(page.getTotalPages());
+                devicePage.getPage().setCurrentPage(page.getNumber());
+                devicePage.getDevices()
+                        .addAll(this.adHocManagementMapper.mapAsList(sslds,
+                                org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Ssld.class));
+                devicePage.getDevices()
+                        .addAll(this.adHocManagementMapper.mapAsList(lmds,
+                                org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.LightMeasurementDevice.class));
+                response.setDevicePage(devicePage);
+            } else {
+                final DevicePage devicePage = new DevicePage();
+                devicePage.setPage(new org.opensmartgridplatform.adapter.ws.schema.publiclighting.common.Page());
+                devicePage.getPage().setCurrentPage(0);
+                devicePage.getPage().setPageSize(request.getPageSize() == null ? 0 : request.getPageSize());
+                devicePage.getPage().setTotalPages(0);
+                response.setDevicePage(devicePage);
+            }
         } catch (final ConstraintViolationException e) {
             LOGGER.error(EXCEPTION_OCCURRED, e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_WS_PUBLIC_LIGHTING,
@@ -312,8 +336,9 @@ public class PublicLightingAdHocManagementEndpoint {
             final TransitionMessageDataContainer transitionMessageDataContainer = new TransitionMessageDataContainer();
 
             if (request.getTransitionType() != null) {
-                transitionMessageDataContainer.setTransitionType(this.adHocManagementMapper.map(
-                        request.getTransitionType(), org.opensmartgridplatform.domain.core.valueobjects.TransitionType.class));
+                transitionMessageDataContainer
+                        .setTransitionType(this.adHocManagementMapper.map(request.getTransitionType(),
+                                org.opensmartgridplatform.domain.core.valueobjects.TransitionType.class));
             }
             DateTime dateTime = null;
             if (request.getTime() != null) {
