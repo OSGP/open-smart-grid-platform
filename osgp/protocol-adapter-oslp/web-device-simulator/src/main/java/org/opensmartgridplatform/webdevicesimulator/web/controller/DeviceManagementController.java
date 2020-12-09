@@ -307,6 +307,10 @@ public class DeviceManagementController extends AbstractController {
         return ArrayUtils.addAll(new byte[] { 0, 1 }, deviceUid);
     }
 
+    private String getDefaultFirmwareVersion() {
+        return "R01";
+    }
+
     @PostMapping(value = DEVICE_CREATE_URL)
     public String createDevice(@ModelAttribute(MODEL_ATTRIBUTE_DEVICE) final Device created,
             final BindingResult bindingResult, final RedirectAttributes attributes) {
@@ -316,6 +320,7 @@ public class DeviceManagementController extends AbstractController {
         }
 
         created.setDeviceUid(this.createRandomDeviceUid());
+        created.setFirmwareVersion(this.getDefaultFirmwareVersion());
 
         Device device;
         try {
