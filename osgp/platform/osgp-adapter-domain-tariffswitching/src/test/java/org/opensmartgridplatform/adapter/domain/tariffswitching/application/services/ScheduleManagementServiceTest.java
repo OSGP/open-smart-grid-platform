@@ -1,7 +1,8 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2020 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -48,13 +49,13 @@ import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 public class ScheduleManagementServiceTest{
 	@Mock
 	private DeviceDomainService deviceDomainService;
-	
+
 	@Mock
 	private DomainTariffSwitchingMapper domainCoreMapper;
 	
 	@Mock 
 	private SsldRepository ssldRepository;
-	
+
 	@Mock
 	private OrganisationDomainService organisationDomainService;
 
@@ -127,7 +128,6 @@ public class ScheduleManagementServiceTest{
 
 		final LightValue value = Mockito.mock(LightValue.class);
 
-		//idk how many entries are typically required
 		for(int i =0; i < 3; i++) {
 			this.scheduleEntries.add(entry);
 			this.deviceOutputSettings.add(deviceOutputSetting);
