@@ -10,12 +10,10 @@ package org.opensmartgridplatform.adapter.domain.core.application.services;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
 
@@ -100,34 +98,13 @@ class ConfigurationManagementServiceTest {
     private static final String IP_ADDRESS = "333.333.1.22";
 
     private OsgpException exception;
-    private static final ByteArrayOutputStream OUT_CONTENT = new ByteArrayOutputStream();
     private static final Organisation TEST_ORGANISATION = new Organisation();
 
     @BeforeEach
-    public void setUp() throws NoSuchFieldException,
-            SecurityException, IllegalArgumentException, IllegalAccessException {
+    public void setUp() throws SecurityException, IllegalArgumentException {
 
         // make correlationIds
         this.correlationIds = new CorrelationIds(ORG_IDENTIFICATION, DEVICE_IDENTIFICATION, CORRELATION_UID);
-        this.configurationManagementService = new ConfigurationManagementService();
-
-        // do injection using reflection
-        // Inject Mocks doesn't inject these mocks, possibly because they are in the parent class of
-        // ConfigurationManagementService
-        this.injectionUsingReflection("organisationDomainService",
-                this.configurationManagementService, this.organisationDomainService);
-        this.injectionUsingReflection("deviceDomainService", this.configurationManagementService,
-                this.deviceDomainService);
-        this.injectionUsingReflection("domainCoreMapper", this.configurationManagementService,
-                this.domainCoreMapper);
-        this.injectionUsingReflection("osgpCoreRequestMessageSender",
-                this.configurationManagementService, this.osgpCoreRequestMessageSender);
-        this.injectionUsingReflection("webServiceResponseMessageSender",
-                this.configurationManagementService, this.webServiceResponseMessageSender);
-        this.injectionUsingReflection("ssldRepository", this.configurationManagementService,
-                this.ssldRepository);
-
-        System.setOut(new PrintStream(OUT_CONTENT));
     }
 
     @Test
@@ -162,7 +139,7 @@ class ConfigurationManagementServiceTest {
         this.configurationManagementService.setConfiguration(this.correlationIds, null, SCHEDULE_TIME, MESSAGE_TYPE,
                 MESSAGE_PRIORITY);
 
-        assertThat(OUT_CONTENT.toString()).contains("Configuration is empty, skip sending a request to device");
+        verify(this.domainCoreMapper, never()).map(any(), any());
     }
 
     @Test
@@ -224,11 +201,9 @@ class ConfigurationManagementServiceTest {
     void testHandleGetConfigurationResponseWithException() {
         this.exception = new OsgpException(ComponentType.DOMAIN_ADMIN, "orgIdentification");
 
-        this.configurationManagementService.handleGetConfigurationResponse(this.configurationDto, this.correlationIds,
-                MESSAGE_TYPE, MESSAGE_PRIORITY, ResponseMessageResultType.OK, this.exception);
+        this.configurationManagementService.handleGetConfigurationResponse(this.configurationDto, this.correlationIds, MESSAGE_TYPE, MESSAGE_PRIORITY, ResponseMessageResultType.OK, this.exception);
 
-        assertThat(OUT_CONTENT.toString()).contains("Unexpected Exception for messageType:");
-
+        verify(this.ssldRepository, never()).findByDeviceIdentification(DEVICE_IDENTIFICATION);
         verify(this.webServiceResponseMessageSender).send(this.responseMessageArgumentCaptor.capture());
 
         this.checkResponseMessageArgumentCaptor();
@@ -264,12 +239,5 @@ class ConfigurationManagementServiceTest {
         assertThat(this.responseMessageArgumentCaptor.getValue().getCorrelationUid()).isEqualTo("correlationUid");
         assertThat(this.responseMessageArgumentCaptor.getValue().getOrganisationIdentification()).isEqualTo("orgIdentification");
         assertThat(this.responseMessageArgumentCaptor.getValue().getDeviceIdentification()).isEqualTo("deviceIdentification");
-    }
-
-    private void injectionUsingReflection(final String fieldName, final Object instance, final Object newValue) throws
-            NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-        final Field field = AbstractService.class.getDeclaredField(fieldName);
-        field.setAccessible(true);
-        field.set(instance, newValue);
     }
 }
