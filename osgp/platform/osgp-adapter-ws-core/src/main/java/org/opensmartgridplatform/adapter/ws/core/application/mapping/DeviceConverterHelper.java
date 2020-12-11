@@ -23,13 +23,10 @@ import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.valueobjects.Address;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ma.glasnost.orika.MapperFacade;
 
 class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.entities.Device> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceConverterHelper.class);
 
     private final Class<T> clazz;
     private MapperFacade mapper;
