@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaRun;
 import org.opensmartgridplatform.adapter.domain.shared.FilterLightAndTariffValuesHelper;
 import org.opensmartgridplatform.adapter.domain.shared.GetLightSensorStatusResponse;
@@ -374,10 +373,10 @@ public class AdHocManagementService extends AbstractService {
     }
 
     private LightMeasurementDevice updateLmdLastCommunicationTime(final LightMeasurementDevice lmd) {
-        final DateTime now = DateTime.now();
-        LOGGER.info("Trying to update lastCommunicationTime for light measurement device: {} with dateTime: {}",
-                lmd.getDeviceIdentification(), now);
-        lmd.setLastCommunicationTime(Instant.now());
+        final Instant now = Instant.now();
+        LOGGER.info("Trying to update lastCommunicationTime for light measurement device: {} at DateTime: {}",
+                lmd.getDeviceIdentification(), Date.from(now));
+        lmd.setLastCommunicationTime(now);
         return this.lightMeasurementDeviceRepository.save(lmd);
     }
 
