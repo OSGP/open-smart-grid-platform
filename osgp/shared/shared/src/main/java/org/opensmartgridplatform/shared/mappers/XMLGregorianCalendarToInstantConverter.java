@@ -55,10 +55,8 @@ public class XMLGregorianCalendarToInstantConverter extends BidirectionalConvert
 
         if (source.getTimezone() == DatatypeConstants.FIELD_UNDEFINED) {
             source.setTimezone(ZoneOffset.UTC.getTotalSeconds() / SECONDS_PER_MINUTE);
-            return source.toGregorianCalendar().toInstant();
-        } else {
-            return source.toGregorianCalendar().toInstant();
         }
+        return source.toGregorianCalendar().toInstant();
     }
 
     @Override

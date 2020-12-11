@@ -23,9 +23,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * configuration requires Spring Framework 3.0
  */
 @Configuration
-@ComponentScan(basePackages = { "org.opensmartgridplatform.shared.domain.services" })
-@ComponentScan(basePackages = { "org.opensmartgridplatform.domain.core" })
-@ComponentScan(basePackages = { "org.opensmartgridplatform.adapter.domain.microgrids" })
+@ComponentScan("org.opensmartgridplatform.shared.domain.services")
+@ComponentScan("org.opensmartgridplatform.domain.core")
+@ComponentScan("org.opensmartgridplatform.adapter.domain.microgrids")
 @PropertySource("classpath:osgp-adapter-domain-microgrids.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterDomainMicrogrids/config}", ignoreResourceNotFound = true)
