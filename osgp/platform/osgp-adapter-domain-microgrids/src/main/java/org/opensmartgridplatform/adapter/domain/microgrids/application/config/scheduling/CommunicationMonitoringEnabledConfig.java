@@ -9,15 +9,11 @@
  */
 package org.opensmartgridplatform.adapter.domain.microgrids.application.config.scheduling;
 
-import javax.annotation.PostConstruct;
-
 import org.opensmartgridplatform.adapter.domain.microgrids.application.tasks.CommunicationMonitoringJob;
+import org.opensmartgridplatform.shared.application.config.scheduling.JobEnabledConfig;
 import org.opensmartgridplatform.shared.application.scheduling.CommunicationMonitoringEnabledCondition;
 import org.opensmartgridplatform.shared.application.scheduling.OsgpScheduler;
 import org.opensmartgridplatform.shared.application.scheduling.OsgpSchedulingEnabledCondition;
-import org.quartz.SchedulerException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Conditional;
@@ -25,27 +21,11 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @Conditional(value = { OsgpSchedulingEnabledCondition.class, CommunicationMonitoringEnabledCondition.class })
-public class CommunicationMonitoringEnabledConfig {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommunicationMonitoringEnabledConfig.class);
-
-    private final String cronExpressionCommunicationMonitoring;
-
-    private final OsgpScheduler osgpScheduler;
+public class CommunicationMonitoringEnabledConfig extends JobEnabledConfig<CommunicationMonitoringJob> {
 
     @Autowired
     public CommunicationMonitoringEnabledConfig(final OsgpScheduler osgpScheduler,
-            @Value("${communication.monitoring.cron.expression}") final String cronExpressionCommunicationMonitoring) {
-        this.osgpScheduler = osgpScheduler;
-        this.cronExpressionCommunicationMonitoring = cronExpressionCommunicationMonitoring;
-    }
-
-    @PostConstruct
-    private void initializeScheduledJob() throws SchedulerException {
-
-        LOGGER.info("Communication monitoring enabled, scheduling job.");
-
-        this.osgpScheduler.createAndScheduleJob(CommunicationMonitoringJob.class,
-                this.cronExpressionCommunicationMonitoring);
+            @Value("${communication.monitoring.cron.expression}") final String jobCronExpression) {
+        super(CommunicationMonitoringJob.class, osgpScheduler, jobCronExpression);
     }
 }

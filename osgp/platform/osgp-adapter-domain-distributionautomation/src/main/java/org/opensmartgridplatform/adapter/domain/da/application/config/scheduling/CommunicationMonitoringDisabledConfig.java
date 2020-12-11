@@ -9,37 +9,21 @@
  */
 package org.opensmartgridplatform.adapter.domain.da.application.config.scheduling;
 
-import javax.annotation.PostConstruct;
-
 import org.opensmartgridplatform.adapter.domain.da.application.tasks.CommunicationMonitoringJob;
+import org.opensmartgridplatform.shared.application.config.scheduling.JobDisabledConfig;
 import org.opensmartgridplatform.shared.application.scheduling.CommunicationMonitoringDisabledCondition;
 import org.opensmartgridplatform.shared.application.scheduling.OsgpScheduler;
 import org.opensmartgridplatform.shared.application.scheduling.OsgpSchedulingEnabledCondition;
-import org.quartz.SchedulerException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @Conditional(value = { OsgpSchedulingEnabledCondition.class, CommunicationMonitoringDisabledCondition.class })
-public class CommunicationMonitoringDisabledConfig {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommunicationMonitoringDisabledConfig.class);
-
-    private final OsgpScheduler osgpScheduler;
+public class CommunicationMonitoringDisabledConfig extends JobDisabledConfig<CommunicationMonitoringJob> {
 
     @Autowired
     public CommunicationMonitoringDisabledConfig(final OsgpScheduler osgpScheduler) {
-        this.osgpScheduler = osgpScheduler;
-    }
-
-    @PostConstruct
-    private void removeScheduledJob() throws SchedulerException {
-
-        LOGGER.info("Communication monitoring disabled, removing job.");
-
-        this.osgpScheduler.deleteScheduledJob(CommunicationMonitoringJob.class);
+        super(CommunicationMonitoringJob.class, osgpScheduler);
     }
 }
