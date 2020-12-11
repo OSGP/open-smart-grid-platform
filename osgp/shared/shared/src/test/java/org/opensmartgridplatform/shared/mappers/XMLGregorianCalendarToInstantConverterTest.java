@@ -43,7 +43,7 @@ class XMLGregorianCalendarToInstantConverterTest {
     }
 
     @Test
-    void testMappingToInstantFromXmlGregorianCalenderWithTimeZone() throws DatatypeConfigurationException {
+    void mapsToInstantFromXmlGregorianCalenderWithTimeZone() throws DatatypeConfigurationException {
         final String withTimeZone = "2010-06-30T01:20:30+02:00";
         final XMLGregorianCalendar xmlGregorianCalendar = DatatypeFactory.newInstance()
                 .newXMLGregorianCalendar(withTimeZone);
@@ -55,7 +55,7 @@ class XMLGregorianCalendarToInstantConverterTest {
     }
 
     @Test
-    void testMappingToInstantFromXmlGregorianCalenderCloseToDayEndWithTimeZone() throws DatatypeConfigurationException {
+    void mapsToInstantFromXmlGregorianCalenderCloseToDayEndWithTimeZone() throws DatatypeConfigurationException {
         final String withTimeZone = "2020-03-30T23:50:30+03:00";
         final XMLGregorianCalendar xmlGregorianCalendar = DatatypeFactory.newInstance()
                 .newXMLGregorianCalendar(withTimeZone);
@@ -67,7 +67,7 @@ class XMLGregorianCalendarToInstantConverterTest {
     }
 
     @Test
-    void testMappingToInstantFromXmlGregorianWithoutTimeZone() throws DatatypeConfigurationException {
+    void mapsToInstantFromXmlGregorianCalenderWithoutTimeZone() throws DatatypeConfigurationException {
         final String withoutTimeZone = "2010-06-30T01:20:30";
         final XMLGregorianCalendar xmlGregorianCalendar = DatatypeFactory.newInstance()
                 .newXMLGregorianCalendar(withoutTimeZone);
@@ -80,7 +80,7 @@ class XMLGregorianCalendarToInstantConverterTest {
     }
 
     @Test
-    void testMappingToXmlGregorianCalenderFromInstant() throws DatatypeConfigurationException {
+    void mapsToXmlGregorianCalenderFromInstant() throws DatatypeConfigurationException {
         final Instant instant = Instant.now();
 
         final XMLGregorianCalendar expected = DatatypeFactory.newInstance()
