@@ -33,6 +33,10 @@ public class SecretBuilder implements CucumberBuilder<DbEncryptedSecret> {
         return this;
     }
 
+    public SecurityKeyType getSecurityKeyType() {
+        return this.securityKeyType;
+    }
+
     public SecretBuilder setKey(final String key) {
         this.key = key;
         return this;
