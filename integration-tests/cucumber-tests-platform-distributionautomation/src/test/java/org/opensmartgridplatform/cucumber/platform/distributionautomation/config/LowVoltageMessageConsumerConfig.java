@@ -20,24 +20,24 @@ import com.alliander.data.scadameasurementpublishedevent.Message;
 
 @Configuration
 @EnableKafka
-public class KafkaPeakShavingConsumerConfig extends AbstractKafkaConsumerConfig<String, Message> {
+public class LowVoltageMessageConsumerConfig extends AbstractKafkaConsumerConfig<String, Message> {
 
-    public KafkaPeakShavingConsumerConfig(final Environment environment,
-            @Value("${peakshaving.kafka.common.properties.prefix}") final String propertiesPrefix,
-            @Value("${peakshaving.kafka.topic}") final String topic,
-            @Value("${peakshaving.kafka.consumer.concurrency}") final int concurrency,
-            @Value("${peakshaving.kafka.consumer.poll.timeout}") final int pollTimeout) {
+    public LowVoltageMessageConsumerConfig(final Environment environment,
+            @Value("${low.voltage.kafka.common.properties.prefix}") final String propertiesPrefix,
+            @Value("${low.voltage.kafka.topic}") final String topic,
+            @Value("${low.voltage.kafka.consumer.concurrency}") final int concurrency,
+            @Value("${low.voltage.kafka.consumer.poll.timeout}") final int pollTimeout) {
 
         super(environment, propertiesPrefix, topic, concurrency, pollTimeout);
     }
 
-    @Bean("peakShavingConsumerFactory")
+    @Bean("lowVoltageMessageConsumerFactory")
     @Override
     public ConsumerFactory<String, Message> consumerFactory() {
         return this.getConsumerFactory();
     }
 
-    @Bean("peakShavingKafkaListenerContainerFactory")
+    @Bean("lowVoltageMessageKafkaListenerContainerFactory")
     @Override
     public ConcurrentKafkaListenerContainerFactory<String, Message> kafkaListenerContainerFactory() {
         return this.getKafkaListenerContainerFactory();

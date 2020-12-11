@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Smart Society Services B.V.
+ * Copyright 2020 Alliander N.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -16,28 +16,30 @@ import org.springframework.core.env.Environment;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 
-@Configuration
-@Conditional(PeakShavingLoggingEnabled.class)
-public class KafkaPeakShavingConsumerConfig extends AbstractKafkaConsumerConfig<String, String> {
+import com.alliander.data.scadameasurementpublishedevent.Message;
 
-    public KafkaPeakShavingConsumerConfig(final Environment environment,
-            @Value("${peakshaving.kafka.common.properties.prefix}") final String propertiesPrefix,
-            @Value("${peakshaving.kafka.topic}") final String topic,
-            @Value("${peakshaving.kafka.consumer.concurrency}") final int concurrency,
-            @Value("${peakshaving.kafka.consumer.poll.timeout}") final int pollTimeout) {
+@Configuration
+@Conditional(LowVoltageMessageLoggingEnabled.class)
+public class LowVoltageMessageConsumerConfig extends AbstractKafkaConsumerConfig<String, Message> {
+
+    public LowVoltageMessageConsumerConfig(final Environment environment,
+            @Value("${low.voltage.kafka.common.properties.prefix}") final String propertiesPrefix,
+            @Value("${low.voltage.kafka.topic}") final String topic,
+            @Value("${low.voltage.kafka.consumer.concurrency}") final int concurrency,
+            @Value("${low.voltage.kafka.consumer.poll.timeout}") final int pollTimeout) {
 
         super(environment, propertiesPrefix, topic, concurrency, pollTimeout);
     }
 
-    @Bean("peakShavingConsumerFactory")
+    @Bean("lowVoltageMessageConsumerFactory")
     @Override
-    public ConsumerFactory<String, String> consumerFactory() {
+    public ConsumerFactory<String, Message> consumerFactory() {
         return this.getConsumerFactory();
     }
 
-    @Bean("peakShavingKafkaListenerContainerFactory")
+    @Bean("lowVoltageMessageKafkaListenerContainerFactory")
     @Override
-    public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory() {
+    public ConcurrentKafkaListenerContainerFactory<String, Message> kafkaListenerContainerFactory() {
         return this.getKafkaListenerContainerFactory();
     }
 

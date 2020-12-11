@@ -1,7 +1,7 @@
-@DistributionAutomation @Platform @PeakShaving
-Feature: Peak shaving
+@DistributionAutomation @Platform @LowVoltageMessage
+Feature: Low voltage message processing
 
-  Scenario: Get Ls Peak shaving message from MQTT device
+  Scenario: Process a low voltage message from MQTT device
     Given an MQTT device
       | DeviceIdentification | TST-01             |
       | IntegrationType      | Kafka              |

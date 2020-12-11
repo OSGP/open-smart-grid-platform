@@ -20,16 +20,17 @@ import com.alliander.data.scadameasurementpublishedevent.Message;
 import com.alliander.data.scadameasurementpublishedevent.ScadaMeasurementPublishedEvent;
 
 @Component
-public class PeakShavingConsumer {
+public class LowVoltageMessageConsumer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PeakShavingConsumer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LowVoltageMessageConsumer.class);
 
-    @Value("${peakshaving.kafka.consumer.wait.fail.duration:90000}")
+    @Value("${low.voltage.kafka.consumer.wait.fail.duration:90000}")
     private long waitFailMillis;
 
     private ConsumerRecord<String, Message> consumerRecord;
 
-    @KafkaListener(containerFactory = "peakShavingKafkaListenerContainerFactory", topics = "${peakshaving.kafka.topic}")
+    @KafkaListener(containerFactory = "lowVoltageMessageKafkaListenerContainerFactory",
+            topics = "${low.voltage.kafka.topic}")
     public void listen(final ConsumerRecord<String, Message> consumerRecord) {
         LOGGER.info("received consumerRecord");
         this.consumerRecord = consumerRecord;
