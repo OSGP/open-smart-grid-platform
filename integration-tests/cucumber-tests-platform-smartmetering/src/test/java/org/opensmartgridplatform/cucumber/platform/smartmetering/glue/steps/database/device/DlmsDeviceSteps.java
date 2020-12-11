@@ -566,6 +566,10 @@ public class DlmsDeviceSteps {
     private SecretBuilder getAppropriateSecretBuilder(final String keyTypeInputName,
             final Map<String, String> inputSettings) {
         SecurityKeyType keyType = this.securityKeyTypesByInputName.get(keyTypeInputName);
+        if(keyType==null) {
+            throw new IllegalArgumentException(String.format("Unknown key type name %s; available types names: %s",
+                    keyTypeInputName, this.securityKeyTypesByInputName.keySet()));
+        }
         if (inputSettings.containsKey(keyTypeInputName)) {
             final String inputKey = inputSettings.get(keyTypeInputName);
             if (inputKey != null && !inputKey.trim().isEmpty()) {
