@@ -323,11 +323,11 @@ public class BaseTask {
         return date.getTime();
     }
 
-    private static long getTime(final Instant date, final long valueIfNull) {
-        if (date == null) {
+    private static long getTime(final Instant instant, final long valueIfNull) {
+        if (instant == null) {
             return valueIfNull;
         }
-        return date.toEpochMilli();
+        return instant.toEpochMilli();
     }
 
     private Predicate<LightMeasurementDevice> noCommunicationSince(final long boundaryTime,
