@@ -9,6 +9,7 @@
  */
 package org.opensmartgridplatform.adapter.domain.da.application.services;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -33,6 +34,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 
 public class BaseService {
 
@@ -57,8 +59,8 @@ public class BaseService {
     @Autowired
     protected ResponseMessageRouter responseMessageRouter;
 
-    @Autowired
-    private Integer lastCommunicationUpdateInterval;
+    @Value("#{T(java.time.Duration).parse('${communication.monitoring.minimum.duration.between.communication.time.updates:PT1M}')}")
+    private Duration minimumDurationBetweenCommunicationTimeUpdates;
 
     protected Device findActiveDevice(final String deviceIdentification) throws FunctionalException {
         return this.deviceDomainService.searchActiveDevice(deviceIdentification,
@@ -94,20 +96,21 @@ public class BaseService {
             final RtuDevice device = this.rtuDeviceRepository.findByDeviceIdentification(deviceIdentification)
                     .orElseThrow(() -> new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE,
                             new UnknownEntityException(RtuDevice.class, deviceIdentification)));
-            if (this.shouldUpdateCommunicationTime(device, this.lastCommunicationUpdateInterval)) {
+            if (this.shouldUpdateCommunicationTime(device, this.minimumDurationBetweenCommunicationTimeUpdates)) {
                 device.messageReceived();
                 this.rtuDeviceRepository.save(device);
             } else {
-                logger.info("Last communication time within {} seconds. Skipping last communication date update.",
-                        this.lastCommunicationUpdateInterval);
+                logger.info("Last communication time within duration: {}. Skipping last communication date update.",
+                        this.minimumDurationBetweenCommunicationTimeUpdates);
             }
         } catch (final OptimisticLockException ex) {
             logger.warn("Last communication time not updated due to optimistic lock exception", ex);
         }
     }
 
-    protected boolean shouldUpdateCommunicationTime(final RtuDevice device, final int lastCommunicationUpdateInterval) {
-        final Instant timeToCheck = Instant.now().minusSeconds(lastCommunicationUpdateInterval);
+    protected boolean shouldUpdateCommunicationTime(final RtuDevice device,
+            final Duration minimumDurationBetweenCommunicationUpdates) {
+        final Instant timeToCheck = Instant.now().minus(minimumDurationBetweenCommunicationUpdates);
         final Instant timeOfLastCommunication = device.getLastCommunicationTime();
         return timeOfLastCommunication.isBefore(timeToCheck);
     }

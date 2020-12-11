@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 Smart Society Services B.V.
+ * Copyright 2020 Alliander N.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,8 +9,8 @@
  */
 package org.opensmartgridplatform.adapter.domain.da.application.tasks;
 
+import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.opensmartgridplatform.adapter.domain.da.application.services.CommunicationRecoveryService;
@@ -26,6 +26,7 @@ import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -46,15 +47,15 @@ public class CommunicationMonitoringJob implements Job {
     @Autowired
     private DomainInfoRepository domainInfoRepository;
 
-    @Autowired
-    private Integer maximumTimeWithoutCommunication;
+    @Value("#{T(java.time.Duration).parse('${communication.monitoring.maximum.duration.without.communication:PT5M}')}")
+    private Duration maximumDurationWithoutCommunication;
 
     @Override
     public void execute(final JobExecutionContext context) throws JobExecutionException {
 
         LOGGER.info("Executing communication monitoring job.");
 
-        final Instant startTime = Instant.now().minus(this.maximumTimeWithoutCommunication, ChronoUnit.MINUTES);
+        final Instant startTime = Instant.now().minus(this.maximumDurationWithoutCommunication);
 
         final List<RtuDevice> rtuDevices = this.getDevicesWithLastCommunicationBefore(startTime);
         LOGGER.info("Found {} device(s) for which communication should be restored.", rtuDevices.size());

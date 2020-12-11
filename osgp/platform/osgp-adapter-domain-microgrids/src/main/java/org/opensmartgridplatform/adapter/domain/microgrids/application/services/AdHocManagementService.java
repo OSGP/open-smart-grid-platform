@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.domain.microgrids.application.services;
 
+import java.time.Duration;
 import java.time.Instant;
 
 import javax.persistence.OptimisticLockException;
@@ -35,6 +36,7 @@ import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,10 +51,10 @@ public class AdHocManagementService extends BaseService {
     private DomainMicrogridsMapper mapper;
 
     @Autowired
-    private Integer lastCommunicationUpdateInterval;
-
-    @Autowired
     private CorrelationIdProviderUUIDService correlationIdProviderUUIDService;
+
+    @Value("#{T(java.time.Duration).parse('${communication.monitoring.minimum.duration.between.communication.time.updates:PT1M}')}")
+    private Duration minimumDurationBetweenCommunicationTimeUpdates;
 
     /**
      * Constructor
@@ -184,8 +186,8 @@ public class AdHocManagementService extends BaseService {
                 device.messageReceived();
                 this.rtuDeviceRepository.save(device);
             } else {
-                LOGGER.info("Last communication time within {} seconds. Skipping last communication date update.",
-                        this.lastCommunicationUpdateInterval);
+                LOGGER.info("Last communication time within duration: {}. Skipping last communication date update.",
+                        this.minimumDurationBetweenCommunicationTimeUpdates);
             }
         } catch (final OptimisticLockException ex) {
             LOGGER.warn("Last communication time not updated due to optimistic lock exception", ex);
@@ -193,7 +195,7 @@ public class AdHocManagementService extends BaseService {
     }
 
     private boolean shouldUpdateCommunicationTime(final RtuDevice device) {
-        final Instant timeToCheck = Instant.now().minusSeconds(this.lastCommunicationUpdateInterval);
+        final Instant timeToCheck = Instant.now().minus(this.minimumDurationBetweenCommunicationTimeUpdates);
         final Instant timeOfLastCommunication = device.getLastCommunicationTime();
         return timeOfLastCommunication.isBefore(timeToCheck);
     }
