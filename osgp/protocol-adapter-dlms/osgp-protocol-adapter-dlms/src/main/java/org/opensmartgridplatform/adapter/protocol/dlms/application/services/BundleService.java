@@ -66,7 +66,7 @@ public class BundleService {
                     actionDto.setResponse(executor.executeBundleAction(conn, device, actionDto.getRequest()));
                 } catch (final ConnectionException connectionException) {
                     log.warn("A connection exception occurred while executing {} [deviceId={}]", executorName,
-                            connectionException, device.getDeviceIdentification());
+                            device.getDeviceIdentification(), connectionException);
 
                     final List<ActionDto> remainingActionDtoList = actionList.subList(actionList.indexOf(actionDto),
                             actionList.size());
