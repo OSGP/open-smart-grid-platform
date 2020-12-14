@@ -51,8 +51,8 @@ public class BundleService {
                 final Class<? extends ActionRequestDto> actionRequestClass = actionDto.getRequest()
                         .getClass();
 
-                final CommandExecutor<?, ?> executor = this.bundleCommandExecutorMap.getCommandExecutor(
-                        actionRequestClass);
+                final CommandExecutor<?, ?> executor = this.bundleCommandExecutorMap
+                        .getCommandExecutor(actionRequestClass);
 
                 final String executorName = executor == null ? "null" : executor.getClass()
                         .getSimpleName();
@@ -75,9 +75,7 @@ public class BundleService {
 
                     if (log.isDebugEnabled()) {
                         for (final ActionDto remainingActionDto : remainingActionDtoList) {
-                            log.debug("Skipping: {}", remainingActionDto.getRequest()
-                                    .getClass()
-                                    .getSimpleName());
+                            log.debug("Skipping: {}", remainingActionDto.getRequest().getClass().getSimpleName());
                         }
                     }
 
@@ -150,8 +148,7 @@ public class BundleService {
         if (exception.getComponentType() == null) {
             component = null;
         } else {
-            component = exception.getComponentType()
-                    .name();
+            component = exception.getComponentType().name();
         }
 
         final String innerException;
