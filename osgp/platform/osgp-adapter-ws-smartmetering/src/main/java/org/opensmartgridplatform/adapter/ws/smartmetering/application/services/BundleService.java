@@ -33,8 +33,6 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class BundleService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BundleService.class);
-
     @Autowired
     private DomainHelperService domainHelperService;
 
@@ -55,7 +53,6 @@ public class BundleService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
-        LOGGER.info("Bundle request called with organisation {}", organisationIdentification);
         this.checkIfBundleIsAllowed(actionList, organisation, device);
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
