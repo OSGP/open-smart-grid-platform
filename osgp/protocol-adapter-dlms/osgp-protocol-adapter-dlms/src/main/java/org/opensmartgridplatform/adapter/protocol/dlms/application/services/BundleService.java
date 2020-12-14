@@ -164,16 +164,21 @@ public class BundleService {
             message = exception.getMessage();
         }
 
-        return new FaultResponseDto.Builder().withCode(code).withMessage(message).withComponent(
-                component).withInnerException(innerException).withInnerMessage(
-                innerMessage).withFaultResponseParameters(faultResponseParameters).build();
+        return new FaultResponseDto.Builder()
+                .withCode(code)
+                .withMessage(message)
+                .withComponent(component)
+                .withInnerException(innerException)
+                .withInnerMessage(innerMessage)
+                .withFaultResponseParameters(faultResponseParameters)
+                .build();
     }
 
     private void checkIfExecutorExists(final Class<? extends ActionRequestDto> actionRequestClass,
             final CommandExecutor<?, ?> executor) throws ProtocolAdapterException {
         if (executor == null) {
-            log.error("bundleCommandExecutorMap in " + this.getClass().getName()
-                    + " does not have a CommandExecutor registered for action: " + actionRequestClass.getName());
+            log.error("bundleCommandExecutorMap in {} does not have a CommandExecutor registered for action: {}",
+                    this.getClass().getName(), actionRequestClass.getName());
             throw new ProtocolAdapterException(
                     "No CommandExecutor available to handle " + actionRequestClass.getSimpleName());
         }
