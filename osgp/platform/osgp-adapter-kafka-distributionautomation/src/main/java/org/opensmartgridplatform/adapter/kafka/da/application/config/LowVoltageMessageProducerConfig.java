@@ -18,10 +18,10 @@ import org.springframework.kafka.core.KafkaTemplate;
 import com.alliander.data.scadameasurementpublishedevent.Message;
 
 @Configuration
-public class ScadaMeasurementKafkaProducerConfig extends AbstractKafkaProducerConfig<String, Message> {
+public class LowVoltageMessageProducerConfig extends AbstractKafkaProducerConfig<String, Message> {
 
     @Autowired
-    public ScadaMeasurementKafkaProducerConfig(final Environment environment,
+    public LowVoltageMessageProducerConfig(final Environment environment,
             @Value("${distributionautomation.kafka.common.properties.prefix}") final String propertiesPrefix,
             @Value("${distributionautomation.kafka.topic}") final String topic) {
         super(environment, propertiesPrefix, topic);

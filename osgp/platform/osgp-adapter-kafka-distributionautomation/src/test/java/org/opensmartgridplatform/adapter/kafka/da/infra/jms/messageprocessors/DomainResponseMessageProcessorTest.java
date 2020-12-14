@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out.ScadaMeasurementPublishedEventProducer;
+import org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out.LowVoltageMessageProducer;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -30,7 +30,7 @@ class DomainResponseMessageProcessorTest {
     DomainResponseMessageProcessor domainResponseMessageProcessor;
 
     @Mock
-    private ScadaMeasurementPublishedEventProducer producer;
+    private LowVoltageMessageProducer producer;
 
     @Mock
     private ObjectMessage receivedMessage;

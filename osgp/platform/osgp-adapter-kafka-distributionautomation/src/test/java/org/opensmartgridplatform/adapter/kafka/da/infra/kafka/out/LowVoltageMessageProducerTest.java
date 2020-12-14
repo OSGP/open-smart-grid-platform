@@ -25,7 +25,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.kafka.da.application.config.LocationConfig;
-import org.opensmartgridplatform.adapter.kafka.da.application.config.ScadaMeasurementKafkaProducerConfig;
+import org.opensmartgridplatform.adapter.kafka.da.application.config.LowVoltageMessageProducerConfig;
 import org.opensmartgridplatform.adapter.kafka.da.application.mapping.DistributionAutomationMapper;
 import org.opensmartgridplatform.adapter.kafka.da.infra.mqtt.in.ScadaMeasurementPayload;
 import org.opensmartgridplatform.adapter.kafka.da.serialization.MessageDeserializer;
@@ -47,14 +47,14 @@ import com.alliander.data.scadameasurementpublishedevent.Message;
 import com.alliander.data.scadameasurementpublishedevent.Name;
 import com.alliander.data.scadameasurementpublishedevent.ScadaMeasurementPublishedEvent;
 
-@SpringJUnitConfig(ScadaMeasurementKafkaProducerConfig.class)
+@SpringJUnitConfig(LowVoltageMessageProducerConfig.class)
 @TestPropertySource("classpath:osgp-adapter-kafka-distributionautomation-test.properties")
 @ExtendWith(MockitoExtension.class)
 @EmbeddedKafka(partitions = 1,
         topics = { "${distributionautomation.kafka.topic}" },
         brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "log.dirs=../kafka-logs/",
                 "auto.create.topics.enable=true" })
-class ScadaMeasurementPublishedEventProducerTest {
+class LowVoltageMessageProducerTest {
 
     @Value("${distributionautomation.kafka.topic}")
     private String topic;
@@ -71,7 +71,7 @@ class ScadaMeasurementPublishedEventProducerTest {
     @Autowired
     private KafkaTemplate<String, Message> template;
 
-    private ScadaMeasurementPublishedEventProducer producer;
+    private LowVoltageMessageProducer producer;
 
     private static final String PAYLOAD = "[{\"gisnr\":\"TST-01-L-1V1\", \"feeder\":\"8\", \"D\": \"02/10/2020 16:03:38\", "
             + "\"uts\":\"1601647418\", \"data\": [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,"
@@ -81,7 +81,7 @@ class ScadaMeasurementPublishedEventProducerTest {
     @SuppressWarnings("unchecked")
     public void setup() {
         when(this.mapper.map(any(ScadaMeasurementPayload.class), any(Class.class))).thenReturn(this.createEvent());
-        this.producer = new ScadaMeasurementPublishedEventProducer(this.template, this.mapper, this.locationConfig);
+        this.producer = new LowVoltageMessageProducer(this.template, this.mapper, this.locationConfig);
     }
 
     @Test
