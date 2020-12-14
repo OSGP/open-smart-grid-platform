@@ -1,15 +1,12 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.CommandExecutor;
@@ -31,6 +28,9 @@ import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Slf4j
 @Service(value = "dlmsBundleService")
 public class BundleService {
@@ -48,30 +48,28 @@ public class BundleService {
             // Because it could be a retry.
             if (actionDto.getResponse() == null) {
 
-                final Class<? extends ActionRequestDto> actionRequestClass = actionDto.getRequest()
-                        .getClass();
+                final Class<? extends ActionRequestDto> actionRequestClass = actionDto.getRequest().getClass();
 
                 final CommandExecutor<?, ?> executor = this.bundleCommandExecutorMap
                         .getCommandExecutor(actionRequestClass);
 
-                final String executorName = executor == null ? "null" : executor.getClass()
-                        .getSimpleName();
+                final String executorName = executor == null ? "null" : executor.getClass().getSimpleName();
 
                 try {
 
                     this.checkIfExecutorExists(actionRequestClass, executor);
 
                     log.debug("**************************************************");
-                    log.info("Calling executor in bundle {} [deviceId={}]", executorName,
-                            device.getDeviceIdentification());
+                    log.info("Calling executor in bundle {} [deviceId={}]", executorName, device
+                            .getDeviceIdentification());
                     log.debug("**************************************************");
                     actionDto.setResponse(executor.executeBundleAction(conn, device, actionDto.getRequest()));
                 } catch (final ConnectionException connectionException) {
-                    log.warn("A connection exception occurred while executing {} [deviceId={}]", executorName,
-                            device.getDeviceIdentification(), connectionException);
+                    log.warn("A connection exception occurred while executing {} [deviceId={}]", executorName, device
+                            .getDeviceIdentification(), connectionException);
 
-                    final List<ActionDto> remainingActionDtoList = actionList.subList(actionList.indexOf(actionDto),
-                            actionList.size());
+                    final List<ActionDto> remainingActionDtoList = actionList
+                            .subList(actionList.indexOf(actionDto), actionList.size());
 
                     if (log.isDebugEnabled()) {
                         for (final ActionDto remainingActionDto : remainingActionDtoList) {
@@ -81,13 +79,12 @@ public class BundleService {
 
                     actionDto.setResponse(null);
                     throw connectionException;
-                } catch (final Exception exception) {
 
-                    log.error("Error while executing bundle action for {} with {} [deviceId={}]",
-                            actionRequestClass.getName(), executorName, device.getDeviceIdentification(), exception);
+                } catch (final Exception exception) {
+                    log.error("Error while executing bundle action for {} with {} [deviceId={}]", actionRequestClass
+                            .getName(), executorName, device.getDeviceIdentification(), exception);
                     final String responseMessage = executor == null ? "Unable to handle request" :
                             "Error handling request with " + executorName;
-
                     this.addFaultResponse(actionDto, exception, responseMessage, device);
                 }
             }
@@ -98,10 +95,10 @@ public class BundleService {
 
     private void addFaultResponse(final ActionDto actionDto, final Exception exception, final String defaultMessage,
             final DlmsDevice device) {
-
         final List<FaultResponseParameterDto> parameterList = new ArrayList<>();
         final FaultResponseParameterDto deviceIdentificationParameter = new FaultResponseParameterDto(
-                "deviceIdentification", device.getDeviceIdentification());
+                "deviceIdentification", device
+                .getDeviceIdentification());
         parameterList.add(deviceIdentificationParameter);
 
         final FaultResponseDto faultResponse = this.faultResponseForException(exception, parameterList, defaultMessage);
@@ -114,20 +111,19 @@ public class BundleService {
         final FaultResponseParametersDto faultResponseParameters = this.faultResponseParametersForList(parameters);
 
         if (exception instanceof FunctionalException || exception instanceof TechnicalException) {
-            return this.faultResponseForFunctionalOrTechnicalException((OsgpException) exception,
-                    faultResponseParameters, defaultMessage);
+            return this
+                    .faultResponseForFunctionalOrTechnicalException((OsgpException) exception,
+                            faultResponseParameters, defaultMessage);
         }
 
         return new FaultResponseDto.Builder().withMessage(defaultMessage)
-                .withComponent(ComponentType.PROTOCOL_DLMS.name())
-                .withInnerException(exception.getClass().getName())
-                .withInnerMessage(exception.getMessage())
-                .withFaultResponseParameters(faultResponseParameters)
-                .build();
+                                             .withComponent(ComponentType.PROTOCOL_DLMS.name())
+                                             .withInnerException(exception.getClass().getName())
+                                             .withInnerMessage(exception.getMessage())
+                                             .withFaultResponseParameters(faultResponseParameters).build();
     }
 
-    private FaultResponseParametersDto faultResponseParametersForList(
-            final List<FaultResponseParameterDto> parameterList) {
+    private FaultResponseParametersDto faultResponseParametersForList(final List<FaultResponseParameterDto> parameterList) {
         if (parameterList == null || parameterList.isEmpty()) {
             return null;
         }
@@ -158,8 +154,7 @@ public class BundleService {
             innerException = null;
             innerMessage = null;
         } else {
-            innerException = cause.getClass()
-                    .getName();
+            innerException = cause.getClass().getName();
             innerMessage = cause.getMessage();
         }
 
@@ -170,23 +165,18 @@ public class BundleService {
             message = exception.getMessage();
         }
 
-        return new FaultResponseDto.Builder().withCode(code)
-                .withMessage(message)
-                .withComponent(component)
-                .withInnerException(innerException)
-                .withInnerMessage(innerMessage)
-                .withFaultResponseParameters(faultResponseParameters)
-                .build();
+        return new FaultResponseDto.Builder().withCode(code).withMessage(message).withComponent(component)
+                                             .withInnerException(innerException).withInnerMessage(innerMessage)
+                                             .withFaultResponseParameters(faultResponseParameters).build();
     }
 
     private void checkIfExecutorExists(final Class<? extends ActionRequestDto> actionRequestClass,
             final CommandExecutor<?, ?> executor) throws ProtocolAdapterException {
         if (executor == null) {
-            log.error("bundleCommandExecutorMap in {} does not have a CommandExecutor registered for action: {}",
-                    this.getClass()
-                            .getName(), actionRequestClass.getName());
-            throw new ProtocolAdapterException(
-                    "No CommandExecutor available to handle " + actionRequestClass.getSimpleName());
+            log.error("bundleCommandExecutorMap in {} does not have a CommandExecutor registered for action: {}", this
+                    .getClass().getName(), actionRequestClass.getName());
+            throw new ProtocolAdapterException("No CommandExecutor available to handle " + actionRequestClass
+                    .getSimpleName());
         }
     }
 }
