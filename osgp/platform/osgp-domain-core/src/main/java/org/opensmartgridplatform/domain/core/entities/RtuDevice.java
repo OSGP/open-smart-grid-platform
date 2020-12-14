@@ -21,7 +21,7 @@ public class RtuDevice extends Device {
     private static final long serialVersionUID = -5356111084356341244L;
 
     @Column
-    private Instant lastCommunicationTime = Instant.MIN;
+    private Instant lastCommunicationTime = Instant.EPOCH;
 
     @ManyToOne()
     @JoinColumn(name = "domain_info_id")
