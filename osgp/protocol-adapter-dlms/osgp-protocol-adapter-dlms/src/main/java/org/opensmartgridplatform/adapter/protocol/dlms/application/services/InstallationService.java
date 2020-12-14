@@ -13,6 +13,7 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Se
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.G_METER_ENCRYPTION;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.G_METER_MASTER;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
@@ -89,7 +90,7 @@ public class InstallationService {
     }
 
     private List<SecurityKeyType> determineKeyTypesToStore(SmartMeteringDeviceDto deviceDto) {
-        List<SecurityKeyType> keyTypesToStore = Arrays.asList(E_METER_MASTER, E_METER_AUTHENTICATION);
+        List<SecurityKeyType> keyTypesToStore = new ArrayList<>(Arrays.asList(E_METER_MASTER, E_METER_AUTHENTICATION));
         boolean deviceIsGMeter = this.getKeyFromDeviceDto(deviceDto, G_METER_MASTER) != null
                 || this.getKeyFromDeviceDto(deviceDto, G_METER_ENCRYPTION) != null;
         if (deviceIsGMeter) {
