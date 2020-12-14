@@ -42,7 +42,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
 
     private static final String NAMESPACE =
-            "http://www.opensmartgridplatform" + ".org/schemas/smartmetering/sm-bundle/2014/10";
+            "http://www.opensmartgridplatform.org/schemas/smartmetering/sm-bundle/2014/10";
 
     private final BundleService bundleService;
     private final ActionMapperService actionMapperService;
