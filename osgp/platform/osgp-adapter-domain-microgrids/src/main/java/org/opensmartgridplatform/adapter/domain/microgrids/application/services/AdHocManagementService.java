@@ -81,6 +81,20 @@ public class AdHocManagementService extends BaseService {
                 device.getIpAddress());
     }
 
+    public void handleInternalDataResponse(final GetDataResponseDto dataResponseDto, final CorrelationIds ids,
+            final String messageType) {
+        LOGGER.info("handleInternalDataResponse for MessageType: {}", messageType);
+        final GetDataResponse dataResponse = this.mapper.map(dataResponseDto, GetDataResponse.class);
+
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withIds(ids)
+                .withResult(ResponseMessageResultType.OK)
+                .withMessageType(messageType)
+                .withDataObject(dataResponse)
+                .build();
+        this.webServiceResponseMessageSender.send(responseMessage, messageType);
+    }
+
     public void handleGetDataResponse(final GetDataResponseDto dataResponseDto, final CorrelationIds ids,
             final String messageType, final ResponseMessageResultType responseMessageResultType,
             final OsgpException osgpException) {
@@ -117,6 +131,7 @@ public class AdHocManagementService extends BaseService {
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withIds(ids)
                 .withCorrelationUid(actualCorrelationUid)
+                .withMessageType(messageType)
                 .withResult(result)
                 .withOsgpException(exception)
                 .withDataObject(dataResponse)
