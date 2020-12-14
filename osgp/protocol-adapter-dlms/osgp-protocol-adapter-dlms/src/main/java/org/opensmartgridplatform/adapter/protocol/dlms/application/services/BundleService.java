@@ -60,13 +60,13 @@ public class BundleService {
                     this.checkIfExecutorExists(actionRequestClass, executor);
 
                     log.debug("**************************************************");
-                    log.info("Calling executor in bundle {} [deviceId={}]", executorName, device
-                            .getDeviceIdentification());
+                    log.info("Calling executor in bundle {} [deviceId={}]", executorName,
+                            device.getDeviceIdentification());
                     log.debug("**************************************************");
                     actionDto.setResponse(executor.executeBundleAction(conn, device, actionDto.getRequest()));
                 } catch (final ConnectionException connectionException) {
-                    log.warn("A connection exception occurred while executing {} [deviceId={}]", executorName, device
-                            .getDeviceIdentification(), connectionException);
+                    log.warn("A connection exception occurred while executing {} [deviceId={}]", executorName,
+                            device.getDeviceIdentification(), connectionException);
 
                     final List<ActionDto> remainingActionDtoList = actionList
                             .subList(actionList.indexOf(actionDto), actionList.size());
@@ -81,10 +81,10 @@ public class BundleService {
                     throw connectionException;
 
                 } catch (final Exception exception) {
-                    log.error("Error while executing bundle action for {} with {} [deviceId={}]", actionRequestClass
-                            .getName(), executorName, device.getDeviceIdentification(), exception);
-                    final String responseMessage = executor == null ? "Unable to handle request" : "Error handling " +
-                            "request with " + executorName;
+                    log.error("Error while executing bundle action for {} with {} [deviceId={}]",
+                            actionRequestClass.getName(), executorName, device.getDeviceIdentification(), exception);
+                    final String responseMessage = executor == null ? "Unable to handle request" :
+                            "Error handling " + "request with " + executorName;
                     this.addFaultResponse(actionDto, exception, responseMessage, device);
                 }
             }
@@ -97,8 +97,7 @@ public class BundleService {
             final DlmsDevice device) {
         final List<FaultResponseParameterDto> parameterList = new ArrayList<>();
         final FaultResponseParameterDto deviceIdentificationParameter = new FaultResponseParameterDto(
-                "deviceIdentification", device
-                .getDeviceIdentification());
+                "deviceIdentification", device.getDeviceIdentification());
         parameterList.add(deviceIdentificationParameter);
 
         final FaultResponseDto faultResponse = this.faultResponseForException(exception, parameterList, defaultMessage);
@@ -112,8 +111,8 @@ public class BundleService {
 
         if (exception instanceof FunctionalException || exception instanceof TechnicalException) {
             return this
-                    .faultResponseForFunctionalOrTechnicalException((OsgpException) exception,
-                            faultResponseParameters, defaultMessage);
+                    .faultResponseForFunctionalOrTechnicalException((OsgpException) exception, faultResponseParameters,
+                            defaultMessage);
         }
 
         return new FaultResponseDto.Builder().withMessage(defaultMessage)
@@ -173,10 +172,10 @@ public class BundleService {
     private void checkIfExecutorExists(final Class<? extends ActionRequestDto> actionRequestClass,
             final CommandExecutor<?, ?> executor) throws ProtocolAdapterException {
         if (executor == null) {
-            log.error("bundleCommandExecutorMap in {} does not have a CommandExecutor registered for action: {}", this
-                    .getClass().getName(), actionRequestClass.getName());
-            throw new ProtocolAdapterException("No CommandExecutor available to handle " + actionRequestClass
-                    .getSimpleName());
+            log.error("bundleCommandExecutorMap in {} does not have a CommandExecutor registered for action: {}",
+                    this.getClass().getName(), actionRequestClass.getName());
+            throw new ProtocolAdapterException(
+                    "No CommandExecutor available to handle " + actionRequestClass.getSimpleName());
         }
     }
 }
