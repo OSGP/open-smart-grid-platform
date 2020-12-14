@@ -9,8 +9,8 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_AUTHENTICATION;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_ENCRYPTION;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_MASTER;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.G_METER_ENCRYPTION;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.G_METER_MASTER;
 
 import java.util.ArrayList;
@@ -81,9 +81,7 @@ public class InstallationService {
             if (key != null && ArrayUtils.isNotEmpty(key)) {
                 keysByType.put(keyType, this.encryptionService.rsaDecrypt(key));
             } else {
-                String rootCauseMessage = "Key type %s not provided; provided key types: %s";
-                Exception rootCause = new NoSuchElementException(
-                        String.format(rootCauseMessage, keyType.name(), keysByType.keySet()));
+                Exception rootCause = new NoSuchElementException(keyType.name());
                 throw new FunctionalException(FunctionalExceptionType.KEY_NOT_PRESENT, ComponentType.PROTOCOL_DLMS,
                         rootCause);
             }
@@ -92,11 +90,10 @@ public class InstallationService {
     }
 
     private List<SecurityKeyType> determineKeyTypesToStore(SmartMeteringDeviceDto deviceDto) {
-        List<SecurityKeyType> keyTypesToStore = new ArrayList<>(Arrays.asList(E_METER_MASTER, E_METER_AUTHENTICATION));
-        boolean deviceIsGMeter = this.getKeyFromDeviceDto(deviceDto, G_METER_MASTER) != null
-                || this.getKeyFromDeviceDto(deviceDto, G_METER_ENCRYPTION) != null;
-        if (deviceIsGMeter) {
-            keyTypesToStore.addAll(Arrays.asList(G_METER_MASTER, G_METER_ENCRYPTION));
+        List<SecurityKeyType> keyTypesToStore = new ArrayList<>(
+                Arrays.asList(E_METER_MASTER, E_METER_AUTHENTICATION, E_METER_ENCRYPTION));
+        if (this.getKeyFromDeviceDto(deviceDto, G_METER_MASTER) != null) {
+            keyTypesToStore.addAll(Arrays.asList(G_METER_MASTER));
         }
         return keyTypesToStore;
     }
@@ -107,7 +104,7 @@ public class InstallationService {
             return deviceDto.getMasterKey();
         case E_METER_AUTHENTICATION:
             return deviceDto.getAuthenticationKey();
-        case G_METER_ENCRYPTION:
+        case E_METER_ENCRYPTION:
             return deviceDto.getGlobalEncryptionUnicastKey();
         case G_METER_MASTER:
             return deviceDto.getMbusDefaultKey();
