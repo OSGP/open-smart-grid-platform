@@ -74,8 +74,7 @@ public class InstallationService {
 
     private void storeNewKeys(final SmartMeteringDeviceDto deviceDto) throws FunctionalException {
         Map<SecurityKeyType, byte[]> keysByType = new EnumMap<>(SecurityKeyType.class);
-        List<SecurityKeyType> keyTypesToStore = Arrays
-                .asList(E_METER_MASTER, E_METER_AUTHENTICATION, G_METER_MASTER, G_METER_ENCRYPTION);
+        List<SecurityKeyType> keyTypesToStore = this.determineKeyTypesToStore(deviceDto);
         for (SecurityKeyType keyType : keyTypesToStore) {
             byte[] key = this.getKeyFromDeviceDto(deviceDto, keyType);
             if (key != null && ArrayUtils.isNotEmpty(key)) {
@@ -87,6 +86,16 @@ public class InstallationService {
             }
         }
         this.secretManagementService.storeNewKeys(deviceDto.getDeviceIdentification(), keysByType);
+    }
+
+    private List<SecurityKeyType> determineKeyTypesToStore(SmartMeteringDeviceDto deviceDto) {
+        List<SecurityKeyType> keyTypesToStore = Arrays.asList(E_METER_MASTER, E_METER_AUTHENTICATION);
+        boolean deviceIsGMeter = this.getKeyFromDeviceDto(deviceDto, G_METER_MASTER) != null
+                || this.getKeyFromDeviceDto(deviceDto, G_METER_ENCRYPTION) != null;
+        if (deviceIsGMeter) {
+            keyTypesToStore.addAll(Arrays.asList(G_METER_MASTER, G_METER_ENCRYPTION));
+        }
+        return keyTypesToStore;
     }
 
     private byte[] getKeyFromDeviceDto(SmartMeteringDeviceDto deviceDto, SecurityKeyType keyType) {
