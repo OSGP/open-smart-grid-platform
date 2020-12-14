@@ -17,9 +17,10 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Calendar;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 
@@ -185,7 +186,8 @@ public class LightMeasurementDeviceSteps extends BaseDeviceSteps {
         final LightMeasurementDevice lmd01 = this.createLightMeasurementDevice("LMD-01", "N-01", "#c9eec9", (short) 1);
 
         // Set the last communication time to 2017-08-01 at 13:00 UTC
-        final Date lastCommunicationTimeLmd01 = new GregorianCalendar(2017, Calendar.AUGUST, 1, 13, 0).getTime();
+        final Instant lastCommunicationTimeLmd01 = ZonedDateTime.of(2017, 8, 1, 13, 0, 0, 0, ZoneOffset.UTC)
+                .toInstant();
         lmd01.setLastCommunicationTime(lastCommunicationTimeLmd01);
         this.lightMeasurementDeviceRepository.save(lmd01);
 
@@ -215,7 +217,7 @@ public class LightMeasurementDeviceSteps extends BaseDeviceSteps {
         lightMeasurementDevice.setDescription(deviceIdentification);
         lightMeasurementDevice.setCode(code);
         lightMeasurementDevice.setColor(color);
-        lightMeasurementDevice.setLastCommunicationTime(technicalInstallationDate);
+        lightMeasurementDevice.setLastCommunicationTime(technicalInstallationDate.toInstant());
         lightMeasurementDevice.setDigitalInput(digitalInput);
 
         // Setting the default authorization both creates the device and adds

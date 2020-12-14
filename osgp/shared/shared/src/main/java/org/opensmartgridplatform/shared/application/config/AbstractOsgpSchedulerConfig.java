@@ -63,9 +63,13 @@ public class AbstractOsgpSchedulerConfig extends AbstractSchedulingConfig {
         this.testIfQuartzTablesExist();
 
         final SchedulingConfigProperties schedulingConfigProperties = SchedulingConfigProperties.newBuilder()
-                .withSchedulerName(this.schedulerName).withThreadCountKey(KEY_QUARTZ_SCHEDULER_THREAD_COUNT)
-                .withJobStoreDbUrl(this.getDatabaseUrl()).withJobStoreDbUsername(this.databaseUsername)
-                .withJobStoreDbPassword(this.databasePassword).withJobStoreDbDriver(this.databaseDriver).build();
+                .withSchedulerName(this.schedulerName)
+                .withThreadCountKey(KEY_QUARTZ_SCHEDULER_THREAD_COUNT)
+                .withJobStoreDbUrl(this.getDatabaseUrl())
+                .withJobStoreDbUsername(this.databaseUsername)
+                .withJobStoreDbPassword(this.databasePassword)
+                .withJobStoreDbDriver(this.databaseDriver)
+                .build();
 
         final Scheduler quartzScheduler = this.constructAndStartQuartzScheduler(schedulingConfigProperties);
         return new OsgpScheduler(quartzScheduler);
@@ -118,4 +122,5 @@ public class AbstractOsgpSchedulerConfig extends AbstractSchedulingConfig {
             LOGGER.error("InterruptedException", e);
         }
     }
+
 }
