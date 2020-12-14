@@ -63,8 +63,6 @@ public class RtuDeviceSteps extends BaseDeviceSteps {
         if (settings.containsKey(KEY_LAST_COMMUNICATION_TIME)) {
             return DateTimeHelper.getDateTime(settings.get(KEY_LAST_COMMUNICATION_TIME));
         }
-        // Set to time in future in order to prevent tests failing due to
-        // communication restore messages
-        return DateTime.now().plusMinutes(5);
+        return DateTime.now();
     }
 }
