@@ -83,8 +83,8 @@ public class BundleService {
                 } catch (final Exception exception) {
                     log.error("Error while executing bundle action for {} with {} [deviceId={}]",
                             actionRequestClass.getName(), executorName, device.getDeviceIdentification(), exception);
-                    final String responseMessage = executor == null ? "Unable to handle request" :
-                            "Error handling " + "request with " + executorName;
+                    final String responseMessage = executor == null ? "Unable to handle request" : "Error handling " +
+                            "request with " + executorName;
                     this.addFaultResponse(actionDto, exception, responseMessage, device);
                 }
             }
