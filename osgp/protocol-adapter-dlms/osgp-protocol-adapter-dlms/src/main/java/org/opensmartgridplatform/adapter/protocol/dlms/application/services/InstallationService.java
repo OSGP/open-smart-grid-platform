@@ -81,7 +81,9 @@ public class InstallationService {
             if (key != null && ArrayUtils.isNotEmpty(key)) {
                 keysByType.put(keyType, this.encryptionService.rsaDecrypt(key));
             } else {
-                Exception rootCause = new NoSuchElementException(keyType.name());
+                String rootCauseMessage = "Key type %s not provided; provided key types: %s";
+                Exception rootCause = new NoSuchElementException(
+                        String.format(rootCauseMessage, keyType.name(), keysByType.keySet()));
                 throw new FunctionalException(FunctionalExceptionType.KEY_NOT_PRESENT, ComponentType.PROTOCOL_DLMS,
                         rootCause);
             }
