@@ -48,12 +48,14 @@ public class BundleService {
             // Because it could be a retry.
             if (actionDto.getResponse() == null) {
 
-                final Class<? extends ActionRequestDto> actionRequestClass = actionDto.getRequest().getClass();
+                final Class<? extends ActionRequestDto> actionRequestClass = actionDto.getRequest()
+                        .getClass();
 
                 final CommandExecutor<?, ?> executor = this.bundleCommandExecutorMap.getCommandExecutor(
                         actionRequestClass);
 
-                final String executorName = executor == null ? "null" : executor.getClass().getSimpleName();
+                final String executorName = executor == null ? "null" : executor.getClass()
+                        .getSimpleName();
 
                 try {
 
@@ -73,7 +75,9 @@ public class BundleService {
 
                     if (log.isDebugEnabled()) {
                         for (final ActionDto remainingActionDto : remainingActionDtoList) {
-                            log.debug("Skipping: {}", remainingActionDto.getRequest().getClass().getSimpleName());
+                            log.debug("Skipping: {}", remainingActionDto.getRequest()
+                                    .getClass()
+                                    .getSimpleName());
                         }
                     }
 
@@ -116,8 +120,7 @@ public class BundleService {
                     faultResponseParameters, defaultMessage);
         }
 
-        return new FaultResponseDto.Builder()
-                .withMessage(defaultMessage)
+        return new FaultResponseDto.Builder().withMessage(defaultMessage)
                 .withComponent(ComponentType.PROTOCOL_DLMS.name())
                 .withInnerException(exception.getClass().getName())
                 .withInnerMessage(exception.getMessage())
@@ -147,7 +150,8 @@ public class BundleService {
         if (exception.getComponentType() == null) {
             component = null;
         } else {
-            component = exception.getComponentType().name();
+            component = exception.getComponentType()
+                    .name();
         }
 
         final String innerException;
@@ -157,7 +161,8 @@ public class BundleService {
             innerException = null;
             innerMessage = null;
         } else {
-            innerException = cause.getClass().getName();
+            innerException = cause.getClass()
+                    .getName();
             innerMessage = cause.getMessage();
         }
 
@@ -168,8 +173,7 @@ public class BundleService {
             message = exception.getMessage();
         }
 
-        return new FaultResponseDto.Builder()
-                .withCode(code)
+        return new FaultResponseDto.Builder().withCode(code)
                 .withMessage(message)
                 .withComponent(component)
                 .withInnerException(innerException)
@@ -182,7 +186,8 @@ public class BundleService {
             final CommandExecutor<?, ?> executor) throws ProtocolAdapterException {
         if (executor == null) {
             log.error("bundleCommandExecutorMap in {} does not have a CommandExecutor registered for action: {}",
-                    this.getClass().getName(), actionRequestClass.getName());
+                    this.getClass()
+                            .getName(), actionRequestClass.getName());
             throw new ProtocolAdapterException(
                     "No CommandExecutor available to handle " + actionRequestClass.getSimpleName());
         }
