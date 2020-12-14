@@ -116,9 +116,13 @@ public class BundleService {
                     faultResponseParameters, defaultMessage);
         }
 
-        return new FaultResponseDto.Builder().withMessage(defaultMessage).withComponent(
-                ComponentType.PROTOCOL_DLMS.name()).withInnerException(exception.getClass().getName()).withInnerMessage(
-                exception.getMessage()).withFaultResponseParameters(faultResponseParameters).build();
+        return new FaultResponseDto.Builder()
+                .withMessage(defaultMessage)
+                .withComponent(ComponentType.PROTOCOL_DLMS.name())
+                .withInnerException(exception.getClass().getName())
+                .withInnerMessage(exception.getMessage())
+                .withFaultResponseParameters(faultResponseParameters)
+                .build();
     }
 
     private FaultResponseParametersDto faultResponseParametersForList(
