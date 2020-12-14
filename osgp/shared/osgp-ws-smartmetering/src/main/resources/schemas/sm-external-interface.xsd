@@ -27,8 +27,10 @@
           <!-- requests from P4/P5 -->
           <xsd:element ref="bun:GetPeriodicMeterReadsRequest"/>
           <xsd:element ref="bun:GetPowerQualityProfileRequest"/>
-          <xsd:element ref="adm:SetMaintenanceStateRequest"/>
           <xsd:element ref="bun:GetOutagesRequest"/>
+          <xsd:element ref="bun:GetActualMeterReadsRequest"/>
+          <xsd:element ref="bun:GetActualMeterReadsGasRequest"/>
+          <xsd:element ref="adm:SetMaintenanceStateRequest"/>
         </xsd:choice>
       </xsd:sequence>
     </xsd:complexType>
@@ -45,9 +47,11 @@
           <!-- responses to P4/P5 -->
           <xsd:element ref="bun:PeriodicMeterReadsResponse"/>
           <xsd:element ref="bun:GetPowerQualityProfileResponse"/>
+          <xsd:element ref="bun:GetOutagesResponse"/>
+          <xsd:element ref="bun:ActualMeterReadsResponse"/>
+          <xsd:element ref="bun:ActualMeterReadsGasResponse"/>
           <xsd:element ref="con:GetPushNotificationAlarmResponse"/>
           <xsd:element ref="bun:FindEventsResponse"/>
-          <xsd:element ref="bun:GetOutagesResponse"/>
           <xsd:element ref="bun:FaultResponse"/>
         </xsd:choice>
       </xsd:sequence>
