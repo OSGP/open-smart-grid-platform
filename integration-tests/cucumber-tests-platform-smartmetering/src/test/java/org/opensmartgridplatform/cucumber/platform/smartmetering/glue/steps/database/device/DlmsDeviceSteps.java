@@ -152,7 +152,7 @@ public class DlmsDeviceSteps {
     public DlmsDeviceSteps() {
         this.securityKeyTypesByInputName
                 .put(PlatformSmartmeteringKeys.KEY_DEVICE_AUTHENTICATIONKEY, E_METER_AUTHENTICATION);
-        this.securityKeyTypesByInputName.put(PlatformSmartmeteringKeys.SECURITY_KEY_E, E_METER_ENCRYPTION);
+        this.securityKeyTypesByInputName.put(PlatformSmartmeteringKeys.KEY_DEVICE_ENCRYPTIONKEY, E_METER_ENCRYPTION);
         this.securityKeyTypesByInputName.put(PlatformSmartmeteringKeys.KEY_DEVICE_MASTERKEY, E_METER_MASTER);
         this.securityKeyTypesByInputName.put(PlatformSmartmeteringKeys.PASSWORD, PASSWORD);
         this.securityKeyTypesByInputName.put(MBUS_USER_KEY, G_METER_ENCRYPTION);
@@ -543,9 +543,10 @@ public class DlmsDeviceSteps {
                 secretBuilders.add(this.getAppropriateSecretBuilder(MBUS_USER_KEY, inputSettings));
             }
         } else if (this.isESmartMeter(deviceType)) {
-            secretBuilders.add(this.getAppropriateSecretBuilder(PlatformSmartmeteringKeys.SECURITY_TYPE_E, inputSettings));
-            secretBuilders
-                    .add(this.getAppropriateSecretBuilder(PlatformSmartmeteringKeys.KEY_DEVICE_MASTERKEY, inputSettings));
+            secretBuilders.add(this
+                    .getAppropriateSecretBuilder(PlatformSmartmeteringKeys.KEY_DEVICE_ENCRYPTIONKEY, inputSettings));
+            secretBuilders.add(this
+                    .getAppropriateSecretBuilder(PlatformSmartmeteringKeys.KEY_DEVICE_MASTERKEY, inputSettings));
             secretBuilders.add(this.getAppropriateSecretBuilder(PlatformSmartmeteringKeys.KEY_DEVICE_AUTHENTICATIONKEY,
                     inputSettings));
         }
@@ -566,9 +567,10 @@ public class DlmsDeviceSteps {
     private SecretBuilder getAppropriateSecretBuilder(final String keyTypeInputName,
             final Map<String, String> inputSettings) {
         SecurityKeyType keyType = this.securityKeyTypesByInputName.get(keyTypeInputName);
-        if(keyType==null) {
-            throw new IllegalArgumentException(String.format("Unknown key type name %s; available types names: %s",
-                    keyTypeInputName, this.securityKeyTypesByInputName.keySet()));
+        if (keyType == null) {
+            throw new IllegalArgumentException(
+                    String.format("Unknown key type name %s; available types names: %s", keyTypeInputName,
+                            this.securityKeyTypesByInputName.keySet()));
         }
         if (inputSettings.containsKey(keyTypeInputName)) {
             final String inputKey = inputSettings.get(keyTypeInputName);
