@@ -8,7 +8,7 @@
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -102,7 +102,6 @@ class ConfigurationManagementServiceTest {
 
     @BeforeEach
     public void setUp() throws SecurityException, IllegalArgumentException {
-
         // make correlationIds
         this.correlationIds = new CorrelationIds(ORG_IDENTIFICATION, DEVICE_IDENTIFICATION, CORRELATION_UID);
     }
@@ -138,7 +137,6 @@ class ConfigurationManagementServiceTest {
     void testTrySetConfigurationWithNoConfiguration() throws Exception {
         this.configurationManagementService.setConfiguration(this.correlationIds, null, SCHEDULE_TIME, MESSAGE_TYPE,
                 MESSAGE_PRIORITY);
-
         verify(this.domainCoreMapper, never()).map(any(), any());
     }
 
@@ -160,7 +158,8 @@ class ConfigurationManagementServiceTest {
         assertThat(this.messageTypeArgumentCaptor.getValue()).isEqualTo(MESSAGE_TYPE);
         assertThat(this.messagePriorityArgumentCaptor.getValue()).isEqualTo(MESSAGE_PRIORITY);
         assertThat(this.ipAddressArgumentCaptor.getValue()).isNull();
-        assertThat(this.scheduledTimeArgumentCaptor.getValue()).isEqualTo(SCHEDULE_TIME);    }
+        assertThat(this.scheduledTimeArgumentCaptor.getValue()).isEqualTo(SCHEDULE_TIME);
+    }
 
     @Test
     void testGetConfiguration() throws UnknownEntityException, FunctionalException {
@@ -188,8 +187,7 @@ class ConfigurationManagementServiceTest {
         when(this.ssldRepository.findByDeviceIdentification("deviceIdentification")).thenReturn(new Ssld());
 
         this.configurationManagementService.handleGetConfigurationResponse(this.configurationDto, this.correlationIds,
-                MESSAGE_TYPE, MESSAGE_PRIORITY,
-                ResponseMessageResultType.OK, this.exception);
+                MESSAGE_TYPE, MESSAGE_PRIORITY, ResponseMessageResultType.OK, this.exception);
 
         verify(this.webServiceResponseMessageSender).send(this.responseMessageArgumentCaptor.capture());
 
@@ -201,13 +199,15 @@ class ConfigurationManagementServiceTest {
     void testHandleGetConfigurationResponseWithException() {
         this.exception = new OsgpException(ComponentType.DOMAIN_ADMIN, "orgIdentification");
 
-        this.configurationManagementService.handleGetConfigurationResponse(this.configurationDto, this.correlationIds, MESSAGE_TYPE, MESSAGE_PRIORITY, ResponseMessageResultType.OK, this.exception);
+        this.configurationManagementService.handleGetConfigurationResponse(this.configurationDto, this.correlationIds,
+                MESSAGE_TYPE, MESSAGE_PRIORITY, ResponseMessageResultType.OK, this.exception);
 
         verify(this.ssldRepository, never()).findByDeviceIdentification(DEVICE_IDENTIFICATION);
         verify(this.webServiceResponseMessageSender).send(this.responseMessageArgumentCaptor.capture());
 
         this.checkResponseMessageArgumentCaptor();
-        assertThat(this.responseMessageArgumentCaptor.getValue().getResult()).isEqualTo(ResponseMessageResultType.NOT_OK);
+        assertThat(this.responseMessageArgumentCaptor.getValue().getResult())
+                .isEqualTo(ResponseMessageResultType.NOT_OK);
     }
 
     @Test
@@ -229,15 +229,19 @@ class ConfigurationManagementServiceTest {
         assertThat(this.ipAddressArgumentCaptor.getValue()).isEqualTo(IP_ADDRESS);
     }
 
-    private void checkRequestMessageArgumentCaptor(){
+    private void checkRequestMessageArgumentCaptor() {
         assertThat(this.requestMessageArgumentCaptor.getValue().getCorrelationUid()).isEqualTo("correlationUid");
-        assertThat(this.requestMessageArgumentCaptor.getValue().getOrganisationIdentification()).isEqualTo("orgIdentification");
-        assertThat(this.requestMessageArgumentCaptor.getValue().getDeviceIdentification()).isEqualTo("deviceIdentification");
+        assertThat(this.requestMessageArgumentCaptor.getValue().getOrganisationIdentification())
+                .isEqualTo("orgIdentification");
+        assertThat(this.requestMessageArgumentCaptor.getValue().getDeviceIdentification())
+                .isEqualTo("deviceIdentification");
     }
 
-    private void checkResponseMessageArgumentCaptor(){
+    private void checkResponseMessageArgumentCaptor() {
         assertThat(this.responseMessageArgumentCaptor.getValue().getCorrelationUid()).isEqualTo("correlationUid");
-        assertThat(this.responseMessageArgumentCaptor.getValue().getOrganisationIdentification()).isEqualTo("orgIdentification");
-        assertThat(this.responseMessageArgumentCaptor.getValue().getDeviceIdentification()).isEqualTo("deviceIdentification");
+        assertThat(this.responseMessageArgumentCaptor.getValue().getOrganisationIdentification())
+                .isEqualTo("orgIdentification");
+        assertThat(this.responseMessageArgumentCaptor.getValue().getDeviceIdentification())
+                .isEqualTo("deviceIdentification");
     }
 }
