@@ -34,6 +34,7 @@ import org.opensmartgridplatform.ws.schema.core.secret.management.OsgpResultType
 import org.opensmartgridplatform.ws.schema.core.secret.management.SecretType;
 import org.opensmartgridplatform.ws.schema.core.secret.management.SecretTypes;
 import org.opensmartgridplatform.ws.schema.core.secret.management.StoreSecretsRequest;
+import org.opensmartgridplatform.ws.schema.core.secret.management.StoreSecretsResponse;
 import org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecret;
 import org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecrets;
 import org.slf4j.Logger;
@@ -204,7 +205,20 @@ public class SecretManagementService {
             typedSecretList.add(ts);
         }
         StoreSecretsRequest request = this.createStoreSecretsRequest(deviceIdentification, typedSecrets);
-        this.secretManagementClient.storeSecretsRequest(request);
+        StoreSecretsResponse response = null;
+        try {
+            this.secretManagementClient.storeSecretsRequest(request);
+        } catch(RuntimeException exc) {
+            throw new IllegalStateException("Could not store keys: unexpected exception occured", exc);
+        }
+        if(!OsgpResultType.OK.equals(response.getResult())) {
+            if(response==null) {
+                throw new IllegalStateException("Could not store keys: NULL response");
+            } else {
+                throw new IllegalStateException(String.format("Could not store keys: result=%s; fault=%s",
+                        response.getResult(), response.getTechnicalFault()));
+            }
+        }
     }
 
     private void validateKeys(Map<SecurityKeyType, byte[]> keysByType) {
