@@ -207,17 +207,15 @@ public class SecretManagementService {
         StoreSecretsRequest request = this.createStoreSecretsRequest(deviceIdentification, typedSecrets);
         StoreSecretsResponse response = null;
         try {
-            this.secretManagementClient.storeSecretsRequest(request);
+            response = this.secretManagementClient.storeSecretsRequest(request);
         } catch(RuntimeException exc) {
             throw new IllegalStateException("Could not store keys: unexpected exception occured", exc);
         }
-        if(!OsgpResultType.OK.equals(response.getResult())) {
-            if(response==null) {
-                throw new IllegalStateException("Could not store keys: NULL response");
-            } else {
+        if(response==null) {
+            throw new IllegalStateException("Could not store keys: NULL response");
+        } else if(!OsgpResultType.OK.equals(response.getResult())) {
                 throw new IllegalStateException(String.format("Could not store keys: result=%s; fault=%s",
                         response.getResult(), response.getTechnicalFault()));
-            }
         }
     }
 
