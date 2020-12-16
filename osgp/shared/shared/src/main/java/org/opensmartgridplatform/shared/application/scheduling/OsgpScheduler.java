@@ -1,9 +1,11 @@
 /**
  * Copyright 2019 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.shared.application.scheduling;
 
@@ -109,8 +111,12 @@ public class OsgpScheduler {
      * @return A {@link Trigger} instance.
      */
     public Trigger createJobTrigger(final JobDetail jobDetail, final String cronExpression) {
-        return TriggerBuilder.newTrigger().forJob(jobDetail).withIdentity(jobDetail.getKey().getName() + "-Trigger")
-                .forJob(jobDetail).withSchedule(CronScheduleBuilder.cronSchedule(cronExpression)).build();
+        return TriggerBuilder.newTrigger()
+                .forJob(jobDetail)
+                .withIdentity(jobDetail.getKey().getName() + "-Trigger")
+                .forJob(jobDetail)
+                .withSchedule(CronScheduleBuilder.cronSchedule(cronExpression))
+                .build();
     }
 
     /**
@@ -140,5 +146,10 @@ public class OsgpScheduler {
         // Add and schedule for trigger.
         this.quartzScheduler.addJob(jobDetail, true);
         this.quartzScheduler.scheduleJob(jobDetail, new HashSet<>(Arrays.asList(trigger)), true);
+    }
+
+    public void deleteScheduledJob(final Class<? extends Job> jobClass) throws SchedulerException {
+        final JobDetail jobDetail = this.createJobDetail(jobClass);
+        this.quartzScheduler.deleteJob(jobDetail.getKey());
     }
 }

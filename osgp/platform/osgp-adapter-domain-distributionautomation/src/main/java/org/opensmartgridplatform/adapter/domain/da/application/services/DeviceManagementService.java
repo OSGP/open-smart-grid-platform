@@ -62,6 +62,26 @@ public class DeviceManagementService extends BaseService {
                 device.getIpAddress());
     }
 
+    public void handleInternalHealthStatusResponse(final GetHealthStatusResponseDto getHealthStatusResponseDto,
+            final String deviceIdentification, final String organisationIdentification, final String correlationUid,
+            final String messageType) {
+
+        LOGGER.info("handleResponse for MessageType: {}", messageType);
+
+        final GetHealthStatusResponse getHealthStatusResponse = this.mapper.map(getHealthStatusResponseDto,
+                GetHealthStatusResponse.class);
+
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(correlationUid)
+                .withOrganisationIdentification(organisationIdentification)
+                .withDeviceIdentification(deviceIdentification)
+                .withMessageType(messageType)
+                .withResult(ResponseMessageResultType.OK)
+                .withDataObject(getHealthStatusResponse)
+                .build();
+        this.responseMessageRouter.send(responseMessage, messageType);
+    }
+
     public void handleHealthStatusResponse(final GetHealthStatusResponseDto getHealthStatusResponseDto,
             final String deviceIdentification, final String organisationIdentification, final String correlationUid,
             final String messageType, final ResponseMessageResultType responseMessageResultType,
@@ -93,6 +113,7 @@ public class DeviceManagementService extends BaseService {
                 .withCorrelationUid(correlationUid)
                 .withOrganisationIdentification(organisationIdentification)
                 .withDeviceIdentification(deviceIdentification)
+                .withMessageType(messageType)
                 .withResult(result)
                 .withOsgpException(exception)
                 .withDataObject(getHealthStatusResponse)

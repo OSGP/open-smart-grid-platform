@@ -7,12 +7,10 @@
  */
 package org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out;
 
-import java.nio.ByteBuffer;
-import java.util.UUID;
-
 import org.opensmartgridplatform.adapter.kafka.da.application.config.LocationConfig;
 import org.opensmartgridplatform.adapter.kafka.da.application.mapping.DistributionAutomationMapper;
 import org.opensmartgridplatform.adapter.kafka.da.infra.mqtt.in.ScadaMeasurementPayload;
+import org.opensmartgridplatform.shared.utils.UuidUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +26,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
-public class ScadaMeasurementPublishedEventProducer {
+public class LowVoltageMessageProducer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ScadaMeasurementPublishedEventProducer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LowVoltageMessageProducer.class);
 
     private static final int META_MEASUREMENT_FEEDER = 100;
 
@@ -41,7 +39,7 @@ public class ScadaMeasurementPublishedEventProducer {
     private final LocationConfig locationConfig;
 
     @Autowired
-    public ScadaMeasurementPublishedEventProducer(
+    public LowVoltageMessageProducer(
             @Qualifier("distributionAutomationKafkaTemplate") final KafkaTemplate<String, Message> kafkaTemplate,
             final DistributionAutomationMapper mapper, final LocationConfig locationConfig) {
         this.kafkaTemplate = kafkaTemplate;
@@ -51,7 +49,7 @@ public class ScadaMeasurementPublishedEventProducer {
 
     public void send(final String measurement) {
 
-        LOGGER.info("ScadaMeasurementPublishedEventProducer.send is called with measurement {}", measurement);
+        LOGGER.info("LowVoltageMessageProducer.send is called with measurement {}", measurement);
 
         final ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -75,7 +73,7 @@ public class ScadaMeasurementPublishedEventProducer {
             LOGGER.debug("Trying to send ScadaMeasurementPublishedEventProducer {}", event);
 
             if (event != null) {
-                final MessageId messageId = new MessageId(getBytesFromUUID(UUID.randomUUID()));
+                final MessageId messageId = new MessageId(UuidUtil.getBytesFromRandomUuid());
                 final Message message = new Message(messageId, System.currentTimeMillis(), "GXF", null, event);
                 /*
                  * No need for callback functionality now; by default, the
@@ -103,13 +101,5 @@ public class ScadaMeasurementPublishedEventProducer {
             LOGGER.error("Payload contains a non-numeric value for feeder", e);
         }
         return payload;
-    }
-
-    private static byte[] getBytesFromUUID(final UUID uuid) {
-        final ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
-        bb.putLong(uuid.getMostSignificantBits());
-        bb.putLong(uuid.getLeastSignificantBits());
-
-        return bb.array();
     }
 }

@@ -10,6 +10,8 @@ package org.opensmartgridplatform.adapter.domain.publiclighting.application.task
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.net.InetAddress;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -289,9 +291,9 @@ public class BaseTask {
             return lightMeasurementDevices;
         }
 
-        final Date maxAge = DateTime.now(DateTimeZone.UTC).minusHours(maximumAllowedAge).toDate();
+        final Instant maxAge = Instant.now().minus(maximumAllowedAge, ChronoUnit.HOURS);
         final long valueForMissingTime = 0;
-        final long boundaryTime = this.getTime(maxAge, valueForMissingTime);
+        final long boundaryTime = getTime(maxAge, valueForMissingTime);
 
         final Predicate<LightMeasurementDevice> deviceFilter;
         if (boundaryTime < valueForMissingTime) {
@@ -314,11 +316,18 @@ public class BaseTask {
                 .collect(Collectors.toList());
     }
 
-    private long getTime(final Date date, final long valueIfNull) {
+    private static long getTime(final Date date, final long valueIfNull) {
         if (date == null) {
             return valueIfNull;
         }
         return date.getTime();
+    }
+
+    private static long getTime(final Instant instant, final long valueIfNull) {
+        if (instant == null) {
+            return valueIfNull;
+        }
+        return instant.toEpochMilli();
     }
 
     private Predicate<LightMeasurementDevice> noCommunicationSince(final long boundaryTime,
@@ -347,8 +356,8 @@ public class BaseTask {
             final long valueForMissingTime) {
 
         final long lastCommunicationTimeLightMeasurementDevice = Long.max(
-                this.getTime(lightMeasurementDevice.getLastCommunicationTime(), valueForMissingTime),
-                this.getTime(lightMeasurementDevice.getLastSuccessfulConnectionTimestamp(), valueForMissingTime));
+                getTime(lightMeasurementDevice.getLastCommunicationTime(), valueForMissingTime),
+                getTime(lightMeasurementDevice.getLastSuccessfulConnectionTimestamp(), valueForMissingTime));
         final long lastCommunicationTimeGateway = this.getGatewayLastCommunicationTime(lightMeasurementDevice,
                 valueForMissingTime);
         return Long.max(lastCommunicationTimeLightMeasurementDevice, lastCommunicationTimeGateway);
@@ -362,10 +371,10 @@ public class BaseTask {
             return valueForMissingTime;
         }
 
-        final long lastSuccessFullConnectionTimestampGateway = this
-                .getTime(gatewayDevice.getLastSuccessfulConnectionTimestamp(), valueForMissingTime);
+        final long lastSuccessFullConnectionTimestampGateway = getTime(
+                gatewayDevice.getLastSuccessfulConnectionTimestamp(), valueForMissingTime);
         final long lastCommunicationTimeRtuGateway = this.rtuDeviceRepository.findById(gatewayDevice.getId())
-                .map(rtu -> this.getTime(rtu.getLastCommunicationTime(), valueForMissingTime))
+                .map(rtu -> getTime(rtu.getLastCommunicationTime(), valueForMissingTime))
                 .orElse(valueForMissingTime);
         return Long.max(lastSuccessFullConnectionTimestampGateway, lastCommunicationTimeRtuGateway);
     }
