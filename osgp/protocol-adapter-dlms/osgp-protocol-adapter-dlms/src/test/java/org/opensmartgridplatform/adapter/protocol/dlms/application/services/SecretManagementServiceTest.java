@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -89,14 +90,10 @@ public class SecretManagementServiceTest {
         response.setResult(OsgpResultType.OK);
         when(this.rsaEncrypter.encrypt(UNENCRYPTED_SECRET)).thenReturn(SOAP_SECRET);
         when(this.secretManagementClient.storeSecretsRequest(any())).thenReturn(response);
-        //ArgumentCaptor<StoreSecretsRequest> storeSecretsCaptor = ArgumentCaptor.forClass(StoreSecretsRequest.class);
         //EXECUTE
         this.testService.storeNewKeys(DEVICE_IDENTIFICATION, keys);
         //ASSERT
-        //verify(this.secretManagementClient).storeSecretsRequest(storeSecretsCaptor.capture());
-        //StoreSecretsRequest capturedArgument = storeSecretsCaptor.getValue();
-        //assertThat(capturedArgument.getDeviceId()).isEqualTo(DEVICE_IDENTIFICATION);
-        //assertThat(capturedArgument.getTypedSecrets().getTypedSecret().get(0).getSecret()).isEqualTo(HEX_SOAP_SECRET);
+        verify(this.secretManagementClient,times(1)).storeSecretsRequest(any());
     }
 
     @Test
