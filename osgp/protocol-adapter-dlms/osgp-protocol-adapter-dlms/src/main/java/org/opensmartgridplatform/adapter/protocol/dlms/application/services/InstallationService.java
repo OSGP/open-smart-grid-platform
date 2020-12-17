@@ -95,10 +95,8 @@ public class InstallationService {
 
     private List<SecurityKeyType> determineKeyTypesToStore(SmartMeteringDeviceDto deviceDto)
             throws FunctionalException {
-        List<SecurityKeyType> keyTypesToStore;
         if (this.getKeyFromDeviceDto(deviceDto, G_METER_MASTER) != null) {
             //device is a G-Meter
-            keyTypesToStore = Arrays.asList(G_METER_MASTER);
             if (this.getKeyFromDeviceDto(deviceDto, E_METER_MASTER) != null
                     || this.getKeyFromDeviceDto(deviceDto, E_METER_AUTHENTICATION) != null
                     || this.getKeyFromDeviceDto(deviceDto, E_METER_ENCRYPTION) != null) {
@@ -107,11 +105,11 @@ public class InstallationService {
                 throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.PROTOCOL_DLMS,
                         new IllegalArgumentException(msg));
             }
+            return Arrays.asList(G_METER_MASTER);
         } else {
             //device is an E-meter
-            keyTypesToStore = Arrays.asList(E_METER_MASTER, E_METER_AUTHENTICATION, E_METER_ENCRYPTION);
+            return Arrays.asList(E_METER_MASTER, E_METER_AUTHENTICATION, E_METER_ENCRYPTION);
         }
-        return keyTypesToStore;
     }
 
     private byte[] getKeyFromDeviceDto(SmartMeteringDeviceDto deviceDto, SecurityKeyType keyType) {
