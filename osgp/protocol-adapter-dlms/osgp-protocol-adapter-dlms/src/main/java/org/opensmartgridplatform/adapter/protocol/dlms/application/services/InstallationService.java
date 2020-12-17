@@ -67,12 +67,12 @@ public class InstallationService {
     private CoupleMbusDeviceByChannelCommandExecutor coupleMbusDeviceByChannelCommandExecutor;
 
     public void addMeter(final SmartMeteringDeviceDto smartMeteringDevice) throws FunctionalException {
-        this.storeNewKeys(smartMeteringDevice);
+        this.storeAndActivateKeys(smartMeteringDevice);
         final DlmsDevice dlmsDevice = this.installationMapper.map(smartMeteringDevice, DlmsDevice.class);
         this.dlmsDeviceRepository.save(dlmsDevice);
     }
 
-    private void storeNewKeys(final SmartMeteringDeviceDto deviceDto) throws FunctionalException {
+    private void storeAndActivateKeys(final SmartMeteringDeviceDto deviceDto) throws FunctionalException {
         Map<SecurityKeyType, byte[]> keysByType = new EnumMap<>(SecurityKeyType.class);
         List<SecurityKeyType> keyTypesToStore = this.determineKeyTypesToStore(deviceDto);
         for (SecurityKeyType keyType : keyTypesToStore) {
@@ -86,6 +86,7 @@ public class InstallationService {
             }
         }
         this.secretManagementService.storeNewKeys(deviceDto.getDeviceIdentification(), keysByType);
+        this.secretManagementService.activateNewKeys(deviceDto.getDeviceIdentification(), keyTypesToStore);
     }
 
     private List<SecurityKeyType> determineKeyTypesToStore(SmartMeteringDeviceDto deviceDto) {
