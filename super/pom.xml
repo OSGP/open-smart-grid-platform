@@ -14,7 +14,7 @@
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>super-osgp</artifactId>
-  <version>5.6.0-SNAPSHOT</version>
+  <version>5.7.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>super-osgp</name>
   <!-- Description, Organization, Licences, URL and Distribution Management
@@ -46,21 +46,21 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
-    <osgp.version>5.6.0-SNAPSHOT</osgp.version>
-    <osgp.dlms.version>5.6.0-SNAPSHOT</osgp.dlms.version>
-    <osgp.shared.version>5.6.0-SNAPSHOT</osgp.shared.version>
-    <osgp.jasper-interface.version>5.6.0-SNAPSHOT</osgp.jasper-interface.version>
-    <spring.version>5.3.0</spring.version>
+    <osgp.version>5.7.0-SNAPSHOT</osgp.version>
+    <osgp.dlms.version>5.7.0-SNAPSHOT</osgp.dlms.version>
+    <osgp.shared.version>5.7.0-SNAPSHOT</osgp.shared.version>
+    <osgp.jasper-interface.version>5.7.0-SNAPSHOT</osgp.jasper-interface.version>
+    <spring.version>5.3.1</spring.version>
     <spring.data.version>2.2.3.RELEASE</spring.data.version>
     <spring.data.commons.version>2.2.3.RELEASE</spring.data.commons.version>
     <spring.security.version>5.4.1</spring.security.version>
     <spring.wscore.version>3.0.9.RELEASE</spring.wscore.version>
     <spring.wssecurity.version>3.0.9.RELEASE</spring.wssecurity.version>
     <spring.wssupport.version>3.0.9.RELEASE</spring.wssupport.version>
-    <spring.ws.version>3.0.9.RELEASE</spring.ws.version>
+    <spring.ws.version>3.0.10.RELEASE</spring.ws.version>
     <assertj.version>3.16.1</assertj.version>
     <xmlunit.version>1.6</xmlunit.version>
-    <mockito.core.version>3.3.3</mockito.core.version>
+    <mockito.core.version>3.6.0</mockito.core.version>
     <apache.wss4j.version>1.6.19</apache.wss4j.version>
     <servlet.version>4.0.1</servlet.version>
     <servlet.jstl.version>1.2</servlet.jstl.version>
@@ -70,9 +70,9 @@
     <javax.validation.api.version>2.0.1.Final</javax.validation.api.version>
     <junit.version>5.7.0</junit.version>
     <junit.platform.launcher.version>1.6.2</junit.platform.launcher.version>
-    <byte.buddy.version>1.10.10</byte.buddy.version>
+    <byte.buddy.version>1.10.18</byte.buddy.version>
     <joda.version>2.10.6</joda.version>
-    <flyway.version>6.4.1</flyway.version>
+    <flyway.version>7.3.0</flyway.version>
     <slf4j.version>1.7.30</slf4j.version>
     <apache.commons.lang.version>3.10</apache.commons.lang.version>
     <apache.commons.text.version>1.8</apache.commons.text.version>
@@ -113,7 +113,7 @@
     <license.maven.plugin>3.0</license.maven.plugin>
     <jackson.version>2.11.0</jackson.version>
     <jackson-databind.version>2.10.3</jackson-databind.version>
-    <cxf.version>3.3.6</cxf.version>
+    <cxf.version>3.4.1</cxf.version>
     <quartz.version>2.3.2</quartz.version>
     <hikaricp.version>3.4.5</hikaricp.version>
     <micrometer.version>1.5.1</micrometer.version>

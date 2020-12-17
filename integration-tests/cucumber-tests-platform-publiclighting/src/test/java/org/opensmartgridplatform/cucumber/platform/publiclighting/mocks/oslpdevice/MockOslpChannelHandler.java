@@ -14,18 +14,22 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.security.PrivateKey;
 import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.codec.binary.Base64;
 import org.joda.time.DateTime;
+import org.opensmartgridplatform.cucumber.platform.publiclighting.PlatformPubliclightingDefaults;
 import org.opensmartgridplatform.oslp.Oslp;
 import org.opensmartgridplatform.oslp.Oslp.Message;
 import org.opensmartgridplatform.oslp.OslpEnvelope;
@@ -33,8 +37,11 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.protobuf.ByteString;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -42,87 +49,20 @@ import io.netty.channel.SimpleChannelInboundHandler;
 @Sharable
 public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope> {
 
-    private static class Callback {
-
-        private final int connectionTimeout;
-
-        private final CountDownLatch latch = new CountDownLatch(1);
-
-        private OslpEnvelope response;
-
-        Callback(final int connectionTimeout) {
-            this.connectionTimeout = connectionTimeout;
-        }
-
-        OslpEnvelope get(final String deviceIdentification) throws IOException, DeviceSimulatorException {
-            try {
-                if (!this.latch.await(this.connectionTimeout, TimeUnit.MILLISECONDS)) {
-                    LOGGER.warn("Failed to receive response from device {} within timelimit {} ms",
-                            deviceIdentification, this.connectionTimeout);
-                    throw new IOException(
-                            "Failed to receive response within timelimit " + this.connectionTimeout + " ms");
-                }
-
-                LOGGER.debug("Response received within {} ms", this.connectionTimeout);
-            } catch (final InterruptedException e) {
-                throw new DeviceSimulatorException("InterruptedException", e);
-            }
-            return this.response;
-        }
-
-        void handle(final OslpEnvelope response) {
-            this.response = response;
-            this.latch.countDown();
-        }
-    }
-
-    public static class OutOfSequenceEvent {
-        private final Long deviceId;
-        private final String request;
-        private final DateTime timestamp;
-
-        public OutOfSequenceEvent(final Long deviceId, final String request, final DateTime timestamp) {
-            this.deviceId = deviceId;
-            this.request = request;
-            this.timestamp = timestamp;
-        }
-
-        public Long getDeviceId() {
-            return this.deviceId;
-        }
-
-        public String getRequest() {
-            return this.request;
-        }
-
-        public DateTime getTimestamp() {
-            return this.timestamp;
-        }
-    }
-
     private static final Logger LOGGER = LoggerFactory.getLogger(MockOslpChannelHandler.class);
-
     private final ConcurrentMap<String, Callback> callbacks = new ConcurrentHashMap<>();
     private final Bootstrap clientBootstrap;
     private final int connectionTimeout;
     private final Lock lock = new ReentrantLock();
     private final DevicesContext devicesContext;
     private final String oslpSignature;
-
     private final String oslpSignatureProvider;
-
     private final List<OutOfSequenceEvent> outOfSequenceList = new ArrayList<>();
-
     private final PrivateKey privateKey;
-
     private final Random random = new Random();
-
     private final List<Message> receivedResponses;
-
     private final Long reponseDelayRandomRange;
-
     private final Long responseDelayTime;
-
     // Device settings
     private final Integer sequenceNumberMaximum;
 
@@ -140,6 +80,23 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
         this.clientBootstrap = clientBootstrap;
         this.devicesContext = devicesContext;
         this.receivedResponses = receivedResponses;
+    }
+
+    private static byte[] convertIntegerToByteArray(final Integer value) {
+        // See: platform.service.SequenceNumberUtils
+        final byte[] bytes = new byte[2];
+        bytes[0] = (byte) (value >>> 8);
+        bytes[1] = value.byteValue();
+        return bytes;
+    }
+
+    private static Integer convertByteArrayToInteger(final byte[] array) {
+        // See: platform.service.SequenceNumberUtils
+        return (array[0] & 0xFF) << 8 | (array[1] & 0xFF);
+    }
+
+    private static String getDeviceUid(final OslpEnvelope message) {
+        return Base64.encodeBase64String(message.getDeviceId());
     }
 
     @Override
@@ -248,6 +205,27 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
                     // wait for the response to actually be written. This
                     // improves stability of the tests
                     final ChannelFuture future = ctx.channel().writeAndFlush(response);
+
+                    final InetSocketAddress remoteAddress = (InetSocketAddress) ctx.channel().remoteAddress();
+                    final InetSocketAddress clientAddress = new InetSocketAddress(remoteAddress.getAddress(),
+                            PlatformPubliclightingDefaults.OSLP_ELSTER_SERVER_PORT);
+
+                    future.addListener((ChannelFutureListener) ChannelFutureListener -> {
+                        Executors.newSingleThreadScheduledExecutor().schedule(() -> {
+
+                            try {
+                                MockOslpChannelHandler.this.sendNotifications(clientAddress, message, deviceUid,
+                                        deviceState);
+                            } catch (final DeviceSimulatorException | IOException e) {
+                                LOGGER.info("Unable to send notifications", e);
+                            }
+                        }, 1000, TimeUnit.MILLISECONDS).get();
+
+                        if (!ChannelFutureListener.isSuccess()) {
+                            ChannelFutureListener.channel().close();
+                        }
+                    });
+
                     future.await();
 
                     LOGGER.debug("Sent OSLP response: {}", response.getPayloadMessage().toString().split(" ")[0]);
@@ -260,6 +238,50 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
         } else {
             LOGGER.warn("Received message wasn't properly secured.");
         }
+    }
+
+    private void sendNotifications(final InetSocketAddress inetAddress, final OslpEnvelope message,
+            final String deviceUid, final DeviceState deviceState) throws DeviceSimulatorException, IOException {
+
+        final MessageType messageType = this.getMessageType(message.getPayloadMessage());
+
+        if (MessageType.SET_LIGHT == messageType) {
+            final List<Oslp.LightValue> lightValueList = message.getPayloadMessage()
+                    .getSetLightRequest()
+                    .getValuesList();
+            for (final Oslp.LightValue lightValue : lightValueList) {
+                final Oslp.Event event = lightValue.getOn() ? Oslp.Event.LIGHT_EVENTS_LIGHT_ON
+                        : Oslp.Event.LIGHT_EVENTS_LIGHT_OFF;
+                final OslpEnvelope notification = this.buildNotification(message, deviceUid, deviceState, event,
+                        lightValue.getIndex());
+                this.send(inetAddress, notification, deviceUid);
+            }
+        }
+    }
+
+    private OslpEnvelope buildNotification(final OslpEnvelope message, final String deviceUid,
+            final DeviceState deviceState, final Oslp.Event event, final ByteString index) {
+        this.devicesContext.getDeviceState(deviceUid).incrementSequenceNumber();
+
+        final String timestamp = DateTimeFormatter.ofPattern("YYYYMMddHHmmss").format(LocalDateTime.now());
+
+        final Oslp.EventNotification.Builder eventNotificationBuilder = Oslp.EventNotification.newBuilder()
+                .setEvent(event)
+                .setDescription(event.name())
+                .setTimestamp(timestamp)
+                .setIndex(index);
+
+        final OslpEnvelope.Builder notificationBuilder = new OslpEnvelope.Builder().withSignature(this.oslpSignature)
+                .withProvider(this.oslpSignatureProvider)
+                .withPrimaryKey(this.privateKey)
+                .withDeviceId(message.getDeviceId())
+                .withSequenceNumber(convertIntegerToByteArray(deviceState.getSequenceNumber()))
+                .withPayloadMessage(Message.newBuilder()
+                        .setEventNotificationRequest(Oslp.EventNotificationRequest.newBuilder()
+                                .addNotifications(eventNotificationBuilder.build()))
+                        .build());
+
+        return notificationBuilder.build();
     }
 
     public OslpEnvelope send(final InetSocketAddress address, final OslpEnvelope request,
@@ -333,8 +355,7 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
         return this.handleRequest(message);
     }
 
-    public Oslp.Message handleRequest(final OslpEnvelope requestMessage)
-            throws DeviceSimulatorException, IOException, ParseException {
+    public Oslp.Message handleRequest(final OslpEnvelope requestMessage) throws DeviceSimulatorException {
         final Oslp.Message request = requestMessage.getPayloadMessage();
 
         final String deviceUid = MockOslpChannelHandler.getDeviceUid(requestMessage);
@@ -366,23 +387,6 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
     }
 
     public void reset() {
-    }
-
-    private static byte[] convertIntegerToByteArray(final Integer value) {
-        // See: platform.service.SequenceNumberUtils
-        final byte[] bytes = new byte[2];
-        bytes[0] = (byte) (value >>> 8);
-        bytes[1] = value.byteValue();
-        return bytes;
-    }
-
-    private static Integer convertByteArrayToInteger(final byte[] array) {
-        // See: platform.service.SequenceNumberUtils
-        return (array[0] & 0xFF) << 8 | (array[1] & 0xFF);
-    }
-
-    private static String getDeviceUid(final OslpEnvelope message) {
-        return Base64.encodeBase64String(message.getDeviceId());
     }
 
     /**
@@ -444,6 +448,64 @@ public class MockOslpChannelHandler extends SimpleChannelInboundHandler<OslpEnve
         }
 
         throw new DeviceSimulatorException("Received an unimplemented message type");
+    }
+
+    private static class Callback {
+
+        private final int connectionTimeout;
+
+        private final CountDownLatch latch = new CountDownLatch(1);
+
+        private OslpEnvelope response;
+
+        Callback(final int connectionTimeout) {
+            this.connectionTimeout = connectionTimeout;
+        }
+
+        OslpEnvelope get(final String deviceIdentification) throws IOException, DeviceSimulatorException {
+            try {
+                if (!this.latch.await(this.connectionTimeout, TimeUnit.MILLISECONDS)) {
+                    LOGGER.warn("Failed to receive response from device {} within timelimit {} ms",
+                            deviceIdentification, this.connectionTimeout);
+                    throw new IOException(
+                            "Failed to receive response within timelimit " + this.connectionTimeout + " ms");
+                }
+
+                LOGGER.debug("Response received within {} ms", this.connectionTimeout);
+            } catch (final InterruptedException e) {
+                throw new DeviceSimulatorException("InterruptedException", e);
+            }
+            return this.response;
+        }
+
+        void handle(final OslpEnvelope response) {
+            this.response = response;
+            this.latch.countDown();
+        }
+    }
+
+    public static class OutOfSequenceEvent {
+        private final Long deviceId;
+        private final String request;
+        private final DateTime timestamp;
+
+        public OutOfSequenceEvent(final Long deviceId, final String request, final DateTime timestamp) {
+            this.deviceId = deviceId;
+            this.request = request;
+            this.timestamp = timestamp;
+        }
+
+        public Long getDeviceId() {
+            return this.deviceId;
+        }
+
+        public String getRequest() {
+            return this.request;
+        }
+
+        public DateTime getTimestamp() {
+            return this.timestamp;
+        }
     }
 
 }

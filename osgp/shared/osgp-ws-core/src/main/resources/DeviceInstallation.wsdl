@@ -158,6 +158,36 @@
     </wsdl:part>
   </wsdl:message>
 
+  <wsdl:message name="AddLightMeasurementDeviceHeader">
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
+    <wsdl:part element="common:UserName" name="UserName" />
+    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+  </wsdl:message>
+  <wsdl:message name="AddLightMeasurementDeviceResponse">
+    <wsdl:part element="dinst:AddLightMeasurementDeviceResponse" name="AddLightMeasurementDeviceResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="AddLightMeasurementDeviceRequest">
+    <wsdl:part element="dinst:AddLightMeasurementDeviceRequest" name="AddLightMeasurementDeviceRequest">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="UpdateLightMeasurementDeviceHeader">
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
+    <wsdl:part element="common:UserName" name="UserName" />
+    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+  </wsdl:message>
+  <wsdl:message name="UpdateLightMeasurementDeviceResponse">
+    <wsdl:part element="dinst:UpdateLightMeasurementDeviceResponse" name="UpdateLightMeasurementDeviceResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="UpdateLightMeasurementDeviceRequest">
+    <wsdl:part element="dinst:UpdateLightMeasurementDeviceRequest" name="UpdateLightMeasurementDeviceRequest">
+    </wsdl:part>
+  </wsdl:message>
+
   <wsdl:portType name="DeviceInstallationPort">
 
     <wsdl:operation name="GetStatus">
@@ -226,6 +256,20 @@
       <wsdl:input message="tns:UpdateDeviceRequest" name="UpdateDeviceRequest">
       </wsdl:input>
       <wsdl:output message="tns:UpdateDeviceResponse" name="UpdateDeviceResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="AddLightMeasurementDevice">
+      <wsdl:input message="tns:AddLightMeasurementDeviceRequest" name="AddLightMeasurementDeviceRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:AddLightMeasurementDeviceResponse" name="AddLightMeasurementDeviceResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="UpdateLightMeasurementDevice">
+      <wsdl:input message="tns:UpdateLightMeasurementDeviceRequest" name="UpdateLightMeasurementDeviceRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:UpdateLightMeasurementDeviceResponse" name="UpdateLightMeasurementDeviceResponse">
       </wsdl:output>
     </wsdl:operation>
 
@@ -374,6 +418,38 @@
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="UpdateDeviceResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="AddLightMeasurementDevice">
+      <soap:operation soapAction="" />
+      <wsdl:input name="AddLightMeasurementDeviceRequest">
+        <soap:header message="tns:AddLightMeasurementDeviceHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:AddLightMeasurementDeviceHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:AddLightMeasurementDeviceHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="AddLightMeasurementDeviceResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="UpdateLightMeasurementDevice">
+      <soap:operation soapAction="" />
+      <wsdl:input name="UpdateLightMeasurementDeviceRequest">
+        <soap:header message="tns:UpdateLightMeasurementDeviceHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:UpdateLightMeasurementDeviceHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:UpdateLightMeasurementDeviceHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="UpdateLightMeasurementDeviceResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>

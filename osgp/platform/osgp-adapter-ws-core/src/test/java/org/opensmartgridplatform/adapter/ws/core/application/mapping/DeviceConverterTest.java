@@ -6,6 +6,14 @@ import static org.mockito.Mockito.when;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -115,11 +123,18 @@ public class DeviceConverterTest {
     }
 
     @Test
-    public void testSsldConversion() throws UnknownHostException {
+    public void testSsldConversion() throws Exception {
+        final Instant instant = ZonedDateTime.of(2020, 1, 1, 14, 0, 0, 0, ZoneOffset.UTC).toInstant();
+        final Date date = Date.from(instant);
+        final GregorianCalendar gregorianCalendar = GregorianCalendar.from(instant.atZone(ZoneOffset.UTC));
+        final XMLGregorianCalendar xmlGregorianCalendar = DatatypeFactory.newInstance()
+                .newXMLGregorianCalendar(gregorianCalendar);
+
         final Ssld device = new Ssld("id", "alias", new Address("city", "postal", "street", 42, "nr", "munic"),
                 new GpsCoordinates(12f, 13f), null);
         device.updateRegistrationData(InetAddress.getByName("localhost"), Ssld.SSLD_TYPE);
         device.getOutputSettings();
+        device.setTechnicalInstallationDate(date);
 
         when(this.ssldRepository.findByDeviceIdentification(anyString())).thenReturn(device);
 
@@ -143,6 +158,7 @@ public class DeviceConverterTest {
             assertThat(device.getOutputSettings().get(i).getAlias())
                     .isEqualTo(jaxbDevice.getOutputSettings().get(i).getAlias());
         }
+        assertThat(jaxbDevice.getTechnicalInstallationDate()).isEqualTo(xmlGregorianCalendar);
 
         final Ssld mappedBack = this.deviceManagementMapper.map(jaxbDevice, Ssld.class);
 
@@ -165,6 +181,6 @@ public class DeviceConverterTest {
             assertThat(device.getOutputSettings().get(i).getAlias())
                     .isEqualTo(mappedBack.getOutputSettings().get(i).getAlias());
         }
+        assertThat(mappedBack.getTechnicalInstallationDate()).isEqualTo(date);
     }
-
 }

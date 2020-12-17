@@ -116,6 +116,9 @@ public class ApplicationContext {
     @Value("${message.source.use.code.as.default.message:true}")
     private boolean messageSourceUseCodeAsDefaultMessage;
 
+    @Value("${reboot.delay.seconds:5}")
+    private int rebootDelayInSeconds;
+
     @Value("${response.delay.time:10}")
     private long responseDelayTime;
     @Value("${response.delay.random.range:20}")
@@ -270,6 +273,11 @@ public class ApplicationContext {
     @Bean
     public SwitchingServices switchingServices() {
         return new SwitchingServices();
+    }
+
+    @Bean
+    public Integer rebootDelayInSeconds() {
+        return this.rebootDelayInSeconds;
     }
 
     @Bean

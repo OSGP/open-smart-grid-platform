@@ -33,6 +33,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetAllAt
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfigurationObjectResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetOutagesResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterReads;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterReadsGas;
@@ -54,6 +55,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetAllAttributeV
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetOutagesResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MeterReadsGasResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MeterReadsResponseDto;
@@ -115,6 +117,7 @@ public class ActionMapperResponseService {
         classMap.put(SetDeviceLifecycleStatusByChannelResponseDto.class,
                 SetDeviceLifecycleStatusByChannelResponseData.class);
         classMap.put(ScanMbusChannelsResponseDto.class, ScanMbusChannelsResponseData.class);
+        classMap.put(GetOutagesResponseDto.class, GetOutagesResponseData.class);
     }
 
     /**
@@ -142,6 +145,7 @@ public class ActionMapperResponseService {
         classToMapperMap.put(GetMbusEncryptionKeyStatusByChannelResponseDto.class, this.configurationMapper);
         classToMapperMap.put(SetDeviceLifecycleStatusByChannelResponseDto.class, this.managementMapper);
         classToMapperMap.put(ScanMbusChannelsResponseDto.class, this.configurationMapper);
+        classToMapperMap.put(GetOutagesResponseDto.class, this.managementMapper);
     }
 
     public BundleMessagesResponse mapAllActions(final BundleMessagesRequestDto bundleMessageResponseDto)

@@ -145,7 +145,7 @@ public class FirmwareManagementService extends AbstractService {
             LOGGER.info("Saved pending fimware update record for SSLD: {}, {}", ids.getDeviceIdentification(),
                     ssldPendingFirmwareUpdate);
         } catch (final Exception e) {
-            LOGGER.error("Caugth exception when creating pending firmware update record for SSLD: {}",
+            LOGGER.error("Caught exception when creating pending firmware update record for SSLD: {}",
                     ids.getDeviceIdentification(), e);
         }
     }

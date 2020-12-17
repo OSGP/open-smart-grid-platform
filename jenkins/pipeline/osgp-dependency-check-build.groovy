@@ -16,10 +16,10 @@ pipeline {
         stage('Maven Build') {
             steps {
                 withMaven(
-                        maven: 'Apache Maven 3.6.2',
+                        maven: 'Apache Maven',
                         mavenLocalRepo: '.repository',
                         publisherStrategy: 'EXPLICIT') {
-                    sh "mvn -V -B -T 1C clean install site -DskipTests=true -DskipITs=true -Dmaven.version.rules=file://${pwd()}/super/versions-plugin-rules.xml -Dmaven.site.distributionManagement.site.url="
+                    sh "mvn -V -B -T 1 clean install site -DskipTests=true -DskipITs=true -Dmaven.version.rules=file://${pwd()}/super/versions-plugin-rules.xml -Dmaven.site.distributionManagement.site.url="
                 }
                 publishHTML(target: [
                         allowMissing: false,
@@ -30,9 +30,9 @@ pipeline {
                         reportName: 'Maven Site Reports'
                     ])
             }
-        }
+        } // stage
 
-    }
+    } // stages
 
     post {
         always {
@@ -50,5 +50,5 @@ pipeline {
             // Delete workspace folder.
             cleanWs()
         }
-    }
-}
+    } // post
+} // pipeline

@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.FindEventsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.SetDeviceLifecycleStatusByChannelCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -26,15 +27,12 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceCommuni
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service(value = "dlmsManagementService")
 public class ManagementService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ManagementService.class);
 
     @Autowired
     private FindEventsCommandExecutor findEventsCommandExecutor;
@@ -52,11 +50,11 @@ public class ManagementService {
 
         final List<EventDto> events = new ArrayList<>();
 
-        LOGGER.info("findEvents setting up connection with meter {}", device.getDeviceIdentification());
+        log.info("findEvents setting up connection with meter {}", device.getDeviceIdentification());
 
         for (final FindEventsRequestDto findEventsQuery :
                 findEventsQueryMessageDataContainer.getFindEventsQueryList()) {
-            LOGGER.info("findEventsQuery.eventLogCategory: {}, findEventsQuery.from: {}, findEventsQuery.until: {}",
+            log.info("findEventsQuery.eventLogCategory: {}, findEventsQuery.from: {}, findEventsQuery.until: {}",
                     findEventsQuery.getEventLogCategory().toString(), findEventsQuery.getFrom(),
                     findEventsQuery.getUntil());
 
