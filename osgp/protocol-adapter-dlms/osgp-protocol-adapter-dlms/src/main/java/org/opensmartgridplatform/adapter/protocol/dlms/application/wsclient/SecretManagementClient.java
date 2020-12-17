@@ -7,7 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.wsclient;
 
-import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.ws.schema.core.secret.management.ActivateSecretsRequest;
 import org.opensmartgridplatform.ws.schema.core.secret.management.ActivateSecretsResponse;
 import org.opensmartgridplatform.ws.schema.core.secret.management.GenerateAndStoreSecretsRequest;
@@ -20,6 +19,8 @@ import org.opensmartgridplatform.ws.schema.core.secret.management.HasNewSecretRe
 import org.opensmartgridplatform.ws.schema.core.secret.management.HasNewSecretResponse;
 import org.opensmartgridplatform.ws.schema.core.secret.management.StoreSecretsRequest;
 import org.opensmartgridplatform.ws.schema.core.secret.management.StoreSecretsResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
@@ -27,8 +28,8 @@ import org.springframework.ws.client.core.WebServiceTemplate;
  * SOAP Client for SecretManagement
  */
 @Component
-@Slf4j
 public class SecretManagementClient {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SecretManagementClient.class);
 
     private final WebServiceTemplate webServiceTemplate;
 
@@ -38,7 +39,7 @@ public class SecretManagementClient {
 
     public GetSecretsResponse getSecretsRequest(GetSecretsRequest request) {
 
-        log.info("Calling SecretManagement.getSecretsRequest over SOAP for device {}", request.getDeviceId());
+        LOGGER.info("Calling SecretManagement.getSecretsRequest over SOAP for device {}", request.getDeviceId());
 
         return (GetSecretsResponse) this.webServiceTemplate
                 .marshalSendAndReceive(request);
@@ -46,21 +47,21 @@ public class SecretManagementClient {
 
     public GetNewSecretsResponse getNewSecretsRequest(GetNewSecretsRequest request) {
 
-        log.info("Calling SecretManagement.getNewSecretsRequest over SOAP for device {}", request.getDeviceId());
+        LOGGER.info("Calling SecretManagement.getNewSecretsRequest over SOAP for device {}", request.getDeviceId());
 
         return (GetNewSecretsResponse) this.webServiceTemplate
                 .marshalSendAndReceive(request);
     }
 
     public StoreSecretsResponse storeSecretsRequest(StoreSecretsRequest request) {
-        log.info("Calling SecretManagement.storeSecretsRequest over SOAP for device {}", request.getDeviceId());
+        LOGGER.info("Calling SecretManagement.storeSecretsRequest over SOAP for device {}", request.getDeviceId());
 
         return (StoreSecretsResponse) this.webServiceTemplate
                 .marshalSendAndReceive(request);
     }
 
     public ActivateSecretsResponse activateSecretsRequest(ActivateSecretsRequest request) {
-        log.info("Calling SecretManagement.activateSecretsRequest over SOAP for device {}",
+        LOGGER.info("Calling SecretManagement.activateSecretsRequest over SOAP for device {}",
                 request.getDeviceId());
 
         return (ActivateSecretsResponse) this.webServiceTemplate
@@ -68,7 +69,7 @@ public class SecretManagementClient {
     }
 
     public HasNewSecretResponse hasNewSecretRequest(HasNewSecretRequest request) {
-        log.info("Calling SecretManagement.hasNewSecretsRequest over SOAP for device {}",
+        LOGGER.info("Calling SecretManagement.hasNewSecretsRequest over SOAP for device {}",
                 request.getDeviceId());
 
         return (HasNewSecretResponse) this.webServiceTemplate
@@ -76,7 +77,7 @@ public class SecretManagementClient {
     }
 
     public GenerateAndStoreSecretsResponse generateAndStoreSecrets(GenerateAndStoreSecretsRequest request) {
-        log.info("Calling SecretManagement.generateAndStoreSecrets over SOAP for device {}",
+        LOGGER.info("Calling SecretManagement.generateAndStoreSecrets over SOAP for device {}",
                 request.getDeviceId());
 
         return (GenerateAndStoreSecretsResponse) this.webServiceTemplate
