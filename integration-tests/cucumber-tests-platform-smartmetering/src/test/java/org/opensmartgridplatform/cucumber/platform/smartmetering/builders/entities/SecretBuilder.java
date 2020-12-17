@@ -50,18 +50,18 @@ public class SecretBuilder implements CucumberBuilder<DbEncryptedSecret> {
     @Override
     public SecretBuilder withSettings(final Map<String, String> inputSettings) {
         if (SecurityKeyType.E_METER_AUTHENTICATION == this.securityKeyType
-                && inputSettings.containsKey(PlatformSmartmeteringKeys.SECURITY_KEY_A)) {
-            this.setKey(getString(inputSettings, PlatformSmartmeteringKeys.SECURITY_KEY_A));
+                && inputSettings.containsKey(PlatformSmartmeteringKeys.KEY_DEVICE_AUTHENTICATIONKEY)) {
+            this.setKey(getString(inputSettings, PlatformSmartmeteringKeys.KEY_DEVICE_ENCRYPTIONKEY));
         }
 
         if (SecurityKeyType.E_METER_MASTER == this.securityKeyType
-                && inputSettings.containsKey(PlatformSmartmeteringKeys.SECURITY_KEY_M)) {
-            this.setKey(getString(inputSettings, PlatformSmartmeteringKeys.SECURITY_KEY_M));
+                && inputSettings.containsKey(PlatformSmartmeteringKeys.KEY_DEVICE_MASTERKEY)) {
+            this.setKey(getString(inputSettings, PlatformSmartmeteringKeys.KEY_DEVICE_MASTERKEY));
         }
 
         if (SecurityKeyType.E_METER_ENCRYPTION == this.securityKeyType
-                && inputSettings.containsKey(PlatformSmartmeteringKeys.SECURITY_KEY_E)) {
-            this.setKey(getString(inputSettings, PlatformSmartmeteringKeys.SECURITY_KEY_E));
+                && inputSettings.containsKey(PlatformSmartmeteringKeys.KEY_DEVICE_ENCRYPTIONKEY)) {
+            this.setKey(getString(inputSettings, PlatformSmartmeteringKeys.KEY_DEVICE_ENCRYPTIONKEY));
         }
 
         if (SecurityKeyType.G_METER_MASTER == this.securityKeyType
