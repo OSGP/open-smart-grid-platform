@@ -35,7 +35,7 @@ import org.opensmartgridplatform.ws.schema.core.secret.management.GenerateAndSto
 import org.opensmartgridplatform.ws.schema.core.secret.management.GetSecretsResponse;
 import org.opensmartgridplatform.ws.schema.core.secret.management.HasNewSecretResponse;
 import org.opensmartgridplatform.ws.schema.core.secret.management.OsgpResultType;
-import org.opensmartgridplatform.ws.schema.core.secret.management.StoreSecretsResponse;
+import org.opensmartgridplatform.ws.schema.core.secret.management.StoreSecretsRequest;
 import org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecret;
 import org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecrets;
 
@@ -85,18 +85,15 @@ public class SecretManagementServiceTest {
     public void testStoreNewKeys() {
         Map<SecurityKeyType, byte[]> keys = new HashMap<>();
         keys.put(KEY_TYPE, UNENCRYPTED_SECRET);
-        StoreSecretsResponse response = new StoreSecretsResponse();
-        response.setResult(OsgpResultType.OK);
         when(this.rsaEncrypter.encrypt(UNENCRYPTED_SECRET)).thenReturn(SOAP_SECRET);
-        when(this.secretManagementClient.storeSecretsRequest(any())).thenReturn(response);
-        //ArgumentCaptor<StoreSecretsRequest> storeSecretsCaptor = ArgumentCaptor.forClass(StoreSecretsRequest.class);
+        ArgumentCaptor<StoreSecretsRequest> storeSecretsCaptor = ArgumentCaptor.forClass(StoreSecretsRequest.class);
         //EXECUTE
         this.testService.storeNewKeys(DEVICE_IDENTIFICATION, keys);
         //ASSERT
-        //verify(this.secretManagementClient).storeSecretsRequest(storeSecretsCaptor.capture());
-        //StoreSecretsRequest capturedArgument = storeSecretsCaptor.getValue();
-        //assertThat(capturedArgument.getDeviceId()).isEqualTo(DEVICE_IDENTIFICATION);
-        //assertThat(capturedArgument.getTypedSecrets().getTypedSecret().get(0).getSecret()).isEqualTo(HEX_SOAP_SECRET);
+        verify(this.secretManagementClient).storeSecretsRequest(storeSecretsCaptor.capture());
+        StoreSecretsRequest capturedArgument = storeSecretsCaptor.getValue();
+        assertThat(capturedArgument.getDeviceId()).isEqualTo(DEVICE_IDENTIFICATION);
+        assertThat(capturedArgument.getTypedSecrets().getTypedSecret().get(0).getSecret()).isEqualTo(HEX_SOAP_SECRET);
     }
 
     @Test
