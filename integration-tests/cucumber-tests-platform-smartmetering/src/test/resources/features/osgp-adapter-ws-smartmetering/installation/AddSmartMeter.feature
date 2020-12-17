@@ -1,7 +1,8 @@
-@SmartMetering @Platform @testaddmeter
+@SmartMetering @Platform
 Feature: SmartMetering Installation - Add smart meter
   As a grid operator
   I want to be able to add a smart meter
+
   Scenario: Add a new device
     When receiving a smartmetering add device request
       | DeviceIdentification  | TEST1024000000001                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
@@ -28,7 +29,7 @@ Feature: SmartMetering Installation - Add smart meter
       | ModelCode        | Test |
     And a request to the device can be performed after activation
     And the stored keys are not equal to the received keys
-  @NightlyBuildOnly
+  @NightlyBuildOnly @Skip
   Scenario: Add a new device with incorrectly encrypted keys
     When receiving a smartmetering add device request
       | DeviceIdentification  | TEST1024000000001 |
@@ -49,5 +50,5 @@ Feature: SmartMetering Installation - Add smart meter
     And a SOAP fault should have been returned
       | Code         | 804                                                           |
       | Message      | DECRYPTION_EXCEPTION                                          |
-      | InnerMessage | Unexpected exception during decryption |
+      | InnerMessage | Unexpected exception during decryption of E_METER_MASTER key. |
     And the dlms device with identification "TEST1024000000001" does not exist
