@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -552,8 +553,10 @@ public class DlmsDeviceSteps {
         }
         final DbEncryptionKeyReference encryptionKeyRef = this.encryptionKeyRepository
                 .findByTypeAndValid(EncryptionProviderType.JRE, new Date()).iterator().next();
-        secretBuilders.stream().map(SecretBuilder::build).map(key -> this
-                .setSecretDefaultProperties(dlmsDevice.getDeviceIdentification(), encryptionKeyRef, key))
+        secretBuilders.stream()
+                      .filter(Objects::nonNull)
+                      .map(SecretBuilder::build)
+                      .map(key -> this.setSecretDefaultProperties(dlmsDevice.getDeviceIdentification(), encryptionKeyRef, key))
                       .forEach(this.encryptedSecretRepository::save);
     }
 
@@ -576,8 +579,8 @@ public class DlmsDeviceSteps {
             final String inputKey = inputSettings.get(keyTypeInputName);
             if (inputKey != null && !inputKey.trim().isEmpty()) {
                 return new SecretBuilder().setSecurityKeyType(E_METER_ENCRYPTION).setKey(inputKey);
-            } else {
-                return this.getDefaultSecretBuilder(keyType);
+            } else {    //secret explicitly set to empty; return null to prevent secret storing
+                return null;
             }
         } else {
             return this.getDefaultSecretBuilder(keyType);

@@ -32,7 +32,7 @@ Feature: SmartMetering functional exceptions regarding encryption keys
       | Hls3active            | false             |
       | Hls4active            | false             |
       | Hls5active            | true              |
-      | SecurityKeyEncryption |                   |
+      | Encryption_key        |                   |
     When the get actual meter reads request generating an error is received
       | DeviceIdentification | TEST1024000000001 |
     And a SOAP fault should have been returned
