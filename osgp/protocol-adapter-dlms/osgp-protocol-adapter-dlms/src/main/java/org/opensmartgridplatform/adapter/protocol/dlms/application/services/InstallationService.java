@@ -67,6 +67,10 @@ public class InstallationService {
     private CoupleMbusDeviceByChannelCommandExecutor coupleMbusDeviceByChannelCommandExecutor;
 
     public void addMeter(final SmartMeteringDeviceDto smartMeteringDevice) throws FunctionalException {
+        if (smartMeteringDevice.getDeviceIdentification() == null) {
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.PROTOCOL_DLMS,
+                    new IllegalArgumentException("Provided device does not contain device identification"));
+        }
         this.storeAndActivateKeys(smartMeteringDevice);
         final DlmsDevice dlmsDevice = this.installationMapper.map(smartMeteringDevice, DlmsDevice.class);
         this.dlmsDeviceRepository.save(dlmsDevice);
@@ -89,11 +93,20 @@ public class InstallationService {
         this.secretManagementService.activateNewKeys(deviceDto.getDeviceIdentification(), keyTypesToStore);
     }
 
-    private List<SecurityKeyType> determineKeyTypesToStore(SmartMeteringDeviceDto deviceDto) {
+    private List<SecurityKeyType> determineKeyTypesToStore(SmartMeteringDeviceDto deviceDto)
+            throws FunctionalException {
         List<SecurityKeyType> keyTypesToStore;
         if (this.getKeyFromDeviceDto(deviceDto, G_METER_MASTER) != null) {
             //device is a G-Meter
             keyTypesToStore = Arrays.asList(G_METER_MASTER);
+            if (this.getKeyFromDeviceDto(deviceDto, E_METER_MASTER) != null
+                    || this.getKeyFromDeviceDto(deviceDto, E_METER_AUTHENTICATION) != null
+                    || this.getKeyFromDeviceDto(deviceDto, E_METER_ENCRYPTION) != null) {
+                String msg = "Provided device is considered a G-Meter (G_METER_MASTER is set)"
+                        + ", but contains E-Meter keys as well";
+                throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.PROTOCOL_DLMS,
+                        new IllegalArgumentException(msg));
+            }
         } else {
             //device is an E-meter
             keyTypesToStore = Arrays.asList(E_METER_MASTER, E_METER_AUTHENTICATION, E_METER_ENCRYPTION);
