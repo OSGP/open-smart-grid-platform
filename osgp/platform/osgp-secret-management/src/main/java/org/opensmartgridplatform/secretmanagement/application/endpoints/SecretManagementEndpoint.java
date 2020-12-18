@@ -78,6 +78,7 @@ public class SecretManagementEndpoint {
         final TypedSecrets soapTypedSecrets = this.converter.convertToSoapTypedSecrets(typedSecrets);
         response.setTypedSecrets(soapTypedSecrets);
         response.setResult(OsgpResultType.OK);
+        //TODO remove trace logging with secrets?
         log.trace(response.toString());
         return response;
     }
