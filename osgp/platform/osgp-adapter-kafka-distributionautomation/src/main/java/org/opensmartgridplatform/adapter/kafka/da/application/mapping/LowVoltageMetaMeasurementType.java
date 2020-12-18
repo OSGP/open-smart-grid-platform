@@ -13,7 +13,7 @@ import com.alliander.data.scadameasurementpublishedevent.UnitSymbol;
 public enum LowVoltageMetaMeasurementType implements LowVoltageMeasurementDefinition {
     FREQUENCY(0, "Frequency", UnitSymbol.Hz),
     TEMPERATURE(1, "Temperature", UnitSymbol.degC),
-    IMRS(2, "IMRS-N", UnitSymbol.A);
+    IRMS(2, "IRMS-N", UnitSymbol.A);
 
     private int index;
     private String description;
