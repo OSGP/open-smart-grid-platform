@@ -58,6 +58,7 @@ public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageP
 
             LOGGER.info("{} called for device: {} for organisation: {}", messageMetadata.getMessageType(),
                     messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification());
+            //TODO added for test failure analysis; remove before merge!
             if(!(message.getObject() instanceof String)) {
                 Class<?> messageObjectClass = message.getObject().getClass();
                 LOGGER.warn("{} called for device: {} for organisation: {}, but "
