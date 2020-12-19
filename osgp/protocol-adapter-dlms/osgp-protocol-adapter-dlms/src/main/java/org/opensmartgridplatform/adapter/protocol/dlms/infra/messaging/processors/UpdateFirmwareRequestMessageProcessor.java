@@ -22,6 +22,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.requests.
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
@@ -57,7 +58,17 @@ public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageP
 
             LOGGER.info("{} called for device: {} for organisation: {}", messageMetadata.getMessageType(),
                     messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification());
-
+            if(!(message.getObject() instanceof String)) {
+                Class<?> messageObjectClass = message.getObject().getClass();
+                LOGGER.warn("{} called for device: {} for organisation: {}, but "
+                        + "message did not contain firmwareIdentification. It contains an object of type {}.", messageMetadata.getMessageType(),
+                        messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification(),
+                        messageObjectClass);
+                if(message.getObject() instanceof ProtocolResponseMessage) {
+                    ProtocolResponseMessage prm = (ProtocolResponseMessage) message.getObject();
+                    LOGGER.warn("message contained unexpected ProtocolResponseMessage: {}",prm.toString());
+                }
+            }
             final String firmwareIdentification = (String) message.getObject();
 
             if (this.firmwareService.isFirmwareFileAvailable(firmwareIdentification)) {
