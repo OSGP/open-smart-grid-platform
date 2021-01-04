@@ -70,16 +70,15 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                 .byDefault()
                 .toClassMap());
 
-        final Mapper<org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdatedDevice, Ssld> deviceOutputSettingsMapper = new DeviceOutputSettingsMapper();
-
+        final Mapper<org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdatedDevice, Ssld> updatedDeviceToSsldMapper = new UpdatedDeviceToSsldMapper();
         mapperFactory
                 .classMap(org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdatedDevice.class,
                         Ssld.class)
                 .exclude("outputSettings")
-                .field("gpsLatitude", "gpsCoordinates.latitude")
-                .field("gpsLongitude", "gpsCoordinates.longitude")
+                .exclude("gpsLatitude")
+                .exclude("gpsLongitude")
                 .byDefault()
-                .customize(deviceOutputSettingsMapper)
+                .customize(updatedDeviceToSsldMapper)
                 .register();
 
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
