@@ -142,7 +142,7 @@ public class AdHocManagementService extends AbstractService {
         LOGGER.info("For now only use sensor status to keep 104 LMDs connected, ignore response: {}", responseMessage);
     }
 
-    private void updateLastCommunicationTime(final String deviceIdentification) {
+    public void updateLastCommunicationTime(final String deviceIdentification) {
         final LightMeasurementDevice lightMeasurementDevice = this.lightMeasurementDeviceRepository
                 .findByDeviceIdentification(deviceIdentification);
         if (lightMeasurementDevice == null) {
