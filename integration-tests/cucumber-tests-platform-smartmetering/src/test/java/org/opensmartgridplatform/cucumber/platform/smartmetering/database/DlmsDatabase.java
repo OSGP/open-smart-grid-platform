@@ -10,6 +10,7 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering.database;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
@@ -74,6 +75,8 @@ public class DlmsDatabase {
      */
     @Transactional(transactionManager = "txMgrDlms")
     public void prepareDatabaseForScenario() {
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+
         this.dlmsDeviceRepo.deleteAllInBatch();
         this.responseDataRepo.deleteAllInBatch();
         this.responseUrlDataRepo.deleteAllInBatch();

@@ -8,8 +8,6 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
-import java.util.List;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.GetFirmwareVersionsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.UpdateFirmwareCommandExecutor;
@@ -26,12 +24,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service(value = "dlmsFirmwareService")
 public class FirmwareService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FirmwareService.class);
 
-    private static final String EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE = "Firmware file is not available.";
+    private static final String EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE = "Firmware file %s is not available.";
 
     @Autowired
     private FirmwareFileCachingRepository firmwareRepository;
@@ -42,8 +42,7 @@ public class FirmwareService {
     @Autowired
     private UpdateFirmwareCommandExecutor updateFirmwareCommandExecutor;
 
-    public List<FirmwareVersionDto> getFirmwareVersions(final DlmsConnectionManager conn, final DlmsDevice device)
-            throws ProtocolAdapterException {
+    public List<FirmwareVersionDto> getFirmwareVersions(final DlmsConnectionManager conn, final DlmsDevice device) throws ProtocolAdapterException {
 
         return this.getFirmwareVersionsCommandExecutor.execute(conn, device, null);
     }
@@ -62,7 +61,8 @@ public class FirmwareService {
                 device, firmwareFileDto.getFirmwareIdentification());
 
         if (ArrayUtils.isEmpty(firmwareFileDto.getFirmwareFile())) {
-            throw new ProtocolAdapterException(EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE);
+            throw new ProtocolAdapterException(String.format(EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE,
+                    firmwareFileDto.getFirmwareIdentification()));
         }
         this.firmwareRepository.store(firmwareFileDto.getFirmwareIdentification(), firmwareFileDto.getFirmwareFile());
 
@@ -73,12 +73,13 @@ public class FirmwareService {
         return this.firmwareRepository.isAvailable(firmwareIdentification);
     }
 
-    private UpdateFirmwareResponseDto executeFirmwareUpdate(final DlmsConnectionManager conn, final DlmsDevice device,
-            final String firmwareIdentification) throws OsgpException {
+    private UpdateFirmwareResponseDto executeFirmwareUpdate(final DlmsConnectionManager conn, final DlmsDevice device
+            , final String firmwareIdentification) throws OsgpException {
         if (this.firmwareRepository.isAvailable(firmwareIdentification)) {
             return this.updateFirmwareCommandExecutor.execute(conn, device, firmwareIdentification);
         } else {
-            throw new ProtocolAdapterException(EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE);
+            throw new ProtocolAdapterException(
+                    String.format(EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE, firmwareIdentification));
         }
     }
 }

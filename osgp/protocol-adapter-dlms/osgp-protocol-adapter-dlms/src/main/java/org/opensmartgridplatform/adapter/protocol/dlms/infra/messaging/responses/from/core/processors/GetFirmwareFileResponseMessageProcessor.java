@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.responses.from.core.processors;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
@@ -23,6 +24,7 @@ import org.opensmartgridplatform.dto.valueobjects.FirmwareFileDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
@@ -79,10 +81,24 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
             }
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, exception,
-                    this.responseMessageSender, message.getObject());
+                    this.responseMessageSender, getFirmwareIdentification(message));
         } finally {
             this.doConnectionPostProcessing(device, conn);
         }
+    }
+
+    private String getFirmwareIdentification(final ObjectMessage objectMessage) throws JMSException {
+        Serializable object = objectMessage.getObject();
+
+        if (object instanceof ProtocolResponseMessage) {
+            Serializable dataObject = ((ProtocolResponseMessage) object).getDataObject();
+            if (dataObject instanceof FirmwareFileDto) {
+                return ((FirmwareFileDto) dataObject).getFirmwareIdentification();
+            }
+        }
+
+        LOGGER.warn("Firmware Identification not present.");
+        return null;
     }
 
     @Override
