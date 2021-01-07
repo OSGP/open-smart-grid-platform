@@ -26,18 +26,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service(value = "domainDistributionAutomationDeviceManagementService")
-@Transactional(value = "transactionManager")
 public class DeviceManagementService extends BaseService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
 
     @Autowired
     private DomainDistributionAutomationMapper mapper;
+
     @Autowired
     private RtuDeviceService rtuDeviceService;
+
+    @Autowired
+    private RtuResponseService rtuResponseService;
 
     /**
      * Constructor
@@ -99,7 +101,7 @@ public class DeviceManagementService extends BaseService {
                 throw osgpException;
             }
 
-            this.handleResponseMessageReceived(LOGGER, deviceIdentification);
+            this.rtuResponseService.handleResponseMessageReceived(LOGGER, deviceIdentification);
 
             getHealthStatusResponse = this.mapper.map(getHealthStatusResponseDto, GetHealthStatusResponse.class);
 
