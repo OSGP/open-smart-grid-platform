@@ -18,7 +18,7 @@ import io.cucumber.junit.CucumberOptions.SnippetType;
 @RunWith(Cucumber.class)
 @CucumberOptions(
         features = { "classpath:features/osgp-adapter-ws-distributionautomation", "classpath:features/peak-shaving" },
-        tags = { "not @Skip", "not @NightlyBuildOnly" },
+        tags = { "not @Skip", "not @NightlyBuildOnly", "@PeakShaving" },
         glue = { "classpath:org.opensmartgridplatform.cucumber.platform.glue",
                 "classpath:org.opensmartgridplatform.cucumber.platform.common.glue",
                 "classpath:org.opensmartgridplatform.cucumber.platform.distributionautomation.glue" },
