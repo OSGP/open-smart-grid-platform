@@ -174,7 +174,7 @@ Feature: SmartMetering Configuration - Firmware
       | Component      | PROTOCOL_DLMS                                                         |
       | Message        | Unexpected exception while handling protocol request/response message |
       | InnerException | org.opensmartgridplatform.shared.exceptionhandling.OsgpException      |
-      | InnerMessage   | Firmware file is not available.                                       |
+      | InnerMessage   | Firmware file KFPP_V060100FA is not available.                        |
     And the database should not be updated with the new device firmware
       | DeviceIdentification      | TEST1024000000002      |
       | FirmwareModuleVersionComm | Telit 10.00.154        |
