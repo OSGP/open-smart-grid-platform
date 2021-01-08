@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.ws.publiclighting.application.mapping;
 
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.ConfigurableMapper;
+import org.opensmartgridplatform.adapter.ws.publiclighting.application.mapping.converters.LightValueConverter;
 import org.opensmartgridplatform.adapter.ws.publiclighting.application.mapping.converters.LmdConverter;
 import org.opensmartgridplatform.adapter.ws.publiclighting.application.mapping.converters.SsldConverter;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceStatus;
@@ -28,6 +29,7 @@ public class AdHocManagementMapper extends ConfigurableMapper {
         .registerConverter(new XMLGregorianCalendarToDateTimeConverter());
     mapperFactory.getConverterFactory().registerConverter(new SsldConverter());
     mapperFactory.getConverterFactory().registerConverter(new LmdConverter());
+    mapperFactory.getConverterFactory().registerConverter(new LightValueConverter());
 
     mapperFactory
         .classMap(
