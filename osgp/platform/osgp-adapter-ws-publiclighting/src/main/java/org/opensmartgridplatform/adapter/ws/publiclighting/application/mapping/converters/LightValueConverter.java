@@ -30,14 +30,12 @@ public class LightValueConverter extends
             return null;
         }
 
-        if (source.isOn()) {
-            return this.mapperFacade.map(source,
-                    org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.LightValue.class);
-        }
-
         final org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.LightValue lv = new org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.LightValue();
         lv.setIndex(source.getIndex());
         lv.setOn(source.isOn());
+        if (source.isOn()) {
+            lv.setDimValue(source.getDimValue());
+        }
 
         return lv;
     }
