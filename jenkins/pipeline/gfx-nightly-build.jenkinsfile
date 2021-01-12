@@ -4,7 +4,7 @@
 def stream = 'osgp'
 def servername = stream + '-at-' + env.BUILD_NUMBER
 def playbook = stream + '-at.yml'
-def branchReleaseRepo = 'feature/OC-693-jenkins-containerization'
+def branchReleaseRepo = 'feature/OC-712-run-automatic-tests-in-containerized-jenkins'
 def amiName = 'CentOS7SingleInstance'
 def amiOwner = 'self'
 def ec2InstanceType = 'm4.xlarge'
