@@ -14,14 +14,20 @@ pipeline {
       kubernetes {
         inheritFrom 'gxf-jenkins-agent'
       }
-    } // agent
+    }
+
     options {
         ansiColor('xterm')
         timestamps()
         timeout(240)
         // Only keep the 10 most recent builds
         buildDiscarder(logRotator(numToKeepStr:'10'))
-    } // options
+    }
+
+    environment {
+        ANSIBLE_FORCE_COLOR = true
+    }
+
     stages {
         stage('Parallel stages') {
             parallel {
@@ -62,6 +68,7 @@ pipeline {
                     steps {
                         echo 'Maven build'
                         container('maven') {
+                              // Git clone no longer needed, git repo is already present because of pipeline in repo
 //                            sh 'git clone https://github.com/OSGP/open-smart-grid-platform.git'
 //                            sh 'cd open-smart-grid-platform && git fetch origin && git checkout feature/OC-712-run-automatic-tests'
 //                            sh 'mv open-smart-grid-platform/* .'
@@ -147,16 +154,23 @@ pipeline {
                 echo 'Skipping tests for now'
                 container('maven') {
                 //     // sh "touch ~/.ssh/known_hosts"
-                //     // sh "ssh-keygen -R ${servername}-instance.dev.osgp.cloud -f ~/.ssh/known_hosts"
+                //     // sh "ssh-keygen -R ${servername}.dev.osgp.cloud -f ~/.ssh/known_hosts"
                     sh """./runTestsAtRemoteServer.sh \
-                            ${servername}-instance.dev.osgp.cloud \
+                            ${servername}.dev.osgp.cloud \
                             integration-tests \
                             cucumber-tests-platform-common \
                             centos \
                             \"osgp_development.pem\" \
                             \"\" \
                             \"\""""
-                //     sh "./runPubliclightingTestsAtRemoteServer.sh ${servername}.dev.osgp.cloud integration-tests cucumber-tests-platform-publiclighting centos \"osgp_development.pem\" \"\" \"\""
+                    sh """./runPubliclightingTestsAtRemoteServer.sh \
+                            ${servername}.dev.osgp.cloud \
+                            integration-tests \
+                            cucumber-tests-platform-publiclighting \
+                            centos \
+                            \"osgp_development.pem\" \
+                            \"\" \
+                            \"\""""
                 //     // sh "./runMicrogridsTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-microgrids centos \"osgp_development.pem\" \"\" \"\""
                 //     // sh "./runSmartMeteringTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-smartmetering centos \"osgp_development.pem\" \"\" \"\""
                 //     // sh "./runDistributionAutomationTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-distributionautomation centos \"osgp_development.pem\" \"\" \"\""
