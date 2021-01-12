@@ -26,18 +26,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service(value = "domainDistributionAutomationDeviceManagementService")
-@Transactional(value = "transactionManager")
 public class DeviceManagementService extends BaseService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
 
     @Autowired
     private DomainDistributionAutomationMapper mapper;
+
     @Autowired
     private RtuDeviceService rtuDeviceService;
+
+    @Autowired
+    private RtuResponseService rtuResponseService;
 
     /**
      * Constructor
@@ -62,6 +64,26 @@ public class DeviceManagementService extends BaseService {
                 device.getIpAddress());
     }
 
+    public void handleInternalHealthStatusResponse(final GetHealthStatusResponseDto getHealthStatusResponseDto,
+            final String deviceIdentification, final String organisationIdentification, final String correlationUid,
+            final String messageType) {
+
+        LOGGER.info("handleResponse for MessageType: {}", messageType);
+
+        final GetHealthStatusResponse getHealthStatusResponse = this.mapper.map(getHealthStatusResponseDto,
+                GetHealthStatusResponse.class);
+
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(correlationUid)
+                .withOrganisationIdentification(organisationIdentification)
+                .withDeviceIdentification(deviceIdentification)
+                .withMessageType(messageType)
+                .withResult(ResponseMessageResultType.OK)
+                .withDataObject(getHealthStatusResponse)
+                .build();
+        this.responseMessageRouter.send(responseMessage, messageType);
+    }
+
     public void handleHealthStatusResponse(final GetHealthStatusResponseDto getHealthStatusResponseDto,
             final String deviceIdentification, final String organisationIdentification, final String correlationUid,
             final String messageType, final ResponseMessageResultType responseMessageResultType,
@@ -79,7 +101,7 @@ public class DeviceManagementService extends BaseService {
                 throw osgpException;
             }
 
-            this.handleResponseMessageReceived(LOGGER, deviceIdentification);
+            this.rtuResponseService.handleResponseMessageReceived(LOGGER, deviceIdentification);
 
             getHealthStatusResponse = this.mapper.map(getHealthStatusResponseDto, GetHealthStatusResponse.class);
 
@@ -93,6 +115,7 @@ public class DeviceManagementService extends BaseService {
                 .withCorrelationUid(correlationUid)
                 .withOrganisationIdentification(organisationIdentification)
                 .withDeviceIdentification(deviceIdentification)
+                .withMessageType(messageType)
                 .withResult(result)
                 .withOsgpException(exception)
                 .withDataObject(getHealthStatusResponse)

@@ -9,6 +9,8 @@ package org.opensmartgridplatform.adapter.domain.da.application.config;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -16,8 +18,13 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * configuration requires Spring Framework 3.0
  */
 @Configuration
-@ComponentScan(basePackages = { "org.opensmartgridplatform.shared.domain.services",
-        "org.opensmartgridplatform.domain.core", "org.opensmartgridplatform.adapter.domain.da" })
+@ComponentScan("org.opensmartgridplatform.shared.domain.services")
+@ComponentScan("org.opensmartgridplatform.domain.core")
+@ComponentScan("org.opensmartgridplatform.adapter.domain.da")
+@PropertySource("classpath:osgp-adapter-domain-distributionautomation.properties")
+@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${osgp/AdapterDomainDistributionAutomation/config}", ignoreResourceNotFound = true)
+@Import({ MessagingConfig.class, OsgpSchedulerConfig.class, PersistenceConfig.class })
 @EnableTransactionManagement
 public class ApplicationContext {
 
