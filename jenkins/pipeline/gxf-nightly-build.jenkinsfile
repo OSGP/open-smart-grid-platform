@@ -66,7 +66,6 @@ pipeline {
 //                            sh 'cd open-smart-grid-platform && git fetch origin && git checkout feature/OC-712-run-automatic-tests'
 //                            sh 'mv open-smart-grid-platform/* .'
                             sh 'mvn clean install -B -DskipTestJarWithDependenciesAssembly=false'
-                            sh 'ls -l target/artifacts'
                             sh 'mkdir -p target/artifacts && find . -name *.war -exec cp -uf {} target/artifacts \\;'
                         } // container
                     } // steps
