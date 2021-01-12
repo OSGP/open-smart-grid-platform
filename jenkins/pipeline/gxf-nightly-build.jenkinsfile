@@ -16,7 +16,7 @@ pipeline {
       }
     } // agent
     options {
-        //ansiColor('xterm')
+        ansiColor('xterm')
         timestamps()
         timeout(240)
         // Only keep the 10 most recent builds
@@ -45,32 +45,19 @@ pipeline {
                             } // container
                         } // withCredentials
                     } // steps
-                }
+                } // stage
 
                 stage('Ansible installation') {
                     steps {
                         container('python') {
-                            // // Configure ssh
-                            // withCredentials([sshUserPrivateKey(credentialsId: 'jenkins-ssh-key', keyFileVariable: 'JENKINS_KEY_FILE' ),
-                            //         sshUserPrivateKey(credentialsId: 'osgp-development-ssh-key', keyFileVariable: 'OSGP_DEVELOPMENT_KEY_FILE' )]) {
-                            //     sh 'mkdir ~/.ssh'
-                            //     sh 'cp ${JENKINS_KEY_FILE} ~/.ssh/id_rsa'
-                            //     sh 'cp ${OSGP_DEVELOPMENT_KEY_FILE} ~/.ssh/osgp_development.pem'
-                            //     sh 'chmod 600 ~/.ssh/*'
-                            //     sh 'echo "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config'
-                            // } // withCredentials
-
                             // Install Ansible
                             sh 'apt-get update'
                             sh 'apt-get install -y python-lxml python-boto python-boto3'
                             sh 'set STATICBUILD=true && pip install lxml boto boto3 ansible==2.6.2'
-
-                        // // Get Ansible playbooks from release repository
-                        // sh 'git clone git@github.com:SmartSocietyServices/release.git'
-                        // sh "cd release && git checkout ${branchReleaseRepo}"
                         } // container
                     } // steps
                 } // stage
+
                 stage('Maven build') {
                     steps {
                         echo 'Maven build'
@@ -79,12 +66,14 @@ pipeline {
 //                            sh 'cd open-smart-grid-platform && git fetch origin && git checkout feature/OC-712-run-automatic-tests'
 //                            sh 'mv open-smart-grid-platform/* .'
                             sh 'mvn clean install -B -DskipTestJarWithDependenciesAssembly=false'
+                            sh 'ls -l target/artifacts'
                             sh 'mkdir -p target/artifacts && find . -name *.war -exec cp -uf {} target/artifacts \\;'
                         } // container
                     } // steps
                 } // stage
             } // parallel
         } // stage
+
         stage('Test server creation') {
             steps {
                 container('python') {
@@ -101,17 +90,27 @@ pipeline {
 
                     // Download missing artifacts from artifactory for the same version
                     // - The following artifacts are not in this repository
-                    sh "cd release && ansible-playbook plays/download-artifacts.yml -e artifactstodownload='{{ configuration_artifacts }}' -e deployment_type=snapshot -e osgp_version=${POMVERSION} -e tmp_artifacts_directory=../../target/artifacts"
-                    sh "cd release && ansible-playbook plays/download-artifacts.yml -e artifactstodownload='{{ dlms_simulator_artifacts }}' -e deployment_type=snapshot -e osgp_version=${POMVERSION} -e tmp_artifacts_directory=../../target/artifacts"
-                    sh 'ls -l target/artifacts'
+                    sh """cd release && ansible-playbook plays/download-artifacts.yml \
+                            -e artifactstodownload='{{ configuration_artifacts }}' \
+                            -e deployment_type=snapshot \
+                            -e osgp_version=${POMVERSION} \
+                            -e tmp_artifacts_directory=../../target/artifacts"""
+
+                    sh """cd release && ansible-playbook plays/download-artifacts.yml \
+                            -e artifactstodownload='{{ dlms_simulator_artifacts }}' \
+                            -e deployment_type=snapshot \
+                            -e osgp_version=${POMVERSION} \
+                            -e tmp_artifacts_directory=../../target/artifacts"""
+
                     // Make sure configuration tgz is present
                     sh "cp -p target/artifacts/configuration-${POMVERSION}-configuration.tgz target/artifacts/configuration-${POMVERSION}.tgz"
+
+                    // No longer needed? standalone version is already present...
                     // Make sure a standalone version of the dlms device simulator is present
                     //sh "cp -p ../target/artifacts/dlms-device-simulator-${POMVERSION}.jar ../target/artifacts/dlms-device-simulator-${POMVERSION}-standalone.jar"
 
                     // Create a new single instance (not stream specific) and put all the artifacts in /data/software/artifacts
-                    sh """cd release;
-                          ansible-playbook plays/deploy-files-to-system.yml \
+                    sh """cd release && ansible-playbook plays/deploy-files-to-system.yml \
                             -e osgp_version=${POMVERSION} \
                             -e deployment_name=${servername} \
                             -e directory_to_deploy=../../target/artifacts \
@@ -120,19 +119,6 @@ pipeline {
                             -e ami_name=${amiName} \
                             -e ami_owner=${amiOwner}"""
 
-                    // // Deploy artifacts
-                    // sh """cd release && ansible-playbook plays/${playbook} \
-                    //         -e osgp_version=${POMVERSION} \
-                    //         -e deployment_name=${servername} \
-                    //         -e INSTALL_FROM_LOCAL_DIR=true \
-                    //         -e ARTIFACT_DIRECTORY=/data/software/artifacts \
-                    //         -e ARTIFACT_DIRECTORY_REMOTE_SRC=true \
-                    //         -e ec2_instance_type=${ec2InstanceType} \
-                    //         -e ami_name=${amiName} \
-                    //         -e ami_owner=${amiOwner}"""
-
-                    // // Wait until the probe is available, which is an indicator that everything is up and running.
-                    // sh "cd release  && ./wait.sh https://${servername}.dev.osgp.cloud/probe 900 302"
                 } // container
             } // steps
         } // stage
@@ -151,40 +137,57 @@ pipeline {
                             -e ami_name=${amiName} \
                             -e ami_owner=${amiOwner}"""
 
-                    // Wait until the probe is available, which is an indicator that everything is up and running.
+                    // Wait until probe is available, which is an indicator that everything is up and running.
                     sh "cd release  && ./wait.sh https://${servername}.dev.osgp.cloud/probe 900 302"
                 } // container
             } // steps
         } // stage
-        
-        // stage ('Deploy AWS System') {
-        //     steps {
-        //         container('python') {
-        //             build job: 'Deploy an AWS System', parameters: [string(name: 'SERVERNAME', value: servername),
-        //                                                             string(name: 'PLAYBOOK', value: playbook),
-        //                                                             booleanParam(name: 'INSTALL_FROM_LOCAL_DIR', value: true),
-        //                                                             string(name: 'ARTIFACT_DIRECTORY', value: "/data/software/artifacts"),
-        //                                                             string(name: 'OSGP_VERSION', value: POMVERSION),
-        //                                                             booleanParam(name: 'ARTIFACT_DIRECTORY_REMOTE_SRC', value: true),
-        //                                                             string(name: 'BRANCH', value: branchReleaseRepo)]
-        //             }
-        //         }
-        //     }
-        // } // stage
 
         stage ('Test execution') {
             steps {
                 echo 'Skipping tests for now'
-                // container('maven') {
+                container('maven') {
                 //     // sh "touch ~/.ssh/known_hosts"
                 //     // sh "ssh-keygen -R ${servername}-instance.dev.osgp.cloud -f ~/.ssh/known_hosts"
-                //     // sh "./runTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-common centos \"osgp_development.pem\" \"\" \"\""
+                    sh """./runTestsAtRemoteServer.sh \
+                            ${servername}-instance.dev.osgp.cloud \
+                            integration-tests \
+                            cucumber-tests-platform-common \
+                            centos \
+                            \"osgp_development.pem\" \
+                            \"\" \
+                            \"\""""
                 //     sh "./runPubliclightingTestsAtRemoteServer.sh ${servername}.dev.osgp.cloud integration-tests cucumber-tests-platform-publiclighting centos \"osgp_development.pem\" \"\" \"\""
                 //     // sh "./runMicrogridsTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-microgrids centos \"osgp_development.pem\" \"\" \"\""
                 //     // sh "./runSmartMeteringTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-smartmetering centos \"osgp_development.pem\" \"\" \"\""
                 //     // sh "./runDistributionAutomationTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-distributionautomation centos \"osgp_development.pem\" \"\" \"\""
-                // }
-            }
+                } // container
+            } // steps
+        } // stage
+
+//        stage ('Collect Coverage') {
+//            steps {
+//                withMaven(
+//                        maven: 'Apache Maven',
+//                        mavenLocalRepo: '.repository',
+//                        options: [
+//                                artifactsPublisher(disabled: true),
+//                                openTasksPublisher(disabled: true)
+//                        ]) {
+//                    sh "mvn -Djacoco.destFile=target/code-coverage/jacoco-it.exec -Djacoco.address=${servername}.dev.osgp.cloud org.jacoco:jacoco-maven-plugin:0.7.9:dump"
+//                } // withMaven
+//            } // steps
+//        } // stage
+
+        stage ('Reporting') {
+            steps {
+//                jacoco execPattern: '**/code-coverage/jacoco-it.exec'
+                cucumber buildStatus: 'FAILURE', fileIncludePattern: '**/cucumber.json', sortingMethod: 'ALPHABETICAL'
+                archiveArtifacts '**/target/*.tgz'
+
+                // Check the console log for failed tests
+                step([$class: 'LogParserPublisher', projectRulePath: 'console-test-result-rules', unstableOnWarning: true, failBuildOnError: true, useProjectRule: true])
+            } // steps
         } // stage
     } // stages
 
@@ -198,7 +201,6 @@ pipeline {
                         -e deployment_action=destroy \
                         -e ec2_instance_type=${ec2InstanceType}"""
             }
-            // build job: 'Destroy an AWS System', parameters: [string(name: 'SERVERNAME', value: servername), string(name: 'PLAYBOOK', value: playbook)]
         }
         // failure {
         //     emailext (
