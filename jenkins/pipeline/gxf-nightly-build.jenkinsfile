@@ -1,13 +1,17 @@
 // Pipeline script for the OSGP Nightly Build job in Jenkins
 /* groovylint-disable CompileStatic, DuplicateStringLiteral, LineLength, NestedBlockDepth, NoDef, VariableTypeRequired */
 
-def stream = 'osgp'
-def servername = stream + '-at-' + env.BUILD_NUMBER
+stream = 'osgp'
+servername = stream + '-at-' + env.BUILD_NUMBER
 def playbook = stream + '-at.yml'
 def branchReleaseRepo = 'feature/OC-712-run-automatic-tests-in-containerized-jenkins'
 def amiName = 'CentOS7SingleInstance'
 def amiOwner = 'self'
 def ec2InstanceType = 'm4.xlarge'
+
+def testServername() {
+    echo ${servername}
+}
 
 def runTestScript(scriptName, projectName) {
     sh """./${scriptName} \
@@ -44,6 +48,8 @@ pipeline {
             parallel {
                 stage('SSH configuration') {
                     steps {
+                        testServername()
+
                         withCredentials([sshUserPrivateKey(credentialsId: 'jenkins-ssh-key', keyFileVariable: 'JENKINS_KEY_FILE' ),
                                 sshUserPrivateKey(credentialsId: 'osgp-development-ssh-key', keyFileVariable: 'OSGP_DEVELOPMENT_KEY_FILE' )]) {
                             container('python') {
