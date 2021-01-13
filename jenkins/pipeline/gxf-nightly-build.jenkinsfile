@@ -9,6 +9,17 @@ def amiName = 'CentOS7SingleInstance'
 def amiOwner = 'self'
 def ec2InstanceType = 'm4.xlarge'
 
+def runTestScript(scriptName, projectName) {
+    sh """./${scriptName} \
+            ${servername}.dev.osgp.cloud \
+            integration-tests \
+            ${projectName} \
+            centos \
+            \"osgp_development.pem\" \
+            \"\" \
+            \"\""""
+}
+
 pipeline {
     agent {
       kubernetes {
@@ -68,10 +79,6 @@ pipeline {
                     steps {
                         echo 'Maven build'
                         container('maven') {
-                              // Git clone no longer needed, git repo is already present because of pipeline in repo
-//                            sh 'git clone https://github.com/OSGP/open-smart-grid-platform.git'
-//                            sh 'cd open-smart-grid-platform && git fetch origin && git checkout feature/OC-712-run-automatic-tests'
-//                            sh 'mv open-smart-grid-platform/* .'
                             sh 'mvn clean install -B -DskipTestJarWithDependenciesAssembly=false'
                             sh 'mkdir -p target/artifacts && find . -name *.war -exec cp -uf {} target/artifacts \\;'
                         } // container
@@ -90,7 +97,6 @@ pipeline {
                     script {
                         // Determine the actual pom version from the pom.
                         POMVERSION = sh ( script: 'grep \"<version>\" pom.xml | sed \"s#<[/]\\?version>##g;s# ##g\" | grep SNAPSHOT', returnStdout: true).trim()
-                    // POMVERSION = '5.6.0-SNAPSHOT'
                     } // script
                     echo "Using version ${POMVERSION} (from pom) to collect artifacts which are needed to deploy a new environment but weren't build in this job."
 
@@ -111,10 +117,6 @@ pipeline {
                     // Make sure configuration tgz is present
                     sh "cp -p target/artifacts/configuration-${POMVERSION}-configuration.tgz target/artifacts/configuration-${POMVERSION}.tgz"
 
-                    // No longer needed? standalone version is already present...
-                    // Make sure a standalone version of the dlms device simulator is present
-                    //sh "cp -p ../target/artifacts/dlms-device-simulator-${POMVERSION}.jar ../target/artifacts/dlms-device-simulator-${POMVERSION}-standalone.jar"
-
                     // Create a new single instance (not stream specific) and put all the artifacts in /data/software/artifacts
                     sh """cd release && ansible-playbook plays/deploy-files-to-system.yml \
                             -e osgp_version=${POMVERSION} \
@@ -124,7 +126,6 @@ pipeline {
                             -e ec2_instance_type=${ec2InstanceType} \
                             -e ami_name=${amiName} \
                             -e ami_owner=${amiOwner}"""
-
                 } // container
             } // steps
         } // stage
@@ -151,29 +152,57 @@ pipeline {
 
         stage ('Test execution') {
             steps {
-                echo 'Skipping tests for now'
                 container('maven') {
-                //     // sh "touch ~/.ssh/known_hosts"
-                //     // sh "ssh-keygen -R ${servername}.dev.osgp.cloud -f ~/.ssh/known_hosts"
-                    sh """./runTestsAtRemoteServer.sh \
-                            ${servername}.dev.osgp.cloud \
-                            integration-tests \
-                            cucumber-tests-platform-common \
-                            centos \
-                            \"osgp_development.pem\" \
-                            \"\" \
-                            \"\""""
-                    sh """./runPubliclightingTestsAtRemoteServer.sh \
-                            ${servername}.dev.osgp.cloud \
-                            integration-tests \
-                            cucumber-tests-platform-publiclighting \
-                            centos \
-                            \"osgp_development.pem\" \
-                            \"\" \
-                            \"\""""
-                //     // sh "./runMicrogridsTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-microgrids centos \"osgp_development.pem\" \"\" \"\""
-                //     // sh "./runSmartMeteringTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-smartmetering centos \"osgp_development.pem\" \"\" \"\""
-                //     // sh "./runDistributionAutomationTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-distributionautomation centos \"osgp_development.pem\" \"\" \"\""
+                    runTestScript('runTestsAtRemoteServer.sh', 'cucumber-tests-platform-common')
+                    runTestScript('runPubliclightingTestsAtRemoteServer.sh','cucumber-tests-platform-publiclighting')
+                    runTestScript('runMicrogridsTestsAtRemoteServer.sh','cucumber-tests-platform-microgrids')
+                    runTestScript('runSmartMeteringTestsAtRemoteServer.sh','cucumber-tests-platform-smartmetering')
+                    runTestScript('runDistributionAutomationTestsAtRemoteServer.sh','cucumber-tests-platform-distributionautomation')
+//
+//                    sh """./runTestsAtRemoteServer.sh \
+//                            ${servername}.dev.osgp.cloud \
+//                            integration-tests \
+//                            cucumber-tests-platform-common \
+//                            centos \
+//                            \"osgp_development.pem\" \
+//                            \"\" \
+//                            \"\""""
+//
+//                    sh """./runPubliclightingTestsAtRemoteServer.sh \
+//                            ${servername}.dev.osgp.cloud \
+//                            integration-tests \
+//                            cucumber-tests-platform-publiclighting \
+//                            centos \
+//                            \"osgp_development.pem\" \
+//                            \"\" \
+//                            \"\""""
+//
+//                     sh """./runMicrogridsTestsAtRemoteServer.sh \
+//                            ${servername}-instance.dev.osgp.cloud \
+//                            integration-tests \
+//                            cucumber-tests-platform-microgrids \
+//                            centos \
+//                            \"osgp_development.pem\" \
+//                            \"\" \
+//                            \"\""""
+//
+//                     sh """./runSmartMeteringTestsAtRemoteServer.sh \
+//                            ${servername}-instance.dev.osgp.cloud \
+//                            integration-tests \
+//                            cucumber-tests-platform-smartmetering \
+//                            centos \
+//                            \"osgp_development.pem\" \
+//                            \"\" \
+//                            \"\""""
+//
+//                     sh """./runDistributionAutomationTestsAtRemoteServer.sh \
+//                            ${servername}-instance.dev.osgp.cloud \
+//                            integration-tests \
+//                            cucumber-tests-platform-distributionautomation \
+//                            centos \
+//                            \"osgp_development.pem\" \
+//                            \"\" \
+//                            \"\""""
                 } // container
             } // steps
         } // stage
