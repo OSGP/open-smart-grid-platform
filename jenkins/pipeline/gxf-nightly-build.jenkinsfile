@@ -1,10 +1,7 @@
 // Pipeline script for the OSGP Nightly Build job in Jenkins
 /* groovylint-disable CompileStatic, DuplicateStringLiteral, LineLength, NestedBlockDepth, NoDef, VariableTypeRequired */
-import groovy.transform.Field
 
-@Field
 def stream = 'osgp'
-@Field
 def servername = stream + '-at-' + env.BUILD_NUMBER
 def playbook = stream + '-at.yml'
 def branchReleaseRepo = 'feature/OC-712-run-automatic-tests-in-containerized-jenkins'
@@ -12,11 +9,11 @@ def amiName = 'CentOS7SingleInstance'
 def amiOwner = 'self'
 def ec2InstanceType = 'm4.xlarge'
 
-def testServername() {
+def testServername(servername) {
     echo "${servername}"
 }
 
-def runTestScript(scriptName, projectName) {
+def runTestScript(scriptName, projectName, servername) {
     sh """./${scriptName} \
             ${servername}.dev.osgp.cloud \
             integration-tests \
@@ -51,7 +48,7 @@ pipeline {
             parallel {
                 stage('SSH configuration') {
                     steps {
-                        testServername()
+                        testServername(servername)
 
                         withCredentials([sshUserPrivateKey(credentialsId: 'jenkins-ssh-key', keyFileVariable: 'JENKINS_KEY_FILE' ),
                                 sshUserPrivateKey(credentialsId: 'osgp-development-ssh-key', keyFileVariable: 'OSGP_DEVELOPMENT_KEY_FILE' )]) {
@@ -162,11 +159,11 @@ pipeline {
         stage ('Test execution') {
             steps {
                 container('maven') {
-                    runTestScript('runTestsAtRemoteServer.sh', 'cucumber-tests-platform-common')
-                    runTestScript('runPubliclightingTestsAtRemoteServer.sh','cucumber-tests-platform-publiclighting')
-                    runTestScript('runMicrogridsTestsAtRemoteServer.sh','cucumber-tests-platform-microgrids')
-                    runTestScript('runSmartMeteringTestsAtRemoteServer.sh','cucumber-tests-platform-smartmetering')
-                    runTestScript('runDistributionAutomationTestsAtRemoteServer.sh','cucumber-tests-platform-distributionautomation')
+                    runTestScript('runTestsAtRemoteServer.sh', 'cucumber-tests-platform-common', servername)
+                    runTestScript('runPubliclightingTestsAtRemoteServer.sh','cucumber-tests-platform-publiclighting', servername)
+                    runTestScript('runMicrogridsTestsAtRemoteServer.sh','cucumber-tests-platform-microgrids', servername)
+                    runTestScript('runSmartMeteringTestsAtRemoteServer.sh','cucumber-tests-platform-smartmetering', servername)
+                    runTestScript('runDistributionAutomationTestsAtRemoteServer.sh','cucumber-tests-platform-distributionautomation', servername)
 //
 //                    sh """./runTestsAtRemoteServer.sh \
 //                            ${servername}.dev.osgp.cloud \
