@@ -9,10 +9,6 @@ def amiName = 'CentOS7SingleInstance'
 def amiOwner = 'self'
 def ec2InstanceType = 'm4.xlarge'
 
-def testServername(servername) {
-    echo "${servername}"
-}
-
 def runTestScript(scriptName, projectName, servername) {
     sh """./${scriptName} \
             ${servername}.dev.osgp.cloud \
@@ -22,6 +18,14 @@ def runTestScript(scriptName, projectName, servername) {
             \"osgp_development.pem\" \
             \"\" \
             \"\""""
+}
+
+def configureSsh(jenkinsKeyFile, osgpDevelopmentKeyFile) {
+    sh 'mkdir ~/.ssh'
+    sh 'cp ${JENKINS_KEY_FILE} ~/.ssh/id_rsa'
+    sh 'cp ${OSGP_DEVELOPMENT_KEY_FILE} ~/.ssh/\'osgp_development.pem\''
+    sh 'chmod 600 ~/.ssh/*'
+    sh 'echo \"Host github.com\n\tStrictHostKeyChecking no\n\" >> ~/.ssh/config'
 }
 
 pipeline {
@@ -48,23 +52,23 @@ pipeline {
             parallel {
                 stage('SSH configuration') {
                     steps {
-                        testServername(servername)
-
                         withCredentials([sshUserPrivateKey(credentialsId: 'jenkins-ssh-key', keyFileVariable: 'JENKINS_KEY_FILE' ),
                                 sshUserPrivateKey(credentialsId: 'osgp-development-ssh-key', keyFileVariable: 'OSGP_DEVELOPMENT_KEY_FILE' )]) {
                             container('python') {
-                                sh 'mkdir ~/.ssh'
-                                sh 'cp ${JENKINS_KEY_FILE} ~/.ssh/id_rsa'
-                                sh 'cp ${OSGP_DEVELOPMENT_KEY_FILE} ~/.ssh/\'osgp_development.pem\''
-                                sh 'chmod 600 ~/.ssh/*'
-                                sh 'echo \"Host github.com\n\tStrictHostKeyChecking no\n\" >> ~/.ssh/config'
+                                configureSsh(${JENKINS_KEY_FILE}, ${OSGP_DEVELOPMENT_KEY_FILE})
+//                                sh 'mkdir ~/.ssh'
+//                                sh 'cp ${JENKINS_KEY_FILE} ~/.ssh/id_rsa'
+//                                sh 'cp ${OSGP_DEVELOPMENT_KEY_FILE} ~/.ssh/\'osgp_development.pem\''
+//                                sh 'chmod 600 ~/.ssh/*'
+//                                sh 'echo \"Host github.com\n\tStrictHostKeyChecking no\n\" >> ~/.ssh/config'
                             } // container
                             container('maven') {
-                                sh 'mkdir ~/.ssh'
-                                sh 'cp ${JENKINS_KEY_FILE} ~/.ssh/id_rsa'
-                                sh 'cp ${OSGP_DEVELOPMENT_KEY_FILE} ~/.ssh/\'osgp_development.pem\''
-                                sh 'chmod 600 ~/.ssh/*'
-                                sh 'echo \"Host github.com\n\tStrictHostKeyChecking no\n\" >> ~/.ssh/config'
+                                configureSsh(${JENKINS_KEY_FILE}, ${OSGP_DEVELOPMENT_KEY_FILE})
+//                                sh 'mkdir ~/.ssh'
+//                                sh 'cp ${JENKINS_KEY_FILE} ~/.ssh/id_rsa'
+//                                sh 'cp ${OSGP_DEVELOPMENT_KEY_FILE} ~/.ssh/\'osgp_development.pem\''
+//                                sh 'chmod 600 ~/.ssh/*'
+//                                sh 'echo \"Host github.com\n\tStrictHostKeyChecking no\n\" >> ~/.ssh/config'
                             } // container
                         } // withCredentials
                     } // steps
@@ -161,75 +165,24 @@ pipeline {
                 container('maven') {
                     runTestScript('runTestsAtRemoteServer.sh', 'cucumber-tests-platform-common', servername)
                     runTestScript('runPubliclightingTestsAtRemoteServer.sh','cucumber-tests-platform-publiclighting', servername)
-                    runTestScript('runMicrogridsTestsAtRemoteServer.sh','cucumber-tests-platform-microgrids', servername)
-                    runTestScript('runSmartMeteringTestsAtRemoteServer.sh','cucumber-tests-platform-smartmetering', servername)
-                    runTestScript('runDistributionAutomationTestsAtRemoteServer.sh','cucumber-tests-platform-distributionautomation', servername)
-//
-//                    sh """./runTestsAtRemoteServer.sh \
-//                            ${servername}.dev.osgp.cloud \
-//                            integration-tests \
-//                            cucumber-tests-platform-common \
-//                            centos \
-//                            \"osgp_development.pem\" \
-//                            \"\" \
-//                            \"\""""
-//
-//                    sh """./runPubliclightingTestsAtRemoteServer.sh \
-//                            ${servername}.dev.osgp.cloud \
-//                            integration-tests \
-//                            cucumber-tests-platform-publiclighting \
-//                            centos \
-//                            \"osgp_development.pem\" \
-//                            \"\" \
-//                            \"\""""
-//
-//                     sh """./runMicrogridsTestsAtRemoteServer.sh \
-//                            ${servername}-instance.dev.osgp.cloud \
-//                            integration-tests \
-//                            cucumber-tests-platform-microgrids \
-//                            centos \
-//                            \"osgp_development.pem\" \
-//                            \"\" \
-//                            \"\""""
-//
-//                     sh """./runSmartMeteringTestsAtRemoteServer.sh \
-//                            ${servername}-instance.dev.osgp.cloud \
-//                            integration-tests \
-//                            cucumber-tests-platform-smartmetering \
-//                            centos \
-//                            \"osgp_development.pem\" \
-//                            \"\" \
-//                            \"\""""
-//
-//                     sh """./runDistributionAutomationTestsAtRemoteServer.sh \
-//                            ${servername}-instance.dev.osgp.cloud \
-//                            integration-tests \
-//                            cucumber-tests-platform-distributionautomation \
-//                            centos \
-//                            \"osgp_development.pem\" \
-//                            \"\" \
-//                            \"\""""
+//                    runTestScript('runMicrogridsTestsAtRemoteServer.sh','cucumber-tests-platform-microgrids', servername)
+//                    runTestScript('runSmartMeteringTestsAtRemoteServer.sh','cucumber-tests-platform-smartmetering', servername)
+//                    runTestScript('runDistributionAutomationTestsAtRemoteServer.sh','cucumber-tests-platform-distributionautomation', servername)
                 } // container
             } // steps
         } // stage
 
-//        stage ('Collect Coverage') {
-//            steps {
-//                withMaven(
-//                        maven: 'Apache Maven',
-//                        mavenLocalRepo: '.repository',
-//                        options: [
-//                                artifactsPublisher(disabled: true),
-//                                openTasksPublisher(disabled: true)
-//                        ]) {
-//                    sh "mvn -Djacoco.destFile=target/code-coverage/jacoco-it.exec -Djacoco.address=${servername}.dev.osgp.cloud org.jacoco:jacoco-maven-plugin:0.7.9:dump"
-//                } // withMaven
-//            } // steps
-//        } // stage
+        stage ('Coverage collection') {
+            steps {
+                container("maven") {
+                    sh "mvn -Djacoco.destFile=target/code-coverage/jacoco-it.exec -Djacoco.address=${servername}.dev.osgp.cloud org.jacoco:jacoco-maven-plugin:0.7.9:dump"
+                } // container
+            } // steps
+        } // stage
 
         stage ('Reporting') {
             steps {
-//                jacoco execPattern: '**/code-coverage/jacoco-it.exec'
+                jacoco execPattern: '**/code-coverage/jacoco-it.exec'
                 cucumber buildStatus: 'FAILURE', fileIncludePattern: '**/cucumber.json', sortingMethod: 'ALPHABETICAL'
                 archiveArtifacts '**/target/*.tgz'
 
