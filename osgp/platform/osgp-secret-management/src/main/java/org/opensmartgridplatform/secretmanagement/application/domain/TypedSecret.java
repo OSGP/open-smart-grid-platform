@@ -21,8 +21,8 @@ public class TypedSecret {
     private final byte[] secret;
 
     public TypedSecret(final byte[] secret, final SecretType secretType) {
-        this.secret = Arrays.copyOf(secret, secret.length);
-        if(secretType!=null) {
+        this.secret = secret == null ? null : Arrays.copyOf(secret, secret.length);
+        if (secretType != null) {
             this.secretType = secretType;
         } else {
             throw new IllegalArgumentException("Secret type can not be NULL");
@@ -30,7 +30,7 @@ public class TypedSecret {
     }
 
     public byte[] getSecret() {
-        return Arrays.copyOf(this.secret, this.secret.length);
+        return this.secret == null ? null : Arrays.copyOf(this.secret, this.secret.length);
     }
 }
 
