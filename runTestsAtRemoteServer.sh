@@ -23,7 +23,7 @@ ADDITIONAL_PARAMETERS=$6
 ADDITIONAL_CUCUMBER_OPTIONS=$7
 
 # If a space is found in the identity file then create a shortcut as the -i parameter for ssh can't handle spaces.
-[ "${SSH_KEY_FILE}"!="" ] && [ "${SSH_KEY_FILE}"=~" " ] && echo "Creating link ${HOME}/.ssh/${5/ /} => ${HOME}/.ssh/${5} ..." && ln -sf "${HOME}/.ssh/${5}" "${HOME}/.ssh/${5/ /}"
+[[ $SSH_KEY_FILE != "" ]] && [[ $SSH_KEY_FILE =~ " " ]] && echo "Creating link ${HOME}/.ssh/${5/ /} => ${HOME}/.ssh/${5} ..." && ln -sf "${HOME}/.ssh/${5}" "${HOME}/.ssh/${5/ /}"
 
 # Now determine if a -i parameter should be generated
 [ "${SSH_KEY_FILE}"!="" ] && SSH_KEY_FILE="-oIdentityFile=\"${HOME}/.ssh/${5/ /}\"" && echo "SSH_KEY_FILE=[${SSH_KEY_FILE}]"
