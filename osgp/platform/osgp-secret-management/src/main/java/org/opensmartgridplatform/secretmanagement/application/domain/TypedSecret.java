@@ -8,6 +8,8 @@
  */
 package org.opensmartgridplatform.secretmanagement.application.domain;
 
+import java.util.Arrays;
+
 import lombok.Getter;
 
 /**
@@ -19,8 +21,16 @@ public class TypedSecret {
     private final byte[] secret;
 
     public TypedSecret(final byte[] secret, final SecretType secretType) {
-        this.secret = secret;
-        this.secretType = secretType;
+        this.secret = Arrays.copyOf(secret, secret.length);
+        if(secretType!=null) {
+            this.secretType = secretType;
+        } else {
+            throw new IllegalArgumentException("Secret type can not be NULL");
+        }
+    }
+
+    public byte[] getSecret() {
+        return Arrays.copyOf(this.secret, this.secret.length);
     }
 }
 

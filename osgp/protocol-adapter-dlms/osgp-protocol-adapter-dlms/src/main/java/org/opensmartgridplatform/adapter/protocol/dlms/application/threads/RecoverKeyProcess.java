@@ -85,8 +85,8 @@ public class RecoverKeyProcess implements Runnable {
             this.findDevice();
         } catch (final Exception e) {
             LOGGER.error("Could not find device", e);
-            //TODO why try to find device if you don't do anything with the result?!?
-            //TODO return?
+            //why try to find device if you don't do anything with the result?!?
+            //shouldn't we throw an exception here?
         }
 
         if (!this.secretManagementService.hasNewSecretOfType(this.deviceIdentification, E_METER_AUTHENTICATION)) {
@@ -103,7 +103,7 @@ public class RecoverKeyProcess implements Runnable {
             }
         } else {
             LOGGER.warn("Could not recover keys: could not connect to device using new keys");
-            //TODO try to connect using 'old' keys? send key change to device again?
+            //shouldn't we try to connect using 'old' keys? or send key change to device again?
         }
     }
 

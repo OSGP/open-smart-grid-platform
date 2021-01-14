@@ -114,7 +114,7 @@ public class SoapServiceSecretManagementIT {
     }
 
     @Test
-    public void getSecretsRequest_noStoredSecretType() {
+    public void getSecretsRequestNoStoredSecretType() {
 
         /**
          * Note that the output depends, besides the value of the keys, also on both the db key and the soap key.
@@ -159,7 +159,7 @@ public class SoapServiceSecretManagementIT {
     }
 
     @Test
-    public void storeSecretsRequest_alreadyNewSecretPresent() throws IOException {
+    public void storeSecretsRequestAlreadyNewSecretPresent() throws IOException {
 
         /**
          * Note that the output depends, besides the value of the keys, also on both the db key and the soap key.
@@ -198,7 +198,7 @@ public class SoapServiceSecretManagementIT {
     }
 
     @Test
-    public void activateSecretsRequest_noNewSecret() throws IOException {
+    public void activateSecretsRequestNoNewSecret() throws IOException {
 
         /**
          * Note that the output depends, besides the value of the keys, also on both the db key and the soap key.
@@ -213,7 +213,7 @@ public class SoapServiceSecretManagementIT {
     }
 
     @Test
-    public void getSecretsRequest_noSecretTypes() {
+    public void getSecretsRequestNoSecretTypes() {
 
         /**
          * Note that the output depends, besides the value of the keys, also on both the db key and the soap key.
@@ -231,7 +231,7 @@ public class SoapServiceSecretManagementIT {
     }
 
     @Test
-    public void storeSecretsRequest_noSecrets() {
+    public void storeSecretsRequestNoSecrets() {
 
         /**
          * Note that the output depends, besides the value of the keys, also on both the db key and the soap key.
@@ -261,7 +261,7 @@ public class SoapServiceSecretManagementIT {
     }
 
     @Test
-    public void generateAndStoreSecrets_alreadyNewSecretPresent() throws IOException {
+    public void generateAndStoreSecretsAlreadyNewSecretPresent() throws IOException {
         //Store secrets
         final Resource storeRequest = new ClassPathResource("test-requests/storeSecrets.xml");
         this.mockWebServiceClient.sendRequest(withPayload(storeRequest)).andExpect(ResponseMatchers.noFault());

@@ -96,7 +96,7 @@ public class SecretManagementServiceTest {
     }
 
     @Test
-    public void retrieveSecrets_decryptionError() throws EncrypterException {
+    public void retrieveSecretsDecryptionError() throws EncrypterException {
         //GIVEN
         final DbEncryptionKeyReference keyReference = new DbEncryptionKeyReference();
         keyReference.setEncryptionProviderType(ENCRYPTION_PROVIDER_TYPE);
@@ -118,7 +118,7 @@ public class SecretManagementServiceTest {
     }
 
     @Test
-    public void retrieveSecrets_secretWithoutKey() {
+    public void retrieveSecretsSecretWithoutKey() {
         final DbEncryptedSecret secret = new DbEncryptedSecret();
         final List<DbEncryptedSecret> secretList = Arrays.asList(secret);
         when(this.secretRepository.findSecrets(SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.ACTIVE))
@@ -128,7 +128,7 @@ public class SecretManagementServiceTest {
     }
 
     @Test
-    public void retrieveSecrets_noSecrets() {
+    public void retrieveSecretsNoSecrets() {
         List<SecretType> secretTypes = Arrays.asList(SecretType.E_METER_MASTER_KEY);
         List<TypedSecret> result = this.service.retrieveSecrets("SOME_DEVICE", secretTypes);
         assertThat(result).isNotNull();
@@ -171,7 +171,7 @@ public class SecretManagementServiceTest {
     }
 
     @Test
-    public void storeSecrets_newKeyAlreadyStored() throws Exception {
+    public void storeSecretsNewKeyAlreadyStored() throws Exception {
         //GIVEN
         final TypedSecret typedSecret = new TypedSecret(new byte[16], SecretType.E_METER_MASTER_KEY);
         final DbEncryptionKeyReference keyReference = new DbEncryptionKeyReference();
@@ -186,7 +186,7 @@ public class SecretManagementServiceTest {
     }
 
     @Test
-    public void storeSecrets_noKey() {
+    public void storeSecretsNoKey() {
         //GIVEN
         final TypedSecret typedSecret = new TypedSecret("$3cr3t".getBytes(), SecretType.E_METER_MASTER_KEY);
         //WHEN
@@ -198,7 +198,7 @@ public class SecretManagementServiceTest {
     }
 
     @Test
-    public void storeSecrets_multipleKeys() {
+    public void storeSecretsMultipleKeys() {
         //GIVEN
         final TypedSecret typedSecret = new TypedSecret("$3cr3t".getBytes(), SecretType.E_METER_MASTER_KEY);
         //WHEN
@@ -210,7 +210,7 @@ public class SecretManagementServiceTest {
     }
 
     @Test
-    public void storeSecrets_encryptionError() throws EncrypterException {
+    public void storeSecretsEncryptionError() throws EncrypterException {
         //GIVEN
         final TypedSecret typedSecret = new TypedSecret("$3cr3t".getBytes(), SecretType.E_METER_MASTER_KEY);
         final DbEncryptionKeyReference keyReference = new DbEncryptionKeyReference();
@@ -228,7 +228,7 @@ public class SecretManagementServiceTest {
     }
 
     @Test
-    public void storeSecrets_existingSecret() throws Exception {
+    public void storeSecretsExistingSecret() throws Exception {
         //GIVEN
         final TypedSecret typedSecret = new TypedSecret("n3w$3cr3t0000001".getBytes(), SecretType.E_METER_MASTER_KEY);
         final DbEncryptionKeyReference keyReference = new DbEncryptionKeyReference();
@@ -268,7 +268,7 @@ public class SecretManagementServiceTest {
     }
 
     @Test
-    public void activateSecrets_noCurrentActiveSecret() {
+    public void activateSecretsNoCurrentActiveSecret() {
         //GIVEN
         final DbEncryptedSecret newSecret = new DbEncryptedSecret();
         newSecret.setId(1L);
@@ -287,7 +287,7 @@ public class SecretManagementServiceTest {
     }
 
     @Test
-    public void activateSecrets_withCurrentActiveSecret() {
+    public void activateSecretsWithCurrentActiveSecret() {
         //GIVEN
         final DbEncryptedSecret newSecret = new DbEncryptedSecret();
         newSecret.setId(1L);
@@ -311,7 +311,7 @@ public class SecretManagementServiceTest {
     }
 
     @Test
-    public void activateSecrets_noNewSecret() {
+    public void activateSecretsNoNewSecret() {
         //GIVEN
         final DbEncryptedSecret newSecret = new DbEncryptedSecret();
         newSecret.setId(1L);

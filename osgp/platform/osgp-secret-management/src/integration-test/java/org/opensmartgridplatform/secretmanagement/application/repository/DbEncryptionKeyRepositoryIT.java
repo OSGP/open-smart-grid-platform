@@ -52,7 +52,7 @@ public class DbEncryptionKeyRepositoryIT extends AbstractRepositoryIT {
     }
 
     @Test
-    public void find_noValidTo() {
+    public void findNoValidTo() {
         final List<DbEncryptionKeyReference> results = this.repository.findByTypeAndValid(EncryptionProviderType.HSM,
                 new Date());
         assertThat(results.size()).isEqualTo(1);
@@ -64,7 +64,7 @@ public class DbEncryptionKeyRepositoryIT extends AbstractRepositoryIT {
     }
 
     @Test
-    public void find_validTo() {
+    public void findValidTo() {
         final List<DbEncryptionKeyReference> results = this.repository.findByTypeAndValid(EncryptionProviderType.JRE,
                 new Date());
         assertThat(results.size()).isEqualTo(1);

@@ -68,7 +68,6 @@ public class SecretManagementEndpoint {
         }
         final GetSecretsResponse response = new GetSecretsResponse();
         final SecretTypes soapSecretTypes = request.getSecretTypes();
-        //TODO see if a PayloadValidatingInterceptor can be used
         if (soapSecretTypes == null) {
             throw new TechnicalException(STR_MISSING_SECRET_TYPES);
         }
@@ -78,8 +77,6 @@ public class SecretManagementEndpoint {
         final TypedSecrets soapTypedSecrets = this.converter.convertToSoapTypedSecrets(typedSecrets);
         response.setTypedSecrets(soapTypedSecrets);
         response.setResult(OsgpResultType.OK);
-        //TODO remove trace logging with secrets?
-        log.trace(response.toString());
         return response;
     }
 
@@ -101,7 +98,6 @@ public class SecretManagementEndpoint {
         final TypedSecrets soapTypedSecrets = this.converter.convertToSoapTypedSecrets(typedSecrets);
         response.setTypedSecrets(soapTypedSecrets);
         response.setResult(OsgpResultType.OK);
-        log.trace(response.toString());
         return response;
     }
 
@@ -121,7 +117,6 @@ public class SecretManagementEndpoint {
         final List<TypedSecret> typedSecretList = this.converter.convertToTypedSecrets(soapTypedSecrets);
         this.secretManagementService.storeSecrets(request.getDeviceId(), typedSecretList);
         response.setResult(OsgpResultType.OK);
-        log.trace(response.toString());
         return response;
     }
 
@@ -144,7 +139,6 @@ public class SecretManagementEndpoint {
                 secretTypeList);
         response.setResult(OsgpResultType.OK);
         response.setTypedSecrets(this.converter.convertToSoapTypedSecrets(typedSecretList));
-        log.trace(response.toString());
         return response;
     }
 
@@ -183,7 +177,6 @@ public class SecretManagementEndpoint {
             log.error("Could not activate new secrets: "+rte.toString());
             throw new TechnicalException("Could not activate new secrets",rte);
         }
-        log.trace(response.toString());
         return response;
     }
 
@@ -199,7 +192,6 @@ public class SecretManagementEndpoint {
         final SecretType type = this.converter.convertToSecretType(request.getSecretType());
         final boolean result = this.secretManagementService.hasNewSecret(request.getDeviceId(), type);
         response.setHasNewSecret(result);
-        log.trace(response.toString());
         return response;
     }
 }
