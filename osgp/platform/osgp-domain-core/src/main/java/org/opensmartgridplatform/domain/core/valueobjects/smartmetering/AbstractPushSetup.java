@@ -154,7 +154,7 @@ public abstract class AbstractPushSetup implements Serializable {
 
     public List<CosemObjectDefinition> getPushObjectList() {
         if (this.pushObjectList == null) {
-            return new ArrayList<>();
+            return null;
         }
         return new ArrayList<>(this.pushObjectList);
     }
@@ -173,7 +173,7 @@ public abstract class AbstractPushSetup implements Serializable {
 
     public List<WindowElement> getCommunicationWindow() {
         if (this.communicationWindow == null) {
-            return new ArrayList<>();
+            return null;
         }
         return new ArrayList<>(this.communicationWindow);
     }
