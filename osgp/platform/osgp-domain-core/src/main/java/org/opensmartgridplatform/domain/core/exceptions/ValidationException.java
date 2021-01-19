@@ -25,23 +25,6 @@ public class ValidationException extends PlatformException {
     private static final long serialVersionUID = 9063383618380310347L;
     private static final String DEFAULT_MESSAGE = "Validation Exception";
 
-    private static String convertToString(final Set<? extends ConstraintViolation<?>> constraintViolations) {
-        final StringBuilder violations = new StringBuilder();
-
-        for (final ConstraintViolation<?> violation : constraintViolations) {
-
-            if (!StringUtils.isBlank(violation.getMessage())) {
-                violations.append(violation.getMessage());
-            } else {
-                violations.append(violation.getPropertyPath());
-            }
-
-            violations.append("; ");
-        }
-
-        return violations.toString();
-    }
-
     @Transient
     private final Set<? extends ConstraintViolation<?>> constraintViolations;
 
@@ -50,14 +33,14 @@ public class ValidationException extends PlatformException {
         this.constraintViolations = null;
     }
 
-    public ValidationException(final Set<? extends ConstraintViolation<?>> constraintViolations) {
-        super(DEFAULT_MESSAGE + ", violations: " + convertToString(constraintViolations));
-        this.constraintViolations = constraintViolations;
-    }
-
     public ValidationException(final String message) {
         super(message);
         this.constraintViolations = null;
+    }
+
+    public ValidationException(final Set<? extends ConstraintViolation<?>> constraintViolations) {
+        super(DEFAULT_MESSAGE + ", violations: " + convertToString(constraintViolations));
+        this.constraintViolations = constraintViolations;
     }
 
     public ValidationException(final String message, final Set<? extends ConstraintViolation<?>> constraintViolations) {
@@ -83,6 +66,23 @@ public class ValidationException extends PlatformException {
         }
 
         return result.toString();
+    }
+
+    private static String convertToString(final Set<? extends ConstraintViolation<?>> constraintViolations) {
+        final StringBuilder violations = new StringBuilder();
+
+        for (final ConstraintViolation<?> violation : constraintViolations) {
+
+            if (!StringUtils.isBlank(violation.getMessage())) {
+                violations.append(violation.getMessage());
+            } else {
+                violations.append(violation.getPropertyPath());
+            }
+
+            violations.append("; ");
+        }
+
+        return violations.toString();
     }
 
 }
