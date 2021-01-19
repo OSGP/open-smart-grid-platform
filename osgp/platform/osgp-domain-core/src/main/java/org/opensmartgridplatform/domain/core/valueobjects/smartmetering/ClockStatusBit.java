@@ -15,14 +15,34 @@ import java.util.Set;
 @SuppressWarnings("squid:S1192")
 public enum ClockStatusBit {
 
-    DAYLIGHT_SAVING_ACTIVE("daylight saving active"),
-    DIFFERENT_CLOCK_BASE("different clock base"),
-    DOUBTFUL_VALUE("doubtful value"),
-    INVALID_CLOCK_STATUS("invalid clock status"),
     INVALID_VALUE("invalid value"),
+    DOUBTFUL_VALUE("doubtful value"),
+    DIFFERENT_CLOCK_BASE("different clock base"),
+    INVALID_CLOCK_STATUS("invalid clock status"),
     RESERVED_1("reserved"),
     RESERVED_2("reserved"),
-    RESERVED_3("reserved");
+    RESERVED_3("reserved"),
+    DAYLIGHT_SAVING_ACTIVE("daylight saving active");
+
+    private final String description;
+
+    ClockStatusBit(final String description) {
+        this.description = description;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public boolean isSet(final int clockStatus) {
+        final int mask = 1 << this.ordinal();
+        return mask == (mask & clockStatus);
+    }
+
+    @Override
+    public String toString() {
+        return this.description;
+    }
 
     public static Set<ClockStatusBit> forClockStatus(final byte clockStatus) {
         return forClockStatus(clockStatus & 0xFF);
@@ -60,25 +80,4 @@ public enum ClockStatusBit {
         }
         return status;
     }
-
-    private final String description;
-
-    ClockStatusBit(final String description) {
-        this.description = description;
-    }
-
-    public String getDescription() {
-        return this.description;
-    }
-
-    public boolean isSet(final int clockStatus) {
-        final int mask = 1 << this.ordinal();
-        return mask == (mask & clockStatus);
-    }
-
-    @Override
-    public String toString() {
-        return this.description;
-    }
-
 }
