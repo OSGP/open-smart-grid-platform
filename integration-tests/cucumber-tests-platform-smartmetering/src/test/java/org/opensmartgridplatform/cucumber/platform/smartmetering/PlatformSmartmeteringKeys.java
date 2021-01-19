@@ -76,12 +76,6 @@ public class PlatformSmartmeteringKeys extends org.opensmartgridplatform.cucumbe
 
     // Default keys for security_key
     public static final String DLMS_DEVICE_ID = "DlmsDeviceId";
-    public static final String SECURITY_KEY_A = "SecurityKeyAuthentication";
-    public static final String SECURITY_KEY_E = "SecurityKeyEncryption";
-    public static final String SECURITY_KEY_M = "SecurityKeyMaster";
-    public static final String SECURITY_TYPE_A = "SecurityKeyTypeAuthentication";
-    public static final String SECURITY_TYPE_E = "SecurityKeyTypeEncryption";
-    public static final String SECURITY_TYPE_M = "SecurityKeyTypeMaster";
     public static final String INVOCATION_COUNTER = "InvocationCounter";
     public static final String NETWORK_ADDRESS = "NetworkAddress";
     public static final String PORT = "Port";

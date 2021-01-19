@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.shared.security;
 
+import java.util.EnumMap;
 import java.util.List;
 
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
@@ -20,24 +21,41 @@ import org.springframework.stereotype.Component;
 @Component
 public class DefaultEncryptionDelegate implements EncryptionDelegate {
 
-    private static final String ERROR_NO_PROVIDER = "Could not find a provider";
-    private final List<EncryptionProvider> providers;
+    private static final String ERROR_NO_PROVIDER = "Could not find a provider of type %s; available providers are %s";
+    private final EnumMap<EncryptionProviderType, EncryptionProvider> encryptionProviders;
 
     public DefaultEncryptionDelegate(final List<EncryptionProvider> encryptionProviders) {
-        this.providers = encryptionProviders;
+        this.encryptionProviders = new EnumMap<>(EncryptionProviderType.class);
+        encryptionProviders.stream().forEach(p -> this.encryptionProviders.put(p.getType(), p));
+    }
+
+    private EncryptionProvider getEncryptionProvider(final EncryptionProviderType type) {
+        if (!this.encryptionProviders.containsKey(type)) {
+            throw new EncrypterException(String.format(ERROR_NO_PROVIDER, type, this.encryptionProviders));
+        }
+        return this.encryptionProviders.get(type);
     }
 
     @Override
-    public EncryptedSecret encrypt(final EncryptionProviderType encryptionProviderType, final Secret secret,
+    public EncryptedSecret encrypt(final EncryptionProviderType encryptionProviderType, final byte[] secret,
             final String keyReference) {
-        return this.providers.stream().filter(ep -> ep.getType().equals(encryptionProviderType)).findFirst().orElseThrow(
-                () -> new EncrypterException(ERROR_NO_PROVIDER)).encrypt(secret, keyReference);
+        return this.getEncryptionProvider(encryptionProviderType).encrypt(secret, keyReference);
     }
 
     @Override
-    public Secret decrypt(final EncryptedSecret secret, final String keyReference) {
-        return this.providers.stream().filter(ep -> ep.getType().equals(secret.getType())).findFirst().orElseThrow(
-                () -> new EncrypterException(ERROR_NO_PROVIDER)).decrypt(secret, keyReference);
+    public byte[] decrypt(final EncryptedSecret secret, final String keyReference) {
+        return this.getEncryptionProvider(secret.getType()).decrypt(secret, keyReference);
+    }
+
+    @Override
+    public byte[] generateAes128BitsSecret(final EncryptionProviderType encryptionProviderType,
+            final String keyReference) {
+        return this.getEncryptionProvider(encryptionProviderType).generateAes128BitsSecret(keyReference);
+    }
+
+    @Override
+    public int getSecretByteLength(final EncryptionProviderType encryptionProviderType) {
+        return this.getEncryptionProvider(encryptionProviderType).getSecretByteLength();
     }
 }
 

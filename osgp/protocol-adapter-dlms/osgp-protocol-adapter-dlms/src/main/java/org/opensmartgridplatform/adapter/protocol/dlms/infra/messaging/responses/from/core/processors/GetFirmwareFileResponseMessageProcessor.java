@@ -23,6 +23,7 @@ import org.opensmartgridplatform.dto.valueobjects.FirmwareFileDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
@@ -54,8 +55,8 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
         try {
             // Get metadata from message and update message type to update
             // firmware
-            messageMetadata = new MessageMetadata.Builder(MessageMetadata.fromMessage(message)).withMessageType(
-                    MessageType.UPDATE_FIRMWARE.name()).build();
+            messageMetadata = new MessageMetadata.Builder(MessageMetadata.fromMessage(message))
+                    .withMessageType(MessageType.UPDATE_FIRMWARE.name()).build();
 
             device = this.domainHelperService.findDlmsDevice(messageMetadata);
 
@@ -79,10 +80,24 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
             }
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, exception,
-                    this.responseMessageSender, message.getObject());
+                    this.responseMessageSender, this.getFirmwareIdentification(message));
         } finally {
             this.doConnectionPostProcessing(device, conn);
         }
+    }
+
+    private String getFirmwareIdentification(final ObjectMessage objectMessage) throws JMSException {
+        Serializable object = objectMessage.getObject();
+
+        if (object instanceof ProtocolResponseMessage) {
+            Serializable dataObject = ((ProtocolResponseMessage) object).getDataObject();
+            if (dataObject instanceof FirmwareFileDto) {
+                return ((FirmwareFileDto) dataObject).getFirmwareIdentification();
+            }
+        }
+
+        LOGGER.warn("Firmware Identification not present.");
+        return null;
     }
 
     @Override

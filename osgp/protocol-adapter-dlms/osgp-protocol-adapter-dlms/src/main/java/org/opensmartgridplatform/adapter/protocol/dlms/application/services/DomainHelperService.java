@@ -74,7 +74,7 @@ public class DomainHelperService {
         final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
         if (dlmsDevice == null) {
             final String errorMessage = String
-                    .format("Unable to communicate with unknown device: %s", deviceIdentification);
+                    .format("Unable to find device: %s", deviceIdentification);
             LOGGER.error(errorMessage);
 
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.PROTOCOL_DLMS);

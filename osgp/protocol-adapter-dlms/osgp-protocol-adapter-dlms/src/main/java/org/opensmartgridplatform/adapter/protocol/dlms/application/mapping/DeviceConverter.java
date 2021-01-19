@@ -11,10 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.mapping;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
-import org.apache.commons.codec.binary.Hex;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKey;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 
 public class DeviceConverter extends BidirectionalConverter<SmartMeteringDeviceDto, DlmsDevice> {
@@ -33,26 +30,6 @@ public class DeviceConverter extends BidirectionalConverter<SmartMeteringDeviceD
         dlmsDevice.setMbusIdentificationNumber(source.getMbusIdentificationNumber());
         dlmsDevice.setMbusManufacturerIdentification(source.getMbusManufacturerIdentification());
         dlmsDevice.setProtocol(source.getProtocolName(), source.getProtocolVersion());
-
-        if (source.getMasterKey() != null) {
-            dlmsDevice.addSecurityKey(new SecurityKey(dlmsDevice, SecurityKeyType.E_METER_MASTER,
-                    Hex.encodeHexString(source.getMasterKey()), source.getDeliveryDate(), null));
-        }
-
-        if (source.getAuthenticationKey() != null) {
-            dlmsDevice.addSecurityKey(new SecurityKey(dlmsDevice, SecurityKeyType.E_METER_AUTHENTICATION,
-                    Hex.encodeHexString(source.getAuthenticationKey()), source.getDeliveryDate(), null));
-        }
-
-        if (source.getGlobalEncryptionUnicastKey() != null) {
-            dlmsDevice.addSecurityKey(new SecurityKey(dlmsDevice, SecurityKeyType.E_METER_ENCRYPTION,
-                    Hex.encodeHexString(source.getGlobalEncryptionUnicastKey()), source.getDeliveryDate(), null));
-        }
-
-        if (source.getMbusDefaultKey() != null) {
-            dlmsDevice.addSecurityKey(new SecurityKey(dlmsDevice, SecurityKeyType.G_METER_MASTER,
-                    Hex.encodeHexString(source.getMbusDefaultKey()), source.getDeliveryDate(), null));
-        }
 
         return dlmsDevice;
     }

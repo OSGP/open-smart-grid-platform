@@ -8,18 +8,21 @@
 package org.opensmartgridplatform.cucumber.platform.smartmetering.database;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
-import org.javalite.activejdbc.Base;
+import java.util.TimeZone;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsSecurityKeyRepository;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseUrlDataRepository;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.ApplicationConstants;
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.NotificationWebServiceConfigurationBuilder;
-import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.device.DatabaseConnectionParameters;
+import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptionKeyReference;
+import org.opensmartgridplatform.secretmanagement.application.repository.DbEncryptedSecretRepository;
+import org.opensmartgridplatform.secretmanagement.application.repository.DbEncryptionKeyRepository;
+import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +37,10 @@ public class DlmsDatabase {
     private DlmsDeviceRepository dlmsDeviceRepo;
 
     @Autowired
-    private DlmsSecurityKeyRepository dlmsDSecurityKeyRepo;
+    private DbEncryptionKeyRepository encryptionKeyRepository;
+
+    @Autowired
+    private DbEncryptedSecretRepository secretRepository;
 
     @Autowired
     private ResponseDataRepository responseDataRepo;
@@ -69,24 +75,30 @@ public class DlmsDatabase {
      */
     @Transactional(transactionManager = "txMgrDlms")
     public void prepareDatabaseForScenario() {
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
-        this.dlmsDSecurityKeyRepo.deleteAllInBatch();
         this.dlmsDeviceRepo.deleteAllInBatch();
         this.responseDataRepo.deleteAllInBatch();
         this.responseUrlDataRepo.deleteAllInBatch();
 
-        if (!Base.hasConnection()) {
-            Base.open(DatabaseConnectionParameters.getDriver(), String.format("jdbc:postgresql://%s:%s/%s", DatabaseConnectionParameters.getHost(), DatabaseConnectionParameters.getPort(), DatabaseConnectionParameters.getDatabase()),
-                    DatabaseConnectionParameters.getUser(), DatabaseConnectionParameters.getPassword());
-        }
-        Base.exec("DELETE FROM public.encrypted_secret;");
-        Base.exec("DELETE FROM public.encryption_key_reference;");
-        Base.exec("insert into public.encryption_key_reference (id, reference, encryption_provider_type, valid_from, valid_to, creation_time, modification_time, modified_by, version)" +
-                "values (1, 1, 'JRE', '2019-06-17 09:25:46.000000', '2021-06-18 09:26:09.000000', '2019-06-18 09:26:23.000000', '2019-06-18 09:26:25.000000', 1, 1);");
-
-        Base.close();
+        this.secretRepository.deleteAllInBatch();
+        this.encryptionKeyRepository.deleteAllInBatch();
+        final DbEncryptionKeyReference jreEncryptionKey = this.getJreEncryptionKey(new Date());
+        this.encryptionKeyRepository.save(jreEncryptionKey);
 
         this.insertDefaultData();
+    }
+
+    private DbEncryptionKeyReference getJreEncryptionKey(Date now) {
+        final DbEncryptionKeyReference jreEncryptionKey = new DbEncryptionKeyReference();
+        jreEncryptionKey.setEncryptionProviderType(EncryptionProviderType.JRE);
+        jreEncryptionKey.setReference("1");
+        jreEncryptionKey.setValidFrom(now);
+        jreEncryptionKey.setCreationTime(now);
+        jreEncryptionKey.setModificationTime(now);
+        jreEncryptionKey.setModifiedBy("DlmsDatabase (Cucumber)");
+        jreEncryptionKey.setVersion(1L);
+        return jreEncryptionKey;
     }
 
 }

@@ -13,12 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.security.DefaultEncryptionDelegate;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
+import org.opensmartgridplatform.shared.security.RsaEncrypter;
 import org.opensmartgridplatform.shared.security.providers.EncryptionProvider;
 import org.opensmartgridplatform.shared.security.providers.HsmEncryptionProvider;
 import org.opensmartgridplatform.shared.security.providers.JreEncryptionProvider;
-import org.opensmartgridplatform.shared.security.providers.RsaEncryptionProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,41 +45,16 @@ public class SecurityConfig {
 
     @Bean("DefaultEncryptionDelegate")
     public DefaultEncryptionDelegate getEncryptionDelegate() {
-        return new DefaultEncryptionDelegate(getDefaultEncryptionProviders());
+        return new DefaultEncryptionDelegate(this.getDefaultEncryptionProviders());
     }
 
-    @Bean
-    public List<EncryptionProvider> getDefaultEncryptionProviders() {
-
-        List<EncryptionProvider> encryptionProviderList = new ArrayList<>();
+    private List<EncryptionProvider> getDefaultEncryptionProviders() {
+        final List<EncryptionProvider> encryptionProviderList = new ArrayList<>();
 
         try {
-            JreEncryptionProvider jreEncryptionProvider = new JreEncryptionProvider(
+            final JreEncryptionProvider jreEncryptionProvider = new JreEncryptionProvider(
                     this.jreEncryptionKeyResource.getFile());
-
             encryptionProviderList.add(jreEncryptionProvider);
-
-            RsaEncryptionProvider rsaEncryptionProvider = new RsaEncryptionProvider();
-
-            this.soapPrivateKeyResource.ifPresent(res-> {
-                try {
-                    rsaEncryptionProvider.setPrivateKeyStore(res.getFile());
-                }
-                catch (IOException e) {
-                    throw new IllegalStateException("Could not load private key resource.", e);
-                }
-            });
-
-            this.soapPublicKeyResource.ifPresent(res-> {
-                try {
-                    rsaEncryptionProvider.setPublicKeyStore(res.getFile());
-                }
-                catch (IOException e) {
-                    throw new IllegalStateException("Could not load public key resource.", e);
-                }
-            });
-
-            encryptionProviderList.add(rsaEncryptionProvider);
 
             if (this.hsmKeystoreResource.isPresent()) {
                 HsmEncryptionProvider hsmEncryptionProvider = new HsmEncryptionProvider(
@@ -87,8 +63,23 @@ public class SecurityConfig {
             }
 
             return encryptionProviderList;
+        } catch (IOException | EncrypterException e) {
+            throw new IllegalStateException("Error creating default encryption providers", e);
+        }
+    }
 
-        } catch (IOException e) {
+    @Bean
+    public RsaEncrypter getSoapEncrypter() {
+        try {
+            final RsaEncrypter rsaEncryptionProvider = new RsaEncrypter();
+            if (this.soapPrivateKeyResource.isPresent()) {
+                rsaEncryptionProvider.setPrivateKeyStore(this.soapPrivateKeyResource.get().getFile());
+            }
+            if (this.soapPublicKeyResource.isPresent()) {
+                rsaEncryptionProvider.setPublicKeyStore(this.soapPublicKeyResource.get().getFile());
+            }
+            return rsaEncryptionProvider;
+        } catch (IOException | EncrypterException e) {
             throw new IllegalStateException("Error creating default encryption providers", e);
         }
     }
