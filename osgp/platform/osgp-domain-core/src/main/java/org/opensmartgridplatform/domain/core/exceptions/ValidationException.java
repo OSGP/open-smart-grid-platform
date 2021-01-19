@@ -19,11 +19,11 @@ import org.springframework.ws.soap.server.endpoint.annotation.SoapFault;
 @SoapFault(faultCode = FaultCode.SERVER)
 public class ValidationException extends PlatformException {
 
-    private static final String DEFAULT_MESSAGE = "Validation Exception";
     /**
      * Serial Version UID.
      */
     private static final long serialVersionUID = 9063383618380310347L;
+    private static final String DEFAULT_MESSAGE = "Validation Exception";
 
     private static String convertToString(final Set<? extends ConstraintViolation<?>> constraintViolations) {
         final StringBuilder violations = new StringBuilder();

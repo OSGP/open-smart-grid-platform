@@ -82,8 +82,6 @@ public class DeviceManagementEndpoint {
 
     private static final String DEVICE_MANAGEMENT_NAMESPACE = "http://www.opensmartgridplatform.org/schemas/admin/devicemanagement/2014/10";
     private static final ComponentType COMPONENT_TYPE_WS_ADMIN = ComponentType.WS_ADMIN;
-    private static final String EXCEPTION_OCCURRED = "Exception Occurred.";
-    private static final String STACK_TRACE = "Exception: {}, StackTrace: {}";
 
     private final DeviceManagementService deviceManagementService;
     private final DeviceManagementMapper deviceManagementMapper;

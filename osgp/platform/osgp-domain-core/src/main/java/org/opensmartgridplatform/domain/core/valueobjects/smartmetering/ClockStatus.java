@@ -54,7 +54,7 @@ public class ClockStatus implements Serializable {
 
     public Set<ClockStatusBit> getStatusBits() {
         if (this.statusBits == null) {
-            return new HashSet<ClockStatusBit>();
+            return new HashSet<>();
         }
         return EnumSet.copyOf(this.statusBits);
     }

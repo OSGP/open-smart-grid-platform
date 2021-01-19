@@ -1,13 +1,20 @@
+/**
+ * Copyright 2020 Alliander N.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import ma.glasnost.orika.MappingContext;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -25,44 +32,42 @@ class PushSetupAlarmDtoConverterTest {
     @Mock
     private ConfigurationMapper configurationMapper;
     @Mock
-    private PushSetupAlarmDto pushSetupAlarmDto;
-    @Mock
     private MappingContext mappingContext;
     @Mock
     private PushSetupAlarm pushSetupAlarm;
     private PushSetupAlarmDtoConverter pushSetupAlarmDtoConverter;
 
+    @BeforeEach
+    public void setup(){
+        this.pushSetupAlarmDtoConverter = new PushSetupAlarmDtoConverter(this.configurationMapper);
+    }
+
     @Test
     void convertTest() {
-        this.pushSetupAlarmDtoConverter = new PushSetupAlarmDtoConverter(this.configurationMapper);
-
-        final List<WindowElement> testList = new ArrayList<>();
-        testList.add(new WindowElement(new CosemDateTime(), new CosemDateTime()));
+        final List<WindowElement> testList = Collections.singletonList(
+                new WindowElement(new CosemDateTime(), new CosemDateTime()));
         when(this.pushSetupAlarm.getCommunicationWindow()).thenReturn(testList);
 
-        final List<CosemObjectDefinition> pushObjectList = new ArrayList<>();
         final CosemObisCode code = new CosemObisCode(1, 2, 3, 4, 5, 6);
-        pushObjectList.add(new CosemObjectDefinition(1, code, 2));
-        when(this.pushSetupAlarm.getPushObjectList()).thenReturn(pushObjectList);
+        when(this.pushSetupAlarm.getPushObjectList()).thenReturn(Collections.singletonList(
+                new CosemObjectDefinition(1, code, 2)));
 
         final PushSetupAlarmDto result = this.pushSetupAlarmDtoConverter.convert(this.pushSetupAlarm, null,
                 this.mappingContext);
 
-        assertNotNull(result.getCommunicationWindow());
-        assertNotNull(result.getPushObjectList());
+        assertThat(result.getCommunicationWindow()).isNotNull();
+        assertThat(result.getPushObjectList()).isNotNull();
     }
 
     @Test
     void convertTestWithEmptyLists() {
-        this.pushSetupAlarmDtoConverter = new PushSetupAlarmDtoConverter(this.configurationMapper);
-
         when(this.pushSetupAlarm.getCommunicationWindow()).thenReturn(null);
         when(this.pushSetupAlarm.getPushObjectList()).thenReturn(null);
 
         final PushSetupAlarmDto result = this.pushSetupAlarmDtoConverter.convert(this.pushSetupAlarm, null,
                 this.mappingContext);
 
-        assertNull(result.getCommunicationWindow());
-        assertNull(result.getPushObjectList());
+        assertThat(result.getCommunicationWindow()).isNull();
+        assertThat(result.getPushObjectList()).isNull();
     }
 }
