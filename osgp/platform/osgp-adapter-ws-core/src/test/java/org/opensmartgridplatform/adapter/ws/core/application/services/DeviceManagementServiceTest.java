@@ -14,11 +14,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -56,54 +51,35 @@ class DeviceManagementServiceTest {
     @Mock
     private Specification<Event> descriptionStartsWithSpecification;
 
+    private static final String DESCRIPTION = "description";
+    private static final String DESCRIPTION_STARTS_WITH = "descriptionStartValue";
+
     @Test
     void findEventsTest() throws FunctionalException {
-        when(this.criteria.getOrganisationIdentification()).thenReturn("orgIdentification");
-        when(this.criteria.getDeviceIdentification()).thenReturn("deviceIdentification");
-        when(this.criteria.getDescriptionStartsWith()).thenReturn("descriptionStartValue");
-        when(this.criteria.getDescription()).thenReturn("description");
-        when(this.domainHelperService.findOrganisation(any())).thenReturn(new Organisation());
-        doNothing().when(this.pagingSettings).updatePagingSettings(any());
-        when(this.domainHelperService.findDevice(any())).thenReturn(new Device());
-        doNothing().when(this.domainHelperService).isAllowed(any(), any(), any());
-        when(this.eventSpecifications.isFromDevice(any())).thenReturn(this.specification);
+        this.generalMockForHandleDescriptionTests();
 
-        when(this.eventSpecifications.withDescription(any())).thenReturn(this.descriptionSpecification);
-        when(this.eventSpecifications.startsWithDescription(any())).thenReturn(this.descriptionStartsWithSpecification);
+        // set descriptionStartWith value
+        when(this.criteria.getDescriptionStartsWith()).thenReturn(DESCRIPTION_STARTS_WITH);
+        when(this.criteria.getDescription()).thenReturn(DESCRIPTION);
+
         when(this.descriptionSpecification.or(this.descriptionStartsWithSpecification)).thenReturn(this.specification);
 
-        when(this.pagingSettings.getPageNumber()).thenReturn(1);
-        when(this.pagingSettings.getPageSize()).thenReturn(1);
-        when(this.eventRepository.findAll((Specification<Event>) any(), any(Pageable.class))).thenReturn(null);
-        when(this.specification.and(any())).thenReturn(this.specification);
-        //when(this.descriptionSpecification.or(any())).thenReturn(this.descriptionSpecification);
-
+        // call method
         this.deviceManagementService.findEvents(this.criteria);
 
+        // verify the method calls
         verify(this.descriptionSpecification, times(1)).or(this.descriptionStartsWithSpecification);
         verify(this.specification, times(1)).and(this.specification);
     }
 
     @Test
-    void findEventsWithNoDescriptionStartsWithTest() throws FunctionalException {
-        when(this.criteria.getOrganisationIdentification()).thenReturn("orgIdentification");
-        when(this.criteria.getDeviceIdentification()).thenReturn("deviceIdentification");
-        when(this.domainHelperService.findOrganisation(any())).thenReturn(new Organisation());
-        doNothing().when(this.pagingSettings).updatePagingSettings(any());
-        when(this.domainHelperService.findDevice(any())).thenReturn(new Device());
-        doNothing().when(this.domainHelperService).isAllowed(any(), any(), any());
-        when(this.eventSpecifications.isFromDevice(any())).thenReturn(this.getSpecification());
-        when(this.pagingSettings.getPageNumber()).thenReturn(1);
-        when(this.pagingSettings.getPageSize()).thenReturn(1);
-        when(this.eventRepository.findAll((Specification<Event>) any(), any(Pageable.class))).thenReturn(null);
+    void findEventsWithNoDescriptionOrDescriptionStartsWithTest() throws FunctionalException {
+        this.generalMockForHandleDescriptionTests();
 
-        when(this.eventSpecifications.withDescription(any())).thenReturn(this.descriptionSpecification);
-        when(this.eventSpecifications.startsWithDescription(any())).thenReturn(this.descriptionStartsWithSpecification);
-        //when(this.descriptionSpecification.or(this.descriptionStartsWithSpecification)).thenReturn(this
-        // .specification);
-
+        // call method
         this.deviceManagementService.findEvents(this.criteria);
 
+        // verify the method calls
         verify(this.specification, never()).and(this.descriptionStartsWithSpecification);
         verify(this.specification, never()).and(this.descriptionSpecification);
         verify(this.specification, never()).and(this.specification);
@@ -111,9 +87,39 @@ class DeviceManagementServiceTest {
 
     @Test
     void findEventsWithNoDescriptionTest() throws FunctionalException {
+        this.generalMockForHandleDescriptionTests();
+
+        // set descriptionStartWith value
+        when(this.criteria.getDescriptionStartsWith()).thenReturn(DESCRIPTION_STARTS_WITH);
+
+        // call method
+        this.deviceManagementService.findEvents(this.criteria);
+
+        // verify the method calls
+        verify(this.specification, times(1)).and(this.descriptionStartsWithSpecification);
+        verify(this.specification, never()).and(this.descriptionSpecification);
+        verify(this.descriptionSpecification, never()).or(this.descriptionStartsWithSpecification);
+    }
+
+    @Test
+    void findEventsWithNoDescriptionStartsWithTest() throws FunctionalException{
+        this.generalMockForHandleDescriptionTests();
+
+        // set description value
+        when(this.criteria.getDescription()).thenReturn(DESCRIPTION);
+
+        // call method
+        this.deviceManagementService.findEvents(this.criteria);
+
+        // verify method calls
+        verify(this.specification, never()).and(this.descriptionStartsWithSpecification);
+        verify(this.specification, times(1)).and(this.descriptionSpecification);
+        verify(this.descriptionSpecification, never()).or(this.descriptionStartsWithSpecification);
+    }
+
+    private void generalMockForHandleDescriptionTests() throws FunctionalException {
         when(this.criteria.getOrganisationIdentification()).thenReturn("orgIdentification");
         when(this.criteria.getDeviceIdentification()).thenReturn("deviceIdentification");
-        when(this.criteria.getDescriptionStartsWith()).thenReturn("descriptionStartValue");
         when(this.domainHelperService.findOrganisation(any())).thenReturn(new Organisation());
         doNothing().when(this.pagingSettings).updatePagingSettings(any());
         when(this.domainHelperService.findDevice(any())).thenReturn(new Device());
@@ -128,25 +134,5 @@ class DeviceManagementServiceTest {
 
         when(this.eventSpecifications.withDescription(any())).thenReturn(this.descriptionSpecification);
         when(this.eventSpecifications.startsWithDescription(any())).thenReturn(this.descriptionStartsWithSpecification);
-        //when(this.descriptionSpecification.or(this.descriptionStartsWithSpecification)).thenReturn(this
-        // .specification);
-
-        this.deviceManagementService.findEvents(this.criteria);
-
-        verify(this.specification, times(1)).and(this.descriptionStartsWithSpecification);
-        verify(this.specification, never()).and(this.descriptionSpecification);
-        verify(this.descriptionSpecification, never()).or(this.descriptionStartsWithSpecification);
-    }
-
-    private Specification<Event> getSpecification(){
-        return new Specification<Event>() {
-            private static final long serialVersionUID = 2946693984484298490L;
-
-            @Override
-            public Predicate toPredicate(final Root<Event> root, final CriteriaQuery<?> criteriaQuery,
-                    final CriteriaBuilder criteriaBuilder) {
-                return null;
-            }
-        };
     }
 }
