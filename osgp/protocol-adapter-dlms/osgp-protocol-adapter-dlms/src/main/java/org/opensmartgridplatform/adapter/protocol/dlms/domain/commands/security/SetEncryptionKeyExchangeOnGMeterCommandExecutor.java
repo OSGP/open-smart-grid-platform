@@ -114,7 +114,8 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
         }
     }
 
-    private MethodResult setEncryptionKey(DlmsConnectionManager conn, int channel, byte[] encryptionKey)
+    private MethodResult setEncryptionKey(final DlmsConnectionManager conn, final int channel,
+            final byte[] encryptionKey)
             throws IOException {
         final MethodParameter methodSetEncryptionKey = this
                 .getSetEncryptionKeyMethodParameter(OBIS_HASHMAP.get(channel), encryptionKey);
@@ -124,8 +125,8 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
         return conn.getConnection().action(methodSetEncryptionKey);
     }
 
-    private MethodResult transferKey(DlmsConnectionManager conn, String mbusDeviceIdentification, int channel,
-            byte[] encryptionKey) throws ProtocolAdapterException, IOException {
+    private MethodResult transferKey(final DlmsConnectionManager conn, final String mbusDeviceIdentification, final int channel,
+            final byte[] encryptionKey) throws ProtocolAdapterException, IOException {
         final MethodParameter methodTransferKey = this
                 .getTransferKeyMethodParameter(mbusDeviceIdentification, channel, encryptionKey);
         conn.getDlmsMessageListener().setDescription(
@@ -135,9 +136,9 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
         return conn.getConnection().action(methodTransferKey);
     }
 
-    private MethodParameter getTransferKeyMethodParameter(String mbusDeviceIdentification, int channel,
-            byte[] gMeterUserKey) throws ProtocolAdapterException {
-        DlmsDevice mbusDevice = this.dlmsDeviceRepository.findByDeviceIdentification(mbusDeviceIdentification);
+    private MethodParameter getTransferKeyMethodParameter(final String mbusDeviceIdentification, final int channel,
+            final byte[] gMeterUserKey) throws ProtocolAdapterException {
+        final DlmsDevice mbusDevice = this.dlmsDeviceRepository.findByDeviceIdentification(mbusDeviceIdentification);
         if (mbusDevice == null) {
             throw new ProtocolAdapterException("Unknown M-Bus device: " + mbusDeviceIdentification);
         }
@@ -150,7 +151,7 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
     }
 
     private void checkMethodResultCode(final MethodResult methodResultCode, final String methodParameterName,
-            ObisCode obisCode) throws ProtocolAdapterException {
+            final ObisCode obisCode) throws ProtocolAdapterException {
         if (methodResultCode == null || !MethodResultCode.SUCCESS.equals(methodResultCode.getResultCode())) {
             String message = "Error while executing " + methodParameterName + ".";
             if (methodResultCode != null) {

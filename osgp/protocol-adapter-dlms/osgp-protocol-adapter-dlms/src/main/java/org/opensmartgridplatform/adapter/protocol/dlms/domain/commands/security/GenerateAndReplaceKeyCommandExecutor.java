@@ -64,7 +64,7 @@ public class GenerateAndReplaceKeyCommandExecutor extends AbstractCommandExecuto
         return this.replaceKeyCommandExecutor.executeBundleAction(conn, device, setKeysRequest);
     }
 
-    private SetKeysRequestDto generateSetKeysRequest(String deviceIdentification) throws FunctionalException {
+    private SetKeysRequestDto generateSetKeysRequest(final String deviceIdentification) throws FunctionalException {
         try {
             final List<SecurityKeyType> keyTypes = Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION);
             final Map<SecurityKeyType, byte[]> generatedKeys = this.secretManagementService

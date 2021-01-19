@@ -29,7 +29,7 @@ public class DefaultEncryptionDelegate implements EncryptionDelegate {
         encryptionProviders.stream().forEach(p -> this.encryptionProviders.put(p.getType(), p));
     }
 
-    private EncryptionProvider getEncryptionProvider(EncryptionProviderType type) {
+    private EncryptionProvider getEncryptionProvider(final EncryptionProviderType type) {
         if (!this.encryptionProviders.containsKey(type)) {
             throw new EncrypterException(String.format(ERROR_NO_PROVIDER, type, this.encryptionProviders));
         }
@@ -54,7 +54,7 @@ public class DefaultEncryptionDelegate implements EncryptionDelegate {
     }
 
     @Override
-    public int getSecretByteLength(EncryptionProviderType encryptionProviderType) {
+    public int getSecretByteLength(final EncryptionProviderType encryptionProviderType) {
         return this.getEncryptionProvider(encryptionProviderType).getSecretByteLength();
     }
 }

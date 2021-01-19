@@ -40,7 +40,7 @@ public enum SecurityKeyType {
 
     private final SecretType secretType;
 
-    SecurityKeyType(SecretType secretType) {
+    SecurityKeyType(final SecretType secretType) {
         this.secretType = secretType;
     }
 
@@ -48,7 +48,7 @@ public enum SecurityKeyType {
         return this.secretType;
     }
 
-    public static SecurityKeyType fromSecretType(SecretType secretType) {
+    public static SecurityKeyType fromSecretType(final SecretType secretType) {
         return Arrays.stream(SecurityKeyType.values()).filter(skt -> skt.secretType.equals(secretType)).findFirst()
                      .orElseThrow(
                              () -> new IllegalArgumentException("Could not get value from secret type " + secretType));

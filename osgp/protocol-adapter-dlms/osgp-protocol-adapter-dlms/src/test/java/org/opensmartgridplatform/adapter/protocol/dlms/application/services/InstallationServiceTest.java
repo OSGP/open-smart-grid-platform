@@ -1,3 +1,11 @@
+/**
+ * Copyright 2021 Alliander N.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -21,10 +29,8 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 public class InstallationServiceTest {
     @InjectMocks
     InstallationService testService;
-
     @Mock
     SecretManagementService secretManagementService;
-
     @Mock
     DlmsDeviceRepository dlmsDeviceRepository;
     @Mock
@@ -35,12 +41,12 @@ public class InstallationServiceTest {
     @Test
     void addEMeter() throws FunctionalException {
         // GIVEN
-        SmartMeteringDeviceDto deviceDto = new SmartMeteringDeviceDto();
+        final SmartMeteringDeviceDto deviceDto = new SmartMeteringDeviceDto();
         deviceDto.setDeviceIdentification("Test");
         deviceDto.setMasterKey(new byte[16]);
         deviceDto.setAuthenticationKey(new byte[16]);
         deviceDto.setGlobalEncryptionUnicastKey(new byte[16]);
-        DlmsDevice dlmsDevice = new DlmsDevice();
+        final DlmsDevice dlmsDevice = new DlmsDevice();
         when(this.installationMapper.map(deviceDto, DlmsDevice.class)).thenReturn(dlmsDevice);
         when(this.dlmsDeviceRepository.save(dlmsDevice)).thenReturn(dlmsDevice);
         when(this.encryptionHelperService.rsaDecrypt(any())).thenReturn(new byte[16]);
@@ -54,10 +60,10 @@ public class InstallationServiceTest {
     @Test
     void addGMeter() throws FunctionalException {
         // GIVEN
-        SmartMeteringDeviceDto deviceDto = new SmartMeteringDeviceDto();
+        final SmartMeteringDeviceDto deviceDto = new SmartMeteringDeviceDto();
         deviceDto.setDeviceIdentification("Test");
         deviceDto.setMbusDefaultKey(new byte[16]);
-        DlmsDevice dlmsDevice = new DlmsDevice();
+        final DlmsDevice dlmsDevice = new DlmsDevice();
         when(this.installationMapper.map(deviceDto, DlmsDevice.class)).thenReturn(dlmsDevice);
         when(this.dlmsDeviceRepository.save(dlmsDevice)).thenReturn(dlmsDevice);
         when(this.encryptionHelperService.rsaDecrypt(any())).thenReturn(new byte[16]);
@@ -69,9 +75,9 @@ public class InstallationServiceTest {
     }
 
     @Test
-    void addMeter_noKeys() {
+    void addMeterNoKeys() {
         // GIVEN
-        SmartMeteringDeviceDto deviceDto = new SmartMeteringDeviceDto();
+        final SmartMeteringDeviceDto deviceDto = new SmartMeteringDeviceDto();
         deviceDto.setDeviceIdentification("Test");
         // WHEN
         Assertions.assertThatExceptionOfType(FunctionalException.class)
@@ -79,9 +85,9 @@ public class InstallationServiceTest {
     }
 
     @Test
-    void addMeter_redundantKeys() {
+    void addMeterRedundantKeys() {
         // GIVEN
-        SmartMeteringDeviceDto deviceDto = new SmartMeteringDeviceDto();
+        final SmartMeteringDeviceDto deviceDto = new SmartMeteringDeviceDto();
         deviceDto.setDeviceIdentification("Test");
         deviceDto.setMasterKey(new byte[16]);
         deviceDto.setAuthenticationKey(new byte[16]);
@@ -93,9 +99,9 @@ public class InstallationServiceTest {
     }
 
     @Test
-    void addMeter_noDeviceIdentification() {
+    void addMeterNoDeviceIdentification() {
         // GIVEN
-        SmartMeteringDeviceDto deviceDto = new SmartMeteringDeviceDto();
+        final SmartMeteringDeviceDto deviceDto = new SmartMeteringDeviceDto();
         deviceDto.setMbusDefaultKey(new byte[16]);
         // WHEN
         Assertions.assertThatExceptionOfType(FunctionalException.class)

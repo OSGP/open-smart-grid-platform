@@ -61,16 +61,16 @@ public class SecretManagementService {
         String encryptionKeyReference;  //NULL when RSA
         EncryptionProviderType encryptionProviderType;  //NULL when RSA
 
-        private EncryptedTypedSecret(SecretType type) {
+        private EncryptedTypedSecret(final SecretType type) {
             this.type = type;
         }
 
-        private EncryptedTypedSecret(byte[] secret, SecretType type) {
+        private EncryptedTypedSecret(final byte[] secret, final SecretType type) {
             this(secret, type, null, null);
         }
 
-        private EncryptedTypedSecret(byte[] secret, SecretType type, String encryptionKeyReference,
-                EncryptionProviderType encryptionProviderType) {
+        private EncryptedTypedSecret(final byte[] secret, final SecretType type, final String encryptionKeyReference,
+                final EncryptionProviderType encryptionProviderType) {
             if (secret == null) {
                 throw new IllegalArgumentException("No NULL value allowed for parameter 'secret'");
             } else if (type == null) {
@@ -90,11 +90,11 @@ public class SecretManagementService {
             return new TypedSecret(this.encryptedSecret, this.type);
         }
 
-        private static EncryptedTypedSecret getNullInstance(SecretType type) {
+        private static EncryptedTypedSecret getNullInstance(final SecretType type) {
             return new EncryptedTypedSecret(type);
         }
 
-        private static EncryptedTypedSecret fromDbEncryptedSecret(DbEncryptedSecret dbEncryptedSecret)
+        private static EncryptedTypedSecret fromDbEncryptedSecret(final DbEncryptedSecret dbEncryptedSecret)
                 throws FunctionalException {
             byte[] aesEncrypted;
             try {
@@ -103,8 +103,8 @@ public class SecretManagementService {
                 throw new FunctionalException(FunctionalExceptionType.INVALID_KEY_FORMAT,
                         ComponentType.SECRET_MANAGEMENT, iae);
             }
-            String keyReference = dbEncryptedSecret.getEncryptionKeyReference().getReference();
-            EncryptionProviderType providerType = dbEncryptedSecret.getEncryptionKeyReference()
+            final String keyReference = dbEncryptedSecret.getEncryptionKeyReference().getReference();
+            final EncryptionProviderType providerType = dbEncryptedSecret.getEncryptionKeyReference()
                                                                    .getEncryptionProviderType();
             return new EncryptedTypedSecret(aesEncrypted, dbEncryptedSecret.getSecretType(), keyReference,
                     providerType);
@@ -120,7 +120,7 @@ public class SecretManagementService {
     public SecretManagementService(
             @Qualifier("DefaultEncryptionDelegate") final EncryptionDelegate defaultEncryptionDelegate,
             final EncryptionProviderType encryptionProviderType, final DbEncryptedSecretRepository secretRepository,
-            final DbEncryptionKeyRepository keyRepository, RsaEncrypter rsaEncrypter) {
+            final DbEncryptionKeyRepository keyRepository, final RsaEncrypter rsaEncrypter) {
         this.encryptionDelegate = defaultEncryptionDelegate;
         this.encryptionProviderType = encryptionProviderType;
         this.secretRepository = secretRepository;
@@ -142,13 +142,13 @@ public class SecretManagementService {
         return keyRefs.get(0);
     }
 
-    private DbEncryptionKeyReference getKeyByReference(String reference) {
+    private DbEncryptionKeyReference getKeyByReference(final String reference) {
         return this.keyRepository.findByTypeAndReference(this.encryptionProviderType, reference);
     }
 
     private EncryptedTypedSecret validateAndReturnNewSecret(final EncryptedTypedSecret secret) {
         if (secret.hasNullSecret()) {
-            FunctionalExceptionType excType = FunctionalExceptionType.KEY_NOT_PRESENT;
+            final FunctionalExceptionType excType = FunctionalExceptionType.KEY_NOT_PRESENT;
             throw new ExceptionWrapper(new FunctionalException(excType, ComponentType.SECRET_MANAGEMENT));
         }
         return secret;
@@ -182,7 +182,7 @@ public class SecretManagementService {
     }
 
     private List<EncryptedTypedSecret> retrieveAesSecrets(final String deviceIdentification,
-            final List<SecretType> secretTypes, SecretStatus status) {
+            final List<SecretType> secretTypes, final SecretStatus status) {
         try {
             return secretTypes.stream().map(secretType -> this.retrieveSecret(deviceIdentification, secretType, status))
                               .collect(Collectors.toList());
@@ -194,7 +194,7 @@ public class SecretManagementService {
     }
 
     private EncryptedTypedSecret retrieveSecret(final String deviceIdentification, final SecretType secretType,
-            SecretStatus status) {
+            final SecretStatus status) {
         final Optional<DbEncryptedSecret> optional = this
                 .getSingleDbEncryptedSecret(deviceIdentification, secretType, status);
         if (optional.isPresent()) {
@@ -212,7 +212,7 @@ public class SecretManagementService {
             final SecretType secretType, final SecretStatus secretStatus) {
         final List<DbEncryptedSecret> secretsList = this.secretRepository
                 .findSecrets(deviceIdentification, secretType, secretStatus);
-        boolean onlySingleSecretAllowed =
+        final boolean onlySingleSecretAllowed =
                 SecretStatus.NEW.equals(secretStatus) || SecretStatus.ACTIVE.equals(secretStatus);
         if (secretsList.isEmpty()) {
             return Optional.empty();
@@ -226,7 +226,7 @@ public class SecretManagementService {
 
     public synchronized void storeSecrets(final String deviceIdentification, final List<TypedSecret> secrets) {
         secrets.forEach(s -> this.checkNrNewSecretsOfType(deviceIdentification, s.getSecretType(), 0));
-        List<EncryptedTypedSecret> aesSecrets = secrets.stream().map(ts -> new EncryptedTypedSecret(ts.getSecret(),
+        final List<EncryptedTypedSecret> aesSecrets = secrets.stream().map(ts -> new EncryptedTypedSecret(ts.getSecret(),
                 ts.getSecretType())).map(this::reencryptRsa2Aes).collect(toList());
         this.storeAesSecrets(deviceIdentification, aesSecrets);
     }
@@ -249,7 +249,7 @@ public class SecretManagementService {
 
     private List<DbEncryptedSecret> getUpdatedSecretsForActivation(final String deviceIdentification,
             final SecretType secretType) {
-        List<DbEncryptedSecret> updatedSecrets = new ArrayList<>();
+        final List<DbEncryptedSecret> updatedSecrets = new ArrayList<>();
         final Optional<DbEncryptedSecret> activeSecretOptional = this
                 .getSingleDbEncryptedSecret(deviceIdentification, secretType, SecretStatus.ACTIVE);
         if (activeSecretOptional.isPresent()) {
@@ -257,7 +257,7 @@ public class SecretManagementService {
             currentSecret.setSecretStatus(SecretStatus.EXPIRED);
             updatedSecrets.add(currentSecret);
         }
-        Optional<DbEncryptedSecret> newSecretOptional = this
+        final Optional<DbEncryptedSecret> newSecretOptional = this
                 .getSingleDbEncryptedSecret(deviceIdentification, secretType, SecretStatus.NEW);
         if (newSecretOptional.isPresent()) {
             final DbEncryptedSecret newSecret = newSecretOptional.get();
@@ -278,10 +278,10 @@ public class SecretManagementService {
         }
     }
 
-    public synchronized List<TypedSecret> generateAndStoreSecrets(String deviceIdentification,
+    public synchronized List<TypedSecret> generateAndStoreSecrets(final String deviceIdentification,
             final List<SecretType> secretTypes) {
         secretTypes.forEach(st -> this.checkNrNewSecretsOfType(deviceIdentification, st, 0));
-        List<EncryptedTypedSecret> encryptedTypedSecrets = secretTypes.stream().map(this::generateAes128BitsSecret)
+        final List<EncryptedTypedSecret> encryptedTypedSecrets = secretTypes.stream().map(this::generateAes128BitsSecret)
                                                                       .collect(Collectors.toList());
         this.storeAesSecrets(deviceIdentification, encryptedTypedSecrets);
         return encryptedTypedSecrets.stream().map(this::reencryptAes2Rsa).map(EncryptedTypedSecret::toTypedSecret)
@@ -290,8 +290,8 @@ public class SecretManagementService {
 
     private EncryptedTypedSecret generateAes128BitsSecret(final SecretType secretType) {
         try {
-            DbEncryptionKeyReference currentKey = this.getCurrentKey();
-            byte[] aesEncrypted = this.encryptionDelegate
+            final DbEncryptionKeyReference currentKey = this.getCurrentKey();
+            final byte[] aesEncrypted = this.encryptionDelegate
                     .generateAes128BitsSecret(this.encryptionProviderType, currentKey.getReference());
             return new EncryptedTypedSecret(aesEncrypted, secretType, currentKey.getReference(),
                     currentKey.getEncryptionProviderType());
@@ -300,14 +300,14 @@ public class SecretManagementService {
         }
     }
 
-    private EncryptedTypedSecret reencryptRsa2Aes(EncryptedTypedSecret secret) {
+    private EncryptedTypedSecret reencryptRsa2Aes(final EncryptedTypedSecret secret) {
         byte[] aesEncrypted = this.reencryptRsa2Aes(secret.encryptedSecret);
-        DbEncryptionKeyReference currentKey = this.getCurrentKey();
+        final DbEncryptionKeyReference currentKey = this.getCurrentKey();
         return new EncryptedTypedSecret(aesEncrypted, secret.type, currentKey.getReference(),
                 currentKey.getEncryptionProviderType());
     }
 
-    private EncryptedTypedSecret reencryptAes2Rsa(EncryptedTypedSecret secret) {
+    private EncryptedTypedSecret reencryptAes2Rsa(final EncryptedTypedSecret secret) {
         if (secret.hasNullSecret()) {
             return secret;  //No need to encrypt NULL value
         } else {
@@ -317,9 +317,9 @@ public class SecretManagementService {
         }
     }
 
-    private byte[] reencryptRsa2Aes(byte[] rsa) {
+    private byte[] reencryptRsa2Aes(final byte[] rsa) {
         //Incoming new secret, so use current key
-        String keyReference = this.getCurrentKey().getReference();
+        final String keyReference = this.getCurrentKey().getReference();
         byte[] aes;
         try {
             aes = this.encryptionDelegate
@@ -330,7 +330,7 @@ public class SecretManagementService {
         return aes;
     }
 
-    private byte[] reencryptAes2Rsa(byte[] aes, String keyReference, EncryptionProviderType encryptionProviderType) {
+    private byte[] reencryptAes2Rsa(final byte[] aes, final String keyReference, final EncryptionProviderType encryptionProviderType) {
         try {
             return this.rsaEncrypter.encrypt(
                     this.encryptionDelegate.decrypt(new EncryptedSecret(encryptionProviderType, aes), keyReference));

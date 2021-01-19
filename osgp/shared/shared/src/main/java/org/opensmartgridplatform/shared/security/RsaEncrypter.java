@@ -24,7 +24,7 @@ import javax.crypto.NoSuchPaddingException;
 
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 
-//TODO merge with RsaEncryptionService; it is almost the same except for different configuration
+//This class should be merged with RsaEncryptionService; it is almost the same except for different configuration
 //  refactor it to 1 single configurable class with 2 instances with different configurations
 public class RsaEncrypter {
     private static final int BLOCK_SIZE = 16;

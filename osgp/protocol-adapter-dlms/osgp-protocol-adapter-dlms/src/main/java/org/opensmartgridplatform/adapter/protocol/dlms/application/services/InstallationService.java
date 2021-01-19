@@ -77,11 +77,11 @@ public class InstallationService {
     }
 
     private void storeAndActivateKeys(final SmartMeteringDeviceDto deviceDto) throws FunctionalException {
-        Map<SecurityKeyType, byte[]> keysByType = new EnumMap<>(SecurityKeyType.class);
-        List<SecurityKeyType> keyTypesToStore = this.determineKeyTypesToStore(deviceDto);
+        final Map<SecurityKeyType, byte[]> keysByType = new EnumMap<>(SecurityKeyType.class);
+        final List<SecurityKeyType> keyTypesToStore = this.determineKeyTypesToStore(deviceDto);
         for (SecurityKeyType keyType : keyTypesToStore) {
-            byte[] key = this.getKeyFromDeviceDto(deviceDto, keyType);
-            if (key != null && ArrayUtils.isNotEmpty(key)) {
+            final byte[] key = this.getKeyFromDeviceDto(deviceDto, keyType);
+            if (ArrayUtils.isNotEmpty(key)) {
                 keysByType.put(keyType, this.encryptionService.rsaDecrypt(key));
             } else {
                 Exception rootCause = new NoSuchElementException(keyType.name());
@@ -93,14 +93,14 @@ public class InstallationService {
         this.secretManagementService.activateNewKeys(deviceDto.getDeviceIdentification(), keyTypesToStore);
     }
 
-    private List<SecurityKeyType> determineKeyTypesToStore(SmartMeteringDeviceDto deviceDto)
+    private List<SecurityKeyType> determineKeyTypesToStore(final SmartMeteringDeviceDto deviceDto)
             throws FunctionalException {
         if (this.getKeyFromDeviceDto(deviceDto, G_METER_MASTER) != null) {
             //device is a G-Meter
             if (this.getKeyFromDeviceDto(deviceDto, E_METER_MASTER) != null
                     || this.getKeyFromDeviceDto(deviceDto, E_METER_AUTHENTICATION) != null
                     || this.getKeyFromDeviceDto(deviceDto, E_METER_ENCRYPTION) != null) {
-                String msg = "Provided device is considered a G-Meter (G_METER_MASTER is set)"
+                final String msg = "Provided device is considered a G-Meter (G_METER_MASTER is set)"
                         + ", but contains E-Meter keys as well";
                 throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.PROTOCOL_DLMS,
                         new IllegalArgumentException(msg));
@@ -112,7 +112,7 @@ public class InstallationService {
         }
     }
 
-    private byte[] getKeyFromDeviceDto(SmartMeteringDeviceDto deviceDto, SecurityKeyType keyType) {
+    private byte[] getKeyFromDeviceDto(final SmartMeteringDeviceDto deviceDto, final SecurityKeyType keyType) {
         switch (keyType) {
         case E_METER_MASTER:
             return deviceDto.getMasterKey();

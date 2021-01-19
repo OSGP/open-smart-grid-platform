@@ -54,10 +54,10 @@ public abstract class GenericResponseSteps {
         }
     }
 
-    private static void assertFaultCodeAndString(Map<String, String> expected, SoapFaultClientException soapFault) {
+    private static void assertFaultCodeAndString(final Map<String, String> expected, final SoapFaultClientException soapFault) {
         final QName qNameFaultCode = soapFault.getFaultCode();
-        String faultCode = qNameFaultCode.getPrefix() + ":" + qNameFaultCode.getLocalPart();
-        String faultString = soapFault.getFaultStringOrReason();
+        final String faultCode = qNameFaultCode.getPrefix() + ":" + qNameFaultCode.getLocalPart();
+        final String faultString = soapFault.getFaultStringOrReason();
 
         if (expected.containsKey(PlatformKeys.KEY_FAULTCODE)) {
             assertThat(faultCode).isEqualTo(getString(expected, PlatformKeys.KEY_FAULTCODE));
@@ -67,7 +67,7 @@ public abstract class GenericResponseSteps {
         }
     }
 
-    private static void assertFaultDetailList(Map<String, String> expected, Object actualObj) {
+    private static void assertFaultDetailList(final Map<String, String> expected, final Object actualObj) {
         int externCounter = 0;
         for (final Map.Entry<String, String> expectedEntry : expected.entrySet()) {
             final String localName = expectedEntry.getKey();
@@ -93,46 +93,25 @@ public abstract class GenericResponseSteps {
         }
     }
 
-    /*private static void assertFaultDetailMap(Map<String, String> expected, Map<FaultDetailElement, String> actual) {
-        for (final Map.Entry<String, String> expectedEntry : expected.entrySet()) {
-            final String localName = expectedEntry.getKey();
-            final FaultDetailElement faultDetailElement = FaultDetailElement.forLocalName(localName);
-            if (faultDetailElement == null) {
-                /*
-                 * Specified response parameter is not a FaultDetailElement
-                 * (e.g. DeviceIdentification), skip it for the assertions.
-                 *
-                continue;
-            }
-
-            final String expectedValue = expectedEntry.getValue();
-            final String actualValue = actual.get(faultDetailElement);
-
-            assertThat(actualValue).as(localName + "; all actual values: " + actual.toString())
-                                   .isEqualTo(expectedValue);
+    private static void assertFaultDetailMap(final Map<String, String> expected, final Map<FaultDetailElement, String> actual) {
+        final Map<String, String> actualByName = new HashMap<>();
+        for (final Map.Entry<FaultDetailElement, String> entry : actual.entrySet()) {
+            actualByName.put(entry.getKey().getLocalName(), entry.getValue());
         }
-    }*/
-
-    private static void assertFaultDetailMap(Map<String, String> expected, Map<FaultDetailElement, String> actual) {
-        final Map<String,String> actualByName = new HashMap<>();
-        for(Map.Entry<FaultDetailElement,String> entry: actual.entrySet()) {
-            actualByName.put(entry.getKey().getLocalName(),entry.getValue());
-        }
-        final Map<String,String> expectedFaults = new HashMap<>();
-        for(Map.Entry<String,String> entry: expected.entrySet()) {
-            if(FaultDetailElement.forLocalName(entry.getKey())!=null) {
-                expectedFaults.put(entry.getKey(),entry.getValue());
+        final Map<String, String> expectedFaults = new HashMap<>();
+        for (final Map.Entry<String, String> entry : expected.entrySet()) {
+            if (FaultDetailElement.forLocalName(entry.getKey()) != null) {
+                expectedFaults.put(entry.getKey(), entry.getValue());
             }
         }
-        SoftAssertions soft = new SoftAssertions();
+        final SoftAssertions soft = new SoftAssertions();
         soft.assertThat(actualByName.keySet()).as("Actual fault fields").containsAll(expectedFaults.keySet());
-        if(!actualByName.keySet().containsAll(expectedFaults.keySet())) {
-            //Not all expected fields are there: fail with message containing full response
+        if (!actualByName.keySet().containsAll(expectedFaults.keySet())) {
+            // Not all expected fields are there: fail with message containing full response
             soft.fail("Not all expected fields are present; expectedFaults=%s, actualFaultDetailElements=%s",
-                    expectedFaults,
-                    actual);
+                    expectedFaults, actual);
         }
-        for(Map.Entry<String,String> expectedEntry:expectedFaults.entrySet()) {
+        for (Map.Entry<String, String> expectedEntry : expectedFaults.entrySet()) {
             final String expectedValue = expectedEntry.getValue();
             final String actualValue = actualByName.get(expectedEntry.getKey());
             soft.assertThat(actualValue).as(expectedEntry.getKey()).isEqualTo(expectedValue);

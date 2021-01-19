@@ -23,10 +23,10 @@ public class DetailSoapFaultMappingExceptionResolver extends SoapFaultMappingExc
     private static final QName COMPONENT = new QName("Component");
 
     @Override
-    protected void customizeFault(Object endpoint, Exception ex, SoapFault fault) {
+    protected void customizeFault(final Object endpoint, final Exception ex, final SoapFault fault) {
         log.error("Exception occured during SOAP request processing", ex);
-        SoapFaultDetail detail = fault.addFaultDetail();
-        if(ex instanceof ExceptionWrapper) {
+        final SoapFaultDetail detail = fault.addFaultDetail();
+        if (ex instanceof ExceptionWrapper) {
             this.customizeFault(endpoint, (Exception) ex.getCause(), fault);
             return;
         }

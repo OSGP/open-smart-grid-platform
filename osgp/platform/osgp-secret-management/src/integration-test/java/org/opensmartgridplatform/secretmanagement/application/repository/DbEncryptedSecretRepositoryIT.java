@@ -51,7 +51,8 @@ public class DbEncryptedSecretRepositoryIT extends AbstractRepositoryIT {
         this.entityManager.flush();
     }
 
-    @Test void testSetup() {
+    @Test
+    public void testSetup() {
         assertThat(this.repository.count()).isEqualTo(1);
     }
 
@@ -64,9 +65,9 @@ public class DbEncryptedSecretRepositoryIT extends AbstractRepositoryIT {
 
     @Test
     public void findSecrets() {
-        final List<DbEncryptedSecret> secretsList =
-                this.repository.findSecrets(this.dbEncryptedSecret.getDeviceIdentification(),
-                this.dbEncryptedSecret.getSecretType(), SecretStatus.ACTIVE);
+        final List<DbEncryptedSecret> secretsList = this.repository
+                .findSecrets(this.dbEncryptedSecret.getDeviceIdentification(), this.dbEncryptedSecret.getSecretType(),
+                        SecretStatus.ACTIVE);
         assertThat(secretsList).hasSize(1);
         assertThat(secretsList.iterator().next().getId()).isEqualTo(this.dbEncryptedSecret.getId());
     }

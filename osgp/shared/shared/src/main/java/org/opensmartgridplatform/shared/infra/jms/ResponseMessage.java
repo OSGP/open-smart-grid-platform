@@ -58,8 +58,7 @@ public class ResponseMessage implements Serializable {
             return "";
         } else {
             final String stringValue = dataObject.toString();
-            //TODO temp change; reset to 40
-            return stringValue.substring(0, Math.min(stringValue.length(), 128));
+            return stringValue.substring(0, Math.min(stringValue.length(), 40));
         }
     }
 

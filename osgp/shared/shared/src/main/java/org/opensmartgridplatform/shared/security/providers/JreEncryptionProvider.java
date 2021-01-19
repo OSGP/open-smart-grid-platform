@@ -38,7 +38,7 @@ public class JreEncryptionProvider extends AbstractEncryptionProvider implements
 
     private final byte[] key;
 
-    public JreEncryptionProvider(File keyStoreFile) {
+    public JreEncryptionProvider(final File keyStoreFile) {
         try {
             super.setKeyFile(keyStoreFile);
             this.key = Files.readAllBytes(Paths.get(keyStoreFile.getAbsolutePath()));
@@ -57,7 +57,7 @@ public class JreEncryptionProvider extends AbstractEncryptionProvider implements
     }
 
     @Override
-    protected Key getSecretEncryptionKey(String keyReference, int cipherMode) {
+    protected Key getSecretEncryptionKey(final String keyReference, final int cipherMode) {
 
         if (!keyReference.equals(DEFAULT_SINGLE_KEY_REFERENCE)) {
             throw new EncrypterException("Only keyReference '1' is valid in this implementation.");
@@ -89,12 +89,12 @@ public class JreEncryptionProvider extends AbstractEncryptionProvider implements
     }
 
     @Override
-    public byte[] generateAes128BitsSecret(String keyReference) {
+    public byte[] generateAes128BitsSecret(final String keyReference) {
         try {
-            KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+            final KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
             keyGenerator.init(KEY_LENGTH*8);
             return this.encrypt(keyGenerator.generateKey().getEncoded(),keyReference).getSecret();
-        } catch (NoSuchAlgorithmException exc) {
+        } catch (final NoSuchAlgorithmException exc) {
             throw new EncrypterException("Could not generate secret", exc);
         }
     }

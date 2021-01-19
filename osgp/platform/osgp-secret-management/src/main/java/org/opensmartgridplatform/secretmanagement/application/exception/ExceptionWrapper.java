@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Smart Society Services B.V.
+ * Copyright 2020 Alliander N.V.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
@@ -15,7 +15,7 @@ package org.opensmartgridplatform.secretmanagement.application.exception;
 public class ExceptionWrapper extends RuntimeException {
     private static final long serialVersionUID = -1239332310446200862L;
 
-    public ExceptionWrapper(Exception exc) {
+    public ExceptionWrapper(final Exception exc) {
         super(exc);
     }
 }

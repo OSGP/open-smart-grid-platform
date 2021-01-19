@@ -45,15 +45,13 @@ import org.springframework.stereotype.Service;
 /**
  * Service for storing, activating and retrieving device keys.
  * Also performs RSA encryption/decryption operations for SOAP messaging purposes.
- */
-public class SecretManagementService {
+ */ public class SecretManagementService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SecretManagementService.class);
     private final RsaEncrypter soapRsaEncrypter;
     private final SecretManagementClient secretManagementClient;
 
-
-    public SecretManagementService(RsaEncrypter soapRsaEncrypter, SecretManagementClient secretManagementClient) {
+    public SecretManagementService(final RsaEncrypter soapRsaEncrypter, final SecretManagementClient secretManagementClient) {
         this.soapRsaEncrypter = soapRsaEncrypter;
         this.secretManagementClient = secretManagementClient;
     }
@@ -68,8 +66,8 @@ public class SecretManagementService {
      *
      * @return the key or NULL if not present
      */
-    public byte[] getKey(String deviceIdentification, SecurityKeyType keyType) {
-        if(LOGGER.isInfoEnabled()) {
+    public byte[] getKey(final String deviceIdentification, final SecurityKeyType keyType) {
+        if (LOGGER.isInfoEnabled()) {
             LOGGER.info("Retrieving {} for device {}", keyType.name(), deviceIdentification);
         }
         return this.getKeys(deviceIdentification, Arrays.asList(keyType)).get(keyType);
@@ -85,9 +83,10 @@ public class SecretManagementService {
      *
      * @return the requested keys in a map by key type, with value NULL if not present
      */
-    public Map<SecurityKeyType, byte[]> getKeys(String deviceIdentification, List<SecurityKeyType> keyTypes) {
-        GetSecretsRequest request = this.createGetSecretsRequest(deviceIdentification, keyTypes);
-        GetSecretsResponse response = this.secretManagementClient.getSecretsRequest(request);
+    public Map<SecurityKeyType, byte[]> getKeys(final String deviceIdentification,
+            final List<SecurityKeyType> keyTypes) {
+        final GetSecretsRequest request = this.createGetSecretsRequest(deviceIdentification, keyTypes);
+        final GetSecretsResponse response = this.secretManagementClient.getSecretsRequest(request);
         this.validateGetResponse(keyTypes, response);
         return this.convertSoapSecretsToSecretMapByType(response.getTypedSecrets().getTypedSecret());
     }
@@ -102,8 +101,8 @@ public class SecretManagementService {
      *
      * @return the key or NULL if not present
      */
-    public byte[] getNewKey(String deviceIdentification, SecurityKeyType keyType) {
-        if(LOGGER.isInfoEnabled()) {
+    public byte[] getNewKey(final String deviceIdentification, final SecurityKeyType keyType) {
+        if (LOGGER.isInfoEnabled()) {
             LOGGER.info("Retrieving new {} for device {}", keyType.name(), deviceIdentification);
         }
         return this.getNewKeys(deviceIdentification, Arrays.asList(keyType)).get(keyType);
@@ -119,46 +118,48 @@ public class SecretManagementService {
      *
      * @return the requested keys in a map by key type, with value NULL if not present
      */
-    public Map<SecurityKeyType, byte[]> getNewKeys(String deviceIdentification, List<SecurityKeyType> keyTypes) {
-        GetNewSecretsRequest request = this.createGetNewSecretsRequest(deviceIdentification, keyTypes);
-        GetNewSecretsResponse response = this.secretManagementClient.getNewSecretsRequest(request);
+    public Map<SecurityKeyType, byte[]> getNewKeys(final String deviceIdentification,
+            final List<SecurityKeyType> keyTypes) {
+        final GetNewSecretsRequest request = this.createGetNewSecretsRequest(deviceIdentification, keyTypes);
+        final GetNewSecretsResponse response = this.secretManagementClient.getNewSecretsRequest(request);
         this.validateGetNewResponse(keyTypes, response);
         return this.convertSoapSecretsToSecretMapByType(response.getTypedSecrets().getTypedSecret());
     }
 
-    private void validateGetResponse(List<SecurityKeyType> keyTypes, GetSecretsResponse response) {
+    private void validateGetResponse(final List<SecurityKeyType> keyTypes, final GetSecretsResponse response) {
         this.validateOsgpResultAndTypedSecrets(response.getResult(), response.getTechnicalFault(),
                 response.getTypedSecrets(), keyTypes.size());
     }
 
-    private void validateGetNewResponse(List<SecurityKeyType> keyTypes, GetNewSecretsResponse response) {
+    private void validateGetNewResponse(final List<SecurityKeyType> keyTypes, final GetNewSecretsResponse response) {
         this.validateOsgpResultAndTypedSecrets(response.getResult(), response.getTechnicalFault(),
                 response.getTypedSecrets(), keyTypes.size());
     }
 
-    private Map<SecurityKeyType, byte[]> convertSoapSecretsToSecretMapByType(List<TypedSecret> soapSecrets) {
-        Function<TypedSecret, SecurityKeyType> convertType = ts -> SecurityKeyType.fromSecretType(ts.getType());
-        Function<TypedSecret, byte[]> convertSecret = ts -> this.decryptSoapSecret(ts,false);
-        Map<SecurityKeyType,byte[]> decryptedKeysByType = new EnumMap<>(SecurityKeyType.class);
-        soapSecrets.forEach(ts->decryptedKeysByType.put(convertType.apply(ts),convertSecret.apply(ts)));
+    private Map<SecurityKeyType, byte[]> convertSoapSecretsToSecretMapByType(final List<TypedSecret> soapSecrets) {
+        final Function<TypedSecret, SecurityKeyType> convertType = ts -> SecurityKeyType.fromSecretType(ts.getType());
+        final Function<TypedSecret, byte[]> convertSecret = ts -> this.decryptSoapSecret(ts, false);
+        final Map<SecurityKeyType, byte[]> decryptedKeysByType = new EnumMap<>(SecurityKeyType.class);
+        soapSecrets.forEach(ts -> decryptedKeysByType.put(convertType.apply(ts), convertSecret.apply(ts)));
         return decryptedKeysByType;
     }
 
-    private GetSecretsRequest createGetSecretsRequest(String deviceIdentification, List<SecurityKeyType> keyTypes) {
-        GetSecretsRequest request = new GetSecretsRequest();
+    private GetSecretsRequest createGetSecretsRequest(final String deviceIdentification,
+            final List<SecurityKeyType> keyTypes) {
+        final GetSecretsRequest request = new GetSecretsRequest();
         request.setDeviceId(deviceIdentification);
         request.setSecretTypes(new SecretTypes());
-        List<SecretType> secretTypeList = request.getSecretTypes().getSecretType();
+        final List<SecretType> secretTypeList = request.getSecretTypes().getSecretType();
         keyTypes.stream().forEach(kt -> secretTypeList.add(kt.toSecretType()));
         return request;
     }
 
-    private GetNewSecretsRequest createGetNewSecretsRequest(String deviceIdentification,
-            List<SecurityKeyType> keyTypes) {
-        GetNewSecretsRequest request = new GetNewSecretsRequest();
+    private GetNewSecretsRequest createGetNewSecretsRequest(final String deviceIdentification,
+            final List<SecurityKeyType> keyTypes) {
+        final GetNewSecretsRequest request = new GetNewSecretsRequest();
         request.setDeviceId(deviceIdentification);
         request.setSecretTypes(new SecretTypes());
-        List<SecretType> secretTypeList = request.getSecretTypes().getSecretType();
+        final List<SecretType> secretTypeList = request.getSecretTypes().getSecretType();
         keyTypes.stream().forEach(kt -> secretTypeList.add(kt.toSecretType()));
         return request;
     }
@@ -188,47 +189,49 @@ public class SecretManagementService {
      *
      * @see #activateNewKey(String, SecurityKeyType)
      */
-    public void storeNewKey(String deviceIdentification, SecurityKeyType keyType, byte[] key) {
-        Map<SecurityKeyType, byte[]> keysByType = new EnumMap<>(SecurityKeyType.class);
+    public void storeNewKey(final String deviceIdentification, final SecurityKeyType keyType, byte[] key) {
+        final Map<SecurityKeyType, byte[]> keysByType = new EnumMap<>(SecurityKeyType.class);
         keysByType.put(keyType, key);
         this.storeNewKeys(deviceIdentification, keysByType);
     }
 
-    public void storeNewKeys(String deviceIdentification, Map<SecurityKeyType, byte[]> keysByType) {
+    public void storeNewKeys(final String deviceIdentification, final Map<SecurityKeyType, byte[]> keysByType) {
         this.validateKeys(keysByType);
-        TypedSecrets typedSecrets = new TypedSecrets();
-        List<TypedSecret> typedSecretList = typedSecrets.getTypedSecret();
-        for (Map.Entry<SecurityKeyType,byte[]> entry : keysByType.entrySet()) {
+        final TypedSecrets typedSecrets = new TypedSecrets();
+        final List<TypedSecret> typedSecretList = typedSecrets.getTypedSecret();
+        for (Map.Entry<SecurityKeyType, byte[]> entry : keysByType.entrySet()) {
             TypedSecret ts = new TypedSecret();
             ts.setType(entry.getKey().toSecretType());
-            ts.setSecret(this.encryptSoapSecret(entry.getValue(),true));
+            ts.setSecret(this.encryptSoapSecret(entry.getValue(), true));
             typedSecretList.add(ts);
         }
-        StoreSecretsRequest request = this.createStoreSecretsRequest(deviceIdentification, typedSecrets);
+        final StoreSecretsRequest request = this.createStoreSecretsRequest(deviceIdentification, typedSecrets);
         StoreSecretsResponse response = null;
         try {
             response = this.secretManagementClient.storeSecretsRequest(request);
-        } catch(RuntimeException exc) {
+        } catch (RuntimeException exc) {
             throw new IllegalStateException("Could not store keys: unexpected exception occured", exc);
         }
-        if(response==null) {
+        if (response == null) {
             throw new IllegalStateException("Could not store keys: NULL response");
-        } else if(!OsgpResultType.OK.equals(response.getResult())) {
-                throw new IllegalStateException(String.format("Could not store keys: result=%s; fault=%s",
-                        response.getResult(), response.getTechnicalFault()));
+        } else if (!OsgpResultType.OK.equals(response.getResult())) {
+            throw new IllegalStateException(
+                    String.format("Could not store keys: result=%s; fault=%s", response.getResult(),
+                            response.getTechnicalFault()));
         }
     }
 
-    private void validateKeys(Map<SecurityKeyType, byte[]> keysByType) {
-        long nrNulls = keysByType.values().stream().filter(Objects::isNull).count();
+    private void validateKeys(final Map<SecurityKeyType, byte[]> keysByType) {
+        final long nrNulls = keysByType.values().stream().filter(Objects::isNull).count();
         if (nrNulls > 0) {
             throw new IllegalArgumentException(
                     String.format("Provided %s keys, %s of which were NULL", keysByType.size(), nrNulls));
         }
     }
 
-    private StoreSecretsRequest createStoreSecretsRequest(String deviceIdentification, TypedSecrets typedSecrets) {
-        StoreSecretsRequest request = new StoreSecretsRequest();
+    private StoreSecretsRequest createStoreSecretsRequest(final String deviceIdentification,
+            final TypedSecrets typedSecrets) {
+        final StoreSecretsRequest request = new StoreSecretsRequest();
         request.setDeviceId(deviceIdentification);
         request.setTypedSecrets(typedSecrets);
         return request;
@@ -248,28 +251,28 @@ public class SecretManagementService {
      *
      * @see #storeNewKeys(String, Map)
      */
-    public void activateNewKey(String deviceIdentification, SecurityKeyType keyType) {
+    public void activateNewKey(final String deviceIdentification, final SecurityKeyType keyType) {
         this.activateNewKeys(deviceIdentification, Arrays.asList(keyType));
     }
 
-    public void activateNewKeys(String deviceIdentification, List<SecurityKeyType> keyTypes) {
-        ActivateSecretsRequest request = new ActivateSecretsRequest();
+    public void activateNewKeys(final String deviceIdentification, final List<SecurityKeyType> keyTypes) {
+        final ActivateSecretsRequest request = new ActivateSecretsRequest();
         request.setDeviceId(deviceIdentification);
         request.setSecretTypes(new SecretTypes());
-        List<SecretType> secretTypeList = request.getSecretTypes().getSecretType();
+        final List<SecretType> secretTypeList = request.getSecretTypes().getSecretType();
         keyTypes.forEach(kt -> secretTypeList.add(kt.toSecretType()));
         this.secretManagementClient.activateSecretsRequest(request);
     }
 
-    public boolean hasNewSecretOfType(String deviceIdentification, SecurityKeyType keyType) {
-        HasNewSecretRequest request = new HasNewSecretRequest();
+    public boolean hasNewSecretOfType(final String deviceIdentification, final SecurityKeyType keyType) {
+        final HasNewSecretRequest request = new HasNewSecretRequest();
         request.setDeviceId(deviceIdentification);
         request.setSecretType(keyType.toSecretType());
-        HasNewSecretResponse response = this.secretManagementClient.hasNewSecretRequest(request);
+        final HasNewSecretResponse response = this.secretManagementClient.hasNewSecretRequest(request);
         return response.isHasNewSecret();
     }
 
-    public byte[] generate128BitsKeyAndStoreAsNewKey(String deviceIdentification, SecurityKeyType keyType) {
+    public byte[] generate128BitsKeyAndStoreAsNewKey(final String deviceIdentification, final SecurityKeyType keyType) {
         return this.generate128BitsKeysAndStoreAsNewKeys(deviceIdentification, Arrays.asList(keyType)).get(keyType);
     }
 
@@ -282,30 +285,30 @@ public class SecretManagementService {
      *
      * @return a new 128bits key, unencrypted.
      */
-    public Map<SecurityKeyType, byte[]> generate128BitsKeysAndStoreAsNewKeys(String deviceIdentification,
-            List<SecurityKeyType> keyTypes) {
-        SecretTypes secretTypes = new SecretTypes();
-        GenerateAndStoreSecretsRequest request = this
+    public Map<SecurityKeyType, byte[]> generate128BitsKeysAndStoreAsNewKeys(final String deviceIdentification,
+            final List<SecurityKeyType> keyTypes) {
+        final SecretTypes secretTypes = new SecretTypes();
+        final GenerateAndStoreSecretsRequest request = this
                 .createGenerateAndStoreSecretsRequest(deviceIdentification, secretTypes);
         secretTypes.getSecretType().addAll(keyTypes.stream().map(SecurityKeyType::toSecretType).collect(toList()));
 
-        GenerateAndStoreSecretsResponse response = this.secretManagementClient.generateAndStoreSecrets(request);
-        TypedSecrets typedSecrets = response.getTypedSecrets();
-        List<TypedSecret> typedSecretList = typedSecrets.getTypedSecret();
+        final GenerateAndStoreSecretsResponse response = this.secretManagementClient.generateAndStoreSecrets(request);
+        final TypedSecrets typedSecrets = response.getTypedSecrets();
+        final List<TypedSecret> typedSecretList = typedSecrets.getTypedSecret();
         this.validateGenerateAndStoreResponse(keyTypes, response, typedSecretList);
         return this.convertSoapSecretsToSecretMapByType(typedSecrets.getTypedSecret());
     }
 
-    private GenerateAndStoreSecretsRequest createGenerateAndStoreSecretsRequest(String deviceIdentification,
-            SecretTypes secretTypes) {
-        GenerateAndStoreSecretsRequest request = new GenerateAndStoreSecretsRequest();
+    private GenerateAndStoreSecretsRequest createGenerateAndStoreSecretsRequest(final String deviceIdentification,
+            final SecretTypes secretTypes) {
+        final GenerateAndStoreSecretsRequest request = new GenerateAndStoreSecretsRequest();
         request.setDeviceId(deviceIdentification);
         request.setSecretTypes(secretTypes);
         return request;
     }
 
-    private void validateGenerateAndStoreResponse(List<SecurityKeyType> keyTypes,
-            GenerateAndStoreSecretsResponse response, List<TypedSecret> typedSecretList) {
+    private void validateGenerateAndStoreResponse(final List<SecurityKeyType> keyTypes,
+            final GenerateAndStoreSecretsResponse response, final List<TypedSecret> typedSecretList) {
         this.validateOsgpResultAndTypedSecrets(response.getResult(), response.getTechnicalFault(),
                 response.getTypedSecrets(), keyTypes.size());
         typedSecretList.forEach(ts -> {
@@ -315,20 +318,20 @@ public class SecretManagementService {
         });
     }
 
-    private void validateOsgpResultAndTypedSecrets(OsgpResultType result, Object fault, TypedSecrets typedSecrets,
-            int expectedNrKeys) {
+    private void validateOsgpResultAndTypedSecrets(final OsgpResultType result, final Object fault,
+            final TypedSecrets typedSecrets, final int expectedNrKeys) {
         if (!OsgpResultType.OK.equals(result)) {
             throw new IllegalStateException("Could not process keys in secret-mgmt: " + fault);
         } else if (typedSecrets == null || typedSecrets.getTypedSecret() == null) {
             throw new IllegalStateException("No secrets in response");
         } else if (expectedNrKeys != typedSecrets.getTypedSecret().size()) {
             throw new IllegalStateException(
-                    String.format("Unexpected number of secrets in response: expected %s but found %s",
-                            expectedNrKeys, typedSecrets.getTypedSecret().size()));
+                    String.format("Unexpected number of secrets in response: expected %s but found %s", expectedNrKeys,
+                            typedSecrets.getTypedSecret().size()));
         }
     }
 
-    private byte[] decryptSoapSecret(TypedSecret typedSecret, boolean exceptionOnNull) {
+    private byte[] decryptSoapSecret(final TypedSecret typedSecret, final boolean exceptionOnNull) {
         boolean nullValue = typedSecret.getSecret() == null || typedSecret.getSecret().isEmpty();
         if (exceptionOnNull && nullValue) {
             throw new IllegalArgumentException("Cannot decrypt NULL value");
@@ -343,7 +346,7 @@ public class SecretManagementService {
         }
     }
 
-    private String encryptSoapSecret(byte[] secret, boolean exceptionOnNull) {
+    private String encryptSoapSecret(final byte[] secret, final boolean exceptionOnNull) {
         boolean nullValue = secret == null || secret.length == 0;
         if (exceptionOnNull && nullValue) {
             throw new IllegalArgumentException("Cannot encrypt NULL value");

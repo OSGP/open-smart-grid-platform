@@ -49,10 +49,10 @@ public class SecurityConfig {
     }
 
     private List<EncryptionProvider> getDefaultEncryptionProviders() {
-        List<EncryptionProvider> encryptionProviderList = new ArrayList<>();
+        final List<EncryptionProvider> encryptionProviderList = new ArrayList<>();
 
         try {
-            JreEncryptionProvider jreEncryptionProvider = new JreEncryptionProvider(
+            final JreEncryptionProvider jreEncryptionProvider = new JreEncryptionProvider(
                     this.jreEncryptionKeyResource.getFile());
             encryptionProviderList.add(jreEncryptionProvider);
 
@@ -71,11 +71,11 @@ public class SecurityConfig {
     @Bean
     public RsaEncrypter getSoapEncrypter() {
         try {
-            RsaEncrypter rsaEncryptionProvider = new RsaEncrypter();
-            if(this.soapPrivateKeyResource.isPresent()) {
+            final RsaEncrypter rsaEncryptionProvider = new RsaEncrypter();
+            if (this.soapPrivateKeyResource.isPresent()) {
                 rsaEncryptionProvider.setPrivateKeyStore(this.soapPrivateKeyResource.get().getFile());
             }
-            if(this.soapPublicKeyResource.isPresent()) {
+            if (this.soapPublicKeyResource.isPresent()) {
                 rsaEncryptionProvider.setPublicKeyStore(this.soapPublicKeyResource.get().getFile());
             }
             return rsaEncryptionProvider;

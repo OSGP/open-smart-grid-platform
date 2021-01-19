@@ -8,6 +8,8 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
+import java.util.List;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.GetFirmwareVersionsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.UpdateFirmwareCommandExecutor;
@@ -23,8 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service(value = "dlmsFirmwareService")
 public class FirmwareService {
@@ -42,7 +42,8 @@ public class FirmwareService {
     @Autowired
     private UpdateFirmwareCommandExecutor updateFirmwareCommandExecutor;
 
-    public List<FirmwareVersionDto> getFirmwareVersions(final DlmsConnectionManager conn, final DlmsDevice device) throws ProtocolAdapterException {
+    public List<FirmwareVersionDto> getFirmwareVersions(final DlmsConnectionManager conn, final DlmsDevice device)
+            throws ProtocolAdapterException {
 
         return this.getFirmwareVersionsCommandExecutor.execute(conn, device, null);
     }
@@ -73,8 +74,8 @@ public class FirmwareService {
         return this.firmwareRepository.isAvailable(firmwareIdentification);
     }
 
-    private UpdateFirmwareResponseDto executeFirmwareUpdate(final DlmsConnectionManager conn, final DlmsDevice device
-            , final String firmwareIdentification) throws OsgpException {
+    private UpdateFirmwareResponseDto executeFirmwareUpdate(final DlmsConnectionManager conn, final DlmsDevice device,
+            final String firmwareIdentification) throws OsgpException {
         if (this.firmwareRepository.isAvailable(firmwareIdentification)) {
             return this.updateFirmwareCommandExecutor.execute(conn, device, firmwareIdentification);
         } else {

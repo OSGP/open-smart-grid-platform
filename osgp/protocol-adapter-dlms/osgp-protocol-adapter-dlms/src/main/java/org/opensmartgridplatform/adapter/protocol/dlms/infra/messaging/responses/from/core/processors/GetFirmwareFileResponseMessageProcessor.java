@@ -9,7 +9,6 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.responses.from.core.processors;
 
 import java.io.Serializable;
-import java.util.Optional;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
@@ -56,8 +55,8 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
         try {
             // Get metadata from message and update message type to update
             // firmware
-            messageMetadata = new MessageMetadata.Builder(MessageMetadata.fromMessage(message)).withMessageType(
-                    MessageType.UPDATE_FIRMWARE.name()).build();
+            messageMetadata = new MessageMetadata.Builder(MessageMetadata.fromMessage(message))
+                    .withMessageType(MessageType.UPDATE_FIRMWARE.name()).build();
 
             device = this.domainHelperService.findDlmsDevice(messageMetadata);
 
@@ -81,7 +80,7 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
             }
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, exception,
-                    this.responseMessageSender, getFirmwareIdentification(message));
+                    this.responseMessageSender, this.getFirmwareIdentification(message));
         } finally {
             this.doConnectionPostProcessing(device, conn);
         }

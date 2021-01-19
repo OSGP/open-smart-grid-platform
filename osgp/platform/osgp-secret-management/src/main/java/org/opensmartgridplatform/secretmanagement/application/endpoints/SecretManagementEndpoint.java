@@ -135,7 +135,7 @@ public class SecretManagementEndpoint {
             throw new TechnicalException(STR_MISSING_SECRET_TYPES);
         }
         final List<SecretType> secretTypeList = this.converter.convertToSecretTypes(soapSecretTypes);
-        List<TypedSecret> typedSecretList = this.secretManagementService.generateAndStoreSecrets(request.getDeviceId(),
+        final List<TypedSecret> typedSecretList = this.secretManagementService.generateAndStoreSecrets(request.getDeviceId(),
                 secretTypeList);
         response.setResult(OsgpResultType.OK);
         response.setTypedSecrets(this.converter.convertToSoapTypedSecrets(typedSecretList));
@@ -150,7 +150,7 @@ public class SecretManagementEndpoint {
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             marshaller.marshal(request, baos);
         } catch (final JAXBException e) {
-            String logFormat = "Could not serialize request of type %s";
+            final String logFormat = "Could not serialize request of type %s";
             log.error(String.format(logFormat,request.getClass()), e);
         }
         return baos.toString();

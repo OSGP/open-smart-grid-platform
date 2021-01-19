@@ -118,24 +118,7 @@ public class DlmsDeviceSteps {
     @Autowired
     private DbEncryptionKeyRepository encryptionKeyRepository;
 
-    /*private final SecretBuilder authenticationSecurityKeyBuilder = new SecretBuilder()
-            .setSecurityKeyType(SecurityKeyType.E_METER_AUTHENTICATION)
-            .setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_A_DB);
-    private final SecretBuilder encryptionSecurityKeyBuilder = new SecretBuilder()
-            .setSecurityKeyType(SecurityKeyType.E_METER_ENCRYPTION)
-            .setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_E_DB);
-    private final SecretBuilder masterSecurityKeyBuilder = new SecretBuilder()
-            .setSecurityKeyType(SecurityKeyType.E_METER_MASTER).setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_M_DB);
-    private final SecretBuilder passwordBuilder = new SecretBuilder().setSecurityKeyType(SecurityKeyType.PASSWORD)
-                                                                     .setKey(PlatformSmartmeteringDefaults.PASSWORD);
-    private final SecretBuilder mbusEncryptionSecurityKeyBuilder = new SecretBuilder()
-            .setSecurityKeyType(SecurityKeyType.G_METER_ENCRYPTION)
-            .setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_G_ENCRYPTION);
-    private final SecretBuilder mbusMasterSecurityKeyBuilder = new SecretBuilder()
-            .setSecurityKeyType(SecurityKeyType.G_METER_MASTER)
-            .setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_G_MASTER);*/
-
-    private final Map<String, SecurityKeyType> securityKeyTypesByInputName = new HashMap();
+    private final Map<String, SecurityKeyType> securityKeyTypesByInputName = new HashMap<>();
 
     private final List<SecretBuilder> defaultSecretBuilders = Arrays
             .asList(new SecretBuilder().setSecurityKeyType(E_METER_AUTHENTICATION)
@@ -400,7 +383,6 @@ public class DlmsDeviceSteps {
         int numberOfMbusUserKeys = 0;
         int numberOfValidMbusUserKeys = 0;
 
-        final Date now = new Date();
         for (final DbEncryptedSecret securityKey : securityKeys) {
             switch (securityKey.getSecretType()) {
             case G_METER_MASTER_KEY:
@@ -449,12 +431,12 @@ public class DlmsDeviceSteps {
 
     private DbEncryptedSecret findExistingSecurityKey(final DlmsDevice dlmsDevice, final SecretType secretType,
             final String keyDescription) {
-        List<DbEncryptedSecret> validSecrets = this.encryptedSecretRepository
+        final List<DbEncryptedSecret> validSecrets = this.encryptedSecretRepository
                 .findSecrets(dlmsDevice.getDeviceIdentification(), secretType, SecretStatus.ACTIVE);
         assertThat(validSecrets.size()).isEqualTo(1)
                                        .as("Device %s should have 1 active secret of type %s, but found %s",
                                                dlmsDevice.getDeviceIdentification(), secretType, validSecrets.size());
-        DbEncryptedSecret secret = validSecrets.get(0);
+        final DbEncryptedSecret secret = validSecrets.get(0);
         assertThat(secret)
                 .as(keyDescription + " for DLMS device with identification " + dlmsDevice.getDeviceIdentification()
                         + " must be stored").isNotNull();
@@ -569,7 +551,7 @@ public class DlmsDeviceSteps {
 
     private SecretBuilder getAppropriateSecretBuilder(final String keyTypeInputName,
             final Map<String, String> inputSettings) {
-        SecurityKeyType keyType = this.securityKeyTypesByInputName.get(keyTypeInputName);
+        final SecurityKeyType keyType = this.securityKeyTypesByInputName.get(keyTypeInputName);
         if (keyType == null) {
             throw new IllegalArgumentException(
                     String.format("Unknown key type name %s; available types names: %s", keyTypeInputName,
