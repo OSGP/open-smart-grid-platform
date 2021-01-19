@@ -45,13 +45,15 @@ import org.springframework.stereotype.Service;
 /**
  * Service for storing, activating and retrieving device keys.
  * Also performs RSA encryption/decryption operations for SOAP messaging purposes.
- */ public class SecretManagementService {
+ */
+public class SecretManagementService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SecretManagementService.class);
     private final RsaEncrypter soapRsaEncrypter;
     private final SecretManagementClient secretManagementClient;
 
-    public SecretManagementService(final RsaEncrypter soapRsaEncrypter, final SecretManagementClient secretManagementClient) {
+    public SecretManagementService(final RsaEncrypter soapRsaEncrypter,
+            final SecretManagementClient secretManagementClient) {
         this.soapRsaEncrypter = soapRsaEncrypter;
         this.secretManagementClient = secretManagementClient;
     }
