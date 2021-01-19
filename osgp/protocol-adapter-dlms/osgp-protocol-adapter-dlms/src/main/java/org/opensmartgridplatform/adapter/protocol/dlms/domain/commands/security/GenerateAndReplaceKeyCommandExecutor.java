@@ -8,9 +8,17 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.security;
 
-import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecurityKeyService;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_AUTHENTICATION;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_ENCRYPTION;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
@@ -24,7 +32,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -36,8 +43,7 @@ public class GenerateAndReplaceKeyCommandExecutor extends AbstractCommandExecuto
     private ReplaceKeyCommandExecutor replaceKeyCommandExecutor;
 
     @Autowired
-    @Qualifier("secretManagementService")
-    private SecurityKeyService securityKeyService;
+    private SecretManagementService secretManagementService;
 
     public GenerateAndReplaceKeyCommandExecutor() {
         super(GenerateAndReplaceKeysRequestDataDto.class);
@@ -54,16 +60,17 @@ public class GenerateAndReplaceKeyCommandExecutor extends AbstractCommandExecuto
     public ActionResponseDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final ActionRequestDto actionRequestDto) throws OsgpException {
         LOGGER.info("Generate new keys for device {}", device.getDeviceIdentification());
-        final SetKeysRequestDto setKeysRequest = this.generateSetKeysRequest();
+        final SetKeysRequestDto setKeysRequest = this.generateSetKeysRequest(device.getDeviceIdentification());
         return this.replaceKeyCommandExecutor.executeBundleAction(conn, device, setKeysRequest);
     }
 
-    private SetKeysRequestDto generateSetKeysRequest() throws FunctionalException {
+    private SetKeysRequestDto generateSetKeysRequest(final String deviceIdentification) throws FunctionalException {
         try {
-            final byte[] encryptedAuthenticationKey = this.securityKeyService.generateAndEncryptKey();
-            final byte[] encryptedEncryptionKey = this.securityKeyService.generateAndEncryptKey();
-            final SetKeysRequestDto setKeysRequest = new SetKeysRequestDto(encryptedAuthenticationKey,
-                    encryptedEncryptionKey);
+            final List<SecurityKeyType> keyTypes = Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION);
+            final Map<SecurityKeyType, byte[]> generatedKeys = this.secretManagementService
+                    .generate128BitsKeysAndStoreAsNewKeys(deviceIdentification, keyTypes);
+            final SetKeysRequestDto setKeysRequest = new SetKeysRequestDto(generatedKeys.get(E_METER_AUTHENTICATION),
+                    generatedKeys.get(E_METER_ENCRYPTION));
             setKeysRequest.setGeneratedKeys(true);
             return setKeysRequest;
         } catch (final EncrypterException e) {

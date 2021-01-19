@@ -14,7 +14,8 @@ import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.SecurityUtils;
 import org.openmuc.jdlms.SecurityUtils.KeyId;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecurityKeyService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.EncryptionHelperService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -31,7 +32,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 /**
@@ -42,14 +42,14 @@ import org.springframework.stereotype.Component;
  * device that received the status NOT_OK should be saved, so in case the
  * supposedly valid key (the key that was on the device before replace keys was
  * executed) does not work anymore the new (but supposedly NOT_OK) key can be
- * tried. This key is recognized because both: valid_to=null and valid_from=null
+ * tried.
  * ! If that key works we know the device gave the wrong response and this key
  * should be made valid. See also DlmsDevice: discardInvalidKeys,
  * promoteInvalidKeys, get/hasNewSecurityKey.
  */
 @Component
 public class ReplaceKeyCommandExecutor
-        extends AbstractCommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice> {
+        extends AbstractCommandExecutor<ReplaceKeyCommandExecutor.ReplaceKeyInput, DlmsDevice> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReplaceKeyCommandExecutor.class);
 
@@ -57,18 +57,23 @@ public class ReplaceKeyCommandExecutor
     private static final String WAS_SUCCESFULL = " was successful";
 
     @Autowired
-    @Qualifier("secretManagementService")
-    private SecurityKeyService securityKeyService;
+    private SecretManagementService secretManagementService;
 
-    static class KeyWrapper {
+    @Autowired
+    EncryptionHelperService encryptionService;
+
+    static class ReplaceKeyInput {
         private final byte[] bytes;
         private final KeyId keyId;
         private final SecurityKeyType securityKeyType;
+        private final boolean isGenerated;
 
-        public KeyWrapper(final byte[] bytes, final KeyId keyId, final SecurityKeyType securityKeyType) {
+        public ReplaceKeyInput(final byte[] bytes, final KeyId keyId, final SecurityKeyType securityKeyType,
+                boolean isGenerated) {
             this.bytes = bytes;
             this.keyId = keyId;
             this.securityKeyType = securityKeyType;
+            this.isGenerated = isGenerated;
         }
 
         public byte[] getBytes() {
@@ -82,14 +87,17 @@ public class ReplaceKeyCommandExecutor
         public SecurityKeyType getSecurityKeyType() {
             return this.securityKeyType;
         }
+
+        public boolean isGenerated() { return this.isGenerated; }
     }
 
     public ReplaceKeyCommandExecutor() {
         super(SetKeysRequestDto.class);
     }
 
-    public static KeyWrapper wrap(final byte[] bytes, final KeyId keyId, final SecurityKeyType securityKeyType) {
-        return new KeyWrapper(bytes, keyId, securityKeyType);
+    public static ReplaceKeyInput wrap(final byte[] bytes, final KeyId keyId, final SecurityKeyType securityKeyType,
+            boolean isGenerated) {
+        return new ReplaceKeyInput(bytes, keyId, securityKeyType, isGenerated);
     }
 
     @Override
@@ -101,38 +109,43 @@ public class ReplaceKeyCommandExecutor
         LOGGER.info("Keys set on device :{}", device.getDeviceIdentification());
 
         SetKeysRequestDto setKeysRequestDto = (SetKeysRequestDto) actionRequestDto;
+
         if (!setKeysRequestDto.isGeneratedKeys()) {
-            setKeysRequestDto = this.reEncryptKeys((SetKeysRequestDto) actionRequestDto);
+            setKeysRequestDto = this.decryptRsaKeys((SetKeysRequestDto) actionRequestDto);
         }
+        //if keys are generated, then they are unencrypted by the GenerateAndReplaceKeyCommandExecutor
 
         final DlmsDevice devicePostSave = this.execute(conn, device, ReplaceKeyCommandExecutor
                 .wrap(setKeysRequestDto.getAuthenticationKey(), KeyId.AUTHENTICATION_KEY,
-                        SecurityKeyType.E_METER_AUTHENTICATION));
+                        SecurityKeyType.E_METER_AUTHENTICATION, setKeysRequestDto.isGeneratedKeys()));
 
         this.execute(conn, devicePostSave, ReplaceKeyCommandExecutor
                 .wrap(setKeysRequestDto.getEncryptionKey(), KeyId.GLOBAL_UNICAST_ENCRYPTION_KEY,
-                        SecurityKeyType.E_METER_ENCRYPTION));
+                        SecurityKeyType.E_METER_ENCRYPTION, setKeysRequestDto.isGeneratedKeys()));
 
         return new ActionResponseDto(REPLACE_KEYS + device.getDeviceIdentification() + WAS_SUCCESFULL);
     }
 
-    private SetKeysRequestDto reEncryptKeys(final SetKeysRequestDto setKeysRequestDto) throws FunctionalException {
-        final byte[] reEncryptedAuthenticationKey = this.securityKeyService
-                .reEncryptKey(setKeysRequestDto.getAuthenticationKey(), SecurityKeyType.E_METER_AUTHENTICATION);
-        final byte[] reEncryptedEncryptionKey = this.securityKeyService
-                .reEncryptKey(setKeysRequestDto.getEncryptionKey(), SecurityKeyType.E_METER_ENCRYPTION);
+    private SetKeysRequestDto decryptRsaKeys(final SetKeysRequestDto setKeysRequestDto) throws FunctionalException {
+        final byte[] authenticationKey =
+                this.encryptionService.rsaDecrypt(setKeysRequestDto.getAuthenticationKey());
+        final byte[] encryptionKey = this.encryptionService.rsaDecrypt(setKeysRequestDto.getEncryptionKey());
 
-        return new SetKeysRequestDto(reEncryptedAuthenticationKey, reEncryptedEncryptionKey);
+        return new SetKeysRequestDto(authenticationKey, encryptionKey);
     }
 
     @Override
     public DlmsDevice execute(final DlmsConnectionManager conn, final DlmsDevice device,
-            final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper) throws OsgpException {
+            final ReplaceKeyCommandExecutor.ReplaceKeyInput keyWrapper) throws OsgpException {
 
-        final DlmsDevice devicePostSave = this.securityKeyService
-                .storeNewKey(device, keyWrapper.getBytes(), keyWrapper.getSecurityKeyType());
-        this.sendToDevice(conn, devicePostSave, keyWrapper);
-        return this.securityKeyService.validateNewKey(devicePostSave, keyWrapper.getSecurityKeyType());
+        if (!keyWrapper.isGenerated()) {
+            this.secretManagementService.storeNewKey(device.getDeviceIdentification(), keyWrapper.getSecurityKeyType(),
+                    keyWrapper.getBytes());
+        }
+
+        this.sendToDevice(conn, device.getDeviceIdentification(), keyWrapper);
+        this.secretManagementService.activateNewKey(device.getDeviceIdentification(), keyWrapper.getSecurityKeyType());
+        return device;
     }
 
     /**
@@ -140,19 +153,18 @@ public class ReplaceKeyCommandExecutor
      *
      * @param conn
      *         jDLMS connection.
-     * @param device
-     *         Device instance
+     * @param deviceIdentification
+     *         Device identification
      * @param keyWrapper
      *         Key data
      */
-    private void sendToDevice(final DlmsConnectionManager conn, final DlmsDevice device,
-            final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper) throws ProtocolAdapterException {
+    private void sendToDevice(final DlmsConnectionManager conn, String deviceIdentification,
+            final ReplaceKeyCommandExecutor.ReplaceKeyInput keyWrapper) throws ProtocolAdapterException {
 
         try {
-            final byte[] decryptedKey = this.securityKeyService
-                    .decryptKey(keyWrapper.getBytes(), keyWrapper.securityKeyType);
-            final byte[] decryptedMasterKey = this.securityKeyService
-                    .getDlmsMasterKey(device.getDeviceIdentification());
+            final byte[] decryptedKey = keyWrapper.getBytes();
+            final byte[] decryptedMasterKey = this.secretManagementService
+                    .getKey(deviceIdentification, SecurityKeyType.E_METER_MASTER);
 
             final MethodParameter methodParameterAuth = SecurityUtils
                     .keyChangeMethodParamFor(decryptedMasterKey, decryptedKey, keyWrapper.getKeyId());

@@ -66,7 +66,8 @@ Feature: SmartMetering Configuration - Firmware
       | FirmwareModuleVersionFunc | M57 4836               |
       | FirmwareModuleVersionMbda | M00 0000               |
       | FirmwareIsForSmartMeters  | true                   |
-  @NightlyBuildOnly @Skip
+
+  @NightlyBuildOnly
   Scenario: successful upgrade of firmware
     Given a manufacturer
       | ManufacturerCode | KAIF  |
@@ -103,7 +104,8 @@ Feature: SmartMetering Configuration - Firmware
       | FirmwareModuleVersionComm | Telit 10.00.154        |
       | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
       | FirmwareModuleVersionFunc | M57 4836               |
-  @NightlyBuildOnly @Skip
+
+  @NightlyBuildOnly
   Scenario: successful upgrade of a single firmware module
     Given a manufacturer
       | ManufacturerCode | KAIF  |
@@ -134,11 +136,12 @@ Feature: SmartMetering Configuration - Firmware
       | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
       | FirmwareModuleVersionFunc | M57 4836               |
     And the database should be updated with the new device firmware
-      | DeviceIdentification      | TEST1024000000002 |
+      | DeviceIdentification      | TEST1024000000002      |
       | FirmwareModuleVersionComm | Telit 10.00.154        |
       | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
-      | FirmwareModuleVersionFunc | M57 4836          |
-  @NightlyBuildOnly @Skip
+      | FirmwareModuleVersionFunc | M57 4836               |
+
+  @NightlyBuildOnly
   Scenario: upgrade of firmware, installation file not available
     Given a manufacturer
       | ManufacturerCode | KAIF  |
@@ -171,13 +174,14 @@ Feature: SmartMetering Configuration - Firmware
       | Component      | PROTOCOL_DLMS                                                         |
       | Message        | Unexpected exception while handling protocol request/response message |
       | InnerException | org.opensmartgridplatform.shared.exceptionhandling.OsgpException      |
-      | InnerMessage   | Firmware file is not available.                                       |
+      | InnerMessage   | Firmware file KFPP_V060100FA is not available.                        |
     And the database should not be updated with the new device firmware
       | DeviceIdentification      | TEST1024000000002      |
       | FirmwareModuleVersionComm | Telit 10.00.154        |
       | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
       | FirmwareModuleVersionFunc | M57 4836               |
-  @NightlyBuildOnly @Skip
+
+  @NightlyBuildOnly
   Scenario: upgrade of firmware, corrupt installation file
     Given a manufacturer
       | ManufacturerCode | KAIF  |

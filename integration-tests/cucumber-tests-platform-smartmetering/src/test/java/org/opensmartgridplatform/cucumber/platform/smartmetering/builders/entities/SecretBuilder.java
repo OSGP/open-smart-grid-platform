@@ -9,86 +9,59 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering.builders.entit
 
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
-import java.util.Date;
 import java.util.Map;
 
-import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.cucumber.platform.core.builders.CucumberBuilder;
-import org.opensmartgridplatform.cucumber.platform.helpers.UtcDateHelper;
-import org.opensmartgridplatform.cucumber.platform.inputparsers.DateInputParser;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
+import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptedSecret;
+import org.opensmartgridplatform.secretmanagement.application.domain.SecretType;
 
-public class SecurityKeyBuilder implements CucumberBuilder<SecurityKey> {
+public class SecretBuilder implements CucumberBuilder<DbEncryptedSecret> {
 
     private boolean builderEnabled = false;
 
     private SecurityKeyType securityKeyType = null;
-    private Date validFrom = new DateTime(UtcDateHelper.getUtcDate()).minusDays(1).toDate();
-    private Date validTo = PlatformSmartmeteringDefaults.VALID_TO;
-    private Long version = PlatformSmartmeteringDefaults.VERSION;
     private String key = PlatformSmartmeteringDefaults.SECURITY_KEY_A_DB;
 
     private DlmsDevice dlmsDevice;
 
-    public SecurityKeyBuilder setSecurityKeyType(final SecurityKeyType securityKeyType) {
+    public SecretBuilder setSecurityKeyType(final SecurityKeyType securityKeyType) {
         this.securityKeyType = securityKeyType;
         return this;
     }
 
-    public SecurityKeyBuilder setValidFrom(final Date validFrom) {
-        this.validFrom = validFrom;
-        return this;
+    public SecurityKeyType getSecurityKeyType() {
+        return this.securityKeyType;
     }
 
-    public SecurityKeyBuilder setValidTo(final Date validTo) {
-        this.validTo = validTo;
-        return this;
-    }
-
-    public SecurityKeyBuilder setVersion(final Long version) {
-        this.version = version;
-        return this;
-    }
-
-    public SecurityKeyBuilder setKey(final String key) {
+    public SecretBuilder setKey(final String key) {
         this.key = key;
         return this;
     }
 
-    public SecurityKeyBuilder setDlmsDevice(final DlmsDevice dlmsDevice) {
+    public SecretBuilder setDlmsDevice(final DlmsDevice dlmsDevice) {
         this.dlmsDevice = dlmsDevice;
         return this;
     }
 
     @Override
-    public SecurityKeyBuilder withSettings(final Map<String, String> inputSettings) {
-        if (inputSettings.containsKey(PlatformSmartmeteringKeys.VERSION)) {
-            this.setVersion(Long.parseLong(inputSettings.get(PlatformSmartmeteringKeys.VERSION)));
-        }
-        if (inputSettings.containsKey(PlatformSmartmeteringKeys.VALID_FROM)) {
-            this.setValidFrom(DateInputParser.parse(inputSettings.get(PlatformSmartmeteringKeys.VALID_FROM)));
-        }
-        if (inputSettings.containsKey(PlatformSmartmeteringKeys.VALID_TO)) {
-            this.setValidTo(DateInputParser.parse(inputSettings.get(PlatformSmartmeteringKeys.VALID_TO)));
-        }
-
+    public SecretBuilder withSettings(final Map<String, String> inputSettings) {
         if (SecurityKeyType.E_METER_AUTHENTICATION == this.securityKeyType
-                && inputSettings.containsKey(PlatformSmartmeteringKeys.SECURITY_KEY_A)) {
-            this.setKey(getString(inputSettings, PlatformSmartmeteringKeys.SECURITY_KEY_A));
+                && inputSettings.containsKey(PlatformSmartmeteringKeys.KEY_DEVICE_AUTHENTICATIONKEY)) {
+            this.setKey(getString(inputSettings, PlatformSmartmeteringKeys.KEY_DEVICE_ENCRYPTIONKEY));
         }
 
         if (SecurityKeyType.E_METER_MASTER == this.securityKeyType
-                && inputSettings.containsKey(PlatformSmartmeteringKeys.SECURITY_KEY_M)) {
-            this.setKey(getString(inputSettings, PlatformSmartmeteringKeys.SECURITY_KEY_M));
+                && inputSettings.containsKey(PlatformSmartmeteringKeys.KEY_DEVICE_MASTERKEY)) {
+            this.setKey(getString(inputSettings, PlatformSmartmeteringKeys.KEY_DEVICE_MASTERKEY));
         }
 
         if (SecurityKeyType.E_METER_ENCRYPTION == this.securityKeyType
-                && inputSettings.containsKey(PlatformSmartmeteringKeys.SECURITY_KEY_E)) {
-            this.setKey(getString(inputSettings, PlatformSmartmeteringKeys.SECURITY_KEY_E));
+                && inputSettings.containsKey(PlatformSmartmeteringKeys.KEY_DEVICE_ENCRYPTIONKEY)) {
+            this.setKey(getString(inputSettings, PlatformSmartmeteringKeys.KEY_DEVICE_ENCRYPTIONKEY));
         }
 
         if (SecurityKeyType.G_METER_MASTER == this.securityKeyType
@@ -110,12 +83,13 @@ public class SecurityKeyBuilder implements CucumberBuilder<SecurityKey> {
     }
 
     @Override
-    public SecurityKey build() {
-        final SecurityKey securityKey = new SecurityKey(this.dlmsDevice, this.securityKeyType, this.key, this.validFrom,
-                this.validTo);
-
-        securityKey.setVersion(this.version);
-
+    public DbEncryptedSecret build() {
+        final DbEncryptedSecret securityKey = new DbEncryptedSecret();
+        if(this.dlmsDevice!=null) {
+            securityKey.setDeviceIdentification(this.dlmsDevice.getDeviceIdentification());
+        }
+        securityKey.setSecretType(SecretType.valueOf(this.securityKeyType.toSecretType().value()));
+        securityKey.setEncodedSecret(this.key);
         return securityKey;
     }
 

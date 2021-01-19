@@ -16,7 +16,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.config.messag
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.messaging.OutboundOsgpCoreResponsesMessagingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.MonitoringService;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecurityKeyService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
@@ -89,12 +89,12 @@ public class MessagingTestConfiguration extends AbstractConfig {
 
     @Bean
     public InvocationCounterManager invocationCounterManager(DlmsDeviceRepository dlmsDeviceRepository) {
-        return new InvocationCounterManager(dlmsConnectionFactory(), dlmsHelper(), dlmsDeviceRepository);
+        return new InvocationCounterManager(this.dlmsConnectionFactory(), this.dlmsHelper(), dlmsDeviceRepository);
     }
 
     @Bean
     public DlmsConnectionHelper dlmsConnectionHelper(DlmsDeviceRepository dlmsDeviceRepository) {
-        return new DlmsConnectionHelper(invocationCounterManager(dlmsDeviceRepository), dlmsConnectionFactory());
+        return new DlmsConnectionHelper(this.invocationCounterManager(dlmsDeviceRepository), this.dlmsConnectionFactory());
     }
 
     @Bean
@@ -133,8 +133,8 @@ public class MessagingTestConfiguration extends AbstractConfig {
     }
 
     @Bean
-    public SecurityKeyService securityKeyService() {
-        return Mockito.mock(SecurityKeyService.class);
+    public SecretManagementService secretManagementService() {
+        return Mockito.mock(SecretManagementService.class);
     }
 
     public static class ExcludeFilter implements TypeFilter {
@@ -144,7 +144,7 @@ public class MessagingTestConfiguration extends AbstractConfig {
             ClassMetadata classMetadata = metadataReader.getClassMetadata();
             String fullyQualifiedName = classMetadata.getClassName();
 
-            boolean match = classesNeeded.stream().anyMatch(fullyQualifiedName::contains);
+            boolean match = this.classesNeeded.stream().anyMatch(fullyQualifiedName::contains);
 
             return match || !fullyQualifiedName.contains("GetPowerQualityProfileRequestMessageProcessor");
         }

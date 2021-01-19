@@ -21,7 +21,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsDevi
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Hls5Connector;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Lls0Connector;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Lls1Connector;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.networking.DlmsChannelHandlerServer;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.networking.DlmsPushNotificationDecoder;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
@@ -147,10 +146,9 @@ public class DlmsConfig extends AbstractConfig {
     @Bean
     @Scope("prototype")
     public RecoverKeyProcess recoverKeyProcess(final DomainHelperService domainHelperService,
-            final DlmsDeviceRepository dlmsDeviceRepository,
             @Value("${jdlms.response_timeout}") final int responseTimeout,
             @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress) {
-        return new RecoverKeyProcess(domainHelperService, dlmsDeviceRepository, responseTimeout, logicalDeviceAddress,
+        return new RecoverKeyProcess(domainHelperService, responseTimeout, logicalDeviceAddress,
                 DlmsDeviceAssociation.MANAGEMENT_CLIENT);
     }
 
