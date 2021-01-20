@@ -4,7 +4,7 @@
 def stream = 'osgp'
 def servername = stream + '-at-' + env.BUILD_NUMBER
 def playbook = stream + '-at.yml'
-def branchReleaseRepo = 'feature/OC-712-run-automatic-tests-in-containerized-jenkins'
+def branchReleaseRepo = 'master'
 def amiName = 'CentOS7SingleInstance'
 def amiOwner = 'self'
 def ec2InstanceType = 'm4.xlarge'
@@ -167,6 +167,7 @@ pipeline {
             }
         }
         // failure {
+        //     // TODO: email not yet working via JCasC
         //     emailext (
         //         subject: '${DEFAULT_SUBJECT}',
         //         body: '${DEFAULT_CONTENT}',
