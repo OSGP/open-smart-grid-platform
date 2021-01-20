@@ -91,21 +91,6 @@
           </excludes>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>com.github.igor-petruk.protobuf</groupId>
-        <artifactId>protobuf-maven-plugin</artifactId>
-        <version>${protobuf.maven.plugin}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <cleanOutputFolder>false</cleanOutputFolder>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
 </project>
