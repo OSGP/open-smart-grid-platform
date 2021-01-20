@@ -37,8 +37,11 @@ public class DeviceInstallationMapper extends ConfigurableMapper {
 
     @Override
     public void configure(final MapperFactory mapperFactory) {
-        mapperFactory.getConverterFactory().registerConverter(
-                new WsInstallationDeviceToDeviceConverter(this.ssldRepository, this.writableDeviceModelRepository));
+        mapperFactory.getConverterFactory()
+                .registerConverter(new WsInstallationDeviceToDeviceConverter(this.ssldRepository,
+                        this.writableDeviceModelRepository));
         mapperFactory.getConverterFactory().registerConverter(new WsInstallationDeviceToSsldConverter());
+        mapperFactory.getConverterFactory()
+                .registerConverter(new WsInstallationLmdToLmdConverter(this.writableDeviceModelRepository));
     }
 }

@@ -2,7 +2,7 @@
 Feature: SmartMetering Installation - Add M-Bus device
   As a grid operator
   I want to be able to add a new M-Bus device
-@Skip
+
   Scenario: Add a new gas device
     When receiving a smartmetering add device request
       | DeviceIdentification           | TEST1024G00000001                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |

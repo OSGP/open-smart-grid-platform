@@ -8,6 +8,17 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_AUTHENTICATION;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_ENCRYPTION;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_MASTER;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.G_METER_MASTER;
+
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.InstallationMapper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.CoupleMBusDeviceCommandExecutor;
@@ -25,9 +36,10 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDevi
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service(value = "dlmsInstallationService")
@@ -40,8 +52,10 @@ public class InstallationService {
     private InstallationMapper installationMapper;
 
     @Autowired
-    @Qualifier("secretManagementService")
-    private SecurityKeyService securityKeyService;
+    private EncryptionHelperService encryptionService;
+
+    @Autowired
+    private SecretManagementService secretManagementService;
 
     @Autowired
     private CoupleMBusDeviceCommandExecutor coupleMBusDeviceCommandExecutor;
@@ -52,59 +66,65 @@ public class InstallationService {
     @Autowired
     private CoupleMbusDeviceByChannelCommandExecutor coupleMbusDeviceByChannelCommandExecutor;
 
-    // === ADD METER ===
     public void addMeter(final SmartMeteringDeviceDto smartMeteringDevice) throws FunctionalException {
-        this.reEncryptKeys(smartMeteringDevice);
+        if (smartMeteringDevice.getDeviceIdentification() == null) {
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.PROTOCOL_DLMS,
+                    new IllegalArgumentException("Provided device does not contain device identification"));
+        }
+        this.storeAndActivateKeys(smartMeteringDevice);
         final DlmsDevice dlmsDevice = this.installationMapper.map(smartMeteringDevice, DlmsDevice.class);
         this.dlmsDeviceRepository.save(dlmsDevice);
     }
 
-    private void reEncryptKeys(final SmartMeteringDeviceDto smartMeteringDevice) throws FunctionalException {
-        this.reEncryptMasterKey(smartMeteringDevice);
-        this.reEncryptAuthenticationKey(smartMeteringDevice);
-        this.reEncryptEncryptionKey(smartMeteringDevice);
-        this.reEncryptMbusDefaultKey(smartMeteringDevice);
-    }
-
-    private void reEncryptMasterKey(final SmartMeteringDeviceDto smartMeteringDevice) throws FunctionalException {
-        if (ArrayUtils.isEmpty(smartMeteringDevice.getMasterKey())) {
-            return;
+    private void storeAndActivateKeys(final SmartMeteringDeviceDto deviceDto) throws FunctionalException {
+        final Map<SecurityKeyType, byte[]> keysByType = new EnumMap<>(SecurityKeyType.class);
+        final List<SecurityKeyType> keyTypesToStore = this.determineKeyTypesToStore(deviceDto);
+        for (SecurityKeyType keyType : keyTypesToStore) {
+            final byte[] key = this.getKeyFromDeviceDto(deviceDto, keyType);
+            if (ArrayUtils.isNotEmpty(key)) {
+                keysByType.put(keyType, this.encryptionService.rsaDecrypt(key));
+            } else {
+                Exception rootCause = new NoSuchElementException(keyType.name());
+                throw new FunctionalException(FunctionalExceptionType.KEY_NOT_PRESENT, ComponentType.PROTOCOL_DLMS,
+                        rootCause);
+            }
         }
-        final byte[] reEncryptedMasterKey = this.securityKeyService
-                .reEncryptKey(smartMeteringDevice.getMasterKey(), SecurityKeyType.E_METER_MASTER);
-        smartMeteringDevice.setMasterKey(reEncryptedMasterKey);
+        this.secretManagementService.storeNewKeys(deviceDto.getDeviceIdentification(), keysByType);
+        this.secretManagementService.activateNewKeys(deviceDto.getDeviceIdentification(), keyTypesToStore);
     }
 
-    private void reEncryptAuthenticationKey(final SmartMeteringDeviceDto smartMeteringDevice)
+    private List<SecurityKeyType> determineKeyTypesToStore(final SmartMeteringDeviceDto deviceDto)
             throws FunctionalException {
-
-        if (ArrayUtils.isEmpty(smartMeteringDevice.getAuthenticationKey())) {
-            return;
+        if (this.getKeyFromDeviceDto(deviceDto, G_METER_MASTER) != null) {
+            //device is a G-Meter
+            if (this.getKeyFromDeviceDto(deviceDto, E_METER_MASTER) != null
+                    || this.getKeyFromDeviceDto(deviceDto, E_METER_AUTHENTICATION) != null
+                    || this.getKeyFromDeviceDto(deviceDto, E_METER_ENCRYPTION) != null) {
+                final String msg = "Provided device is considered a G-Meter (G_METER_MASTER is set)"
+                        + ", but contains E-Meter keys as well";
+                throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.PROTOCOL_DLMS,
+                        new IllegalArgumentException(msg));
+            }
+            return Arrays.asList(G_METER_MASTER);
+        } else {
+            //device is an E-meter
+            return Arrays.asList(E_METER_MASTER, E_METER_AUTHENTICATION, E_METER_ENCRYPTION);
         }
-        final byte[] reEncryptedAuthenticationKey = this.securityKeyService
-                .reEncryptKey(smartMeteringDevice.getAuthenticationKey(), SecurityKeyType.E_METER_AUTHENTICATION);
-        smartMeteringDevice.setAuthenticationKey(reEncryptedAuthenticationKey);
     }
 
-    private void reEncryptEncryptionKey(final SmartMeteringDeviceDto smartMeteringDevice) throws FunctionalException {
-
-        if (ArrayUtils.isEmpty(smartMeteringDevice.getGlobalEncryptionUnicastKey())) {
-            return;
+    private byte[] getKeyFromDeviceDto(final SmartMeteringDeviceDto deviceDto, final SecurityKeyType keyType) {
+        switch (keyType) {
+        case E_METER_MASTER:
+            return deviceDto.getMasterKey();
+        case E_METER_AUTHENTICATION:
+            return deviceDto.getAuthenticationKey();
+        case E_METER_ENCRYPTION:
+            return deviceDto.getGlobalEncryptionUnicastKey();
+        case G_METER_MASTER:
+            return deviceDto.getMbusDefaultKey();
+        default:
+            throw new IllegalArgumentException("Unknown type " + keyType);
         }
-        final byte[] reEncryptedEncryptionKey = this.securityKeyService
-                .reEncryptKey(smartMeteringDevice.getGlobalEncryptionUnicastKey(), SecurityKeyType.E_METER_ENCRYPTION);
-        smartMeteringDevice.setGlobalEncryptionUnicastKey(reEncryptedEncryptionKey);
-    }
-
-    private void reEncryptMbusDefaultKey(final SmartMeteringDeviceDto smartMeteringDevice) throws FunctionalException {
-
-        if (ArrayUtils.isEmpty(smartMeteringDevice.getMbusDefaultKey())) {
-            return;
-        }
-
-        final byte[] reEncryptedMbusDefaultKey = this.securityKeyService
-                .reEncryptKey(smartMeteringDevice.getMbusDefaultKey(), SecurityKeyType.G_METER_MASTER);
-        smartMeteringDevice.setMbusDefaultKey(reEncryptedMbusDefaultKey);
     }
 
     public MbusChannelElementsResponseDto coupleMbusDevice(final DlmsConnectionManager conn, final DlmsDevice device,

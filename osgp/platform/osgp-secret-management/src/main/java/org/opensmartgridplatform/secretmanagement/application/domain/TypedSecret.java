@@ -8,29 +8,30 @@
  */
 package org.opensmartgridplatform.secretmanagement.application.domain;
 
+import java.util.Arrays;
+
+import lombok.Getter;
+
 /**
  * TypedSecret stores a secret (not necessarily an encrypted secret), along with it's type.
  */
+@Getter
 public class TypedSecret {
-    private SecretType secretType;
-    private String secret;
+    private final SecretType secretType;
+    private final byte[] secret;
 
-    public String getSecret() {
-        return this.secret;
+    public TypedSecret(final byte[] secret, final SecretType secretType) {
+        this.secret = secret == null ? null : Arrays.copyOf(secret, secret.length);
+        if (secretType != null) {
+            this.secretType = secretType;
+        } else {
+            throw new IllegalArgumentException("Secret type can not be NULL");
+        }
     }
 
-    public SecretType getSecretType() {
-        return this.secretType;
+    public byte[] getSecret() {
+        return this.secret == null ? null : Arrays.copyOf(this.secret, this.secret.length);
     }
-
-    public void setSecret(final String secret) {
-        this.secret = secret;
-    }
-
-    public void setSecretType(final SecretType secretType) {
-        this.secretType = secretType;
-    }
-
 }
 
 

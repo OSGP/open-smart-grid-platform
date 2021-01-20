@@ -23,7 +23,7 @@ import org.opensmartgridplatform.adapter.protocol.mqtt.domain.entities.MqttDevic
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.repositories.MqttDeviceRepository;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationDefaults;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationKeys;
-import org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.kafka.in.PeakShavingConsumer;
+import org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.kafka.in.LowVoltageMessageConsumer;
 import org.opensmartgridplatform.simulator.protocol.mqtt.SimulatorSpecPublishingClient;
 import org.opensmartgridplatform.simulator.protocol.mqtt.spec.Message;
 import org.opensmartgridplatform.simulator.protocol.mqtt.spec.SimulatorSpec;
@@ -53,7 +53,7 @@ public class MqttDeviceSteps {
     private MqttDeviceRepository mqttDeviceRepository;
 
     @Autowired
-    private PeakShavingConsumer consumer;
+    private LowVoltageMessageConsumer consumer;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MqttDeviceSteps.class);
 

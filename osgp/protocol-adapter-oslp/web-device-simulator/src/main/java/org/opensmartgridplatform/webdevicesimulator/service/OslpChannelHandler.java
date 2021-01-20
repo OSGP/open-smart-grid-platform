@@ -639,7 +639,6 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
             return DeviceMessageStatus.FAILURE;
         }
 
-
         final String deviceIdentification = device.getDeviceIdentification();
         if (!StringUtils.hasText(deviceIdentification)) {
             return DeviceMessageStatus.FAILURE;
