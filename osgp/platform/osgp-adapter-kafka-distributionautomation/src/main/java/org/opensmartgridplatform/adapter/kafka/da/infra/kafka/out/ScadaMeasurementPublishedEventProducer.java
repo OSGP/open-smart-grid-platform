@@ -10,8 +10,8 @@ package org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 
-import org.opensmartgridplatform.adapter.kafka.da.application.config.LocationConfig;
 import org.opensmartgridplatform.adapter.kafka.da.application.mapping.DistributionAutomationMapper;
+import org.opensmartgridplatform.adapter.kafka.da.application.services.LocationService;
 import org.opensmartgridplatform.adapter.kafka.da.infra.mqtt.in.ScadaMeasurementPayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,15 +38,15 @@ public class ScadaMeasurementPublishedEventProducer {
 
     private final DistributionAutomationMapper mapper;
 
-    private final LocationConfig locationConfig;
+    private final LocationService locationService;
 
     @Autowired
     public ScadaMeasurementPublishedEventProducer(
             @Qualifier("distributionAutomationKafkaTemplate") final KafkaTemplate<String, Message> kafkaTemplate,
-            final DistributionAutomationMapper mapper, final LocationConfig locationConfig) {
+            final DistributionAutomationMapper mapper, final LocationService locationService) {
         this.kafkaTemplate = kafkaTemplate;
         this.mapper = mapper;
-        this.locationConfig = locationConfig;
+        this.locationService = locationService;
     }
 
     public void send(final String measurement) {
@@ -92,12 +92,12 @@ public class ScadaMeasurementPublishedEventProducer {
     private ScadaMeasurementPayload addLocationData(final ScadaMeasurementPayload[] payloads) {
         final ScadaMeasurementPayload payload = payloads[0];
         final String substationIdentification = payload.getSubstationIdentification();
-        payload.setSubstationName(this.locationConfig.getSubstationLocation(substationIdentification));
+        payload.setSubstationName(this.locationService.getSubstationIdentification(substationIdentification));
         final String feeder = payload.getFeeder();
         try {
             if (Integer.valueOf(feeder) != META_MEASUREMENT_FEEDER) {
                 payload.setBayIdentification(
-                        this.locationConfig.getBayIdentification(substationIdentification, feeder));
+                        this.locationService.getBayIdentification(substationIdentification, feeder));
             }
         } catch (final NumberFormatException e) {
             LOGGER.error("Payload contains a non-numeric value for feeder", e);

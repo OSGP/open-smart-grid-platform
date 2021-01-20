@@ -24,9 +24,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.opensmartgridplatform.adapter.kafka.da.application.config.LocationConfig;
 import org.opensmartgridplatform.adapter.kafka.da.application.config.ScadaMeasurementKafkaProducerConfig;
 import org.opensmartgridplatform.adapter.kafka.da.application.mapping.DistributionAutomationMapper;
+import org.opensmartgridplatform.adapter.kafka.da.application.services.LocationService;
 import org.opensmartgridplatform.adapter.kafka.da.infra.mqtt.in.ScadaMeasurementPayload;
 import org.opensmartgridplatform.adapter.kafka.da.serialization.MessageDeserializer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +63,7 @@ class ScadaMeasurementPublishedEventProducerTest {
     private EmbeddedKafkaBroker embeddedKafka;
 
     @Mock
-    private LocationConfig locationConfig;
+    private LocationService locationService;
 
     @Mock
     private DistributionAutomationMapper mapper;
@@ -81,7 +81,7 @@ class ScadaMeasurementPublishedEventProducerTest {
     @SuppressWarnings("unchecked")
     public void setup() {
         when(this.mapper.map(any(ScadaMeasurementPayload.class), any(Class.class))).thenReturn(this.createEvent());
-        this.producer = new ScadaMeasurementPublishedEventProducer(this.template, this.mapper, this.locationConfig);
+        this.producer = new ScadaMeasurementPublishedEventProducer(this.template, this.mapper, this.locationService);
     }
 
     @Test
@@ -111,7 +111,7 @@ class ScadaMeasurementPublishedEventProducerTest {
         final String mRid = "mRid";
         final List<Analog> measurements = new ArrayList<>();
         final ConductingEquipment powerSystemResource = new ConductingEquipment(new BaseVoltage(description, null),
-                new ArrayList<Name>());
+                new ArrayList<>());
         return new ScadaMeasurementPublishedEvent(measurements, powerSystemResource, createdDateTime, description,
                 mRid);
     }
