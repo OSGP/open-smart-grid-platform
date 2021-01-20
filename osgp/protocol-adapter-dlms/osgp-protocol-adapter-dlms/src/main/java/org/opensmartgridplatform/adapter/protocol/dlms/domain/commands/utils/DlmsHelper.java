@@ -166,11 +166,11 @@ public class DlmsHelper {
             } else {
                 return this.getWithListWorkaround(conn, params);
             }
-        } catch (final IOException e) {
-            throw new ConnectionException(e);
+        } catch (final IOException | NullPointerException e) {
+            // Null Pointer Exception is added, because we saw some low-level connection errors
+            throw new ConnectionException("Connection error retrieving values with-list for device: " + device.getDeviceIdentification(), e);
         } catch (final Exception e) {
-            LOGGER.error("Unexpected excpetion", e);
-            throw new ProtocolAdapterException("Error retrieving values with-list.", e);
+            throw new ProtocolAdapterException("Error retrieving values with-list for device: " + device.getDeviceIdentification(), e);
         }
     }
 
