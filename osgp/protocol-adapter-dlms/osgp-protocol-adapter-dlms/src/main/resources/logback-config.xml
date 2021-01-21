@@ -20,15 +20,7 @@
     </encoder>
   </appender>
 
-  <logger name="org.springframework.ws.server.MessageTracing" level="TRACE" additivity="false">
-    <appender-ref ref="CONSOLE"/>
-  </logger>
-
-  <logger name="org.springframework.ws.client.MessageTracing" level="TRACE" additivity="false">
-    <appender-ref ref="CONSOLE"/>
-  </logger>
-
-  <root level="WARN" additivity="false">
+  <root level="INFO" additivity="false">
     <appender-ref ref="CONSOLE"/>
     <appender-ref ref="FILE"/>
   </root>
