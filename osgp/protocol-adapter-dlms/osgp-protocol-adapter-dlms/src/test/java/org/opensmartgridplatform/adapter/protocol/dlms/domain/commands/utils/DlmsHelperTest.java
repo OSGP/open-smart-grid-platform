@@ -248,8 +248,8 @@ public class DlmsHelperTest {
         assertThat(logMessage).isEqualTo(expected);
     }
 
-    private void assertGetWithListException(Class<? extends Exception> jdlmsExceptionClazz,
-            Class<? extends Exception> exceptionClazz) throws IOException {
+    private void assertGetWithListException(final Class<? extends Exception> jdlmsExceptionClazz,
+            final Class<? extends Exception> exceptionClazz) throws IOException {
         final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
         final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
         final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
