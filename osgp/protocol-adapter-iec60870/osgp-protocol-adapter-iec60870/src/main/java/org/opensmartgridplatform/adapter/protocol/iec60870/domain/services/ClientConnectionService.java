@@ -98,6 +98,7 @@ public class ClientConnectionService {
         final String deviceIdentification = requestMetadata.getDeviceIdentification();
         final Iec60870Device device = this.getIec60870Device(deviceIdentification);
         final Iec60870Device connectionDevice = this.getConnectionDevice(device);
+        final String connectionDeviceIdentification = this.getConnectionDeviceIdentification(device);
 
         final ConnectionParameters connectionParameters = this.createConnectionParameters(connectionDevice,
                 requestMetadata.getIpAddress());
@@ -110,7 +111,7 @@ public class ClientConnectionService {
         final ClientConnection newDeviceConnection = this.iec60870Client.connect(connectionParameters, eventListener);
 
         try {
-            this.connectionCache.addConnection(deviceIdentification, newDeviceConnection);
+            this.connectionCache.addConnection(connectionDeviceIdentification, newDeviceConnection);
         } catch (final ClientConnectionAlreadyInCacheException e) {
             LOGGER.warn(
                     "Client connection for device {} already exists. Closing new connection and returning existing connection",
