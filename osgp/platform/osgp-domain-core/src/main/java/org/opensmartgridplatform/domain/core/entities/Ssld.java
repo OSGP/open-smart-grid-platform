@@ -59,7 +59,7 @@ public class Ssld extends Device {
 
     @OneToMany(mappedBy = "device", targetEntity = Ean.class, cascade = CascadeType.ALL, orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.FALSE)
-    private List<Ean> eans = new ArrayList<>();
+    private final List<Ean> eans = new ArrayList<>();
 
     @LazyCollection(LazyCollectionOption.FALSE)
     @ElementCollection()
