@@ -167,33 +167,8 @@ public class DlmsHelper {
                 return this.getWithListWorkaround(conn, params);
             }
         } catch (final IOException | NullPointerException e) {
-            /*
-                We have seen logging with production incidents retrieving data from a DLMS device where
-                the call chain goes to:
-                org.openmuc.jdlms.LnConnectionWrapper.get(AttributeAddress)
-                org.openmuc.jdlms.LnConnectionWrapper.get(boolean, AttributeAddress)
-                org.openmuc.jdlms.DlmsLnConnectionImpl.get(boolean, List)
-                org.openmuc.jdlms.BaseDlmsConnection.send(COSEMpdu)
-                org.openmuc.jdlms.BaseDlmsConnection.pollValidResponsePdu()
-                org.openmuc.jdlms.ResponseQueue.poll(long,TimeUnit)
-                Then, if timeout == 0 (from: org.openmuc.jdlms.settings.client.Settings.responseTimeout())
-                the call blocks, waiting for a response.
-                But, if a timeout > 0 is in place, the following call returns null if the specified waiting
-                time elapses before an element is available:
-                java.util.concurrent.BlockingQueue.poll(long, TimeUnit)
-
-                The javadoc for org.openmuc.jdlms.DlmsConnection.get(AttributeAddress) says:
-                Throws:
-                java.io.IOException - if the connection breaks, while requesting.
-                May be of type org.openmuc.jdlms.FatalJDlmsException or org.openmuc.jdlms.ResponseTimeoutException
-
-                Given this documentation DlmsConnection#get it would be reasonable, I think,
-                to expect a ResponseTimeoutException in this case for the described call chain.
-                Now the null value of the responsePdu resulting from polling the ResponseQueue
-                is passed to PduHelper.invokeIdFrom (as this example is for logical name referencing).
-                The PduHelper throws a NullPointerException trying to switch on cosemPdu.getChoiceIndex(),
-                which looks like a programmer error.
-             */
+            // The jDMLS code throws a NullPointerException instead of a ResponseTimeoutException
+            // (specific type of IOException via NonFatalJDlmsException and JDlmsException).
             throw new ConnectionException("Connection error retrieving values with-list for device: " + device.getDeviceIdentification(), e);
         } catch (final Exception e) {
             throw new ProtocolAdapterException("Error retrieving values with-list for device: " + device.getDeviceIdentification(), e);
