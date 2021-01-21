@@ -111,11 +111,7 @@ public class ClientConnectionService {
         final ClientConnection newDeviceConnection = this.iec60870Client.connect(connectionParameters, eventListener);
 
         try {
-            if (device.hasGatewayDevice()) {
-                this.connectionCache.addConnection(connectionDeviceIdentification, newDeviceConnection);
-            } else {
-                this.connectionCache.addConnection(deviceIdentification, newDeviceConnection);
-            }
+            this.connectionCache.addConnection(connectionDeviceIdentification, newDeviceConnection);
         } catch (final ClientConnectionAlreadyInCacheException e) {
             LOGGER.warn(
                     "Client connection for device {} already exists. Closing new connection and returning existing connection",
