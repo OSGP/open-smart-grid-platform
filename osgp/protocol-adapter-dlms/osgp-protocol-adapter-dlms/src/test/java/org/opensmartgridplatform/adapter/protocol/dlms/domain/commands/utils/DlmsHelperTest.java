@@ -60,9 +60,9 @@ public class DlmsHelperTest {
 
     @Test
     public void testGetWithListSupported() throws ProtocolAdapterException, IOException {
-        DlmsConnection dlmsConnection = mock(DlmsConnection.class);
-        DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
-        DlmsDevice dlmsDevice = mock(DlmsDevice.class);
+        final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
+        final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+        final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
         when(connectionManager.getConnection()).thenReturn(dlmsConnection);
 
         final AttributeAddress[] attrAddresses = new AttributeAddress[1];
@@ -76,9 +76,9 @@ public class DlmsHelperTest {
 
     @Test
     public void testGetWithListWorkaround() throws ProtocolAdapterException, IOException {
-        DlmsConnection dlmsConnection = mock(DlmsConnection.class);
-        DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
-        DlmsDevice dlmsDevice = mock(DlmsDevice.class);
+        final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
+        final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+        final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
         when(connectionManager.getConnection()).thenReturn(dlmsConnection);
 
         final AttributeAddress[] attrAddresses = new AttributeAddress[1];
@@ -90,11 +90,16 @@ public class DlmsHelperTest {
         verify(dlmsConnection).get(attrAddresses[0]);
     }
 
+    /*
+     * this test is here because the jDMLS code throws a NullPointerException instead of a
+     * ResponseTimeoutException (specific type of IOException
+     * via NonFatalJDlmsException and JDlmsException).
+     */
     @Test
     public void testGetWithListException() throws IOException {
-        assertGetWithListException(IOException.class, ConnectionException.class);
-        assertGetWithListException(NullPointerException.class, ConnectionException.class);
-        assertGetWithListException(RuntimeException.class, ProtocolAdapterException.class);
+        this.assertGetWithListException(IOException.class, ConnectionException.class);
+        this.assertGetWithListException(NullPointerException.class, ConnectionException.class);
+        this.assertGetWithListException(RuntimeException.class, ProtocolAdapterException.class);
     }
 
     @Test
@@ -245,9 +250,9 @@ public class DlmsHelperTest {
 
     private void assertGetWithListException(Class<? extends Exception> jdlmsExceptionClazz,
             Class<? extends Exception> exceptionClazz) throws IOException {
-        DlmsConnection dlmsConnection = mock(DlmsConnection.class);
-        DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
-        DlmsDevice dlmsDevice = mock(DlmsDevice.class);
+        final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
+        final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+        final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
         when(dlmsDevice.getDeviceIdentification()).thenReturn("666");
         when(connectionManager.getConnection()).thenReturn(dlmsConnection);
 
@@ -257,7 +262,7 @@ public class DlmsHelperTest {
         when(dlmsDevice.isWithListSupported()).thenReturn(true);
         when(dlmsConnection.get(Arrays.asList(attrAddresses))).thenThrow(jdlmsExceptionClazz);
 
-        Exception exception = assertThrows(exceptionClazz, () -> {
+        final Exception exception = assertThrows(exceptionClazz, () -> {
             this.dlmsHelper.getWithList(connectionManager, dlmsDevice, attrAddresses);
         });
         assertThat(exception.getMessage()).contains(dlmsDevice.getDeviceIdentification());
