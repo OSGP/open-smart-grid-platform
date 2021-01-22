@@ -8,7 +8,7 @@ pipelineJob('example') {
     properties {
         pipelineTriggers {
             triggers {
-                scm('H 21 * * *')
+                cron('H 21 * * *')
             }
         }
     }
