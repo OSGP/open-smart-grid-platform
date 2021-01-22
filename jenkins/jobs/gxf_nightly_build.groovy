@@ -6,7 +6,7 @@ pipelineJob('gxf-nightly-build-using-job-dsl') {
                 git {
                     branch('${BRANCH}')
                     remote {
-                        credentials('jenkins-ip-10-4-24-184')
+                        credentials('jenkins-ssh-key')
                         github('OSGP/open-smart-grid-platform', 'git', 'github.com')
                     }
                 }
