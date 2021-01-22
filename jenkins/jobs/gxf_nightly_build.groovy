@@ -12,6 +12,7 @@ pipelineJob('gxf-nightly-build-using-job-dsl') {
                 }
             scriptPath('jenkins/pipeline/gxf-nightly-build.jenkinsfile')
             }
+        }
     }
     parameters {
         stringParam('BRANCH', 'development', 'Source branch from the open-smart-grid-platform repository to use for the build. Default value: development')
