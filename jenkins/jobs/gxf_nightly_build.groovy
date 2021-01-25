@@ -1,4 +1,4 @@
-pipelineJob('gxf-nightly-build-using-job-dsl') {
+pipelineJob('gxf-nightly-build') {
     description('GXF nightly build job building all open-smart-grid-platform components and running integration tests. [Managed by Job DSL]')
     definition {
         cpsScm {
