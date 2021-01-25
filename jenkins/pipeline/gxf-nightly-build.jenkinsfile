@@ -1,6 +1,9 @@
 // Pipeline script for the OSGP Nightly Build job in Jenkins
 /* groovylint-disable CompileStatic, DuplicateStringLiteral, LineLength, NestedBlockDepth, NoDef, VariableTypeRequired */
 
+// Use global pipeline library
+@Library('jenkins-shared@feature/OC-715-introducing-jobdsl') _
+
 def stream = 'osgp'
 def servername = stream + '-at-' + env.BUILD_NUMBER
 def playbook = stream + '-at.yml'
@@ -34,10 +37,10 @@ pipeline {
                 stage('SSH configuration') {
                     steps {
                         container('python') {
-                            configureSsh()
+                            sshConfiguration()
                         }
                         container('maven') {
-                            configureSsh()
+                            sshConfiguration()
                         }
                     }
                 }
@@ -45,7 +48,7 @@ pipeline {
                 stage('Ansible installation') {
                     steps {
                         container('python') {
-                            installAnsible()
+                            ansibleInstallation()
                         }
                     }
                 }
@@ -166,38 +169,19 @@ pipeline {
                         -e ec2_instance_type=${ec2InstanceType}"""
             }
         }
-        // failure {
-        //     // TODO: email not yet working via JCasC
-        //     emailext (
-        //         subject: '${DEFAULT_SUBJECT}',
-        //         body: '${DEFAULT_CONTENT}',
-        //         recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
-        //         to: '${DEFAULT_RECIPIENTS}',
-        //         from: '${DEFAULT_REPLYTO}')
-        // }
+        failure {
+            emailext (
+                subject: '${DEFAULT_SUBJECT}',
+                body: '${DEFAULT_CONTENT}',
+                recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+                to: '${DEFAULT_RECIPIENTS}',
+                from: '${DEFAULT_REPLYTO}')
+        }
         cleanup {
             // Delete workspace folder.
             cleanWs()
         }
     }
-}
-
-
-def configureSsh() {
-    withCredentials([sshUserPrivateKey(credentialsId: 'jenkins-ssh-key', keyFileVariable: 'JENKINS_KEY_FILE' ),
-            sshUserPrivateKey(credentialsId: 'osgp-development-ssh-key', keyFileVariable: 'OSGP_DEVELOPMENT_KEY_FILE' )]) {
-        sh 'mkdir ~/.ssh'
-        sh 'cp ${JENKINS_KEY_FILE} ~/.ssh/id_rsa'
-        sh 'cp ${OSGP_DEVELOPMENT_KEY_FILE} ~/.ssh/\'osgp_development.pem\''
-        sh 'chmod 600 ~/.ssh/*'
-        sh 'echo \"Host github.com\n\tStrictHostKeyChecking no\n\" >> ~/.ssh/config'
-    }
-}
-
-def installAnsible() {
-    sh 'apt-get update'
-    sh 'apt-get install -y python-lxml python-boto python-boto3'
-    sh 'set STATICBUILD=true && pip install lxml boto boto3 ansible==2.6.2'
 }
 
 def runTestsOnServer(servername) {
