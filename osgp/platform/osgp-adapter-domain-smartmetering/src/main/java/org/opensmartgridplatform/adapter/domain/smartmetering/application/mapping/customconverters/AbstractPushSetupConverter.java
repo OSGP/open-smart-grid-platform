@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters;
 
+import ma.glasnost.orika.CustomConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AbstractPushSetup;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AbstractPushSetupDto;
@@ -14,8 +15,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemObisCodeDto
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemObjectDefinitionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SendDestinationAndMethodDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.WindowElementDto;
-
-import ma.glasnost.orika.CustomConverter;
 
 /*
  * squid:S2160 Subclasses that add fields should override "equals"

@@ -28,6 +28,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.springframework.transaction.support.AbstractPlatformTransactionManager;
 
 @EnableJpaRepositories(entityManagerFactoryRef = "readableEntityManagerFactory", basePackageClasses = {
         DeviceLogItemPagingRepository.class })
@@ -123,7 +124,7 @@ public class ReadOnlyLoggingConfig extends AbstractCustomConfig {
 
         try {
             transactionManager.setEntityManagerFactory(this.readableEntityManagerFactory().getObject());
-            transactionManager.setTransactionSynchronization(JpaTransactionManager.SYNCHRONIZATION_ALWAYS);
+            transactionManager.setTransactionSynchronization(AbstractPlatformTransactionManager.SYNCHRONIZATION_ALWAYS);
         } catch (final Exception e) {
             final String msg = "Error in creating transaction manager bean";
             LOGGER.error(msg, e);

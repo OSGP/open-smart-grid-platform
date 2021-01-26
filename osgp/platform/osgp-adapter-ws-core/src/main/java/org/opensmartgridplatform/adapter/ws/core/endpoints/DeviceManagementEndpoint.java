@@ -134,7 +134,6 @@ public class DeviceManagementEndpoint {
             response.setOrganisation(this.deviceManagementMapper.map(organisation,
                     org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Organisation.class));
         } catch (final ConstraintViolationException e) {
-            LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -161,7 +160,6 @@ public class DeviceManagementEndpoint {
                     .addAll(this.deviceManagementMapper.mapAsList(organisations,
                             org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Organisation.class));
         } catch (final ConstraintViolationException e) {
-            LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -268,7 +266,6 @@ public class DeviceManagementEndpoint {
             response.getPage().setTotalPages(result.getTotalPages());
             response.getPage().setCurrentPage(result.getNumber());
         } catch (final ConstraintViolationException e) {
-            LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -304,7 +301,7 @@ public class DeviceManagementEndpoint {
                 response.getPage().setCurrentPage(result.getNumber());
             }
 
-            if (request.isUsePages() != null && !request.isUsePages()) {
+            if (result != null && request.isUsePages() != null && !request.isUsePages()) {
                 int calls = 0;
                 while ((calls += 1) < result.getTotalPages()) {
                     request.setPage(calls);
@@ -315,7 +312,6 @@ public class DeviceManagementEndpoint {
                 }
             }
         } catch (final ConstraintViolationException e) {
-            LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -330,6 +326,8 @@ public class DeviceManagementEndpoint {
         return this.deviceManagementMapper.map(request.getDeviceFilter(), DeviceFilter.class);
     }
 
+    // suppress warning about unused method. This method is used in findDevices.
+    @SuppressWarnings("squid:S1144")
     private PageSpecifier pageFrom(final FindDevicesRequest request) {
         return new PageSpecifier(request.getPageSize(), request.getPage());
     }
@@ -345,7 +343,7 @@ public class DeviceManagementEndpoint {
         final FindScheduledTasksResponse response = new FindScheduledTasksResponse();
 
         try {
-            List<ScheduledTaskWithoutData> scheduledTasks;
+            final List<ScheduledTaskWithoutData> scheduledTasks;
             if (request.getDeviceIdentification() == null) {
                 scheduledTasks = this.deviceManagementService.findScheduledTasks(organisationIdentification);
             } else {
@@ -357,7 +355,6 @@ public class DeviceManagementEndpoint {
                     .addAll(this.deviceManagementMapper.mapAsList(scheduledTasks,
                             org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.ScheduledTask.class));
         } catch (final ConstraintViolationException e) {
-            LOGGER.error("Exception find Scheduled tasks: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -383,7 +380,6 @@ public class DeviceManagementEndpoint {
 
             this.deviceManagementService.updateDevice(organisationIdentification, deviceToUpdateIdentification, ssld);
         } catch (final ConstraintViolationException e) {
-            LOGGER.error("Exception update Device: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -425,7 +421,6 @@ public class DeviceManagementEndpoint {
             this.deviceManagementService.setDeviceAlias(organisationIdentification, request.getDeviceIdentification(),
                     request.getDeviceAlias(), request.getDeviceOutputSettings());
         } catch (final ConstraintViolationException e) {
-            LOGGER.error("Exception setting alias Device: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -467,7 +462,6 @@ public class DeviceManagementEndpoint {
             this.deviceManagementService.setMaintenanceStatus(organisationIdentification,
                     request.getDeviceIdentification(), request.isStatus());
         } catch (final ConstraintViolationException e) {
-            LOGGER.error("Exception update Device: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -516,7 +510,6 @@ public class DeviceManagementEndpoint {
             response.setAsyncResponse(asyncResponse);
 
         } catch (final ConstraintViolationException e) {
-            LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -576,7 +569,6 @@ public class DeviceManagementEndpoint {
             response.setAsyncResponse(asyncResponse);
 
         } catch (final ConstraintViolationException e) {
-            LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {

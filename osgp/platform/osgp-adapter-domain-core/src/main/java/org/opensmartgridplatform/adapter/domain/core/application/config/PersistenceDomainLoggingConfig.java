@@ -22,6 +22,7 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.springframework.transaction.support.AbstractPlatformTransactionManager;
 
 @EnableJpaRepositories(entityManagerFactoryRef = "domainLoggingEntityManagerFactory", basePackageClasses = {
         DeviceLogItemSlicingRepository.class })
@@ -68,7 +69,7 @@ public class PersistenceDomainLoggingConfig extends AbstractPersistenceConfig {
     public JpaTransactionManager domainLoggingTransactionManager() {
         final JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(this.entityManagerFactory().getObject());
-        transactionManager.setTransactionSynchronization(JpaTransactionManager.SYNCHRONIZATION_ALWAYS);
+        transactionManager.setTransactionSynchronization(AbstractPlatformTransactionManager.SYNCHRONIZATION_ALWAYS);
 
         return transactionManager;
     }

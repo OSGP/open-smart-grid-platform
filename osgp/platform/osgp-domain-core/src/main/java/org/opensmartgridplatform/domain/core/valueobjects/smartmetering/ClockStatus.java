@@ -9,6 +9,7 @@ package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Set;
 
 public class ClockStatus implements Serializable {
@@ -53,7 +54,7 @@ public class ClockStatus implements Serializable {
 
     public Set<ClockStatusBit> getStatusBits() {
         if (this.statusBits == null) {
-            return null;
+            return new HashSet<>();
         }
         return EnumSet.copyOf(this.statusBits);
     }

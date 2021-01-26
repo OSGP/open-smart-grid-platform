@@ -151,7 +151,6 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
                     org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event.class));
 
         } catch (final ConstraintViolationException e) {
-            LOGGER.error("FindEventsRequest Exception", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -180,7 +179,6 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
                     org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Device.class));
             response.setDevicePage(devicePage);
         } catch (final ConstraintViolationException e) {
-            LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_WS_SMART_METERING,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -244,7 +242,6 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
                 response.setDescription((String) responseData.getMessageData());
             }
         } catch (final ConstraintViolationException e) {
-            LOGGER.error("EnableDebuggingResponse Exception", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -308,7 +305,6 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
                 response.setDescription((String) responseData.getMessageData());
             }
         } catch (final ConstraintViolationException e) {
-            LOGGER.error("DisableDebuggingResponse Exception", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -393,7 +389,6 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
 
             response.setMessageLogPage(logPage);
         } catch (final ConstraintViolationException e) {
-            LOGGER.error("FindMessageLogsResponse Exception", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -459,7 +454,6 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
                 response.setDescription((String) responseData.getMessageData());
             }
         } catch (final ConstraintViolationException e) {
-            LOGGER.error("SetDeviceCommunicationSettingsResponse Exception", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -525,7 +519,6 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
 
         } catch (final ConstraintViolationException e) {
-            LOGGER.error("Set device lifecycle status by channel Exception", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {

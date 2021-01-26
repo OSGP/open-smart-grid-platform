@@ -247,7 +247,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while requesting actual meter reads for device: {} for organisation {}.",
-                    new Object[] { e.getMessage(), deviceIdentification, organisationIdentification }, e);
+                    e.getMessage(), deviceIdentification, organisationIdentification, e);
 
             this.handleException(e);
         }
