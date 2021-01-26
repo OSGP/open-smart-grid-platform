@@ -44,7 +44,6 @@ import com.alliander.data.scadameasurementpublishedevent.Analog;
 import com.alliander.data.scadameasurementpublishedevent.BaseVoltage;
 import com.alliander.data.scadameasurementpublishedevent.ConductingEquipment;
 import com.alliander.data.scadameasurementpublishedevent.Message;
-import com.alliander.data.scadameasurementpublishedevent.Name;
 import com.alliander.data.scadameasurementpublishedevent.ScadaMeasurementPublishedEvent;
 
 @SpringJUnitConfig(LowVoltageMessageProducerConfig.class)
@@ -54,7 +53,7 @@ import com.alliander.data.scadameasurementpublishedevent.ScadaMeasurementPublish
         topics = { "${distributionautomation.kafka.topic}" },
         brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "log.dirs=../kafka-logs/",
                 "auto.create.topics.enable=true" })
-class ScadaMeasurementPublishedEventProducerTest {
+class LowVoltageMessageProducerTest {
 
     @Value("${distributionautomation.kafka.topic}")
     private String topic;
@@ -102,7 +101,7 @@ class ScadaMeasurementPublishedEventProducerTest {
         // check the consumed message
         final Message actualMessage = received.value();
         assertThat(actualMessage.getMessageId()).isNotNull();
-        assertThat(actualMessage.getProducerId().toString()).isEqualTo("GXF");
+        assertThat(actualMessage.getProducerId()).hasToString("GXF");
     }
 
     private ScadaMeasurementPublishedEvent createEvent() {
