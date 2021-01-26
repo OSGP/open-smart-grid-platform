@@ -41,9 +41,6 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
     @Autowired
     private String successfulMessagesMetric;
 
-    @Autowired
-    private String failedMessagesMetric;
-
     public OslpChannelHandlerClient() {
         super(LOGGER);
     }
@@ -98,7 +95,6 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
                     // numbers, replace the exception by a generic exception.
                     LOGGER.error("An error occurred while checking the sequence number", exc);
                     oslpResponseHandler.handleException(new NoDeviceResponseException());
-                    Metrics.counter(this.failedMessagesMetric).increment();
                 }
 
                 this.callbackHandlers.remove(channelId);

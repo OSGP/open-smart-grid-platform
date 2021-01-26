@@ -57,23 +57,33 @@ class MetricsCounterTest {
     @InjectMocks
     private OslpChannelHandlerClient handler;
 
+    private EmbeddedChannel channel;
+
     @BeforeEach
     void setup() {
         final JmxConfig jmxConfig = key -> null;
         Metrics.addRegistry(new JmxMeterRegistry(jmxConfig, Clock.SYSTEM));
+        this.resetCounter();
         ReflectionTestUtils.setField(this.handler, "successfulMessagesMetric", MESSAGES_SUCCESSFUL);
-        ReflectionTestUtils.setField(this.handler, "failedMessagesMetric", MESSAGES_FAILED);
         final ConcurrentMap<String, OslpCallbackHandler> callbackHandlers = new ConcurrentHashMap<>();
         callbackHandlers.put("embedded", new OslpCallbackHandler(this.responseHandler()));
         ReflectionTestUtils.setField(this.handler, "callbackHandlers", callbackHandlers);
+        this.channel = new EmbeddedChannel(this.handler);
+    }
+
+    private void resetCounter() {
+        try {
+            final Counter counter = Metrics.globalRegistry.find(MESSAGES_FAILED).counter();
+            Metrics.counter(MESSAGES_FAILED).increment(-counter.count());
+        } catch (final Exception e) {
+            // ignore error
+        }
     }
 
     @Test
     void countSuccess() throws Exception {
 
-        final EmbeddedChannel channel = new EmbeddedChannel(this.handler);
-
-        channel.writeInbound(this.oslpEnvelope());
+        this.channel.writeInbound(this.oslpEnvelope());
 
         final Counter counter = Metrics.globalRegistry.find(MESSAGES_SUCCESSFUL).counter();
         assertThat(counter.count()).isEqualTo(1.0);
@@ -81,13 +91,26 @@ class MetricsCounterTest {
     }
 
     @Test
-    void countFailure() throws Exception {
+    void countFailureInChannelRead() throws Exception {
 
         doThrow(new ProtocolAdapterException("")).when(this.deviceRegistrationService)
                 .checkSequenceNumber(any(byte[].class), anyInt());
-        final EmbeddedChannel channel = new EmbeddedChannel(this.handler);
 
-        channel.writeInbound(this.oslpEnvelope());
+        this.channel.writeInbound(this.oslpEnvelope());
+
+        final Counter counter = Metrics.globalRegistry.find(MESSAGES_FAILED).counter();
+        assertThat(counter.count()).isEqualTo(1.0);
+
+    }
+
+    @Test
+    void countException() throws Exception {
+        this.channel.close();
+        try {
+            this.channel.writeInbound(this.oslpEnvelope());
+        } catch (final Exception e) {
+            // ignore exception
+        }
 
         final Counter counter = Metrics.globalRegistry.find(MESSAGES_FAILED).counter();
         assertThat(counter.count()).isEqualTo(1.0);
@@ -103,6 +126,7 @@ class MetricsCounterTest {
 
             @Override
             public void handleException(final Throwable t) {
+                Metrics.counter(MESSAGES_FAILED).increment();
             }
         };
     }
