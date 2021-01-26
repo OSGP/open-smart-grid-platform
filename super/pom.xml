@@ -116,7 +116,7 @@
     <cxf.version>3.4.1</cxf.version>
     <quartz.version>2.3.2</quartz.version>
     <hikaricp.version>3.4.5</hikaricp.version>
-    <micrometer.version>1.5.1</micrometer.version>
+    <micrometer.version>1.6.3</micrometer.version>
     <protobuf.version>2.4.1</protobuf.version>
     <guava.version>29.0-jre</guava.version>
     <spotbugs.version>4.0.4</spotbugs.version>
@@ -885,7 +885,7 @@
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-reflect</artifactId>
           </exclusion>
-	    </exclusions>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.scala-lang</groupId>
@@ -963,6 +963,11 @@
       <dependency>
         <groupId>io.micrometer</groupId>
         <artifactId>micrometer-registry-prometheus</artifactId>
+        <version>${micrometer.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.micrometer</groupId>
+        <artifactId>micrometer-registry-jmx</artifactId>
         <version>${micrometer.version}</version>
       </dependency>
 
