@@ -126,6 +126,9 @@ class MetricsCounterTest {
 
             @Override
             public void handleException(final Throwable t) {
+
+                // handle metrics the same way as
+                // OslpDeviceService.handleException
                 Metrics.counter(MESSAGES_FAILED).increment();
             }
         };
