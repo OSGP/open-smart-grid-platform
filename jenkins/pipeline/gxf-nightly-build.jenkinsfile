@@ -2,7 +2,7 @@
 /* groovylint-disable CompileStatic, DuplicateStringLiteral, LineLength, NestedBlockDepth, NoDef, VariableTypeRequired */
 
 // Use global pipeline library
-@Library('jenkins-shared@feature/OC-715-introducing-jobdsl') _
+@Library('jenkins-shared@development') _
 
 def stream = 'osgp'
 def servername = stream + '-at-' + env.BUILD_NUMBER
@@ -32,30 +32,30 @@ pipeline {
     }
 
     stages {
-        stage('Parallel stages') {
+        stage ('Parallel stages') {
             parallel {
-                stage('SSH configuration') {
+                stage ('SSH configuration') {
                     steps {
-                        container('python') {
+                        container ('python') {
                             sshConfiguration()
                         }
-                        container('maven') {
+                        container ('maven') {
                             sshConfiguration()
                         }
                     }
                 }
 
-                stage('Ansible installation') {
+                stage ('Ansible installation') {
                     steps {
-                        container('python') {
+                        container ('python') {
                             ansibleInstallation()
                         }
                     }
                 }
 
-                stage('Maven build') {
+                stage ('Maven build') {
                     steps {
-                        container('maven') {
+                        container ('maven') {
                             sh 'mvn clean install -B -DskipTestJarWithDependenciesAssembly=false'
                             sh 'mkdir -p target/artifacts && find . -name *.war -exec cp -uf {} target/artifacts \\;'
                         }
@@ -64,9 +64,9 @@ pipeline {
             }
         }
 
-        stage('Test server creation') {
+        stage ('Test server creation') {
             steps {
-                container('python') {
+                container ('python') {
                     // Get Ansible playbooks from release repository
                     sh 'git clone git@github.com:SmartSocietyServices/release.git'
                     sh "cd release && git checkout ${branchReleaseRepo}"
@@ -107,9 +107,9 @@ pipeline {
             }
         }
 
-        stage('Test server software deployment') {
+        stage ('Test server software deployment') {
             steps {
-                container('python') {
+                container ('python') {
                     // Deploy artifacts
                     sh """cd release && ansible-playbook plays/${playbook} \
                             -e osgp_version=${POMVERSION} \
@@ -129,7 +129,7 @@ pipeline {
 
         stage ('Test execution') {
             steps {
-                container('maven') {
+                container ('maven') {
                     runTestsOnServer(servername)
                 }
             }
@@ -137,7 +137,7 @@ pipeline {
 
         stage ('Coverage collection') {
             steps {
-                container("maven") {
+                container ("maven") {
                     sh """mvn -Djacoco.destFile=target/code-coverage/jacoco-it.exec \
                             -Djacoco.address=${servername}.dev.osgp.cloud \
                             org.jacoco:jacoco-maven-plugin:0.7.9:dump"""
@@ -162,7 +162,7 @@ pipeline {
         always {
             echo 'End of pipeline'
             echo 'Destroying test server'
-            container('python') {
+            container ('python') {
                 sh """cd release && ansible-playbook plays/${playbook} \
                         -e deployment_name=${servername} \
                         -e deployment_action=destroy \
