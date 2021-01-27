@@ -13,6 +13,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.opensmartgridplatform.adapter.kafka.da.domain.valueobjects.LowVoltageMeasurementDefinition;
+import org.opensmartgridplatform.adapter.kafka.da.domain.valueobjects.LowVoltageMeasurementType;
+import org.opensmartgridplatform.adapter.kafka.da.domain.valueobjects.LowVoltageMetaMeasurementType;
+
 import com.alliander.data.scadameasurementpublishedevent.Analog;
 
 public class LowVoltageMeasurementToAnalogList implements StringArrayToAnalogList {

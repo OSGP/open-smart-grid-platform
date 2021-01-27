@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.kafka.da.application.entities;
+package org.opensmartgridplatform.adapter.kafka.da.domain.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,12 +20,11 @@ import lombok.Data;
 @Data
 public class Feeder extends AbstractEntity {
 
-
-    @ManyToOne(fetch= FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Location location;
 
     @Column(nullable = false)
-    private Long feederId;
+    private Long feederNumber;
 
     @Column(length = 32, nullable = false)
     private String name;

@@ -36,9 +36,10 @@ IF NOT EXISTS (
             modification_time timestamp without time zone NOT NULL,
             version bigint,
             location_id bigint NOT NULL,
-            feeder_id bigint NOT NULL,
+            feeder_number bigint NOT NULL,
             name character varying(32) NOT NULL,
             CONSTRAINT feeder_pkey PRIMARY KEY (id),
+            CONSTRAINT location_feeder_key UNIQUE (location_id, feeder_number),
             CONSTRAINT location_id_fk FOREIGN KEY (location_id) REFERENCES location (id) ON UPDATE CASCADE ON DELETE RESTRICT
         );
 

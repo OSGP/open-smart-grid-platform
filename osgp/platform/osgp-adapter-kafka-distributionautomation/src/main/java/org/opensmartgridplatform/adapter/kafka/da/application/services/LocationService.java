@@ -7,8 +7,9 @@
  */
 package org.opensmartgridplatform.adapter.kafka.da.application.services;
 
-import org.opensmartgridplatform.adapter.kafka.da.application.repositories.FeederRepository;
-import org.opensmartgridplatform.adapter.kafka.da.application.repositories.LocationRepository;
+import org.opensmartgridplatform.adapter.kafka.da.domain.repositories.FeederRepository;
+import org.opensmartgridplatform.adapter.kafka.da.domain.repositories.LocationRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,13 +18,14 @@ public class LocationService {
     private final LocationRepository locationRepository;
     private final FeederRepository feederRepository;
 
+    @Autowired
     public LocationService(final LocationRepository locationRepository, final FeederRepository feederRepository) {
         this.locationRepository = locationRepository;
         this.feederRepository = feederRepository;
     }
 
     public String getBayIdentification(final String substationIdentification, final String feeder) {
-        return this.feederRepository.findOneByLocation_NameAndName(substationIdentification, feeder).getName();
+        return this.feederRepository.findOneByLocationNameAndName(substationIdentification, feeder).getName();
     }
 
     public String getSubstationIdentification(final String substationIdentification) {

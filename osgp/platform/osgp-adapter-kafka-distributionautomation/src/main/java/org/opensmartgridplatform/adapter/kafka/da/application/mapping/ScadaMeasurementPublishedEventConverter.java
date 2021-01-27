@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.opensmartgridplatform.adapter.kafka.da.domain.valueobjects.LowVoltageMeasurementType;
+import org.opensmartgridplatform.adapter.kafka.da.domain.valueobjects.LowVoltageMetaMeasurementType;
 import org.opensmartgridplatform.adapter.kafka.da.infra.mqtt.in.ScadaMeasurementPayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

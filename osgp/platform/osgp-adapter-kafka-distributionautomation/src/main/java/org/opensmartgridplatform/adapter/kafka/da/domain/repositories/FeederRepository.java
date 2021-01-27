@@ -5,9 +5,9 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.kafka.da.application.repositories;
+package org.opensmartgridplatform.adapter.kafka.da.domain.repositories;
 
-import org.opensmartgridplatform.adapter.kafka.da.application.entities.Feeder;
+import org.opensmartgridplatform.adapter.kafka.da.domain.entities.Feeder;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,5 +17,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FeederRepository extends JpaRepository<Feeder, Long> {
     Feeder findOneByName(String name);
-    Feeder findOneByLocation_NameAndName(String substationIdentification, String feeder);
+
+    Feeder findOneByLocationNameAndName(String substationIdentification, String feeder);
 }

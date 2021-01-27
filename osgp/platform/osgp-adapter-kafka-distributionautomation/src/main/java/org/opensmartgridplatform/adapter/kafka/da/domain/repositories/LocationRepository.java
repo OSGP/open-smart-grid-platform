@@ -5,9 +5,9 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.kafka.da.application.repositories;
+package org.opensmartgridplatform.adapter.kafka.da.domain.repositories;
 
-import org.opensmartgridplatform.adapter.kafka.da.application.entities.Location;
+import org.opensmartgridplatform.adapter.kafka.da.domain.entities.Location;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,5 +17,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface LocationRepository extends CrudRepository<Location, Long> {
     Location findOneByName(String name);
+
     Location findOneBySubstationIdentification(String substationIdentification);
 }

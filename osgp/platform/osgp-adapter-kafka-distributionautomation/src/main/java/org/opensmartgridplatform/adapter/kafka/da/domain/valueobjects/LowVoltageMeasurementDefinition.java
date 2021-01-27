@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.kafka.da.application.mapping;
+package org.opensmartgridplatform.adapter.kafka.da.domain.valueobjects;
 
 import java.util.Arrays;
 

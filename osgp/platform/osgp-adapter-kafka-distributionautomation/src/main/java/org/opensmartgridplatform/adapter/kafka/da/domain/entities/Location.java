@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.kafka.da.application.entities;
+package org.opensmartgridplatform.adapter.kafka.da.domain.entities;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ public class Location extends AbstractEntity {
     @OneToMany
     private List<Feeder> feederList;
 
-    @Column(length = 32, nullable = false)
+    @Column(length = 12, nullable = false)
     private String substationIdentification;
 
     @Column(length = 32, nullable = false)
