@@ -100,7 +100,7 @@
     <checkstyle.maven.plugin.version>3.1.1</checkstyle.maven.plugin.version>
     <dependency-check.maven.plugin.version>5.3.2</dependency-check.maven.plugin.version>
     <versions.maven.plugin.version>2.7</versions.maven.plugin.version>
-    <apache.activemq.version>5.16.0</apache.activemq.version>
+    <apache.activemq.version>5.16.1</apache.activemq.version>
     <logback.version>1.2.3</logback.version>
     <apache.commons.schema>2.2.5</apache.commons.schema>
     <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
