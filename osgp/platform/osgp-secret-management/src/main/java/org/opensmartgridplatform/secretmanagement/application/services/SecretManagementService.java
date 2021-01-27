@@ -20,6 +20,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.buf.HexUtils;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptedSecret;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptionKeyReference;
@@ -53,6 +54,7 @@ import org.springframework.stereotype.Service;
  * by reencrypting the AES-encrypted secrets to RSA.
  */
 @Service
+@Slf4j
 public class SecretManagementService {
     //Internal datastructure to keep track of (intermediate) secret details
     private static class EncryptedTypedSecret {
@@ -105,7 +107,7 @@ public class SecretManagementService {
             }
             final String keyReference = dbEncryptedSecret.getEncryptionKeyReference().getReference();
             final EncryptionProviderType providerType = dbEncryptedSecret.getEncryptionKeyReference()
-                                                                   .getEncryptionProviderType();
+                                                                         .getEncryptionProviderType();
             return new EncryptedTypedSecret(aesEncrypted, dbEncryptedSecret.getSecretType(), keyReference,
                     providerType);
         }
@@ -168,21 +170,25 @@ public class SecretManagementService {
     }
 
     public List<TypedSecret> retrieveSecrets(final String deviceIdentification, final List<SecretType> secretTypes) {
+        log.trace(">>> retrieveSecrets({},{})", deviceIdentification, secretTypes);
         return this.doRetrieveSecrets(deviceIdentification, secretTypes, SecretStatus.ACTIVE);
     }
 
     public List<TypedSecret> retrieveNewSecrets(final String deviceIdentification, final List<SecretType> secretTypes) {
+        log.trace(">>> retrieveNewSecrets({},{})", deviceIdentification, secretTypes);
         return this.doRetrieveSecrets(deviceIdentification, secretTypes, SecretStatus.NEW);
     }
 
     private List<TypedSecret> doRetrieveSecrets(final String deviceIdentification, final List<SecretType> secretTypes,
             SecretStatus status) {
+        log.trace(">>> doRetrieveSecrets({},{},{})", deviceIdentification, secretTypes, status);
         return this.retrieveAesSecrets(deviceIdentification, secretTypes, status).stream().map(this::reencryptAes2Rsa)
                    .map(EncryptedTypedSecret::toTypedSecret).collect(Collectors.toList());
     }
 
     private List<EncryptedTypedSecret> retrieveAesSecrets(final String deviceIdentification,
             final List<SecretType> secretTypes, final SecretStatus status) {
+        log.trace(">>> retrieveAesSecrets({},{})", deviceIdentification, secretTypes, status);
         try {
             return secretTypes.stream().map(secretType -> this.retrieveSecret(deviceIdentification, secretType, status))
                               .collect(Collectors.toList());
@@ -195,46 +201,60 @@ public class SecretManagementService {
 
     private EncryptedTypedSecret retrieveSecret(final String deviceIdentification, final SecretType secretType,
             final SecretStatus status) {
+        log.trace(">>> retrieveAesSecrets({},{})", deviceIdentification, secretType, status);
         final Optional<DbEncryptedSecret> optional = this
                 .getSingleDbEncryptedSecret(deviceIdentification, secretType, status);
         if (optional.isPresent()) {
             try {
+                log.trace("<<< retrieveAesSecrets({},{}): secret found", deviceIdentification, secretType, status);
                 return EncryptedTypedSecret.fromDbEncryptedSecret(optional.get());
             } catch (FunctionalException e) {
                 throw new ExceptionWrapper(e);
             }
         } else {
+            log.trace("<<< retrieveAesSecrets({},{}): no secret found", deviceIdentification, secretType, status);
             return EncryptedTypedSecret.getNullInstance(secretType);
         }
     }
 
     private Optional<DbEncryptedSecret> getSingleDbEncryptedSecret(final String deviceIdentification,
             final SecretType secretType, final SecretStatus secretStatus) {
+        log.trace(">>> getSingleDbEncryptedSecret({},{},{})", deviceIdentification, secretType,
+                secretStatus);
         final List<DbEncryptedSecret> secretsList = this.secretRepository
                 .findSecrets(deviceIdentification, secretType, secretStatus);
         final boolean onlySingleSecretAllowed =
                 SecretStatus.NEW.equals(secretStatus) || SecretStatus.ACTIVE.equals(secretStatus);
         if (secretsList.isEmpty()) {
+            log.trace("<<< getSingleDbEncryptedSecret({},{},{}): no secret found", deviceIdentification, secretType,
+                    secretStatus);
             return Optional.empty();
         } else if (secretsList.size() > 1 && onlySingleSecretAllowed) {
             String msgFormat = "Only 1 instance allowed with status %s, but found %s for device %s, secret type %s";
             throw new IllegalStateException(
                     String.format(msgFormat, secretStatus, secretsList.size(), deviceIdentification, secretType));
         }
+        log.trace("<<< getSingleDbEncryptedSecret({},{},{}): secret found", deviceIdentification, secretType,
+                secretStatus);
         return Optional.of(secretsList.iterator().next());
     }
 
     public synchronized void storeSecrets(final String deviceIdentification, final List<TypedSecret> secrets) {
         secrets.forEach(s -> this.checkNrNewSecretsOfType(deviceIdentification, s.getSecretType(), 0));
-        final List<EncryptedTypedSecret> aesSecrets = secrets.stream().map(ts -> new EncryptedTypedSecret(ts.getSecret(),
-                ts.getSecretType())).map(this::reencryptRsa2Aes).collect(toList());
+        final List<EncryptedTypedSecret> aesSecrets = secrets.stream()
+                                                             .map(ts -> new EncryptedTypedSecret(ts.getSecret(),
+                                                                     ts.getSecretType())).map(this::reencryptRsa2Aes)
+                                                             .collect(toList());
         this.storeAesSecrets(deviceIdentification, aesSecrets);
     }
 
     private void storeAesSecrets(final String deviceIdentification, final List<EncryptedTypedSecret> secrets) {
+        log.trace(">>> storeAesSecrets({},{})", deviceIdentification, secrets);
         secrets.stream().map(this::validateAndReturnNewSecret).map(ets -> this
                 .createDbEncrypted(deviceIdentification, ets, this.getKeyByReference(ets.encryptionKeyReference)))
                .collect(collectingAndThen(toList(), this.secretRepository::saveAll));
+        log.trace("<<< storeAesSecrets({},{}): secrets stored", deviceIdentification, secrets);
+
     }
 
     public synchronized void activateNewSecrets(final String deviceIdentification, final List<SecretType> secretTypes) {
@@ -270,29 +290,38 @@ public class SecretManagementService {
     }
 
     private void checkNrNewSecretsOfType(final String deviceIdentification, final SecretType t, final int expectedNr) {
+        log.trace(">>> checkNrNewSecretsOfType({},{},{})", deviceIdentification, t, expectedNr);
         final int nrNewSecretsOfType = this.secretRepository.getSecretCount(deviceIdentification, t, SecretStatus.NEW);
         if (nrNewSecretsOfType != expectedNr) {
             final String errorMsg = "Expected %s new secrets of type %s for device %s, but %s new secret(s) present";
             throw new IllegalStateException(
                     String.format(errorMsg, expectedNr, t, deviceIdentification, nrNewSecretsOfType));
         }
+        log.trace("<<< checkNrNewSecretsOfType({},{},{}): OK", deviceIdentification, t, expectedNr);
     }
 
     public synchronized List<TypedSecret> generateAndStoreSecrets(final String deviceIdentification,
             final List<SecretType> secretTypes) {
+        log.trace(">>> generateAndStoreSecrets({},{})", deviceIdentification, secretTypes);
         secretTypes.forEach(st -> this.checkNrNewSecretsOfType(deviceIdentification, st, 0));
-        final List<EncryptedTypedSecret> encryptedTypedSecrets = secretTypes.stream().map(this::generateAes128BitsSecret)
-                                                                      .collect(Collectors.toList());
+        final List<EncryptedTypedSecret> encryptedTypedSecrets = secretTypes.stream()
+                                                                            .map(this::generateAes128BitsSecret)
+                                                                            .collect(Collectors.toList());
         this.storeAesSecrets(deviceIdentification, encryptedTypedSecrets);
+        log.trace("<<< generateAndStoreSecrets({},{}): convert and return stored secrets ({})", deviceIdentification,
+                secretTypes, encryptedTypedSecrets.size());
         return encryptedTypedSecrets.stream().map(this::reencryptAes2Rsa).map(EncryptedTypedSecret::toTypedSecret)
                                     .collect(Collectors.toList());
     }
 
     private EncryptedTypedSecret generateAes128BitsSecret(final SecretType secretType) {
+        log.trace(">>> generateAes128BitsSecret({})", secretType);
         try {
             final DbEncryptionKeyReference currentKey = this.getCurrentKey();
             final byte[] aesEncrypted = this.encryptionDelegate
                     .generateAes128BitsSecret(this.encryptionProviderType, currentKey.getReference());
+            log.debug("<<< generateAes128BitsSecret({}): generated AES secret with bytesize {}", secretType,
+                    aesEncrypted.length);
             return new EncryptedTypedSecret(aesEncrypted, secretType, currentKey.getReference(),
                     currentKey.getEncryptionProviderType());
         } catch (EncrypterException ee) {
@@ -301,18 +330,23 @@ public class SecretManagementService {
     }
 
     private EncryptedTypedSecret reencryptRsa2Aes(final EncryptedTypedSecret secret) {
+        log.trace(">>> reencryptRsa2Aes(...)");
         byte[] aesEncrypted = this.reencryptRsa2Aes(secret.encryptedSecret);
         final DbEncryptionKeyReference currentKey = this.getCurrentKey();
+        log.trace("<<< reencryptRsa2Aes(...)");
         return new EncryptedTypedSecret(aesEncrypted, secret.type, currentKey.getReference(),
                 currentKey.getEncryptionProviderType());
     }
 
     private EncryptedTypedSecret reencryptAes2Rsa(final EncryptedTypedSecret secret) {
+        log.trace(">>> reencryptAes2Rsa(...)");
         if (secret.hasNullSecret()) {
+            log.trace("<<< reencryptAes2Rsa(...): NULL value");
             return secret;  //No need to encrypt NULL value
         } else {
             byte[] rsaEncrypted = this.reencryptAes2Rsa(secret.encryptedSecret, secret.encryptionKeyReference,
                     secret.encryptionProviderType);
+            log.trace("<<< reencryptAes2Rsa(...): non-NULL value");
             return new EncryptedTypedSecret(rsaEncrypted, secret.type);
         }
     }
@@ -330,7 +364,8 @@ public class SecretManagementService {
         return aes;
     }
 
-    private byte[] reencryptAes2Rsa(final byte[] aes, final String keyReference, final EncryptionProviderType encryptionProviderType) {
+    private byte[] reencryptAes2Rsa(final byte[] aes, final String keyReference,
+            final EncryptionProviderType encryptionProviderType) {
         try {
             return this.rsaEncrypter.encrypt(
                     this.encryptionDelegate.decrypt(new EncryptedSecret(encryptionProviderType, aes), keyReference));
