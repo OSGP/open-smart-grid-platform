@@ -124,7 +124,11 @@
       <artifactId>cucumber-tests-platform-common</artifactId>
       <type>test-jar</type>
     </dependency>
-
+    <dependency>
+      <groupId>org.opensmartgridplatform</groupId>
+      <artifactId>osgp-adapter-kafka-distributionautomation</artifactId>
+      <classifier>classes</classifier>
+    </dependency>
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-adapter-ws-distributionautomation</artifactId>

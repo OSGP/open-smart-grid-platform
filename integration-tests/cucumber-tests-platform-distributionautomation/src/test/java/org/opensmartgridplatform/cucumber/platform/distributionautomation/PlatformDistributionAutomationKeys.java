@@ -15,6 +15,8 @@ public class PlatformDistributionAutomationKeys {
     public static final String BAY_POSITION = "bay position";
     public static final String COMMON_ADDRESS = "CommonAddress";
     public static final String DESCRIPTION = "description";
+    public static final String FEEDER_NUMBER = "feeder number";
+    public static final String FEEDER_NAME = "feeder name";
     public static final String INFORMATION_ELEMENT_VALUE = "InformationElementValue";
     public static final String INFORMATION_OBJECT_ADDRESS = "InformationObjectAddress";
     public static final String INFORMATION_OBJECT_TYPE = "InformationObjectType";
