@@ -19,12 +19,13 @@ import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.security.EncryptedSecret;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 
-public abstract class AbstractEncryptionProvider {
+public abstract class AbstractEncryptionProvider implements EncryptionProvider {
 
-    private static final int BLOCK_SIZE=16;
+    private static final int BLOCK_SIZE = 16;
 
     protected File keyFile;
 
+    @Override
     public abstract EncryptionProviderType getType();
 
     protected abstract Cipher getCipher();
@@ -37,6 +38,7 @@ public abstract class AbstractEncryptionProvider {
         this.keyFile = keyFile;
     }
 
+    @Override
     public EncryptedSecret encrypt(final byte[] secret, final String keyReference) {
         try {
             final Cipher cipher = this.getCipher();
@@ -48,12 +50,13 @@ public abstract class AbstractEncryptionProvider {
         }
     }
 
+    @Override
     public byte[] decrypt(final EncryptedSecret secret, final String keyReference) {
 
         if (secret.getType() != this.getType()) {
             throw new EncrypterException(
-                    "EncryptionProvider for type " + this.getType().name() + " cannot decrypt secrets of type "
-                            + secret.getType().name());
+                    "EncryptionProvider for type " + this.getType().name() + " cannot decrypt secrets of type " + secret
+                            .getType().name());
         }
 
         try {
@@ -61,7 +64,11 @@ public abstract class AbstractEncryptionProvider {
             cipher.init(Cipher.DECRYPT_MODE, this.getSecretEncryptionKey(keyReference, Cipher.DECRYPT_MODE),
                     this.getAlgorithmParameterSpec());
             final byte[] decryptedData = cipher.doFinal(secret.getSecret());
-
+            if (decryptedData.length != this.getSecretByteLength()) {
+                throw new EncrypterException(
+                        String.format("Incorrect key byte length: expected %s, but was %s", this.getSecretByteLength(),
+                                decryptedData.length));
+            }
             if (this.checkNullBytesPrepended(decryptedData)) {
                 return Arrays.copyOfRange(decryptedData, BLOCK_SIZE, decryptedData.length);
             } else {

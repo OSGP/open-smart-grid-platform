@@ -33,7 +33,7 @@ import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class HsmEncryptionProvider extends AbstractEncryptionProvider implements EncryptionProvider {
+public class HsmEncryptionProvider extends AbstractEncryptionProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HsmEncryptionProvider.class);
 
