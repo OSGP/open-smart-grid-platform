@@ -79,8 +79,8 @@ public class Database {
         this.rtuDeviceRepository.deleteAll();
 
         // Remove from osgp_adapter_kafka_distributionautomation
-        this.feederRepository.deleteAll();
-        this.locationRepository.deleteAll();
+//        this.feederRepository.deleteAll();
+//        this.locationRepository.deleteAll();
 
         this.insertDefaultData();
     }
