@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.messageproc
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -63,9 +64,7 @@ public class DomainResponseMessageProcessorTest {
     @Test
     void processMessageErrorInHandleMessage() throws JMSException {
 
-        org.mockito.Mockito.doThrow(new NullPointerException("Some runtime exception"))
-                .when(this.responseDataService)
-                .enqueue(any());
+        doThrow(new NullPointerException("Some runtime exception")).when(this.responseDataService).enqueue(any());
 
         assertThatThrownBy(() -> this.messageProcessor.processMessage(this.message))
                 .isInstanceOf(RuntimeException.class);
@@ -75,7 +74,7 @@ public class DomainResponseMessageProcessorTest {
     @Test
     void processMessageErrorInSendNotification() throws JMSException {
 
-        org.mockito.Mockito.doThrow(new NullPointerException("Some runtime exception while sending the notification"))
+        doThrow(new NullPointerException("Some runtime exception while sending the notification"))
                 .when(this.notificationService)
                 .sendNotification(any(), any(), any(), any(), any(), any());
 
