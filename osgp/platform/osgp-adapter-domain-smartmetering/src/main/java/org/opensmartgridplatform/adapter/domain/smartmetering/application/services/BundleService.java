@@ -137,7 +137,8 @@ public class BundleService {
                 this.managementService
                         .setDeviceLifecycleStatusByChannel((SetDeviceLifecycleStatusByChannelResponseDto) action);
             } else if (action instanceof EventMessageDataResponseDto) {
-                // Add EventType to EventDto
+
+                /* Add EventType to EventDto */
                 this.eventService.addEventTypeToEvents(deviceMessageMetadata, (EventMessageDataResponseDto)action);
             } else if (action instanceof FirmwareVersionResponseDto) {
                 final List<FirmwareVersion> firmwareVersions = this.configurationMapper
