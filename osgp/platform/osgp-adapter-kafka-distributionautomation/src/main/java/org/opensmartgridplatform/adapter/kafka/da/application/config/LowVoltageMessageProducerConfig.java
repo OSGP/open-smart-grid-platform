@@ -55,7 +55,7 @@ public class LowVoltageMessageProducerConfig extends AbstractKafkaProducerConfig
                 .signatureKeyAlgorithm(signatureKeyAlgorithm)
                 .signatureKeySize(signatureKeySize)
                 .signingKey(this.readKeyFromPemResource(signingKeyResource, "private signing key"))
-                .verificationKey(this.readKeyFromPemResource(signingKeyResource, "public verification key"))
+                .verificationKey(this.readKeyFromPemResource(verificationKeyResource, "public verification key"))
                 .build();
     }
 
