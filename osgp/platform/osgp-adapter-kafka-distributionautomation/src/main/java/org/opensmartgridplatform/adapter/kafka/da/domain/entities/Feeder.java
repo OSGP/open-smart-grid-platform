@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.kafka.da.domain.entities;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
@@ -21,6 +22,7 @@ import lombok.Data;
 public class Feeder extends AbstractEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "location_id", nullable = false, updatable = false)
     private Location location;
 
     @Column(nullable = false)

@@ -9,6 +9,7 @@ package org.opensmartgridplatform.adapter.kafka.da.domain.entities;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
@@ -21,7 +22,7 @@ import lombok.Data;
 @Data
 public class Location extends AbstractEntity {
 
-    @OneToMany
+    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL)
     private List<Feeder> feederList;
 
     @Column(length = 12, nullable = false)
