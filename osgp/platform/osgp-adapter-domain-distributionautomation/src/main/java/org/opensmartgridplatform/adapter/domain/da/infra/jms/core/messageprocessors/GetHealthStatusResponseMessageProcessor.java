@@ -81,7 +81,7 @@ public class GetHealthStatusResponseMessageProcessor extends BaseNotificationMes
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             LOGGER.debug("responseMessageResultType: {}", responseMessageResultType);
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("osgpException: {}", osgpException);
+            LOGGER.debug("osgpException", osgpException);
             return;
         }
         try {
