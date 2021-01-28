@@ -64,11 +64,6 @@ public abstract class AbstractEncryptionProvider implements EncryptionProvider {
             cipher.init(Cipher.DECRYPT_MODE, this.getSecretEncryptionKey(keyReference, Cipher.DECRYPT_MODE),
                     this.getAlgorithmParameterSpec());
             final byte[] decryptedData = cipher.doFinal(secret.getSecret());
-            if (decryptedData.length != this.getSecretByteLength()) {
-                throw new EncrypterException(
-                        String.format("Incorrect key byte length: expected %s, but was %s", this.getSecretByteLength(),
-                                decryptedData.length));
-            }
             if (this.checkNullBytesPrepended(decryptedData)) {
                 return Arrays.copyOfRange(decryptedData, BLOCK_SIZE, decryptedData.length);
             } else {
