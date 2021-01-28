@@ -30,53 +30,54 @@ import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service(value = "domainSmartMeteringBundleService")
-@Transactional(value = "transactionManager")
 public class BundleService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BundleService.class);
 
-    @Autowired
-    @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
-    private OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
+    private final OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
 
-    @Autowired
-    @Qualifier(value = "domainSmartMeteringOutboundWebServiceResponsesMessageSender")
-    private WebServiceResponseMessageSender webServiceResponseMessageSender;
+    private final WebServiceResponseMessageSender webServiceResponseMessageSender;
 
-    @Autowired
-    private DomainHelperService domainHelperService;
+    private final DomainHelperService domainHelperService;
 
-    @Autowired
-    private ActionMapperService actionMapperService;
+    private final ActionMapperService actionMapperService;
 
-    @Autowired
-    private ActionMapperResponseService actionMapperResponseService;
+    private final ActionMapperResponseService actionMapperResponseService;
 
-    @Autowired
-    private MBusGatewayService mBusGatewayService;
+    private final MBusGatewayService mBusGatewayService;
 
-    @Autowired
-    private ManagementService managementService;
+    private final ManagementService managementService;
 
-    @Autowired
-    private ConfigurationMapper configurationMapper;
+    private final ConfigurationMapper configurationMapper;
 
-    @Autowired
-    private FirmwareService firmwareService;
+    private final FirmwareService firmwareService;
 
-    @Autowired
-    private EventService eventService;
+    private final EventService eventService;
 
-    public BundleService() {
-        // Parameterless constructor required for transactions...
+    public BundleService(
+            @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender") OsgpCoreRequestMessageSender osgpCoreRequestMessageSender,
+            @Qualifier(value = "domainSmartMeteringOutboundWebServiceResponsesMessageSender") WebServiceResponseMessageSender webServiceResponseMessageSender, DomainHelperService domainHelperService,
+            ActionMapperService actionMapperService, ActionMapperResponseService actionMapperResponseService,
+            MBusGatewayService mBusGatewayService, ManagementService managementService,
+            ConfigurationMapper configurationMapper, FirmwareService firmwareService, EventService eventService) {
+        this.osgpCoreRequestMessageSender = osgpCoreRequestMessageSender;
+        this.webServiceResponseMessageSender = webServiceResponseMessageSender;
+        this.domainHelperService = domainHelperService;
+        this.actionMapperService = actionMapperService;
+        this.actionMapperResponseService = actionMapperResponseService;
+        this.mBusGatewayService = mBusGatewayService;
+        this.managementService = managementService;
+        this.configurationMapper = configurationMapper;
+        this.firmwareService = firmwareService;
+        this.eventService = eventService;
     }
 
+    @Transactional(value = "transactionManager")
     public void handleBundle(final DeviceMessageMetadata deviceMessageMetadata,
             final BundleMessageRequest bundleMessageDataContainer) throws FunctionalException {
 
@@ -98,6 +99,7 @@ public class BundleService {
                 deviceMessageMetadata.bypassRetry());
     }
 
+    @Transactional(value = "transactionManager")
     public void handleBundleResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException,
             final BundleMessagesRequestDto bundleResponseMessageDataContainerDto) throws FunctionalException {
@@ -137,8 +139,6 @@ public class BundleService {
                 this.managementService
                         .setDeviceLifecycleStatusByChannel((SetDeviceLifecycleStatusByChannelResponseDto) action);
             } else if (action instanceof EventMessageDataResponseDto) {
-
-                /* Add EventType to EventDto */
                 this.eventService.addEventTypeToEvents(deviceMessageMetadata, (EventMessageDataResponseDto)action);
             } else if (action instanceof FirmwareVersionResponseDto) {
                 final List<FirmwareVersion> firmwareVersions = this.configurationMapper

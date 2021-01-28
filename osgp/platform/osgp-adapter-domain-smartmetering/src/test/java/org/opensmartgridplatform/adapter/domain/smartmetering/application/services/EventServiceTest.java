@@ -42,6 +42,7 @@ public class EventServiceTest {
 
     private EventService eventService;
     private DeviceMessageMetadata deviceMessageMetadata;
+    @Mock
     private SmartMeter smartMeter;
 
     @BeforeEach
@@ -54,7 +55,6 @@ public class EventServiceTest {
                                      .withOrganisationIdentification(RandomStringUtils.randomAlphabetic(10))
                                      .withMessageType(RandomStringUtils.randomAlphabetic(10)).build();
 
-        smartMeter = mock(SmartMeter.class);
         when(domainHelperService.findSmartMeter(deviceMessageMetadata.getDeviceIdentification())).thenReturn(smartMeter);
     }
 
