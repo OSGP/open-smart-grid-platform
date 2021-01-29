@@ -21,21 +21,15 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DbEncryptedSecretRepository extends JpaRepository<DbEncryptedSecret, Long> {
     @Query(value = "SELECT es FROM DbEncryptedSecret es "
-            + "JOIN es.encryptionKeyReference ekr "
             + "WHERE es.deviceIdentification = :deviceIdentification AND es.secretType = :secretType "
             + "AND es.secretStatus= :secretStatus "
-            + "AND ekr.validFrom < current_timestamp() "
-            + "AND (ekr.validTo IS NULL OR ekr.validTo > current_timestamp()) "
             + "ORDER BY es.creationTime DESC, es.id DESC")
     List<DbEncryptedSecret> findSecrets(@Param("deviceIdentification") String deviceIdentification,
             @Param("secretType") SecretType secretType, @Param("secretStatus") SecretStatus secretStatus);
 
     @Query(value = "SELECT count(es) FROM DbEncryptedSecret es "
-            + "JOIN es.encryptionKeyReference ekr "
             + "WHERE es.deviceIdentification = :deviceIdentification AND es.secretType = :secretType "
-            + "AND es.secretStatus= :secretStatus "
-            + "AND ekr.validFrom < current_timestamp() "
-            + "AND (ekr.validTo IS NULL OR ekr.validTo > current_timestamp())")
+            + "AND es.secretStatus= :secretStatus")
     int getSecretCount(@Param("deviceIdentification") String deviceIdentification,
             @Param("secretType") SecretType secretType, @Param("secretStatus") SecretStatus secretStatus);
 }
