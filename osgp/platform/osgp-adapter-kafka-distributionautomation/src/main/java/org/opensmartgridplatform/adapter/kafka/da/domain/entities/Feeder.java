@@ -16,9 +16,11 @@ import javax.persistence.ManyToOne;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Entity
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class Feeder extends AbstractEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)

@@ -12,17 +12,20 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Entity
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class Location extends AbstractEntity {
 
-    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Feeder> feederList;
 
     @Column(length = 12, nullable = false)
