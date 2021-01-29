@@ -16,7 +16,4 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface FeederRepository extends JpaRepository<Feeder, Long> {
-    Feeder findOneByName(String name);
-
-    Feeder findOneByLocationNameAndName(String substationIdentification, String feeder);
 }

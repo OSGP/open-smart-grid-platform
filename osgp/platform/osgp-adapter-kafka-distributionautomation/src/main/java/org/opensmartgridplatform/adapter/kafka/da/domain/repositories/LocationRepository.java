@@ -16,7 +16,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface LocationRepository extends CrudRepository<Location, Long> {
-    Location findOneByName(String name);
-
     Location findOneBySubstationIdentification(String substationIdentification);
 }

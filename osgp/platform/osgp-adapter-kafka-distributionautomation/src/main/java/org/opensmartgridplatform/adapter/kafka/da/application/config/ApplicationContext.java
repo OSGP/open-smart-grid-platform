@@ -17,7 +17,6 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 
 @Configuration
 @ComponentScan("org.opensmartgridplatform.adapter.kafka.da")
-// @ComponentScan("org.opensmartgridplatform.adapter.kafka.da.infra.jms.messageprocessors")
 @ComponentScan("org.opensmartgridplatform.domain.da")
 @ComponentScan("org.opensmartgridplatform.domain.core.services")
 @ComponentScan("org.opensmartgridplatform.domain.logging")
