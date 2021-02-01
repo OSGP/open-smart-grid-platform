@@ -540,4 +540,57 @@
     </xsd:sequence>
   </xsd:complexType>
 
+  <!-- OnDemandPowerQuality -->
+
+  <xsd:element name="OnDemandPowerQualityRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="tns:OnDemandPowerQualityRequestData">
+          <xsd:sequence>
+            <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="OnDemandPowerQualityRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Query">
+        <xsd:sequence>
+          <xsd:element name="ProfileType" type="xsd:string"/>
+          <xsd:element name="SelectedValues" type="common:CaptureObjectDefinitions" minOccurs="0"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="OnDemandPowerQualityResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="tns:OnDemandPowerQualityResponseData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="OnDemandPowerQualityResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
+        <xsd:sequence>
+          <xsd:element name="OnDemandPowerQualityDatas" type="tns:OnDemandPowerQualityData"
+                       minOccurs="1"
+                       maxOccurs="2"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="OnDemandPowerQualityData">
+    <xsd:sequence>
+      <xsd:element name="LogicalName" type="common:ObisCodeValues"/>
+      <xsd:element name="CaptureObjects" type="common:CaptureObjects" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="ProfileEntries" type="common:ProfileEntries" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
 </xsd:schema>

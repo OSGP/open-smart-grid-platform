@@ -176,6 +176,20 @@
     </wsdl:part>
   </wsdl:message>
 
+
+  <!-- ON DEMAND POWER QUALITY -->
+
+  <wsdl:message name="OnDemandPowerQualityRequest">
+    <wsdl:part element="smmon:OnDemandPowerQualityRequest" name="OnDemandPowerQualityRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="OnDemandPowerQualityResponse">
+    <wsdl:part element="smmon:OnDemandPowerQualityResponse"
+               name="OnDemandPowerQualityResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+
   <!-- FOR USE IN BINDING -->
   <wsdl:message name="SoapHeaders">
     <wsdl:part name="org" element="common:OrganisationIdentification" />
