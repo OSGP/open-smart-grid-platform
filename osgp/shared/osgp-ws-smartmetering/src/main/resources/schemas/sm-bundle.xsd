@@ -219,7 +219,7 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="ActualPowerQualityRequest">
+  <xsd:element name="GetActualPowerQualityRequest">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="smmon:ActualPowerQualityRequestData"></xsd:extension>
@@ -323,6 +323,7 @@
         <xsd:element ref="tns:SetClockConfigurationRequest"/>
         <xsd:element ref="tns:GetConfigurationObjectRequest"/>
         <xsd:element ref="tns:GetPowerQualityProfileRequest"/>
+        <xsd:element ref="tns:GetActualPowerQualityRequest"/>
         <xsd:element ref="tns:GenerateAndReplaceKeysRequest"/>
         <xsd:element ref="tns:ConfigureDefinableLoadProfileRequest"/>
         <xsd:element ref="tns:SetMbusUserKeyByChannelRequest"/>
