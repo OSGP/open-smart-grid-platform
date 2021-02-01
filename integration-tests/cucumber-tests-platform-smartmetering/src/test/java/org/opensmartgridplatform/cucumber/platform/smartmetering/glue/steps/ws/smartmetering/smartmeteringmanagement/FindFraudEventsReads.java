@@ -29,6 +29,8 @@ public class FindFraudEventsReads extends AbstractFindEventsReads {
             EventType.METER_COVER_REMOVED,
             EventType.FAILED_LOGIN_ATTEMPT,
             EventType.CONFIGURATION_CHANGE,
+            EventType.MODULE_COVER_OPENED,
+            EventType.MODULE_COVER_CLOSED,
             EventType.EVENTLOG_CLEARED));
 
     @Override

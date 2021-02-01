@@ -19,6 +19,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.instrument.Metrics;
+import io.micrometer.jmx.JmxConfig;
+import io.micrometer.jmx.JmxMeterRegistry;
 import io.netty.util.internal.logging.InternalLoggerFactory;
 import io.netty.util.internal.logging.Slf4JLoggerFactory;
 
@@ -45,6 +49,18 @@ public class ApplicationContext extends AbstractConfig {
 
     public ApplicationContext() {
         InternalLoggerFactory.setDefaultFactory(Slf4JLoggerFactory.INSTANCE);
+        final JmxConfig jmxConfig = key -> null;
+        Metrics.addRegistry(new JmxMeterRegistry(jmxConfig, Clock.SYSTEM));
+    }
+
+    @Bean
+    public String successfulMessagesMetric() {
+        return "oslp.successful.messages";
+    }
+
+    @Bean
+    public String failedMessagesMetric() {
+        return "oslp.failed.messages";
     }
 
     @Bean(name = "oslpPagingSettings")
@@ -62,8 +78,8 @@ public class ApplicationContext extends AbstractConfig {
 
     @Bean
     public Integer pendingSetScheduleRequestExpiresInMinutes() {
-        return Integer.parseInt(this.environment.getRequiredProperty(
-                PROPERTY_NAME_DEVICE_PENDINGSETSCHEDULEREQUEST_EXPIRES_IN_MINUTES));
+        return Integer.parseInt(this.environment
+                .getRequiredProperty(PROPERTY_NAME_DEVICE_PENDINGSETSCHEDULEREQUEST_EXPIRES_IN_MINUTES));
     }
 
     // === Time zone config ===

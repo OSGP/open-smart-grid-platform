@@ -9,15 +9,27 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.ISODateTimeFormat;
 import org.junit.jupiter.api.Test;
+import org.openmuc.jdlms.AttributeAddress;
+import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClockStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
@@ -45,6 +57,50 @@ public class DlmsHelperTest {
     public static final short DEVIATION_AMSTERDAM_WINTER_TIME = -60;
 
     private final DlmsHelper dlmsHelper = new DlmsHelper();
+
+    @Test
+    public void testGetWithListSupported() throws ProtocolAdapterException, IOException {
+        final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
+        final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+        final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
+        when(connectionManager.getConnection()).thenReturn(dlmsConnection);
+
+        final AttributeAddress[] attrAddresses = new AttributeAddress[1];
+        attrAddresses[0] = mock(AttributeAddress.class);
+
+        when(dlmsDevice.isWithListSupported()).thenReturn(true);
+
+        this.dlmsHelper.getWithList(connectionManager, dlmsDevice, attrAddresses);
+        verify(dlmsConnection).get(Arrays.asList(attrAddresses));
+    }
+
+    @Test
+    public void testGetWithListWorkaround() throws ProtocolAdapterException, IOException {
+        final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
+        final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+        final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
+        when(connectionManager.getConnection()).thenReturn(dlmsConnection);
+
+        final AttributeAddress[] attrAddresses = new AttributeAddress[1];
+        attrAddresses[0] = mock(AttributeAddress.class);
+
+        when(dlmsDevice.isWithListSupported()).thenReturn(false);
+
+        this.dlmsHelper.getWithList(connectionManager, dlmsDevice, attrAddresses);
+        verify(dlmsConnection).get(attrAddresses[0]);
+    }
+
+    /*
+     * this test is here because the jDMLS code throws a NullPointerException instead of a
+     * ResponseTimeoutException (specific type of IOException
+     * via NonFatalJDlmsException and JDlmsException).
+     */
+    @Test
+    public void testGetWithListException() throws IOException {
+        this.assertGetWithListException(IOException.class, ConnectionException.class);
+        this.assertGetWithListException(NullPointerException.class, ConnectionException.class);
+        this.assertGetWithListException(RuntimeException.class, ProtocolAdapterException.class);
+    }
 
     @Test
     public void testDateTimeSummerTime() {
@@ -190,6 +246,26 @@ public class DlmsHelperTest {
         final String logMessage = this.dlmsHelper.getDebugInfoBitStringBytes(new byte[] { -110, 64 });
 
         assertThat(logMessage).isEqualTo(expected);
+    }
+
+    private void assertGetWithListException(final Class<? extends Exception> jdlmsExceptionClazz,
+            final Class<? extends Exception> exceptionClazz) throws IOException {
+        final DlmsConnection dlmsConnection = mock(DlmsConnection.class);
+        final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+        final DlmsDevice dlmsDevice = mock(DlmsDevice.class);
+        when(dlmsDevice.getDeviceIdentification()).thenReturn("666");
+        when(connectionManager.getConnection()).thenReturn(dlmsConnection);
+
+        final AttributeAddress[] attrAddresses = new AttributeAddress[1];
+        attrAddresses[0] = mock(AttributeAddress.class);
+
+        when(dlmsDevice.isWithListSupported()).thenReturn(true);
+        when(dlmsConnection.get(Arrays.asList(attrAddresses))).thenThrow(jdlmsExceptionClazz);
+
+        final Exception exception = assertThrows(exceptionClazz, () -> {
+            this.dlmsHelper.getWithList(connectionManager, dlmsDevice, attrAddresses);
+        });
+        assertThat(exception.getMessage()).contains(dlmsDevice.getDeviceIdentification());
     }
 
     private DateTime dateTimeSummerTime() {

@@ -60,6 +60,9 @@ public class ManagementService {
     @Autowired
     private SmartMeterRepository smartMeterRepository;
 
+    @Autowired
+    private EventService eventService;
+
     public ManagementService() {
         // Parameterless constructor required for transactions...
     }
@@ -84,7 +87,9 @@ public class ManagementService {
 
     public void handleFindEventsResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException,
-            final EventMessageDataResponseDto eventMessageDataContainerDto) {
+            final EventMessageDataResponseDto eventMessageDataContainerDto) throws FunctionalException {
+
+        this.eventService.addEventTypeToEvents(deviceMessageMetadata, eventMessageDataContainerDto);
 
         final EventMessagesResponse eventMessageDataContainer = this.managementMapper.map(eventMessageDataContainerDto,
                 EventMessagesResponse.class);
