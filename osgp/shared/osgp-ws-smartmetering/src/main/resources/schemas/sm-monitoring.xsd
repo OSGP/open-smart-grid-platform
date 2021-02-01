@@ -540,12 +540,12 @@
     </xsd:sequence>
   </xsd:complexType>
 
-  <!-- OnDemandPowerQuality -->
+  <!-- ActualPowerQuality -->
 
-  <xsd:element name="OnDemandPowerQualityRequest">
+  <xsd:element name="ActualPowerQualityRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="tns:OnDemandPowerQualityRequestData">
+        <xsd:extension base="tns:ActualPowerQualityRequestData">
           <xsd:sequence>
             <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
           </xsd:sequence>
@@ -554,7 +554,7 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:complexType name="OnDemandPowerQualityRequestData">
+  <xsd:complexType name="ActualPowerQualityRequestData">
     <xsd:complexContent>
       <xsd:extension base="common:Query">
         <xsd:sequence>
@@ -565,19 +565,19 @@
     </xsd:complexContent>
   </xsd:complexType>
 
-  <xsd:element name="OnDemandPowerQualityResponse">
+  <xsd:element name="ActualPowerQualityResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="tns:OnDemandPowerQualityResponseData"></xsd:extension>
+        <xsd:extension base="tns:ActualPowerQualityResponseData"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:complexType name="OnDemandPowerQualityResponseData">
+  <xsd:complexType name="ActualPowerQualityResponseData">
     <xsd:complexContent>
       <xsd:extension base="common:Response">
         <xsd:sequence>
-          <xsd:element name="OnDemandPowerQualityDatas" type="tns:OnDemandPowerQualityData"
+          <xsd:element name="ActualPowerQualityDatas" type="tns:ActualPowerQualityData"
                        minOccurs="1"
                        maxOccurs="2"/>
         </xsd:sequence>
@@ -585,7 +585,7 @@
     </xsd:complexContent>
   </xsd:complexType>
 
-  <xsd:complexType name="OnDemandPowerQualityData">
+  <xsd:complexType name="ActualPowerQualityData">
     <xsd:sequence>
       <xsd:element name="LogicalName" type="common:ObisCodeValues"/>
       <xsd:element name="CaptureObjects" type="common:CaptureObjects" minOccurs="1" maxOccurs="1"/>

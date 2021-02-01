@@ -177,15 +177,15 @@
   </wsdl:message>
 
 
-  <!-- ON DEMAND POWER QUALITY -->
+  <!-- ACTUAL POWER QUALITY -->
 
-  <wsdl:message name="OnDemandPowerQualityRequest">
-    <wsdl:part element="smmon:OnDemandPowerQualityRequest" name="OnDemandPowerQualityRequest">
+  <wsdl:message name="ActualPowerQualityRequest">
+    <wsdl:part element="smmon:ActualPowerQualityRequest" name="ActualPowerQualityRequest">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="OnDemandPowerQualityResponse">
-    <wsdl:part element="smmon:OnDemandPowerQualityResponse"
-               name="OnDemandPowerQualityResponse">
+  <wsdl:message name="ActualPowerQualityResponse">
+    <wsdl:part element="smmon:ActualPowerQualityResponse"
+               name="ActualPowerQualityResponse">
     </wsdl:part>
   </wsdl:message>
 

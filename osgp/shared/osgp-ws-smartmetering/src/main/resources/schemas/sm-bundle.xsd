@@ -219,10 +219,10 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="OnDemandPowerQualityRequest">
+  <xsd:element name="ActualPowerQualityRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="smmon:OnDemandPowerQualityRequestData"></xsd:extension>
+        <xsd:extension base="smmon:ActualPowerQualityRequestData"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -482,10 +482,10 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="OnDemandPowerQualityResponse">
+  <xsd:element name="ActualPowerQualityResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="smmon:OnDemandPowerQualityResponseData"></xsd:extension>
+        <xsd:extension base="smmon:ActualPowerQualityResponseData"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -552,7 +552,7 @@
         <xsd:element ref="tns:AssociationLnObjectsResponse"/>
         <xsd:element ref="tns:GetConfigurationObjectResponse"/>
         <xsd:element ref="tns:GetPowerQualityProfileResponse"/>
-        <xsd:element ref="tns:OnDemandPowerQualityResponse"/>
+        <xsd:element ref="tns:ActualPowerQualityResponse"/>
         <xsd:element ref="tns:CoupleMbusDeviceByChannelResponse"/>
         <xsd:element ref="tns:GetMbusEncryptionKeyStatusByChannelResponse"/>
         <xsd:element ref="tns:SetDeviceLifecycleStatusByChannelResponse"/>
