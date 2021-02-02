@@ -156,10 +156,14 @@ public class SecretManagementServiceTest {
         when(this.encryptionDelegate.encrypt(any(), any(), anyString())).thenReturn(encryptedSecret);
         this.service.storeSecrets("SOME_DEVICE", Arrays.asList(typedSecret));
         //THEN
-        final ArgumentCaptor<List<DbEncryptedSecret>> secretListArgumentCaptor =
-                ArgumentCaptor.forClass(List.class);
-        verify(this.secretRepository).saveAll(secretListArgumentCaptor.capture());
-        final List<DbEncryptedSecret> savedSecrets = secretListArgumentCaptor.getValue();
+        final ArgumentCaptor<DbEncryptedSecret> secretArgumentCaptor =
+                ArgumentCaptor.forClass(DbEncryptedSecret.class);
+        verify(this.secretRepository).save(secretArgumentCaptor.capture());
+        final List<DbEncryptedSecret> savedSecrets = secretArgumentCaptor.getAllValues();
+        //final ArgumentCaptor<List<DbEncryptedSecret>> secretListArgumentCaptor =
+        //        ArgumentCaptor.forClass(List.class);
+        //verify(this.secretRepository).saveAll(secretListArgumentCaptor.capture());
+        //final List<DbEncryptedSecret> savedSecrets = secretListArgumentCaptor.getValue();
         assertThat(savedSecrets).isNotNull();
         assertThat(savedSecrets.size()).isEqualTo(1);
         DbEncryptedSecret savedSecret = savedSecrets.get(0);
@@ -252,10 +256,14 @@ public class SecretManagementServiceTest {
                 .thenReturn(encryptedSecret);   //encrypt new DB secret
         this.service.storeSecrets("SOME_DEVICE", Arrays.asList(typedSecret));
         //THEN
-        final ArgumentCaptor<List<DbEncryptedSecret>> secretListArgumentCaptor =
-                ArgumentCaptor.forClass(List.class);
-        verify(this.secretRepository).saveAll(secretListArgumentCaptor.capture());
-        final List<DbEncryptedSecret> savedSecrets = secretListArgumentCaptor.getValue();
+        final ArgumentCaptor<DbEncryptedSecret> secretArgumentCaptor =
+                ArgumentCaptor.forClass(DbEncryptedSecret.class);
+        verify(this.secretRepository).save(secretArgumentCaptor.capture());
+        final List<DbEncryptedSecret> savedSecrets = secretArgumentCaptor.getAllValues();
+        //final ArgumentCaptor<List<DbEncryptedSecret>> secretListArgumentCaptor =
+        //        ArgumentCaptor.forClass(List.class);
+        //verify(this.secretRepository).saveAll(secretListArgumentCaptor.capture());
+        //final List<DbEncryptedSecret> savedSecrets = secretListArgumentCaptor.getValue();
         assertThat(savedSecrets).isNotNull();
         assertThat(savedSecrets.size()).isEqualTo(1);
         DbEncryptedSecret savedSecret = savedSecrets.get(0);

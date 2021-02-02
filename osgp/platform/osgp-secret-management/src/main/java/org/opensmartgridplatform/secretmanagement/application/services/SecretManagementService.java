@@ -238,7 +238,8 @@ public class SecretManagementService {
     private void storeAesSecrets(final String deviceIdentification, final List<EncryptedTypedSecret> secrets) {
         secrets.stream().map(this::validateAndReturnNewSecret).map(ets -> this
                 .createDbEncrypted(deviceIdentification, ets, this.getKeyByReference(ets.encryptionKeyReference)))
-               .collect(collectingAndThen(toList(), this.secretRepository::saveAll));
+                .forEach(this.secretRepository::save);
+                //.collect(collectingAndThen(toList(), this.secretRepository::saveAll));
     }
 
     public synchronized void activateNewSecrets(final String deviceIdentification, final List<SecretType> secretTypes) {
