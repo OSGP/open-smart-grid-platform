@@ -7,8 +7,12 @@
  */
 package org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out;
 
+import java.util.Optional;
+
 import org.opensmartgridplatform.adapter.kafka.da.application.mapping.DistributionAutomationMapper;
 import org.opensmartgridplatform.adapter.kafka.da.application.services.LocationService;
+import org.opensmartgridplatform.adapter.kafka.da.domain.entities.Feeder;
+import org.opensmartgridplatform.adapter.kafka.da.domain.entities.Location;
 import org.opensmartgridplatform.adapter.kafka.da.infra.mqtt.in.ScadaMeasurementPayload;
 import org.opensmartgridplatform.shared.utils.UuidUtil;
 import org.slf4j.Logger;
@@ -90,16 +94,23 @@ public class LowVoltageMessageProducer {
     private ScadaMeasurementPayload addLocationData(final ScadaMeasurementPayload[] payloads) {
         final ScadaMeasurementPayload payload = payloads[0];
         final String substationIdentification = payload.getSubstationIdentification();
-        payload.setSubstationName(this.locationService.getSubstationIdentification(substationIdentification));
-        final String feeder = payload.getFeeder();
+
+        final Optional<Location> locationOptional = this.locationService.getLocation(substationIdentification);
+        payload.setSubstationName(locationOptional.map(Location::getName)
+                .orElse(""));
+
         try {
-            if (Integer.valueOf(feeder) != META_MEASUREMENT_FEEDER) {
-                payload.setBayIdentification(
-                        this.locationService.getBayIdentification(substationIdentification, feeder));
+            final int feederNumber = Integer.parseInt(payload.getFeeder());
+            if (feederNumber != META_MEASUREMENT_FEEDER) {
+                final Optional<Feeder> feederOptional = locationOptional
+                        .flatMap(l -> this.locationService.getFeeder(l, feederNumber));
+                payload.setBayIdentification(feederOptional.map(Feeder::getName)
+                        .orElse(""));
             }
         } catch (final NumberFormatException e) {
             LOGGER.error("Payload contains a non-numeric value for feeder", e);
         }
         return payload;
     }
+
 }

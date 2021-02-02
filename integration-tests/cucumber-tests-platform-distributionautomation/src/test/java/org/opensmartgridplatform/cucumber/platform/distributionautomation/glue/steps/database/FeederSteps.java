@@ -30,11 +30,12 @@ public class FeederSteps {
     @Given("a feeder")
     public void givenAFeeder(final Map<String, String> settings) {
         final Feeder feeder = new Feeder();
-        final Location location = this.locationSteps.findLocation(
-                ReadSettingsHelper.getString(settings, PlatformDistributionAutomationKeys.SUBSTATION_IDENTIFICATION,
-                        PlatformDistributionAutomationDefaults.SUBSTATION_IDENTIFICATION));
+        final String substationIdentification = ReadSettingsHelper.getString(settings,
+                PlatformDistributionAutomationKeys.SUBSTATION_IDENTIFICATION,
+                PlatformDistributionAutomationDefaults.SUBSTATION_IDENTIFICATION);
+        final Location location = this.locationSteps.findLocation(substationIdentification);
         feeder.setLocation(location);
-        feeder.setFeederNumber(ReadSettingsHelper.getLong(settings, PlatformDistributionAutomationKeys.FEEDER_NUMBER,
+        feeder.setFeederNumber(ReadSettingsHelper.getInteger(settings, PlatformDistributionAutomationKeys.FEEDER_NUMBER,
                 PlatformDistributionAutomationDefaults.FEEDER_NUMBER));
         feeder.setName(ReadSettingsHelper.getString(settings, PlatformDistributionAutomationKeys.FEEDER_NAME,
                 PlatformDistributionAutomationDefaults.FEEDER_NAME));

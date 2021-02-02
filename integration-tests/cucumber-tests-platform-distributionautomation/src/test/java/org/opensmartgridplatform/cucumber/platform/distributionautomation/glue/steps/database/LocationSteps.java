@@ -9,6 +9,8 @@ package org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.
 
 import java.util.Map;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.opensmartgridplatform.adapter.kafka.da.domain.entities.Location;
 import org.opensmartgridplatform.adapter.kafka.da.domain.repositories.LocationRepository;
 import org.opensmartgridplatform.cucumber.core.ReadSettingsHelper;
@@ -23,7 +25,7 @@ public class LocationSteps {
     @Autowired
     private LocationRepository locationRepository;
 
-    @Given("^a location$")
+    @Given("a location")
     public void givenALocation(final Map<String, String> settings) {
         final Location location = new Location();
         location.setSubstationIdentification(
@@ -36,6 +38,7 @@ public class LocationSteps {
     }
 
     public Location findLocation(final String substationIdentification) {
-        return this.locationRepository.findOneBySubstationIdentification(substationIdentification);
+        return this.locationRepository.findOneBySubstationIdentification(substationIdentification)
+                .orElseThrow(() -> new EntityNotFoundException("Location not found."));
     }
 }

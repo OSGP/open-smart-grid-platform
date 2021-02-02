@@ -76,8 +76,8 @@ public class AdapterKafkaDistributionAutomationPersistenceConfig extends Applica
      */
     @Bean(name = "txMgrKafkaDistributionAutomation")
     public JpaTransactionManager transactionManager(
-            @Qualifier("entityMgrFactKafkaDistributionAutomation") final EntityManagerFactory barEntityManagerFactory) {
-        return new JpaTransactionManager(barEntityManagerFactory);
+            @Qualifier("entityMgrFactKafkaDistributionAutomation") final EntityManagerFactory entityManagerFactory) {
+        return new JpaTransactionManager(entityManagerFactory);
     }
 
 }
