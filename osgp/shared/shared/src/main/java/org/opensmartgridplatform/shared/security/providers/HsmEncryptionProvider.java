@@ -56,36 +56,16 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider {
         }
     }
 
-    //TODO remove this overriding method!
-    @Override
-    public EncryptedSecret encrypt(byte[] secret, String keyReference) {
-        LOGGER.debug("REMOVE THIS LOGGING: encrypting({}) ({} bytes) with keyRefence '{}'", Hex.encodeHexString(secret),
-                secret.length, keyReference);
-        EncryptedSecret encryptedSecret = super.encrypt(secret, keyReference);
-        //TODO remove this logging!
-        LOGGER.debug("REMOVE THIS LOGGING: encrypting({}) ({} bytes) resulted in {} ({} bytes)",
-                Hex.encodeHexString(secret),
-                secret.length, Hex.encodeHexString(encryptedSecret.getSecret()), encryptedSecret.getSecret().length);
-        return encryptedSecret;
-    }
-
     @Override
     public byte[] decrypt(final EncryptedSecret secret, final String keyReference) {
-        //TODO remove this logging!
-        LOGGER.debug("REMOVE THIS LOGGING: decrypting({}) ({} bytes)", Hex.encodeHexString(secret.getSecret()),
-                secret.getSecret().length);
         byte[] decryptedSecret = super.decrypt(secret, keyReference);
         if (decryptedSecret.length > KEY_LENGTH) {
             final byte[] truncatedDecryptedSecretBytes = Arrays
                     .copyOfRange(decryptedSecret, 0, decryptedSecret.length - 16);
-            LOGGER.debug("Truncating decrypted key from " + Hex.encodeHexString(decryptedSecret) + " to " + Hex
+            LOGGER.trace("Truncating decrypted key from " + Hex.encodeHexString(decryptedSecret) + " to " + Hex
                     .encodeHexString(truncatedDecryptedSecretBytes));
             return truncatedDecryptedSecretBytes;
         }
-        //TODO remove this logging!
-        LOGGER.debug("REMOVE THIS LOGGING: decrypting({}) ({} bytes) resulted in {} ({} bytes)",
-                Hex.encodeHexString(secret.getSecret()),
-                secret.getSecret().length, Hex.encodeHexString(decryptedSecret), decryptedSecret.length);
         return decryptedSecret;
     }
 
