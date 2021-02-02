@@ -20,7 +20,6 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.buf.HexUtils;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptedSecret;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptionKeyReference;
@@ -54,7 +53,6 @@ import org.springframework.stereotype.Service;
  * by reencrypting the AES-encrypted secrets to RSA.
  */
 @Service
-@Slf4j
 public class SecretManagementService {
     //Internal datastructure to keep track of (intermediate) secret details
     private static class EncryptedTypedSecret {
@@ -238,8 +236,7 @@ public class SecretManagementService {
     private void storeAesSecrets(final String deviceIdentification, final List<EncryptedTypedSecret> secrets) {
         secrets.stream().map(this::validateAndReturnNewSecret).map(ets -> this
                 .createDbEncrypted(deviceIdentification, ets, this.getKeyByReference(ets.encryptionKeyReference)))
-                .forEach(this.secretRepository::save);
-                //.collect(collectingAndThen(toList(), this.secretRepository::saveAll));
+               .collect(collectingAndThen(toList(), this.secretRepository::saveAll));
     }
 
     public synchronized void activateNewSecrets(final String deviceIdentification, final List<SecretType> secretTypes) {
