@@ -352,4 +352,7 @@ public class PlatformKeys extends Keys {
     public static final String KEY_LMD_CODE = "LmdCode";
     public static final String KEY_LMD_COLOR = "LmdColor";
     public static final String KEY_LMD_DIGITAL_INPUT = "LmdDigitalInput";
+
+    public static final String KEY_DHCP_ENABLED = "DhcpEnabled";
+    public static final String KEY_TEST_BUTTON_ENABLED = "TestButtonEnabled";
 }

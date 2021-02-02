@@ -283,8 +283,8 @@ public class MockOslpServer {
 
     public void mockGetConfigurationResponse(final String deviceUid, final Oslp.Status oslpStatus,
             final LightType lightType, final String dcLights, final String dcMap, final String rcMap,
-            final LinkType preferredLinkType, final String osgpIpAddress, final Integer osgpPort)
-            throws UnknownHostException {
+            final LinkType preferredLinkType, final String osgpIpAddress, final Integer osgpPort,
+            final Boolean dhcpEnabled, final Boolean testButtonEnabled) throws UnknownHostException {
 
         final String[] dcMapArray;
         final String[] rcMapArray;
@@ -367,6 +367,9 @@ public class MockOslpServer {
         if (osgpPort != null) {
             builder.setOsgpPortNumber(osgpPort);
         }
+
+        builder.setIsDhcpEnabled(dhcpEnabled);
+        builder.setIsTestButtonEnabled(testButtonEnabled);
 
         LOGGER.info(MOCKING_MESSAGE_TYPE, deviceUid, MessageType.GET_CONFIGURATION);
         this.devicesContext.getDeviceState(deviceUid)
