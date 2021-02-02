@@ -8,13 +8,12 @@
 package org.opensmartgridplatform.adapter.kafka.da.application.services;
 
 import java.util.Optional;
-import java.util.function.Predicate;
 
-import org.opensmartgridplatform.adapter.kafka.da.domain.entities.Feeder;
 import org.opensmartgridplatform.adapter.kafka.da.domain.entities.Location;
 import org.opensmartgridplatform.adapter.kafka.da.domain.repositories.LocationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class LocationService {
@@ -26,21 +25,8 @@ public class LocationService {
         this.locationRepository = locationRepository;
     }
 
+    @Transactional(transactionManager = "transactionManager", readOnly = true)
     public Optional<Location> getLocation(final String substationIdentification) {
         return this.locationRepository.findOneBySubstationIdentification(substationIdentification);
-    }
-
-    public Optional<Feeder> getFeeder(final Location location, final int feederNumber) {
-        if (location == null || location.getFeederList() == null) {
-            return Optional.empty();
-        }
-
-        final Predicate<Feeder> byFeederNumber = f -> f.getFeederNumber()
-                .intValue() == feederNumber;
-
-        return location.getFeederList()
-                .stream()
-                .filter(byFeederNumber)
-                .findFirst();
     }
 }

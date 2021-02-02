@@ -102,8 +102,7 @@ public class LowVoltageMessageProducer {
         try {
             final int feederNumber = Integer.parseInt(payload.getFeeder());
             if (feederNumber != META_MEASUREMENT_FEEDER) {
-                final Optional<Feeder> feederOptional = locationOptional
-                        .flatMap(l -> this.locationService.getFeeder(l, feederNumber));
+                final Optional<Feeder> feederOptional = locationOptional.flatMap(l -> l.getFeeder(feederNumber));
                 payload.setBayIdentification(feederOptional.map(Feeder::getName)
                         .orElse(""));
             }
