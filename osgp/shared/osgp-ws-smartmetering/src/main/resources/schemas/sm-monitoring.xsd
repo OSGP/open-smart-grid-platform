@@ -577,9 +577,9 @@
     <xsd:complexContent>
       <xsd:extension base="common:Response">
         <xsd:sequence>
-          <xsd:element name="ActualPowerQualityDatas" type="tns:ActualPowerQualityData"
+          <xsd:element name="ActualPowerQualityData" type="tns:ActualPowerQualityData"
                        minOccurs="1"
-                       maxOccurs="2"/>
+                       maxOccurs="1"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -587,10 +587,25 @@
 
   <xsd:complexType name="ActualPowerQualityData">
     <xsd:sequence>
-      <xsd:element name="LogicalName" type="common:ObisCodeValues"/>
       <xsd:element name="CaptureObjects" type="common:CaptureObjects" minOccurs="1" maxOccurs="1"/>
-      <xsd:element name="ProfileEntries" type="common:ProfileEntries" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="ActualValues" type="tns:ActualValues" minOccurs="1" maxOccurs="1"/>
     </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="ActualValues">
+    <xsd:sequence>
+      <xsd:element type="tns:ActualValue" name="ActualValue"
+                   minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="ActualValue">
+    <xsd:choice maxOccurs="unbounded">
+      <xsd:element name="StringValue" type="xsd:string" />
+      <xsd:element name="DateValue" type="xsd:dateTime" />
+      <xsd:element name="FloatValue" type="xsd:decimal" />
+      <xsd:element name="LongValue" type="xsd:long" />
+    </xsd:choice>
   </xsd:complexType>
 
 </xsd:schema>
