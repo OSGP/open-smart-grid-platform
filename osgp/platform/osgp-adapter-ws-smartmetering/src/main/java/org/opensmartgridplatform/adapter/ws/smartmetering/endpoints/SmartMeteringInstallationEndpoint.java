@@ -92,16 +92,16 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final ConstraintViolationException e) {
 
-            LOGGER.error("Exception: {} while adding device: {} for organisation {}.", new Object[] { e.getMessage(),
-                    request.getDevice().getDeviceIdentification(), organisationIdentification }, e);
+            LOGGER.error("Exception: {} while adding device: {} for organisation {}.", e.getMessage(),
+                    request.getDevice().getDeviceIdentification(), organisationIdentification, e);
 
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
 
         } catch (final Exception e) {
 
-            LOGGER.error("Exception: {} while adding device: {} for organisation {}.", new Object[] { e.getMessage(),
-                    request.getDevice().getDeviceIdentification(), organisationIdentification }, e);
+            LOGGER.error("Exception: {} while adding device: {} for organisation {}.", e.getMessage(),
+                    request.getDevice().getDeviceIdentification(), organisationIdentification, e);
 
             this.handleException(e);
         }
@@ -249,8 +249,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
 
-            LOGGER.error("Exception: {} while decoupling devices: {} and {} for organisation {}.", new Object[] {
-                    e.getMessage(), deviceIdentification, mbusDeviceIdentification, organisationIdentification }, e);
+            LOGGER.error("Exception: {} while decoupling devices: {} and {} for organisation {}.", e.getMessage(),
+                    deviceIdentification, mbusDeviceIdentification, organisationIdentification, e);
 
             this.handleException(e);
         }

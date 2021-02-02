@@ -41,7 +41,9 @@ public class FindStandardEventsReads extends AbstractFindEventsReads {
             EventType.FIRMWARE_READY_FOR_ACTIVATION,
             EventType.FIRMWARE_ACTIVATED,
             EventType.PASSIVE_TARIFF_UPDATED,
-            EventType.SUCCESSFUL_SELFCHECK_AFTER_FIRMWARE_UPDATE));
+            EventType.SUCCESSFUL_SELFCHECK_AFTER_FIRMWARE_UPDATE,
+            EventType.COMMUNICATION_MODULE_REMOVED,
+            EventType.COMMUNICATION_MODULE_INSERTED));
 
     @Override
     protected String getEventLogCategory() {

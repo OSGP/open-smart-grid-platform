@@ -100,7 +100,7 @@ public abstract class OslpChannelHandler extends SimpleChannelInboundHandler<Osl
         if (this.isConnectionReset(cause)) {
             this.logger.info("Channel [{}] - Connection was (as expected) reset by the device.", channelId);
         } else {
-            this.logger.warn("Channel [{}] - Unexpected exception from downstream. {}", channelId, cause);
+            this.logger.warn("Channel [{}] - Unexpected exception from downstream.", channelId, cause);
             this.callbackHandlers.get(channelId).getDeviceResponseHandler().handleException(cause);
             this.callbackHandlers.remove(channelId);
         }

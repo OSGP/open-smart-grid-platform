@@ -1,6 +1,9 @@
 // Pipeline script for the OSGP Nightly Build job in Jenkins
 /* groovylint-disable CompileStatic, DuplicateStringLiteral, LineLength, NestedBlockDepth, NoDef, VariableTypeRequired */
 
+// Use global pipeline library
+@Library('jenkins-shared@development') _
+
 def stream = 'osgp'
 def servername = stream + '-at-' + env.BUILD_NUMBER
 def playbook = stream + '-at.yml'
@@ -29,30 +32,30 @@ pipeline {
     }
 
     stages {
-        stage('Parallel stages') {
+        stage ('Parallel stages') {
             parallel {
-                stage('SSH configuration') {
+                stage ('SSH configuration') {
                     steps {
-                        container('python') {
-                            configureSsh()
+                        container ('python') {
+                            sshConfiguration()
                         }
-                        container('maven') {
-                            configureSsh()
-                        }
-                    }
-                }
-
-                stage('Ansible installation') {
-                    steps {
-                        container('python') {
-                            installAnsible()
+                        container ('maven') {
+                            sshConfiguration()
                         }
                     }
                 }
 
-                stage('Maven build') {
+                stage ('Ansible installation') {
                     steps {
-                        container('maven') {
+                        container ('python') {
+                            ansibleInstallation()
+                        }
+                    }
+                }
+
+                stage ('Maven build') {
+                    steps {
+                        container ('maven') {
                             sh 'mvn clean install -B -DskipTestJarWithDependenciesAssembly=false'
                             sh 'mkdir -p target/artifacts && find . -name *.war -exec cp -uf {} target/artifacts \\;'
                         }
@@ -61,9 +64,9 @@ pipeline {
             }
         }
 
-        stage('Test server creation') {
+        stage ('Test server creation') {
             steps {
-                container('python') {
+                container ('python') {
                     // Get Ansible playbooks from release repository
                     sh 'git clone git@github.com:SmartSocietyServices/release.git'
                     sh "cd release && git checkout ${branchReleaseRepo}"
@@ -104,9 +107,9 @@ pipeline {
             }
         }
 
-        stage('Test server software deployment') {
+        stage ('Test server software deployment') {
             steps {
-                container('python') {
+                container ('python') {
                     // Deploy artifacts
                     sh """cd release && ansible-playbook plays/${playbook} \
                             -e osgp_version=${POMVERSION} \
@@ -126,7 +129,7 @@ pipeline {
 
         stage ('Test execution') {
             steps {
-                container('maven') {
+                container ('maven') {
                     runTestsOnServer(servername)
                 }
             }
@@ -134,7 +137,7 @@ pipeline {
 
         stage ('Coverage collection') {
             steps {
-                container("maven") {
+                container ("maven") {
                     sh """mvn -Djacoco.destFile=target/code-coverage/jacoco-it.exec \
                             -Djacoco.address=${servername}.dev.osgp.cloud \
                             org.jacoco:jacoco-maven-plugin:0.7.9:dump"""
@@ -159,45 +162,26 @@ pipeline {
         always {
             echo 'End of pipeline'
             echo 'Destroying test server'
-            container('python') {
+            container ('python') {
                 sh """cd release && ansible-playbook plays/${playbook} \
                         -e deployment_name=${servername} \
                         -e deployment_action=destroy \
                         -e ec2_instance_type=${ec2InstanceType}"""
             }
         }
-        // failure {
-        //     // TODO: email not yet working via JCasC
-        //     emailext (
-        //         subject: '${DEFAULT_SUBJECT}',
-        //         body: '${DEFAULT_CONTENT}',
-        //         recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
-        //         to: '${DEFAULT_RECIPIENTS}',
-        //         from: '${DEFAULT_REPLYTO}')
-        // }
+        failure {
+            emailext (
+                subject: '${DEFAULT_SUBJECT}',
+                body: '${DEFAULT_CONTENT}',
+                recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+                to: '${DEFAULT_RECIPIENTS}',
+                from: '${DEFAULT_REPLYTO}')
+        }
         cleanup {
             // Delete workspace folder.
             cleanWs()
         }
     }
-}
-
-
-def configureSsh() {
-    withCredentials([sshUserPrivateKey(credentialsId: 'jenkins-ssh-key', keyFileVariable: 'JENKINS_KEY_FILE' ),
-            sshUserPrivateKey(credentialsId: 'osgp-development-ssh-key', keyFileVariable: 'OSGP_DEVELOPMENT_KEY_FILE' )]) {
-        sh 'mkdir ~/.ssh'
-        sh 'cp ${JENKINS_KEY_FILE} ~/.ssh/id_rsa'
-        sh 'cp ${OSGP_DEVELOPMENT_KEY_FILE} ~/.ssh/\'osgp_development.pem\''
-        sh 'chmod 600 ~/.ssh/*'
-        sh 'echo \"Host github.com\n\tStrictHostKeyChecking no\n\" >> ~/.ssh/config'
-    }
-}
-
-def installAnsible() {
-    sh 'apt-get update'
-    sh 'apt-get install -y python-lxml python-boto python-boto3'
-    sh 'set STATICBUILD=true && pip install lxml boto boto3 ansible==2.6.2'
 }
 
 def runTestsOnServer(servername) {
