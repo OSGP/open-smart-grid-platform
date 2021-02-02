@@ -40,7 +40,7 @@ public class ProtocolResponseMessageListener implements MessageListener {
             LOGGER.debug("Domain                    : [{}]", protocolResponseMessage.getDomain());
             LOGGER.debug("DomainVersion             : [{}]", protocolResponseMessage.getDomainVersion());
             LOGGER.debug("Result                    : [{}]", protocolResponseMessage.getResult());
-            LOGGER.debug("Description               : [{}]", protocolResponseMessage.getOsgpException());
+            LOGGER.debug("Description               :", protocolResponseMessage.getOsgpException());
             LOGGER.debug("MessagePriority           : [{}]", protocolResponseMessage.getMessagePriority());
             LOGGER.debug("BypassRetry               : [{}]", protocolResponseMessage.bypassRetry());
 
