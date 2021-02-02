@@ -14,6 +14,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm.Cle
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm.ReadAlarmRegisterCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetActualMeterReadsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetActualMeterReadsGasCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetActualPowerQualityPrivateCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetActualPowerQualityPublicCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.monitoring.GetPowerQualityProfileCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.GetPeriodicMeterReadsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.GetPeriodicMeterReadsGasCommandExecutor;
@@ -21,6 +23,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmRegisterResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearAlarmRegisterRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
@@ -35,6 +38,8 @@ public class MonitoringService {
     private final GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor;
     private final GetActualMeterReadsCommandExecutor actualMeterReadsCommandExecutor;
     private final GetActualMeterReadsGasCommandExecutor actualMeterReadsGasCommandExecutor;
+    private final GetActualPowerQualityPrivateCommandExecutor getActualPowerQualityPrivateCommandExecutor;
+    private final GetActualPowerQualityPublicCommandExecutor getActualPowerQualityPublicCommandExecutor;
     private final ReadAlarmRegisterCommandExecutor readAlarmRegisterCommandExecutor;
     private final GetPowerQualityProfileCommandExecutor getPowerQualityProfileCommandExecutor;
     private final ClearAlarmRegisterCommandExecutor clearAlarmRegisterCommandExecutor;
@@ -43,6 +48,8 @@ public class MonitoringService {
             GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor,
             GetActualMeterReadsCommandExecutor actualMeterReadsCommandExecutor,
             GetActualMeterReadsGasCommandExecutor actualMeterReadsGasCommandExecutor,
+            GetActualPowerQualityPrivateCommandExecutor getActualPowerQualityPrivateCommandExecutor,
+            GetActualPowerQualityPublicCommandExecutor getActualPowerQualityPublicCommandExecutor,
             ReadAlarmRegisterCommandExecutor readAlarmRegisterCommandExecutor,
             GetPowerQualityProfileCommandExecutor getPowerQualityProfileCommandExecutor,
             ClearAlarmRegisterCommandExecutor clearAlarmRegisterCommandExecutor) {
@@ -51,6 +58,8 @@ public class MonitoringService {
         this.getPeriodicMeterReadsGasCommandExecutor = getPeriodicMeterReadsGasCommandExecutor;
         this.actualMeterReadsCommandExecutor = actualMeterReadsCommandExecutor;
         this.actualMeterReadsGasCommandExecutor = actualMeterReadsGasCommandExecutor;
+        this.getActualPowerQualityPrivateCommandExecutor = getActualPowerQualityPrivateCommandExecutor;
+        this.getActualPowerQualityPublicCommandExecutor = getActualPowerQualityPublicCommandExecutor;
         this.readAlarmRegisterCommandExecutor = readAlarmRegisterCommandExecutor;
         this.getPowerQualityProfileCommandExecutor = getPowerQualityProfileCommandExecutor;
         this.clearAlarmRegisterCommandExecutor = clearAlarmRegisterCommandExecutor;
@@ -83,6 +92,18 @@ public class MonitoringService {
             response = this.actualMeterReadsCommandExecutor.execute(conn, device, actualMeterReadsRequest);
         }
 
+        return response;
+    }
+
+    public Serializable requestActualPowerQuality(final DlmsConnectionManager conn, final DlmsDevice device,
+            final ActualPowerQualityRequestDto actualPowerQualityRequestDto) throws ProtocolAdapterException {
+
+        final Serializable response;
+        if (actualPowerQualityRequestDto.isPublic()) {
+            response = this.getActualPowerQualityPublicCommandExecutor.execute(conn, device, actualPowerQualityRequestDto);
+        } else {
+            response = this.getActualPowerQualityPrivateCommandExecutor.execute(conn, device, actualPowerQualityRequestDto);
+        }
         return response;
     }
 

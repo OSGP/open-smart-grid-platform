@@ -12,6 +12,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.CommandEx
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActivityCalendarDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualMeterReadsDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualMeterReadsDataGasDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdministrativeStatusTypeDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FindEventsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GMeterInfoDto;
@@ -35,6 +36,7 @@ public class CommandExecutorMapStub extends CommandExecutorMap {
 
         this.addCommandExecutor(FindEventsRequestDto.class, new RetrieveEventsBundleCommandExecutorStub());
         this.addCommandExecutor(ActualMeterReadsDataDto.class, new GetActualMeterReadsBundleCommandExecutorStub());
+        this.addCommandExecutor(ActualPowerQualityRequestDto.class, new GetActualPowerQualityBundleCommandExecutorStub());
         this.addCommandExecutor(ActualMeterReadsDataGasDto.class, new GetActualMeterReadsBundleGasCommandExecutorStub());
         this.addCommandExecutor(SpecialDaysRequestDataDto.class, new SetSpecialDaysBundleCommandExecutorStub());
         this.addCommandExecutor(ReadAlarmRegisterDataDto.class, new ReadAlarmRegisterBundleCommandExecutorStub());
