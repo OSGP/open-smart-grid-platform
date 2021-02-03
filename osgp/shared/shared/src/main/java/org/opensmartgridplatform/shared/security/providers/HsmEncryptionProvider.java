@@ -33,7 +33,7 @@ import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class HsmEncryptionProvider extends AbstractEncryptionProvider implements EncryptionProvider {
+public class HsmEncryptionProvider extends AbstractEncryptionProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HsmEncryptionProvider.class);
 
@@ -60,10 +60,11 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
     public byte[] decrypt(final EncryptedSecret secret, final String keyReference) {
         byte[] decryptedSecret = super.decrypt(secret, keyReference);
         if (decryptedSecret.length > KEY_LENGTH) {
-            final byte[] truncatedDecryptedSecretBytes = Arrays.copyOfRange(decryptedSecret, 0,
-                    decryptedSecret.length-16);
-            LOGGER.trace("Truncating decrypted key from " + Hex.encodeHexString(decryptedSecret) + " to " +
-                            Hex.encodeHexString(truncatedDecryptedSecretBytes));
+            // This provider uses NoPadding, but since decrypted byte size is bigger than key byte size,
+            // the secrets were apparently encrypted using padding of some kind; truncate the padded bytes.
+            final byte[] truncatedDecryptedSecretBytes = Arrays.copyOfRange(decryptedSecret, 0, KEY_LENGTH);
+            LOGGER.trace("Truncating decrypted key from " + Hex.encodeHexString(decryptedSecret) + " to " + Hex
+                    .encodeHexString(truncatedDecryptedSecretBytes));
             return truncatedDecryptedSecretBytes;
         }
         return decryptedSecret;
@@ -72,7 +73,7 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
     @Override
     public byte[] generateAes128BitsSecret(String keyReference) {
         try {
-            return this.encrypt(KeyGenerator.getInstance("AES").generateKey().getEncoded(),keyReference).getSecret();
+            return this.encrypt(KeyGenerator.getInstance("AES").generateKey().getEncoded(), keyReference).getSecret();
         } catch (NoSuchAlgorithmException exc) {
             throw new EncrypterException("Could not generate secret", exc);
         }

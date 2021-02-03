@@ -105,7 +105,7 @@ public class SecretManagementService {
             }
             final String keyReference = dbEncryptedSecret.getEncryptionKeyReference().getReference();
             final EncryptionProviderType providerType = dbEncryptedSecret.getEncryptionKeyReference()
-                                                                   .getEncryptionProviderType();
+                                                                         .getEncryptionProviderType();
             return new EncryptedTypedSecret(aesEncrypted, dbEncryptedSecret.getSecretType(), keyReference,
                     providerType);
         }
@@ -226,8 +226,10 @@ public class SecretManagementService {
 
     public synchronized void storeSecrets(final String deviceIdentification, final List<TypedSecret> secrets) {
         secrets.forEach(s -> this.checkNrNewSecretsOfType(deviceIdentification, s.getSecretType(), 0));
-        final List<EncryptedTypedSecret> aesSecrets = secrets.stream().map(ts -> new EncryptedTypedSecret(ts.getSecret(),
-                ts.getSecretType())).map(this::reencryptRsa2Aes).collect(toList());
+        final List<EncryptedTypedSecret> aesSecrets = secrets.stream()
+                                                             .map(ts -> new EncryptedTypedSecret(ts.getSecret(),
+                                                                     ts.getSecretType())).map(this::reencryptRsa2Aes)
+                                                             .collect(toList());
         this.storeAesSecrets(deviceIdentification, aesSecrets);
     }
 
@@ -281,8 +283,9 @@ public class SecretManagementService {
     public synchronized List<TypedSecret> generateAndStoreSecrets(final String deviceIdentification,
             final List<SecretType> secretTypes) {
         secretTypes.forEach(st -> this.checkNrNewSecretsOfType(deviceIdentification, st, 0));
-        final List<EncryptedTypedSecret> encryptedTypedSecrets = secretTypes.stream().map(this::generateAes128BitsSecret)
-                                                                      .collect(Collectors.toList());
+        final List<EncryptedTypedSecret> encryptedTypedSecrets = secretTypes.stream()
+                                                                            .map(this::generateAes128BitsSecret)
+                                                                            .collect(Collectors.toList());
         this.storeAesSecrets(deviceIdentification, encryptedTypedSecrets);
         return encryptedTypedSecrets.stream().map(this::reencryptAes2Rsa).map(EncryptedTypedSecret::toTypedSecret)
                                     .collect(Collectors.toList());
@@ -330,7 +333,8 @@ public class SecretManagementService {
         return aes;
     }
 
-    private byte[] reencryptAes2Rsa(final byte[] aes, final String keyReference, final EncryptionProviderType encryptionProviderType) {
+    private byte[] reencryptAes2Rsa(final byte[] aes, final String keyReference,
+            final EncryptionProviderType encryptionProviderType) {
         try {
             return this.rsaEncrypter.encrypt(
                     this.encryptionDelegate.decrypt(new EncryptedSecret(encryptionProviderType, aes), keyReference));
