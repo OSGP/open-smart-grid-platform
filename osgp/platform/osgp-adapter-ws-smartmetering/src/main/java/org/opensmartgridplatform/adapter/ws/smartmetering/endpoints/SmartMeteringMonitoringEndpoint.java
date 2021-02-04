@@ -23,6 +23,11 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.Actu
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityRequest;
+//import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ClearAlarmRegisterAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ClearAlarmRegisterAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ClearAlarmRegisterRequest;
@@ -519,5 +524,64 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
         }
         return response;
     }
+    
+    @PayloadRoot(localPart = "ActualPowerQualityRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
+    @ResponsePayload
+    public ActualPowerQualityAsyncResponse getActualPowerQuality(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final ActualPowerQualityRequest request, @MessagePriority final String messagePriority,
+            @ResponseUrl final String responseUrl, @ScheduleTime final String scheduleTime) throws OsgpException {
+
+        LOGGER.debug("Incoming ActualPowerQualityRequest for meter: {}.", request.getDeviceIdentification());
+
+
+        ActualPowerQualityAsyncResponse response = null;
+
+        try {
+            final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityRequest dataRequest = this.monitoringMapper
+                    .map(request,
+                            org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityRequest.class);
+
+            final String correlationUid = this.monitoringService.enqueueActualPowerQualityRequestData(
+                    organisationIdentification, request.getDeviceIdentification(), dataRequest, MessagePriorityEnum.getMessagePriority(messagePriority),
+                    this.monitoringMapper.map(scheduleTime, Long.class));
+
+            response = new ActualPowerQualityAsyncResponse();
+            response.setCorrelationUid(correlationUid);
+            response.setDeviceIdentification(request.getDeviceIdentification());
+            this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
+        } catch (final Exception e) {
+            LOGGER.error("Exception: {} while requesting meter reads for device: {} for organisation {}.",
+                    e.getMessage(), request.getDeviceIdentification(), organisationIdentification, e);
+
+            this.handleException(e);
+        }
+        return response;
+    }
+
+    @PayloadRoot(localPart = "ActualPowerQualityAsyncRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
+    @ResponsePayload
+    public ActualPowerQualityResponse getActualPowerQualityResponse(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final ActualPowerQualityAsyncRequest request) throws OsgpException {
+
+        LOGGER.debug("Incoming ActualPowerQualityAsyncRequest for meter: {}.", request.getDeviceIdentification());
+
+        ActualPowerQualityResponse response = null;
+        try {
+            // TODO What would be the expected class here (Not MeterReadsGas)?
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    MeterReadsGas.class, ComponentType.WS_SMART_METERING);
+
+            this.throwExceptionIfResultNotOk(responseData, "retrieving the periodic meter reads");
+
+            response = this.monitoringMapper.map(responseData.getMessageData(),
+                    org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityResponse.class);
+        } catch (final Exception e) {
+            this.handleRetrieveException(e, request, organisationIdentification);
+        }
+        return response;
+    }
+
 
 }

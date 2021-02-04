@@ -70,7 +70,7 @@ public class GetActualPowerQualityPrivateCommandExecutorTest {
         this.actualPowerQualityRequestDto = new ActualPowerQualityRequestDto(ConfidentialityTypeDto.PRIVATE);
 
         when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
-        doReturn(generateMockedResult(AccessResultCode.SUCCESS)).when(this.dlmsHelper).getAndCheck(eq(conn), any(DlmsDevice.class),
+        doReturn(generateMockedResult(AccessResultCode.SUCCESS)).when(this.dlmsHelper).getAndCheck(eq(this.conn), eq(this.dlmsDevice),
                 eq("retrieve actual power quality"), any(AttributeAddress.class));
     }
 
@@ -118,7 +118,7 @@ public class GetActualPowerQualityPrivateCommandExecutorTest {
 
     @Test
     void testOtherReasonResult() throws ProtocolAdapterException {
-        doReturn(generateMockedResult(AccessResultCode.OTHER_REASON)).when(this.dlmsHelper).getAndCheck(eq(conn), any(DlmsDevice.class),
+        doReturn(generateMockedResult(AccessResultCode.OTHER_REASON)).when(this.dlmsHelper).getAndCheck(eq(this.conn), eq(this.dlmsDevice),
                 eq("retrieve actual power quality"), any(AttributeAddress.class));
 
         assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {

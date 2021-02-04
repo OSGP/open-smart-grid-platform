@@ -29,6 +29,10 @@ public class ActionDtoBuilder {
         return new ActualMeterReadsDataDto();
     }
 
+    public ActualPowerQualityRequestDto makeActualPowerQualityRequestDto() {
+        return new ActualPowerQualityRequestDto();
+    }
+
     public GetAdministrativeStatusDataDto makeGetAdministrativeStatusDataDto() {
         return new GetAdministrativeStatusDataDto();
     }

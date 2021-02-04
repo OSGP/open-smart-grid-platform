@@ -109,6 +109,8 @@
     <wsdl:part element="smmon:ActualMeterReadsGasResponse"
       name="ActualMeterReadsGasResponse" />
   </wsdl:message>
+  
+  
   <!-- READ ALARM REGISTER -->
   <wsdl:message name="ReadAlarmRegisterRequest">
     <wsdl:part element="smmon:ReadAlarmRegisterRequest" name="AlarmRegisterRequest" />
@@ -183,6 +185,18 @@
     <wsdl:part element="smmon:ActualPowerQualityRequest" name="ActualPowerQualityRequest">
     </wsdl:part>
   </wsdl:message>
+  
+  <wsdl:message name="ActualPowerQualityAsyncResponse">
+    <wsdl:part element="smmon:ActualPowerQualityAsyncResponse"
+      name="ActualPowerQualityAsyncResponse" />
+  </wsdl:message>
+
+  <wsdl:message name="ActualPowerQualityAsyncRequest">
+    <wsdl:part element="smmon:ActualPowerQualityAsyncRequest"
+      name="ActualPowerQualityAsyncRequest" />
+  </wsdl:message>
+  
+  
   <wsdl:message name="ActualPowerQualityResponse">
     <wsdl:part element="smmon:ActualPowerQualityResponse"
                name="ActualPowerQualityResponse">
