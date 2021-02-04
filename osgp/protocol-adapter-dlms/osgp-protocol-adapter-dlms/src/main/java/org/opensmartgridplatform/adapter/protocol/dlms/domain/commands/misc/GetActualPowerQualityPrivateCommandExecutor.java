@@ -23,11 +23,11 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityPrivateResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfidentialityTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component()
@@ -188,13 +188,11 @@ public class GetActualPowerQualityPrivateCommandExecutor
     private static final int INDEX_AVERAGE_REACTIVE_POWER_EXPORT_L3_SCALER_UNIT = 53;
     private static final int INDEX_INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES_SCALER_UNIT = 54;
 
+    private final DlmsHelper dlmsHelper;
 
-
-    @Autowired
-    private DlmsHelper dlmsHelper;
-
-    public GetActualPowerQualityPrivateCommandExecutor() {
+    public GetActualPowerQualityPrivateCommandExecutor(final DlmsHelper dlmsHelper) {
         super(ActualPowerQualityRequestDto.class);
+        this.dlmsHelper = dlmsHelper;
     }
 
     @Override
@@ -208,7 +206,7 @@ public class GetActualPowerQualityPrivateCommandExecutor
          * contain any data, so no further configuration of the
          * ActualMeterReadsQueryDto is necessary.
          */
-        return new ActualPowerQualityRequestDto();
+        return new ActualPowerQualityRequestDto(ConfidentialityTypeDto.PRIVATE);
     }
 
     @Override

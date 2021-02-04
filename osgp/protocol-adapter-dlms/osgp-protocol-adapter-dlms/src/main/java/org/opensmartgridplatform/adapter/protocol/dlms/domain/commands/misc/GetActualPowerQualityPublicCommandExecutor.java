@@ -21,16 +21,16 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityPublicResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfidentialityTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component()
+@Component
 public class GetActualPowerQualityPublicCommandExecutor
         extends AbstractCommandExecutor<ActualPowerQualityRequestDto, ActualPowerQualityPublicResponseDto> {
 
@@ -123,11 +123,11 @@ public class GetActualPowerQualityPublicCommandExecutor
     private static final int INDEX_NUMBER_OF_VOLTAGE_SWELLS_FOR_L2_SCALER_UNIT = 27;
     private static final int INDEX_NUMBER_OF_VOLTAGE_SWELLS_FOR_L3_SCALER_UNIT = 28;
 
-    @Autowired
-    private DlmsHelper dlmsHelper;
+    private final DlmsHelper dlmsHelper;
 
-    public GetActualPowerQualityPublicCommandExecutor() {
+    public GetActualPowerQualityPublicCommandExecutor(final DlmsHelper dlmsHelper) {
         super(ActualPowerQualityRequestDto.class);
+        this.dlmsHelper = dlmsHelper;
     }
 
     @Override
@@ -141,7 +141,7 @@ public class GetActualPowerQualityPublicCommandExecutor
          * contain any data, so no further configuration of the
          * ActualMeterReadsQueryDto is necessary.
          */
-        return new ActualPowerQualityRequestDto();
+        return new ActualPowerQualityRequestDto(ConfidentialityTypeDto.PUBLIC);
     }
 
     @Override
