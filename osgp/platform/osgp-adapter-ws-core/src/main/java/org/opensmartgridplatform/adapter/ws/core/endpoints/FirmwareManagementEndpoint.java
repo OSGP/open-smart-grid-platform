@@ -347,8 +347,7 @@ public class FirmwareManagementEndpoint {
             this.handleException(e);
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while adding manufacturer: {} for organisation {}",
-                    new Object[] { e.getMessage(), request.getManufacturer().getCode(), organisationIdentification },
-                    e);
+                    e.getMessage(), request.getManufacturer().getCode(), organisationIdentification, e);
             this.handleException(e);
         }
 
@@ -375,8 +374,7 @@ public class FirmwareManagementEndpoint {
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while Changing manufacturer: {} for organisation {}",
-                    new Object[] { e.getMessage(), request.getManufacturer().getCode(), organisationIdentification },
-                    e);
+                    e.getMessage(), request.getManufacturer().getCode(), organisationIdentification, e);
             this.handleException(e);
         }
 
@@ -411,7 +409,7 @@ public class FirmwareManagementEndpoint {
             this.handleException(e);
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while removing manufacturer: {} for organisation {}",
-                    new Object[] { e.getMessage(), request.getManufacturerId(), organisationIdentification }, e);
+                    e.getMessage(), request.getManufacturerId(), organisationIdentification, e);
             this.handleException(e);
         }
 
@@ -526,7 +524,7 @@ public class FirmwareManagementEndpoint {
             response.setDeviceModel(this.firmwareManagementMapper.map(deviceModel,
                     org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.DeviceModel.class));
         } catch (final ConstraintViolationException e) {
-            LOGGER.error("Exception find all devicemodels {}: ", e);
+            LOGGER.error("Exception find all devicemodels", e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -603,7 +601,7 @@ public class FirmwareManagementEndpoint {
             this.handleException(e);
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while removing deviceModel: {} for organisation {}",
-                    new Object[] { e.getMessage(), request.getDeviceModelId(), organisationIdentification }, e);
+                    e.getMessage(), request.getDeviceModelId(), organisationIdentification, e);
             this.handleException(e);
         }
 
@@ -628,8 +626,8 @@ public class FirmwareManagementEndpoint {
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
-            LOGGER.error("Exception: {} while Changing devicemodel: {} for organisation {}", new Object[] {
-                    e.getMessage(), request.getDeviceModel().getModelCode(), organisationIdentification }, e);
+            LOGGER.error("Exception: {} while Changing devicemodel: {} for organisation {}",
+                    e.getMessage(), request.getDeviceModel().getModelCode(), organisationIdentification, e);
             this.handleException(e);
         }
 
@@ -661,7 +659,7 @@ public class FirmwareManagementEndpoint {
                             org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Firmware.class));
 
         } catch (final ConstraintViolationException e) {
-            LOGGER.error("Exception find all firmwares {}: ", e);
+            LOGGER.error("Exception find all firmwares", e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -689,7 +687,7 @@ public class FirmwareManagementEndpoint {
                     org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Firmware.class));
 
         } catch (final ConstraintViolationException e) {
-            LOGGER.error("Exception find firmware {}: ", e);
+            LOGGER.error("Exception find firmware", e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
@@ -719,9 +717,8 @@ public class FirmwareManagementEndpoint {
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while saving device firmware: {} to device: {} for organisation {}",
-                    new Object[] { e.getMessage(), request.getDeviceFirmware().getFirmware().getDescription(),
-                            request.getDeviceFirmware().getDeviceIdentification(), organisationIdentification },
-                    e);
+                    e.getMessage(), request.getDeviceFirmware().getFirmware().getDescription(),
+                    request.getDeviceFirmware().getDeviceIdentification(), organisationIdentification, e);
             this.handleException(e);
         }
 
@@ -760,8 +757,7 @@ public class FirmwareManagementEndpoint {
             this.handleException(e);
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while adding firmware: {} for organisation {}",
-                    new Object[] { e.getMessage(), request.getFirmware().getFilename(), organisationIdentification },
-                    e);
+                    e.getMessage(), request.getFirmware().getFilename(), organisationIdentification, e);
             this.handleException(e);
         }
 
@@ -795,8 +791,7 @@ public class FirmwareManagementEndpoint {
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while Changing firmware: {} for organisation {}",
-                    new Object[] { e.getMessage(), request.getFirmware().getFilename(), organisationIdentification },
-                    e);
+                    e.getMessage(), request.getFirmware().getFilename(), organisationIdentification, e);
             this.handleException(e);
         }
 
@@ -830,7 +825,7 @@ public class FirmwareManagementEndpoint {
             this.handleException(e);
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while removing firmware: {} for organisation {}",
-                    new Object[] { e.getMessage(), request.getId(), organisationIdentification }, e);
+                    e.getMessage(), request.getId(), organisationIdentification, e);
             this.handleException(e);
         }
 
@@ -882,7 +877,7 @@ public class FirmwareManagementEndpoint {
             response.setDeviceFirmwareHistory(output);
 
         } catch (final ConstraintViolationException e) {
-            LOGGER.error("Exception get firmware history {}: ", e);
+            LOGGER.error("Exception get firmware history", e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {

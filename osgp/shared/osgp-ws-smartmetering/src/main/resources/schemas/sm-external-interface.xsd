@@ -42,7 +42,6 @@
         <xsd:element name="messageId" type="xsd:string" minOccurs="0"/>
         <xsd:element name="deviceIdentification" type="xsd:string"/>
         <xsd:element name="deviceType" type="tns:DeviceType"/>
-        <xsd:element name="deviceModel" type="xsd:string" minOccurs="0"/>
         <xsd:choice>
           <!-- responses to P4/P5 -->
           <xsd:element ref="bun:PeriodicMeterReadsResponse"/>

@@ -119,14 +119,13 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
             return;
         }
 
+        LOGGER.info("Calling application service function to handle response: {} with correlationUid: {}",
+                actualMessageType, correlationUid);
+
+        final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification, correlationUid);
+        this.handleMessage(ids, actualMessageType, resultType, resultDescription, dataObject);
+
         try {
-            LOGGER.info("Calling application service function to handle response: {} with correlationUid: {}",
-                    actualMessageType, correlationUid);
-
-            final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
-                    correlationUid);
-            this.handleMessage(ids, actualMessageType, resultType, resultDescription, dataObject);
-
             // Send notification indicating data is available.
             this.notificationService.sendNotification(
                     new NotificationWebServiceLookupKey(organisationIdentification,
@@ -135,7 +134,11 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
                             correlationUid, String.valueOf(notificationType)));
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, notificationType);
+            // Logging is enough, sending the notification will be done
+            // automatically by the resend notification job
+            LOGGER.warn(
+                    "Delivering notification with correlationUid: {} and notification type: {} did not complete successfully.",
+                    correlationUid, notificationType, e);
         }
     }
 
@@ -155,27 +158,4 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
         this.responseDataService.enqueue(responseData);
     }
 
-    /**
-     * In case of an error, this function can be used to send a response
-     * containing the exception to the web-service-adapter.
-     *
-     * @param e
-     *            The exception.
-     * @param correlationUid
-     *            The correlation UID.
-     * @param organisationIdentification
-     *            The organisation identification.
-     * @param deviceIdentification
-     *            The device identification.
-     * @param notificationType
-     *            The message type.
-     */
-    protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
-            final String deviceIdentification, final NotificationType notificationType) {
-
-        LOGGER.info("handling error: {} for notification type: {} with correlationUid: {}", e.getMessage(),
-                notificationType, correlationUid, e);
-        this.notificationService.sendNotification(organisationIdentification, deviceIdentification, "NOT_OK",
-                correlationUid, e.getMessage(), notificationType);
-    }
 }

@@ -14,6 +14,7 @@ import org.opensmartgridplatform.adapter.kafka.da.application.services.LocationS
 import org.opensmartgridplatform.adapter.kafka.da.domain.entities.Feeder;
 import org.opensmartgridplatform.adapter.kafka.da.domain.entities.Location;
 import org.opensmartgridplatform.adapter.kafka.da.infra.mqtt.in.ScadaMeasurementPayload;
+import org.opensmartgridplatform.adapter.kafka.da.signature.MessageSigner;
 import org.opensmartgridplatform.shared.utils.UuidUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +39,8 @@ public class LowVoltageMessageProducer {
 
     private final KafkaTemplate<String, Message> kafkaTemplate;
 
+    private final MessageSigner messageSigner;
+
     private final DistributionAutomationMapper mapper;
 
     private final LocationService locationService;
@@ -45,8 +48,10 @@ public class LowVoltageMessageProducer {
     @Autowired
     public LowVoltageMessageProducer(
             @Qualifier("distributionAutomationKafkaTemplate") final KafkaTemplate<String, Message> kafkaTemplate,
-            final DistributionAutomationMapper mapper, final LocationService locationService) {
+            final MessageSigner messageSigner, final DistributionAutomationMapper mapper,
+            final LocationService locationService) {
         this.kafkaTemplate = kafkaTemplate;
+        this.messageSigner = messageSigner;
         this.mapper = mapper;
         this.locationService = locationService;
     }
@@ -79,6 +84,7 @@ public class LowVoltageMessageProducer {
             if (event != null) {
                 final MessageId messageId = new MessageId(UuidUtil.getBytesFromRandomUuid());
                 final Message message = new Message(messageId, System.currentTimeMillis(), "GXF", null, event);
+                this.messageSigner.sign(message);
                 /*
                  * No need for callback functionality now; by default, the
                  * template is configured with a LoggingProducerListener, which
@@ -96,15 +102,13 @@ public class LowVoltageMessageProducer {
         final String substationIdentification = payload.getSubstationIdentification();
 
         final Optional<Location> locationOptional = this.locationService.getLocation(substationIdentification);
-        payload.setSubstationName(locationOptional.map(Location::getName)
-                .orElse(""));
+        payload.setSubstationName(locationOptional.map(Location::getName).orElse(""));
 
         try {
             final int feederNumber = Integer.parseInt(payload.getFeeder());
             if (feederNumber != META_MEASUREMENT_FEEDER) {
                 final Optional<Feeder> feederOptional = locationOptional.flatMap(l -> l.getFeeder(feederNumber));
-                payload.setBayIdentification(feederOptional.map(Feeder::getName)
-                        .orElse(""));
+                payload.setBayIdentification(feederOptional.map(Feeder::getName).orElse(""));
             }
         } catch (final NumberFormatException e) {
             LOGGER.error("Payload contains a non-numeric value for feeder", e);

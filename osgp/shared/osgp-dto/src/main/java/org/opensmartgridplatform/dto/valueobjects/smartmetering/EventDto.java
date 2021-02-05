@@ -23,6 +23,7 @@ public class EventDto implements Serializable {
     private final Integer eventCode;
     private final Integer eventCounter;
     private final String eventLogCategoryName;
+    private EventTypeDto eventTypeDto;
 
     public EventDto(final DateTime timestamp, final Integer eventCode, final Integer eventCounter,
             final String eventLogCategoryName) {
@@ -30,5 +31,9 @@ public class EventDto implements Serializable {
         this.eventCode = eventCode;
         this.eventCounter = eventCounter;
         this.eventLogCategoryName = eventLogCategoryName;
+    }
+
+    public void setEventTypeDto(EventTypeDto eventTypeDto) {
+        this.eventTypeDto = eventTypeDto;
     }
 }
