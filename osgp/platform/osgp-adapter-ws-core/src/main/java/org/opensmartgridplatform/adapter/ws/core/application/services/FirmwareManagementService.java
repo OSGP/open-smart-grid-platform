@@ -7,6 +7,8 @@
  */
 package org.opensmartgridplatform.adapter.ws.core.application.services;
 
+import static org.springframework.data.jpa.domain.Specification.where;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -20,6 +22,7 @@ import java.util.function.Supplier;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessage;
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessageSender;
@@ -39,6 +42,7 @@ import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.exceptions.ExistingEntityException;
 import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
 import org.opensmartgridplatform.domain.core.repositories.FirmwareModuleRepository;
+import org.opensmartgridplatform.domain.core.specifications.FirmwareFileSpecifications;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareUpdateMessageDataContainer;
@@ -57,6 +61,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -437,24 +442,16 @@ public class FirmwareManagementService {
      * Returns a list of all {@link FirmwareFile} in the Platform
      */
     public List<FirmwareFile> findAllFirmwareFiles(final String organisationIdentification, final String manufacturer,
-            final String modelCode) throws FunctionalException {
+            final String modelCode, final Boolean active) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_FIRMWARE);
 
-        List<FirmwareFile> firmwareFiles = new ArrayList<>();
-        if (manufacturer != null) {
-            final Manufacturer databaseManufacturer = this.manufacturerRepository.findByCode(manufacturer);
-            final DeviceModel databaseDeviceModel = this.deviceModelRepository
-                    .findByManufacturerAndModelCode(databaseManufacturer, modelCode);
-            if (databaseDeviceModel != null) {
-                firmwareFiles = this.firmwareFileRepository.findByDeviceModel(databaseDeviceModel);
-            }
+        final List<FirmwareFile> firmwareFiles = new ArrayList<>();
+        if (StringUtils.isNotBlank(manufacturer)) {
+            firmwareFiles.addAll(this.getFirmwareFiles(manufacturer, modelCode, active));
         } else {
-            final List<DeviceModel> deviceModels = this.deviceModelRepository.findByModelCode(modelCode);
-            for (final DeviceModel deviceModel : deviceModels) {
-                firmwareFiles.addAll(this.firmwareFileRepository.findByDeviceModel(deviceModel));
-            }
+            firmwareFiles.addAll(this.getFirmwareFiles(modelCode, active));
         }
 
         // performance issue, clean list with firmware files for front-end admin
@@ -466,6 +463,57 @@ public class FirmwareManagementService {
         return firmwareFiles;
     }
 
+    private List<FirmwareFile> getFirmwareFiles(final String manufacturerCode, final String modelCode,
+            final Boolean active) {
+
+        if (StringUtils.isBlank(manufacturerCode) || StringUtils.isBlank(modelCode)) {
+            return new ArrayList<>();
+        }
+
+        final Manufacturer manufacturer = this.manufacturerRepository.findByCode(manufacturerCode);
+        final DeviceModel deviceModel = this.deviceModelRepository.findByManufacturerAndModelCode(manufacturer,
+                modelCode);
+
+        if (deviceModel == null) {
+            return new ArrayList<>();
+        }
+
+        Specification<FirmwareFile> specification = where(FirmwareFileSpecifications.forDeviceModel(deviceModel));
+        if (specification == null) {
+            return new ArrayList<>();
+        }
+        specification = specification.and(FirmwareFileSpecifications.forActiveFirmwareFilesOnly(active));
+        if (specification == null) {
+            return new ArrayList<>();
+        }
+
+        return this.firmwareFileRepository.findAll(specification);
+    }
+
+    private List<FirmwareFile> getFirmwareFiles(final String modelCode, final Boolean active) {
+
+        if (StringUtils.isBlank(modelCode)) {
+            return new ArrayList<>();
+        }
+
+        final List<DeviceModel> deviceModels = this.deviceModelRepository.findByModelCode(modelCode);
+        if (deviceModels == null || deviceModels.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        Specification<FirmwareFile> specification = where(FirmwareFileSpecifications.forDeviceModels(deviceModels));
+        if (specification == null) {
+            return new ArrayList<>();
+        }
+
+        specification = specification.and(FirmwareFileSpecifications.forActiveFirmwareFilesOnly(active));
+        if (specification == null) {
+            return new ArrayList<>();
+        }
+
+        return this.firmwareFileRepository.findAll(specification);
+    }
+
     /**
      * Returns the {@link FirmwareFile} of the given id, if it exists
      */
@@ -475,7 +523,7 @@ public class FirmwareManagementService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_FIRMWARE);
 
-        return this.firmwareFileRepository.findById(Long.valueOf(firmwareFileId))
+        return this.firmwareFileRepository.findById((long) firmwareFileId)
                 .orElseThrow(supplyfirmwareFileNotFoundException(firmwareFileId));
     }
 
@@ -532,15 +580,13 @@ public class FirmwareManagementService {
                 // Storing the file in the database
                 savedFirmwareFile = this.savedToDatabase(firmwareFileRequest, databaseFirmwareFiles.get(0).getFile());
             }
+        } else if (databaseDeviceModel.isFileStorage()) {
+            // Saving the file to the file system
+            this.writeToFilesystem(file, firmwareFileRequest.getFileName(), databaseDeviceModel);
+            savedFirmwareFile = this.firmwareFileFrom(firmwareFileRequest);
         } else {
-            if (databaseDeviceModel.isFileStorage()) {
-                // Saving the file to the file system
-                this.writeToFilesystem(file, firmwareFileRequest.getFileName(), databaseDeviceModel);
-                savedFirmwareFile = this.firmwareFileFrom(firmwareFileRequest);
-            } else {
-                // Storing the file in the database
-                savedFirmwareFile = this.savedToDatabase(firmwareFileRequest, file);
-            }
+            // Storing the file in the database
+            savedFirmwareFile = this.savedToDatabase(firmwareFileRequest, file);
         }
 
         if (firmwareFileRequest.isPushToNewDevices()) {
@@ -611,7 +657,7 @@ public class FirmwareManagementService {
                     new UnknownEntityException(DeviceModel.class, modelCode));
         }
 
-        FirmwareFile changedFirmwareFile = this.firmwareFileRepository.findById(Long.valueOf(id))
+        FirmwareFile changedFirmwareFile = this.firmwareFileRepository.findById((long) id)
                 .orElseThrow(supplyfirmwareFileNotFoundException(id, firmwareFileRequest.getFileName()));
 
         changedFirmwareFile.setDescription(firmwareFileRequest.getDescription());
@@ -666,8 +712,7 @@ public class FirmwareManagementService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.REMOVE_FIRMWARE);
 
-        final FirmwareFile removedFirmwareFile = this.firmwareFileRepository
-                .findById(Long.valueOf(firmwareIdentification))
+        final FirmwareFile removedFirmwareFile = this.firmwareFileRepository.findById((long) firmwareIdentification)
                 .orElseThrow(supplyfirmwareFileNotFoundException(firmwareIdentification));
 
         final List<DeviceFirmwareFile> deviceFirmwares = this.deviceFirmwareFileRepository

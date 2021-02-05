@@ -13,12 +13,11 @@ import java.util.Set;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Firmware;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FirmwareModuleData;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
@@ -58,6 +57,7 @@ class FirmwareConverter extends CustomConverter<org.opensmartgridplatform.domain
         output.setModelCode(deviceModel.getModelCode());
         output.setPushToNewDevices(source.getPushToNewDevices());
         output.setManufacturer(deviceModel.getManufacturer().getCode());
+        output.setActive(source.isActive());
 
         final FirmwareModuleData firmwareModuleData = new FirmwareModuleData();
         firmwareModuleData.setModuleVersionComm(source.getModuleVersionComm());
