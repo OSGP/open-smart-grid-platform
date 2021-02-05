@@ -29,6 +29,7 @@ import org.opensmartgridplatform.adapter.kafka.da.application.config.LowVoltageM
 import org.opensmartgridplatform.adapter.kafka.da.application.mapping.DistributionAutomationMapper;
 import org.opensmartgridplatform.adapter.kafka.da.infra.mqtt.in.ScadaMeasurementPayload;
 import org.opensmartgridplatform.adapter.kafka.da.serialization.MessageDeserializer;
+import org.opensmartgridplatform.adapter.kafka.da.signature.MessageSigner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.ConsumerFactory;
@@ -71,6 +72,9 @@ class LowVoltageMessageProducerTest {
     @Autowired
     private KafkaTemplate<String, Message> template;
 
+    @Autowired
+    private MessageSigner messageSigner;
+
     private LowVoltageMessageProducer producer;
 
     private static final String PAYLOAD = "[{\"gisnr\":\"TST-01-L-1V1\", \"feeder\":\"8\", \"D\": \"02/10/2020 16:03:38\", "
@@ -81,7 +85,8 @@ class LowVoltageMessageProducerTest {
     @SuppressWarnings("unchecked")
     public void setup() {
         when(this.mapper.map(any(ScadaMeasurementPayload.class), any(Class.class))).thenReturn(this.createEvent());
-        this.producer = new LowVoltageMessageProducer(this.template, this.mapper, this.locationConfig);
+        this.producer = new LowVoltageMessageProducer(this.template, this.messageSigner, this.mapper,
+                this.locationConfig);
     }
 
     @Test
@@ -102,7 +107,8 @@ class LowVoltageMessageProducerTest {
         // check the consumed message
         final Message actualMessage = received.value();
         assertThat(actualMessage.getMessageId()).isNotNull();
-        assertThat(actualMessage.getProducerId().toString()).isEqualTo("GXF");
+        assertThat(actualMessage.getProducerId()).hasToString("GXF");
+        assertThat(this.messageSigner.verify(actualMessage)).isTrue();
     }
 
     private ScadaMeasurementPublishedEvent createEvent() {
