@@ -15,6 +15,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptedSecret;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptionKeyReference;
 import org.opensmartgridplatform.secretmanagement.application.domain.SecretStatus;
+import org.opensmartgridplatform.secretmanagement.application.domain.SecretType;
 import org.opensmartgridplatform.secretmanagement.application.repository.DbEncryptedSecretRepository;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -254,6 +256,12 @@ public class SoapServiceSecretManagementIT {
             response.writeTo(outputStream);
             assertThat(outputStream.toString()).contains("Result>OK");
         });
+        List<DbEncryptedSecret> authKeys = this.secretRepository.findSecrets(DEVICE_IDENTIFICATION,
+                SecretType.E_METER_AUTHENTICATION_KEY,
+                SecretStatus.NEW);
+        assertThat(authKeys).hasSize(1);
+        DbEncryptedSecret authKey = authKeys.get(0);
+        assertThat(authKey.getEncodedSecret()).hasSize(64);
     }
 
     @Test

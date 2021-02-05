@@ -46,14 +46,14 @@ public class EventNotificationTransition implements Runnable {
 
                 if (event.getLightOn()) {
                     // Send EventNotifications for Light Transition ON
-                    LOGGER.info("Sending LIGHT_EVENTS_LIGHT_ON_VALUE event for device : {}: {} ", event.getdeviceId());
+                    LOGGER.info("Sending LIGHT_EVENTS_LIGHT_ON_VALUE event for device: {}", event.getdeviceId());
                     status = this.registerDevice.sendEventNotificationCommand(event.getdeviceId(),
                             Oslp.Event.LIGHT_EVENTS_LIGHT_ON_VALUE,
                             "LIGHT_EVENTS_LIGHT_ON_VALUE event occurred on Light Switching on ", null);
 
                 } else {
                     // Send EventNotifications for Light Transition OFF
-                    LOGGER.info("Sending LIGHT_EVENTS_LIGHT_OFF_VALUE event for device : {}: {} ", event.getdeviceId());
+                    LOGGER.info("Sending LIGHT_EVENTS_LIGHT_OFF_VALUE event for device: {}", event.getdeviceId());
                     status = this.registerDevice.sendEventNotificationCommand(event.getdeviceId(),
                             Oslp.Event.LIGHT_EVENTS_LIGHT_OFF_VALUE,
                             "LIGHT_EVENTS_LIGHT_OFF_VALUE event occurred on light Switching off ", null);

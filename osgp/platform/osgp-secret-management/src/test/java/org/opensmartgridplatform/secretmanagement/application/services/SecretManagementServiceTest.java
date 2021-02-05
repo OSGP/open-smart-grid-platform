@@ -156,8 +156,7 @@ public class SecretManagementServiceTest {
         when(this.encryptionDelegate.encrypt(any(), any(), anyString())).thenReturn(encryptedSecret);
         this.service.storeSecrets("SOME_DEVICE", Arrays.asList(typedSecret));
         //THEN
-        final ArgumentCaptor<List<DbEncryptedSecret>> secretListArgumentCaptor =
-                ArgumentCaptor.forClass(List.class);
+        final ArgumentCaptor<List<DbEncryptedSecret>> secretListArgumentCaptor = ArgumentCaptor.forClass(List.class);
         verify(this.secretRepository).saveAll(secretListArgumentCaptor.capture());
         final List<DbEncryptedSecret> savedSecrets = secretListArgumentCaptor.getValue();
         assertThat(savedSecrets).isNotNull();
@@ -252,8 +251,7 @@ public class SecretManagementServiceTest {
                 .thenReturn(encryptedSecret);   //encrypt new DB secret
         this.service.storeSecrets("SOME_DEVICE", Arrays.asList(typedSecret));
         //THEN
-        final ArgumentCaptor<List<DbEncryptedSecret>> secretListArgumentCaptor =
-                ArgumentCaptor.forClass(List.class);
+        final ArgumentCaptor<List<DbEncryptedSecret>> secretListArgumentCaptor = ArgumentCaptor.forClass(List.class);
         verify(this.secretRepository).saveAll(secretListArgumentCaptor.capture());
         final List<DbEncryptedSecret> savedSecrets = secretListArgumentCaptor.getValue();
         assertThat(savedSecrets).isNotNull();
@@ -302,8 +300,7 @@ public class SecretManagementServiceTest {
                 .thenReturn(Arrays.asList(activeSecret));
         when(this.secretRepository.findSecrets(SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.NEW))
                 .thenReturn(Arrays.asList(newSecret));
-        when(this.secretRepository.saveAll(any())).thenReturn(Arrays.asList(newSecret
-                ,activeSecret));
+        when(this.secretRepository.saveAll(any())).thenReturn(Arrays.asList(newSecret, activeSecret));
         this.service.activateNewSecrets("SOME_DEVICE", Arrays.asList(SecretType.E_METER_MASTER_KEY));
         //THEN
         assertThat(newSecret.getSecretStatus()).isEqualTo(SecretStatus.ACTIVE);

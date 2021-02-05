@@ -26,7 +26,7 @@ import javax.crypto.spec.IvParameterSpec;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 
-public class JreEncryptionProvider extends AbstractEncryptionProvider implements EncryptionProvider {
+public class JreEncryptionProvider extends AbstractEncryptionProvider {
 
     private static final String DEFAULT_SINGLE_KEY_REFERENCE = "1";
     private static final String ALG = "AES";
