@@ -609,6 +609,7 @@ public class FirmwareManagementService {
         return new FirmwareFile.Builder().withFilename(firmwareFileRequest.getFileName())
                 .withDescription(firmwareFileRequest.getDescription())
                 .withPushToNewDevices(firmwareFileRequest.isPushToNewDevices())
+                .withActive(firmwareFileRequest.isActive())
                 .build();
     }
 
