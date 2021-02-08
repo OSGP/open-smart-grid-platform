@@ -223,7 +223,6 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(SetClockConfigurationRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(GetConfigurationObjectRequestData.class, this.commonMapper);
         CLASS_TO_MAPPER_MAP.put(GetPowerQualityProfileRequestData.class, this.monitoringMapper);
-        CLASS_TO_MAPPER_MAP.put(ActualPowerQualityRequestData.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(GenerateAndReplaceKeysRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(DefinableLoadProfileConfigurationData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SetMbusUserKeyByChannelRequestData.class, this.configurationMapper);
@@ -234,6 +233,7 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(SetDeviceLifecycleStatusByChannelRequestData.class, this.managementMapper);
         CLASS_TO_MAPPER_MAP.put(ScanMbusChannelsRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(GetOutagesRequestData.class, this.managementMapper);
+        CLASS_TO_MAPPER_MAP.put(ActualPowerQualityRequestData.class, this.monitoringMapper);
     }
 
     public BundleMessagesRequestDto mapAllActions(final BundleMessageRequest bundleMessageRequest,

@@ -39,8 +39,8 @@ public class ActualPowerQualityDtoConverter
 
         final ActualPowerQualityResponse response = new ActualPowerQualityResponse();
 
-        if (source.getAtualPowerQualityData() != null) {
-            final ActualPowerQualityDataDto responseDataDto = source.getAtualPowerQualityData();
+        if (source.getActualPowerQualityData() != null) {
+            final ActualPowerQualityDataDto responseDataDto = source.getActualPowerQualityData();
 
             final List<CaptureObject> captureObjects = new ArrayList<>(
                     this.mapperFacade.mapAsList(responseDataDto.getCaptureObjects(), CaptureObject.class));

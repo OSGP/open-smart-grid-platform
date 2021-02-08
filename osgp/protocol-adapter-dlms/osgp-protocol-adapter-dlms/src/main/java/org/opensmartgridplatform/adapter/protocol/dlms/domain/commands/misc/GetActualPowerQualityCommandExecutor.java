@@ -86,8 +86,6 @@ public class GetActualPowerQualityCommandExecutor
         final List<CaptureObjectDto> captureObjects = new ArrayList<>();
         final List<ActualValueDto> actualValues = new ArrayList<>();
 
-
-
         for (int i=0;i<logicalNames.size();i++) {
             ActualPowerQualityLogicalName logicalName = logicalNames.get(i);
             CaptureObjectDto captureObject;
@@ -96,8 +94,8 @@ public class GetActualPowerQualityCommandExecutor
                 final GetResult resultTime  = resultList.get(0);
                 final CosemDateTimeDto cosemDateTime = this.dlmsHelper
                         .readDateTime(resultTime, "Actual Power Quality - Time");
-                captureObject = new CaptureObjectDto(CLASS_ID_CLOCK, OBIS_CODE_CLOCK,
-                        ATTRIBUTE_ID_TIME,
+                captureObject = new CaptureObjectDto(logicalName.getClassId(), logicalName.getObisCode(),
+                        logicalName.getAttributeIdValue(),
                         0, null);
                 actualValue = new ActualValueDto(cosemDateTime.asDateTime().toDate());
             } else {

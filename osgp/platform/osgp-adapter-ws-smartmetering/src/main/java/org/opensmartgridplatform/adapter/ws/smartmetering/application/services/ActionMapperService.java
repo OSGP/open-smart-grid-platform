@@ -338,6 +338,9 @@ public class ActionMapperService {
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileRequest.class,
                 this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityRequest.class,
+                this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ClearAlarmRegisterData.class,
                 this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(ClearAlarmRegisterRequest.class, this.monitoringMapper);

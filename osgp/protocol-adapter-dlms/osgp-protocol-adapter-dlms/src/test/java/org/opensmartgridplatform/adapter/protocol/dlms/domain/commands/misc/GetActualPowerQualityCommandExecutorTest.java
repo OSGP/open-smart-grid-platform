@@ -111,8 +111,8 @@ public class GetActualPowerQualityCommandExecutorTest {
         final ActualPowerQualityResponseDto responseDto = executor.execute(this.conn, this.dlmsDevice,
                 this.actualPowerQualityRequestDto);
 
-        assertThat(responseDto.getAtualPowerQualityData().getActualValues().size()).isEqualTo(logicalNames.size());
-        assertThat(responseDto.getAtualPowerQualityData().getCaptureObjects().size()).isEqualTo(logicalNames.size());
+        assertThat(responseDto.getActualPowerQualityData().getActualValues().size()).isEqualTo(logicalNames.size());
+        assertThat(responseDto.getActualPowerQualityData().getCaptureObjects().size()).isEqualTo(logicalNames.size());
 
         for (int i=0;i<logicalNames.size();i++) {
             final GetActualPowerQualityCommandExecutor.ActualPowerQualityLogicalName logicalName = logicalNames.get(i);
@@ -127,13 +127,13 @@ public class GetActualPowerQualityCommandExecutorTest {
                 expectedUnit = DlmsUnitTypeDto.VOLT.getUnit();
             }
 
-            final CaptureObjectDto captureObject = responseDto.getAtualPowerQualityData().getCaptureObjects().get(i);
+            final CaptureObjectDto captureObject = responseDto.getActualPowerQualityData().getCaptureObjects().get(i);
             assertThat(captureObject.getLogicalName()).isEqualTo(logicalName.getObisCode());
             assertThat(captureObject.getClassId()).isEqualTo(logicalName.getClassId());
             assertThat(captureObject.getAttributeIndex()).isEqualTo(logicalName.getAttributeIdValue().longValue());
             assertThat(captureObject.getUnit()).isEqualTo(expectedUnit);
 
-            final ActualValueDto actualValue = responseDto.getAtualPowerQualityData().getActualValues().get(i);
+            final ActualValueDto actualValue = responseDto.getActualPowerQualityData().getActualValues().get(i);
             assertThat(actualValue.getValue()).isEqualTo(expectedValue);
         }
     }
