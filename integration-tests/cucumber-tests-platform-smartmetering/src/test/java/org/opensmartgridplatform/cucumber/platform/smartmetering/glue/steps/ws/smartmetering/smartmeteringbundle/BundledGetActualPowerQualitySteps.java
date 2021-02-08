@@ -52,8 +52,8 @@ public class BundledGetActualPowerQualitySteps extends BaseBundleSteps {
         final ActualPowerQualityData actualPowerQualityData = actualPowerQualityResponse
                 .getActualPowerQualityData();
 
-        this.assertEqualCaptureObjects(actualPowerQualityData.getCaptureObjects(), values);
-        this.assertEqualActualValues(actualPowerQualityData.getActualValues(), values);
+        this.assertEqualCaptureObjects(actualPowerQualityData.getCaptureObjects().getCaptureObjects(), values);
+        this.assertEqualActualValues(actualPowerQualityData.getActualValues().getActualValue(), values);
     }
 
     private void assertEqualCaptureObjects(final List<CaptureObject> actualCaptureObjects,

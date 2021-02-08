@@ -80,7 +80,7 @@ public class ActualPowerQualitySteps {
 
         final int expectedNumberOfCaptureObjects = getInteger(settings, "NumberOfCaptureObjects", 0);
         final List<CaptureObject> actualCaptureObjects =
-                response.getActualPowerQualityData().getCaptureObjects();
+                response.getActualPowerQualityData().getCaptureObjects().getCaptureObjects();
         assertThat(actualCaptureObjects.size()).as("Number of capture objects")
                                                .isEqualTo(expectedNumberOfCaptureObjects);
 
@@ -94,7 +94,7 @@ public class ActualPowerQualitySteps {
 
         final int expectedNumberOfActualValues = getInteger(settings, "NumberOfActualValues", 0);
         final List<ActualValue> actualValues =
-                response.getActualPowerQualityData().getActualValues();
+                response.getActualPowerQualityData().getActualValues().getActualValue();
         assertThat(actualValues.size()).as("Number of actual values")
                                                .isEqualTo(expectedNumberOfActualValues);
 
