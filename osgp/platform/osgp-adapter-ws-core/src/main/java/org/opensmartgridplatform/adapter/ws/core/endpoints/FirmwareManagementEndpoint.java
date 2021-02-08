@@ -767,8 +767,8 @@ public class FirmwareManagementEndpoint {
     }
 
     private FirmwareFileRequest firmwareFileRequestFor(final Firmware firmware) {
-        return new FirmwareFileRequest(firmware.getDescription(), firmware.getFilename(),
-                firmware.isPushToNewDevices());
+        return new FirmwareFileRequest(firmware.getDescription(), firmware.getFilename(), firmware.isPushToNewDevices(),
+                firmware.isActive());
     }
 
     @PayloadRoot(localPart = "ChangeFirmwareRequest", namespace = NAMESPACE)

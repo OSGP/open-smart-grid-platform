@@ -70,7 +70,7 @@ import org.springframework.validation.annotation.Validated;
 @Transactional(value = "transactionManager")
 @Validated
 public class FirmwareManagementService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FirmwareManagementService.class);
 
     private static final String SPACE_REPLACER = "_";
 
@@ -524,7 +524,7 @@ public class FirmwareManagementService {
         this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_FIRMWARE);
 
         return this.firmwareFileRepository.findById((long) firmwareFileId)
-                .orElseThrow(supplyfirmwareFileNotFoundException(firmwareFileId));
+                .orElseThrow(supplyFirmwareFileNotFoundException(firmwareFileId));
     }
 
     /**
@@ -658,7 +658,7 @@ public class FirmwareManagementService {
         }
 
         FirmwareFile changedFirmwareFile = this.firmwareFileRepository.findById((long) id)
-                .orElseThrow(supplyfirmwareFileNotFoundException(id, firmwareFileRequest.getFileName()));
+                .orElseThrow(supplyFirmwareFileNotFoundException(id, firmwareFileRequest.getFileName()));
 
         changedFirmwareFile.setDescription(firmwareFileRequest.getDescription());
         /*
@@ -687,6 +687,7 @@ public class FirmwareManagementService {
         changedFirmwareFile
                 .updateFirmwareModuleData(firmwareModuleData.getVersionsByModule(this.firmwareModuleRepository, false));
         changedFirmwareFile.setPushToNewDevices(firmwareFileRequest.isPushToNewDevices());
+        changedFirmwareFile.setActive(firmwareFileRequest.isActive());
 
         // Save the changed firmware entity
         changedFirmwareFile = this.firmwareFileRepository.save(changedFirmwareFile);
@@ -713,7 +714,7 @@ public class FirmwareManagementService {
         this.domainHelperService.isAllowed(organisation, PlatformFunction.REMOVE_FIRMWARE);
 
         final FirmwareFile removedFirmwareFile = this.firmwareFileRepository.findById((long) firmwareIdentification)
-                .orElseThrow(supplyfirmwareFileNotFoundException(firmwareIdentification));
+                .orElseThrow(supplyFirmwareFileNotFoundException(firmwareIdentification));
 
         final List<DeviceFirmwareFile> deviceFirmwares = this.deviceFirmwareFileRepository
                 .findByFirmwareFile(removedFirmwareFile);
@@ -751,11 +752,11 @@ public class FirmwareManagementService {
         this.firmwareFileRepository.delete(removedFirmwareFile);
     }
 
-    private static Supplier<FunctionalException> supplyfirmwareFileNotFoundException(final int firmwareId) {
-        return supplyfirmwareFileNotFoundException(firmwareId, String.valueOf(firmwareId));
+    private static Supplier<FunctionalException> supplyFirmwareFileNotFoundException(final int firmwareId) {
+        return supplyFirmwareFileNotFoundException(firmwareId, String.valueOf(firmwareId));
     }
 
-    private static Supplier<FunctionalException> supplyfirmwareFileNotFoundException(final int firmwareId,
+    private static Supplier<FunctionalException> supplyFirmwareFileNotFoundException(final int firmwareId,
             final String firmwareIdentification) {
         LOGGER.info("FirmwareFile not found for id {}.", firmwareId);
         return () -> new FunctionalException(FunctionalExceptionType.UNKNOWN_FIRMWARE, ComponentType.WS_CORE,
