@@ -18,7 +18,7 @@ import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityRequest;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ClearAlarmRegisterRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileResponse;
@@ -104,7 +104,7 @@ public class MonitoringService {
     }
     
     public String enqueueActualPowerQualityRequestData(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final ActualPowerQualityRequest requestData,
+            @Identification final String deviceIdentification, final ActualPowerQualityRequestData requestData,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
         return enqueueRequestData(organisationIdentification, deviceIdentification, requestData, messagePriority,

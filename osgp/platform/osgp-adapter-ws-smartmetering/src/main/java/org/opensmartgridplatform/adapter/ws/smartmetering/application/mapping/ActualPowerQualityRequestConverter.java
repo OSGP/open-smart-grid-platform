@@ -10,9 +10,10 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityRequestData;
 
 public class ActualPowerQualityRequestConverter extends
-        CustomConverter<org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityRequest, org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityRequest> {
+        CustomConverter<org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityRequest, ActualPowerQualityRequestData> {
 
     @Override
     public boolean canConvert(final Type<?> sourceType, final Type<?> destinationType) {
@@ -20,11 +21,9 @@ public class ActualPowerQualityRequestConverter extends
     }
 
     @Override
-    public org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityRequest convert(final org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityRequest source,
-            final Type<? extends org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityRequest> destinationType, final MappingContext context) {
-        return new org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityRequest(
-                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ConfidentialityType
-                        .valueOf(source.getProfileType()));
+    public ActualPowerQualityRequestData convert(final org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityRequest source,
+            final Type<? extends ActualPowerQualityRequestData> destinationType, final MappingContext context) {
+        return new ActualPowerQualityRequestData(source.getProfileType());
     }
 
 }

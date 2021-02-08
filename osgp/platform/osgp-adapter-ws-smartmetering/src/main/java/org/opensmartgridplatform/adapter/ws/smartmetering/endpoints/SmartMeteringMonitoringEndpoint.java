@@ -52,6 +52,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.Retr
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.RetrievePushNotificationAlarmResponse;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.services.MonitoringService;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmRegister;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterReads;
@@ -538,9 +539,9 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
         ActualPowerQualityAsyncResponse response = null;
 
         try {
-            final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityRequest dataRequest = this.monitoringMapper
+            final ActualPowerQualityRequestData dataRequest = this.monitoringMapper
                     .map(request,
-                            org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityRequest.class);
+                            ActualPowerQualityRequestData.class);
 
             final String correlationUid = this.monitoringService.enqueueActualPowerQualityRequestData(
                     organisationIdentification, request.getDeviceIdentification(), dataRequest, MessagePriorityEnum.getMessagePriority(messagePriority),
@@ -569,11 +570,10 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
         ActualPowerQualityResponse response = null;
         try {
-            // TODO What would be the expected class here (Not MeterReadsGas)?
             final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    MeterReadsGas.class, ComponentType.WS_SMART_METERING);
+                    ComponentType.WS_SMART_METERING);
 
-            this.throwExceptionIfResultNotOk(responseData, "retrieving the periodic meter reads");
+            this.throwExceptionIfResultNotOk(responseData, "retrieving actual power data");
 
             response = this.monitoringMapper.map(responseData.getMessageData(),
                     org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityResponse.class);

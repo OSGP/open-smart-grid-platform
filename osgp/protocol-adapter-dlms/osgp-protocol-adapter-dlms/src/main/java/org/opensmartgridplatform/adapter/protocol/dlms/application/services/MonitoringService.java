@@ -14,8 +14,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm.Cle
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm.ReadAlarmRegisterCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetActualMeterReadsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetActualMeterReadsGasCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetActualPowerQualityPrivateCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetActualPowerQualityPublicCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetActualPowerQualityCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.monitoring.GetPowerQualityProfileCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.GetPeriodicMeterReadsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodicmeterreads.GetPeriodicMeterReadsGasCommandExecutor;
@@ -38,8 +37,7 @@ public class MonitoringService {
     private final GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor;
     private final GetActualMeterReadsCommandExecutor actualMeterReadsCommandExecutor;
     private final GetActualMeterReadsGasCommandExecutor actualMeterReadsGasCommandExecutor;
-    private final GetActualPowerQualityPrivateCommandExecutor getActualPowerQualityPrivateCommandExecutor;
-    private final GetActualPowerQualityPublicCommandExecutor getActualPowerQualityPublicCommandExecutor;
+    private final GetActualPowerQualityCommandExecutor getActualPowerQualityCommandExecutor;
     private final ReadAlarmRegisterCommandExecutor readAlarmRegisterCommandExecutor;
     private final GetPowerQualityProfileCommandExecutor getPowerQualityProfileCommandExecutor;
     private final ClearAlarmRegisterCommandExecutor clearAlarmRegisterCommandExecutor;
@@ -48,8 +46,7 @@ public class MonitoringService {
             GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor,
             GetActualMeterReadsCommandExecutor actualMeterReadsCommandExecutor,
             GetActualMeterReadsGasCommandExecutor actualMeterReadsGasCommandExecutor,
-            GetActualPowerQualityPrivateCommandExecutor getActualPowerQualityPrivateCommandExecutor,
-            GetActualPowerQualityPublicCommandExecutor getActualPowerQualityPublicCommandExecutor,
+            GetActualPowerQualityCommandExecutor getActualPowerQualityCommandExecutor,
             ReadAlarmRegisterCommandExecutor readAlarmRegisterCommandExecutor,
             GetPowerQualityProfileCommandExecutor getPowerQualityProfileCommandExecutor,
             ClearAlarmRegisterCommandExecutor clearAlarmRegisterCommandExecutor) {
@@ -58,8 +55,7 @@ public class MonitoringService {
         this.getPeriodicMeterReadsGasCommandExecutor = getPeriodicMeterReadsGasCommandExecutor;
         this.actualMeterReadsCommandExecutor = actualMeterReadsCommandExecutor;
         this.actualMeterReadsGasCommandExecutor = actualMeterReadsGasCommandExecutor;
-        this.getActualPowerQualityPrivateCommandExecutor = getActualPowerQualityPrivateCommandExecutor;
-        this.getActualPowerQualityPublicCommandExecutor = getActualPowerQualityPublicCommandExecutor;
+        this.getActualPowerQualityCommandExecutor = getActualPowerQualityCommandExecutor;
         this.readAlarmRegisterCommandExecutor = readAlarmRegisterCommandExecutor;
         this.getPowerQualityProfileCommandExecutor = getPowerQualityProfileCommandExecutor;
         this.clearAlarmRegisterCommandExecutor = clearAlarmRegisterCommandExecutor;
@@ -98,13 +94,7 @@ public class MonitoringService {
     public Serializable requestActualPowerQuality(final DlmsConnectionManager conn, final DlmsDevice device,
             final ActualPowerQualityRequestDto actualPowerQualityRequestDto) throws ProtocolAdapterException {
 
-        final Serializable response;
-        if (actualPowerQualityRequestDto.isPublic()) {
-            response = this.getActualPowerQualityPublicCommandExecutor.execute(conn, device, actualPowerQualityRequestDto);
-        } else {
-            response = this.getActualPowerQualityPrivateCommandExecutor.execute(conn, device, actualPowerQualityRequestDto);
-        }
-        return response;
+        return this.getActualPowerQualityCommandExecutor.execute(conn, device, actualPowerQualityRequestDto);
     }
 
     public AlarmRegisterResponseDto requestReadAlarmRegister(final DlmsConnectionManager conn, final DlmsDevice device,

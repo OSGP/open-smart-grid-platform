@@ -13,18 +13,18 @@ import java.util.Objects;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 
-public class ActualPowerQualityRequest implements Serializable, ActionRequest {
+public class ActualPowerQualityRequestData implements Serializable, ActionRequest {
 
     private static final long serialVersionUID = 7924053476264448032L;
     
-    private final ConfidentialityType confidentialityType;
+    private final String profileType;
 
-    public ActualPowerQualityRequest(final ConfidentialityType confidentialityType) {
-        this.confidentialityType = confidentialityType;
+    public ActualPowerQualityRequestData(final String profileType) {
+        this.profileType = profileType;
     }
 
-    public ConfidentialityType getConfidentialityType() {
-        return this.confidentialityType;
+    public String getProfileType() {
+        return this.profileType;
     }
 
     @Override
@@ -40,12 +40,12 @@ public class ActualPowerQualityRequest implements Serializable, ActionRequest {
     @Override
     public String toString() {
         return String.format("%s[profileType=%s]",
-                ActualPowerQualityRequest.class.getSimpleName(), this.confidentialityType);
+                ActualPowerQualityRequestData.class.getSimpleName(), this.profileType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.confidentialityType);
+        return Objects.hash(this.profileType);
     }
 
     @Override
@@ -53,10 +53,10 @@ public class ActualPowerQualityRequest implements Serializable, ActionRequest {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof ActualPowerQualityRequest)) {
+        if (!(obj instanceof ActualPowerQualityRequestData)) {
             return false;
         }
-        final ActualPowerQualityRequest other = (ActualPowerQualityRequest) obj;
-        return Objects.equals(this.confidentialityType, other.confidentialityType);
+        final ActualPowerQualityRequestData other = (ActualPowerQualityRequestData) obj;
+        return Objects.equals(this.profileType, other.profileType);
     }
 }

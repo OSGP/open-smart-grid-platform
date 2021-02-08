@@ -41,6 +41,7 @@
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="ADD_METER" />
       <xsd:enumeration value="FIND_EVENTS" />
+      <xsd:enumeration value="GET_ACTUAL_POWER_QUALITY" />
       <xsd:enumeration value="REQUEST_PERIODIC_METER_DATA" />
       <xsd:enumeration value="SYNCHRONIZE_TIME" />
       <xsd:enumeration value="SET_SPECIAL_DAYS" />
