@@ -25,6 +25,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.FindEven
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetFirmwareVersionResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetMbusEncryptionKeyStatusByChannelResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetMbusEncryptionKeyStatusResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetOutagesResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ObjectFactory;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.PeriodicMeterReadsGasResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.PeriodicMeterReadsResponse;
@@ -32,7 +33,6 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ReadAlar
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ScanMbusChannelsResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetDeviceLifecycleStatusByChannelResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetOutagesResponse;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.AdhocMapper;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.CommonMapper;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.ConfigurationMapper;
@@ -40,6 +40,7 @@ import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.In
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.ManagementMapper;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActionResponse;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AdministrativeStatusTypeResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmRegister;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AssociationLnObjectsResponseData;
@@ -113,6 +114,7 @@ public class ActionMapperResponseService {
         CLASS_TO_MAPPER_MAP.put(AssociationLnObjectsResponseData.class, this.adhocMapper);
         CLASS_TO_MAPPER_MAP.put(GetConfigurationObjectResponse.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(GetPowerQualityProfileResponse.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(ActualPowerQualityResponse.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(CoupleMbusDeviceByChannelResponse.class, this.installationMapper);
         CLASS_TO_MAPPER_MAP.put(GetMbusEncryptionKeyStatusResponseData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(GetMbusEncryptionKeyStatusByChannelResponseData.class, this.configurationMapper);
@@ -147,6 +149,8 @@ public class ActionMapperResponseService {
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetConfigurationObjectResponse.class);
         CLASS_MAP.put(GetPowerQualityProfileResponse.class,
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPowerQualityProfileResponse.class);
+        CLASS_MAP.put(ActualPowerQualityResponse.class,
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActualPowerQualityResponse.class);
         CLASS_MAP.put(CoupleMbusDeviceByChannelResponse.class,
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.CoupleMbusDeviceByChannelResponse.class);
         CLASS_MAP.put(GetMbusEncryptionKeyStatusResponseData.class, GetMbusEncryptionKeyStatusResponse.class);

@@ -66,8 +66,11 @@ public class BundledGetActualPowerQualitySteps extends BaseBundleSteps {
                                                .isEqualTo(expectedNumberOfCaptureObjects);
 
         for (int i = 0; i < expectedNumberOfCaptureObjects; i++) {
-            final CaptureObject actualCaptureObject = actualCaptureObjects.get(i);
-            this.assertEqualCaptureObject(actualCaptureObject, expectedValues, i + 1);
+            final Long expectedClassId = SettingsHelper.getLongValue(expectedValues, "CaptureObject_ClassId", i+1);
+            if (expectedClassId != null) {
+                final CaptureObject actualCaptureObject = actualCaptureObjects.get(i);
+                this.assertEqualCaptureObject(actualCaptureObject, expectedValues, i + 1);
+            }
         }
     }
 
@@ -92,7 +95,11 @@ public class BundledGetActualPowerQualitySteps extends BaseBundleSteps {
                                                                     .isEqualTo(expectedDataIndex);
 
         final String expectedUnit = SettingsHelper.getStringValue(expectedValues, "CaptureObject_Unit", index);
-        assertThat(actualCaptureObject.getUnit().value()).as("Unit of CaptureObject " + index).isEqualTo(expectedUnit);
+        if (expectedUnit == null) {
+            assertThat(actualCaptureObject.getUnit()).as("Unit of CaptureObject " + index).isNull();
+        } else {
+            assertThat(actualCaptureObject.getUnit().value()).as("Unit of CaptureObject " + index).isEqualTo(expectedUnit);
+        }
     }
 
     private void assertEqualActualValues(final List<ActualValue> actualValues,

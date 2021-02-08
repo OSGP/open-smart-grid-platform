@@ -30,7 +30,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualValueDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsMeterValueDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -43,14 +42,13 @@ public class GetActualPowerQualityCommandExecutor
     private static final byte ATTRIBUTE_ID_TIME = 2;
     private static final byte ATTRIBUTE_ID_VALUE = 2;
     private static final byte ATTRIBUTE_ID_SCALER_UNIT = 3;
-    private static final String OBIS_CODE_CLOCK = "0.0.1.0.0.255";
     private static final String PUBLIC = "PUBLIC";
     private static final String PRIVATE = "PRIVATE";
 
     private final DlmsHelper dlmsHelper;
 
     public GetActualPowerQualityCommandExecutor(final DlmsHelper dlmsHelper) {
-        super(GetPowerQualityProfileRequestDataDto.class);
+        super(ActualPowerQualityRequestDto.class);
         this.dlmsHelper = dlmsHelper;
     }
 

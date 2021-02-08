@@ -20,10 +20,10 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ClearAla
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ConfigureDefinableLoadProfileRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.CoupleMbusDeviceByChannelRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.FindEventsRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetOutagesRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GenerateAndReplaceKeysRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetActualMeterReadsGasRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetActualMeterReadsRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetActualPowerQualityRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetAdministrativeStatusRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetAllAttributeValuesRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetAssociationLnObjectsRequest;
@@ -31,6 +31,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetConfi
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetFirmwareVersionRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetMbusEncryptionKeyStatusByChannelRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetMbusEncryptionKeyStatusRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetOutagesRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPeriodicMeterReadsGasRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPeriodicMeterReadsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPowerQualityProfileRequest;
@@ -62,11 +63,11 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActionRe
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActivityCalendarData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualMeterReadsGasRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualMeterReadsRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AdministrativeStatusTypeData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DefinableLoadProfileConfigurationData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FindEventsRequestData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetOutagesRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GenerateAndReplaceKeysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetAdministrativeStatusData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetAllAttributeValuesRequestData;
@@ -75,6 +76,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfi
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetFirmwareVersionRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetOutagesRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGasRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
@@ -237,6 +239,7 @@ public class ActionMapperService {
         CLASS_MAP.put(ScanMbusChannelsRequest.class, ScanMbusChannelsRequestData.class);
         CLASS_MAP.put(SetRandomisationSettingsRequest.class, SetRandomisationSettingsRequestData.class);
         CLASS_MAP.put(GetOutagesRequest.class, GetOutagesRequestData.class);
+        CLASS_MAP.put(GetActualPowerQualityRequest.class, ActualPowerQualityRequestData.class);
     }
 
     @Autowired
@@ -336,6 +339,8 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(GetPowerQualityProfileRequest.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileRequest.class,
+                this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(GetActualPowerQualityRequest.class,
                 this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityRequest.class,
