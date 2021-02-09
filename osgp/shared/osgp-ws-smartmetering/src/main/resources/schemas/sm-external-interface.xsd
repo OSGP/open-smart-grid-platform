@@ -35,7 +35,7 @@
           <xsd:element ref="bun:GetActualMeterReadsRequest"/>
           <xsd:element ref="bun:GetActualMeterReadsGasRequest"/>
           <xsd:element ref="adm:SetMaintenanceStateRequest"/>
-          <xsd:element ref="adh:SynchronizeTimeRequest"/>
+          <xsd:element ref="bun:SynchronizeTimeRequest"/>
         </xsd:choice>
       </xsd:sequence>
     </xsd:complexType>
