@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out;
 import org.opensmartgridplatform.adapter.kafka.da.application.config.LocationConfig;
 import org.opensmartgridplatform.adapter.kafka.da.application.mapping.DistributionAutomationMapper;
 import org.opensmartgridplatform.adapter.kafka.da.infra.mqtt.in.ScadaMeasurementPayload;
+import org.opensmartgridplatform.adapter.kafka.da.signature.MessageSigner;
 import org.opensmartgridplatform.shared.utils.UuidUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,8 @@ public class LowVoltageMessageProducer {
 
     private final KafkaTemplate<String, Message> kafkaTemplate;
 
+    private final MessageSigner messageSigner;
+
     private final DistributionAutomationMapper mapper;
 
     private final LocationConfig locationConfig;
@@ -41,8 +44,10 @@ public class LowVoltageMessageProducer {
     @Autowired
     public LowVoltageMessageProducer(
             @Qualifier("distributionAutomationKafkaTemplate") final KafkaTemplate<String, Message> kafkaTemplate,
-            final DistributionAutomationMapper mapper, final LocationConfig locationConfig) {
+            final MessageSigner messageSigner, final DistributionAutomationMapper mapper,
+            final LocationConfig locationConfig) {
         this.kafkaTemplate = kafkaTemplate;
+        this.messageSigner = messageSigner;
         this.mapper = mapper;
         this.locationConfig = locationConfig;
     }
@@ -75,6 +80,7 @@ public class LowVoltageMessageProducer {
             if (event != null) {
                 final MessageId messageId = new MessageId(UuidUtil.getBytesFromRandomUuid());
                 final Message message = new Message(messageId, System.currentTimeMillis(), "GXF", null, event);
+                this.messageSigner.sign(message);
                 /*
                  * No need for callback functionality now; by default, the
                  * template is configured with a LoggingProducerListener, which
