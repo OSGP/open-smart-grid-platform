@@ -13,13 +13,13 @@ import java.util.Objects;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 
-public class ActualPowerQualityRequestData implements Serializable, ActionRequest {
+public class ActualPowerQualityRequest implements Serializable, ActionRequest {
 
     private static final long serialVersionUID = 7924053476264448032L;
     
     private final String profileType;
 
-    public ActualPowerQualityRequestData(final String profileType) {
+    public ActualPowerQualityRequest(final String profileType) {
         this.profileType = profileType;
     }
 
@@ -40,7 +40,7 @@ public class ActualPowerQualityRequestData implements Serializable, ActionReques
     @Override
     public String toString() {
         return String.format("%s[profileType=%s]",
-                ActualPowerQualityRequestData.class.getSimpleName(), this.profileType);
+                ActualPowerQualityRequest.class.getSimpleName(), this.profileType);
     }
 
     @Override
@@ -53,10 +53,10 @@ public class ActualPowerQualityRequestData implements Serializable, ActionReques
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof ActualPowerQualityRequestData)) {
+        if (!(obj instanceof ActualPowerQualityRequest)) {
             return false;
         }
-        final ActualPowerQualityRequestData other = (ActualPowerQualityRequestData) obj;
+        final ActualPowerQualityRequest other = (ActualPowerQualityRequest) obj;
         return Objects.equals(this.profileType, other.profileType);
     }
 }

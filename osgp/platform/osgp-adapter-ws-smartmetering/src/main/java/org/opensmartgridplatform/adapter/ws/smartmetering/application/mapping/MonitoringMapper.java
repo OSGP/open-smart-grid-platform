@@ -41,9 +41,6 @@ public class MonitoringMapper extends ConfigurableMapper {
         // and the M3 in the OsgpUnit enum.
         mapperFactory.getConverterFactory().registerConverter(new MeterValueConverter());
 
-        // This convertor converts String to ConfidentialityType enum
-        mapperFactory.getConverterFactory().registerConverter(new ActualPowerQualityRequestConverter());
-        
         // This converter is needed to ensure correct mapping of dates and
         // times.
         mapperFactory.getConverterFactory().registerConverter(new XsdDateTimeToLongConverter());
@@ -73,6 +70,8 @@ public class MonitoringMapper extends ConfigurableMapper {
         mapperFactory.getConverterFactory().registerConverter(new ProfileEntryValueConverter());
         mapperFactory.getConverterFactory().registerConverter(new PowerQualityProfileResponseDataConverter());
         mapperFactory.getConverterFactory().registerConverter(new GetPowerQualityProfileRequestDataConverter());
+        mapperFactory.getConverterFactory().registerConverter(new ActualPowerQualityResponseDataConverter());
+        mapperFactory.getConverterFactory().registerConverter(new ActualValueConverter());
     }
 
 }

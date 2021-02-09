@@ -29,7 +29,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActionRe
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActivityCalendarData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualMeterReadsGasRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualMeterReadsRequestData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AdministrativeStatusTypeData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.BundleMessageRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ClearAlarmRegisterData;
@@ -186,7 +186,7 @@ public class ActionMapperService {
                 SetDeviceLifecycleStatusByChannelRequestDataDto.class);
         CLASS_MAP.put(ScanMbusChannelsRequestData.class, ScanMbusChannelsRequestDataDto.class);
         CLASS_MAP.put(GetOutagesRequestData.class, GetOutagesRequestDto.class);
-        CLASS_MAP.put(ActualPowerQualityRequestData.class, ActualPowerQualityRequestDto.class);
+        CLASS_MAP.put(ActualPowerQualityRequest.class, ActualPowerQualityRequestDto.class);
     }
 
     /**
@@ -233,7 +233,7 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(SetDeviceLifecycleStatusByChannelRequestData.class, this.managementMapper);
         CLASS_TO_MAPPER_MAP.put(ScanMbusChannelsRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(GetOutagesRequestData.class, this.managementMapper);
-        CLASS_TO_MAPPER_MAP.put(ActualPowerQualityRequestData.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(ActualPowerQualityRequest.class, this.monitoringMapper);
     }
 
     public BundleMessagesRequestDto mapAllActions(final BundleMessageRequest bundleMessageRequest,

@@ -21,6 +21,7 @@ import org.opensmartgridplatform.adapter.domain.smartmetering.application.mappin
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ManagementMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActionResponse;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AdministrativeStatusTypeResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmRegister;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AssociationLnObjectsResponseData;
@@ -43,6 +44,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ScanMbus
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdministrativeStatusTypeResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmRegisterResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AssociationLnObjectsResponseDto;
@@ -110,6 +112,7 @@ public class ActionMapperResponseService {
         classMap.put(AssociationLnObjectsResponseDto.class, AssociationLnObjectsResponseData.class);
         classMap.put(GetConfigurationObjectResponseDto.class, GetConfigurationObjectResponse.class);
         classMap.put(GetPowerQualityProfileResponseDto.class, GetPowerQualityProfileResponse.class);
+        classMap.put(ActualPowerQualityResponseDto.class, ActualPowerQualityResponse.class);
         classMap.put(CoupleMbusDeviceByChannelResponseDto.class, CoupleMbusDeviceByChannelResponse.class);
         classMap.put(GetMbusEncryptionKeyStatusResponseDto.class, GetMbusEncryptionKeyStatusResponseData.class);
         classMap.put(GetMbusEncryptionKeyStatusByChannelResponseDto.class,
@@ -140,6 +143,7 @@ public class ActionMapperResponseService {
         classToMapperMap.put(AssociationLnObjectsResponseDto.class, this.commonMapper);
         classToMapperMap.put(GetConfigurationObjectResponseDto.class, this.configurationMapper);
         classToMapperMap.put(GetPowerQualityProfileResponseDto.class, this.monitoringMapper);
+        classToMapperMap.put(ActualPowerQualityResponseDto.class, this.monitoringMapper);
         classToMapperMap.put(CoupleMbusDeviceByChannelResponseDto.class, this.commonMapper);
         classToMapperMap.put(GetMbusEncryptionKeyStatusResponseDto.class, this.configurationMapper);
         classToMapperMap.put(GetMbusEncryptionKeyStatusByChannelResponseDto.class, this.configurationMapper);

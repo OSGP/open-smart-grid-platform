@@ -11,24 +11,24 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.mappi
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityRequest;
 
-public class ActualPowerQualityRequestDataMapperTest {
+public class ActualPowerQualityRequestMapperTest {
 
     private final MonitoringMapper mapper = new MonitoringMapper();
 
     @Test
     public void testGetActualPowerQualityRequest() {
-        final ActualPowerQualityRequestData actualPowerQualityRequestData = this.makeRequest();
-        final ActualPowerQualityRequestData result = this.mapper
-                .map(actualPowerQualityRequestData, ActualPowerQualityRequestData.class);
+        final ActualPowerQualityRequest actualPowerQualityRequest = this.makeRequest();
+        final ActualPowerQualityRequest result = this.mapper
+                .map(actualPowerQualityRequest, ActualPowerQualityRequest.class);
         assertThat(result).isNotNull();
-        assertThat(result).isOfAnyClassIn(ActualPowerQualityRequestData.class);
+        assertThat(result).isOfAnyClassIn(ActualPowerQualityRequest.class);
         assertThat(result.getProfileType()).isEqualTo("PUBLIC");
     }
 
-    private ActualPowerQualityRequestData makeRequest() {
-        return new ActualPowerQualityRequestData("PUBLIC");
+    private ActualPowerQualityRequest makeRequest() {
+        return new ActualPowerQualityRequest("PUBLIC");
     }
 
 }
