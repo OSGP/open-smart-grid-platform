@@ -13,7 +13,7 @@ import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.Osg
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmRegister;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ClearAlarmRegisterRequest;
@@ -288,7 +288,7 @@ public class MonitoringService {
 
 
     public void requestActualPowerQuality(final DeviceMessageMetadata deviceMessageMetadata,
-            final ActualPowerQualityRequestData request) throws FunctionalException {
+            final ActualPowerQualityRequest request) throws FunctionalException {
 
         LOGGER.info("requestActualPowerQuality for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());

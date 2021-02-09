@@ -25,7 +25,6 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.Actu
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityAsyncResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityRequest;
 //import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ClearAlarmRegisterAsyncRequest;
@@ -52,7 +51,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.Retr
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.RetrievePushNotificationAlarmResponse;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.services.MonitoringService;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmRegister;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterReads;
@@ -530,7 +529,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public ActualPowerQualityAsyncResponse getActualPowerQuality(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final ActualPowerQualityRequest request, @MessagePriority final String messagePriority,
+            @RequestPayload final org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityRequest request, @MessagePriority final String messagePriority,
             @ResponseUrl final String responseUrl, @ScheduleTime final String scheduleTime) throws OsgpException {
 
         LOGGER.debug("Incoming ActualPowerQualityRequest for meter: {}.", request.getDeviceIdentification());
@@ -539,9 +538,9 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
         ActualPowerQualityAsyncResponse response = null;
 
         try {
-            final ActualPowerQualityRequestData dataRequest = this.monitoringMapper
+            final ActualPowerQualityRequest dataRequest = this.monitoringMapper
                     .map(request,
-                            ActualPowerQualityRequestData.class);
+                            ActualPowerQualityRequest.class);
 
             final String correlationUid = this.monitoringService.enqueueActualPowerQualityRequestData(
                     organisationIdentification, request.getDeviceIdentification(), dataRequest, MessagePriorityEnum.getMessagePriority(messagePriority),

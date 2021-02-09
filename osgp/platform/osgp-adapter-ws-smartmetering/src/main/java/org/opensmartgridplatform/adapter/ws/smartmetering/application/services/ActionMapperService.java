@@ -63,7 +63,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActionRe
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActivityCalendarData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualMeterReadsGasRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualMeterReadsRequestData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AdministrativeStatusTypeData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DefinableLoadProfileConfigurationData;
@@ -239,7 +239,7 @@ public class ActionMapperService {
         CLASS_MAP.put(ScanMbusChannelsRequest.class, ScanMbusChannelsRequestData.class);
         CLASS_MAP.put(SetRandomisationSettingsRequest.class, SetRandomisationSettingsRequestData.class);
         CLASS_MAP.put(GetOutagesRequest.class, GetOutagesRequestData.class);
-        CLASS_MAP.put(GetActualPowerQualityRequest.class, ActualPowerQualityRequestData.class);
+        CLASS_MAP.put(GetActualPowerQualityRequest.class, ActualPowerQualityRequest.class);
     }
 
     @Autowired
