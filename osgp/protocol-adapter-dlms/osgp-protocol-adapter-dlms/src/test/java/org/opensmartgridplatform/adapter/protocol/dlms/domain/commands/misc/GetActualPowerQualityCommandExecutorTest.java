@@ -27,6 +27,7 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetActualPowerQualityCommandExecutor.ActualPowerQualityLogicalName;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.GetResultImpl;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -52,7 +53,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsUnitTypeDto;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class GetActualPowerQualityCommandExecutorTest {
-    private static final String OBIS_CODE_CLOCK = "0.0.1.0.0.255";
+    private static final int CLASS_ID_DATA = 1;
     private static final int CLASS_ID_REGISTER = 3;
     private static final int CLASS_ID_CLOCK = 8;
 
@@ -117,14 +118,15 @@ public class GetActualPowerQualityCommandExecutorTest {
         for (int i=0;i<logicalNames.size();i++) {
             final GetActualPowerQualityCommandExecutor.ActualPowerQualityLogicalName logicalName = logicalNames.get(i);
 
-            Serializable expectedValue;
-            String expectedUnit;
-            if (logicalName == GetActualPowerQualityCommandExecutor.ActualPowerQualityLogicalName.CLOCK) {
+            Serializable expectedValue = null;
+            String expectedUnit = null;
+            if (logicalName.getClassId() == CLASS_ID_CLOCK) {
                 expectedValue = DateTime.parse("2018-12-31T23:00:00Z").toDate();
-                expectedUnit = null;
-            } else {
-                expectedValue = BigDecimal.valueOf((i-1) * 10.0);
+            } else if (logicalName.getClassId() == CLASS_ID_REGISTER) {
+                expectedValue = BigDecimal.valueOf(i * 10.0);
                 expectedUnit = DlmsUnitTypeDto.VOLT.getUnit();
+            } else if (logicalName.getClassId() == CLASS_ID_DATA) {
+                expectedValue = BigDecimal.valueOf(i);
             }
 
             final CaptureObjectDto captureObject = responseDto.getActualPowerQualityData().getCaptureObjects().get(i);
@@ -144,22 +146,25 @@ public class GetActualPowerQualityCommandExecutorTest {
                 31, 23, 0, 0,
                 0)));
     }
+
     private List<GetResult> generateMockedResult(
-            List<GetActualPowerQualityCommandExecutor.ActualPowerQualityLogicalName> logicalNames, AccessResultCode resultCode, DataObject dateTimeDataObject) {
+            List<GetActualPowerQualityCommandExecutor.ActualPowerQualityLogicalName> logicalNames,
+            AccessResultCode resultCode, DataObject dateTimeDataObject) {
         List<GetResult> results = new ArrayList<>();
 
-        // INDEX_TIME = 0;
-        results.add(new GetResultImpl(dateTimeDataObject, resultCode));
-        // Values
-        for (int i = 0;i<=logicalNames.size();i++) {
-            results.add(new GetResultImpl(DataObject.newInteger64Data(i),
-                    resultCode));
-
-            List<DataObject> scalerUnit = new ArrayList<>();
-            scalerUnit.add(DataObject.newInteger64Data(1));
-            scalerUnit.add(DataObject.newInteger64Data(DlmsUnitTypeDto.VOLT.getIndex()));
-            results.add(new GetResultImpl(DataObject.newArrayData(scalerUnit),
-                    resultCode));
+        int idx = 1;
+        for (ActualPowerQualityLogicalName logicalName : logicalNames) {
+            if (logicalName.getClassId() == CLASS_ID_CLOCK) {
+                results.add(new GetResultImpl(dateTimeDataObject, resultCode));
+            } else {
+                results.add(new GetResultImpl(DataObject.newInteger64Data(idx++), resultCode));
+                if (logicalName.getClassId() == CLASS_ID_REGISTER) {
+                    List<DataObject> scalerUnit = new ArrayList<>();
+                    scalerUnit.add(DataObject.newInteger64Data(1));
+                    scalerUnit.add(DataObject.newInteger64Data(DlmsUnitTypeDto.VOLT.getIndex()));
+                    results.add(new GetResultImpl(DataObject.newArrayData(scalerUnit), resultCode));
+                }
+            }
         }
         return results;
     }
