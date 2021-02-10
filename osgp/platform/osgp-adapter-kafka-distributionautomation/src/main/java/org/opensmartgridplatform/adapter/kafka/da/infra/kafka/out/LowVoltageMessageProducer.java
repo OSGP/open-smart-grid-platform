@@ -7,8 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out;
 
-import java.util.Optional;
-
 import org.opensmartgridplatform.adapter.kafka.da.application.mapping.DistributionAutomationMapper;
 import org.opensmartgridplatform.adapter.kafka.da.application.services.LocationService;
 import org.opensmartgridplatform.adapter.kafka.da.domain.entities.Feeder;
@@ -101,19 +99,27 @@ public class LowVoltageMessageProducer {
         final ScadaMeasurementPayload payload = payloads[0];
         final String substationIdentification = payload.getSubstationIdentification();
 
-        final Optional<Location> locationOptional = this.locationService.getLocation(substationIdentification);
-        payload.setSubstationName(locationOptional.map(Location::getName).orElse(""));
-
-        try {
-            final int feederNumber = Integer.parseInt(payload.getFeeder());
-            if (feederNumber != META_MEASUREMENT_FEEDER) {
-                final Optional<Feeder> feederOptional = locationOptional.flatMap(l -> l.getFeeder(feederNumber));
-                payload.setBayIdentification(feederOptional.map(Feeder::getName).orElse(""));
-            }
-        } catch (final NumberFormatException e) {
-            LOGGER.error("Payload contains a non-numeric value for feeder", e);
+        final Location location = this.locationService.getLocation(substationIdentification).orElse(null);
+        if (location == null) {
+            payload.setBayIdentification("");
+            payload.setSubstationName("");
+        } else {
+            addLocationData(payload, location);
         }
         return payload;
     }
 
+    private static void addLocationData(final ScadaMeasurementPayload payload, final Location location) {
+        payload.setSubstationName(location.getName());
+
+        try {
+            final int feederNumber = Integer.parseInt(payload.getFeeder());
+            if (feederNumber != META_MEASUREMENT_FEEDER) {
+                final String bayIdentification = location.getFeeder(feederNumber).map(Feeder::getName).orElse("");
+                payload.setBayIdentification(bayIdentification);
+            }
+        } catch (final NumberFormatException e) {
+            LOGGER.error("Payload contains a non-numeric value for feeder", e);
+        }
+    }
 }
