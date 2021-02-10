@@ -37,11 +37,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service(value = "wsSmartMeteringMonitoringService")
 @Validated
 public class MonitoringService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(MonitoringService.class);
 
     @Autowired
     private DomainHelperService domainHelperService;
@@ -120,8 +121,10 @@ public class MonitoringService {
 
         this.domainHelperService.checkAllowed(organisation, device, deviceFunction);
 
-        LOGGER.debug("Enqueue {} request data called with organisation {} and device {}",
-                messageType.name().toLowerCase().replace('_', ' '), organisationIdentification, deviceIdentification);
+        if (log.isDebugEnabled()) {
+            log.debug("Enqueue {} request data called with organisation {} and device {}",
+                    messageType.name().toLowerCase().replace('_', ' '), organisationIdentification, deviceIdentification);
+        }
 
         final String correlationUid = this.correlationIdProviderService
                 .getCorrelationId(organisationIdentification, deviceIdentification);
