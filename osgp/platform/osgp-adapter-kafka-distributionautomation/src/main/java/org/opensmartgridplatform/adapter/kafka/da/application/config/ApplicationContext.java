@@ -7,7 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.kafka.da.application.config;
 
-import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -17,16 +16,18 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
 @Configuration
-@ComponentScan(
-        basePackages = { "org.opensmartgridplatform.shared.domain.services", "org.opensmartgridplatform.domain.da",
-                "org.opensmartgridplatform.adapter.kafka.da", "org.opensmartgridplatform.domain.logging",
-                "org.opensmartgridplatform.domain.core.services", "org.opensmartgridplatform.shared.application.config",
-                "org.opensmartgridplatform.adapter.kafka.da.infra.jms.messageprocessors" })
-@Import({ PersistenceConfigCore.class, MessagingConfig.class })
+@ComponentScan("org.opensmartgridplatform.adapter.kafka.da")
+@ComponentScan("org.opensmartgridplatform.domain.da")
+@ComponentScan("org.opensmartgridplatform.domain.core.services")
+@ComponentScan("org.opensmartgridplatform.domain.logging")
+@ComponentScan("org.opensmartgridplatform.shared.application.config")
+@ComponentScan("org.opensmartgridplatform.shared.domain.entities")
+@ComponentScan("org.opensmartgridplatform.shared.domain.services")
+@Import({ PersistenceConfig.class, PersistenceConfigCore.class, MessagingConfig.class })
 @PropertySource("classpath:osgp-adapter-kafka-distributionautomation.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterKafkaDistributionAutomation/config}", ignoreResourceNotFound = true)
-public class ApplicationContext extends AbstractConfig {
+public class ApplicationContext {
 
     @Bean
     public LocalValidatorFactoryBean validator() {

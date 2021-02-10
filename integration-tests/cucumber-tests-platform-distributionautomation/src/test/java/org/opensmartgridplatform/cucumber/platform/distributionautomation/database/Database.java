@@ -10,6 +10,7 @@ package org.opensmartgridplatform.cucumber.platform.distributionautomation.datab
 import java.util.Arrays;
 import java.util.List;
 
+import org.opensmartgridplatform.adapter.kafka.da.domain.repositories.LocationRepository;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.repositories.MqttDeviceRepository;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
@@ -37,6 +38,9 @@ public class Database {
 
     @Autowired
     private RtuDeviceRepository rtuDeviceRepository;
+
+    @Autowired
+    private LocationRepository locationRepository;
 
     private void insertDefaultData() {
         this.notificationWebServiceConfigurationRepository.saveAll(this.notificationEndpointConfigurations());
@@ -69,6 +73,9 @@ public class Database {
 
         // Remove from osgp_core
         this.rtuDeviceRepository.deleteAll();
+
+        // Remove from osgp_adapter_kafka_distributionautomation
+        this.locationRepository.deleteAll();
 
         this.insertDefaultData();
     }
