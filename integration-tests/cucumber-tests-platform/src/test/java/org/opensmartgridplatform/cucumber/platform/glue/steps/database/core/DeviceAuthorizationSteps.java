@@ -13,6 +13,7 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.cucumber.core.Wait;
@@ -97,17 +98,11 @@ public class DeviceAuthorizationSteps {
                 .findByDeviceIdentification(expectedEntity.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
 
         Wait.until(() -> {
-            final List<DeviceAuthorization> storedDeviceAuthorizations = this.deviceAuthorizationRepository
-                    .findByDevice(device);
-
-            // There's always an owner for the device. If OWNER isn't in the
-            // given list of expected authorizations, an additional
-            // authorization will be retrieved from the database.
-            if (authorizationsStringList.contains(DeviceFunctionGroup.OWNER.toString())) {
-                assertThat(storedDeviceAuthorizations.size()).isEqualTo(authorizations.length);
-            } else {
-                assertThat(storedDeviceAuthorizations.size()).isEqualTo(authorizations.length + 1);
-            }
+            final List<String> storedDeviceAuthorizations = this.deviceAuthorizationRepository.findByDevice(device)
+                    .stream()
+                    .map(da -> da.getFunctionGroup().name())
+                    .collect(Collectors.toList());
+            assertThat(storedDeviceAuthorizations).contains(authorizations);
         });
 
         final List<DeviceAuthorization> storedDeviceAuthorizations = this.deviceAuthorizationRepository
