@@ -6,7 +6,6 @@
             xmlns:con="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-configuration/2014/10"
             xmlns:adm="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-administration"
             xmlns:tns="http://www.opensmartgridplatform.org/schemas/smartmetering/external-interface"
-            xmlns:adh="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-adhoc/2014/10"
             attributeFormDefault="qualified" elementFormDefault="qualified"
             targetNamespace="http://www.opensmartgridplatform.org/schemas/smartmetering/external-interface">
 
@@ -18,10 +17,7 @@
 
   <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-administration"
               schemaLocation="sm-administration.xsd"/>
-
-  <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-adhoc/2014/10"
-              schemaLocation="sm-adhoc.xsd"/>
-
+  
   <xsd:element name="ExternalInterfaceRequestMessage">
     <xsd:complexType>
       <xsd:sequence>
@@ -56,7 +52,7 @@
           <xsd:element ref="bun:ActualMeterReadsGasResponse"/>
           <xsd:element ref="con:GetPushNotificationAlarmResponse"/>
           <xsd:element ref="bun:FindEventsResponse"/>
-          <xsd:element ref="adh:SynchronizeTimeResponse"/>
+          <xsd:element ref="bun:ActionResponse"/>
           <xsd:element ref="bun:FaultResponse"/>
         </xsd:choice>
       </xsd:sequence>
