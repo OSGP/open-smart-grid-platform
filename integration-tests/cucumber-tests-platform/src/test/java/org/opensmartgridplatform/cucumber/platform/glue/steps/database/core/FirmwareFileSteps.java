@@ -137,6 +137,7 @@ public class FirmwareFileSteps {
                         getString(settings, PlatformKeys.FIRMWARE_DESCRIPTION, PlatformDefaults.FIRMWARE_DESCRIPTION))
                 .withPushToNewDevices(getBoolean(settings, PlatformKeys.FIRMWARE_PUSH_TO_NEW_DEVICES,
                         PlatformDefaults.FIRMWARE_PUSH_TO_NEW_DEVICE))
+                .withActive(getBoolean(settings, PlatformKeys.FIRMWARE_ACTIVE, PlatformDefaults.FIRMWARE_ACTIVE))
                 .withFile(file)
                 .build();
 
