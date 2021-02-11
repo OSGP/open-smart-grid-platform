@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.CdmaRun;
+import org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects.OsgpSystemCorrelationUid;
 import org.opensmartgridplatform.adapter.domain.shared.FilterLightAndTariffValuesHelper;
 import org.opensmartgridplatform.adapter.domain.shared.GetLightSensorStatusResponse;
 import org.opensmartgridplatform.adapter.domain.shared.GetStatusResponse;
@@ -126,20 +127,12 @@ public class AdHocManagementService extends AbstractService {
                 .withDataObject(response.getLightSensorStatus())
                 .withMessagePriority(messagePriority)
                 .build();
-        /*
-         * For now this only takes care of updating some light measurement
-         * device related data, and no response will be sent to the web service
-         * layer.
-         *
-         * For the use cases involving keeping device connections open, this
-         * behavior is probably sufficient. There may be issues when the light
-         * sensor status will be requested from the web service layer as well as
-         * from the DeviceConnection104LmdScheduledTask. If these occur, they
-         * will need to be addressed, possibly as part of the work for FLEX-5349
-         * (Fix get status in web-operator for 104 light measurement devices
-         * (Make sure correlation uid is correctly passed)).
-         */
-        LOGGER.info("For now only use sensor status to keep 104 LMDs connected, ignore response: {}", responseMessage);
+
+        if (!OsgpSystemCorrelationUid.CORRELATION_UID.equals(ids.getCorrelationUid())) {
+            this.webServiceResponseMessageSender.send(responseMessage);
+        } else {
+            LOGGER.info("We used sensor status to keep 104 LMDs connected, ignore response: {}", responseMessage);
+        }
     }
 
     public void updateLastCommunicationTime(final String deviceIdentification) {

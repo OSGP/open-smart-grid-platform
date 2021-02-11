@@ -14,9 +14,12 @@ import static org.mockito.Mockito.when;
 import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_DEVICE_IDENTIFICATION;
 import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_MESSAGE_TYPE;
 
+import java.util.HashMap;
+
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,9 +31,10 @@ import org.opensmartgridplatform.dto.da.GetHealthStatusRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.ObjectMessageBuilder;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
-public class DeviceRequestMessageListenerTest {
+class DeviceRequestMessageListenerTest {
 
     @InjectMocks
     private DeviceRequestMessageListener deviceRequestMessageListener;
@@ -41,8 +45,15 @@ public class DeviceRequestMessageListenerTest {
     @Mock
     private DeviceResponseMessageSender deviceResponseMessageSender;
 
+    @BeforeEach
+    void setup() {
+        ReflectionTestUtils.setField(this.deviceRequestMessageListener, "correlationUidQueuePerDevice",
+                new HashMap<>());
+    }
+
     @Test
-    public void shouldProcessMessageWhenMessageTypeIsSupported() throws JMSException {
+    void shouldProcessMessageWhenMessageTypeIsSupported() throws JMSException {
+
         // Arrange
         final ObjectMessage message = new ObjectMessageBuilder().withDeviceIdentification(DEFAULT_DEVICE_IDENTIFICATION)
                 .withMessageType(DEFAULT_MESSAGE_TYPE)
@@ -60,7 +71,8 @@ public class DeviceRequestMessageListenerTest {
     }
 
     @Test
-    public void shouldSendErrorMessageWhenMessageTypeIsNotSupported() throws JMSException {
+    void shouldSendErrorMessageWhenMessageTypeIsNotSupported() throws JMSException {
+
         // Arrange
         final ObjectMessage message = new ObjectMessageBuilder().withDeviceIdentification(DEFAULT_DEVICE_IDENTIFICATION)
                 .withMessageType(DEFAULT_MESSAGE_TYPE)

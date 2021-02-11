@@ -7,6 +7,10 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.application.config;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -51,4 +55,8 @@ public class ApplicationContext extends AbstractConfig {
         return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_MAX_RETRY_COUNT));
     }
 
+    @Bean
+    public Map<String, LinkedList<String>> correlationUidQueuePerDevice() {
+        return new HashMap<>();
+    }
 }

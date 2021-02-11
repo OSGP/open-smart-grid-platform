@@ -8,6 +8,8 @@
 
 package org.opensmartgridplatform.adapter.protocol.iec60870.application.services;
 
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -45,6 +47,9 @@ public class LightMeasurementDeviceResponseService extends AbstractDeviceRespons
 
     @Autowired
     private LightMeasurementService lightMeasurementService;
+
+    @Autowired
+    private Map<String, LinkedList<String>> correlationUidQueuePerDevice;
 
     public LightMeasurementDeviceResponseService() {
         super(DEVICE_TYPE);
@@ -147,9 +152,19 @@ public class LightMeasurementDeviceResponseService extends AbstractDeviceRespons
     private void sendLightSensorStatus(final LightSensorStatusDto lightSensorStatus, final Iec60870Device device,
             final ResponseMetadata responseMetadata) {
 
-        final ResponseMetadata rm = new ResponseMetadata.Builder()
-                .withCorrelationUid(responseMetadata.getCorrelationUid())
-                .withDeviceIdentification(device.getDeviceIdentification())
+        String corralationUid;
+        final String deviceIdentification = device.getDeviceIdentification();
+        if (this.correlationUidQueuePerDevice.containsKey(deviceIdentification)) {
+            corralationUid = this.correlationUidQueuePerDevice.get(deviceIdentification).poll();
+            if (corralationUid == null) {
+                corralationUid = responseMetadata.getCorrelationUid();
+            }
+        } else {
+            corralationUid = responseMetadata.getCorrelationUid();
+        }
+
+        final ResponseMetadata rm = new ResponseMetadata.Builder().withCorrelationUid(corralationUid)
+                .withDeviceIdentification(deviceIdentification)
                 .withDomainInfo(responseMetadata.getDomainInfo())
                 .withMessageType(MessageType.GET_LIGHT_SENSOR_STATUS.name())
                 .withOrganisationIdentification(responseMetadata.getOrganisationIdentification())

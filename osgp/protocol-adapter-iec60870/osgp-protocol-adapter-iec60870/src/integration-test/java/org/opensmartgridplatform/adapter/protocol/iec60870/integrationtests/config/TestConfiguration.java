@@ -10,6 +10,10 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.con
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+
 import org.openmuc.j60870.Connection;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.mapping.Iec60870Mapper;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.DistributionAutomationDeviceResponseService;
@@ -176,6 +180,11 @@ public class TestConfiguration {
     @Bean
     public GeneralInterrogationService generalInterrogationService() {
         return new GeneralInterrogationService();
+    }
+
+    @Bean
+    public Map<String, LinkedList<String>> correlationUidQueuePerDevice() {
+        return new HashMap<>();
     }
 
 }
