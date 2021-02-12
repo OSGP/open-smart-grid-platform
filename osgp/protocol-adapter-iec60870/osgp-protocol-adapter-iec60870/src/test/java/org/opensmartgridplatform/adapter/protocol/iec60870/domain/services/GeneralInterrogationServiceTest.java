@@ -31,7 +31,7 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.R
 import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories.RequestMetadataFactory;
 
 @ExtendWith(MockitoExtension.class)
-public class GeneralInterrogationServiceTest {
+class GeneralInterrogationServiceTest {
     private static final String DEVICE_IDENTIFICATION = "DEVICE-001";
 
     @InjectMocks
