@@ -7,14 +7,12 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging;
 
-import java.util.LinkedList;
-import java.util.Map;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.adapter.protocol.iec60870.infra.CorrelationUidPerDevice;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -37,8 +35,6 @@ public class DeviceRequestMessageListener implements MessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRequestMessageListener.class);
 
-    private static final String SYSTEM_CORRELATION_UID = "osgp-system-correlation-uid";
-
     @Autowired
     @Qualifier("protocolIec60870InboundOsgpCoreRequestsMessageProcessorMap")
     private MessageProcessorMap messageProcessorMap;
@@ -48,7 +44,7 @@ public class DeviceRequestMessageListener implements MessageListener {
     private DeviceResponseMessageSender deviceResponseMessageSender;
 
     @Autowired
-    private Map<String, LinkedList<String>> correlationUidQueuePerDevice;
+    private CorrelationUidPerDevice correlationUidPerDevice;
 
     @Override
     public void onMessage(final Message message) {
@@ -68,7 +64,7 @@ public class DeviceRequestMessageListener implements MessageListener {
             LOGGER.info("Received message [correlationUid={}, messageType={}, messagePriority={}]", correlationUid,
                     messageMetadata.getMessageType(), messageMetadata.getMessagePriority());
 
-            this.handleCorrelationUidQueue(correlationUid, messageMetadata.getDeviceIdentification());
+            this.correlationUidPerDevice.enqueu(messageMetadata.getDeviceIdentification(), correlationUid);
 
             final MessageProcessor processor = this.messageProcessorMap.getMessageProcessor(objectMessage);
 
@@ -78,15 +74,6 @@ public class DeviceRequestMessageListener implements MessageListener {
             LOGGER.error("Unexpected exception for message [correlationUid={}]", correlationUid, e);
             this.sendNotSupportedException(objectMessage, messageMetadata);
         }
-    }
-
-    private void handleCorrelationUidQueue(final String correlationUid, final String deviceIdentification) {
-
-        if (!SYSTEM_CORRELATION_UID.equals(correlationUid)) {
-            this.correlationUidQueuePerDevice.computeIfAbsent(deviceIdentification, key -> new LinkedList<>())
-                    .add(correlationUid);
-        }
-
     }
 
     private void sendNotSupportedException(final ObjectMessage objectMessage, final MessageMetadata messageMetadata) {

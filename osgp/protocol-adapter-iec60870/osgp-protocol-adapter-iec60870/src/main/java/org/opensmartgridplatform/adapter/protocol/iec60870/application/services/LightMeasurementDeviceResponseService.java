@@ -8,8 +8,6 @@
 
 package org.opensmartgridplatform.adapter.protocol.iec60870.application.services;
 
-import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -20,6 +18,7 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.I
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LightMeasurementService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceType;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
+import org.opensmartgridplatform.adapter.protocol.iec60870.infra.CorrelationUidPerDevice;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementGroupDto;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementReportDto;
 import org.opensmartgridplatform.dto.da.measurements.elements.BitmaskMeasurementElementDto;
@@ -49,7 +48,7 @@ public class LightMeasurementDeviceResponseService extends AbstractDeviceRespons
     private LightMeasurementService lightMeasurementService;
 
     @Autowired
-    private Map<String, LinkedList<String>> correlationUidQueuePerDevice;
+    private CorrelationUidPerDevice correlationUidQueuePerDevice;
 
     public LightMeasurementDeviceResponseService() {
         super(DEVICE_TYPE);
@@ -167,8 +166,7 @@ public class LightMeasurementDeviceResponseService extends AbstractDeviceRespons
 
         final String deviceIdentification = device.getDeviceIdentification();
 
-        String correlationUid = this.correlationUidQueuePerDevice.getOrDefault(deviceIdentification, new LinkedList<>())
-                .poll();
+        String correlationUid = this.correlationUidQueuePerDevice.dequeu(deviceIdentification);
 
         if (correlationUid == null) {
             correlationUid = responseMetadata.getCorrelationUid();

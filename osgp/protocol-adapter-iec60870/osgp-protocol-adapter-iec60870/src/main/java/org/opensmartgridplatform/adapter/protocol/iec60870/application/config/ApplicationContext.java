@@ -7,10 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.application.config;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-
+import org.opensmartgridplatform.adapter.protocol.iec60870.infra.CorrelationUidPerDevice;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -56,7 +53,7 @@ public class ApplicationContext extends AbstractConfig {
     }
 
     @Bean
-    public Map<String, LinkedList<String>> correlationUidQueuePerDevice() {
-        return new HashMap<>();
+    public CorrelationUidPerDevice correlationUidPerDevice() {
+        return new CorrelationUidPerDevice();
     }
 }

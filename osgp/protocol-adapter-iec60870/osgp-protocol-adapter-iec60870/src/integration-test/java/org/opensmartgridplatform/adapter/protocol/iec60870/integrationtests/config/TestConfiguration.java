@@ -10,10 +10,6 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.con
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-
 import org.openmuc.j60870.Connection;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.mapping.Iec60870Mapper;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.DistributionAutomationDeviceResponseService;
@@ -41,6 +37,7 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asduh
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asduhandlers.ShortFloatWithTime56MeasurementAsduHandler;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asduhandlers.SinglePointInformationWithTimeTagAsduHandler;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asduhandlers.SinglePointWithQualityAsduHandler;
+import org.opensmartgridplatform.adapter.protocol.iec60870.infra.CorrelationUidPerDevice;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.Iec60870Client;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderTimestampService;
@@ -183,8 +180,8 @@ public class TestConfiguration {
     }
 
     @Bean
-    public Map<String, LinkedList<String>> correlationUidQueuePerDevice() {
-        return new HashMap<>();
+    public CorrelationUidPerDevice correlationUidPerDevice() {
+        return new CorrelationUidPerDevice();
     }
 
 }

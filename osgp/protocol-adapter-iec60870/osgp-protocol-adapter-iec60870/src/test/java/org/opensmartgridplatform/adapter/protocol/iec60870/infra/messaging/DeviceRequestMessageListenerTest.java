@@ -14,8 +14,6 @@ import static org.mockito.Mockito.when;
 import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_DEVICE_IDENTIFICATION;
 import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_MESSAGE_TYPE;
 
-import java.util.HashMap;
-
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
@@ -25,6 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.opensmartgridplatform.adapter.protocol.iec60870.infra.CorrelationUidPerDevice;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.processors.GetHealthStatusRequestMessageProcessor;
 import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.matchers.ErrorResponseMessageMatcher;
 import org.opensmartgridplatform.dto.da.GetHealthStatusRequestDto;
@@ -47,8 +46,8 @@ class DeviceRequestMessageListenerTest {
 
     @BeforeEach
     void setup() {
-        ReflectionTestUtils.setField(this.deviceRequestMessageListener, "correlationUidQueuePerDevice",
-                new HashMap<>());
+        ReflectionTestUtils.setField(this.deviceRequestMessageListener, "correlationUidPerDevice",
+                new CorrelationUidPerDevice());
     }
 
     @Test
