@@ -38,7 +38,7 @@ public class DeviceRequestMessageListener implements MessageListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRequestMessageListener.class);
 
     private static final String SYSTEM_CORRELATION_UID = "osgp-system-correlation-uid";
-    
+
     @Autowired
     @Qualifier("protocolIec60870InboundOsgpCoreRequestsMessageProcessorMap")
     private MessageProcessorMap messageProcessorMap;
@@ -68,11 +68,11 @@ public class DeviceRequestMessageListener implements MessageListener {
             LOGGER.info("Received message [correlationUid={}, messageType={}, messagePriority={}]", correlationUid,
                     messageMetadata.getMessageType(), messageMetadata.getMessagePriority());
 
+            this.handleCorrelationUidQueue(correlationUid, messageMetadata.getDeviceIdentification());
+
             final MessageProcessor processor = this.messageProcessorMap.getMessageProcessor(objectMessage);
 
             processor.processMessage(objectMessage);
-
-            this.handleCorrelationUidQueue(correlationUid, messageMetadata.getDeviceIdentification());
 
         } catch (final IllegalArgumentException | JMSException e) {
             LOGGER.error("Unexpected exception for message [correlationUid={}]", correlationUid, e);
@@ -82,16 +82,9 @@ public class DeviceRequestMessageListener implements MessageListener {
 
     private void handleCorrelationUidQueue(final String correlationUid, final String deviceIdentification) {
 
-        LinkedList<String> correlationUidsForDevice;
-
         if (!SYSTEM_CORRELATION_UID.equals(correlationUid)) {
-            if (this.correlationUidQueuePerDevice.containsKey(deviceIdentification)) {
-                correlationUidsForDevice = this.correlationUidQueuePerDevice.get(deviceIdentification);
-            } else {
-                correlationUidsForDevice = new LinkedList<>();
-            }
-            correlationUidsForDevice.add(correlationUid);
-            this.correlationUidQueuePerDevice.put(deviceIdentification, correlationUidsForDevice);
+            this.correlationUidQueuePerDevice.computeIfAbsent(deviceIdentification, key -> new LinkedList<>())
+                    .add(correlationUid);
         }
 
     }

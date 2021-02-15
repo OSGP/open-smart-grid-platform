@@ -97,10 +97,23 @@ public class LightMeasurementDeviceResponseService extends AbstractDeviceRespons
     public void sendLightSensorStatusResponse(final MeasurementReportDto measurementReportDto,
             final Iec60870Device device, final ResponseMetadata responseMetadata, final String errorPrefix) {
 
-        this.findMeasurementGroupAndThen(
-                measurementReportDto, device, measurementGroup -> this.sendLightSensorStatusResponse(measurementGroup,
-                        device, responseMetadata, errorPrefix),
-                () -> this.logMeasurementGroupNotFound(device, errorPrefix));
+        /*
+         * If the device has a gateway device, the report contains values for
+         * all the devices of the gateway device. We are going to handle them
+         * all.
+         */
+        if (device.hasGatewayDevice()) {
+            this.iec60870DeviceRepository.findByGatewayDeviceIdentification(device.getGatewayDeviceIdentification())
+                    .forEach(d -> this.findMeasurementGroupAndThen(measurementReportDto, d,
+                            measurementGroup -> this.sendLightSensorStatusResponse(measurementGroup, d,
+                                    responseMetadata, errorPrefix),
+                            () -> this.logMeasurementGroupNotFound(d, errorPrefix)));
+        } else {
+            this.findMeasurementGroupAndThen(
+                    measurementReportDto, device, measurementGroup -> this
+                            .sendLightSensorStatusResponse(measurementGroup, device, responseMetadata, errorPrefix),
+                    () -> this.logMeasurementGroupNotFound(device, errorPrefix));
+        }
     }
 
     public void sendEvent(final MeasurementReportDto measurementReportDto, final Iec60870Device device,
@@ -152,18 +165,16 @@ public class LightMeasurementDeviceResponseService extends AbstractDeviceRespons
     private void sendLightSensorStatus(final LightSensorStatusDto lightSensorStatus, final Iec60870Device device,
             final ResponseMetadata responseMetadata) {
 
-        String corralationUid;
         final String deviceIdentification = device.getDeviceIdentification();
-        if (this.correlationUidQueuePerDevice.containsKey(deviceIdentification)) {
-            corralationUid = this.correlationUidQueuePerDevice.get(deviceIdentification).poll();
-            if (corralationUid == null) {
-                corralationUid = responseMetadata.getCorrelationUid();
-            }
-        } else {
-            corralationUid = responseMetadata.getCorrelationUid();
+
+        String correlationUid = this.correlationUidQueuePerDevice.getOrDefault(deviceIdentification, new LinkedList<>())
+                .poll();
+
+        if (correlationUid == null) {
+            correlationUid = responseMetadata.getCorrelationUid();
         }
 
-        final ResponseMetadata rm = new ResponseMetadata.Builder().withCorrelationUid(corralationUid)
+        final ResponseMetadata rm = new ResponseMetadata.Builder().withCorrelationUid(correlationUid)
                 .withDeviceIdentification(deviceIdentification)
                 .withDomainInfo(responseMetadata.getDomainInfo())
                 .withMessageType(MessageType.GET_LIGHT_SENSOR_STATUS.name())
