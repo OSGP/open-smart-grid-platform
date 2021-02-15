@@ -21,8 +21,9 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 @Configuration
-@EnableJpaRepositories(entityManagerFactoryRef = "entityMgrFactWsDistributionAutomation", transactionManagerRef = "txMgrWsDistributionAutomation", basePackageClasses = {
-        ResponseDataRepository.class })
+@EnableJpaRepositories(entityManagerFactoryRef = "entityMgrFactWsDistributionAutomation",
+        transactionManagerRef = "txMgrWsDistributionAutomation",
+        basePackageClasses = { ResponseDataRepository.class })
 public class AdapterWsDistributionAutomationPersistenceConfig extends ApplicationPersistenceConfiguration {
 
     public AdapterWsDistributionAutomationPersistenceConfig() {
@@ -75,8 +76,8 @@ public class AdapterWsDistributionAutomationPersistenceConfig extends Applicatio
      */
     @Bean(name = "txMgrWsDistributionAutomation")
     public JpaTransactionManager transactionManager(
-            @Qualifier("entityMgrFactWsDistributionAutomation") final EntityManagerFactory barEntityManagerFactory) {
-        return new JpaTransactionManager(barEntityManagerFactory);
+            @Qualifier("entityMgrFactWsDistributionAutomation") final EntityManagerFactory entityManagerFactory) {
+        return new JpaTransactionManager(entityManagerFactory);
     }
 
 }

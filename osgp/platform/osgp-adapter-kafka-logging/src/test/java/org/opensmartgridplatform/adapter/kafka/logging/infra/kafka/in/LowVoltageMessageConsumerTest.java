@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.kafka.da.serialization.MessageSerializer;
+import org.opensmartgridplatform.adapter.kafka.da.signature.MessageSigner;
 import org.opensmartgridplatform.adapter.kafka.logging.config.ApplicationContext;
 import org.opensmartgridplatform.adapter.kafka.logging.config.LowVoltageMessageLoggingEnabled;
 import org.opensmartgridplatform.adapter.kafka.logging.infra.kafka.in.LowVoltageMessageConsumerTest.TestConfig;
@@ -56,7 +57,7 @@ import com.alliander.messaging.MessageId;
         brokerProperties = { "listeners=PLAINTEXT://${low.voltage.kafka.bootstrap.servers}",
                 "log.dirs=target/kafka-logs-low-voltage-messages", "auto.create.topics.enable=true" })
 @DirtiesContext
-public class LowVoltageMessageConsumerTest {
+class LowVoltageMessageConsumerTest {
 
     /**
      * Spring test context configuration setting up the CountDownKafkaLogger to
@@ -68,6 +69,9 @@ public class LowVoltageMessageConsumerTest {
     @Import(ApplicationContext.class)
     @Conditional(LowVoltageMessageLoggingEnabled.class)
     public static class TestConfig {
+
+        @Autowired
+        MessageSigner messageSigner;
 
         @Bean
         public CountDownLatch countDownLatch() {
@@ -91,7 +95,9 @@ public class LowVoltageMessageConsumerTest {
                     powerSystemResource, createdDateTime, description, mRid);
 
             final MessageId messageId = new MessageId(UuidUtil.getBytesFromRandomUuid());
-            return new Message(messageId, System.currentTimeMillis(), "GXF", null, event);
+            final Message message = new Message(messageId, System.currentTimeMillis(), "GXF", null, event);
+            this.messageSigner.sign(message);
+            return message;
         }
     }
 
