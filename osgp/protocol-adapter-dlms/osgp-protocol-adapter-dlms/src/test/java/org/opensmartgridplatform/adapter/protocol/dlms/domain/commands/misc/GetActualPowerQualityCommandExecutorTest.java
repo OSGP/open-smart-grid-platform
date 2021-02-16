@@ -34,7 +34,7 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetActualPowerQualityCommandExecutor.ActualPowerQualityLogicalName;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetActualPowerQualityCommandExecutor.ActualPowerQualityAttributeName;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.GetResultImpl;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -44,8 +44,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessa
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualValueDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsUnitTypeDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityObjectDto;
 
 @ExtendWith(MockitoExtension.class)
 public class GetActualPowerQualityCommandExecutorTest {
@@ -74,18 +74,18 @@ public class GetActualPowerQualityCommandExecutorTest {
 
     @Test
     void testRetrieval() throws ProtocolAdapterException {
-        executeAndAssert("PRIVATE", GetActualPowerQualityCommandExecutor.getLogicalNamesPrivate());
-        executeAndAssert("PUBLIC", GetActualPowerQualityCommandExecutor.getLogicalNamesPublic());
+        executeAndAssert("PRIVATE", GetActualPowerQualityCommandExecutor.getAttributeNamesPrivate());
+        executeAndAssert("PUBLIC", GetActualPowerQualityCommandExecutor.getAttributeNamesPublic());
     }
 
     @Test
     void testOtherReasonResult() throws ProtocolAdapterException {
         this.actualPowerQualityRequestDto = new ActualPowerQualityRequestDto("PRIVATE");
 
-        final List<GetActualPowerQualityCommandExecutor.ActualPowerQualityLogicalName> logicalNames =
-                GetActualPowerQualityCommandExecutor.getLogicalNamesPrivate();
+        final List<GetActualPowerQualityCommandExecutor.ActualPowerQualityAttributeName> attributeNames =
+                GetActualPowerQualityCommandExecutor.getAttributeNamesPrivate();
 
-        doReturn(generateMockedResult(logicalNames, AccessResultCode.OTHER_REASON)).when(this.dlmsHelper).getAndCheck(eq(this.conn), eq(this.dlmsDevice),
+        doReturn(generateMockedResult(attributeNames, AccessResultCode.OTHER_REASON)).when(this.dlmsHelper).getAndCheck(eq(this.conn), eq(this.dlmsDevice),
                 eq("retrieve actual power quality"), any(AttributeAddress.class));
 
         assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {
@@ -95,10 +95,10 @@ public class GetActualPowerQualityCommandExecutorTest {
     }
 
     void executeAndAssert(String profileType,
-            List<GetActualPowerQualityCommandExecutor.ActualPowerQualityLogicalName> logicalNames) throws ProtocolAdapterException {
+            List<GetActualPowerQualityCommandExecutor.ActualPowerQualityAttributeName> attributeNames) throws ProtocolAdapterException {
         this.actualPowerQualityRequestDto = new ActualPowerQualityRequestDto(profileType);
 
-        doReturn(generateMockedResult(logicalNames, AccessResultCode.SUCCESS)).when(this.dlmsHelper).getAndCheck(eq(this.conn), eq(this.dlmsDevice),
+        doReturn(generateMockedResult(attributeNames, AccessResultCode.SUCCESS)).when(this.dlmsHelper).getAndCheck(eq(this.conn), eq(this.dlmsDevice),
                 eq("retrieve actual power quality"), any(AttributeAddress.class));
 
         final GetActualPowerQualityCommandExecutor executor =
@@ -108,11 +108,11 @@ public class GetActualPowerQualityCommandExecutorTest {
         final ActualPowerQualityResponseDto responseDto = executor.execute(this.conn, this.dlmsDevice,
                 this.actualPowerQualityRequestDto);
 
-        assertThat(responseDto.getActualPowerQualityData().getActualValues().size()).isEqualTo(logicalNames.size());
-        assertThat(responseDto.getActualPowerQualityData().getCaptureObjects().size()).isEqualTo(logicalNames.size());
+        assertThat(responseDto.getActualPowerQualityData().getActualValues().size()).isEqualTo(attributeNames.size());
+        assertThat(responseDto.getActualPowerQualityData().getPowerQualityObjects().size()).isEqualTo(attributeNames.size());
 
-        for (int i=0;i<logicalNames.size();i++) {
-            final GetActualPowerQualityCommandExecutor.ActualPowerQualityLogicalName logicalName = logicalNames.get(i);
+        for (int i=0;i<attributeNames.size();i++) {
+            final GetActualPowerQualityCommandExecutor.ActualPowerQualityAttributeName logicalName = attributeNames.get(i);
 
             Serializable expectedValue;
             String expectedUnit = null;
@@ -128,11 +128,9 @@ public class GetActualPowerQualityCommandExecutorTest {
                 
             }
 
-            final CaptureObjectDto captureObject = responseDto.getActualPowerQualityData().getCaptureObjects().get(i);
-            assertThat(captureObject.getLogicalName()).isEqualTo(logicalName.getObisCode());
-            assertThat(captureObject.getClassId()).isEqualTo(logicalName.getClassId());
-            assertThat(captureObject.getAttributeIndex()).isEqualTo(logicalName.getAttributeIdValue().longValue());
-            assertThat(captureObject.getUnit()).isEqualTo(expectedUnit);
+            final PowerQualityObjectDto powerQualityObjectDto = responseDto.getActualPowerQualityData().getPowerQualityObjects().get(i);
+            assertThat(powerQualityObjectDto.getName()).isEqualTo(logicalName.name());
+            assertThat(powerQualityObjectDto.getUnit()).isEqualTo(expectedUnit);
 
             final ActualValueDto actualValue = responseDto.getActualPowerQualityData().getActualValues().get(i);
             assertThat(actualValue.getValue()).isEqualTo(expectedValue);
@@ -140,19 +138,19 @@ public class GetActualPowerQualityCommandExecutorTest {
     }
 
     private List<GetResult> generateMockedResult(
-            List<GetActualPowerQualityCommandExecutor.ActualPowerQualityLogicalName> logicalNames, AccessResultCode resultCode) {
-        return generateMockedResult(logicalNames, resultCode, DataObject.newDateTimeData(new CosemDateTime(2018, 12,
+            List<GetActualPowerQualityCommandExecutor.ActualPowerQualityAttributeName> attributeNames, AccessResultCode resultCode) {
+        return generateMockedResult(attributeNames, resultCode, DataObject.newDateTimeData(new CosemDateTime(2018, 12,
                 31, 23, 0, 0,
                 0)));
     }
 
     private List<GetResult> generateMockedResult(
-            List<GetActualPowerQualityCommandExecutor.ActualPowerQualityLogicalName> logicalNames,
+            List<GetActualPowerQualityCommandExecutor.ActualPowerQualityAttributeName> attributeNames,
             AccessResultCode resultCode, DataObject dateTimeDataObject) {
         List<GetResult> results = new ArrayList<>();
 
         int idx = 1;
-        for (ActualPowerQualityLogicalName logicalName : logicalNames) {
+        for (ActualPowerQualityAttributeName logicalName : attributeNames) {
             if (logicalName.getClassId() == CLASS_ID_CLOCK) {
                 results.add(new GetResultImpl(dateTimeDataObject, resultCode));
             } else {

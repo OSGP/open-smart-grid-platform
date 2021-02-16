@@ -12,18 +12,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.CaptureObject;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualValue;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityObject;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.helpers.SettingsHelper;
@@ -77,17 +76,17 @@ public class ActualPowerQualitySteps {
         final ActualPowerQualityResponse response = this.responseClient.getResponse(asyncRequest);
         assertThat(response).as("ActualPowerQualityResponseData should not be null").isNotNull();
 
-        final int expectedNumberOfCaptureObjects = getInteger(settings, "NumberOfCaptureObjects", 0);
-        final List<CaptureObject> actualCaptureObjects =
-                response.getActualPowerQualityData().getCaptureObjects().getCaptureObjects();
-        assertThat(actualCaptureObjects.size()).as("Number of capture objects")
-                                               .isEqualTo(expectedNumberOfCaptureObjects);
+        final int expectedNumberOfPowerQualityObjects = getInteger(settings, "NumberOfPowerQualityObjects", 0);
+        final List<PowerQualityObject> actualPowerQualityObjects =
+                response.getActualPowerQualityData().getPowerQualityObjects().getPowerQualityObject();
+        assertThat(actualPowerQualityObjects.size()).as("Number of power quality objects")
+                                               .isEqualTo(expectedNumberOfPowerQualityObjects);
 
-        for (int i = 0; i < expectedNumberOfCaptureObjects; i++) {
-            final CaptureObject actualCaptureObject = actualCaptureObjects.get(i);
-            final Long expectedClassId = SettingsHelper.getLongValue(settings, "CaptureObject_ClassId", i+1);
-            if (expectedClassId != null) {
-                this.validateCaptureObject(actualCaptureObject, settings, i + 1);
+        for (int i = 0; i < expectedNumberOfPowerQualityObjects; i++) {
+            final PowerQualityObject actualPowerQualityObject = actualPowerQualityObjects.get(i);
+            final Long expectedNameId = SettingsHelper.getLongValue(settings, "PowerQuality_Name", i+1);
+            if (expectedNameId != null) {
+                this.validatePowerQualityObject(actualPowerQualityObject, settings, i + 1);
             }
         }
 
@@ -99,37 +98,24 @@ public class ActualPowerQualitySteps {
 
         if (expectedNumberOfActualValues > 0) {
             /*
-             * Expected value equals expectedNumberOfCaptureObjects, because the
-             * number of ActualValues should match the number of captured objects
+             * Expected value equals expectedNumberOfPowerQualityObjects, because the
+             * number of ActualValues should match the number of power quality objects
              * from the buffer.
              */
-            assertThat(actualValues.size()).as("Number of actual values").isEqualTo(expectedNumberOfCaptureObjects);
+            assertThat(actualValues.size()).as("Number of actual values").isEqualTo(expectedNumberOfPowerQualityObjects);
         }
     }
 
-    private void validateCaptureObject(final CaptureObject actualCaptureObject, final Map<String, String> settings,
+    private void validatePowerQualityObject(final PowerQualityObject actualPowerQualityObject, final Map<String, String> settings,
             final int index) {
 
-        final Long expectedClassId = SettingsHelper.getLongValue(settings, "CaptureObject_ClassId", index);
-        assertThat(Long.valueOf(actualCaptureObject.getClassId())).as("ClassId of CaptureObject " + index)
-                                                                  .isEqualTo(expectedClassId);
+        final String expectedName = SettingsHelper.getStringValue(settings, "PowerQualityObject_Name", index);
+        assertThat(actualPowerQualityObject.getName()).as("LogicalName of PowerQualityObject " + index)
+                                                        .isEqualTo(expectedName);
 
-        final String expectedLogicalName = SettingsHelper.getStringValue(settings, "CaptureObject_LogicalName", index);
-        assertThat(actualCaptureObject.getLogicalName()).as("LogicalName of CaptureObject " + index)
-                                                        .isEqualTo(expectedLogicalName);
-
-        final BigInteger expectedAttributeIndex = SettingsHelper
-                .getBigIntegerValue(settings, "CaptureObject_AttributeIndex", index);
-        assertThat(actualCaptureObject.getAttributeIndex()).as("AttributeIndex of CaptureObject " + index)
-                                                           .isEqualTo(expectedAttributeIndex);
-
-        final Long expectedDataIndex = SettingsHelper.getLongValue(settings, "CaptureObject_DataIndex", index);
-        assertThat(Long.valueOf(actualCaptureObject.getDataIndex())).as("DataIndex of CaptureObject " + index)
-                                                                    .isEqualTo(expectedDataIndex);
-
-        final String expectedUnit = SettingsHelper.getStringValue(settings, "CaptureObject_Unit", index);
+        final String expectedUnit = SettingsHelper.getStringValue(settings, "PowerQualityObject_Unit", index);
         if (expectedUnit != null) {
-            assertThat(actualCaptureObject.getUnit().value()).as("Unit of CaptureObject " + index).isEqualTo(expectedUnit);
+            assertThat(actualPowerQualityObject.getUnit().value()).as("Unit of PowerQualityObject " + index).isEqualTo(expectedUnit);
         }
     }
 }

@@ -10,8 +10,8 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.mappi
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
+import lombok.EqualsAndHashCode;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.MappingContext;
@@ -19,12 +19,10 @@ import ma.glasnost.orika.metadata.Type;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualValue;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CaptureObject;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PowerQualityObject;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualValueDto;
-
-import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper=true)
 public class ActualPowerQualityDtoConverter
@@ -45,12 +43,12 @@ public class ActualPowerQualityDtoConverter
         if (source.getActualPowerQualityData() != null) {
             final ActualPowerQualityDataDto responseDataDto = source.getActualPowerQualityData();
 
-            final List<CaptureObject> captureObjects = new ArrayList<>(
-                    this.mapperFacade.mapAsList(responseDataDto.getCaptureObjects(), CaptureObject.class));
+            final List<PowerQualityObject> powerQualityObjects = new ArrayList<>(
+                    this.mapperFacade.mapAsList(responseDataDto.getPowerQualityObjects(), PowerQualityObject.class));
 
             final List<ActualValue> actualValues = this.makeActualValues(responseDataDto);
 
-            final ActualPowerQualityData actualPowerQualityData = new ActualPowerQualityData(captureObjects,
+            final ActualPowerQualityData actualPowerQualityData = new ActualPowerQualityData(powerQualityObjects,
                     actualValues);
             response.setActualPowerQualityData(actualPowerQualityData);
         }

@@ -15,18 +15,18 @@ public class ActualPowerQualityData extends ActionResponse implements Serializab
 
     private static final long serialVersionUID = -156966569210717657L;
 
-    private final List<CaptureObject> captureObjects;
+    private final List<PowerQualityObject> powerQualityObjects;
     private final List<ActualValue> actualValues;
 
     public ActualPowerQualityData(
-            final List<CaptureObject> captureObjects, final List<ActualValue> actualValues) {
+            final List<PowerQualityObject> powerQualityObjects, final List<ActualValue> actualValues) {
         super();
-        this.captureObjects = captureObjects;
+        this.powerQualityObjects = powerQualityObjects;
         this.actualValues = actualValues;
     }
 
-    public List<CaptureObject> getCaptureObjects() {
-        return this.captureObjects;
+    public List<PowerQualityObject> getPowerQualityObjects() {
+        return this.powerQualityObjects;
     }
 
     public List<ActualValue> getActualValues() {

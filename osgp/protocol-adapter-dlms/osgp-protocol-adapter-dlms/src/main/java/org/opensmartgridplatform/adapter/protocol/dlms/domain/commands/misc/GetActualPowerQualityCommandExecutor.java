@@ -27,9 +27,9 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQuali
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualValueDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsMeterValueDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityObjectDto;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -68,11 +68,11 @@ public class GetActualPowerQualityCommandExecutor
         final List<GetResult> resultList = this.dlmsHelper.getAndCheck(conn, device, "retrieve actual power quality",
                 attributeAddresses);
 
-        return makeActualPowerQualityResponseDto(resultList, profile.getLogicalNames());
+        return makeActualPowerQualityResponseDto(resultList, profile.getAttributeNames());
     }
 
     private ActualPowerQualityResponseDto makeActualPowerQualityResponseDto(List<GetResult> resultList,
-            List<ActualPowerQualityLogicalName> logicalNames) throws ProtocolAdapterException {
+            List<ActualPowerQualityAttributeName> logicalNames) throws ProtocolAdapterException {
         final ActualPowerQualityResponseDto responseDto = new ActualPowerQualityResponseDto();
         final ActualPowerQualityDataDto actualPowerQualityDataDto = makeActualPowerQualityDataDto(resultList,
                 logicalNames);
@@ -81,22 +81,21 @@ public class GetActualPowerQualityCommandExecutor
     }
 
     private ActualPowerQualityDataDto makeActualPowerQualityDataDto(List<GetResult> resultList,
-            List<ActualPowerQualityLogicalName> logicalNames) throws ProtocolAdapterException {
+            List<ActualPowerQualityAttributeName> logicalNames) throws ProtocolAdapterException {
 
-        final List<CaptureObjectDto> captureObjects = new ArrayList<>();
+        final List<PowerQualityObjectDto> powerQualityObjects = new ArrayList<>();
         final List<ActualValueDto> actualValues = new ArrayList<>();
 
         int idx = 0;
-        for (ActualPowerQualityLogicalName logicalName : logicalNames) {
-            CaptureObjectDto captureObject;
+        for (ActualPowerQualityAttributeName logicalName : logicalNames) {
+            PowerQualityObjectDto powerQualityObject;
             ActualValueDto actualValue;
             if (logicalName.getClassId() == CLASS_ID_CLOCK) {
                 // Clock is the first value, without a scalar unit
                 final GetResult resultTime = resultList.get(idx++);
                 final CosemDateTimeDto cosemDateTime = this.dlmsHelper.readDateTime(resultTime,
                         "Actual Power Quality - Time");
-                captureObject = new CaptureObjectDto(logicalName.getClassId(), logicalName.getObisCode(),
-                        logicalName.getAttributeIdValue(), 0, null);
+                powerQualityObject = new PowerQualityObjectDto(logicalName.name(), null);
                 actualValue = new ActualValueDto(cosemDateTime.asDateTime().toDate());
             } else if (logicalName.getClassId() == CLASS_ID_REGISTER) {
                 final GetResult resultValue = resultList.get(idx++);
@@ -109,8 +108,7 @@ public class GetActualPowerQualityCommandExecutor
                 final String unit = meterValue != null ? meterValue.getDlmsUnit().getUnit() : null;
                 actualValue = new ActualValueDto(value);
 
-                captureObject = new CaptureObjectDto(logicalName.getClassId(), logicalName.getObisCode(),
-                        logicalName.getAttributeIdValue(), 0, unit);
+                powerQualityObject = new PowerQualityObjectDto(logicalName.name(), unit);
 
             } else if (logicalName.getClassId() == CLASS_ID_DATA) {
 
@@ -121,23 +119,22 @@ public class GetActualPowerQualityCommandExecutor
 
                 actualValue = meterValue != null ? new ActualValueDto(new BigDecimal(meterValue)) : null;
 
-                captureObject = new CaptureObjectDto(logicalName.getClassId(), logicalName.getObisCode(),
-                        logicalName.getAttributeIdValue(), 0, null);
+                powerQualityObject = new PowerQualityObjectDto(logicalName.name(), null);
             } else {
                 throw new ProtocolAdapterException(String.format("Unsupported ClassId {} for logical name {}",
                         logicalName.getClassId(), logicalName.obisCode));
             }
-            captureObjects.add(captureObject);
+            powerQualityObjects.add(powerQualityObject);
             actualValues.add(actualValue);
 
         }
 
-        return new ActualPowerQualityDataDto(captureObjects, actualValues);
+        return new ActualPowerQualityDataDto(powerQualityObjects, actualValues);
     }
 
     private AttributeAddress[] createAttributeAddresses(Profile profile) {
         List<AttributeAddress> attributeAddresses = new ArrayList<>();
-        for (ActualPowerQualityLogicalName logicalName : profile.getLogicalNames()) {
+        for (ActualPowerQualityAttributeName logicalName : profile.getAttributeNames()) {
             attributeAddresses.add(new AttributeAddress(logicalName.getClassId(), logicalName.getObisCode(),
                     logicalName.getAttributeIdValue()));
             if (logicalName.getAttributeIdScalarUnit() != null) {
@@ -161,111 +158,111 @@ public class GetActualPowerQualityCommandExecutor
         }
     }
 
-    protected static List<ActualPowerQualityLogicalName> getLogicalNamesPublic() {
+    protected static List<ActualPowerQualityAttributeName> getAttributeNamesPublic() {
         return Arrays.asList(
-                ActualPowerQualityLogicalName.CLOCK,
-                ActualPowerQualityLogicalName.PUBLIC_INSTANTANEOUS_VOLTAGE_L1,
-                ActualPowerQualityLogicalName.PUBLIC_INSTANTANEOUS_VOLTAGE_L2,
-                ActualPowerQualityLogicalName.PUBLIC_INSTANTANEOUS_VOLTAGE_L3,
-                ActualPowerQualityLogicalName.PUBLIC_AVERAGE_VOLTAGE_L1,
-                ActualPowerQualityLogicalName.PUBLIC_AVERAGE_VOLTAGE_L2,
-                ActualPowerQualityLogicalName.PUBLIC_AVERAGE_VOLTAGE_L3,
-                ActualPowerQualityLogicalName.PUBLIC_NUMBER_OF_LONG_POWER_FAILURES,
-                ActualPowerQualityLogicalName.PUBLIC_NUMBER_OF_POWER_FAILURES,
-                ActualPowerQualityLogicalName.PUBLIC_NUMBER_OF_VOLTAGE_SAGS_FOR_L1,
-                ActualPowerQualityLogicalName.PUBLIC_NUMBER_OF_VOLTAGE_SAGS_FOR_L2,
-                ActualPowerQualityLogicalName.PUBLIC_NUMBER_OF_VOLTAGE_SAGS_FOR_L3,
-                ActualPowerQualityLogicalName.PUBLIC_NUMBER_OF_VOLTAGE_SWELLS_FOR_L1,
-                ActualPowerQualityLogicalName.PUBLIC_NUMBER_OF_VOLTAGE_SWELLS_FOR_L2,
-                ActualPowerQualityLogicalName.PUBLIC_NUMBER_OF_VOLTAGE_SWELLS_FOR_L3);
+                ActualPowerQualityAttributeName.CLOCK,
+                ActualPowerQualityAttributeName.INSTANTANEOUS_VOLTAGE_L1,
+                ActualPowerQualityAttributeName.INSTANTANEOUS_VOLTAGE_L2,
+                ActualPowerQualityAttributeName.INSTANTANEOUS_VOLTAGE_L3,
+                ActualPowerQualityAttributeName.AVERAGE_VOLTAGE_L1,
+                ActualPowerQualityAttributeName.AVERAGE_VOLTAGE_L2,
+                ActualPowerQualityAttributeName.AVERAGE_VOLTAGE_L3,
+                ActualPowerQualityAttributeName.NUMBER_OF_LONG_POWER_FAILURES,
+                ActualPowerQualityAttributeName.NUMBER_OF_POWER_FAILURES,
+                ActualPowerQualityAttributeName.NUMBER_OF_VOLTAGE_SAGS_FOR_L1,
+                ActualPowerQualityAttributeName.NUMBER_OF_VOLTAGE_SAGS_FOR_L2,
+                ActualPowerQualityAttributeName.NUMBER_OF_VOLTAGE_SAGS_FOR_L3,
+                ActualPowerQualityAttributeName.NUMBER_OF_VOLTAGE_SWELLS_FOR_L1,
+                ActualPowerQualityAttributeName.NUMBER_OF_VOLTAGE_SWELLS_FOR_L2,
+                ActualPowerQualityAttributeName.NUMBER_OF_VOLTAGE_SWELLS_FOR_L3);
     }
 
-    protected static List<ActualPowerQualityLogicalName> getLogicalNamesPrivate() {
+    protected static List<ActualPowerQualityAttributeName> getAttributeNamesPrivate() {
         return Arrays.asList(
-                ActualPowerQualityLogicalName.CLOCK,
-                ActualPowerQualityLogicalName.PRIVATE_INSTANTANEOUS_CURRENT_L1,
-                ActualPowerQualityLogicalName.PRIVATE_INSTANTANEOUS_CURRENT_L2,
-                ActualPowerQualityLogicalName.PRIVATE_INSTANTANEOUS_CURRENT_L3,
-                ActualPowerQualityLogicalName.PRIVATE_INSTANTANEOUS_ACTIVE_POWER_IMPORT,
-                ActualPowerQualityLogicalName.PRIVATE_INSTANTANEOUS_ACTIVE_POWER_EXPORT,
-                ActualPowerQualityLogicalName.PRIVATE_INSTANTANEOUS_ACTIVE_POWER_IMPORT_L1,
-                ActualPowerQualityLogicalName.PRIVATE_INSTANTANEOUS_ACTIVE_POWER_IMPORT_L2,
-                ActualPowerQualityLogicalName.PRIVATE_INSTANTANEOUS_ACTIVE_POWER_IMPORT_L3,
-                ActualPowerQualityLogicalName.PRIVATE_INSTANTANEOUS_ACTIVE_POWER_EXPORT_L1,
-                ActualPowerQualityLogicalName.PRIVATE_INSTANTANEOUS_ACTIVE_POWER_EXPORT_L2,
-                ActualPowerQualityLogicalName.PRIVATE_INSTANTANEOUS_ACTIVE_POWER_EXPORT_L3,
-                ActualPowerQualityLogicalName.PRIVATE_AVERAGE_CURRENT_L1,
-                ActualPowerQualityLogicalName.PRIVATE_AVERAGE_CURRENT_L2,
-                ActualPowerQualityLogicalName.PRIVATE_AVERAGE_CURRENT_L3,
-                ActualPowerQualityLogicalName.PRIVATE_AVERAGE_ACTIVE_POWER_IMPORT_L1,
-                ActualPowerQualityLogicalName.PRIVATE_AVERAGE_ACTIVE_POWER_IMPORT_L2,
-                ActualPowerQualityLogicalName.PRIVATE_AVERAGE_ACTIVE_POWER_IMPORT_L3,
-                ActualPowerQualityLogicalName.PRIVATE_AVERAGE_ACTIVE_POWER_EXPORT_L1,
-                ActualPowerQualityLogicalName.PRIVATE_AVERAGE_ACTIVE_POWER_EXPORT_L2,
-                ActualPowerQualityLogicalName.PRIVATE_AVERAGE_ACTIVE_POWER_EXPORT_L3,
-                ActualPowerQualityLogicalName.PRIVATE_AVERAGE_REACTIVE_POWER_IMPORT_L1,
-                ActualPowerQualityLogicalName.PRIVATE_AVERAGE_REACTIVE_POWER_IMPORT_L2,
-                ActualPowerQualityLogicalName.PRIVATE_AVERAGE_REACTIVE_POWER_IMPORT_L3,
-                ActualPowerQualityLogicalName.PRIVATE_AVERAGE_REACTIVE_POWER_EXPORT_L1,
-                ActualPowerQualityLogicalName.PRIVATE_AVERAGE_REACTIVE_POWER_EXPORT_L2,
-                ActualPowerQualityLogicalName.PRIVATE_AVERAGE_REACTIVE_POWER_EXPORT_L3,
-                ActualPowerQualityLogicalName.PRIVATE_INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES);
+                ActualPowerQualityAttributeName.CLOCK,
+                ActualPowerQualityAttributeName.INSTANTANEOUS_CURRENT_L1,
+                ActualPowerQualityAttributeName.INSTANTANEOUS_CURRENT_L2,
+                ActualPowerQualityAttributeName.INSTANTANEOUS_CURRENT_L3,
+                ActualPowerQualityAttributeName.INSTANTANEOUS_ACTIVE_POWER_IMPORT,
+                ActualPowerQualityAttributeName.INSTANTANEOUS_ACTIVE_POWER_EXPORT,
+                ActualPowerQualityAttributeName.INSTANTANEOUS_ACTIVE_POWER_IMPORT_L1,
+                ActualPowerQualityAttributeName.INSTANTANEOUS_ACTIVE_POWER_IMPORT_L2,
+                ActualPowerQualityAttributeName.INSTANTANEOUS_ACTIVE_POWER_IMPORT_L3,
+                ActualPowerQualityAttributeName.INSTANTANEOUS_ACTIVE_POWER_EXPORT_L1,
+                ActualPowerQualityAttributeName.INSTANTANEOUS_ACTIVE_POWER_EXPORT_L2,
+                ActualPowerQualityAttributeName.INSTANTANEOUS_ACTIVE_POWER_EXPORT_L3,
+                ActualPowerQualityAttributeName.AVERAGE_CURRENT_L1,
+                ActualPowerQualityAttributeName.AVERAGE_CURRENT_L2,
+                ActualPowerQualityAttributeName.AVERAGE_CURRENT_L3,
+                ActualPowerQualityAttributeName.AVERAGE_ACTIVE_POWER_IMPORT_L1,
+                ActualPowerQualityAttributeName.AVERAGE_ACTIVE_POWER_IMPORT_L2,
+                ActualPowerQualityAttributeName.AVERAGE_ACTIVE_POWER_IMPORT_L3,
+                ActualPowerQualityAttributeName.AVERAGE_ACTIVE_POWER_EXPORT_L1,
+                ActualPowerQualityAttributeName.AVERAGE_ACTIVE_POWER_EXPORT_L2,
+                ActualPowerQualityAttributeName.AVERAGE_ACTIVE_POWER_EXPORT_L3,
+                ActualPowerQualityAttributeName.AVERAGE_REACTIVE_POWER_IMPORT_L1,
+                ActualPowerQualityAttributeName.AVERAGE_REACTIVE_POWER_IMPORT_L2,
+                ActualPowerQualityAttributeName.AVERAGE_REACTIVE_POWER_IMPORT_L3,
+                ActualPowerQualityAttributeName.AVERAGE_REACTIVE_POWER_EXPORT_L1,
+                ActualPowerQualityAttributeName.AVERAGE_REACTIVE_POWER_EXPORT_L2,
+                ActualPowerQualityAttributeName.AVERAGE_REACTIVE_POWER_EXPORT_L3,
+                ActualPowerQualityAttributeName.INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES);
     }
 
     @Getter
-    protected enum ActualPowerQualityLogicalName {
+    protected enum ActualPowerQualityAttributeName {
         CLOCK("0.0.1.0.0.255", CLASS_ID_CLOCK, ATTRIBUTE_ID_TIME, null),
         // PRIVATE
-        PRIVATE_INSTANTANEOUS_CURRENT_L1("1.0.31.7.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PRIVATE_INSTANTANEOUS_CURRENT_L2("1.0.51.7.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PRIVATE_INSTANTANEOUS_CURRENT_L3("1.0.71.7.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PRIVATE_INSTANTANEOUS_ACTIVE_POWER_IMPORT("1.0.1.7.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PRIVATE_INSTANTANEOUS_ACTIVE_POWER_EXPORT("1.0.2.7.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PRIVATE_INSTANTANEOUS_ACTIVE_POWER_IMPORT_L1("1.0.21.7.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PRIVATE_INSTANTANEOUS_ACTIVE_POWER_IMPORT_L2("1.0.41.7.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PRIVATE_INSTANTANEOUS_ACTIVE_POWER_IMPORT_L3("1.0.61.7.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PRIVATE_INSTANTANEOUS_ACTIVE_POWER_EXPORT_L1("1.0.22.7.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PRIVATE_INSTANTANEOUS_ACTIVE_POWER_EXPORT_L2("1.0.42.7.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PRIVATE_INSTANTANEOUS_ACTIVE_POWER_EXPORT_L3("1.0.62.7.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PRIVATE_AVERAGE_CURRENT_L1("1.0.31.24.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PRIVATE_AVERAGE_CURRENT_L2("1.0.51.24.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PRIVATE_AVERAGE_CURRENT_L3("1.0.71.24.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PRIVATE_AVERAGE_ACTIVE_POWER_IMPORT_L1("1.0.21.4.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PRIVATE_AVERAGE_ACTIVE_POWER_IMPORT_L2("1.0.41.4.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PRIVATE_AVERAGE_ACTIVE_POWER_IMPORT_L3("1.0.61.4.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PRIVATE_AVERAGE_ACTIVE_POWER_EXPORT_L1("1.0.22.4.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PRIVATE_AVERAGE_ACTIVE_POWER_EXPORT_L2("1.0.42.4.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PRIVATE_AVERAGE_ACTIVE_POWER_EXPORT_L3("1.0.62.4.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PRIVATE_AVERAGE_REACTIVE_POWER_IMPORT_L1("1.0.23.4.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PRIVATE_AVERAGE_REACTIVE_POWER_IMPORT_L2("1.0.43.4.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PRIVATE_AVERAGE_REACTIVE_POWER_IMPORT_L3("1.0.63.4.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PRIVATE_AVERAGE_REACTIVE_POWER_EXPORT_L1("1.0.24.4.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PRIVATE_AVERAGE_REACTIVE_POWER_EXPORT_L2("1.0.44.4.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PRIVATE_AVERAGE_REACTIVE_POWER_EXPORT_L3("1.0.64.4.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PRIVATE_INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES("1.0.90.7.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        INSTANTANEOUS_CURRENT_L1("1.0.31.7.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        INSTANTANEOUS_CURRENT_L2("1.0.51.7.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        INSTANTANEOUS_CURRENT_L3("1.0.71.7.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        INSTANTANEOUS_ACTIVE_POWER_IMPORT("1.0.1.7.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        INSTANTANEOUS_ACTIVE_POWER_EXPORT("1.0.2.7.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        INSTANTANEOUS_ACTIVE_POWER_IMPORT_L1("1.0.21.7.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        INSTANTANEOUS_ACTIVE_POWER_IMPORT_L2("1.0.41.7.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        INSTANTANEOUS_ACTIVE_POWER_IMPORT_L3("1.0.61.7.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        INSTANTANEOUS_ACTIVE_POWER_EXPORT_L1("1.0.22.7.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        INSTANTANEOUS_ACTIVE_POWER_EXPORT_L2("1.0.42.7.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        INSTANTANEOUS_ACTIVE_POWER_EXPORT_L3("1.0.62.7.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        AVERAGE_CURRENT_L1("1.0.31.24.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        AVERAGE_CURRENT_L2("1.0.51.24.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        AVERAGE_CURRENT_L3("1.0.71.24.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        AVERAGE_ACTIVE_POWER_IMPORT_L1("1.0.21.4.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        AVERAGE_ACTIVE_POWER_IMPORT_L2("1.0.41.4.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        AVERAGE_ACTIVE_POWER_IMPORT_L3("1.0.61.4.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        AVERAGE_ACTIVE_POWER_EXPORT_L1("1.0.22.4.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        AVERAGE_ACTIVE_POWER_EXPORT_L2("1.0.42.4.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        AVERAGE_ACTIVE_POWER_EXPORT_L3("1.0.62.4.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        AVERAGE_REACTIVE_POWER_IMPORT_L1("1.0.23.4.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        AVERAGE_REACTIVE_POWER_IMPORT_L2("1.0.43.4.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        AVERAGE_REACTIVE_POWER_IMPORT_L3("1.0.63.4.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        AVERAGE_REACTIVE_POWER_EXPORT_L1("1.0.24.4.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        AVERAGE_REACTIVE_POWER_EXPORT_L2("1.0.44.4.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        AVERAGE_REACTIVE_POWER_EXPORT_L3("1.0.64.4.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES("1.0.90.7.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
 
         // PUBLIC
-        PUBLIC_INSTANTANEOUS_VOLTAGE_L1("1.0.32.7.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PUBLIC_INSTANTANEOUS_VOLTAGE_L2("1.0.52.7.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PUBLIC_INSTANTANEOUS_VOLTAGE_L3("1.0.72.7.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PUBLIC_AVERAGE_VOLTAGE_L1("1.0.32.24.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PUBLIC_AVERAGE_VOLTAGE_L2("1.0.52.24.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PUBLIC_AVERAGE_VOLTAGE_L3("1.0.72.24.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
-        PUBLIC_NUMBER_OF_LONG_POWER_FAILURES("0.0.96.7.9.255", CLASS_ID_DATA, ATTRIBUTE_ID_VALUE, null),
-        PUBLIC_NUMBER_OF_POWER_FAILURES("0.0.96.7.21.255", CLASS_ID_DATA, ATTRIBUTE_ID_VALUE, null),
-        PUBLIC_NUMBER_OF_VOLTAGE_SAGS_FOR_L1("1.0.32.32.0.255", CLASS_ID_DATA, ATTRIBUTE_ID_VALUE, null),
-        PUBLIC_NUMBER_OF_VOLTAGE_SAGS_FOR_L2("1.0.52.32.0.255", CLASS_ID_DATA, ATTRIBUTE_ID_VALUE, null),
-        PUBLIC_NUMBER_OF_VOLTAGE_SAGS_FOR_L3("1.0.72.32.0.255", CLASS_ID_DATA, ATTRIBUTE_ID_VALUE, null),
-        PUBLIC_NUMBER_OF_VOLTAGE_SWELLS_FOR_L1("1.0.32.36.0.255", CLASS_ID_DATA, ATTRIBUTE_ID_VALUE, null),
-        PUBLIC_NUMBER_OF_VOLTAGE_SWELLS_FOR_L2("1.0.52.36.0.255", CLASS_ID_DATA, ATTRIBUTE_ID_VALUE, null),
-        PUBLIC_NUMBER_OF_VOLTAGE_SWELLS_FOR_L3("1.0.72.36.0.255", CLASS_ID_DATA, ATTRIBUTE_ID_VALUE, null);
+        INSTANTANEOUS_VOLTAGE_L1("1.0.32.7.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        INSTANTANEOUS_VOLTAGE_L2("1.0.52.7.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        INSTANTANEOUS_VOLTAGE_L3("1.0.72.7.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        AVERAGE_VOLTAGE_L1("1.0.32.24.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        AVERAGE_VOLTAGE_L2("1.0.52.24.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        AVERAGE_VOLTAGE_L3("1.0.72.24.0.255", CLASS_ID_REGISTER, ATTRIBUTE_ID_VALUE, ATTRIBUTE_ID_SCALER_UNIT),
+        NUMBER_OF_LONG_POWER_FAILURES("0.0.96.7.9.255", CLASS_ID_DATA, ATTRIBUTE_ID_VALUE, null),
+        NUMBER_OF_POWER_FAILURES("0.0.96.7.21.255", CLASS_ID_DATA, ATTRIBUTE_ID_VALUE, null),
+        NUMBER_OF_VOLTAGE_SAGS_FOR_L1("1.0.32.32.0.255", CLASS_ID_DATA, ATTRIBUTE_ID_VALUE, null),
+        NUMBER_OF_VOLTAGE_SAGS_FOR_L2("1.0.52.32.0.255", CLASS_ID_DATA, ATTRIBUTE_ID_VALUE, null),
+        NUMBER_OF_VOLTAGE_SAGS_FOR_L3("1.0.72.32.0.255", CLASS_ID_DATA, ATTRIBUTE_ID_VALUE, null),
+        NUMBER_OF_VOLTAGE_SWELLS_FOR_L1("1.0.32.36.0.255", CLASS_ID_DATA, ATTRIBUTE_ID_VALUE, null),
+        NUMBER_OF_VOLTAGE_SWELLS_FOR_L2("1.0.52.36.0.255", CLASS_ID_DATA, ATTRIBUTE_ID_VALUE, null),
+        NUMBER_OF_VOLTAGE_SWELLS_FOR_L3("1.0.72.36.0.255", CLASS_ID_DATA, ATTRIBUTE_ID_VALUE, null);
 
         private final String obisCode;
         private final int classId;
         private final Byte attributeIdValue;
         private final Byte attributeIdScalarUnit;
 
-        ActualPowerQualityLogicalName(final String obisCode, int classId, Byte attributeIdValue,
+        ActualPowerQualityAttributeName(final String obisCode, int classId, Byte attributeIdValue,
                 Byte attributeIdScalarUnit) {
             this.obisCode = obisCode;
             this.classId = classId;
@@ -277,17 +274,17 @@ public class GetActualPowerQualityCommandExecutor
 
     private enum Profile {
 
-        PROFILE_PUBLIC(getLogicalNamesPublic()),
-        PROFILE_PRIVATE(getLogicalNamesPrivate());
+        PROFILE_PUBLIC(getAttributeNamesPublic()),
+        PROFILE_PRIVATE(getAttributeNamesPrivate());
 
-        private final List<ActualPowerQualityLogicalName> logicalNames;
+        private final List<ActualPowerQualityAttributeName> attributeNames;
 
-        Profile(final List<ActualPowerQualityLogicalName> logicalNames) {
-            this.logicalNames = logicalNames;
+        Profile(final List<ActualPowerQualityAttributeName> attributeNames) {
+            this.attributeNames = attributeNames;
         }
 
-        public List<ActualPowerQualityLogicalName> getLogicalNames() {
-            return this.logicalNames;
+        public List<ActualPowerQualityAttributeName> getAttributeNames() {
+            return this.attributeNames;
         }
     }
 }

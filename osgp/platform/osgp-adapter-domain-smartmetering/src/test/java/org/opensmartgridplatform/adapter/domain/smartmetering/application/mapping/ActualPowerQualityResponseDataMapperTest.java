@@ -20,7 +20,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPo
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualValue;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualValueDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityObjectDto;
 
 public class ActualPowerQualityResponseDataMapperTest {
 
@@ -31,7 +31,8 @@ public class ActualPowerQualityResponseDataMapperTest {
 
     @Test
     public void testConvertActualPowerQualityResponse() {
-        final ActualPowerQualityDataDto responseDto = new ActualPowerQualityDataDto(new ArrayList<CaptureObjectDto>(),
+        final ActualPowerQualityDataDto responseDto =
+                new ActualPowerQualityDataDto(new ArrayList<PowerQualityObjectDto>(),
                 this.makeActualValueDtos());
         final ActualPowerQualityData response = this.mapper
                 .map(responseDto, ActualPowerQualityData.class);

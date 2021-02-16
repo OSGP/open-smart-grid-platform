@@ -23,10 +23,10 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpUnitType;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualValue;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CaptureObject;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityResponse;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualValue;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PowerQualityObject;
 
 public class ActualPowerQualityResponseMappingTest {
 
@@ -38,10 +38,10 @@ public class ActualPowerQualityResponseMappingTest {
     @Test
     public void shouldConvertActualPowerQualityResponse() {
         // Arrange
-        final List<CaptureObject> captureObjects = this.makeCaptureObjects();
+        final List<PowerQualityObject> powerQualityObjects = this.makePowerQualityObjects();
         final List<ActualValue> actualValues = this.makeActualValues();
 
-        final ActualPowerQualityData responseData = new ActualPowerQualityData(captureObjects,
+        final ActualPowerQualityData responseData = new ActualPowerQualityData(powerQualityObjects,
                 actualValues);
 
         final ActualPowerQualityResponse source = new ActualPowerQualityResponse();
@@ -57,32 +57,29 @@ public class ActualPowerQualityResponseMappingTest {
         final org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityData mappedResponseData = target
                 .getActualPowerQualityData();
 
-        this.assertCaptureObjects(mappedResponseData.getCaptureObjects().getCaptureObjects(), captureObjects);
+        this.assertPowerQualityObjects(mappedResponseData.getPowerQualityObjects().getPowerQualityObject(),
+                powerQualityObjects);
         this.assertActualValues(mappedResponseData.getActualValues().getActualValue(), actualValues);
 
     }
 
-    private void assertCaptureObject(
-            final org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.CaptureObject actualCaptureObject,
-            final CaptureObject sourceCaptureObject) throws AssertionError {
+    private void assertPowerQualityObject(
+            final org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityObject actualPowerQualityObject,
+            final PowerQualityObject sourcePowerQualityObject) throws AssertionError {
 
-        assertThat(actualCaptureObject.getClassId()).as(MAPPED_FIELD_VALUE_MESSAGE)
-                                                    .isEqualTo(sourceCaptureObject.getClassId());
-        assertThat(actualCaptureObject.getLogicalName()).as(MAPPED_FIELD_VALUE_MESSAGE)
-                                                        .isEqualTo(sourceCaptureObject.getLogicalName());
-        assertThat(actualCaptureObject.getAttributeIndex().intValue()).as(MAPPED_FIELD_VALUE_MESSAGE).isEqualTo(
-                sourceCaptureObject.getAttributeIndex());
-        assertThat(actualCaptureObject.getDataIndex()).as(MAPPED_FIELD_VALUE_MESSAGE)
-                                                      .isEqualTo(sourceCaptureObject.getDataIndex());
+        assertThat(actualPowerQualityObject.getName()).as(MAPPED_FIELD_VALUE_MESSAGE)
+                                                        .isEqualTo(sourcePowerQualityObject.getName());
+        assertThat(actualPowerQualityObject.getUnit().value()).as(MAPPED_FIELD_VALUE_MESSAGE)
+                                                      .isEqualTo(sourcePowerQualityObject.getUnit());
     }
 
-    private void assertCaptureObjects(
-            final List<org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.CaptureObject> actualCaptureObjects,
-            final List<CaptureObject> sourceCaptureObjects) throws AssertionError {
+    private void assertPowerQualityObjects(
+            final List<org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityObject> actualPowerQualityObjects,
+            final List<PowerQualityObject> sourcePowerQualityObjects) throws AssertionError {
 
-        assertThat(actualCaptureObjects.size()).as(MAPPED_LIST_SIZE_MESSAGE).isEqualTo(sourceCaptureObjects.size());
-        for (int i = 0; i < actualCaptureObjects.size(); i++) {
-            this.assertCaptureObject(actualCaptureObjects.get(i), sourceCaptureObjects.get(i));
+        assertThat(actualPowerQualityObjects.size()).as(MAPPED_LIST_SIZE_MESSAGE).isEqualTo(sourcePowerQualityObjects.size());
+        for (int i = 0; i < actualPowerQualityObjects.size(); i++) {
+            this.assertPowerQualityObject(actualPowerQualityObjects.get(i), sourcePowerQualityObjects.get(i));
         }
     }
 
@@ -109,13 +106,13 @@ public class ActualPowerQualityResponseMappingTest {
         }
     }
 
-    private List<CaptureObject> makeCaptureObjects() {
-        final List<CaptureObject> captureObjects = new ArrayList<>();
-        captureObjects.add(new CaptureObject(8L, "0.0.1.0.0.255", 2, 0, OsgpUnitType.UNDEFINED.name()));
-        captureObjects.add(new CaptureObject(3L, "1.1.1.0.0.255", 2, 0, OsgpUnitType.W.name()));
-        captureObjects.add(new CaptureObject(3L, "2.2.2.0.0.255", 2, 0, OsgpUnitType.W.name()));
-        captureObjects.add(new CaptureObject(4L, "3.3.3.0.0.255", 2, 0, OsgpUnitType.W.name()));
-        return captureObjects;
+    private List<PowerQualityObject> makePowerQualityObjects() {
+        final List<PowerQualityObject> powerQualityObjects = new ArrayList<>();
+        powerQualityObjects.add(new PowerQualityObject("ATTR1", OsgpUnitType.UNDEFINED.name()));
+        powerQualityObjects.add(new PowerQualityObject("ATTR2", OsgpUnitType.W.name()));
+        powerQualityObjects.add(new PowerQualityObject("ATTR3", OsgpUnitType.W.name()));
+        powerQualityObjects.add(new PowerQualityObject("ATTR4", OsgpUnitType.W.name()));
+        return powerQualityObjects;
     }
 
     private List<ActualValue> makeActualValues() {

@@ -14,10 +14,10 @@ import java.util.List;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.CaptureObject;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.CaptureObjects;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualValue;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualValues;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityObject;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityObjects;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityData;
 
 public class ActualPowerQualityResponseDataConverter extends
@@ -34,10 +34,10 @@ public class ActualPowerQualityResponseDataConverter extends
         final org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityData result =
                 new org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityData();
 
-        final CaptureObjects captureObjects = new CaptureObjects();
-        captureObjects.getCaptureObjects()
-                      .addAll(this.mapperFacade.mapAsList(source.getCaptureObjects(), CaptureObject.class));
-        result.setCaptureObjects(captureObjects);
+        final PowerQualityObjects powerQualityObjects = new PowerQualityObjects();
+        powerQualityObjects.getPowerQualityObject()
+                      .addAll(this.mapperFacade.mapAsList(source.getPowerQualityObjects(), PowerQualityObject.class));
+        result.setPowerQualityObjects(powerQualityObjects);
 
         final ActualValues actualValues = new ActualValues();
         actualValues.getActualValue().addAll(this.mapActualValues(source));
