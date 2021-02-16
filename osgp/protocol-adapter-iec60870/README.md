@@ -13,8 +13,7 @@ Grid eXchange Fabric issue tracker:
 
 ## Add 104 devices to the database
 
-...
-
+```
 -- osgp_core
 
 INSERT INTO device
@@ -72,5 +71,4 @@ INSERT INTO iec60870_device
     (current_timestamp, current_timestamp, 0, 'GATEWAY_1', 0, 2404, 'LIGHT_MEASUREMENT_GATEWAY', null, null),
     (current_timestamp, current_timestamp, 0, 'LMD_1', 0, 2404, 'LIGHT_MEASUREMENT_DEVICE', 'GATEWAY_1', 1),
     (current_timestamp, current_timestamp, 0, 'LMD_2', 0, 2404, 'LIGHT_MEASUREMENT_DEVICE', 'GATEWAY_1', 2);
-    
-...
+```
