@@ -14,6 +14,7 @@ Grid eXchange Fabric issue tracker:
 ## Add 104 devices to the database
 
 ...
+
 -- osgp_core
 
 INSERT INTO device
@@ -21,11 +22,12 @@ INSERT INTO device
      protocol_info_id, network_address, in_maintenance, gateway_device_id,
      device_model, device_lifecycle_status)
   VALUES
-    (current_timestamp, current_timestamp, 0, 'GATEWAY_1', null, true,
+    (current_timestamp, current_timestamp, 0, 'GATEWAY_1', 'LMG' , true,
         (SELECT id FROM protocol_info WHERE protocol = '60870-5-104' AND protocol_version = '1.0'),
         '127.0.0.1', false, null,
         (SELECT id FROM device_model WHERE model_code = 'Test' AND manufacturer_id = (SELECT id FROM manufacturer WHERE code = 'Test')),
         'IN_USE');
+        
 INSERT INTO device
     (creation_time, modification_time, version, device_identification, device_type, is_activated,
      protocol_info_id, network_address, in_maintenance, gateway_device_id,
@@ -42,13 +44,13 @@ INSERT INTO device
         (SELECT id FROM device_model WHERE model_code = 'Test' AND manufacturer_id = (SELECT id FROM manufacturer WHERE code = 'Test')),
         'IN_USE');
 
-INSERT INTO rtu_device VALUES ((SELECT id FROM device WHERE device_identification = 'GATEWAY_1'), null, 2);
+INSERT INTO rtu_device VALUES ((SELECT id FROM device WHERE device_identification = 'GATEWAY_1'), null, (SELECT id FROM domain_info WHERE domain = 'PUBLIC_LIGHTING' AND domain_version = '1.0'));
 
 INSERT INTO light_measurement_device
     (id, description, code, color, digital_input)
   VALUES
-    ((SELECT id FROM device WHERE device_identification = 'LMD_1'), 'Test LMD 1', 'CODE-1', '#c9eec9', 42),
-    ((SELECT id FROM device WHERE device_identification = 'LMD_2'), 'Test LMD 2', 'CODE-2', '#c9eec9', 78);
+    ((SELECT id FROM device WHERE device_identification = 'LMD_1'), 'Test LMD 1', 'CODE-1', '#c9eec9', 1),
+    ((SELECT id FROM device WHERE device_identification = 'LMD_2'), 'Test LMD 2', 'CODE-2', '#c9eec9', 2);
 
 INSERT INTO device_authorization
     (creation_time, modification_time, version, function_group, device, organisation)
@@ -70,4 +72,5 @@ INSERT INTO iec60870_device
     (current_timestamp, current_timestamp, 0, 'GATEWAY_1', 0, 2404, 'LIGHT_MEASUREMENT_GATEWAY', null, null),
     (current_timestamp, current_timestamp, 0, 'LMD_1', 0, 2404, 'LIGHT_MEASUREMENT_DEVICE', 'GATEWAY_1', 1),
     (current_timestamp, current_timestamp, 0, 'LMD_2', 0, 2404, 'LIGHT_MEASUREMENT_DEVICE', 'GATEWAY_1', 2);
+    
 ...
