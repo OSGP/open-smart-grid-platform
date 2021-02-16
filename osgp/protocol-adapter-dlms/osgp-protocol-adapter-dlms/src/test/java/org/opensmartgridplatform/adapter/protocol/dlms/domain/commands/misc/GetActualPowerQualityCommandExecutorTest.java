@@ -29,8 +29,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -50,7 +48,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDto
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsUnitTypeDto;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 public class GetActualPowerQualityCommandExecutorTest {
     private static final int CLASS_ID_DATA = 1;
     private static final int CLASS_ID_REGISTER = 3;
