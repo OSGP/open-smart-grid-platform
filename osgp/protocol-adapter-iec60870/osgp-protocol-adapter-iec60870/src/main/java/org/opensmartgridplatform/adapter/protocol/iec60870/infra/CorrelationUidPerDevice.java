@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.infra;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 
 public class CorrelationUidPerDevice {
 
@@ -20,7 +21,13 @@ public class CorrelationUidPerDevice {
                 .add(correlationUid);
     }
 
-    public String dequeu(final String deviceIdentification) {
-        return this.correlationUidQueuePerDevice.getOrDefault(deviceIdentification, new LinkedList<>()).poll();
+    public Optional<String> dequeu(final String deviceIdentification) {
+        final String correlationUid = this.correlationUidQueuePerDevice
+                .getOrDefault(deviceIdentification, new LinkedList<>())
+                .poll();
+        if (correlationUid == null) {
+            return Optional.empty();
+        }
+        return Optional.of(correlationUid);
     }
 }

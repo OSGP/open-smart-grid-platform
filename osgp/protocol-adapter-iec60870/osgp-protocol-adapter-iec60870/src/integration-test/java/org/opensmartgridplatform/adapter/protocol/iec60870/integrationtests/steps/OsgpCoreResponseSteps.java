@@ -10,7 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.ste
 import static java.util.stream.Collectors.toList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.List;
@@ -69,7 +69,7 @@ public class OsgpCoreResponseSteps {
     }
 
     private void verifyNumberOfResponseMessages(final int rows) {
-        verify(this.responseMessageSenderMock, atLeast(rows)).send(any(ResponseMessage.class));
+        verify(this.responseMessageSenderMock, times(rows)).send(any(ResponseMessage.class));
     }
 
     private void verifyResponseMessages(final List<ProtocolResponseMessage> responseMessages) {
@@ -77,7 +77,7 @@ public class OsgpCoreResponseSteps {
     }
 
     private void verifyResponse(final ProtocolResponseMessage msg) {
-        verify(this.responseMessageSenderMock, atLeast(1)).send(argThat(new ProtocolResponseMessageMatcher(msg)));
+        verify(this.responseMessageSenderMock).send(argThat(new ProtocolResponseMessageMatcher(msg)));
     }
 
     private ProtocolResponseMessage protocolResponseMessage(final Map<String, String> map) {

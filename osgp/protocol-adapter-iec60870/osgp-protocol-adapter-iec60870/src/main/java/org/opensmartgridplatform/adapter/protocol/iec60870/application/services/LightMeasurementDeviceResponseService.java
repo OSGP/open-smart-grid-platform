@@ -30,6 +30,7 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Optionals;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -156,21 +157,24 @@ public class LightMeasurementDeviceResponseService extends AbstractDeviceRespons
             final ResponseMetadata responseMetadata, final String errorPrefix) {
 
         this.findLightSensorStatusAndThen(measurementGroup,
-                lightSensorStatus -> this.sendLightSensorStatus(lightSensorStatus, device, responseMetadata),
+                lightSensorStatus -> this.sendOrLogLightSensorStatus(lightSensorStatus, device, responseMetadata),
                 () -> LOGGER.error("{} Light sensor status information not found for device {}", errorPrefix,
                         device.getDeviceIdentification()));
     }
 
-    private void sendLightSensorStatus(final LightSensorStatusDto lightSensorStatus, final Iec60870Device device,
+    private void sendOrLogLightSensorStatus(final LightSensorStatusDto lightSensorStatus, final Iec60870Device device,
             final ResponseMetadata responseMetadata) {
 
         final String deviceIdentification = device.getDeviceIdentification();
 
-        String correlationUid = this.correlationUidQueuePerDevice.dequeu(deviceIdentification);
+        Optionals.ifPresentOrElse(this.correlationUidQueuePerDevice.dequeu(deviceIdentification),
+                uid -> this.sendLightSensorStatus(uid, lightSensorStatus, deviceIdentification, responseMetadata),
+                () -> LOGGER.info("No correlation UID found for device identification {}", deviceIdentification));
 
-        if (correlationUid == null) {
-            correlationUid = responseMetadata.getCorrelationUid();
-        }
+    }
+
+    private void sendLightSensorStatus(final String correlationUid, final LightSensorStatusDto lightSensorStatus,
+            final String deviceIdentification, final ResponseMetadata responseMetadata) {
 
         final ResponseMetadata rm = new ResponseMetadata.Builder().withCorrelationUid(correlationUid)
                 .withDeviceIdentification(deviceIdentification)
