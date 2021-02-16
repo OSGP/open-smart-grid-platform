@@ -48,7 +48,7 @@ public class ActualPowerQualityResponseMessageProcessor extends OsgpCoreResponse
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessage responseMessage, final OsgpException osgpException) throws FunctionalException {
 
-        if (responseMessage.getDataObject() instanceof ActualPowerQualityResponseDto) {
+        if (hasRegularResponseObject(responseMessage)) {
 
             final ActualPowerQualityResponseDto actualPowerQualityResponseDto = (ActualPowerQualityResponseDto) responseMessage
                     .getDataObject();

@@ -31,7 +31,8 @@ public class ActualPowerQualityResponseDataMapperTest {
 
     @Test
     public void testConvertActualPowerQualityResponse() {
-        final ActualPowerQualityDataDto responseDto = this.makeResponseDataDto();
+        final ActualPowerQualityDataDto responseDto = new ActualPowerQualityDataDto(new ArrayList<CaptureObjectDto>(),
+                this.makeActualValueDtos());
         final ActualPowerQualityData response = this.mapper
                 .map(responseDto, ActualPowerQualityData.class);
         assertThat(response).isNotNull();
@@ -45,15 +46,6 @@ public class ActualPowerQualityResponseDataMapperTest {
             assertThat(clazz).withFailMessage("the return class should be of the same type")
                              .isEqualTo(EXPECTED_CLASS[i++]);
         }
-    }
-
-    private ActualPowerQualityDataDto makeResponseDataDto() {
-        return new ActualPowerQualityDataDto(this.makeCaptureObjectDtos(),
-                this.makeActualValueDtos());
-    }
-
-    private List<CaptureObjectDto> makeCaptureObjectDtos() {
-        return new ArrayList<>();
     }
 
     private List<ActualValueDto> makeActualValueDtos() {

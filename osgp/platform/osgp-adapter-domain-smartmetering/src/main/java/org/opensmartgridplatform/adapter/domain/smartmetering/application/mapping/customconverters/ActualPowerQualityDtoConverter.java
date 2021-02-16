@@ -24,6 +24,9 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQuali
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualValueDto;
 
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode(callSuper=true)
 public class ActualPowerQualityDtoConverter
         extends CustomConverter<ActualPowerQualityResponseDto, ActualPowerQualityResponse> {
 
@@ -45,41 +48,20 @@ public class ActualPowerQualityDtoConverter
             final List<CaptureObject> captureObjects = new ArrayList<>(
                     this.mapperFacade.mapAsList(responseDataDto.getCaptureObjects(), CaptureObject.class));
 
-            final List<ActualValue> actualValues = makeActualValues(responseDataDto);
+            final List<ActualValue> actualValues = this.makeActualValues(responseDataDto);
 
-            final ActualPowerQualityData actualPowerQualityData = new ActualPowerQualityData(captureObjects
-                    , actualValues);
+            final ActualPowerQualityData actualPowerQualityData = new ActualPowerQualityData(captureObjects,
+                    actualValues);
             response.setActualPowerQualityData(actualPowerQualityData);
         }
         return response;
     }
 
-    @Override
-    public boolean equals(final Object other) {
-        if (!(other instanceof ActualPowerQualityDtoConverter)) {
-            return false;
-        }
-        if (!super.equals(other)) {
-            return false;
-        }
-        final ActualPowerQualityDtoConverter o = (ActualPowerQualityDtoConverter) other;
-        if (this.mapperFactory.getMapperFacade() == null) {
-            return o.mapperFactory.getMapperFacade() == null;
-        }
-        return this.mapperFactory.getMapperFacade().getClass().equals(o.mapperFactory.getMapperFacade().getClass());
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode() + Objects.hashCode(this.mapperFactory.getMapperFacade());
-    }
-
     private List<ActualValue> makeActualValues(final ActualPowerQualityDataDto responseDataDto) {
         final List<ActualValue> actualValues = new ArrayList<>();
 
-        for (ActualValueDto actualValueDto : responseDataDto.getActualValues()) {
-            final ActualValue actualValue = this.mapperFactory.getMapperFacade().map(actualValueDto,
-                    ActualValue.class);
+        for (final ActualValueDto actualValueDto : responseDataDto.getActualValues()) {
+            final ActualValue actualValue = this.mapperFactory.getMapperFacade().map(actualValueDto, ActualValue.class);
             actualValues.add(actualValue);
         }
 

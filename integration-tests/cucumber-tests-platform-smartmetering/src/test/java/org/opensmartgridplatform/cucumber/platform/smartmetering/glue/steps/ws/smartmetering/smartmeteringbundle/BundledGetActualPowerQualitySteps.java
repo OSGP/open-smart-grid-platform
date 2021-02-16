@@ -27,7 +27,15 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.builders.GetAct
 
 public class BundledGetActualPowerQualitySteps extends BaseBundleSteps {
 
-    @Given("^the bundle request contains a actual power quality request with parameters$")
+    private static final String NUMBER_OF_ACTUAL_VALUES = "NumberOfActualValues";
+    private static final String NUMBER_OF_CAPTURE_OBJECTS = "NumberOfCaptureObjects";
+    private static final String CAPTURE_OBJECT_CLASS_ID = "CaptureObject_ClassId";
+    private static final String CAPTURE_OBJECT_LOGICAL_NAME = "CaptureObject_LogicalName";
+    private static final String CAPTURE_OBJECT_ATTRIBUTE_INDEX = "CaptureObject_AttributeIndex";
+    private static final String CAPTURE_OBJECT_DATA_INDEX = "CaptureObject_DataIndex";
+    private static final String CAPTURE_OBJECT_UNIT = "CaptureObject_Unit";
+
+    @Given("^the bundle request contains an actual power quality request with parameters$")
     public void theBundleRequestContainsAGetActualPowerQualityRequestAction(final Map<String, String> parameters)
             throws Throwable {
 
@@ -37,16 +45,16 @@ public class BundledGetActualPowerQualitySteps extends BaseBundleSteps {
         this.addActionToBundleRequest(action);
     }
 
-    @Then("^the bundle response should contain a actual power quality response with values$")
+    @Then("^the bundle response should contain an actual power quality response with values$")
     public void theBundleResponseShouldContainAGetActualPowerQualityResponse(final Map<String, String> values)
             throws Throwable {
 
         final Response response = this.getNextBundleResponse();
 
-        assertThat(response instanceof ActualPowerQualityResponse)
+        assertThat(response)
                 .as("Not a valid response, expected ActualPowerQualityResponse but is :" +
                         response.getClass().getSimpleName())
-                .isTrue();
+                .isInstanceOf(ActualPowerQualityResponse.class);
 
         final ActualPowerQualityResponse actualPowerQualityResponse = (ActualPowerQualityResponse) response;
         final ActualPowerQualityData actualPowerQualityData = actualPowerQualityResponse
@@ -60,13 +68,13 @@ public class BundledGetActualPowerQualitySteps extends BaseBundleSteps {
             final Map<String, String> expectedValues) throws AssertionError {
 
         final int expectedNumberOfCaptureObjects = SettingsHelper
-                .getIntegerValue(expectedValues, "NumberOfCaptureObjects");
+                .getIntegerValue(expectedValues, NUMBER_OF_CAPTURE_OBJECTS);
 
         assertThat(actualCaptureObjects.size()).as("Number of capture objects")
-                                               .isEqualTo(expectedNumberOfCaptureObjects);
+                .isEqualTo(expectedNumberOfCaptureObjects);
 
         for (int i = 0; i < expectedNumberOfCaptureObjects; i++) {
-            final Long expectedClassId = SettingsHelper.getLongValue(expectedValues, "CaptureObject_ClassId", i+1);
+            final Long expectedClassId = SettingsHelper.getLongValue(expectedValues, CAPTURE_OBJECT_CLASS_ID, i + 1);
             if (expectedClassId != null) {
                 final CaptureObject actualCaptureObject = actualCaptureObjects.get(i);
                 this.assertEqualCaptureObject(actualCaptureObject, expectedValues, i + 1);
@@ -76,38 +84,38 @@ public class BundledGetActualPowerQualitySteps extends BaseBundleSteps {
 
     private void assertEqualCaptureObject(final CaptureObject actualCaptureObject,
             final Map<String, String> expectedValues, final int index) throws AssertionError {
-        final Long expectedClassId = SettingsHelper.getLongValue(expectedValues, "CaptureObject_ClassId", index);
-        assertThat(Long.valueOf(actualCaptureObject.getClassId())).as("ClassId of CaptureObject " + index)
+        final Long expectedClassId = SettingsHelper.getLongValue(expectedValues, CAPTURE_OBJECT_CLASS_ID, index);
+        assertThat(Long.valueOf(actualCaptureObject.getClassId())).as(CAPTURE_OBJECT_CLASS_ID + index)
                                                                   .isEqualTo(expectedClassId);
 
         final String expectedLogicalName = SettingsHelper
-                .getStringValue(expectedValues, "CaptureObject_LogicalName", index);
-        assertThat(actualCaptureObject.getLogicalName()).as("LogicalName of CaptureObject " + index)
+                .getStringValue(expectedValues, CAPTURE_OBJECT_LOGICAL_NAME, index);
+        assertThat(actualCaptureObject.getLogicalName()).as(CAPTURE_OBJECT_LOGICAL_NAME + index)
                                                         .isEqualTo(expectedLogicalName);
 
         final BigInteger expectedAttributeIndex = SettingsHelper
-                .getBigIntegerValue(expectedValues, "CaptureObject_AttributeIndex", index);
-        assertThat(actualCaptureObject.getAttributeIndex()).as("AttributeIndex of CaptureObject " + index)
+                .getBigIntegerValue(expectedValues, CAPTURE_OBJECT_ATTRIBUTE_INDEX, index);
+        assertThat(actualCaptureObject.getAttributeIndex()).as(CAPTURE_OBJECT_ATTRIBUTE_INDEX + index)
                                                            .isEqualTo(expectedAttributeIndex);
 
-        final Long expectedDataIndex = SettingsHelper.getLongValue(expectedValues, "CaptureObject_DataIndex", index);
-        assertThat(Long.valueOf(actualCaptureObject.getDataIndex())).as("DataIndex of CaptureObject " + index)
+        final Long expectedDataIndex = SettingsHelper.getLongValue(expectedValues, CAPTURE_OBJECT_DATA_INDEX, index);
+        assertThat(Long.valueOf(actualCaptureObject.getDataIndex())).as(CAPTURE_OBJECT_DATA_INDEX + index)
                                                                     .isEqualTo(expectedDataIndex);
 
-        final String expectedUnit = SettingsHelper.getStringValue(expectedValues, "CaptureObject_Unit", index);
+        final String expectedUnit = SettingsHelper.getStringValue(expectedValues, CAPTURE_OBJECT_UNIT, index);
         if (expectedUnit == null) {
-            assertThat(actualCaptureObject.getUnit()).as("Unit of CaptureObject " + index).isNull();
+            assertThat(actualCaptureObject.getUnit()).as(CAPTURE_OBJECT_UNIT + index).isNull();
         } else {
-            assertThat(actualCaptureObject.getUnit().value()).as("Unit of CaptureObject " + index).isEqualTo(expectedUnit);
+            assertThat(actualCaptureObject.getUnit().value()).as(CAPTURE_OBJECT_UNIT + index).isEqualTo(expectedUnit);
         }
     }
 
     private void assertEqualActualValues(final List<ActualValue> actualValues,
             final Map<String, String> expectedValues) {
-        final int expectedNumberOfActualValues = SettingsHelper
-                .getIntegerValue(expectedValues, "NumberOfActualValues");
+        final int expectedNumberOfActualValues = SettingsHelper.getIntegerValue(expectedValues,
+                NUMBER_OF_ACTUAL_VALUES);
 
-        assertThat(actualValues.size()).as("Number of profile entries")
+        assertThat(actualValues.size()).as(NUMBER_OF_ACTUAL_VALUES)
                                                .isEqualTo(expectedNumberOfActualValues);
     }
 }

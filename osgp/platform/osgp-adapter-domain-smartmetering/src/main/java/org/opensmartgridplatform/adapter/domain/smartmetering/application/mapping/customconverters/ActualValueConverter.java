@@ -7,9 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
@@ -21,20 +18,10 @@ public class ActualValueConverter extends CustomConverter<ActualValueDto, Actual
     @Override
     public ActualValue convert(final ActualValueDto source,
             final Type<? extends ActualValue> destinationType, final MappingContext context) {
-        final Object value = source.getValue();
-        if (value != null) {
-            if (value instanceof Long) {
-                return new ActualValue((Long) value);
-            } else if (value instanceof Date) {
-                return new ActualValue((Date) value);
-            } else if (value instanceof BigDecimal) {
-                return new ActualValue((BigDecimal) value);
-            } else {
-                return new ActualValue((String) value);
-            }
-        } else {
-            return new ActualValue((String) null);
+        if (source == null) {
+            return null;
         }
+        return new ActualValue(source.getValue());
     }
 
 }

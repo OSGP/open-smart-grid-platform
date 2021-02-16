@@ -17,10 +17,10 @@ Feature: SmartMetering Bundle - GetActualPowerQuality
   Scenario: Retrieve actual power quality data as part of a bundled public request
     Given a bundle request
       | DeviceIdentification | TEST1024000000001   |
-    And the bundle request contains a actual power quality request with parameters
+    And the bundle request contains an actual power quality request with parameters
       | ProfileType          |              PUBLIC |
     When the bundle request is received
-    Then the bundle response should contain a actual power quality response with values
+    Then the bundle response should contain an actual power quality response with values
       | DeviceIdentification            | TEST1024000000001 |
       | NumberOfCaptureObjects          |                15 |
       | NumberOfActualValues            |                15 |
@@ -94,10 +94,10 @@ Feature: SmartMetering Bundle - GetActualPowerQuality
   Scenario: Retrieve actual power quality data as part of a bundled private request
     Given a bundle request
       | DeviceIdentification | TEST1024000000001   |
-    And the bundle request contains a actual power quality request with parameters
+    And the bundle request contains an actual power quality request with parameters
       | ProfileType          |             PRIVATE |
     When the bundle request is received
-    Then the bundle response should contain a actual power quality response with values
+    Then the bundle response should contain an actual power quality response with values
       | DeviceIdentification             | TEST1024000000001 |
       | NumberOfCaptureObjects           |                28 |
       | NumberOfActualValues             |                28 |

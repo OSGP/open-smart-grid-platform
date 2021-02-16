@@ -60,7 +60,6 @@ public class ActualPowerQualitySteps {
 
         final ActualPowerQualityAsyncRequest actualPowerQualityAsyncRequest = ActualPowerQualityRequestFactory
                 .fromScenarioContext();
-        assertThat(actualPowerQualityAsyncRequest).as("ActualPowerQualityAsyncRequest should not be null").isNotNull();
 
         try {
             final ActualPowerQualityResponse response = this.responseClient.getResponse(actualPowerQualityAsyncRequest);
@@ -104,8 +103,7 @@ public class ActualPowerQualitySteps {
              * number of ActualValues should match the number of captured objects
              * from the buffer.
              */
-            assertThat(actualValues.size()).as("Number of actual values")
-                                                                                 .isEqualTo(expectedNumberOfCaptureObjects);
+            assertThat(actualValues.size()).as("Number of actual values").isEqualTo(expectedNumberOfCaptureObjects);
         }
     }
 

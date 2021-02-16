@@ -19,16 +19,12 @@ public class ActualPowerQualityRequestMapperTest {
 
     @Test
     public void testGetActualPowerQualityRequest() {
-        final ActualPowerQualityRequest actualPowerQualityRequest = this.makeRequest();
+        final ActualPowerQualityRequest actualPowerQualityRequest = new ActualPowerQualityRequest("PUBLIC");
         final ActualPowerQualityRequest result = this.mapper
                 .map(actualPowerQualityRequest, ActualPowerQualityRequest.class);
         assertThat(result).isNotNull();
         assertThat(result).isOfAnyClassIn(ActualPowerQualityRequest.class);
         assertThat(result.getProfileType()).isEqualTo("PUBLIC");
-    }
-
-    private ActualPowerQualityRequest makeRequest() {
-        return new ActualPowerQualityRequest("PUBLIC");
     }
 
 }

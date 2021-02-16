@@ -88,7 +88,7 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
   Scenario: Get the actual power quality private from a device
     When the get actual power quality request is received
       | DeviceIdentification | TEST1024000000001 |
-      | ProfileType          |            PRIVATE |
+      | ProfileType          | PRIVATE           |
     Then the actual power quality result should be returned
       | NumberOfCaptureObjects           |                28 |
       | NumberOfActualValues             |                28 |

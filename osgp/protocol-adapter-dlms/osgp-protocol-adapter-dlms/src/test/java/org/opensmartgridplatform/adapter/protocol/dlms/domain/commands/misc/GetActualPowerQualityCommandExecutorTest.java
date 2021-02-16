@@ -117,15 +117,18 @@ public class GetActualPowerQualityCommandExecutorTest {
         for (int i=0;i<logicalNames.size();i++) {
             final GetActualPowerQualityCommandExecutor.ActualPowerQualityLogicalName logicalName = logicalNames.get(i);
 
-            Serializable expectedValue = null;
+            Serializable expectedValue;
             String expectedUnit = null;
-            if (logicalName.getClassId() == CLASS_ID_CLOCK) {
-                expectedValue = DateTime.parse("2018-12-31T23:00:00Z").toDate();
-            } else if (logicalName.getClassId() == CLASS_ID_REGISTER) {
-                expectedValue = BigDecimal.valueOf(i * 10.0);
-                expectedUnit = DlmsUnitTypeDto.VOLT.getUnit();
-            } else if (logicalName.getClassId() == CLASS_ID_DATA) {
-                expectedValue = BigDecimal.valueOf(i);
+            switch(logicalName.getClassId()) {
+                case CLASS_ID_CLOCK:     expectedValue = DateTime.parse("2018-12-31T23:00:00Z").toDate();
+                                         break;
+                case CLASS_ID_REGISTER:  expectedValue = BigDecimal.valueOf(i * 10.0);
+                                         expectedUnit = DlmsUnitTypeDto.VOLT.getUnit();
+                                         break;
+                case CLASS_ID_DATA:      expectedValue = BigDecimal.valueOf(i);
+                                         break;
+                default:                 expectedValue = null;
+                
             }
 
             final CaptureObjectDto captureObject = responseDto.getActualPowerQualityData().getCaptureObjects().get(i);

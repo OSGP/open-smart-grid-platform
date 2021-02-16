@@ -62,18 +62,18 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Endpoint
 public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringMonitoringEndpoint.class);
     private static final String SMARTMETER_MONITORING_NAMESPACE = "http://www.opensmartgridplatform.org/schemas/smartmetering/sm-monitoring/2014/10";
 
     @Autowired
@@ -93,7 +93,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             @RequestPayload final PeriodicMeterReadsRequest request, @MessagePriority final String messagePriority,
             @ResponseUrl final String responseUrl, @ScheduleTime final String scheduleTime) throws OsgpException {
 
-        LOGGER.debug("Incoming PeriodicMeterReadsRequest for meter: {}.", request.getDeviceIdentification());
+        log.debug("Incoming PeriodicMeterReadsRequest for meter: {}.", request.getDeviceIdentification());
 
         return (PeriodicMeterReadsAsyncResponse) this.getPeriodicAsyncResponseForEandG(organisationIdentification,
                 request, MessagePriorityEnum.getMessagePriority(messagePriority), scheduleTime, responseUrl);
@@ -106,7 +106,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             @RequestPayload final PeriodicMeterReadsGasRequest request, @MessagePriority final String messagePriority,
             @ResponseUrl final String responseUrl, @ScheduleTime final String scheduleTime) throws OsgpException {
 
-        LOGGER.debug("Incoming PeriodicMeterReadsGasRequest for meter: {}.", request.getDeviceIdentification());
+        log.debug("Incoming PeriodicMeterReadsGasRequest for meter: {}.", request.getDeviceIdentification());
 
         return (PeriodicMeterReadsGasAsyncResponse) this.getPeriodicAsyncResponseForEandG(organisationIdentification,
                 request, MessagePriorityEnum.getMessagePriority(messagePriority), scheduleTime, responseUrl);
@@ -132,7 +132,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             response.setDeviceIdentification(request.getDeviceIdentification());
             this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
-            LOGGER.error("Exception: {} while requesting meter reads for device: {} for organisation {}.",
+            log.error("Exception: {} while requesting meter reads for device: {} for organisation {}.",
                     e.getMessage(), request.getDeviceIdentification(), organisationIdentification, e);
 
             this.handleException(e);
@@ -146,7 +146,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final PeriodicMeterReadsAsyncRequest request) throws OsgpException {
 
-        LOGGER.debug("Incoming PeriodicMeterReadsAsyncRequest for meter: {}.", request.getDeviceIdentification());
+        log.debug("Incoming PeriodicMeterReadsAsyncRequest for meter: {}.", request.getDeviceIdentification());
 
         PeriodicMeterReadsResponse response = null;
         try {
@@ -169,7 +169,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final PeriodicMeterReadsGasAsyncRequest request) throws OsgpException {
 
-        LOGGER.debug("Incoming PeriodicMeterReadsGasAsyncRequest for meter: {}.", request.getDeviceIdentification());
+        log.debug("Incoming PeriodicMeterReadsGasAsyncRequest for meter: {}.", request.getDeviceIdentification());
 
         PeriodicMeterReadsGasResponse response = null;
         try {
@@ -189,7 +189,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
     void handleRetrieveException(final Exception e, final AsyncRequest request, final String organisationIdentification)
             throws OsgpException {
         if (!(e instanceof FunctionalException)) {
-            LOGGER.error("Exception: {} while sending PeriodicMeterReads of device: {} for organisation {}.",
+            log.error("Exception: {} while sending PeriodicMeterReads of device: {} for organisation {}.",
                     e.getMessage(), request.getDeviceIdentification(), organisationIdentification);
         }
 
@@ -205,7 +205,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
         final String deviceIdentification = request.getDeviceIdentification();
 
-        LOGGER.debug("Incoming ActualMeterReadsRequest for meter: {}", deviceIdentification);
+        log.debug("Incoming ActualMeterReadsRequest for meter: {}", deviceIdentification);
 
         return (ActualMeterReadsAsyncResponse) this.getActualAsyncResponseForEandG(organisationIdentification,
                 deviceIdentification, false, MessagePriorityEnum.getMessagePriority(messagePriority), scheduleTime,
@@ -221,7 +221,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
         final String deviceIdentification = request.getDeviceIdentification();
 
-        LOGGER.debug("Incoming ActualMeterReadsGasRequest for meter: {}", deviceIdentification);
+        log.debug("Incoming ActualMeterReadsGasRequest for meter: {}", deviceIdentification);
 
         return (ActualMeterReadsGasAsyncResponse) this.getActualAsyncResponseForEandG(organisationIdentification,
                 deviceIdentification, true, MessagePriorityEnum.getMessagePriority(messagePriority), scheduleTime,
@@ -250,7 +250,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             asyncResponse.setDeviceIdentification(deviceIdentification);
             this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
-            LOGGER.error("Exception: {} while requesting actual meter reads for device: {} for organisation {}.",
+            log.error("Exception: {} while requesting actual meter reads for device: {} for organisation {}.",
                     e.getMessage(), deviceIdentification, organisationIdentification, e);
 
             this.handleException(e);
@@ -264,7 +264,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final ActualMeterReadsAsyncRequest request) throws OsgpException {
 
-        LOGGER.debug("Incoming ActualMeterReadsAsyncRequest for meter: {}", request.getDeviceIdentification());
+        log.debug("Incoming ActualMeterReadsAsyncRequest for meter: {}", request.getDeviceIdentification());
 
         ActualMeterReadsResponse response = null;
         try {
@@ -286,7 +286,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final ActualMeterReadsGasAsyncRequest request) throws OsgpException {
 
-        LOGGER.debug("Incoming ActualMeterReadsGasAsyncRequest for meter: {}", request.getDeviceIdentification());
+        log.debug("Incoming ActualMeterReadsGasAsyncRequest for meter: {}", request.getDeviceIdentification());
 
         ActualMeterReadsGasResponse response = null;
         try {
@@ -309,7 +309,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             @RequestPayload final ReadAlarmRegisterRequest request, @MessagePriority final String messagePriority,
             @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
 
-        LOGGER.info("Incoming ReadAlarmRegisterRequest for meter: {}", request.getDeviceIdentification());
+        log.info("Incoming ReadAlarmRegisterRequest for meter: {}", request.getDeviceIdentification());
 
         ReadAlarmRegisterAsyncResponse response = null;
         try {
@@ -328,7 +328,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             response.setDeviceIdentification(request.getDeviceIdentification());
             this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
-            LOGGER.error("Exception: {} while requesting read alarm register for device: {} for organisation {}.",
+            log.error("Exception: {} while requesting read alarm register for device: {} for organisation {}.",
                     e.getMessage(), request.getDeviceIdentification(), organisationIdentification, e);
 
             this.handleException(e);
@@ -342,7 +342,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final ReadAlarmRegisterAsyncRequest request) throws OsgpException {
 
-        LOGGER.info("Incoming RetrieveReadAlarmRegisterRequest for meter: {}", request.getDeviceIdentification());
+        log.info("Incoming RetrieveReadAlarmRegisterRequest for meter: {}", request.getDeviceIdentification());
 
         ReadAlarmRegisterResponse response = null;
         try {
@@ -356,7 +356,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
         } catch (final FunctionalException e) {
             throw e;
         } catch (final Exception e) {
-            LOGGER.error(
+            log.error(
                     "Exception: {} while sending RetrieveReadAlarmRegisterRequest of device: {} for organisation {}.",
                     e.getMessage(), request.getDeviceIdentification(), organisationIdentification);
 
@@ -371,7 +371,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final RetrievePushNotificationAlarmRequest request) throws OsgpException {
 
-        LOGGER.info("Incoming RetrievePushNotificationAlarmRequest for correlation UID: {}",
+        log.info("Incoming RetrievePushNotificationAlarmRequest for correlation UID: {}",
                 request.getCorrelationUid());
 
         RetrievePushNotificationAlarmResponse response = null;
@@ -387,7 +387,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
         } catch (final FunctionalException e) {
             throw e;
         } catch (final Exception e) {
-            LOGGER.error(
+            log.error(
                     "Exception: {} while sending RetrievePushNotificationAlarmRequest for correlation UID: {} for organisation {}.",
                     e.getMessage(), request.getCorrelationUid(), organisationIdentification);
 
@@ -403,7 +403,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             @RequestPayload final GetPowerQualityProfileRequest request, @MessagePriority final String messagePriority,
             @ResponseUrl final String responseUrl, @ScheduleTime final String scheduleTime) throws OsgpException {
 
-        LOGGER.debug("Incoming GetPowerQualityProfileRequest for meter: {}.", request.getDeviceIdentification());
+        log.debug("Incoming GetPowerQualityProfileRequest for meter: {}.", request.getDeviceIdentification());
 
         GetPowerQualityProfileAsyncResponse response = null;
 
@@ -422,7 +422,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             response.setDeviceIdentification(request.getDeviceIdentification());
             this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
-            LOGGER.error("Exception: {} while requesting profile generic data for device: {} for organisation {}.",
+            log.error("Exception: {} while requesting profile generic data for device: {} for organisation {}.",
                     e.getMessage(), request.getDeviceIdentification(), organisationIdentification, e);
 
             this.handleException(e);
@@ -437,7 +437,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final GetPowerQualityProfileAsyncRequest request) throws OsgpException {
 
-        LOGGER.debug("Incoming GetPowerQualityProfileAsyncRequest for meter: {}.", request.getDeviceIdentification());
+        log.debug("Incoming GetPowerQualityProfileAsyncRequest for meter: {}.", request.getDeviceIdentification());
 
         GetPowerQualityProfileResponse response = null;
         try {
@@ -449,7 +449,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             response = this.monitoringMapper.map(responseData.getMessageData(), GetPowerQualityProfileResponse.class);
 
         } catch (final Exception e) {
-            LOGGER.error(
+            log.error(
                     "Exception: {} while sending GetPowerQualityProfileAsyncRequest for correlation UID: {} for organisation {}.",
                     e.getMessage(), request.getCorrelationUid(), organisationIdentification);
 
@@ -465,7 +465,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             @RequestPayload final ClearAlarmRegisterRequest request, @MessagePriority final String messagePriority,
             @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
 
-        LOGGER.info("Incoming ClearAlarmRegisterRequest for meter: {}", request.getDeviceIdentification());
+        log.info("Incoming ClearAlarmRegisterRequest for meter: {}", request.getDeviceIdentification());
 
         ClearAlarmRegisterAsyncResponse response = null;
         try {
@@ -484,7 +484,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             response.setDeviceIdentification(request.getDeviceIdentification());
             this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
-            LOGGER.error("Exception: {} while requesting clear alarm register for device: {} for organisation {}.",
+            log.error("Exception: {} while requesting clear alarm register for device: {} for organisation {}.",
                     e.getMessage(), request.getDeviceIdentification(), organisationIdentification, e);
 
             this.handleException(e);
@@ -498,7 +498,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final ClearAlarmRegisterAsyncRequest request) throws OsgpException {
 
-        LOGGER.info("Incoming clear alarm register request for meter: {}", request.getDeviceIdentification());
+        log.info("Incoming clear alarm register request for meter: {}", request.getDeviceIdentification());
 
         ClearAlarmRegisterResponse response = null;
         try {
@@ -516,7 +516,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
         } catch (final FunctionalException e) {
             throw e;
         } catch (final Exception e) {
-            LOGGER.error("Exception: {} while sending clear alarm register request of device: {} for organisation {}.",
+            log.error("Exception: {} while sending clear alarm register request of device: {} for organisation {}.",
                     e.getMessage(), request.getDeviceIdentification(), organisationIdentification);
 
             this.handleException(e);
@@ -531,7 +531,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             @RequestPayload final org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityRequest request, @MessagePriority final String messagePriority,
             @ResponseUrl final String responseUrl, @ScheduleTime final String scheduleTime) throws OsgpException {
 
-        LOGGER.debug("Incoming ActualPowerQualityRequest for meter: {}.", request.getDeviceIdentification());
+        log.debug("Incoming ActualPowerQualityRequest for meter: {}.", request.getDeviceIdentification());
 
 
         ActualPowerQualityAsyncResponse response = null;
@@ -550,7 +550,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             response.setDeviceIdentification(request.getDeviceIdentification());
             this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
-            LOGGER.error("Exception: {} while requesting meter reads for device: {} for organisation {}.",
+            log.error("Exception: {} while requesting meter reads for device: {} for organisation {}.",
                     e.getMessage(), request.getDeviceIdentification(), organisationIdentification, e);
 
             this.handleException(e);
@@ -564,7 +564,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final ActualPowerQualityAsyncRequest request) throws OsgpException {
 
-        LOGGER.debug("Incoming ActualPowerQualityAsyncRequest for meter: {}.", request.getDeviceIdentification());
+        log.debug("Incoming ActualPowerQualityAsyncRequest for meter: {}.", request.getDeviceIdentification());
 
         ActualPowerQualityResponse response = null;
         try {
