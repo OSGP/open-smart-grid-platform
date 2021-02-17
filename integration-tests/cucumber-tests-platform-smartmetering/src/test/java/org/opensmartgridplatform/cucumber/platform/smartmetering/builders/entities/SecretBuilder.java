@@ -9,6 +9,7 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering.builders.entit
 
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
+import java.util.Date;
 import java.util.Map;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -17,6 +18,7 @@ import org.opensmartgridplatform.cucumber.platform.core.builders.CucumberBuilder
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptedSecret;
+import org.opensmartgridplatform.secretmanagement.application.domain.SecretStatus;
 import org.opensmartgridplatform.secretmanagement.application.domain.SecretType;
 
 public class SecretBuilder implements CucumberBuilder<DbEncryptedSecret> {
@@ -25,8 +27,9 @@ public class SecretBuilder implements CucumberBuilder<DbEncryptedSecret> {
 
     private SecurityKeyType securityKeyType = null;
     private String key = PlatformSmartmeteringDefaults.SECURITY_KEY_A_DB;
-
-    private DlmsDevice dlmsDevice;
+    private SecretStatus status;
+    private String deviceIdentification;
+    private Date creationTime;
 
     public SecretBuilder setSecurityKeyType(final SecurityKeyType securityKeyType) {
         this.securityKeyType = securityKeyType;
@@ -43,7 +46,23 @@ public class SecretBuilder implements CucumberBuilder<DbEncryptedSecret> {
     }
 
     public SecretBuilder setDlmsDevice(final DlmsDevice dlmsDevice) {
-        this.dlmsDevice = dlmsDevice;
+        this.deviceIdentification = dlmsDevice.getDeviceIdentification();
+        return this;
+    }
+
+    public SecretBuilder setDeviceIdentification(final String deviceIdentification) {
+        this.deviceIdentification = deviceIdentification;
+        return this;
+    }
+
+
+    public SecretBuilder setSecretStatus(final SecretStatus status) {
+        this.status = status;
+        return this;
+    }
+
+    public SecretBuilder setCreationTime(final Date creationTime) {
+        this.creationTime = creationTime;
         return this;
     }
 
@@ -85,11 +104,11 @@ public class SecretBuilder implements CucumberBuilder<DbEncryptedSecret> {
     @Override
     public DbEncryptedSecret build() {
         final DbEncryptedSecret securityKey = new DbEncryptedSecret();
-        if(this.dlmsDevice!=null) {
-            securityKey.setDeviceIdentification(this.dlmsDevice.getDeviceIdentification());
-        }
+        securityKey.setDeviceIdentification(this.deviceIdentification);
         securityKey.setSecretType(SecretType.valueOf(this.securityKeyType.toSecretType().value()));
         securityKey.setEncodedSecret(this.key);
+        securityKey.setSecretStatus(this.status==null?SecretStatus.ACTIVE:this.status);
+        securityKey.setCreationTime(this.creationTime==null?new Date():this.creationTime);
         return securityKey;
     }
 
