@@ -30,6 +30,9 @@ public class ActualPowerQualityResponseDataConverter extends
             final Type<?
                     extends org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityData> destinationType,
             final MappingContext mappingContext) {
+        if (source == null) {
+            return null;
+        }
 
         final org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityData result =
                 new org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityData();

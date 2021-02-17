@@ -63,6 +63,16 @@ public class ActualPowerQualityResponseMappingTest {
 
     }
 
+    @Test
+    public void sourceNull() {
+        final org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActualPowerQualityResponse target
+                = this.monitoringMapper
+                .map(null,
+                        org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActualPowerQualityResponse.class);
+
+        assertThat(target).isNull();
+    }
+
     private void assertPowerQualityObject(
             final org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityObject actualPowerQualityObject,
             final PowerQualityObject sourcePowerQualityObject) throws AssertionError {

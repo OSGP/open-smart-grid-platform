@@ -523,7 +523,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
         }
         return response;
     }
-    
+
     @PayloadRoot(localPart = "ActualPowerQualityRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
     @ResponsePayload
     public ActualPowerQualityAsyncResponse getActualPowerQuality(
@@ -533,9 +533,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
         log.debug("Incoming ActualPowerQualityRequest for meter: {}.", request.getDeviceIdentification());
 
-
         ActualPowerQualityAsyncResponse response = null;
-
         try {
             final ActualPowerQualityRequest dataRequest = this.monitoringMapper
                     .map(request,
@@ -550,7 +548,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             response.setDeviceIdentification(request.getDeviceIdentification());
             this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
-            log.error("Exception: {} while requesting meter reads for device: {} for organisation {}.",
+            log.error("Exception: {} while requesting the actual power quality for device: {} for organisation {}.",
                     e.getMessage(), request.getDeviceIdentification(), organisationIdentification, e);
 
             this.handleException(e);
@@ -580,6 +578,4 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
         }
         return response;
     }
-
-
 }

@@ -27,6 +27,9 @@ public class ActualValueConverter extends
     public ActualValue convert(
             final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualValue source,
             final Type<? extends ActualValue> destinationType, final MappingContext context) {
+        if (source == null) {
+            return null;
+        }
 
         final ActualValue result = new ActualValue();
         if (source.getValue() instanceof Date) {

@@ -1,4 +1,4 @@
-@SmartMetering @Platform @SmartMeteringMonitoring @KroesCTRL
+@SmartMetering @Platform @SmartMeteringMonitoring
 Feature: SmartMetering Monitoring - Get Actual Power Quality
   As a grid operator
   I want to be able to get the actual power quality from a device

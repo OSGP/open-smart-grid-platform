@@ -1,4 +1,4 @@
-@SmartMetering @Platform @KroesCTRL
+@SmartMetering @Platform
 Feature: SmartMetering Bundle - GetActualPowerQuality
   As a grid operator
   I want to be able to retrieve actual power quality data from a meter via a bundle request

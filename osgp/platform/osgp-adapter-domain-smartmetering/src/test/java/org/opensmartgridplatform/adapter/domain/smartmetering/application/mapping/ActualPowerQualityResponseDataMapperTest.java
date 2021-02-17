@@ -38,9 +38,8 @@ public class ActualPowerQualityResponseDataMapperTest {
                 .map(responseDto, ActualPowerQualityData.class);
         assertThat(response).isNotNull();
 
-        assertThat(response.getActualValues().size())
-                .withFailMessage("response object should return same number of profilentries")
-                .isEqualTo(EXPECTED_CLASS.length);
+        assertThat(response.getActualValues()).hasSize(EXPECTED_CLASS.length);
+
         int i = 0;
         for (final ActualValue actualValue : response.getActualValues()) {
             final Class<?> clazz = actualValue.getValue().getClass();
