@@ -49,7 +49,7 @@ public class LightMeasurementDeviceResponseService extends AbstractDeviceRespons
     private LightMeasurementService lightMeasurementService;
 
     @Autowired
-    private CorrelationUidPerDevice correlationUidQueuePerDevice;
+    private CorrelationUidPerDevice correlationUidPerDevice;
 
     public LightMeasurementDeviceResponseService() {
         super(DEVICE_TYPE);
@@ -167,7 +167,7 @@ public class LightMeasurementDeviceResponseService extends AbstractDeviceRespons
 
         final String deviceIdentification = device.getDeviceIdentification();
 
-        Optionals.ifPresentOrElse(this.correlationUidQueuePerDevice.dequeu(deviceIdentification),
+        Optionals.ifPresentOrElse(this.correlationUidPerDevice.dequeue(deviceIdentification),
                 uid -> this.sendLightSensorStatus(uid, lightSensorStatus, deviceIdentification, responseMetadata),
                 () -> LOGGER.info("No correlation UID found for device identification {}", deviceIdentification));
 

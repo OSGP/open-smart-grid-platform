@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -26,6 +27,12 @@ public class Iec60870DeviceFactory {
     public static final String DEFAULT_DEVICE_TYPE = "DISTRIBUTION_AUTOMATION_DEVICE";
     public static final String DEFAULT_PORT = "2404";
     public static final String DEFAULT_COMMON_ADDRESS = "0";
+
+    public static final String GATEWAY_DEVICE_IDENTIFICATION = "TEST-GATEWAY-1";
+    public static final String LMD_1_DEVICE_IDENTIFICATION = "TEST-LMD-1";
+    public static final String LMD_2_DEVICE_IDENTIFICATION = "TEST-LMD-2";
+    public static final String LMD_1_IOA = "1";
+    public static final String LMD_2_IOA = "2";
 
     public static Iec60870Device createDefaultWith(final String deviceIdentification) {
         final Iec60870Device device = new Iec60870Device(deviceIdentification);
@@ -54,6 +61,18 @@ public class Iec60870DeviceFactory {
         device.setCommonAddress(Integer.parseInt(DEFAULT_COMMON_ADDRESS));
         device.setPort(Integer.parseInt(DEFAULT_PORT));
         return device;
+    }
+
+    public static Iec60870Device getGatewayDevice() {
+        return fromSettings(getGatewayDeviceSettings());
+    }
+
+    public static Iec60870Device getLightMeasurementDevice1() {
+        return fromSettings(getLightMeasurementDevice1Settings());
+    }
+
+    public static Iec60870Device getLightMeasurementDevice2() {
+        return fromSettings(getLightMeasurementDevice2Settings());
     }
 
     public static Iec60870Device fromSettings(final Map<String, String> settings) {
@@ -96,4 +115,30 @@ public class Iec60870DeviceFactory {
             return Optional.of(Integer.parseInt(value));
         }
     }
+
+    private static Map<String, String> getGatewayDeviceSettings() {
+        final Map<String, String> settings = new HashMap<>();
+        settings.put(KEY_DEVICE_IDENTIFICATION, GATEWAY_DEVICE_IDENTIFICATION);
+        settings.put(KEY_DEVICE_TYPE, DeviceType.LIGHT_MEASUREMENT_GATEWAY.name());
+        return settings;
+    }
+
+    private static Map<String, String> getLightMeasurementDevice1Settings() {
+        final Map<String, String> settings = new HashMap<>();
+        settings.put(KEY_DEVICE_IDENTIFICATION, LMD_1_DEVICE_IDENTIFICATION);
+        settings.put(KEY_DEVICE_TYPE, DeviceType.LIGHT_MEASUREMENT_DEVICE.name());
+        settings.put(KEY_GATEWAY_DEVICE_IDENTIFICATION, GATEWAY_DEVICE_IDENTIFICATION);
+        settings.put(KEY_INFORMATION_OBJECT_ADDRESS, LMD_1_IOA);
+        return settings;
+    }
+
+    private static Map<String, String> getLightMeasurementDevice2Settings() {
+        final Map<String, String> settings = new HashMap<>();
+        settings.put(KEY_DEVICE_IDENTIFICATION, LMD_2_DEVICE_IDENTIFICATION);
+        settings.put(KEY_DEVICE_TYPE, DeviceType.LIGHT_MEASUREMENT_DEVICE.name());
+        settings.put(KEY_GATEWAY_DEVICE_IDENTIFICATION, GATEWAY_DEVICE_IDENTIFICATION);
+        settings.put(KEY_INFORMATION_OBJECT_ADDRESS, LMD_2_IOA);
+        return settings;
+    }
+
 }

@@ -16,18 +16,20 @@ public class CorrelationUidPerDevice {
 
     private final Map<String, LinkedList<String>> correlationUidQueuePerDevice = new HashMap<>();
 
-    public void enqueu(final String deviceIdentification, final String correlationUid) {
+    public void enqueue(final String deviceIdentification, final String correlationUid) {
         this.correlationUidQueuePerDevice.computeIfAbsent(deviceIdentification, key -> new LinkedList<>())
                 .add(correlationUid);
     }
 
-    public Optional<String> dequeu(final String deviceIdentification) {
+    public Optional<String> dequeue(final String deviceIdentification) {
         final String correlationUid = this.correlationUidQueuePerDevice
                 .getOrDefault(deviceIdentification, new LinkedList<>())
                 .poll();
-        if (correlationUid == null) {
-            return Optional.empty();
-        }
-        return Optional.of(correlationUid);
+        return Optional.ofNullable(correlationUid);
+    }
+
+    public void remove(final String deviceIdentification, final String correlationUid) {
+        this.correlationUidQueuePerDevice.computeIfAbsent(deviceIdentification, key -> new LinkedList<>())
+                .remove(correlationUid);
     }
 }

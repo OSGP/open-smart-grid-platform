@@ -7,7 +7,9 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -17,9 +19,10 @@ import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.Test
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -30,7 +33,6 @@ import org.opensmartgridplatform.dto.da.GetHealthStatusRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.ObjectMessageBuilder;
-import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class DeviceRequestMessageListenerTest {
@@ -44,11 +46,11 @@ class DeviceRequestMessageListenerTest {
     @Mock
     private DeviceResponseMessageSender deviceResponseMessageSender;
 
-    @BeforeEach
-    void setup() {
-        ReflectionTestUtils.setField(this.deviceRequestMessageListener, "correlationUidPerDevice",
-                new CorrelationUidPerDevice());
-    }
+    @Mock
+    private CorrelationUidPerDevice correlationUidPerDevice;
+
+    @Captor
+    private ArgumentCaptor<String> correlationUidCaptor;
 
     @Test
     void shouldProcessMessageWhenMessageTypeIsSupported() throws JMSException {
@@ -66,6 +68,9 @@ class DeviceRequestMessageListenerTest {
         this.deviceRequestMessageListener.onMessage(message);
 
         // Assert
+        verify(this.correlationUidPerDevice).enqueue(eq(DEFAULT_DEVICE_IDENTIFICATION),
+                this.correlationUidCaptor.capture());
+        assertThat(this.correlationUidCaptor.getValue()).isEqualTo(message.getJMSCorrelationID());
         verify(messageProcessor).processMessage(message);
     }
 
@@ -84,6 +89,10 @@ class DeviceRequestMessageListenerTest {
         this.deviceRequestMessageListener.onMessage(message);
 
         // Assert
+        verify(this.correlationUidPerDevice).enqueue(eq(DEFAULT_DEVICE_IDENTIFICATION),
+                this.correlationUidCaptor.capture());
+        verify(this.correlationUidPerDevice).remove(DEFAULT_DEVICE_IDENTIFICATION,
+                this.correlationUidCaptor.getValue());
         verify(this.deviceResponseMessageSender).send(argThat(new ErrorResponseMessageMatcher()));
     }
 }
