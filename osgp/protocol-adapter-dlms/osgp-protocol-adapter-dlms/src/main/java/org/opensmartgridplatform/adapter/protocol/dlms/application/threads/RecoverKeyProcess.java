@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.bouncycastle.util.encoders.Hex;
 import org.openmuc.jdlms.AuthenticationMechanism;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.SecuritySuite;
@@ -155,8 +154,8 @@ public class RecoverKeyProcess implements Runnable {
     private DlmsConnection createConnectionUsingNewKeys() throws IOException, FunctionalException {
         Map<SecurityKeyType, byte[]> keys = this.secretManagementService
                 .getNewKeys(this.deviceIdentification, Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION));
-        final byte[] authenticationKey = Hex.decode(keys.get(E_METER_AUTHENTICATION));
-        final byte[] encryptionKey = Hex.decode(keys.get(E_METER_ENCRYPTION));
+        final byte[] authenticationKey = keys.get(E_METER_AUTHENTICATION);
+        final byte[] encryptionKey = keys.get(E_METER_ENCRYPTION);
 
         final SecuritySuite securitySuite = SecuritySuite.builder().setAuthenticationKey(authenticationKey)
                                                          .setAuthenticationMechanism(AuthenticationMechanism.HLS5_GMAC)
