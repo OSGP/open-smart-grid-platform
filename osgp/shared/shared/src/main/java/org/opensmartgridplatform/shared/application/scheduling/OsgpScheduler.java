@@ -11,6 +11,7 @@ package org.opensmartgridplatform.shared.application.scheduling;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.TimeZone;
 
 import org.opensmartgridplatform.shared.application.config.AbstractOsgpSchedulerConfig;
 import org.quartz.CronScheduleBuilder;
@@ -107,16 +108,66 @@ public class OsgpScheduler {
      *            {@link OsgpScheduler#createJobDetail(Class)}.
      * @param cronExpression
      *            A CRON-expression.
+     * @param timeZone
+     *            A Timezone for the CRON-expression.
+     *
+     * @return A {@link Trigger} instance.
+     */
+    public Trigger createJobTrigger(final JobDetail jobDetail, final String cronExpression, final TimeZone timeZone) {
+        return TriggerBuilder.newTrigger()
+                             .forJob(jobDetail)
+                             .withIdentity(jobDetail.getKey().getName() + "-Trigger")
+                             .forJob(jobDetail)
+                             .withSchedule(CronScheduleBuilder.cronSchedule(cronExpression).inTimeZone(timeZone))
+                             .build();
+    }
+
+    /**
+     * Create a {@link Trigger} instance using a {@link JobDetail} instance and
+     * a CRON-expression, the default TimeZone will be used
+     *
+     * @param jobDetail
+     *            A {@link JobDetail} instance, possibly created using
+     *            {@link OsgpScheduler#createJobDetail(Class)}.
+     * @param cronExpression
+     *            A CRON-expression.
      *
      * @return A {@link Trigger} instance.
      */
     public Trigger createJobTrigger(final JobDetail jobDetail, final String cronExpression) {
-        return TriggerBuilder.newTrigger()
-                .forJob(jobDetail)
-                .withIdentity(jobDetail.getKey().getName() + "-Trigger")
-                .forJob(jobDetail)
-                .withSchedule(CronScheduleBuilder.cronSchedule(cronExpression))
-                .build();
+        return createJobTrigger(jobDetail, cronExpression, TimeZone.getDefault());
+    }
+
+    /**
+     * Convenience method for creating a job and trigger, then adding and
+     * scheduling the job using the trigger. This method uses
+     * {@link OsgpScheduler#createJobDetail(Class)} and
+     * {@link OsgpScheduler#createJobTrigger(JobDetail, String)}.
+     *
+     * @param jobClass
+     *            The class which defines the actions of the scheduled job.
+     * @param cronExpression
+     *            The input for the trigger, a Quartz CRON expression like
+     *            {@code 0 0/1 * * * ?} for example.
+     * @param timeZone
+     *            A Timezone for the CRON-expression.
+     *
+     * @throws SchedulerException
+     *             In case adding or scheduling of the job fails.
+     */
+    public void createAndScheduleJob(final Class<? extends Job> jobClass, final String cronExpression,
+            final TimeZone timeZone)
+            throws SchedulerException {
+
+        LOGGER.info("Scheduling job: {} using Quartz cron expression: {}", jobClass.getSimpleName(), cronExpression);
+
+        // Create job and trigger.
+        final JobDetail jobDetail = this.createJobDetail(jobClass);
+        final Trigger trigger = this.createJobTrigger(jobDetail, cronExpression, timeZone);
+
+        // Add and schedule for trigger.
+        this.quartzScheduler.addJob(jobDetail, true);
+        this.quartzScheduler.scheduleJob(jobDetail, new HashSet<>(Arrays.asList(trigger)), true);
     }
 
     /**
@@ -136,16 +187,7 @@ public class OsgpScheduler {
      */
     public void createAndScheduleJob(final Class<? extends Job> jobClass, final String cronExpression)
             throws SchedulerException {
-
-        LOGGER.info("Scheduling job: {} using Quartz cron expression: {}", jobClass.getSimpleName(), cronExpression);
-
-        // Create job and trigger.
-        final JobDetail jobDetail = this.createJobDetail(jobClass);
-        final Trigger trigger = this.createJobTrigger(jobDetail, cronExpression);
-
-        // Add and schedule for trigger.
-        this.quartzScheduler.addJob(jobDetail, true);
-        this.quartzScheduler.scheduleJob(jobDetail, new HashSet<>(Arrays.asList(trigger)), true);
+        createAndScheduleJob(jobClass, cronExpression, TimeZone.getDefault());
     }
 
     public void deleteScheduledJob(final Class<? extends Job> jobClass) throws SchedulerException {
