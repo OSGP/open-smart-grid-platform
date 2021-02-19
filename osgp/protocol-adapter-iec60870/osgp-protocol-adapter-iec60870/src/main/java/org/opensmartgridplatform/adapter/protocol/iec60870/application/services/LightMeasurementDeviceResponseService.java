@@ -103,6 +103,21 @@ public class LightMeasurementDeviceResponseService extends AbstractDeviceRespons
          * all.
          */
         if (device.hasGatewayDevice()) {
+            /*
+             * A question that may arise here, is why go through all devices
+             * behind the gateway, instead of sending a response just for the
+             * device provided in the method parameter.
+             *
+             * Due to the way the IEC 60870-5-104 protocol works at the moment
+             * this code is added, the device from the method parameter may not
+             * actually be the device for which the light sensor status was
+             * requested.
+             *
+             * The proper device is filtered out later in the call chain in
+             * sendOrLogLightSensorStatus. If a correlation UID has been queued
+             * for the light measurement device, a response will be sent for
+             * that device and the then dequeued correlation UID.
+             */
             this.iec60870DeviceRepository.findByGatewayDeviceIdentification(device.getGatewayDeviceIdentification())
                     .forEach(d -> this.findMeasurementGroupAndThen(measurementReportDto, d,
                             measurementGroup -> this.sendLightSensorStatusResponse(measurementGroup, d,

@@ -60,24 +60,27 @@ public class DeviceRequestMessageListener implements MessageListener {
         }
 
         final String correlationUid = messageMetadata.getCorrelationUid();
+        final String deviceIdentification = messageMetadata.getDeviceIdentification();
         try {
-            LOGGER.info("Received message [correlationUid={}, messageType={}, messagePriority={}]", correlationUid,
-                    messageMetadata.getMessageType(), messageMetadata.getMessagePriority());
+            LOGGER.info("Received message [correlationUid={}, messageType={}, messagePriority={}] for device {}",
+                    correlationUid, messageMetadata.getMessageType(), messageMetadata.getMessagePriority(),
+                    deviceIdentification);
 
-            this.correlationUidPerDevice.enqueue(messageMetadata.getDeviceIdentification(), correlationUid);
+            this.correlationUidPerDevice.enqueue(deviceIdentification, correlationUid);
 
             final MessageProcessor processor = this.messageProcessorMap.getMessageProcessor(objectMessage);
 
             processor.processMessage(objectMessage);
 
         } catch (final IllegalArgumentException | JMSException e) {
+
+            this.correlationUidPerDevice.remove(deviceIdentification, correlationUid);
             LOGGER.error("Unexpected exception for message [correlationUid={}]", correlationUid, e);
-            this.sendNotSupportedException(objectMessage, messageMetadata, correlationUid);
+            this.sendNotSupportedException(objectMessage, messageMetadata);
         }
     }
 
-    private void sendNotSupportedException(final ObjectMessage objectMessage, final MessageMetadata messageMetadata,
-            final String correlationUid) {
+    private void sendNotSupportedException(final ObjectMessage objectMessage, final MessageMetadata messageMetadata) {
 
         try {
             final Exception exception = new NotSupportedException(ComponentType.PROTOCOL_IEC60870,
@@ -98,9 +101,6 @@ public class DeviceRequestMessageListener implements MessageListener {
                     .build();
 
             this.deviceResponseMessageSender.send(protocolResponseMessage);
-
-            // remove the correlation UID from the queue
-            this.correlationUidPerDevice.remove(messageMetadata.getDeviceIdentification(), correlationUid);
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected error during sendException(ObjectMessage, Exception)", e);

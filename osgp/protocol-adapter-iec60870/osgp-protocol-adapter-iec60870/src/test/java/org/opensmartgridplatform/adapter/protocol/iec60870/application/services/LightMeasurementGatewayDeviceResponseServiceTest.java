@@ -25,6 +25,7 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
 import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories.Iec60870DeviceFactory;
+import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories.MeasurementReportFactory;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementReportDto;
 
 @ExtendWith(MockitoExtension.class)

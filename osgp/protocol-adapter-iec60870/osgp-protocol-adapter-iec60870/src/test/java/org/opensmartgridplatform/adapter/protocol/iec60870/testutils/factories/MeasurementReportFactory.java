@@ -5,11 +5,10 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.iec60870.application.services;
+package org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories;
 
 import java.util.Arrays;
 
-import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories.Iec60870DeviceFactory;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementDto;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementElementDto;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementGroupDto;
@@ -17,11 +16,11 @@ import org.opensmartgridplatform.dto.da.measurements.MeasurementReportDto;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementReportHeaderDto;
 import org.opensmartgridplatform.dto.da.measurements.elements.BitmaskMeasurementElementDto;
 
-class MeasurementReportFactory {
+public class MeasurementReportFactory {
     private static final byte LMD_1_ON = 1;
     private static final byte LMD_2_ON = 0;
 
-    static MeasurementReportDto getMeasurementReportDto() {
+    public static MeasurementReportDto getMeasurementReportDto() {
         final MeasurementReportHeaderDto mrh = new MeasurementReportHeaderDto("M_SP_NA_1", "INTERROGATED_BY_STATION", 0,
                 0);
         final MeasurementGroupDto mg1 = getMeasurementGroup(Iec60870DeviceFactory.LMD_1_IOA, LMD_1_ON);
