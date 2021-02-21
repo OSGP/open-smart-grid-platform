@@ -35,6 +35,9 @@ public class AbstractOsgpSchedulerConfig extends AbstractSchedulingConfig {
     @Value("${quartz.scheduler.start.attempt.sleep.time:30000}")
     private long startAttemptSleepTime;
 
+    @Value("${quartz.scheduler.use.properties:true}")
+    private boolean useProperties;
+
     private int startAttemptCount = 0;
 
     private final String schedulerName;
@@ -69,6 +72,7 @@ public class AbstractOsgpSchedulerConfig extends AbstractSchedulingConfig {
                 .withJobStoreDbUsername(this.databaseUsername)
                 .withJobStoreDbPassword(this.databasePassword)
                 .withJobStoreDbDriver(this.databaseDriver)
+                .withUseProperties(this.useProperties)
                 .build();
 
         final Scheduler quartzScheduler = this.constructAndStartQuartzScheduler(schedulingConfigProperties);
