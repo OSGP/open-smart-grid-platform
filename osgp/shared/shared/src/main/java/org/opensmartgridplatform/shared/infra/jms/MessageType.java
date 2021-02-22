@@ -1,9 +1,10 @@
 /**
  * Copyright 2018 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.shared.infra.jms;
 
@@ -86,6 +87,7 @@ public enum MessageType {
     SET_RANDOMISATION_SETTINGS,
     SET_REBOOT,
     SET_SPECIAL_DAYS,
+    SET_SUBSCRIPTION_INFORMATION,
     SET_TARIFF_SCHEDULE,
     SET_TRANSITION,
     START_SELF_TEST,
