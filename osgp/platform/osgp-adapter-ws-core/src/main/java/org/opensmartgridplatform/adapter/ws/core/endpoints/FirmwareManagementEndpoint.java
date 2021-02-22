@@ -346,8 +346,8 @@ public class FirmwareManagementEndpoint {
             }
             this.handleException(e);
         } catch (final Exception e) {
-            LOGGER.error("Exception: {} while adding manufacturer: {} for organisation {}",
-                    e.getMessage(), request.getManufacturer().getCode(), organisationIdentification, e);
+            LOGGER.error("Exception: {} while adding manufacturer: {} for organisation {}", e.getMessage(),
+                    request.getManufacturer().getCode(), organisationIdentification, e);
             this.handleException(e);
         }
 
@@ -373,8 +373,8 @@ public class FirmwareManagementEndpoint {
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
-            LOGGER.error("Exception: {} while Changing manufacturer: {} for organisation {}",
-                    e.getMessage(), request.getManufacturer().getCode(), organisationIdentification, e);
+            LOGGER.error("Exception: {} while Changing manufacturer: {} for organisation {}", e.getMessage(),
+                    request.getManufacturer().getCode(), organisationIdentification, e);
             this.handleException(e);
         }
 
@@ -408,8 +408,8 @@ public class FirmwareManagementEndpoint {
             }
             this.handleException(e);
         } catch (final Exception e) {
-            LOGGER.error("Exception: {} while removing manufacturer: {} for organisation {}",
-                    e.getMessage(), request.getManufacturerId(), organisationIdentification, e);
+            LOGGER.error("Exception: {} while removing manufacturer: {} for organisation {}", e.getMessage(),
+                    request.getManufacturerId(), organisationIdentification, e);
             this.handleException(e);
         }
 
@@ -600,8 +600,8 @@ public class FirmwareManagementEndpoint {
             }
             this.handleException(e);
         } catch (final Exception e) {
-            LOGGER.error("Exception: {} while removing deviceModel: {} for organisation {}",
-                    e.getMessage(), request.getDeviceModelId(), organisationIdentification, e);
+            LOGGER.error("Exception: {} while removing deviceModel: {} for organisation {}", e.getMessage(),
+                    request.getDeviceModelId(), organisationIdentification, e);
             this.handleException(e);
         }
 
@@ -626,8 +626,8 @@ public class FirmwareManagementEndpoint {
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
-            LOGGER.error("Exception: {} while Changing devicemodel: {} for organisation {}",
-                    e.getMessage(), request.getDeviceModel().getModelCode(), organisationIdentification, e);
+            LOGGER.error("Exception: {} while Changing devicemodel: {} for organisation {}", e.getMessage(),
+                    request.getDeviceModel().getModelCode(), organisationIdentification, e);
             this.handleException(e);
         }
 
@@ -652,7 +652,7 @@ public class FirmwareManagementEndpoint {
 
         try {
             final List<FirmwareFile> firmwareFiles = this.firmwareManagementService.findAllFirmwareFiles(
-                    organisationIdentification, request.getManufacturer(), request.getModelCode());
+                    organisationIdentification, request.getManufacturer(), request.getModelCode(), request.isActive());
 
             response.getFirmwares()
                     .addAll(this.firmwareManagementMapper.mapAsList(firmwareFiles,
@@ -756,8 +756,8 @@ public class FirmwareManagementEndpoint {
             }
             this.handleException(e);
         } catch (final Exception e) {
-            LOGGER.error("Exception: {} while adding firmware: {} for organisation {}",
-                    e.getMessage(), request.getFirmware().getFilename(), organisationIdentification, e);
+            LOGGER.error("Exception: {} while adding firmware: {} for organisation {}", e.getMessage(),
+                    request.getFirmware().getFilename(), organisationIdentification, e);
             this.handleException(e);
         }
 
@@ -767,8 +767,8 @@ public class FirmwareManagementEndpoint {
     }
 
     private FirmwareFileRequest firmwareFileRequestFor(final Firmware firmware) {
-        return new FirmwareFileRequest(firmware.getDescription(), firmware.getFilename(),
-                firmware.isPushToNewDevices());
+        return new FirmwareFileRequest(firmware.getDescription(), firmware.getFilename(), firmware.isPushToNewDevices(),
+                firmware.isActive());
     }
 
     @PayloadRoot(localPart = "ChangeFirmwareRequest", namespace = NAMESPACE)
@@ -790,8 +790,8 @@ public class FirmwareManagementEndpoint {
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
-            LOGGER.error("Exception: {} while Changing firmware: {} for organisation {}",
-                    e.getMessage(), request.getFirmware().getFilename(), organisationIdentification, e);
+            LOGGER.error("Exception: {} while Changing firmware: {} for organisation {}", e.getMessage(),
+                    request.getFirmware().getFilename(), organisationIdentification, e);
             this.handleException(e);
         }
 
@@ -824,8 +824,8 @@ public class FirmwareManagementEndpoint {
             }
             this.handleException(e);
         } catch (final Exception e) {
-            LOGGER.error("Exception: {} while removing firmware: {} for organisation {}",
-                    e.getMessage(), request.getId(), organisationIdentification, e);
+            LOGGER.error("Exception: {} while removing firmware: {} for organisation {}", e.getMessage(),
+                    request.getId(), organisationIdentification, e);
             this.handleException(e);
         }
 

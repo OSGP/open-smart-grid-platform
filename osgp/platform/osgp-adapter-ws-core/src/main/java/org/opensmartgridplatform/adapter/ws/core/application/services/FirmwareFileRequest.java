@@ -11,11 +11,14 @@ public class FirmwareFileRequest {
     private final String description;
     private final String fileName;
     private final boolean pushToNewDevices;
+    private final boolean active;
 
-    public FirmwareFileRequest(final String description, final String fileName, final boolean pushToNewDevices) {
+    public FirmwareFileRequest(final String description, final String fileName, final boolean pushToNewDevices,
+            final boolean active) {
         this.description = description;
         this.fileName = fileName;
         this.pushToNewDevices = pushToNewDevices;
+        this.active = active;
     }
 
     public String getDescription() {
@@ -28,5 +31,9 @@ public class FirmwareFileRequest {
 
     public boolean isPushToNewDevices() {
         return this.pushToNewDevices;
+    }
+
+    public boolean isActive() {
+        return this.active;
     }
 }
