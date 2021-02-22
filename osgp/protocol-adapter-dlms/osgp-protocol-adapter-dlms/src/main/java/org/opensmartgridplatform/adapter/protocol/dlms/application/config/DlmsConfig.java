@@ -14,6 +14,15 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import javax.inject.Provider;
 
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcess;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
@@ -34,16 +43,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
 
 @Configuration
 @EnableTransactionManagement()
@@ -147,9 +146,9 @@ public class DlmsConfig extends AbstractConfig {
     @Scope("prototype")
     public RecoverKeyProcess recoverKeyProcess(final DomainHelperService domainHelperService,
             @Value("${jdlms.response_timeout}") final int responseTimeout,
-            @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress) {
+            @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress, Hls5Connector hls5Connector) {
         return new RecoverKeyProcess(domainHelperService, responseTimeout, logicalDeviceAddress,
-                DlmsDeviceAssociation.MANAGEMENT_CLIENT);
+                DlmsDeviceAssociation.MANAGEMENT_CLIENT, hls5Connector);
     }
 
     @Bean

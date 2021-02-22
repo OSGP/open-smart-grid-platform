@@ -13,8 +13,6 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Se
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openmuc.jdlms.AuthenticationMechanism;
@@ -25,7 +23,6 @@ import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -66,7 +63,7 @@ public class Hls5Connector extends SecureDlmsConnector {
         this.checkIpAddress(device);
 
         try {
-            return this.createConnection(device, dlmsMessageListener);
+            return this.createConnection(device, dlmsMessageListener, this.secretManagementService::getKey);
         } catch (final UnknownHostException e) { // Unknown IP, unrecoverable.
             LOGGER.error("The IP address is not found: {}", device.getIpAddress(), e);
             throw new TechnicalException(ComponentType.PROTOCOL_DLMS,
@@ -89,22 +86,17 @@ public class Hls5Connector extends SecureDlmsConnector {
         }
     }
 
-    @Override
-    protected void setSecurity(final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder)
-            throws OsgpException {
+    public DlmsConnection connectUnchecked(final DlmsDevice device,
+            final DlmsMessageListener dlmsMessageListener,
+            SecurityKeyProvider keyProvider) throws IOException, OsgpException {
+        return this.createConnection(device, dlmsMessageListener, keyProvider);
+    }
 
-        final String deviceIdentification = device.getDeviceIdentification();
-        final byte[] dlmsAuthenticationKey;
-        final byte[] dlmsEncryptionKey;
-        try {
-            Map<SecurityKeyType, byte[]> encryptedKeys = this.secretManagementService
-                    .getKeys(deviceIdentification, Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION));
-            dlmsAuthenticationKey = encryptedKeys.get(E_METER_AUTHENTICATION);
-            dlmsEncryptionKey = encryptedKeys.get(E_METER_ENCRYPTION);
-        } catch (final EncrypterException e) {
-            throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION,
-                    ComponentType.PROTOCOL_DLMS, e);
-        }
+    @Override
+    public void setSecurity(DlmsDevice device, SecurityKeyProvider provider,
+            final TcpConnectionBuilder tcpConnectionBuilder) throws FunctionalException {
+        final byte[] dlmsAuthenticationKey = provider.getKey(device.getDeviceIdentification(), E_METER_AUTHENTICATION);
+        final byte[] dlmsEncryptionKey = provider.getKey(device.getDeviceIdentification(), E_METER_ENCRYPTION);
 
         // Validate keys before JDLMS does and throw a FunctionalException if
         // necessary
@@ -156,13 +148,11 @@ public class Hls5Connector extends SecureDlmsConnector {
 
     private void validateKeys(final byte[] encryptionKey, final byte[] authenticationKey) throws FunctionalException {
         if (this.checkEmptyKey(encryptionKey)) {
-            this.throwFunctionalException("The encryption key is empty",
-                    FunctionalExceptionType.KEY_NOT_PRESENT);
+            this.throwFunctionalException("The encryption key is empty", FunctionalExceptionType.KEY_NOT_PRESENT);
         }
 
         if (this.checkEmptyKey(authenticationKey)) {
-            this.throwFunctionalException("The authentication key is empty",
-                    FunctionalExceptionType.KEY_NOT_PRESENT);
+            this.throwFunctionalException("The authentication key is empty", FunctionalExceptionType.KEY_NOT_PRESENT);
         }
 
         if (this.checkLenghtKey(encryptionKey)) {

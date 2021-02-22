@@ -51,7 +51,7 @@ public class Lls1Connector extends SecureDlmsConnector {
         this.checkIpAddress(device);
 
         try {
-            return this.createConnection(device, dlmsMessageListener);
+            return this.createConnection(device, dlmsMessageListener, this.secretManagementService::getKey);
         } catch (final UnknownHostException e) {
             LOGGER.warn("The IP address is not found: {}", device.getIpAddress(), e);
             // Unknown IP, unrecoverable.
@@ -67,12 +67,12 @@ public class Lls1Connector extends SecureDlmsConnector {
     }
 
     @Override
-    protected void setSecurity(final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder)
-            throws OsgpException {
+    protected void setSecurity(final DlmsDevice device, final SecurityKeyProvider keyProvider,
+            final TcpConnectionBuilder tcpConnectionBuilder) throws OsgpException {
 
         final byte[] password;
         try {
-            password = this.secretManagementService.getKey(device.getDeviceIdentification(), SecurityKeyType.PASSWORD);
+            password = keyProvider.getKey(device.getDeviceIdentification(), SecurityKeyType.PASSWORD);
         } catch (final EncrypterException e) {
             LOGGER.error("Error determining DLMS password setting up LLS1 connection", e);
             throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION,
