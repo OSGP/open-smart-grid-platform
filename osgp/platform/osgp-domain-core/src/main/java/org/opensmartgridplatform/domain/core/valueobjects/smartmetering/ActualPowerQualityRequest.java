@@ -14,10 +14,13 @@ import java.util.Objects;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 
-public class ActualPowerQualityRequest implements Serializable, ActionRequest {
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode
+public class ActualPowerQualityRequest implements ActionRequest {
 
     private static final long serialVersionUID = 7924053476264448032L;
-    
+
     private final String profileType;
 
     public ActualPowerQualityRequest(final String profileType) {
@@ -44,20 +47,4 @@ public class ActualPowerQualityRequest implements Serializable, ActionRequest {
                 ActualPowerQualityRequest.class.getSimpleName(), this.profileType);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(this.profileType);
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!(obj instanceof ActualPowerQualityRequest)) {
-            return false;
-        }
-        final ActualPowerQualityRequest other = (ActualPowerQualityRequest) obj;
-        return Objects.equals(this.profileType, other.profileType);
-    }
 }

@@ -19,14 +19,14 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActualPo
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetActualPowerQualityRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityData;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualValue;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityValue;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityObject;
 import org.opensmartgridplatform.cucumber.platform.helpers.SettingsHelper;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.builders.GetActualPowerQualityRequestBuilder;
 
 public class BundledGetActualPowerQualitySteps extends BaseBundleSteps {
 
-    private static final String NUMBER_OF_ACTUAL_VALUES = "NumberOfActualValues";
+    private static final String NUMBER_OF_POWER_QUALITY_VALUES = "NumberOfPowerQualityValues";
     private static final String NUMBER_OF_POWER_QUALITY_OBJECTS = "NumberOfPowerQualityObjects";
     private static final String POWER_QUALITY_OBJECT_NAME = "PowerQualityObject_Name";
     private static final String POWER_QUALITY_OBJECT_UNIT = "PowerQualityObject_Unit";
@@ -57,7 +57,7 @@ public class BundledGetActualPowerQualitySteps extends BaseBundleSteps {
                 .getActualPowerQualityData();
 
         this.assertEqualPowerQualityObjects(actualPowerQualityData.getPowerQualityObjects().getPowerQualityObject(), values);
-        this.assertEqualActualValues(actualPowerQualityData.getActualValues().getActualValue(), values);
+        this.assertEqualPowerQualityValues(actualPowerQualityData.getPowerQualityValues().getPowerQualityValue(), values);
     }
 
     private void assertEqualPowerQualityObjects(final List<PowerQualityObject> actualPowerQualityObjects,
@@ -93,12 +93,12 @@ public class BundledGetActualPowerQualitySteps extends BaseBundleSteps {
         }
     }
 
-    private void assertEqualActualValues(final List<ActualValue> actualValues,
+    private void assertEqualPowerQualityValues(final List<PowerQualityValue> powerQualityValues,
             final Map<String, String> expectedValues) {
-        final int expectedNumberOfActualValues = SettingsHelper.getIntegerValue(expectedValues,
-                NUMBER_OF_ACTUAL_VALUES);
+        final int expectedNumberOfPowerQualityValues = SettingsHelper.getIntegerValue(expectedValues,
+                NUMBER_OF_POWER_QUALITY_VALUES);
 
-        assertThat(actualValues.size()).as(NUMBER_OF_ACTUAL_VALUES)
-                                               .isEqualTo(expectedNumberOfActualValues);
+        assertThat(powerQualityValues.size()).as(NUMBER_OF_POWER_QUALITY_VALUES)
+                                               .isEqualTo(expectedNumberOfPowerQualityValues);
     }
 }

@@ -27,7 +27,6 @@ import org.springframework.stereotype.Component;
 public class ActualPowerQualityResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
     @Autowired
-    @Qualifier("domainSmartMeteringMonitoringService")
     private MonitoringService monitoringService;
 
     @Autowired
@@ -40,8 +39,7 @@ public class ActualPowerQualityResponseMessageProcessor extends OsgpCoreResponse
 
     @Override
     protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
-        final Object dataObject = responseMessage.getDataObject();
-        return dataObject instanceof ActualPowerQualityResponseDto;
+        return responseMessage.getDataObject() instanceof ActualPowerQualityResponseDto;
     }
 
     @Override

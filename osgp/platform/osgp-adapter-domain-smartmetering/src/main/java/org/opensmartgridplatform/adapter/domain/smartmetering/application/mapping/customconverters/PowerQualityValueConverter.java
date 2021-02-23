@@ -10,18 +10,18 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.mappi
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualValue;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualValueDto;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PowerQualityValue;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityValueDto;
 
-public class ActualValueConverter extends CustomConverter<ActualValueDto, ActualValue> {
+public class PowerQualityValueConverter extends CustomConverter<PowerQualityValueDto, PowerQualityValue> {
 
     @Override
-    public ActualValue convert(final ActualValueDto source,
-            final Type<? extends ActualValue> destinationType, final MappingContext context) {
+    public PowerQualityValue convert(final PowerQualityValueDto source,
+            final Type<? extends PowerQualityValue> destinationType, final MappingContext context) {
         if (source == null) {
             return null;
         }
-        return new ActualValue(source.getValue());
+        return new PowerQualityValue(source.getValue());
     }
 
 }

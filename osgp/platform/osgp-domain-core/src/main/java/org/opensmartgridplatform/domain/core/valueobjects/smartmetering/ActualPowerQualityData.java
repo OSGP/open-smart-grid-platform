@@ -8,28 +8,26 @@
  */
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
-import java.io.Serializable;
 import java.util.List;
 
-public class ActualPowerQualityData extends ActionResponse implements Serializable {
+public class ActualPowerQualityData extends ActionResponse {
 
     private static final long serialVersionUID = -156966569210717657L;
 
     private final List<PowerQualityObject> powerQualityObjects;
-    private final List<ActualValue> actualValues;
+    private final List<PowerQualityValue> powerQualityValues;
 
     public ActualPowerQualityData(
-            final List<PowerQualityObject> powerQualityObjects, final List<ActualValue> actualValues) {
-        super();
+            final List<PowerQualityObject> powerQualityObjects, final List<PowerQualityValue> powerQualityValues) {
         this.powerQualityObjects = powerQualityObjects;
-        this.actualValues = actualValues;
+        this.powerQualityValues = powerQualityValues;
     }
 
     public List<PowerQualityObject> getPowerQualityObjects() {
         return this.powerQualityObjects;
     }
 
-    public List<ActualValue> getActualValues() {
-        return this.actualValues;
+    public List<PowerQualityValue> getPowerQualityValues() {
+        return this.powerQualityValues;
     }
 }

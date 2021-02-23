@@ -16,7 +16,7 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       | ProfileType          |            PUBLIC |
     Then the actual power quality result should be returned
       | NumberOfPowerQualityObjects      |                15 |
-      | NumberOfActualValues             |                15 |
+      | NumberOfPowerQualityValues       |                15 |
       | DeviceIdentification             | TEST1024000000001 |
       | PowerQualityObject_Name_1        | CLOCK                           |
       | PowerQualityObject_Name_2        | INSTANTANEOUS_VOLTAGE_L1        |
@@ -47,7 +47,7 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
     Then the actual power quality result should be returned
       | DeviceIdentification             | TEST1024000000001                                   |
       | NumberOfPowerQualityObjects      |                                                  28 |
-      | NumberOfActualValues             |                                                  28 |
+      | NumberOfPowerQualityValues       |                                                  28 |
       | PowerQualityObject_Name_1        | CLOCK                                               |
       | PowerQualityObject_Name_2        | INSTANTANEOUS_CURRENT_L1                            |
       | PowerQualityObject_Unit_2        | AMP                                                 |
@@ -113,6 +113,6 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       | DeviceIdentification   | E9998000014123414 |
       | ProfileType            |           PRIVATE |
     Then the actual power quality result should be returned
-      | DeviceIdentification   | E9998000014123414 |
-      | NumberOfCaptureObjects |                28 |
-      | NumberOfActualValues   |                28 |
+      | DeviceIdentification       | E9998000014123414 |
+      | NumberOfCaptureObjects     |                28 |
+      | NumberOfPowerQualityValues |                28 |

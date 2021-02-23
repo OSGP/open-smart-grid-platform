@@ -16,20 +16,19 @@ public class ActualPowerQualityDataDto implements Serializable {
     private static final long serialVersionUID = 5222890224967684849L;
 
     private final List<PowerQualityObjectDto> powerQualityObjects;
-    private final List<ActualValueDto> actualValues;
+    private final List<PowerQualityValueDto> powerQualityValues;
 
     public ActualPowerQualityDataDto(final List<PowerQualityObjectDto> powerQualityObjects,
-            final List<ActualValueDto> actualValues) {
-        super();
+            final List<PowerQualityValueDto> powerQualityValues) {
         this.powerQualityObjects = powerQualityObjects;
-        this.actualValues = actualValues;
+        this.powerQualityValues = powerQualityValues;
     }
 
     public List<PowerQualityObjectDto> getPowerQualityObjects() {
         return this.powerQualityObjects;
     }
 
-    public List<ActualValueDto> getActualValues() {
-        return this.actualValues;
+    public List<PowerQualityValueDto> getPowerQualityValues() {
+        return this.powerQualityValues;
     }
 }

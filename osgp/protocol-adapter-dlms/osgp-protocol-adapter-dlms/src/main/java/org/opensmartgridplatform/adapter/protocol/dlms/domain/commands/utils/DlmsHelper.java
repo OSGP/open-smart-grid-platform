@@ -80,6 +80,7 @@ public class DlmsHelper {
     }
 
     public static final int MILLISECONDS_PER_MINUTE = 60000;
+    private static final int MAX_CONCURRENT_ATTRIBUTE_ADDRESSES = 20;
 
     /**
      * Gets a single result from a meter, and returns the result data if
@@ -162,7 +163,14 @@ public class DlmsHelper {
             final AttributeAddress... params) throws ProtocolAdapterException {
         try {
             if (device.isWithListSupported()) {
-                return conn.getConnection().get(Arrays.asList(params));
+                // Getting a too large list of attribute addresses in one get from the DlmsConnection
+                // might result in a SCOPE_OF_ACCESS_VIOLATED error
+                List<GetResult> getResults = new ArrayList<>();
+                List<AttributeAddress[]> maximizedSubsetsOfParams = getMaximizedSubsetsOfParams(params);
+                for (AttributeAddress[] maximizedSubsetOfParams : maximizedSubsetsOfParams) {
+                    getResults.addAll(conn.getConnection().get(Arrays.asList(maximizedSubsetOfParams)));
+                }
+                return getResults;
             } else {
                 return this.getWithListWorkaround(conn, params);
             }
@@ -173,6 +181,15 @@ public class DlmsHelper {
         } catch (final Exception e) {
             throw new ProtocolAdapterException("Error retrieving values with-list for device: " + device.getDeviceIdentification(), e);
         }
+    }
+
+    private List<AttributeAddress[]> getMaximizedSubsetsOfParams(final AttributeAddress[] attributeAddresses) {
+        int chunk = MAX_CONCURRENT_ATTRIBUTE_ADDRESSES;
+        List<AttributeAddress[]> maximizedCurrentSets = new ArrayList<>();
+        for(int i=0;i<attributeAddresses.length;i+=chunk){
+            maximizedCurrentSets.add(Arrays.copyOfRange(attributeAddresses, i, Math.min(attributeAddresses.length,i+chunk)));
+        }
+        return maximizedCurrentSets;
     }
 
     public DataObject getClockDefinition() {

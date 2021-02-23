@@ -30,7 +30,7 @@ public class ActionDtoBuilder {
     }
 
     public ActualPowerQualityRequestDto makeActualPowerQualityRequestDto() {
-        return new ActualPowerQualityRequestDto();
+        return new ActualPowerQualityRequestDto(null);
     }
 
     public GetAdministrativeStatusDataDto makeGetAdministrativeStatusDataDto() {

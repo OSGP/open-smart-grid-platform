@@ -71,7 +71,7 @@ public class MonitoringMapper extends ConfigurableMapper {
         mapperFactory.getConverterFactory().registerConverter(new PowerQualityProfileResponseDataConverter());
         mapperFactory.getConverterFactory().registerConverter(new GetPowerQualityProfileRequestDataConverter());
         mapperFactory.getConverterFactory().registerConverter(new ActualPowerQualityResponseDataConverter());
-        mapperFactory.getConverterFactory().registerConverter(new ActualValueConverter());
+        mapperFactory.getConverterFactory().registerConverter(new PowerQualityValueConverter());
     }
 
 }

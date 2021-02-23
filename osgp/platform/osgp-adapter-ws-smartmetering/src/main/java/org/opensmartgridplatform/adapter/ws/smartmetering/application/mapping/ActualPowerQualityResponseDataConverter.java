@@ -14,10 +14,10 @@ import java.util.List;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualValue;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualValues;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityObject;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityObjects;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityValue;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityValues;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityData;
 
 public class ActualPowerQualityResponseDataConverter extends
@@ -42,18 +42,18 @@ public class ActualPowerQualityResponseDataConverter extends
                       .addAll(this.mapperFacade.mapAsList(source.getPowerQualityObjects(), PowerQualityObject.class));
         result.setPowerQualityObjects(powerQualityObjects);
 
-        final ActualValues actualValues = new ActualValues();
-        actualValues.getActualValue().addAll(this.mapActualValues(source));
-        result.setActualValues(actualValues);
+        final PowerQualityValues powerQualityValues = new PowerQualityValues();
+        powerQualityValues.getPowerQualityValue().addAll(this.mapPowerQualityValues(source));
+        result.setPowerQualityValues(powerQualityValues);
 
         return result;
     }
 
-    private List<ActualValue> mapActualValues(final ActualPowerQualityData source) {
-        final List<ActualValue> result = new ArrayList<>();
-        for (final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualValue actualValueVo : source
-                .getActualValues()) {
-            result.add(this.mapperFacade.map(actualValueVo, ActualValue.class));
+    private List<PowerQualityValue> mapPowerQualityValues(final ActualPowerQualityData source) {
+        final List<PowerQualityValue> result = new ArrayList<>();
+        for (final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PowerQualityValue powerQualityValueVo : source
+                .getPowerQualityValues()) {
+            result.add(this.mapperFacade.map(powerQualityValueVo, PowerQualityValue.class));
         }
         return result;
     }

@@ -18,7 +18,7 @@ public class ActualPowerQualityResponseDto extends ActionResponseDto {
         return this.actualPowerQualityData;
     }
 
-    public void setActualPowerQualityDataDto(ActualPowerQualityDataDto actualPowerQualityData) {
+    public void setActualPowerQualityDataDto(final ActualPowerQualityDataDto actualPowerQualityData) {
         this.actualPowerQualityData = actualPowerQualityData;
     }
 }

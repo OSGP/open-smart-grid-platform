@@ -23,7 +23,7 @@ Feature: SmartMetering Bundle - GetActualPowerQuality
     Then the bundle response should contain an actual power quality response with values
       | DeviceIdentification             | TEST1024000000001               |
       | NumberOfPowerQualityObjects      |                              15 |
-      | NumberOfActualValues             |                              15 |
+      | NumberOfPowerQualityValues       |                              15 |
       | PowerQualityObject_Name_1        | CLOCK                           |
       | PowerQualityObject_Name_2        | INSTANTANEOUS_VOLTAGE_L1        |
       | PowerQualityObject_Unit_2        | V                               |
@@ -55,7 +55,7 @@ Feature: SmartMetering Bundle - GetActualPowerQuality
     Then the bundle response should contain an actual power quality response with values
       | DeviceIdentification             | TEST1024000000001                                   |
       | NumberOfPowerQualityObjects      |                                                  28 |
-      | NumberOfActualValues             |                                                  28 |
+      | NumberOfPowerQualityValues       |                                                  28 |
       | PowerQualityObject_Name_1        | CLOCK                                               |
       | PowerQualityObject_Name_2        | INSTANTANEOUS_CURRENT_L1                            |
       | PowerQualityObject_Unit_2        | AMP                                                 |

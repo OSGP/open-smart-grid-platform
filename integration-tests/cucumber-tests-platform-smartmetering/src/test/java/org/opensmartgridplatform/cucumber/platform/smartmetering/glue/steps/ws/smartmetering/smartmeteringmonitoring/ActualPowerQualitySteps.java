@@ -21,7 +21,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.Actu
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualValue;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityValue;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityObject;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -90,19 +90,19 @@ public class ActualPowerQualitySteps {
             }
         }
 
-        final int expectedNumberOfActualValues = getInteger(settings, "NumberOfActualValues", 0);
-        final List<ActualValue> actualValues =
-                response.getActualPowerQualityData().getActualValues().getActualValue();
-        assertThat(actualValues.size()).as("Number of actual values")
-                                               .isEqualTo(expectedNumberOfActualValues);
+        final int expectedNumberOfPowerQualityValues = getInteger(settings, "NumberOfPowerQualityValues", 0);
+        final List<PowerQualityValue> powerQualityValues =
+                response.getActualPowerQualityData().getPowerQualityValues().getPowerQualityValue();
+        assertThat(powerQualityValues.size()).as("Number of power quality values")
+                                               .isEqualTo(expectedNumberOfPowerQualityValues);
 
-        if (expectedNumberOfActualValues > 0) {
+        if (expectedNumberOfPowerQualityValues > 0) {
             /*
              * Expected value equals expectedNumberOfPowerQualityObjects, because the
-             * number of ActualValues should match the number of power quality objects
+             * number of PowerQualityValues should match the number of power quality objects
              * from the buffer.
              */
-            assertThat(actualValues.size()).as("Number of actual values").isEqualTo(expectedNumberOfPowerQualityObjects);
+            assertThat(powerQualityValues.size()).as("Number of power quality values").isEqualTo(expectedNumberOfPowerQualityObjects);
         }
     }
 

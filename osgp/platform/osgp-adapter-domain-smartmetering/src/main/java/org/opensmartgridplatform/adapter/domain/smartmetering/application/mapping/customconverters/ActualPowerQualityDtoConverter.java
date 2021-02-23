@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.mappi
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import lombok.EqualsAndHashCode;
 import ma.glasnost.orika.CustomConverter;
@@ -18,13 +19,12 @@ import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityResponse;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualValue;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PowerQualityValue;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PowerQualityObject;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualValueDto;
 
-@EqualsAndHashCode(callSuper=true)
+@EqualsAndHashCode(callSuper = true)
 public class ActualPowerQualityDtoConverter
         extends CustomConverter<ActualPowerQualityResponseDto, ActualPowerQualityResponse> {
 
@@ -38,31 +38,27 @@ public class ActualPowerQualityDtoConverter
     public ActualPowerQualityResponse convert(final ActualPowerQualityResponseDto source,
             final Type<? extends ActualPowerQualityResponse> destinationType, final MappingContext mappingContext) {
 
-        final ActualPowerQualityResponse response = new ActualPowerQualityResponse();
-
         if (source.getActualPowerQualityData() != null) {
             final ActualPowerQualityDataDto responseDataDto = source.getActualPowerQualityData();
 
             final List<PowerQualityObject> powerQualityObjects = new ArrayList<>(
                     this.mapperFacade.mapAsList(responseDataDto.getPowerQualityObjects(), PowerQualityObject.class));
 
-            final List<ActualValue> actualValues = this.makeActualValues(responseDataDto);
+            final List<PowerQualityValue> powerQualityValues = this.makePowerQualityValues(responseDataDto);
 
             final ActualPowerQualityData actualPowerQualityData = new ActualPowerQualityData(powerQualityObjects,
-                    actualValues);
-            response.setActualPowerQualityData(actualPowerQualityData);
+                    powerQualityValues);
+            return new ActualPowerQualityResponse(actualPowerQualityData);
+        } else {
+            return new ActualPowerQualityResponse(null);
         }
-        return response;
     }
 
-    private List<ActualValue> makeActualValues(final ActualPowerQualityDataDto responseDataDto) {
-        final List<ActualValue> actualValues = new ArrayList<>();
+    private List<PowerQualityValue> makePowerQualityValues(final ActualPowerQualityDataDto responseDataDto) {
 
-        for (final ActualValueDto actualValueDto : responseDataDto.getActualValues()) {
-            final ActualValue actualValue = this.mapperFactory.getMapperFacade().map(actualValueDto, ActualValue.class);
-            actualValues.add(actualValue);
-        }
-
-        return actualValues;
+        return responseDataDto.getPowerQualityValues()
+                .stream()
+                .map(dto -> this.mapperFactory.getMapperFacade().map(dto, PowerQualityValue.class))
+                .collect(Collectors.toList());
     }
 }

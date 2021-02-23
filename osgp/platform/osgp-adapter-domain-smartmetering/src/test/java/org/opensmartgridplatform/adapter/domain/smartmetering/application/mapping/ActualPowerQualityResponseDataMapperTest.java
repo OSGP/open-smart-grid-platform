@@ -12,14 +12,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualValue;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PowerQualityValue;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityDataDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualValueDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityValueDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityObjectDto;
 
 public class ActualPowerQualityResponseDataMapperTest {
@@ -33,27 +34,23 @@ public class ActualPowerQualityResponseDataMapperTest {
     public void testConvertActualPowerQualityResponse() {
         final ActualPowerQualityDataDto responseDto =
                 new ActualPowerQualityDataDto(new ArrayList<PowerQualityObjectDto>(),
-                this.makeActualValueDtos());
+                this.makePowerQualityValueDtos());
         final ActualPowerQualityData response = this.mapper
                 .map(responseDto, ActualPowerQualityData.class);
         assertThat(response).isNotNull();
 
-        assertThat(response.getActualValues()).hasSize(EXPECTED_CLASS.length);
+        assertThat(response.getPowerQualityValues()).hasSize(EXPECTED_CLASS.length);
 
         int i = 0;
-        for (final ActualValue actualValue : response.getActualValues()) {
-            final Class<?> clazz = actualValue.getValue().getClass();
+        for (final PowerQualityValue powerQualityValue : response.getPowerQualityValues()) {
+            final Class<?> clazz = powerQualityValue.getValue().getClass();
             assertThat(clazz).withFailMessage("the return class should be of the same type")
                              .isEqualTo(EXPECTED_CLASS[i++]);
         }
     }
 
-    private List<ActualValueDto> makeActualValueDtos() {
-        final List<ActualValueDto> result = new ArrayList<>();
-        result.add(new ActualValueDto("Test"));
-        result.add(new ActualValueDto(new Date()));
-        result.add(new ActualValueDto(new BigDecimal(123.45d)));
-        result.add(new ActualValueDto(12345L));
-        return result;
+    private List<PowerQualityValueDto> makePowerQualityValueDtos() {
+        return Arrays.asList(new PowerQualityValueDto("Test"), new PowerQualityValueDto(new Date()),
+                new PowerQualityValueDto(new BigDecimal(123.45d)), new PowerQualityValueDto(12345L));
     }
 }

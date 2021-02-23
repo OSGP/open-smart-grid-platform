@@ -16,6 +16,10 @@ public class ActualPowerQualityResponse extends ActionResponse implements Serial
 
     private ActualPowerQualityData actualPowerQualityData;
 
+    public ActualPowerQualityResponse(final ActualPowerQualityData actualPowerQualityData) {
+        this.actualPowerQualityData = actualPowerQualityData;
+    }
+
     public ActualPowerQualityData getActualPowerQualityData() {
         return actualPowerQualityData;
     }

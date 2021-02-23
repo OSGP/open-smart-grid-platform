@@ -14,10 +14,6 @@ public class ActualPowerQualityRequestDto implements ActionRequestDto {
 
     private final String profileType;
 
-    public ActualPowerQualityRequestDto() {
-        this(null);
-    }
-
     public ActualPowerQualityRequestDto(final String profileType) {
         this.profileType = profileType;
     }

@@ -9,13 +9,13 @@ package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
-public class ActualValueDto implements Serializable {
+public class PowerQualityValueDto implements Serializable {
 
     private static final long serialVersionUID = 2123390296585369209L;
 
     private final Serializable value;
 
-    public ActualValueDto(final Serializable value) {
+    public PowerQualityValueDto(final Serializable value) {
         this.value = value;
     }
 
