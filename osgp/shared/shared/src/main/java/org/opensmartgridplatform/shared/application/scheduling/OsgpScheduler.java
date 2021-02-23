@@ -115,11 +115,11 @@ public class OsgpScheduler {
      */
     public Trigger createJobTrigger(final JobDetail jobDetail, final String cronExpression, final TimeZone timeZone) {
         return TriggerBuilder.newTrigger()
-                             .forJob(jobDetail)
-                             .withIdentity(jobDetail.getKey().getName() + "-Trigger")
-                             .forJob(jobDetail)
-                             .withSchedule(CronScheduleBuilder.cronSchedule(cronExpression).inTimeZone(timeZone))
-                             .build();
+                .forJob(jobDetail)
+                .withIdentity(jobDetail.getKey().getName() + "-Trigger")
+                .forJob(jobDetail)
+                .withSchedule(CronScheduleBuilder.cronSchedule(cronExpression).inTimeZone(timeZone))
+                .build();
     }
 
     /**
@@ -135,7 +135,7 @@ public class OsgpScheduler {
      * @return A {@link Trigger} instance.
      */
     public Trigger createJobTrigger(final JobDetail jobDetail, final String cronExpression) {
-        return createJobTrigger(jobDetail, cronExpression, TimeZone.getDefault());
+        return this.createJobTrigger(jobDetail, cronExpression, TimeZone.getDefault());
     }
 
     /**
@@ -187,7 +187,7 @@ public class OsgpScheduler {
      */
     public void createAndScheduleJob(final Class<? extends Job> jobClass, final String cronExpression)
             throws SchedulerException {
-        createAndScheduleJob(jobClass, cronExpression, TimeZone.getDefault());
+        this.createAndScheduleJob(jobClass, cronExpression, TimeZone.getDefault());
     }
 
     public void deleteScheduledJob(final Class<? extends Job> jobClass) throws SchedulerException {
