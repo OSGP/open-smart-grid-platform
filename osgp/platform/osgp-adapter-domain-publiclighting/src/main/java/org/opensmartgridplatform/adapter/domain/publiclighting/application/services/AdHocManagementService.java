@@ -189,10 +189,22 @@ public class AdHocManagementService extends AbstractService {
 
         final String actualMessageType = LightMeasurementDevice.LMD_TYPE.equals(device.getDeviceType())
                 ? DeviceFunction.GET_LIGHT_SENSOR_STATUS.name()
-                : messageType;
+                        : messageType;
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, allowedDomainTypeDto), actualMessageType, messagePriority, device.getIpAddress());
+                deviceIdentification, allowedDomainTypeDto), actualMessageType, messagePriority,
+                this.getIpAddress(device));
+    }
+
+    private String getIpAddress(final Device device) {
+        String ipAddress = null;
+        if (device.getGatewayDevice() != null) {
+            ipAddress = device.getGatewayDevice().getIpAddress();
+        }
+        if (ipAddress == null) {
+            ipAddress = device.getIpAddress();
+        }
+        return ipAddress;
     }
 
     public void handleGetStatusResponse(final DeviceStatusDto deviceStatusDto, final CorrelationIds ids,
