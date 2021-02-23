@@ -20,7 +20,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessa
 public class Hls5ConnectorStub extends Hls5Connector {
 
     public Hls5ConnectorStub() {
-        super(null, 0, 0, DlmsDeviceAssociation.PUBLIC_CLIENT);
+        super(null, 0, 0, DlmsDeviceAssociation.PUBLIC_CLIENT, null);
     }
 
     @Override

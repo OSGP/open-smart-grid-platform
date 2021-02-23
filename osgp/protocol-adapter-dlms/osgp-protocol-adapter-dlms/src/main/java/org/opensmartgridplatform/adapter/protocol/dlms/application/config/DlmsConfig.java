@@ -126,9 +126,10 @@ public class DlmsConfig extends AbstractConfig {
     @Bean
     public Hls5Connector hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator,
             @Value("${jdlms.response_timeout}") final int responseTimeout,
-            @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress) {
+            @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress,
+            final SecretManagementService secretManagementService) {
         return new Hls5Connector(recoverKeyProcessInitiator, responseTimeout, logicalDeviceAddress,
-                DlmsDeviceAssociation.MANAGEMENT_CLIENT);
+                DlmsDeviceAssociation.MANAGEMENT_CLIENT, secretManagementService);
     }
 
     @Bean
@@ -147,8 +148,8 @@ public class DlmsConfig extends AbstractConfig {
     @Scope("prototype")
     public RecoverKeyProcess recoverKeyProcess(final DomainHelperService domainHelperService,
             @Value("${jdlms.response_timeout}") final int responseTimeout,
-            @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress, Hls5Connector hls5Connector,
-            SecretManagementService secretManagementService) {
+            @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress, final Hls5Connector hls5Connector,
+            final SecretManagementService secretManagementService) {
         return new RecoverKeyProcess(domainHelperService, responseTimeout, logicalDeviceAddress,
                 DlmsDeviceAssociation.MANAGEMENT_CLIENT, hls5Connector, secretManagementService);
     }

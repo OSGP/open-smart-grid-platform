@@ -33,7 +33,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -45,13 +44,14 @@ public class Hls5Connector extends SecureDlmsConnector {
 
     private final RecoverKeyProcessInitiator recoverKeyProcessInitiator;
 
-    @Autowired
-    private SecretManagementService secretManagementService;
+    private final SecretManagementService secretManagementService;
 
     public Hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator, final int responseTimeout,
-            final int logicalDeviceAddress, final DlmsDeviceAssociation deviceAssociation) {
+            final int logicalDeviceAddress, final DlmsDeviceAssociation deviceAssociation,
+            SecretManagementService secretManagementService) {
         super(responseTimeout, logicalDeviceAddress, deviceAssociation);
         this.recoverKeyProcessInitiator = recoverKeyProcessInitiator;
+        this.secretManagementService = secretManagementService;
     }
 
     @Override
@@ -86,6 +86,17 @@ public class Hls5Connector extends SecureDlmsConnector {
         }
     }
 
+    /**
+     * Connect method without any error handling. Used by key recovery process to try to connect to a device with
+     * newly registered keys, without triggering a new key recovery process when the connection fails.
+     * @param device the device to connect to
+     * @param dlmsMessageListener a message listener (for tracing or debugging)
+     * @param keyProvider the method to use to get the required keys
+     * @return the created connection
+     * @throws IOException
+     * @throws OsgpException
+     * @see org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcess
+     */
     public DlmsConnection connectUnchecked(final DlmsDevice device,
             final DlmsMessageListener dlmsMessageListener,
             SecurityKeyProvider keyProvider) throws IOException, OsgpException {

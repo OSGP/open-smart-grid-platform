@@ -68,7 +68,7 @@ public class RecoverKeyProcess implements Runnable {
         this.checkState();
         LOGGER.info("Attempting key recovery for device {}", this.deviceIdentification);
 
-        DlmsDevice device = this.findDevice();
+        final DlmsDevice device = this.findDevice();
         if (!this.secretManagementService.hasNewSecretOfType(this.deviceIdentification, E_METER_AUTHENTICATION)) {
             LOGGER.error(
                     "Could not recover keys: device has no new authorisation key registered in secret-mgmt module");
@@ -76,7 +76,6 @@ public class RecoverKeyProcess implements Runnable {
         }
         if (!this.canConnectUsingNewKeys(device)) {
             LOGGER.error("Could not recover keys: could not connect to device using new keys");
-            //shouldn't we try to connect using 'old' keys? or send key change to device again?
             return;
         }
 
