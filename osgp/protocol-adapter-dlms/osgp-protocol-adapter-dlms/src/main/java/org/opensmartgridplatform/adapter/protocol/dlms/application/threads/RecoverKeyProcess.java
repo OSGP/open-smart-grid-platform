@@ -23,7 +23,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Hls5Conn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.RecoverKeyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class RecoverKeyProcess implements Runnable {
 
@@ -43,17 +42,17 @@ public class RecoverKeyProcess implements Runnable {
 
     private final Hls5Connector hls5Connector;
 
-    @Autowired
-    private SecretManagementService secretManagementService;
+    private final SecretManagementService secretManagementService;
 
     public RecoverKeyProcess(final DomainHelperService domainHelperService, final int responseTimeout,
             final int logicalDeviceAddress, final DlmsDeviceAssociation deviceAssociation,
-            final Hls5Connector hls5Connector) {
+            final Hls5Connector hls5Connector, SecretManagementService secretManagementService) {
         this.domainHelperService = domainHelperService;
         this.responseTimeout = responseTimeout;
         this.logicalDeviceAddress = logicalDeviceAddress;
         this.clientId = deviceAssociation.getClientId();
         this.hls5Connector = hls5Connector;
+        this.secretManagementService = secretManagementService;
     }
 
     public void setDeviceIdentification(final String deviceIdentification) {

@@ -24,6 +24,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcess;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsDeviceAssociation;
@@ -146,9 +147,10 @@ public class DlmsConfig extends AbstractConfig {
     @Scope("prototype")
     public RecoverKeyProcess recoverKeyProcess(final DomainHelperService domainHelperService,
             @Value("${jdlms.response_timeout}") final int responseTimeout,
-            @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress, Hls5Connector hls5Connector) {
+            @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress, Hls5Connector hls5Connector,
+            SecretManagementService secretManagementService) {
         return new RecoverKeyProcess(domainHelperService, responseTimeout, logicalDeviceAddress,
-                DlmsDeviceAssociation.MANAGEMENT_CLIENT, hls5Connector);
+                DlmsDeviceAssociation.MANAGEMENT_CLIENT, hls5Connector, secretManagementService);
     }
 
     @Bean
@@ -160,8 +162,8 @@ public class DlmsConfig extends AbstractConfig {
     }
 
     @Bean(name = "protocolAdapterDlmsScheduleExecutorService")
-    public ScheduledExecutorService
-            scheduledExecutorService(@Value("${executor.scheduled.poolsize}") final int poolsize) {
+    public ScheduledExecutorService scheduledExecutorService(
+            @Value("${executor.scheduled.poolsize}") final int poolsize) {
         return Executors.newScheduledThreadPool(poolsize);
     }
 }
