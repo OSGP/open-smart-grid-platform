@@ -564,7 +564,7 @@ public class DlmsDeviceSteps {
         if (inputSettings.containsKey(keyTypeInputName)) {
             final String inputKey = inputSettings.get(keyTypeInputName);
             if (inputKey != null && !inputKey.trim().isEmpty()) {
-                return new SecretBuilder().setSecurityKeyType(E_METER_ENCRYPTION).setKey(inputKey);
+                return new SecretBuilder().setSecurityKeyType(keyType).setKey(inputKey);
             } else {    //secret explicitly set to empty; return null to prevent secret storing
                 return null;
             }
@@ -647,8 +647,9 @@ public class DlmsDeviceSteps {
         }
     }
 
-    @Then("the new keys are recovered")
-    public void newKeysAreRecovered(Map<String, String> inputSettings) {
+    @Then("after 5 minutes, the new keys are recovered")
+    public void newKeysAreRecovered(Map<String, String> inputSettings) throws InterruptedException {
+        final long waitTimeInMillis = 5 * 60 * 1000;
         if (!inputSettings.containsKey(PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION)) {
             throw new IllegalArgumentException("No device identification provided");
         }
@@ -657,28 +658,37 @@ public class DlmsDeviceSteps {
                 .containsKey(PlatformSmartmeteringKeys.KEY_DEVICE_ENCRYPTIONKEY)) {
             throw new IllegalArgumentException("No authentication or encryption key provided");
         }
+        Thread.sleep(waitTimeInMillis);
         final DbEncryptionKeyReference encryptionKeyRef = this.encryptionKeyRepository
                 .findByTypeAndValid(EncryptionProviderType.JRE, new Date()).iterator().next();
-        if (inputSettings.containsKey(PlatformSmartmeteringKeys.KEY_DEVICE_AUTHENTICATIONKEY)) {
-            int nrOfNewEncryptionKeys = this.encryptedSecretRepository.getSecretCount(deviceIdentification,
-                    E_METER_AUTHENTICATION_KEY, SecretStatus.NEW);
-            assertThat(nrOfNewEncryptionKeys).isEqualTo(0);
-            List<DbEncryptedSecret> activeSecretList = this.encryptedSecretRepository.findSecrets(deviceIdentification,
-                    E_METER_AUTHENTICATION_KEY, SecretStatus.ACTIVE);
-            assertThat(activeSecretList).hasSize(1);
-            DbEncryptedSecret activeSecret = activeSecretList.get(0);
-            assertThat(activeSecret.getEncodedSecret()).isEqualTo(inputSettings.get(KEY_DEVICE_AUTHENTICATIONKEY));
+        List<SecretType> keyTypesToCheck = Arrays.asList(E_METER_AUTHENTICATION_KEY, E_METER_ENCRYPTION_KEY_UNICAST);
+        for (SecretType secretType : keyTypesToCheck) {
+            String keyInputName = this.getKeyTypeInputName(secretType);
+            if (inputSettings.containsKey(keyInputName)) {
+                Map<SecretStatus, Integer> expectedNrOfKeysByStatus = new HashMap<>();
+                expectedNrOfKeysByStatus.put(SecretStatus.NEW, 0);
+                expectedNrOfKeysByStatus.put(SecretStatus.ACTIVE, 1);
+                expectedNrOfKeysByStatus.put(SecretStatus.EXPIRED, 1);
+                for (SecretStatus secretStatus : expectedNrOfKeysByStatus.keySet()) {
+                    int nrOfKeys = this.encryptedSecretRepository
+                            .getSecretCount(deviceIdentification, secretType, secretStatus);
+                    assertThat(nrOfKeys).isEqualTo(expectedNrOfKeysByStatus.get(secretStatus));
+                }
+                List<DbEncryptedSecret> activeSecretList = this.encryptedSecretRepository
+                        .findSecrets(deviceIdentification, secretType, SecretStatus.ACTIVE);
+                assertThat(activeSecretList.get(0).getEncodedSecret()).isEqualTo(inputSettings.get(keyInputName));
+            }
         }
-        if (inputSettings.containsKey(PlatformSmartmeteringKeys.KEY_DEVICE_ENCRYPTIONKEY)) {
-            int nrOfNewEncryptionKeys = this.encryptedSecretRepository.getSecretCount(deviceIdentification,
-                    E_METER_ENCRYPTION_KEY_UNICAST, SecretStatus.NEW);
-            assertThat(nrOfNewEncryptionKeys).isEqualTo(0);
-            List<DbEncryptedSecret> activeSecretList = this.encryptedSecretRepository.findSecrets(deviceIdentification,
-                    E_METER_ENCRYPTION_KEY_UNICAST, SecretStatus.ACTIVE);
-            assertThat(activeSecretList).hasSize(1);
-            DbEncryptedSecret activeSecret = activeSecretList.get(0);
-            assertThat(activeSecret.getEncodedSecret()).isEqualTo(inputSettings.get(KEY_DEVICE_ENCRYPTIONKEY));
-        }
+    }
 
+    public String getKeyTypeInputName(SecretType secretType) {
+        switch (secretType) {
+        case E_METER_AUTHENTICATION_KEY:
+            return KEY_DEVICE_AUTHENTICATIONKEY;
+        case E_METER_ENCRYPTION_KEY_UNICAST:
+            return KEY_DEVICE_ENCRYPTIONKEY;
+        default:
+            throw new IllegalArgumentException("Unsupported secret type: " + secretType.toString());
+        }
     }
 }
