@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.TimeZone;
 
+import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.shared.application.config.AbstractOsgpSchedulerConfig;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.Job;
@@ -135,7 +136,7 @@ public class OsgpScheduler {
      * @return A {@link Trigger} instance.
      */
     public Trigger createJobTrigger(final JobDetail jobDetail, final String cronExpression) {
-        return this.createJobTrigger(jobDetail, cronExpression, TimeZone.getDefault());
+        return this.createJobTrigger(jobDetail, cronExpression, DateTimeZone.UTC.toTimeZone());
     }
 
     /**
@@ -187,7 +188,7 @@ public class OsgpScheduler {
      */
     public void createAndScheduleJob(final Class<? extends Job> jobClass, final String cronExpression)
             throws SchedulerException {
-        this.createAndScheduleJob(jobClass, cronExpression, TimeZone.getDefault());
+        this.createAndScheduleJob(jobClass, cronExpression, DateTimeZone.UTC.toTimeZone());
     }
 
     public void deleteScheduledJob(final Class<? extends Job> jobClass) throws SchedulerException {
