@@ -10,18 +10,18 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.ste
 import static java.util.stream.Collectors.toList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.List;
 import java.util.Map;
 
-import org.mockito.internal.verification.Times;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60870Device;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DomainInfo;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories.DomainInfoFactory;
-import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.matchers.ProtocolResponseMessageMatcher;
 import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.matchers.MeasurementReportTypeMatcher;
+import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.matchers.ProtocolResponseMessageMatcher;
 import org.opensmartgridplatform.dto.valueobjects.LightSensorStatusDto;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -69,7 +69,7 @@ public class OsgpCoreResponseSteps {
     }
 
     private void verifyNumberOfResponseMessages(final int rows) {
-        verify(this.responseMessageSenderMock, new Times(rows)).send(any(ResponseMessage.class));
+        verify(this.responseMessageSenderMock, times(rows)).send(any(ResponseMessage.class));
     }
 
     private void verifyResponseMessages(final List<ProtocolResponseMessage> responseMessages) {

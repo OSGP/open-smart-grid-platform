@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_CORRELATION_UID;
 import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_DEVICE_IDENTIFICATION;
 import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.TestDefaults.DEFAULT_MESSAGE_TYPE;
 
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.opensmartgridplatform.adapter.protocol.iec60870.infra.CorrelationUidPerDevice;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.processors.GetHealthStatusRequestMessageProcessor;
 import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.matchers.ErrorResponseMessageMatcher;
 import org.opensmartgridplatform.dto.da.GetHealthStatusRequestDto;
@@ -30,7 +32,7 @@ import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.ObjectMessageBuilder;
 
 @ExtendWith(MockitoExtension.class)
-public class DeviceRequestMessageListenerTest {
+class DeviceRequestMessageListenerTest {
 
     @InjectMocks
     private DeviceRequestMessageListener deviceRequestMessageListener;
@@ -41,10 +43,16 @@ public class DeviceRequestMessageListenerTest {
     @Mock
     private DeviceResponseMessageSender deviceResponseMessageSender;
 
+    @Mock
+    private CorrelationUidPerDevice correlationUidPerDevice;
+
     @Test
-    public void shouldProcessMessageWhenMessageTypeIsSupported() throws JMSException {
+    void shouldProcessMessageWhenMessageTypeIsSupported() throws JMSException {
+
         // Arrange
-        final ObjectMessage message = new ObjectMessageBuilder().withDeviceIdentification(DEFAULT_DEVICE_IDENTIFICATION)
+        final String correlationUid = DEFAULT_CORRELATION_UID;
+        final ObjectMessage message = new ObjectMessageBuilder().withCorrelationUid(correlationUid)
+                .withDeviceIdentification(DEFAULT_DEVICE_IDENTIFICATION)
                 .withMessageType(DEFAULT_MESSAGE_TYPE)
                 .withObject(new GetHealthStatusRequestDto())
                 .build();
@@ -56,13 +64,17 @@ public class DeviceRequestMessageListenerTest {
         this.deviceRequestMessageListener.onMessage(message);
 
         // Assert
+        verify(this.correlationUidPerDevice).enqueue(DEFAULT_DEVICE_IDENTIFICATION, correlationUid);
         verify(messageProcessor).processMessage(message);
     }
 
     @Test
-    public void shouldSendErrorMessageWhenMessageTypeIsNotSupported() throws JMSException {
+    void shouldSendErrorMessageWhenMessageTypeIsNotSupported() throws JMSException {
+
         // Arrange
-        final ObjectMessage message = new ObjectMessageBuilder().withDeviceIdentification(DEFAULT_DEVICE_IDENTIFICATION)
+        final String correlationUid = DEFAULT_CORRELATION_UID;
+        final ObjectMessage message = new ObjectMessageBuilder().withCorrelationUid(correlationUid)
+                .withDeviceIdentification(DEFAULT_DEVICE_IDENTIFICATION)
                 .withMessageType(DEFAULT_MESSAGE_TYPE)
                 .withObject(new GetHealthStatusRequestDto())
                 .build();
@@ -73,6 +85,9 @@ public class DeviceRequestMessageListenerTest {
         this.deviceRequestMessageListener.onMessage(message);
 
         // Assert
+        verify(this.correlationUidPerDevice).enqueue(DEFAULT_DEVICE_IDENTIFICATION, correlationUid);
+        verify(this.correlationUidPerDevice).remove(DEFAULT_DEVICE_IDENTIFICATION,
+                correlationUid);
         verify(this.deviceResponseMessageSender).send(argThat(new ErrorResponseMessageMatcher()));
     }
 }

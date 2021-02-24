@@ -18,6 +18,7 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.I
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LightMeasurementService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceType;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
+import org.opensmartgridplatform.adapter.protocol.iec60870.infra.CorrelationUidPerDevice;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementGroupDto;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementReportDto;
 import org.opensmartgridplatform.dto.da.measurements.elements.BitmaskMeasurementElementDto;
@@ -29,6 +30,7 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Optionals;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -45,6 +47,9 @@ public class LightMeasurementDeviceResponseService extends AbstractDeviceRespons
 
     @Autowired
     private LightMeasurementService lightMeasurementService;
+
+    @Autowired
+    private CorrelationUidPerDevice correlationUidPerDevice;
 
     public LightMeasurementDeviceResponseService() {
         super(DEVICE_TYPE);
@@ -92,10 +97,38 @@ public class LightMeasurementDeviceResponseService extends AbstractDeviceRespons
     public void sendLightSensorStatusResponse(final MeasurementReportDto measurementReportDto,
             final Iec60870Device device, final ResponseMetadata responseMetadata, final String errorPrefix) {
 
-        this.findMeasurementGroupAndThen(
-                measurementReportDto, device, measurementGroup -> this.sendLightSensorStatusResponse(measurementGroup,
-                        device, responseMetadata, errorPrefix),
-                () -> this.logMeasurementGroupNotFound(device, errorPrefix));
+        /*
+         * If the device has a gateway device, the report contains values for
+         * all the devices of the gateway device. We are going to handle them
+         * all.
+         */
+        if (device.hasGatewayDevice()) {
+            /*
+             * A question that may arise here, is why go through all devices
+             * behind the gateway, instead of sending a response just for the
+             * device provided in the method parameter.
+             *
+             * Due to the way the IEC 60870-5-104 protocol works at the moment
+             * this code is added, the device from the method parameter may not
+             * actually be the device for which the light sensor status was
+             * requested.
+             *
+             * The proper device is filtered out later in the call chain in
+             * sendOrLogLightSensorStatus. If a correlation UID has been queued
+             * for the light measurement device, a response will be sent for
+             * that device and the then dequeued correlation UID.
+             */
+            this.iec60870DeviceRepository.findByGatewayDeviceIdentification(device.getGatewayDeviceIdentification())
+                    .forEach(d -> this.findMeasurementGroupAndThen(measurementReportDto, d,
+                            measurementGroup -> this.sendLightSensorStatusResponse(measurementGroup, d,
+                                    responseMetadata, errorPrefix),
+                            () -> this.logMeasurementGroupNotFound(d, errorPrefix)));
+        } else {
+            this.findMeasurementGroupAndThen(
+                    measurementReportDto, device, measurementGroup -> this
+                            .sendLightSensorStatusResponse(measurementGroup, device, responseMetadata, errorPrefix),
+                    () -> this.logMeasurementGroupNotFound(device, errorPrefix));
+        }
     }
 
     public void sendEvent(final MeasurementReportDto measurementReportDto, final Iec60870Device device,
@@ -139,17 +172,27 @@ public class LightMeasurementDeviceResponseService extends AbstractDeviceRespons
             final ResponseMetadata responseMetadata, final String errorPrefix) {
 
         this.findLightSensorStatusAndThen(measurementGroup,
-                lightSensorStatus -> this.sendLightSensorStatus(lightSensorStatus, device, responseMetadata),
+                lightSensorStatus -> this.sendOrLogLightSensorStatus(lightSensorStatus, device, responseMetadata),
                 () -> LOGGER.error("{} Light sensor status information not found for device {}", errorPrefix,
                         device.getDeviceIdentification()));
     }
 
-    private void sendLightSensorStatus(final LightSensorStatusDto lightSensorStatus, final Iec60870Device device,
+    private void sendOrLogLightSensorStatus(final LightSensorStatusDto lightSensorStatus, final Iec60870Device device,
             final ResponseMetadata responseMetadata) {
 
-        final ResponseMetadata rm = new ResponseMetadata.Builder()
-                .withCorrelationUid(responseMetadata.getCorrelationUid())
-                .withDeviceIdentification(device.getDeviceIdentification())
+        final String deviceIdentification = device.getDeviceIdentification();
+
+        Optionals.ifPresentOrElse(this.correlationUidPerDevice.dequeue(deviceIdentification),
+                uid -> this.sendLightSensorStatus(uid, lightSensorStatus, deviceIdentification, responseMetadata),
+                () -> LOGGER.info("No correlation UID found for device identification {}", deviceIdentification));
+
+    }
+
+    private void sendLightSensorStatus(final String correlationUid, final LightSensorStatusDto lightSensorStatus,
+            final String deviceIdentification, final ResponseMetadata responseMetadata) {
+
+        final ResponseMetadata rm = new ResponseMetadata.Builder().withCorrelationUid(correlationUid)
+                .withDeviceIdentification(deviceIdentification)
                 .withDomainInfo(responseMetadata.getDomainInfo())
                 .withMessageType(MessageType.GET_LIGHT_SENSOR_STATUS.name())
                 .withOrganisationIdentification(responseMetadata.getOrganisationIdentification())
