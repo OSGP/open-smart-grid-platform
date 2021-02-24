@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 public class ActualPowerQualityResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
     @Autowired
+    @Qualifier("domainSmartMeteringMonitoringService")
     private MonitoringService monitoringService;
 
     @Autowired
