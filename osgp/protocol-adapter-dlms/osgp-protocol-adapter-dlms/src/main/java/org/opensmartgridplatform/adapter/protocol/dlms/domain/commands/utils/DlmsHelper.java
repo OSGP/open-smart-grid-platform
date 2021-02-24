@@ -80,7 +80,7 @@ public class DlmsHelper {
     }
 
     public static final int MILLISECONDS_PER_MINUTE = 60000;
-    private static final int MAX_CONCURRENT_ATTRIBUTE_ADDRESSES = 20;
+    private static final int MAX_CONCURRENT_ATTRIBUTE_ADDRESSES = 32;
 
     /**
      * Gets a single result from a meter, and returns the result data if
