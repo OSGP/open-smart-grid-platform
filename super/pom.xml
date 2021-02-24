@@ -323,6 +323,13 @@
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>cucumber-tests-protocol-iec60870</artifactId>
+        <version>${osgp.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
 
       <!-- Guava for Joiner class -->
       <dependency>

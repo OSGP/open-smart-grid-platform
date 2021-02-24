@@ -149,5 +149,6 @@
     <module>cucumber-tests-platform-smartmetering</module>
     <module>cucumber-tests-platform-microgrids</module>
 
+    <module>cucumber-tests-protocol-iec60870</module>
   </modules>
 </project>

@@ -15,10 +15,11 @@ import org.opensmartgridplatform.domain.core.entities.DomainInfo;
 import org.opensmartgridplatform.domain.core.entities.RtuDevice;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface RtuDeviceRepository extends JpaRepository<RtuDevice, Long> {
+public interface RtuDeviceRepository extends JpaRepository<RtuDevice, Long>, JpaSpecificationExecutor<RtuDevice> {
     RtuDevice findById(long id);
 
     Optional<RtuDevice> findByDeviceIdentification(String deviceIdentification);

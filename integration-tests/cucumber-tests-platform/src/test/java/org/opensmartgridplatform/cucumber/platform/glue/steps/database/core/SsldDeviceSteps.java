@@ -25,8 +25,10 @@ import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.domain.core.entities.DeviceOutputSetting;
+import org.opensmartgridplatform.domain.core.entities.LightMeasurementDevice;
 import org.opensmartgridplatform.domain.core.entities.RelayStatus;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
+import org.opensmartgridplatform.domain.core.repositories.LightMeasurementDeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.RelayStatusRepository;
 import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.RelayType;
@@ -43,6 +45,9 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
 
     @Autowired
     private RelayStatusRepository relayStatusRepository;
+
+    @Autowired
+    private LightMeasurementDeviceRepository lmdRepository;
 
     @Autowired
     private DeviceSteps deviceSteps;
@@ -177,6 +182,12 @@ public class SsldDeviceSteps extends BaseDeviceSteps {
         final DateTime lastSuccessfulConnectionTimestamp = getDate(settings, PlatformKeys.KEY_LAST_COMMUNICATION_TIME,
                 DateTime.now());
         ssld.setLastSuccessfulConnectionTimestamp(lastSuccessfulConnectionTimestamp.toDate());
+
+        if (settings.containsKey(PlatformKeys.KEY_LIGHTMEASUREMENT_DEVICE_IDENTIFICATION)) {
+            final LightMeasurementDevice lmd = this.lmdRepository
+                    .findByDeviceIdentification(settings.get(PlatformKeys.KEY_LIGHTMEASUREMENT_DEVICE_IDENTIFICATION));
+            ssld.setLightMeasurementDevice(lmd);
+        }
 
         this.ssldRepository.save(ssld);
 

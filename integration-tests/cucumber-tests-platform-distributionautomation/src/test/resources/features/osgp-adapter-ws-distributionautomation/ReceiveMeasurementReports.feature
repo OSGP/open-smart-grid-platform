@@ -30,19 +30,3 @@ Feature: DistributionAutomation Receive measurement reports
       | InformationObjectType    | IeShortFloat |
       | InformationElementValue  |         10.0 |
 
-  Scenario: Update process image of light measurement device
-    Given an IEC 60870 RTU
-      | DeviceIdentification | TEST1024000000001        |
-      | Status               | Active                   |
-      | Port                 |                    62404 |
-      | CommonAddress        |                       75 |
-      | Profile              | light_measurement_device |
-    When Organization test-org connects to device TEST1024000000001
-    And I update the information object
-      | InformationObjectAddress |                        2 |
-      | InformationObjectType    | IeSinglePointWithQuality |
-      | InformationElementValue  | true                     |
-    Then I get a measurement report for device TEST1024000000001 with values
-      | InformationObjectAddress |                        2 |
-      | InformationObjectType    | IeSinglePointWithQuality |
-      | InformationElementValue  | true                     |

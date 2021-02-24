@@ -93,15 +93,24 @@ public class Wait {
         return response;
     }
 
-    public static <T> void until(final Runnable task) {
+    public static void until(final Runnable task) {
+        until(task, configuration.getTimeout());
+    }
+
+    public static void until(final Runnable task, final int timeoutSeconds) {
+        until(task, configuration.getTimeout(), configuration.getSleepTime());
+    }
+
+    public static void until(final Runnable task, final int timeoutSeconds, final int sleeptimeMillis) {
+
         final Logger logger = LoggerFactory.getLogger(Wait.class);
 
         boolean success = false;
         final Instant startInstant = Instant.now();
-        final Instant timeoutInstant = startInstant.plusSeconds(configuration.getTimeout());
+        final Instant timeoutInstant = startInstant.plusSeconds(timeoutSeconds);
         while (!success) {
             if (Instant.now().isAfter(timeoutInstant)) {
-                Assertions.fail("Timeout after [" + configuration.getTimeout() + "] seconds.");
+                Assertions.fail("Timeout after [" + timeoutSeconds + "] seconds.");
             }
 
             try {
@@ -125,7 +134,7 @@ public class Wait {
             logger.info("... polling in Wait.until (" + Duration.between(startInstant, Instant.now()).getSeconds()
                     + " seconds) ...");
             try {
-                TimeUnit.MILLISECONDS.sleep(configuration.getSleepTime());
+                TimeUnit.MILLISECONDS.sleep(sleeptimeMillis);
             } catch (final Exception ex) {
                 handleException(logger, ex);
             }

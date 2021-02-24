@@ -158,7 +158,6 @@ public class BaseTask {
         if (lightMeasurementDevices.isEmpty()) {
             LOGGER.warn("No connectable light measurement devices found for protocol {}", protocol);
         } else {
-            this.deviceIdentifications(lightMeasurementDevices);
             final String identifications = this.deviceIdentifications(lightMeasurementDevices);
             LOGGER.info("{} connectable light measurement device(s) found for protocol {}: {}",
                     lightMeasurementDevices.size(), protocol, identifications);
@@ -194,7 +193,7 @@ public class BaseTask {
             return devices;
         }
 
-        List<Object> listOfObjectArrays = this.eventRepository.findLatestEventForEveryDevice(devices);
+        final List<Object> listOfObjectArrays = this.eventRepository.findLatestEventForEveryDevice(devices);
         LOGGER.info("devicesWithEventsList.size(): {}", listOfObjectArrays.size());
 
         final Date maxAge = DateTime.now(DateTimeZone.UTC).minusHours(maximumAllowedAge).toDate();

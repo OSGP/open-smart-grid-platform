@@ -303,6 +303,7 @@ public class PlatformKeys extends Keys {
     public static final String FIRMWARE_INSTALLATION_DATE = "InstallationDate";
     public static final String KEY_SCHEDULE_VERSION = "Version";
     public static final String KEY_LIGHTMEASUREMENT_IDENTIFICATION = "Identification";
+    public static final String KEY_LIGHTMEASUREMENT_DEVICE_IDENTIFICATION = "LightMeasurementDeviceIdentification";
     public static final String KEY_LIGHTMEASUREMENT_COLOR = "Color";
     public static final String KEY_LIGHTMEASUREMENT_DIGITAL_INPUT = "DigitalInput";
     public static final String KEY_LIGHTMEASUREMENT_LAST_COMMUNICATION_TIME = "LastCommunicationTime";
