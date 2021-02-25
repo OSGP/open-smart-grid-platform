@@ -10,22 +10,17 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
 import java.util.List;
 
-import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.CosemObjectAccessor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.CosemObjectMethod;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DataObjectAttrExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DataObjectAttrExecutors;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
-import org.opensmartgridplatform.dlms.interfaceclass.attribute.MbusClientAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.method.MBusClientMethod;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CleanUpMbusChannelDto;
@@ -45,9 +40,6 @@ public class CleanUpMBusChannelCommandExecutor
     private DeviceChannelsHelper deviceChannelsHelper;
 
     private static final int CLASS_ID = InterfaceClass.MBUS_CLIENT.id();
-    private static final int SLAVE_DEINSTALL_METHOD_ID = MBusClientMethod.SLAVE_DEINSTALL.getMethodId();
-    private static final int SET_ENCRYPTION_KEY_METHOD_ID = MBusClientMethod.SET_ENCRYPTION_KEY.getMethodId();
-    private static final int IDENTIFICATION_NUMBER_ATTRIBUTE_ID = MbusClientAttribute.IDENTIFICATION_NUMBER.attributeId();
     /**
      * The ObisCode for the M-Bus Client Setup exists for a number of channels.
      * DSMR specifies these M-Bus Client Setup channels as values from 1..4.
@@ -105,12 +97,12 @@ public class CleanUpMBusChannelCommandExecutor
         // in blue book version 10, the parameter is of type integer
         DataObject parameter = DataObject.newInteger8Data((byte) 0);
         conn.getDlmsMessageListener().setDescription("Call slave deinstall method");
-        MethodResultCode slaveDeinstall = mBusSetup.callMethod(Method.SLAVE_DEINSTALL, parameter);
+        MethodResultCode slaveDeinstall = mBusSetup.callMethod(MBusClientMethod.SLAVE_DEINSTALL, parameter);
         if (slaveDeinstall == MethodResultCode.TYPE_UNMATCHED) {
             // in blue book version 12, the parameter is of type unsigned, we
             // will try again with that type
             parameter = DataObject.newUInteger8Data((byte) 0);
-            slaveDeinstall = mBusSetup.callMethod(Method.SLAVE_DEINSTALL, parameter);
+            slaveDeinstall = mBusSetup.callMethod(MBusClientMethod.SLAVE_DEINSTALL, parameter);
         }
         if (slaveDeinstall != MethodResultCode.SUCCESS) {
             log.warn("Slave deinstall was not successfull on device {} for channel {}",
@@ -129,22 +121,6 @@ public class CleanUpMBusChannelCommandExecutor
         this.deviceChannelsHelper.writeUpdatedMbus(conn,
                 mbusChannelElementsDto, cleanUpMbusChannelDto.getChannel(), Protocol.forDevice(device));
 
-    }
-
-    private enum Method implements CosemObjectMethod {
-        SLAVE_DEINSTALL(2),
-        SET_ENCRYPTION_KEY(7);
-
-        private final int methodId;
-
-        Method(final int methodId) {
-            this.methodId = methodId;
-        }
-
-        @Override
-        public int getValue() {
-            return this.methodId;
-        }
     }
 
 }

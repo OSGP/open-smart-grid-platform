@@ -25,12 +25,13 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.CosemObjectAccessor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.CosemObjectAttribute;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.CosemObjectMethod;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ImageTransferException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeClass;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.ImageTransferAttribute;
+import org.opensmartgridplatform.dlms.interfaceclass.method.ImageTransferMethod;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,9 +101,9 @@ class ImageTransfer {
         this.connector.getDlmsMessageListener().setDescription(
                 "ImageTransfer read image_transfer_enabled, read attribute: " + JdlmsObjectToStringUtil
                         .describeAttributes(
-                                this.imageTransferCosem.createAttributeAddress(Attribute.IMAGE_TRANSFER_ENABLED)));
+                                this.imageTransferCosem.createAttributeAddress(ImageTransferAttribute.IMAGE_TRANSFER_ENABLED)));
 
-        final DataObject transferEnabled = this.imageTransferCosem.readAttribute(Attribute.IMAGE_TRANSFER_ENABLED);
+        final DataObject transferEnabled = this.imageTransferCosem.readAttribute(ImageTransferAttribute.IMAGE_TRANSFER_ENABLED);
         if (transferEnabled == null || !transferEnabled.isBoolean()) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_TRANSFER_ENABLED_NOT_READ);
         }
@@ -114,10 +115,10 @@ class ImageTransfer {
         this.connector.getDlmsMessageListener().setDescription(
                 "ImageTransfer set image_transfer_enabled to " + (enabled ? "TRUE" : "FALSE") + ", write attribute: "
                         + JdlmsObjectToStringUtil.describeAttributes(
-                        this.imageTransferCosem.createAttributeAddress(Attribute.IMAGE_TRANSFER_ENABLED)));
+                        this.imageTransferCosem.createAttributeAddress(ImageTransferAttribute.IMAGE_TRANSFER_ENABLED)));
 
         final DataObject transferEnabled = DataObject.newBoolData(enabled);
-        this.imageTransferCosem.writeAttribute(Attribute.IMAGE_TRANSFER_ENABLED, transferEnabled);
+        this.imageTransferCosem.writeAttribute(ImageTransferAttribute.IMAGE_TRANSFER_ENABLED, transferEnabled);
     }
 
     /**
@@ -131,10 +132,10 @@ class ImageTransfer {
         params.add(DataObject.newUInteger32Data(this.getImageSize()));
         final DataObject parameter = DataObject.newStructureData(params);
 
-        this.setDescriptionForMethodCall(Method.IMAGE_TRANSFER_INITIATE, parameter);
+        this.setDescriptionForMethodCall(ImageTransferMethod.IMAGE_TRANSFER_INITIATE, parameter);
 
         final MethodResultCode resultCode = this.imageTransferCosem
-                .callMethod(Method.IMAGE_TRANSFER_INITIATE, parameter);
+                .callMethod(ImageTransferMethod.IMAGE_TRANSFER_INITIATE, parameter);
 
         if (resultCode != MethodResultCode.SUCCESS) {
             LOGGER.warn("Method IMAGE_TRANSFER_INITIATE gave result {}", resultCode);
@@ -180,9 +181,9 @@ class ImageTransfer {
      */
     public void verifyImage() throws OsgpException {
         final DataObject parameter = DataObject.newInteger8Data((byte) 0);
-        this.setDescriptionForMethodCall(Method.IMAGE_VERIFY, parameter);
+        this.setDescriptionForMethodCall(ImageTransferMethod.IMAGE_VERIFY, parameter);
 
-        final MethodResultCode verified = this.imageTransferCosem.callMethod(Method.IMAGE_VERIFY, parameter);
+        final MethodResultCode verified = this.imageTransferCosem.callMethod(ImageTransferMethod.IMAGE_VERIFY, parameter);
         if (verified == null) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_VERIFY_NOT_CALLED);
         }
@@ -215,10 +216,10 @@ class ImageTransfer {
         this.connector.getDlmsMessageListener().setDescription(
                 "ImageTransfer read image_to_activate_info, read attribute: " + JdlmsObjectToStringUtil
                         .describeAttributes(
-                                this.imageTransferCosem.createAttributeAddress(Attribute.IMAGE_TO_ACTIVATE_INFO)));
+                                this.imageTransferCosem.createAttributeAddress(ImageTransferAttribute.IMAGE_TO_ACTIVATE_INFO)));
 
         final DataObject imageToActivateInfoData = this.imageTransferCosem
-                .readAttribute(Attribute.IMAGE_TO_ACTIVATE_INFO);
+                .readAttribute(ImageTransferAttribute.IMAGE_TO_ACTIVATE_INFO);
 
         if (imageToActivateInfoData.getType() != Type.ARRAY) {
             /*
@@ -274,9 +275,9 @@ class ImageTransfer {
      */
     public void activateImage() throws OsgpException {
         final DataObject parameter = DataObject.newInteger8Data((byte) 0);
-        this.setDescriptionForMethodCall(Method.IMAGE_ACTIVATE, parameter);
+        this.setDescriptionForMethodCall(ImageTransferMethod.IMAGE_ACTIVATE, parameter);
 
-        final MethodResultCode imageActivate = this.imageTransferCosem.callMethod(Method.IMAGE_ACTIVATE, parameter);
+        final MethodResultCode imageActivate = this.imageTransferCosem.callMethod(ImageTransferMethod.IMAGE_ACTIVATE, parameter);
         if (imageActivate == null) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_ACTIVATE_NOT_CALLED);
         }
@@ -362,9 +363,9 @@ class ImageTransfer {
     private int readImageBlockSize() throws ProtocolAdapterException {
         this.connector.getDlmsMessageListener().setDescription(
                 "ImageTransfer read image_block_size, read attribute: " + JdlmsObjectToStringUtil.describeAttributes(
-                        this.imageTransferCosem.createAttributeAddress(Attribute.IMAGE_BLOCK_SIZE)));
+                        this.imageTransferCosem.createAttributeAddress(ImageTransferAttribute.IMAGE_BLOCK_SIZE)));
 
-        final DataObject imageBlockSizeData = this.imageTransferCosem.readAttribute(Attribute.IMAGE_BLOCK_SIZE);
+        final DataObject imageBlockSizeData = this.imageTransferCosem.readAttribute(ImageTransferAttribute.IMAGE_BLOCK_SIZE);
         if (imageBlockSizeData == null || !imageBlockSizeData.isNumber()) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_BLOCK_SIZE_NOT_READ);
         }
@@ -386,10 +387,10 @@ class ImageTransfer {
         this.connector.getDlmsMessageListener().setDescription(
                 "ImageTransfer read image_first_not_transferred_block_number, read attribute: "
                         + JdlmsObjectToStringUtil.describeAttributes(this.imageTransferCosem
-                        .createAttributeAddress(Attribute.IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER)));
+                        .createAttributeAddress(ImageTransferAttribute.IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER)));
 
         final DataObject imageFirstNotReadBlockNumberData = this.imageTransferCosem
-                .readAttribute(Attribute.IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER);
+                .readAttribute(ImageTransferAttribute.IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER);
         if (imageFirstNotReadBlockNumberData == null || !imageFirstNotReadBlockNumberData.isNumber()) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER_NOT_READ);
         }
@@ -415,10 +416,10 @@ class ImageTransfer {
         this.connector.getDlmsMessageListener().setDescription(
                 "ImageTransfer read image_transfer_status, read attribute: " + JdlmsObjectToStringUtil
                         .describeAttributes(
-                                this.imageTransferCosem.createAttributeAddress(Attribute.IMAGE_TRANSFER_STATUS)));
+                                this.imageTransferCosem.createAttributeAddress(ImageTransferAttribute.IMAGE_TRANSFER_STATUS)));
 
         final DataObject imageTransferStatusData = this.imageTransferCosem
-                .readAttribute(Attribute.IMAGE_TRANSFER_STATUS);
+                .readAttribute(ImageTransferAttribute.IMAGE_TRANSFER_STATUS);
         if (imageTransferStatusData == null || !imageTransferStatusData.isNumber()) {
             throw new ProtocolAdapterException(EXCEPTION_MSG_IMAGE_TRANSFER_STATUS_NOT_READ);
         }
@@ -439,16 +440,16 @@ class ImageTransfer {
         params.add(DataObject.newOctetStringData(transferData));
         final DataObject parameter = DataObject.newStructureData(params);
 
-        this.setDescriptionForMethodCall(Method.IMAGE_BLOCK_TRANSFER, parameter);
+        this.setDescriptionForMethodCall(ImageTransferMethod.IMAGE_BLOCK_TRANSFER, parameter);
 
-        final MethodResultCode resultCode = this.imageTransferCosem.callMethod(Method.IMAGE_BLOCK_TRANSFER, parameter);
+        final MethodResultCode resultCode = this.imageTransferCosem.callMethod(ImageTransferMethod.IMAGE_BLOCK_TRANSFER, parameter);
 
         if (resultCode != MethodResultCode.SUCCESS) {
             LOGGER.info("Method IMAGE_BLOCK_TRANSFER gave result {} for block {}", resultCode, blockNumber);
         }
     }
 
-    private void setDescriptionForMethodCall(final Method method, final DataObject parameter) {
+    private void setDescriptionForMethodCall(final ImageTransferMethod method, final DataObject parameter) {
         this.connector.getDlmsMessageListener().setDescription(
                 "ImageTransfer call " + method.name().toLowerCase(Locale.UK) + " with parameter " + parameter
                         + ", call method: " + JdlmsObjectToStringUtil
@@ -613,41 +614,4 @@ class ImageTransfer {
         }
     }
 
-    /**
-     * Attributes of Image transfer IC definition.
-     */
-    private enum Attribute implements CosemObjectAttribute {
-        LOGICAL_NAME(1), IMAGE_BLOCK_SIZE(2), IMAGE_TRANSFERRED_BLOCKS_STATUS(
-                3), IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER(4), IMAGE_TRANSFER_ENABLED(5), IMAGE_TRANSFER_STATUS(
-                6), IMAGE_TO_ACTIVATE_INFO(7);
-
-        private final int attributeId;
-
-        Attribute(final int attributeId) {
-            this.attributeId = attributeId;
-        }
-
-        @Override
-        public int getValue() {
-            return this.attributeId;
-        }
-    }
-
-    /**
-     * Methods of Image transfer IC definition.
-     */
-    private enum Method implements CosemObjectMethod {
-        IMAGE_TRANSFER_INITIATE(1), IMAGE_BLOCK_TRANSFER(2), IMAGE_VERIFY(3), IMAGE_ACTIVATE(4);
-
-        private final int methodId;
-
-        Method(final int methodId) {
-            this.methodId = methodId;
-        }
-
-        @Override
-        public int getValue() {
-            return this.methodId;
-        }
-    }
 }

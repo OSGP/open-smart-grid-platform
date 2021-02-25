@@ -22,6 +22,8 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeClass;
+import org.opensmartgridplatform.dlms.interfaceclass.method.MethodClass;
 
 public class CosemObjectAccessor {
 
@@ -43,25 +45,25 @@ public class CosemObjectAccessor {
         this.classId = classId;
     }
 
-    public DataObject readAttribute(final CosemObjectAttribute attributeId) throws ProtocolAdapterException {
+    public DataObject readAttribute(final AttributeClass attributeClass) throws ProtocolAdapterException {
         final GetResult getResult;
         try {
-            getResult = this.connector.getConnection().get(this.createAttributeAddress(attributeId));
+            getResult = this.connector.getConnection().get(this.createAttributeAddress(attributeClass));
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }
 
         if (getResult == null) {
             throw new ProtocolAdapterException(
-                    String.format(EXCEPTION_MSG_NO_GET_RESULT, attributeId, this.classId, this.obisCode));
+                    String.format(EXCEPTION_MSG_NO_GET_RESULT, attributeClass, this.classId, this.obisCode));
         }
 
         return getResult.getResultData();
     }
 
-    public void writeAttribute(final CosemObjectAttribute attributeId, final DataObject data)
+    public void writeAttribute(final AttributeClass attributeClass, final DataObject data)
             throws ProtocolAdapterException {
-        final AttributeAddress attributeAddress = this.createAttributeAddress(attributeId);
+        final AttributeAddress attributeAddress = this.createAttributeAddress(attributeClass);
         final SetParameter setParameter = new SetParameter(attributeAddress, data);
 
         final AccessResultCode accessResultCode;
@@ -69,37 +71,37 @@ public class CosemObjectAccessor {
             accessResultCode = this.connector.getConnection().set(setParameter);
         } catch (final IOException e) {
             throw new ProtocolAdapterException(
-                    String.format(EXCEPTION_MSG_WRITING_ATTRIBUTE, attributeId, this.classId, this.obisCode), e);
+                    String.format(EXCEPTION_MSG_WRITING_ATTRIBUTE, attributeClass, this.classId, this.obisCode), e);
         }
 
         if (accessResultCode != AccessResultCode.SUCCESS) {
             throw new ProtocolAdapterException(
-                    String.format(EXCEPTION_MSG_ACCESS_RESULT_NOT_SUCCESS, accessResultCode.name(), attributeId,
+                    String.format(EXCEPTION_MSG_ACCESS_RESULT_NOT_SUCCESS, accessResultCode.name(), attributeClass,
                             this.classId, this.obisCode));
         }
     }
 
-    public MethodResultCode callMethod(final CosemObjectMethod methodId) throws ProtocolAdapterException {
-        final MethodParameter methodParameter = this.createMethodParameter(methodId);
+    public MethodResultCode callMethod(final MethodClass methodClass) throws ProtocolAdapterException {
+        final MethodParameter methodParameter = this.createMethodParameter(methodClass);
         return this.handleMethod(methodParameter);
     }
 
-    public MethodResultCode callMethod(final CosemObjectMethod methodId, final DataObject dataObject)
+    public MethodResultCode callMethod(final MethodClass methodClass, final DataObject dataObject)
             throws ProtocolAdapterException {
-        final MethodParameter methodParameter = this.createMethodParameter(methodId, dataObject);
+        final MethodParameter methodParameter = this.createMethodParameter(methodClass, dataObject);
         return this.handleMethod(methodParameter);
     }
 
-    public AttributeAddress createAttributeAddress(final CosemObjectAttribute attributeId) {
-        return new AttributeAddress(this.classId, this.obisCode, attributeId.getValue());
+    public AttributeAddress createAttributeAddress(final AttributeClass attributeClass) {
+        return new AttributeAddress(this.classId, this.obisCode, attributeClass.attributeId());
     }
 
-    public MethodParameter createMethodParameter(final CosemObjectMethod methodId, final DataObject dataObject) {
-        return new MethodParameter(this.classId, this.obisCode, methodId.getValue(), dataObject);
+    public MethodParameter createMethodParameter(final MethodClass methodClass, final DataObject dataObject) {
+        return new MethodParameter(this.classId, this.obisCode, methodClass.getMethodId(), dataObject);
     }
 
-    public MethodParameter createMethodParameter(final CosemObjectMethod methodId) {
-        return new MethodParameter(this.classId, this.obisCode, methodId.getValue());
+    public MethodParameter createMethodParameter(final MethodClass methodClass) {
+        return new MethodParameter(this.classId, this.obisCode, methodClass.getMethodId());
     }
 
     private MethodResultCode handleMethod(final MethodParameter methodParameter) throws ProtocolAdapterException {

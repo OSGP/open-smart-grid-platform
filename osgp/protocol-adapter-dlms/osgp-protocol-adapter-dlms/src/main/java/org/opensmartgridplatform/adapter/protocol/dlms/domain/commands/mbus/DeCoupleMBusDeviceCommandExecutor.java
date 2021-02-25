@@ -14,7 +14,6 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.CosemObjectAccessor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.CosemObjectMethod;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DataObjectAttrExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DataObjectAttrExecutors;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -22,6 +21,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.MbusClientAttribute;
+import org.opensmartgridplatform.dlms.interfaceclass.method.MBusClientMethod;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceResponseDto;
 import org.slf4j.Logger;
@@ -61,12 +61,12 @@ public class DeCoupleMBusDeviceCommandExecutor
         // in blue book version 10, the parameter is of type integer
         DataObject parameter = DataObject.newInteger8Data((byte) 0);
         conn.getDlmsMessageListener().setDescription("Call slave deinstall method");
-        MethodResultCode slaveDeinstall = mBusSetup.callMethod(Method.SLAVE_DEINSTALL, parameter);
+        MethodResultCode slaveDeinstall = mBusSetup.callMethod(MBusClientMethod.SLAVE_DEINSTALL, parameter);
         if (slaveDeinstall == MethodResultCode.TYPE_UNMATCHED) {
             // in blue book version 12, the parameter is of type unsigned, we
             // will try again with that type
             parameter = DataObject.newUInteger8Data((byte) 0);
-            slaveDeinstall = mBusSetup.callMethod(Method.SLAVE_DEINSTALL, parameter);
+            slaveDeinstall = mBusSetup.callMethod(MBusClientMethod.SLAVE_DEINSTALL, parameter);
         }
         if (slaveDeinstall != MethodResultCode.SUCCESS) {
             LOGGER.warn("Slave deinstall was not successfull on device {} for mbus device {}",
@@ -114,21 +114,6 @@ public class DeCoupleMBusDeviceCommandExecutor
 
         return new DataObjectAttrExecutor(attribute.attributeName(), attributeAddress, value, CLASS_ID, obiscode,
                 attribute.attributeId());
-    }
-
-    private enum Method implements CosemObjectMethod {
-        SLAVE_DEINSTALL(2);
-
-        private final int methodId;
-
-        Method(final int methodId) {
-            this.methodId = methodId;
-        }
-
-        @Override
-        public int getValue() {
-            return this.methodId;
-        }
     }
 
 }
