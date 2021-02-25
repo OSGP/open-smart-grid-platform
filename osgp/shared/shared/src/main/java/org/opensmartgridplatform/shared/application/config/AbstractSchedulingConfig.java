@@ -193,7 +193,8 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
         properties.put("org.quartz.jobStore.class", JobStoreTX.class.getName());
         properties.put("org.quartz.jobStore.driverDelegateClass", PostgreSQLDelegate.class.getName());
         properties.put("org.quartz.jobStore.tablePrefix", "QRTZ_");
-        properties.put("org.quartz.jobStore.useProperties", Boolean.TRUE.toString());
+        properties.put("org.quartz.jobStore.useProperties",
+                schedulingConfigProperties.isUseProperties());
         properties.put("org.quartz.jobStore.isClustered", Boolean.TRUE.toString());
         properties.put("org.quartz.jobStore.misfireThreshold", "60000");
         properties.put("org.quartz.jobStore.dataSource", "quartzDefault");

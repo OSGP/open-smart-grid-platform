@@ -12,6 +12,7 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
+import org.opensmartgridplatform.adapter.protocol.iec60870.infra.CorrelationUidPerDevice;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -42,6 +43,9 @@ public class DeviceRequestMessageListener implements MessageListener {
     @Qualifier("protocolIec60870OutboundOsgpCoreResponsesMessageSender")
     private DeviceResponseMessageSender deviceResponseMessageSender;
 
+    @Autowired
+    private CorrelationUidPerDevice correlationUidPerDevice;
+
     @Override
     public void onMessage(final Message message) {
 
@@ -55,18 +59,23 @@ public class DeviceRequestMessageListener implements MessageListener {
             return;
         }
 
+        final String correlationUid = messageMetadata.getCorrelationUid();
+        final String deviceIdentification = messageMetadata.getDeviceIdentification();
         try {
-            LOGGER.info("Received message [correlationUid={}, messageType={}, messagePriority={}]",
-                    messageMetadata.getCorrelationUid(), messageMetadata.getMessageType(),
-                    messageMetadata.getMessagePriority());
+            LOGGER.info("Received message [correlationUid={}, messageType={}, messagePriority={}] for device {}",
+                    correlationUid, messageMetadata.getMessageType(), messageMetadata.getMessagePriority(),
+                    deviceIdentification);
+
+            this.correlationUidPerDevice.enqueue(deviceIdentification, correlationUid);
 
             final MessageProcessor processor = this.messageProcessorMap.getMessageProcessor(objectMessage);
 
             processor.processMessage(objectMessage);
 
         } catch (final IllegalArgumentException | JMSException e) {
-            LOGGER.error("Unexpected exception for message [correlationUid={}]", messageMetadata.getCorrelationUid(),
-                    e);
+
+            this.correlationUidPerDevice.remove(deviceIdentification, correlationUid);
+            LOGGER.error("Unexpected exception for message [correlationUid={}]", correlationUid, e);
             this.sendNotSupportedException(objectMessage, messageMetadata);
         }
     }
@@ -92,6 +101,7 @@ public class DeviceRequestMessageListener implements MessageListener {
                     .build();
 
             this.deviceResponseMessageSender.send(protocolResponseMessage);
+
         } catch (final Exception e) {
             LOGGER.error("Unexpected error during sendException(ObjectMessage, Exception)", e);
         }

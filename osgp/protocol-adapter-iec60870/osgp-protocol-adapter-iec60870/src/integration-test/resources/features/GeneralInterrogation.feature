@@ -14,6 +14,8 @@ Feature: General Interrogation
       |                          1 | SIQ                     | OFF                       |
       |                          2 | SIQ                     | ON                        |
 
+# we have to decide what to do with this situation until then, the scenario is skipped
+@Skip
   Scenario: send general interrogation command after connecting to a controlled station
     When I receive a connect request for IEC60870 device "GATEWAY_1" from osgp core
     Then I should send a general interrogation command to device "GATEWAY_1"

@@ -49,7 +49,7 @@ import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 @Entity
 public class FirmwareFile extends AbstractEntity {
 
-    private static final long serialVersionUID = 6996358385968307111L;
+    private static final long serialVersionUID = 2L;
 
     @Column(unique = true, nullable = false, updatable = false)
     private String identification;
@@ -65,21 +65,24 @@ public class FirmwareFile extends AbstractEntity {
     @OneToMany(mappedBy = "firmwareFile", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private final Set<FirmwareFileFirmwareModule> firmwareModules = new HashSet<>();
 
-    @Column()
+    @Column
     private String filename;
 
     @Column(length = 100)
     private String description;
 
-    @Column()
+    @Column
     private boolean pushToNewDevices;
 
     @Lob
-    @Column()
+    @Column
     private byte[] file;
 
-    @Column()
+    @Column
     private String hash;
+
+    @Column
+    private boolean active;
 
     protected FirmwareFile() {
         // Default constructor
@@ -92,6 +95,7 @@ public class FirmwareFile extends AbstractEntity {
         this.pushToNewDevices = builder.pushToNewDevices;
         this.file = builder.file;
         this.hash = builder.hash;
+        this.active = builder.active;
     }
 
     public void updateFirmwareModuleData(final Map<FirmwareModule, String> versionsByModule) {
@@ -186,8 +190,10 @@ public class FirmwareFile extends AbstractEntity {
         for (final Iterator<FirmwareFileFirmwareModule> iterator = this.firmwareModules.iterator(); iterator
                 .hasNext();) {
             final FirmwareFileFirmwareModule firmwareFileFirmwareModule = iterator.next();
-            if (firmwareFileFirmwareModule.getFirmwareFile().equals(this)
-                    && firmwareFileFirmwareModule.getFirmwareModule().equals(firmwareModule)) {
+            if (firmwareFileFirmwareModule.getFirmwareFile()
+                    .equals(this)
+                    && firmwareFileFirmwareModule.getFirmwareModule()
+                            .equals(firmwareModule)) {
                 iterator.remove();
                 firmwareFileFirmwareModule.prepareForRemoval();
             }
@@ -204,6 +210,14 @@ public class FirmwareFile extends AbstractEntity {
 
     public boolean getPushToNewDevices() {
         return this.pushToNewDevices;
+    }
+
+    public boolean isActive() {
+        return this.active;
+    }
+
+    public void setActive(final boolean active) {
+        this.active = active;
     }
 
     /**
@@ -341,12 +355,15 @@ public class FirmwareFile extends AbstractEntity {
 
     public static class Builder {
 
-        private String identification = UUID.randomUUID().toString().replace("-", "");
+        private String identification = UUID.randomUUID()
+                .toString()
+                .replace("-", "");
         private String filename;
         private String description;
         private boolean pushToNewDevices;
         private byte[] file;
         private String hash;
+        private boolean active;
 
         public Builder withIdentification(final String identification) {
             this.identification = identification;
@@ -375,6 +392,11 @@ public class FirmwareFile extends AbstractEntity {
 
         public Builder withHash(final String hash) {
             this.hash = hash;
+            return this;
+        }
+
+        public Builder withActive(final boolean active) {
+            this.active = active;
             return this;
         }
 

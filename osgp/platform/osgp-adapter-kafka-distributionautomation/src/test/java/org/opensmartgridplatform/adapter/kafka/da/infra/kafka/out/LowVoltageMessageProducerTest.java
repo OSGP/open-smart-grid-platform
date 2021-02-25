@@ -24,9 +24,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.opensmartgridplatform.adapter.kafka.da.application.config.LocationConfig;
 import org.opensmartgridplatform.adapter.kafka.da.application.config.LowVoltageMessageProducerConfig;
 import org.opensmartgridplatform.adapter.kafka.da.application.mapping.DistributionAutomationMapper;
+import org.opensmartgridplatform.adapter.kafka.da.application.services.LocationService;
 import org.opensmartgridplatform.adapter.kafka.da.infra.mqtt.in.ScadaMeasurementPayload;
 import org.opensmartgridplatform.adapter.kafka.da.serialization.MessageDeserializer;
 import org.opensmartgridplatform.adapter.kafka.da.signature.MessageSigner;
@@ -45,7 +45,6 @@ import com.alliander.data.scadameasurementpublishedevent.Analog;
 import com.alliander.data.scadameasurementpublishedevent.BaseVoltage;
 import com.alliander.data.scadameasurementpublishedevent.ConductingEquipment;
 import com.alliander.data.scadameasurementpublishedevent.Message;
-import com.alliander.data.scadameasurementpublishedevent.Name;
 import com.alliander.data.scadameasurementpublishedevent.ScadaMeasurementPublishedEvent;
 
 @SpringJUnitConfig(LowVoltageMessageProducerConfig.class)
@@ -64,7 +63,7 @@ class LowVoltageMessageProducerTest {
     private EmbeddedKafkaBroker embeddedKafka;
 
     @Mock
-    private LocationConfig locationConfig;
+    private LocationService locationService;
 
     @Mock
     private DistributionAutomationMapper mapper;
@@ -86,7 +85,7 @@ class LowVoltageMessageProducerTest {
     public void setup() {
         when(this.mapper.map(any(ScadaMeasurementPayload.class), any(Class.class))).thenReturn(this.createEvent());
         this.producer = new LowVoltageMessageProducer(this.template, this.messageSigner, this.mapper,
-                this.locationConfig);
+                this.locationService);
     }
 
     @Test
@@ -117,7 +116,7 @@ class LowVoltageMessageProducerTest {
         final String mRid = "mRid";
         final List<Analog> measurements = new ArrayList<>();
         final ConductingEquipment powerSystemResource = new ConductingEquipment(new BaseVoltage(description, null),
-                new ArrayList<Name>());
+                new ArrayList<>());
         return new ScadaMeasurementPublishedEvent(measurements, powerSystemResource, createdDateTime, description,
                 mRid);
     }
