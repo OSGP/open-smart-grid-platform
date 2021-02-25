@@ -323,7 +323,17 @@
   <xsd:element name="GetSubscriptionInformationResponse">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="result" type="xsd:string" minOccurs="1"/>
+        <xsd:element name="meid" type="xsd:string"/>
+        <xsd:element name="esn" type="xsd:string"/>
+        <xsd:element name="uimid" type="xsd:string"/>
+        <xsd:element name="eqId" type="xsd:string"/>
+        <xsd:element name="ipAddress" type="xsd:string"/>
+        <xsd:element name="mdn" type="xsd:string"/>
+        <xsd:element name="btsId" type="xsd:string"/>
+        <xsd:element name="cellId" type="xsd:string"/>
+        <xsd:element name="status" type="xsd:string"/>
+        <xsd:element name="custCode" type="xsd:string"/>
+        <xsd:element name="supplierReferenceId" type="xsd:string"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
