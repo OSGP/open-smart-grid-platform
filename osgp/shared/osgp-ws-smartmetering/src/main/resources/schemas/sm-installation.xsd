@@ -201,7 +201,7 @@
     <xsd:complexContent>
       <xsd:extension base="common:Response">
         <xsd:sequence>
-          <xsd:element name="ChannelElementValues" type="tns:ChannelElementValues" />
+          <xsd:element name="MbusDeviceIdentification" type="common:DeviceIdentification"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
