@@ -8,42 +8,30 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
-import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.ObisCode;
-import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.CosemObjectAccessor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DataObjectAttrExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DataObjectAttrExecutors;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
-import org.opensmartgridplatform.dlms.interfaceclass.attribute.MbusClientAttribute;
-import org.opensmartgridplatform.dlms.interfaceclass.method.MBusClientMethod;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceResponseDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsDto;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class DeCoupleMBusDeviceCommandExecutor
         extends AbstractCommandExecutor<DeCoupleMbusDeviceDto, DeCoupleMbusDeviceResponseDto> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeCoupleMBusDeviceCommandExecutor.class);
-
-    private static final int CLASS_ID = InterfaceClass.MBUS_CLIENT.id();
-    /**
-     * The ObisCode for the M-Bus Client Setup exists for a number of channels.
-     * DSMR specifies these M-Bus Client Setup channels as values from 1..4.
-     */
-    private static final String OBIS_CODE_TEMPLATE = "0.%d.24.1.0.255";
-
-    private static final DataObject UINT_8_ZERO = DataObject.newUInteger8Data((short) 0);
-    private static final DataObject UINT_16_ZERO = DataObject.newUInteger16Data(0);
-    private static final DataObject UINT_32_ZERO = DataObject.newUInteger32Data(0L);
+    @Autowired
+    private DeviceChannelsHelper deviceChannelsHelper;
 
     public DeCoupleMBusDeviceCommandExecutor() {
         super(DeCoupleMbusDeviceDto.class);
@@ -53,67 +41,30 @@ public class DeCoupleMBusDeviceCommandExecutor
     public DeCoupleMbusDeviceResponseDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final DeCoupleMbusDeviceDto decoupleMbusDto) throws ProtocolAdapterException {
 
-        LOGGER.debug("DeCouple mbus device from gateway device");
+        Short channel = decoupleMbusDto.getChannel();
+        String mBusDeviceIdentification = decoupleMbusDto.getmBusDeviceIdentification();
+        log.debug("DeCouple mbus device from gateway device");
 
-        final CosemObjectAccessor mBusSetup = new CosemObjectAccessor(conn, this.getObisCode(decoupleMbusDto),
-                CLASS_ID);
+        final ObisCode obisCode = this.deviceChannelsHelper.getObisCode(channel);
+        
+        final CosemObjectAccessor mBusSetup = new CosemObjectAccessor(conn, obisCode, InterfaceClass.MBUS_CLIENT.id());
 
-        // in blue book version 10, the parameter is of type integer
-        DataObject parameter = DataObject.newInteger8Data((byte) 0);
-        conn.getDlmsMessageListener().setDescription("Call slave deinstall method");
-        MethodResultCode slaveDeinstall = mBusSetup.callMethod(MBusClientMethod.SLAVE_DEINSTALL, parameter);
-        if (slaveDeinstall == MethodResultCode.TYPE_UNMATCHED) {
-            // in blue book version 12, the parameter is of type unsigned, we
-            // will try again with that type
-            parameter = DataObject.newUInteger8Data((byte) 0);
-            slaveDeinstall = mBusSetup.callMethod(MBusClientMethod.SLAVE_DEINSTALL, parameter);
-        }
-        if (slaveDeinstall != MethodResultCode.SUCCESS) {
-            LOGGER.warn("Slave deinstall was not successfull on device {} for mbus device {}",
-                    device.getDeviceIdentification(), decoupleMbusDto.getmBusDeviceIdentification());
-        }
+        this.deviceChannelsHelper.deinstallSlave(conn, device, channel, mBusDeviceIdentification, mBusSetup);
 
-        return this.writeUpdatedMbus(conn, decoupleMbusDto);
+        this.writeUpdatedMbus(conn, device, channel);
+        
+        return new DeCoupleMbusDeviceResponseDto(mBusDeviceIdentification,
+                channel);
+
     }
 
-    private ObisCode getObisCode(final DeCoupleMbusDeviceDto decoupleMbusDto) {
-        return new ObisCode(String.format(OBIS_CODE_TEMPLATE, decoupleMbusDto.getChannel()));
-    }
+    private ChannelElementValuesDto writeUpdatedMbus(final DlmsConnectionManager conn,
+            final DlmsDevice device, Short channel) throws ProtocolAdapterException {
 
-    private DeCoupleMbusDeviceResponseDto writeUpdatedMbus(final DlmsConnectionManager conn,
-            final DeCoupleMbusDeviceDto deCoupleMbusDeviceDto) throws ProtocolAdapterException {
+        MbusChannelElementsDto mbusChannelElementsDto = new MbusChannelElementsDto((short)0, "", "", "", (short)0, (short)0);
+        return this.deviceChannelsHelper.writeUpdatedMbus(conn,
+                mbusChannelElementsDto, channel, Protocol.forDevice(device), "DeCoupleMbusDevice");
 
-        final DataObjectAttrExecutors dataObjectExecutors = new DataObjectAttrExecutors("DeCoupleMBusDevice")
-                .addExecutor(this.getMbusAttributeExecutor(deCoupleMbusDeviceDto, MbusClientAttribute.PRIMARY_ADDRESS,
-                        UINT_8_ZERO))
-                .addExecutor(this.getMbusAttributeExecutor(deCoupleMbusDeviceDto,
-                        MbusClientAttribute.IDENTIFICATION_NUMBER, UINT_32_ZERO))
-                .addExecutor(this.getMbusAttributeExecutor(deCoupleMbusDeviceDto, MbusClientAttribute.MANUFACTURER_ID,
-                        UINT_16_ZERO))
-                .addExecutor(
-                        this.getMbusAttributeExecutor(deCoupleMbusDeviceDto, MbusClientAttribute.VERSION, UINT_8_ZERO))
-                .addExecutor(this.getMbusAttributeExecutor(deCoupleMbusDeviceDto, MbusClientAttribute.DEVICE_TYPE,
-                        UINT_8_ZERO));
-
-        conn.getDlmsMessageListener()
-                .setDescription("Write updated MBus attributes to channel " + deCoupleMbusDeviceDto.getChannel()
-                        + ", set attributes: " + dataObjectExecutors.describeAttributes());
-
-        dataObjectExecutors.execute(conn);
-
-        LOGGER.info("Finished decoupling the mbus device from the gateway device");
-
-        return new DeCoupleMbusDeviceResponseDto(deCoupleMbusDeviceDto.getmBusDeviceIdentification(),
-                deCoupleMbusDeviceDto.getChannel());
-    }
-
-    private DataObjectAttrExecutor getMbusAttributeExecutor(final DeCoupleMbusDeviceDto deCoupleMbusDeviceDto,
-            final MbusClientAttribute attribute, final DataObject value) {
-        final ObisCode obiscode = this.getObisCode(deCoupleMbusDeviceDto);
-        final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, obiscode, attribute.attributeId());
-
-        return new DataObjectAttrExecutor(attribute.attributeName(), attributeAddress, value, CLASS_ID, obiscode,
-                attribute.attributeId());
     }
 
 }

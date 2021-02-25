@@ -11,9 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 import java.util.List;
 
 import org.openmuc.jdlms.GetResult;
-import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.ObisCode;
-import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.CosemObjectAccessor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -21,7 +19,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
-import org.opensmartgridplatform.dlms.interfaceclass.method.MBusClientMethod;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CleanUpMbusChannelDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CleanUpMbusChannelResponseDto;
@@ -39,13 +36,6 @@ public class CleanUpMBusChannelCommandExecutor
     @Autowired
     private DeviceChannelsHelper deviceChannelsHelper;
 
-    private static final int CLASS_ID = InterfaceClass.MBUS_CLIENT.id();
-    /**
-     * The ObisCode for the M-Bus Client Setup exists for a number of channels.
-     * DSMR specifies these M-Bus Client Setup channels as values from 1..4.
-     */
-    private static final String OBIS_CODE_TEMPLATE = "0.%d.24.1.0.255";
-
     public CleanUpMBusChannelCommandExecutor() {
         super(CleanUpMbusChannelDto.class);
     }
@@ -54,34 +44,36 @@ public class CleanUpMBusChannelCommandExecutor
     public CleanUpMbusChannelResponseDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final CleanUpMbusChannelDto cleanUpMbusChannelDto) throws ProtocolAdapterException {
 
-        log.debug("Clean up mbus channel {} on device {}", cleanUpMbusChannelDto.getChannel(),
-                device.getDeviceIdentification());
+        Short channel = cleanUpMbusChannelDto.getChannel();
+        
+        log.debug("Clean up mbus channel {} on device {}", channel, device.getDeviceIdentification());
 
-        final CosemObjectAccessor mBusSetup = new CosemObjectAccessor(conn, this.getObisCode(cleanUpMbusChannelDto),
-                CLASS_ID);
+        final ObisCode obisCode = this.deviceChannelsHelper.getObisCode(channel);
+        
+        final CosemObjectAccessor mBusSetup = new CosemObjectAccessor(conn, obisCode, InterfaceClass.MBUS_CLIENT.id());
 
-        this.deinstallSlave(conn, device, cleanUpMbusChannelDto, mBusSetup);
+        String mbusDeviceIdentification = this.getMbusDeviceIdentification(conn, device, channel, mBusSetup);
+        
+        this.deviceChannelsHelper.deinstallSlave(conn, device, channel, mbusDeviceIdentification, mBusSetup);
 
         this.emptyEncryptionKey(conn, device, cleanUpMbusChannelDto, mBusSetup);
         
-        String mbusDeviceIdentification = this.getMbusDeviceIdentification(conn, device, cleanUpMbusChannelDto, mBusSetup);
+        this.resetMbusDeviceDetails(conn, device, channel);
         
-        this.resetMbusDeviceDetails(conn, device, cleanUpMbusChannelDto);
-        
-        return new CleanUpMbusChannelResponseDto(mbusDeviceIdentification, cleanUpMbusChannelDto.getChannel());
+        return new CleanUpMbusChannelResponseDto(mbusDeviceIdentification, channel);
     }
 
     private String getMbusDeviceIdentification(DlmsConnectionManager conn, DlmsDevice device,
-            CleanUpMbusChannelDto cleanUpMbusChannelDto, CosemObjectAccessor mBusSetup)
+            short channel, CosemObjectAccessor mBusSetup)
             throws ProtocolAdapterException {
 
-        log.info("Retrieving attribute values of mbus channel {} on device {}", cleanUpMbusChannelDto.getChannel(),
+        log.info("Retrieving attribute values of mbus channel {} on device {}", channel,
                 device.getDeviceIdentification());
 
         final List<GetResult> resultList = this.deviceChannelsHelper.getMBusClientAttributeValues(conn, device,
-                cleanUpMbusChannelDto.getChannel());
+                channel);
         ChannelElementValuesDto channelElementValues = this.deviceChannelsHelper
-                .makeChannelElementValues(cleanUpMbusChannelDto.getChannel(), resultList);
+                .makeChannelElementValues(channel, resultList);
         return channelElementValues.getIdentificationNumber();
 
     }
@@ -91,35 +83,12 @@ public class CleanUpMBusChannelCommandExecutor
         // TODO via SetEncryptionKeyExchangeOnGMeterCommandExecutor?
     }
 
-    private void deinstallSlave(final DlmsConnectionManager conn, final DlmsDevice device,
-            final CleanUpMbusChannelDto cleanUpMbusChannelDto, final CosemObjectAccessor mBusSetup)
-            throws ProtocolAdapterException {
-        // in blue book version 10, the parameter is of type integer
-        DataObject parameter = DataObject.newInteger8Data((byte) 0);
-        conn.getDlmsMessageListener().setDescription("Call slave deinstall method");
-        MethodResultCode slaveDeinstall = mBusSetup.callMethod(MBusClientMethod.SLAVE_DEINSTALL, parameter);
-        if (slaveDeinstall == MethodResultCode.TYPE_UNMATCHED) {
-            // in blue book version 12, the parameter is of type unsigned, we
-            // will try again with that type
-            parameter = DataObject.newUInteger8Data((byte) 0);
-            slaveDeinstall = mBusSetup.callMethod(MBusClientMethod.SLAVE_DEINSTALL, parameter);
-        }
-        if (slaveDeinstall != MethodResultCode.SUCCESS) {
-            log.warn("Slave deinstall was not successfull on device {} for channel {}",
-                    device.getDeviceIdentification(), cleanUpMbusChannelDto.getChannel());
-        }
-    }
-
-    private ObisCode getObisCode(final CleanUpMbusChannelDto cleanUpMbusChannelDto) {
-        return new ObisCode(String.format(OBIS_CODE_TEMPLATE, cleanUpMbusChannelDto.getChannel()));
-    }
-
     private void resetMbusDeviceDetails(final DlmsConnectionManager conn,
-            DlmsDevice device, final CleanUpMbusChannelDto cleanUpMbusChannelDto) throws ProtocolAdapterException {
+            DlmsDevice device, final short channel) throws ProtocolAdapterException {
 
         MbusChannelElementsDto mbusChannelElementsDto = new MbusChannelElementsDto((short)0, "", "", "", (short)0, (short)0);
         this.deviceChannelsHelper.writeUpdatedMbus(conn,
-                mbusChannelElementsDto, cleanUpMbusChannelDto.getChannel(), Protocol.forDevice(device));
+                mbusChannelElementsDto, channel, Protocol.forDevice(device), "CleanUpMbusChannel");
 
     }
 
