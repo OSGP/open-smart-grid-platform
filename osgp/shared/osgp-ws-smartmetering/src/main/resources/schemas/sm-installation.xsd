@@ -45,6 +45,26 @@
     </xsd:complexType>
   </xsd:element>
 
+  <xsd:element name="CleanUpMbusChannelRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+        <xsd:element name="Channel" type="common:Channel" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="CleanUpMbusChannelResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType"
+          minOccurs="1" />
+        <xsd:element name="MbusDeviceIdentification" type="common:DeviceIdentification"
+          minOccurs="0" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
   <xsd:element name="CoupleMbusDeviceRequest">
     <xsd:complexType>
       <xsd:sequence>
