@@ -43,27 +43,6 @@
     </wsdl:part>
   </wsdl:message>
 
-  <wsdl:message name="CleanUpMbusChannelRequest">
-    <wsdl:part element="sminst:CleanUpMbusChannelRequest"
-      name="CleanUpMbusChannelRequest">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="CleanUpMbusChannelAsyncResponse">
-    <wsdl:part element="sminst:CleanUpMbusChannelAsyncResponse"
-      name="CleanUpMbusChannelAsyncResponse">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="CleanUpMbusChannelAsyncRequest">
-    <wsdl:part element="sminst:CleanUpMbusChannelAsyncRequest"
-      name="CleanUpMbusChannelAsyncRequest">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="CleanUpMbusChannelResponse">
-    <wsdl:part element="sminst:CleanUpMbusChannelResponse"
-      name="CleanUpMbusChannelResponse">
-    </wsdl:part>
-  </wsdl:message>
-
   <wsdl:message name="CoupleMbusDeviceRequest">
     <wsdl:part element="sminst:CoupleMbusDeviceRequest" name="CoupleMbusDeviceRequest">
     </wsdl:part>
@@ -125,6 +104,27 @@
     </wsdl:part>
   </wsdl:message>
 
+  <wsdl:message name="CleanUpMbusDeviceByChannelRequest">
+    <wsdl:part element="sminst:CleanUpMbusDeviceByChannelRequest"
+               name="CleanUpMbusDeviceByChannelRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="CleanUpMbusDeviceByChannelAsyncResponse">
+    <wsdl:part element="sminst:CleanUpMbusDeviceByChannelAsyncResponse"
+               name="CleanUpMbusDeviceByChannelAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="CleanUpMbusDeviceByChannelAsyncRequest">
+    <wsdl:part element="sminst:CleanUpMbusDeviceByChannelAsyncRequest"
+               name="CleanUpMbusDeviceByChannelAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="CleanUpMbusDeviceByChannelResponse">
+    <wsdl:part element="sminst:CleanUpMbusDeviceByChannelResponse"
+               name="CleanUpMbusDeviceByChannelResponse">
+    </wsdl:part>
+  </wsdl:message>
+
   <wsdl:portType name="SmartMeteringInstallationPort">
 
     <wsdl:operation name="AddDevice">
@@ -138,23 +138,6 @@
       <wsdl:input message="tns:AddDeviceAsyncRequest" name="AddDeviceAsyncRequest">
       </wsdl:input>
       <wsdl:output message="tns:AddDeviceResponse" name="AddDeviceResponse">
-      </wsdl:output>
-    </wsdl:operation>
-
-    <wsdl:operation name="CleanUpMbusChannel">
-      <wsdl:input message="tns:CleanUpMbusChannelRequest"
-        name="CleanUpMbusChannelRequest">
-      </wsdl:input>
-      <wsdl:output message="tns:CleanUpMbusChannelAsyncResponse"
-        name="CleanUpMbusChannelAsyncResponse">
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="GetCleanUpMbusChannelReponse">
-      <wsdl:input message="tns:CleanUpMbusChannelAsyncRequest"
-        name="CleanUpMbusChannelAsyncRequest">
-      </wsdl:input>
-      <wsdl:output message="tns:CleanUpMbusChannelResponse"
-        name="CleanUpMbusChannelResponse">
       </wsdl:output>
     </wsdl:operation>
 
@@ -204,6 +187,22 @@
       </wsdl:input>
       <wsdl:output message="tns:CoupleMbusDeviceByChannelResponse"
         name="CoupleMbusDeviceByChannelResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="CleanUpMbusDeviceByChannel">
+      <wsdl:input message="tns:CleanUpMbusDeviceByChannelRequest" name="CleanUpMbusDeviceByChannelRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:CleanUpMbusDeviceByChannelAsyncResponse"
+                   name="CleanUpMbusDeviceByChannelAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CleanUpMbusDeviceByChannelResponse">
+      <wsdl:input message="tns:CleanUpMbusDeviceByChannelAsyncRequest"
+                  name="CleanUpMbusDeviceByChannelAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:CleanUpMbusDeviceByChannelResponse"
+                   name="CleanUpMbusDeviceByChannelResponse">
       </wsdl:output>
     </wsdl:operation>
 
