@@ -19,6 +19,10 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.Ad
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.AddDeviceAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.AddDeviceRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.AddDeviceResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CleanUpMbusDeviceByChannelAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CleanUpMbusDeviceByChannelAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CleanUpMbusDeviceByChannelRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CleanUpMbusDeviceByChannelResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelAsyncRequest;
@@ -369,4 +373,84 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
         return response;
     }
 
+    /**
+     * @param organisationIdentification
+     *            the organization requesting the coupling of devices
+     * @param request
+     *            the CoupleMbusDeviceByChannelRequest containing the
+     *            gatewayDeviceIdentification and channel
+     * @param messagePriority
+     *            the priority of the message
+     * @param scheduleTime
+     *            the time the request is scheduled for
+     * @return a response containing a correlationUid and the
+     *         deviceIdentification
+     * @throws OsgpException
+     */
+    @PayloadRoot(localPart = "CleanUpMbusDeviceByChannelRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
+    @ResponsePayload
+    public CleanUpMbusDeviceByChannelAsyncResponse cleanUpMbusDeviceByChannel(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final CleanUpMbusDeviceByChannelRequest request,
+            @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
+            @ResponseUrl final String responseUrl) throws OsgpException {
+
+        final String deviceIdentification = request.getDeviceIdentification();
+        final short channel = request.getCleanUpMbusDeviceByChannelRequestData().getChannel();
+        LOGGER.info("Incoming CleanUpMbusDeviceByChannelRequest for device: {} and channel {}.", deviceIdentification,
+                channel);
+
+        CleanUpMbusDeviceByChannelAsyncResponse response = null;
+        try {
+            response = new CleanUpMbusDeviceByChannelAsyncResponse();
+
+            final String correlationUid = this.installationService.enqueueCleanUpMbusDeviceByChannelRequest(
+                    organisationIdentification, deviceIdentification,
+                    MessagePriorityEnum.getMessagePriority(messagePriority),
+                    this.installationMapper.map(scheduleTime, Long.class), channel);
+
+            response.setCorrelationUid(correlationUid);
+            response.setDeviceIdentification(deviceIdentification);
+            this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
+        } catch (final Exception e) {
+            LOGGER.error("Exception while cleaning up on channel: {} for device: {} for organisation {}.", channel,
+                    deviceIdentification, organisationIdentification, e);
+            this.handleException(e);
+        }
+        return response;
+    }
+
+    /**
+     * @param request
+     *            the request message containing the correlationUid
+     * @return the response message containing the OsgpResultType and optional a
+     *         message
+     * @throws OsgpException
+     */
+    @PayloadRoot(localPart = "CleanUpMbusDeviceByChannelAsyncRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
+    @ResponsePayload
+    public CleanUpMbusDeviceByChannelResponse getCleanUpMbusDeviceByChannelResponse(
+            @RequestPayload final CleanUpMbusDeviceByChannelAsyncRequest request) throws OsgpException {
+
+        CleanUpMbusDeviceByChannelResponse response = null;
+        try {
+            response = new CleanUpMbusDeviceByChannelResponse();
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
+
+            this.throwExceptionIfResultNotOk(responseData, "Clean Up Mbus Device By Channel");
+
+            if (responseData.getMessageData() instanceof String) {
+                response.setResultString((String) responseData.getMessageData());
+            }
+            response = this.installationMapper.map(responseData.getMessageData(),
+                    CleanUpMbusDeviceByChannelResponse.class);
+
+            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+        return response;
+    }
 }

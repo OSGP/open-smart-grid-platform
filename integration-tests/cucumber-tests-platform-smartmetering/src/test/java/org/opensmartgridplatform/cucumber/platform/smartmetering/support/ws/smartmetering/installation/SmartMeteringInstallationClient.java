@@ -7,14 +7,14 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.installation;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.ws.client.core.WebServiceTemplate;
-
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CleanUpMbusDeviceByChannelRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.AddDeviceAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.AddDeviceAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.AddDeviceRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.AddDeviceResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CleanUpMbusDeviceByChannelAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CleanUpMbusDeviceByChannelAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CleanUpMbusDeviceByChannelResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelAsyncRequest;
@@ -30,6 +30,9 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.De
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.SmartMeteringBaseClient;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.opensmartgridplatform.shared.infra.ws.DefaultWebServiceTemplateFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.ws.client.core.WebServiceTemplate;
 
 @Component
 public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
@@ -106,6 +109,24 @@ public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
         final WebServiceTemplate webServiceTemplate = this.smartMeteringInstallationWebServiceTemplateFactory
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
         return (CoupleMbusDeviceByChannelResponse) webServiceTemplate.marshalSendAndReceive(asyncRequest);
+    }
+
+    public CleanUpMbusDeviceByChannelAsyncResponse cleanUpMbusDeviceByChannel(
+            final CleanUpMbusDeviceByChannelRequest request) throws WebServiceSecurityException {
+        final WebServiceTemplate webServiceTemplate = this.smartMeteringInstallationWebServiceTemplateFactory
+                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
+        return (CleanUpMbusDeviceByChannelAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
+    }
+
+    public CleanUpMbusDeviceByChannelResponse getCleanUpMbusDeviceByChannelResponse(
+            final CleanUpMbusDeviceByChannelAsyncRequest asyncRequest) throws WebServiceSecurityException {
+
+        final String correlationUid = asyncRequest.getCorrelationUid();
+        this.waitForNotification(correlationUid);
+
+        final WebServiceTemplate webServiceTemplate = this.smartMeteringInstallationWebServiceTemplateFactory
+                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
+        return (CleanUpMbusDeviceByChannelResponse) webServiceTemplate.marshalSendAndReceive(asyncRequest);
     }
 
 }

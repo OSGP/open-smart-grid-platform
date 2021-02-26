@@ -20,8 +20,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.CleanUpMbusChannelDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.CleanUpMbusChannelResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CleanUpMbusDeviceByChannelRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CleanUpMbusDeviceByChannelResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,21 +30,21 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class CleanUpMBusChannelCommandExecutor
-        extends AbstractCommandExecutor<CleanUpMbusChannelDto, CleanUpMbusChannelResponseDto> {
+public class CleanUpMbusDeviceByChannelCommandExecutor
+        extends AbstractCommandExecutor<CleanUpMbusDeviceByChannelRequestDataDto, CleanUpMbusDeviceByChannelResponseDto> {
 
     @Autowired
     private DeviceChannelsHelper deviceChannelsHelper;
 
-    public CleanUpMBusChannelCommandExecutor() {
-        super(CleanUpMbusChannelDto.class);
+    public CleanUpMbusDeviceByChannelCommandExecutor() {
+        super(CleanUpMbusDeviceByChannelRequestDataDto.class);
     }
 
     @Override
-    public CleanUpMbusChannelResponseDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
-            final CleanUpMbusChannelDto cleanUpMbusChannelDto) throws ProtocolAdapterException {
+    public CleanUpMbusDeviceByChannelResponseDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
+            final CleanUpMbusDeviceByChannelRequestDataDto cleanUpMbusDeviceByChannelRequestDataDto) throws ProtocolAdapterException {
 
-        Short channel = cleanUpMbusChannelDto.getChannel();
+        Short channel = cleanUpMbusDeviceByChannelRequestDataDto.getChannel();
         
         log.debug("Clean up mbus channel {} on device {}", channel, device.getDeviceIdentification());
 
@@ -56,11 +56,11 @@ public class CleanUpMBusChannelCommandExecutor
         
         this.deviceChannelsHelper.deinstallSlave(conn, device, channel, mbusDeviceIdentification, mBusSetup);
 
-        this.emptyEncryptionKey(conn, device, cleanUpMbusChannelDto, mBusSetup);
+        this.emptyEncryptionKey(conn, device, cleanUpMbusDeviceByChannelRequestDataDto, mBusSetup);
         
         this.resetMbusDeviceDetails(conn, device, channel);
         
-        return new CleanUpMbusChannelResponseDto(mbusDeviceIdentification, channel);
+        return new CleanUpMbusDeviceByChannelResponseDto(mbusDeviceIdentification, channel);
     }
 
     private String getMbusDeviceIdentification(DlmsConnectionManager conn, DlmsDevice device,
@@ -79,7 +79,7 @@ public class CleanUpMBusChannelCommandExecutor
     }
 
     private void emptyEncryptionKey(final DlmsConnectionManager conn, final DlmsDevice device,
-            final CleanUpMbusChannelDto cleanUpMbusChannelDto, final CosemObjectAccessor mBusSetup) {
+            final CleanUpMbusDeviceByChannelRequestDataDto cleanUpMbusDeviceByChannelRequestDataDto, final CosemObjectAccessor mBusSetup) {
         // TODO via SetEncryptionKeyExchangeOnGMeterCommandExecutor?
     }
 

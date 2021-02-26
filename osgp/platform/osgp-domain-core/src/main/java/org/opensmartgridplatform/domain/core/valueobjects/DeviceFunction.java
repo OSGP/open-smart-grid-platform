@@ -10,6 +10,7 @@ package org.opensmartgridplatform.domain.core.valueobjects;
 public enum DeviceFunction {
     ADD_EVENT_NOTIFICATION,
     ADD_METER,
+    CLEAN_UP_MBUS_DEVICE_BY_CHANNEL,
     CLEAR_ALARM_REGISTER,
     CONFIGURE_DEFINABLE_LOAD_PROFILE,
     COUPLE_MBUS_DEVICE,

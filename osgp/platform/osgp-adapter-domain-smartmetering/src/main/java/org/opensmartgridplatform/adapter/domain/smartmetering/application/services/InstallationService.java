@@ -14,11 +14,14 @@ import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.Osg
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AddSmartMeterRequest;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CleanUpMbusDeviceByChannelRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CleanUpMbusDeviceByChannelResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CleanUpMbusDeviceByChannelResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
@@ -133,6 +136,32 @@ public class InstallationService {
             this.mBusGatewayService.handleCoupleMbusDeviceResponse(deviceMessageMetadata, dataObject);
         }
         this.handleResponse("coupleMbusDevice", deviceMessageMetadata, result, exception);
+    }
+
+    @Transactional(value = "transactionManager")
+    public void cleanUpMbusDeviceByChannel(final DeviceMessageMetadata deviceMessageMetadata,
+            final CleanUpMbusDeviceByChannelRequestData requestData) throws FunctionalException {
+        this.mBusGatewayService.cleanUpMbusDeviceByChannel(deviceMessageMetadata, requestData);
+    }
+
+    @Transactional(value = "transactionManager")
+    public void handleCleanUpMbusDeviceByChannelResponse(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException,
+            final CleanUpMbusDeviceByChannelResponseDto dataObject) throws FunctionalException {
+
+        this.mBusGatewayService.handleCleanUpMbusDeviceByChannelResponse(deviceMessageMetadata, dataObject);
+
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(responseMessageResultType)
+                .withOsgpException(osgpException)
+                .withDataObject(this.commonMapper.map(dataObject, CleanUpMbusDeviceByChannelResponse.class))
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
+
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
     @Transactional(value = "transactionManager")

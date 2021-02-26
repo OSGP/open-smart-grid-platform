@@ -14,11 +14,14 @@ import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.exceptions.InactiveDeviceException;
 import org.opensmartgridplatform.domain.core.repositories.SmartMeterRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CleanUpMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
 import org.opensmartgridplatform.domain.smartmetering.exceptions.MbusChannelNotFoundException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CleanUpMbusDeviceByChannelRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CleanUpMbusDeviceByChannelResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceDto;
@@ -190,6 +193,33 @@ public class MBusGatewayService {
         this.smartMeteringDeviceRepository.save(mbusDevice);
     }
 
+    public void cleanUpMbusDeviceByChannel(final DeviceMessageMetadata deviceMessageMetadata,
+            final CleanUpMbusDeviceByChannelRequestData requestData) throws FunctionalException {
+
+        final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
+
+        LOGGER.debug("cleanUpMbusDeviceByChannel for organizationIdentification: {} for gateway: {}",
+                deviceMessageMetadata.getOrganisationIdentification(), deviceIdentification);
+
+        final CleanUpMbusDeviceByChannelRequestDataDto requestDataDto = new CleanUpMbusDeviceByChannelRequestDataDto(
+                requestData.getChannel());
+
+        final SmartMeter gatewayDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
+        final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                gatewayDevice.getIpAddress(), requestDataDto);
+        this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+
+    }
+
+    public void handleCleanUpMbusDeviceByChannelResponse(final DeviceMessageMetadata deviceMessageMetadata,
+            final CleanUpMbusDeviceByChannelResponseDto cleanUpMbusDeviceByChannelResponseDto)
+            throws FunctionalException {
+
+        // TODO: Implement clean up
+    }
+
     /**
      * Updates the M-Bus device identified in the input part of the
      * {@code mbusChannelElementsResponseDto} with respect to persisted
@@ -295,7 +325,7 @@ public class MBusGatewayService {
         if (!values.hasChannel() || !values.hasDeviceTypeIdentification() || !values.hasManufacturerIdentification()) {
             throw new FunctionalException(FunctionalExceptionType.NO_DEVICE_FOUND_ON_CHANNEL,
                     ComponentType.DOMAIN_SMART_METERING, new OsgpException(ComponentType.DOMAIN_SMART_METERING,
-                            "No device was found on channel: " + values.getChannel()));
+                    "No device was found on channel: " + values.getChannel()));
         }
     }
 
