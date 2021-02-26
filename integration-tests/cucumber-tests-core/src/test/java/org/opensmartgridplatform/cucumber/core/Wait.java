@@ -98,7 +98,7 @@ public class Wait {
     }
 
     public static void until(final Runnable task, final int timeoutSeconds) {
-        until(task, configuration.getTimeout(), configuration.getSleepTime());
+        until(task, timeoutSeconds, configuration.getSleepTime());
     }
 
     public static void until(final Runnable task, final int timeoutSeconds, final int sleeptimeMillis) {
