@@ -7,14 +7,14 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.domain.platform;
+package org.opensmartgridplatform.cucumber.protocol.iec60870.domain;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60870Device;
 import org.opensmartgridplatform.cucumber.platform.helpers.DeviceType;
-import org.opensmartgridplatform.cucumber.platform.helpers.Protocol;
-import org.opensmartgridplatform.cucumber.platform.publiclighting.glue.domain.protocol.ProtocolDeviceFactory;
+import org.opensmartgridplatform.cucumber.platform.helpers.ProtocolDeviceCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -22,31 +22,33 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PlatformDeviceFactory implements InitializingBean {
+public class Iec60870DeviceFactory implements InitializingBean {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolDeviceFactory.class);
-
-    @Autowired
-    LmdDeviceCreator lmdCreator;
+    private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870DeviceFactory.class);
 
     @Autowired
-    LmgDeviceCreator lmgCreator;
+    private Iec60870LmdDeviceCreator lmdCreator;
 
-    private final Map<DeviceType, PlatformDeviceCreator<?>> factoryMap = new HashMap<>();
+    @Autowired
+    private Iec60870LmgDeviceCreator lmgCreator;
+
+    @Autowired
+    private Iec60870DaDeviceCreator daCreator;
+
+    private final Map<DeviceType, ProtocolDeviceCreator<Iec60870Device>> factoryMap = new HashMap<>();
 
     @Override
     public void afterPropertiesSet() throws Exception {
+        this.factoryMap.put(DeviceType.DISTRIBUTION_AUTOMATION_DEVICE, this.daCreator);
         this.factoryMap.put(DeviceType.LIGHT_MEASUREMENT_DEVICE, this.lmdCreator);
         this.factoryMap.put(DeviceType.LIGHT_MEASUREMENT_GATEWAY, this.lmgCreator);
     }
 
-    public Object createPlatformDevice(final DeviceType deviceType, final Protocol protocol,
-            final Map<String, String> settings) {
-
+    public Iec60870Device create(final DeviceType deviceType, final Map<String, String> settings) {
         if (this.factoryMap.containsKey(deviceType)) {
-            return this.factoryMap.get(deviceType).apply(protocol, settings);
+            return this.factoryMap.get(deviceType).apply(settings);
         } else {
-            LOGGER.warn("Unsupported DeviceType: {}", deviceType);
+            LOGGER.warn("Unsuppported DeviceType: " + deviceType);
             return null;
         }
     }

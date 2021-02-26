@@ -11,6 +11,7 @@ package org.opensmartgridplatform.cucumber.platform.helpers;
 
 public enum DeviceType {
     // SSLD("SSLD"),
+    DISTRIBUTION_AUTOMATION_DEVICE("RTU"),
     LIGHT_MEASUREMENT_DEVICE("LMD"),
     LIGHT_MEASUREMENT_GATEWAY("LMG");
 

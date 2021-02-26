@@ -26,8 +26,8 @@ import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.generi
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.notification.Notification;
 import org.opensmartgridplatform.adapter.ws.schema.distributionautomation.notification.NotificationType;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
-import org.opensmartgridplatform.cucumber.platform.distributionautomation.mocks.iec60870.Iec60870MockServer;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.support.ws.distributionautomation.DistributionAutomationDeviceManagementClient;
+import org.opensmartgridplatform.cucumber.protocol.iec60870.mock.Iec60870MockServer;
 import org.opensmartgridplatform.iec60870.Iec60870AsduHandler;
 import org.opensmartgridplatform.iec60870.Iec60870InformationObjectType;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;

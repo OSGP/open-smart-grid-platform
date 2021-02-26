@@ -7,7 +7,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.domain;
+package org.opensmartgridplatform.cucumber.platform.publiclighting.domain;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,8 +15,8 @@ import java.util.function.BiConsumer;
 
 import org.opensmartgridplatform.cucumber.platform.helpers.DeviceType;
 import org.opensmartgridplatform.cucumber.platform.helpers.Protocol;
-import org.opensmartgridplatform.cucumber.platform.publiclighting.glue.domain.platform.PlatformDeviceFactory;
-import org.opensmartgridplatform.cucumber.platform.publiclighting.glue.domain.protocol.ProtocolDeviceFactory;
+import org.opensmartgridplatform.cucumber.platform.publiclighting.domain.platform.PlatformDeviceFactory;
+import org.opensmartgridplatform.cucumber.platform.publiclighting.domain.protocol.ProtocolDeviceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;

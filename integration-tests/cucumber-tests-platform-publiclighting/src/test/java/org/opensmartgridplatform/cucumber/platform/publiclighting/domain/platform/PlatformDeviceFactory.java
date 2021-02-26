@@ -7,14 +7,14 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.protocol.iec60870.database;
+package org.opensmartgridplatform.cucumber.platform.publiclighting.domain.platform;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60870Device;
 import org.opensmartgridplatform.cucumber.platform.helpers.DeviceType;
-import org.opensmartgridplatform.cucumber.platform.helpers.ProtocolDeviceCreator;
+import org.opensmartgridplatform.cucumber.platform.helpers.Protocol;
+import org.opensmartgridplatform.cucumber.platform.publiclighting.domain.protocol.ProtocolDeviceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -22,17 +22,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Iec60870DeviceDbFactory implements InitializingBean {
+public class PlatformDeviceFactory implements InitializingBean {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870DeviceDbFactory.class);
-
-    @Autowired
-    private Iec60870LmdDeviceDbCreator lmdCreator;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolDeviceFactory.class);
 
     @Autowired
-    private Iec60870LmgDeviceDbCreator lmgCreator;
+    LmdDeviceCreator lmdCreator;
 
-    private final Map<DeviceType, ProtocolDeviceCreator<Iec60870Device>> factoryMap = new HashMap<>();
+    @Autowired
+    LmgDeviceCreator lmgCreator;
+
+    private final Map<DeviceType, PlatformDeviceCreator<?>> factoryMap = new HashMap<>();
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -40,11 +40,13 @@ public class Iec60870DeviceDbFactory implements InitializingBean {
         this.factoryMap.put(DeviceType.LIGHT_MEASUREMENT_GATEWAY, this.lmgCreator);
     }
 
-    public Iec60870Device create(final DeviceType deviceType, final Map<String, String> settings) {
+    public Object createPlatformDevice(final DeviceType deviceType, final Protocol protocol,
+            final Map<String, String> settings) {
+
         if (this.factoryMap.containsKey(deviceType)) {
-            return this.factoryMap.get(deviceType).apply(settings);
+            return this.factoryMap.get(deviceType).apply(protocol, settings);
         } else {
-            LOGGER.warn("Unsuppported DeviceType: " + deviceType);
+            LOGGER.warn("Unsupported DeviceType: {}", deviceType);
             return null;
         }
     }

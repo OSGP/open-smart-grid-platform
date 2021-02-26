@@ -7,25 +7,21 @@
  */
 package org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.steps.database;
 
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60870Device;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationDefaults;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationKeys;
-import org.opensmartgridplatform.cucumber.platform.distributionautomation.config.Iec60870MockServerConfig;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.RtuDeviceSteps;
+import org.opensmartgridplatform.cucumber.platform.helpers.DeviceType;
 import org.opensmartgridplatform.cucumber.platform.helpers.SettingsHelper;
+import org.opensmartgridplatform.cucumber.protocol.iec60870.config.Iec60870MockServerConfig;
+import org.opensmartgridplatform.cucumber.protocol.iec60870.database.Iec60870Database;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import io.cucumber.java.en.Given;
 
@@ -51,7 +47,7 @@ public class Iec60870DeviceSteps {
     }
 
     @Autowired
-    private Iec60870DeviceRepository iec60870DeviceRepository;
+    private Iec60870Database iec60870Database;
 
     @Autowired
     private RtuDeviceSteps rtuDeviceSteps;
@@ -81,17 +77,7 @@ public class Iec60870DeviceSteps {
         this.createIec60870Device(rtuSettings);
     }
 
-    @Transactional("txMgrIec60870")
     private void createIec60870Device(final Map<String, String> settings) {
-
-        final Iec60870Device iec60870Device = new Iec60870Device(getString(settings,
-                PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-
-        iec60870Device.setCommonAddress(getInteger(settings, PlatformDistributionAutomationKeys.COMMON_ADDRESS,
-                PlatformDistributionAutomationDefaults.COMMON_ADDRESS));
-        iec60870Device.setPort(getInteger(settings, PlatformDistributionAutomationKeys.PORT,
-                PlatformDistributionAutomationDefaults.PORT));
-
-        this.iec60870DeviceRepository.save(iec60870Device);
+        this.iec60870Database.addIec60870Device(DeviceType.DISTRIBUTION_AUTOMATION_DEVICE, settings);
     }
 }

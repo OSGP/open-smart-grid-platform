@@ -7,14 +7,12 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.domain.platform;
+package org.opensmartgridplatform.cucumber.platform.publiclighting.domain.protocol;
 
 import java.util.Map;
-import java.util.function.BiFunction;
-
-import org.opensmartgridplatform.cucumber.platform.helpers.Protocol;
+import java.util.function.Function;
 
 @FunctionalInterface
-public interface PlatformDeviceCreator<T> extends BiFunction<Protocol, Map<String, String>, T> {
+public interface ProtocolDeviceCreator<T> extends Function<Map<String, String>, T> {
 
 }

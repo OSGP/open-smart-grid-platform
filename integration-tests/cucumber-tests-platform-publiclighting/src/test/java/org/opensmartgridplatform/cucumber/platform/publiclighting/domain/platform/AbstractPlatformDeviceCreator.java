@@ -7,7 +7,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.domain.platform;
+package org.opensmartgridplatform.cucumber.platform.publiclighting.domain.platform;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

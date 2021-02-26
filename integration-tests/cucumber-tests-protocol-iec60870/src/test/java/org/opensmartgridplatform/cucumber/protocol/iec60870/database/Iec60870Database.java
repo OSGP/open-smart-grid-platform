@@ -7,10 +7,14 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.platform.publiclighting.database;
+package org.opensmartgridplatform.cucumber.protocol.iec60870.database;
+
+import java.util.Map;
 
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60870Device;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
+import org.opensmartgridplatform.cucumber.platform.helpers.DeviceType;
+import org.opensmartgridplatform.cucumber.protocol.iec60870.domain.Iec60870DeviceFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,20 +23,29 @@ import org.springframework.transaction.annotation.Transactional;
 public class Iec60870Database {
 
     @Autowired
-    private Iec60870DeviceRepository iec60870DeviceRepository;
+    private Iec60870DeviceFactory factory;
+
+    @Autowired
+    private Iec60870DeviceRepository repository;
 
     @Transactional("txMgrIec60870")
-    public void prepareDatabaseForScenario() {
-        this.iec60870DeviceRepository.deleteAllInBatch();
+    public void prepareForScenario() {
+        this.repository.deleteAllInBatch();
     }
 
     @Transactional(value = "txMgrIec60870", readOnly = true)
     public boolean isIec60870DeviceTableEmpty() {
-        return this.iec60870DeviceRepository.findAll().size() == 0;
+        return this.repository.findAll().size() == 0;
     }
 
-    @Transactional("txtMgrIec60870")
+    @Transactional("txMgrIec60870")
     public Iec60870Device addIec60870Device(final Iec60870Device device) {
-        return this.iec60870DeviceRepository.save(device);
+        return this.repository.save(device);
+    }
+
+    @Transactional("txMgrIec60870")
+    public Iec60870Device addIec60870Device(final DeviceType deviceType, final Map<String, String> settings) {
+        final Iec60870Device device = this.factory.create(deviceType, settings);
+        return this.repository.save(device);
     }
 }

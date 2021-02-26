@@ -13,7 +13,7 @@ import com.alliander.data.scadameasurementpublishedevent.UnitMultiplier;
 
 public class PlatformDistributionAutomationDefaults {
 
-    public static final Integer COMMON_ADDRESS = 1511;
+    public static final Integer COMMON_ADDRESS = 1;
     public static final String FEEDER_NAME = "feeder-1";
     public static final Integer FEEDER_NUMBER = 1;
     public static final String MQTT_HOST = "0.0.0.0";

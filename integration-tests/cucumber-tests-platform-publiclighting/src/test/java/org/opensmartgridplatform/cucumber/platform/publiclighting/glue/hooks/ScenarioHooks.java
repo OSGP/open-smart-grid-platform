@@ -9,7 +9,6 @@ package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.hooks;
 
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.database.Database;
-import org.opensmartgridplatform.cucumber.platform.publiclighting.database.Iec60870Database;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.database.OslpDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,9 +29,6 @@ public class ScenarioHooks {
 
     @Autowired
     private OslpDatabase oslpDatabase;
-
-    @Autowired
-    private Iec60870Database iec60870Database;
 
     /**
      * Executed after each scenario.
@@ -67,8 +63,6 @@ public class ScenarioHooks {
                     "OSLP device table or the 'pending set schedule request' table is not empty after inital delete! Trying once more...");
             this.oslpDatabase.prepareDatabaseForScenario();
         }
-
-        this.iec60870Database.prepareDatabaseForScenario();
 
         // Make sure that the scenario context is clean before each test.
         ScenarioContext.context = null;

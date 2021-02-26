@@ -7,7 +7,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.domain.protocol;
+package org.opensmartgridplatform.cucumber.platform.publiclighting.domain.protocol;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +17,7 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60
 import org.opensmartgridplatform.cucumber.platform.helpers.DeviceType;
 import org.opensmartgridplatform.cucumber.platform.helpers.Protocol;
 import org.opensmartgridplatform.cucumber.platform.helpers.Protocol.ProtocolType;
-import org.opensmartgridplatform.cucumber.protocol.iec60870.database.Iec60870DeviceDbFactory;
+import org.opensmartgridplatform.cucumber.protocol.iec60870.database.Iec60870Database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -30,7 +30,7 @@ public class ProtocolDeviceFactory implements InitializingBean {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolDeviceFactory.class);
 
     @Autowired
-    Iec60870DeviceDbFactory iec60870DeviceDbFactory;
+    Iec60870Database iec60870Database;
 
     private final Map<ProtocolType, BiFunction<DeviceType, Map<String, String>, Object>> factoryMap = new HashMap<>();
 
@@ -53,6 +53,6 @@ public class ProtocolDeviceFactory implements InitializingBean {
     }
 
     private Iec60870Device createIec60870Device(final DeviceType deviceType, final Map<String, String> settings) {
-        return this.iec60870DeviceDbFactory.create(deviceType, settings);
+        return this.iec60870Database.addIec60870Device(deviceType, settings);
     }
 }

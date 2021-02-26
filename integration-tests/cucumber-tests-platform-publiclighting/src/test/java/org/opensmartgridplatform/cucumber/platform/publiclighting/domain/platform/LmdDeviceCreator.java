@@ -7,36 +7,35 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.domain.platform;
+package org.opensmartgridplatform.cucumber.platform.publiclighting.domain.platform;
 
 import java.util.Map;
 
 import org.opensmartgridplatform.cucumber.platform.helpers.DeviceType;
 import org.opensmartgridplatform.cucumber.platform.helpers.Protocol;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
-import org.opensmartgridplatform.domain.core.entities.RtuDevice;
-import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
+import org.opensmartgridplatform.domain.core.entities.LightMeasurementDevice;
+import org.opensmartgridplatform.domain.core.repositories.LightMeasurementDeviceRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class LmgDeviceCreator extends AbstractPlatformDeviceCreator<RtuDevice> {
+public class LmdDeviceCreator extends AbstractPlatformDeviceCreator<LightMeasurementDevice> {
 
     @Autowired
-    private RtuDeviceRepository rtuDeviceRepository;
+    private LightMeasurementDeviceRepository lmdRepository;
 
     @Override
-    public RtuDevice apply(final Protocol protocol, final Map<String, String> settings) {
-        RtuDevice device = new RtuDevice(this.deviceIdentification(settings));
-        device.setDeviceType(DeviceType.LIGHT_MEASUREMENT_GATEWAY.getType());
-        device.setNetworkAddress(this.networkAddress(settings));
+    public LightMeasurementDevice apply(final Protocol protocol, final Map<String, String> settings) {
+        LightMeasurementDevice device = new LightMeasurementDevice(this.deviceIdentification(settings));
+        device.setDeviceType(DeviceType.LIGHT_MEASUREMENT_DEVICE.getType());
+        device.updateGatewayDevice(this.gatewayDevice(settings));
         device.setDeviceLifecycleStatus(this.deviceLifecycleStatus(settings));
         device.setActivated(this.activated(settings));
         device.updateProtocol(this.protocolInfo(protocol));
-        device.setDomainInfo(this.domainInfo());
 
-        device = this.rtuDeviceRepository.save(device);
+        device = this.lmdRepository.save(device);
 
         DeviceAuthorization deviceAuthorization = device.addAuthorization(this.ownerOrganisation(),
                 DeviceFunctionGroup.OWNER);
@@ -44,4 +43,5 @@ public class LmgDeviceCreator extends AbstractPlatformDeviceCreator<RtuDevice> {
 
         return device;
     }
+
 }

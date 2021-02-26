@@ -14,8 +14,8 @@ import java.util.Map;
 import org.opensmartgridplatform.cucumber.platform.helpers.DeviceType;
 import org.opensmartgridplatform.cucumber.platform.helpers.Protocol;
 import org.opensmartgridplatform.cucumber.platform.helpers.Protocol.ProtocolType;
+import org.opensmartgridplatform.cucumber.platform.publiclighting.domain.DeviceFactory;
 import org.opensmartgridplatform.cucumber.platform.helpers.ProtocolHelper;
-import org.opensmartgridplatform.cucumber.platform.publiclighting.glue.domain.DeviceFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
