@@ -129,6 +129,7 @@
     <module>integration-tests/cucumber-tests-platform-microgrids</module>
     <module>integration-tests/cucumber-tests-platform-publiclighting</module>
     <module>integration-tests/cucumber-tests-platform-smartmetering</module>
+    <module>integration-tests/cucumber-tests-protocol-iec60870</module>
 
     <!-- demo client application -->
     <module>public-lighting-demo-app/parent-os-webapps</module>
