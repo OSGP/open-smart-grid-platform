@@ -27,7 +27,7 @@ public abstract class AbstractIec60870DeviceCreator implements ProtocolDeviceCre
     private static final String DEFAULT_DEVICE_IDENTIFICATION = "IEC60870-DVC-1";
     private static final String DEFAULT_GATEWAY_DEVICE_IDENTIFICATION = "IEC60870-GW-1";
     private static final int DEFAULT_COMMON_ADDRESS = 1;
-    private static final int DEFAULT_PORT = 2404;
+    private static final int DEFAULT_PORT = 62404;
     private static final int DEFAULT_INFORMATION_OBJECT_ADDRESS = 1;
 
     @Override
