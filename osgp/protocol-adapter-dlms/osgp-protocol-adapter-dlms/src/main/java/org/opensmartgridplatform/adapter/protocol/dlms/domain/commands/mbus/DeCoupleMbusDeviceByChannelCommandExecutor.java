@@ -15,14 +15,12 @@ import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.CosemObjectAccessor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceByChannelResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -55,10 +53,8 @@ public class DeCoupleMbusDeviceByChannelCommandExecutor
         String mbusDeviceIdentification = this.getMbusDeviceIdentification(conn, device, channel, mBusSetup);
         
         this.deviceChannelsHelper.deinstallSlave(conn, device, channel, mbusDeviceIdentification, mBusSetup);
-
-        this.emptyEncryptionKey(conn, device, deCoupleMbusDeviceByChannelRequestDataDto, mBusSetup);
         
-        this.resetMbusDeviceDetails(conn, device, channel);
+        this.deviceChannelsHelper.resetMBusClientAttributeValues(conn, device, channel);
         
         return new DeCoupleMbusDeviceByChannelResponseDto(mbusDeviceIdentification, channel);
     }
@@ -75,20 +71,6 @@ public class DeCoupleMbusDeviceByChannelCommandExecutor
         ChannelElementValuesDto channelElementValues = this.deviceChannelsHelper
                 .makeChannelElementValues(channel, resultList);
         return channelElementValues.getIdentificationNumber();
-
-    }
-
-    private void emptyEncryptionKey(final DlmsConnectionManager conn, final DlmsDevice device,
-            final DeCoupleMbusDeviceByChannelRequestDataDto deCoupleMbusDeviceByChannelRequestDataDto, final CosemObjectAccessor mBusSetup) {
-        // TODO via SetEncryptionKeyExchangeOnGMeterCommandExecutor?
-    }
-
-    private void resetMbusDeviceDetails(final DlmsConnectionManager conn,
-            DlmsDevice device, final short channel) throws ProtocolAdapterException {
-
-        MbusChannelElementsDto mbusChannelElementsDto = new MbusChannelElementsDto((short)0, "", "", "", (short)0, (short)0);
-        this.deviceChannelsHelper.writeUpdatedMbus(conn,
-                mbusChannelElementsDto, channel, Protocol.forDevice(device), "DeCoupleMbusDeviceByChannel");
 
     }
 

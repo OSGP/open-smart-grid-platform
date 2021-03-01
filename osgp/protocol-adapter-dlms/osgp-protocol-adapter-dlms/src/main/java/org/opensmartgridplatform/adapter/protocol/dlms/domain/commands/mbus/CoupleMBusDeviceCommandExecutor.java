@@ -19,19 +19,18 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class CoupleMBusDeviceCommandExecutor
         extends AbstractCommandExecutor<MbusChannelElementsDto, MbusChannelElementsResponseDto> {
 
     @Autowired
     private DeviceChannelsHelper deviceChannelsHelper;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(CoupleMBusDeviceCommandExecutor.class);
 
     public CoupleMBusDeviceCommandExecutor() {
         super(MbusChannelElementsDto.class);
@@ -41,7 +40,7 @@ public class CoupleMBusDeviceCommandExecutor
     public MbusChannelElementsResponseDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final MbusChannelElementsDto requestDto) throws ProtocolAdapterException {
 
-        LOGGER.debug("retrieving mbus info on e-meter");
+        log.debug("retrieving mbus info on e-meter");
 
         final List<ChannelElementValuesDto> candidateChannelElementValues = this.deviceChannelsHelper
                 .findCandidateChannelsForDevice(conn, device, requestDto);

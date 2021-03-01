@@ -17,19 +17,18 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class CoupleMbusDeviceByChannelCommandExecutor
         extends AbstractCommandExecutor<CoupleMbusDeviceByChannelRequestDataDto, CoupleMbusDeviceByChannelResponseDto> {
 
     @Autowired
     private DeviceChannelsHelper deviceChannelsHelper;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(CoupleMbusDeviceByChannelCommandExecutor.class);
 
     public CoupleMbusDeviceByChannelCommandExecutor() {
         super(CoupleMbusDeviceByChannelRequestDataDto.class);
@@ -39,7 +38,7 @@ public class CoupleMbusDeviceByChannelCommandExecutor
     public CoupleMbusDeviceByChannelResponseDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final CoupleMbusDeviceByChannelRequestDataDto requestDto) throws ProtocolAdapterException {
 
-        LOGGER.info("Retrieving values for mbus channel {} on device {}", requestDto.getChannel(),
+        log.info("Retrieving values for mbus channel {} on device {}", requestDto.getChannel(),
                 device.getDeviceIdentification());
         final List<GetResult> resultList = this.deviceChannelsHelper
                 .getMBusClientAttributeValues(conn, device, requestDto.getChannel());

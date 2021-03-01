@@ -12,14 +12,11 @@ import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.CosemObjectAccessor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -43,7 +40,7 @@ public class DeCoupleMBusDeviceCommandExecutor
 
         Short channel = decoupleMbusDto.getChannel();
         String mBusDeviceIdentification = decoupleMbusDto.getmBusDeviceIdentification();
-        log.debug("DeCouple mbus device from gateway device");
+        log.debug("DeCouple mbus device {} from channel {} on gateway device", mBusDeviceIdentification, channel);
 
         final ObisCode obisCode = this.deviceChannelsHelper.getObisCode(channel);
         
@@ -51,19 +48,10 @@ public class DeCoupleMBusDeviceCommandExecutor
 
         this.deviceChannelsHelper.deinstallSlave(conn, device, channel, mBusDeviceIdentification, mBusSetup);
 
-        this.writeUpdatedMbus(conn, device, channel);
+        this.deviceChannelsHelper.resetMBusClientAttributeValues(conn, device, channel);
         
         return new DeCoupleMbusDeviceResponseDto(mBusDeviceIdentification,
                 channel);
-
-    }
-
-    private ChannelElementValuesDto writeUpdatedMbus(final DlmsConnectionManager conn,
-            final DlmsDevice device, Short channel) throws ProtocolAdapterException {
-
-        MbusChannelElementsDto mbusChannelElementsDto = new MbusChannelElementsDto((short)0, "", "", "", (short)0, (short)0);
-        return this.deviceChannelsHelper.writeUpdatedMbus(conn,
-                mbusChannelElementsDto, channel, Protocol.forDevice(device), "DeCoupleMbusDevice");
 
     }
 

@@ -100,6 +100,15 @@ public class DeviceChannelsHelper {
         return this.dlmsHelper.getWithList(conn, device, attrAddresses);
     }
 
+    protected ChannelElementValuesDto resetMBusClientAttributeValues(final DlmsConnectionManager conn,
+            DlmsDevice device, final short channel) throws ProtocolAdapterException {
+
+        MbusChannelElementsDto mbusChannelElementsDto = new MbusChannelElementsDto((short)0, "", "", "", (short)0, (short)0);
+        return this.writeUpdatedMbus(conn,
+                mbusChannelElementsDto, channel, Protocol.forDevice(device), "DeCoupleMbusDeviceByChannel");
+
+    }
+
     protected ChannelElementValuesDto makeChannelElementValues(final short channel, final List<GetResult> resultList)
             throws ProtocolAdapterException {
         final short primaryAddress = this.readShort(resultList, INDEX_PRIMARY_ADDRESS, "primaryAddress");
