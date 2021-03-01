@@ -11,6 +11,8 @@ import java.util.concurrent.Executor;
 
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.tasks.DeviceConnection104LmdScheduledTask;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +32,9 @@ import org.springframework.scheduling.support.CronTrigger;
 public class SchedulingConfigForDeviceConnection104LmdScheduledTask extends AbstractConfig
         implements SchedulingConfigurer {
 
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(SchedulingConfigForDeviceConnection104LmdScheduledTask.class);
+
     private static final String CRON_EXPRESSION = "scheduling.task.device.connection.104.lmd.cron.expression";
     private static final String POOL_SIZE = "scheduling.task.device.connection.104.lmd.pool.size";
     private static final String MAX_ALLOWED_AGE = "scheduling.task.device.connection.104.lmd.max.allowed.age";
@@ -46,6 +51,9 @@ public class SchedulingConfigForDeviceConnection104LmdScheduledTask extends Abst
 
     public CronTrigger deviceConnection104LmdScheduledTaskCronTrigger() {
         final String cron = this.environment.getRequiredProperty(CRON_EXPRESSION);
+
+        LOGGER.info("CronTrigger used for 60870-5-104: {}", cron);
+
         return new CronTrigger(cron);
     }
 
