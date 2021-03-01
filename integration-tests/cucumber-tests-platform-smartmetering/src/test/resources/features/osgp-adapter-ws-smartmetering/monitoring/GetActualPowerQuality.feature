@@ -40,6 +40,7 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       | PowerQualityObject_Name_14       | NUMBER_OF_VOLTAGE_SWELLS_FOR_L2 |
       | PowerQualityObject_Name_15       | NUMBER_OF_VOLTAGE_SWELLS_FOR_L3 |
 
+  @hbm
   Scenario: Get the actual power quality private from a device
     When the get actual power quality request is received
       | DeviceIdentification | TEST1024000000001 |
@@ -113,6 +114,6 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       | DeviceIdentification   | E9998000014123414 |
       | ProfileType            |           PRIVATE |
     Then the actual power quality result should be returned
-      | DeviceIdentification       | E9998000014123414 |
-      | NumberOfCaptureObjects     |                28 |
-      | NumberOfPowerQualityValues |                28 |
+      | DeviceIdentification        | E9998000014123414 |
+      | NumberOfPowerQualityObjects |                28 |
+      | NumberOfPowerQualityValues  |                28 |
