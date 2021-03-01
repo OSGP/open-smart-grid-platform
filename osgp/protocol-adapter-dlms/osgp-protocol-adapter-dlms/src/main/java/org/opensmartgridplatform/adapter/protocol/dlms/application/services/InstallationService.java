@@ -21,7 +21,7 @@ import java.util.NoSuchElementException;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.InstallationMapper;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.CleanUpMbusDeviceByChannelCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.DeCoupleMbusDeviceByChannelCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.CoupleMBusDeviceCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.CoupleMbusDeviceByChannelCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.DeCoupleMBusDeviceCommandExecutor;
@@ -30,8 +30,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityK
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.CleanUpMbusDeviceByChannelRequestDataDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.CleanUpMbusDeviceByChannelResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceByChannelRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceByChannelResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceDto;
@@ -70,7 +70,7 @@ public class InstallationService {
     private CoupleMbusDeviceByChannelCommandExecutor coupleMbusDeviceByChannelCommandExecutor;
 
     @Autowired
-    private CleanUpMbusDeviceByChannelCommandExecutor cleanUpMbusDeviceByChannelCommandExecutor;
+    private DeCoupleMbusDeviceByChannelCommandExecutor deCoupleMbusDeviceByChannelCommandExecutor;
 
     public void addMeter(final SmartMeteringDeviceDto smartMeteringDevice) throws FunctionalException {
         if (smartMeteringDevice.getDeviceIdentification() == null) {
@@ -149,9 +149,9 @@ public class InstallationService {
         return this.deCoupleMBusDeviceCommandExecutor.execute(conn, device, deCoupleMbusDeviceDto);
     }
 
-    public CleanUpMbusDeviceByChannelResponseDto cleanUpMbusDeviceByChannel(final DlmsConnectionManager conn,
-            final DlmsDevice device, final CleanUpMbusDeviceByChannelRequestDataDto requestDto)
+    public DeCoupleMbusDeviceByChannelResponseDto deCoupleMbusDeviceByChannel(final DlmsConnectionManager conn,
+            final DlmsDevice device, final DeCoupleMbusDeviceByChannelRequestDataDto requestDto)
             throws ProtocolAdapterException {
-        return this.cleanUpMbusDeviceByChannelCommandExecutor.execute(conn, device, requestDto);
+        return this.deCoupleMbusDeviceByChannelCommandExecutor.execute(conn, device, requestDto);
     }
 }

@@ -104,24 +104,24 @@
     </wsdl:part>
   </wsdl:message>
 
-  <wsdl:message name="CleanUpMbusDeviceByChannelRequest">
-    <wsdl:part element="sminst:CleanUpMbusDeviceByChannelRequest"
-               name="CleanUpMbusDeviceByChannelRequest">
+  <wsdl:message name="DeCoupleMbusDeviceByChannelRequest">
+    <wsdl:part element="sminst:DeCoupleMbusDeviceByChannelRequest"
+               name="DeCoupleMbusDeviceByChannelRequest">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="CleanUpMbusDeviceByChannelAsyncResponse">
-    <wsdl:part element="sminst:CleanUpMbusDeviceByChannelAsyncResponse"
-               name="CleanUpMbusDeviceByChannelAsyncResponse">
+  <wsdl:message name="DeCoupleMbusDeviceByChannelAsyncResponse">
+    <wsdl:part element="sminst:DeCoupleMbusDeviceByChannelAsyncResponse"
+               name="DeCoupleMbusDeviceByChannelAsyncResponse">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="CleanUpMbusDeviceByChannelAsyncRequest">
-    <wsdl:part element="sminst:CleanUpMbusDeviceByChannelAsyncRequest"
-               name="CleanUpMbusDeviceByChannelAsyncRequest">
+  <wsdl:message name="DeCoupleMbusDeviceByChannelAsyncRequest">
+    <wsdl:part element="sminst:DeCoupleMbusDeviceByChannelAsyncRequest"
+               name="DeCoupleMbusDeviceByChannelAsyncRequest">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="CleanUpMbusDeviceByChannelResponse">
-    <wsdl:part element="sminst:CleanUpMbusDeviceByChannelResponse"
-               name="CleanUpMbusDeviceByChannelResponse">
+  <wsdl:message name="DeCoupleMbusDeviceByChannelResponse">
+    <wsdl:part element="sminst:DeCoupleMbusDeviceByChannelResponse"
+               name="DeCoupleMbusDeviceByChannelResponse">
     </wsdl:part>
   </wsdl:message>
 
@@ -190,19 +190,19 @@
       </wsdl:output>
     </wsdl:operation>
 
-    <wsdl:operation name="CleanUpMbusDeviceByChannel">
-      <wsdl:input message="tns:CleanUpMbusDeviceByChannelRequest" name="CleanUpMbusDeviceByChannelRequest">
+    <wsdl:operation name="DeCoupleMbusDeviceByChannel">
+      <wsdl:input message="tns:DeCoupleMbusDeviceByChannelRequest" name="DeCoupleMbusDeviceByChannelRequest">
       </wsdl:input>
-      <wsdl:output message="tns:CleanUpMbusDeviceByChannelAsyncResponse"
-                   name="CleanUpMbusDeviceByChannelAsyncResponse">
+      <wsdl:output message="tns:DeCoupleMbusDeviceByChannelAsyncResponse"
+                   name="DeCoupleMbusDeviceByChannelAsyncResponse">
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="CleanUpMbusDeviceByChannelResponse">
-      <wsdl:input message="tns:CleanUpMbusDeviceByChannelAsyncRequest"
-                  name="CleanUpMbusDeviceByChannelAsyncRequest">
+    <wsdl:operation name="DeCoupleMbusDeviceByChannelResponse">
+      <wsdl:input message="tns:DeCoupleMbusDeviceByChannelAsyncRequest"
+                  name="DeCoupleMbusDeviceByChannelAsyncRequest">
       </wsdl:input>
-      <wsdl:output message="tns:CleanUpMbusDeviceByChannelResponse"
-                   name="CleanUpMbusDeviceByChannelResponse">
+      <wsdl:output message="tns:DeCoupleMbusDeviceByChannelResponse"
+                   name="DeCoupleMbusDeviceByChannelResponse">
       </wsdl:output>
     </wsdl:operation>
 

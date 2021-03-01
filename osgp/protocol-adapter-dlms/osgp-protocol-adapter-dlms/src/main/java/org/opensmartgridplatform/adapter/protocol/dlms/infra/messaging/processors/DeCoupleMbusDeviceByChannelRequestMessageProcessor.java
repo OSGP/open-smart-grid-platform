@@ -15,29 +15,29 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Inst
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.CleanUpMbusDeviceByChannelRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceByChannelRequestDataDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CleanUpMbusDeviceByChannelRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class DeCoupleMbusDeviceByChannelRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
     @Autowired
     private InstallationService installationService;
 
-    protected CleanUpMbusDeviceByChannelRequestMessageProcessor() {
-        super(MessageType.CLEAN_UP_MBUS_DEVICE_BY_CHANNEL);
+    protected DeCoupleMbusDeviceByChannelRequestMessageProcessor() {
+        super(MessageType.DE_COUPLE_MBUS_DEVICE_BY_CHANNEL);
     }
 
     @Override
     protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException {
 
-        this.assertRequestObjectType(CleanUpMbusDeviceByChannelRequestDataDto.class, requestObject);
+        this.assertRequestObjectType(DeCoupleMbusDeviceByChannelRequestDataDto.class, requestObject);
 
-        final CleanUpMbusDeviceByChannelRequestDataDto requestDto = (CleanUpMbusDeviceByChannelRequestDataDto) requestObject;
-        return this.installationService.cleanUpMbusDeviceByChannel(conn, device, requestDto);
+        final DeCoupleMbusDeviceByChannelRequestDataDto requestDto = (DeCoupleMbusDeviceByChannelRequestDataDto) requestObject;
+        return this.installationService.deCoupleMbusDeviceByChannel(conn, device, requestDto);
     }
 }

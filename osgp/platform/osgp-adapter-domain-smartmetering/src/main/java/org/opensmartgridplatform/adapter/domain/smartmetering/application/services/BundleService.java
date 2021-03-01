@@ -18,7 +18,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.BundleMe
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.BundleMessagesResponse;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.CleanUpMbusDeviceByChannelResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceByChannelResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FirmwareVersionResponseDto;
@@ -135,9 +135,9 @@ public class BundleService {
             if (action instanceof CoupleMbusDeviceByChannelResponseDto) {
                 this.mBusGatewayService.handleCoupleMbusDeviceByChannelResponse(deviceMessageMetadata,
                         (CoupleMbusDeviceByChannelResponseDto) action);
-            } else if (action instanceof CleanUpMbusDeviceByChannelResponseDto) {
-                    this.mBusGatewayService.handleCleanUpMbusDeviceByChannelResponse(deviceMessageMetadata,
-                            (CleanUpMbusDeviceByChannelResponseDto) action);
+            } else if (action instanceof DeCoupleMbusDeviceByChannelResponseDto) {
+                    this.mBusGatewayService.handleDeCoupleMbusDeviceByChannelResponse(deviceMessageMetadata,
+                            (DeCoupleMbusDeviceByChannelResponseDto) action);
             } else if (action instanceof SetDeviceLifecycleStatusByChannelResponseDto) {
                 this.managementService
                         .setDeviceLifecycleStatusByChannel((SetDeviceLifecycleStatusByChannelResponseDto) action);

@@ -13,9 +13,9 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CleanUpMbusDeviceByChannelResponseMessageProcessor extends DomainResponseMessageProcessor {
+public class DeCoupleMbusDeviceByChannelResponseMessageProcessor extends DomainResponseMessageProcessor {
 
-    protected CleanUpMbusDeviceByChannelResponseMessageProcessor() {
-        super(MessageType.CLEAN_UP_MBUS_DEVICE_BY_CHANNEL);
+    protected DeCoupleMbusDeviceByChannelResponseMessageProcessor() {
+        super(MessageType.DE_COUPLE_MBUS_DEVICE_BY_CHANNEL);
     }
 }

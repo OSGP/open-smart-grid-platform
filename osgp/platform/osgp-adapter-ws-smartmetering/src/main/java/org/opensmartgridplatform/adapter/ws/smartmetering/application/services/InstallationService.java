@@ -14,7 +14,7 @@ import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AddSmartMeterRequest;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CleanUpMbusDeviceByChannelRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
@@ -199,27 +199,27 @@ public class InstallationService {
      *            the time the request should be carried out
      * @return the correlationUid identifying the operation
      */
-    public String enqueueCleanUpMbusDeviceByChannelRequest(@Identification final String organisationIdentification,
+    public String enqueueDeCoupleMbusDeviceByChannelRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final int messagePriority, final Long scheduleTime,
             final short channel) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
-        this.domainHelperService.checkAllowed(organisation, device, DeviceFunction.CLEAN_UP_MBUS_DEVICE_BY_CHANNEL);
+        this.domainHelperService.checkAllowed(organisation, device, DeviceFunction.DE_COUPLE_MBUS_DEVICE_BY_CHANNEL);
 
-        LOGGER.debug("enqueueCleanUpMbusDeviceByChannelRequest called with organisation {}, gateway {}",
+        LOGGER.debug("enqueueDeCoupleMbusDeviceByChannelRequest called with organisation {}, gateway {}",
                 organisationIdentification, deviceIdentification);
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, MessageType.CLEAN_UP_MBUS_DEVICE_BY_CHANNEL.name(),
+                organisationIdentification, correlationUid, MessageType.DE_COUPLE_MBUS_DEVICE_BY_CHANNEL.name(),
                 messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).request(new CleanUpMbusDeviceByChannelRequestData(channel)).build();
+                deviceMessageMetadata).request(new DeCoupleMbusDeviceByChannelRequestData(channel)).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 

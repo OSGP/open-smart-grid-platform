@@ -44,7 +44,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.Administ
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmRegister;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AssociationLnObjectsResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.BundleMessagesResponse;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CleanUpMbusDeviceByChannelResponse;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceByChannelResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventMessagesResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FaultResponse;
@@ -115,7 +115,7 @@ public class ActionMapperResponseService {
         CLASS_TO_MAPPER_MAP.put(GetConfigurationObjectResponse.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(GetPowerQualityProfileResponse.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(CoupleMbusDeviceByChannelResponse.class, this.installationMapper);
-        CLASS_TO_MAPPER_MAP.put(CleanUpMbusDeviceByChannelResponse.class, this.installationMapper);
+        CLASS_TO_MAPPER_MAP.put(DeCoupleMbusDeviceByChannelResponse.class, this.installationMapper);
         CLASS_TO_MAPPER_MAP.put(GetMbusEncryptionKeyStatusResponseData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(GetMbusEncryptionKeyStatusByChannelResponseData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SetDeviceLifecycleStatusByChannelResponseData.class, this.managementMapper);
@@ -151,8 +151,8 @@ public class ActionMapperResponseService {
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPowerQualityProfileResponse.class);
         CLASS_MAP.put(CoupleMbusDeviceByChannelResponse.class,
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.CoupleMbusDeviceByChannelResponse.class);
-        CLASS_MAP.put(CleanUpMbusDeviceByChannelResponse.class,
-                org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.CleanUpMbusDeviceByChannelResponse.class);
+        CLASS_MAP.put(DeCoupleMbusDeviceByChannelResponse.class,
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.DeCoupleMbusDeviceByChannelResponse.class);
         CLASS_MAP.put(GetMbusEncryptionKeyStatusResponseData.class, GetMbusEncryptionKeyStatusResponse.class);
         CLASS_MAP.put(GetMbusEncryptionKeyStatusByChannelResponseData.class,
                 GetMbusEncryptionKeyStatusByChannelResponse.class);

@@ -159,17 +159,17 @@
     </xsd:complexContent>
   </xsd:complexType>
 
-  <xsd:element name="CleanUpMbusDeviceByChannelRequest">
+  <xsd:element name="DeCoupleMbusDeviceByChannelRequest">
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
-        <xsd:element name="CleanUpMbusDeviceByChannelRequestData"
-                     type="tns:CleanUpMbusDeviceByChannelRequestData" />
+        <xsd:element name="DeCoupleMbusDeviceByChannelRequestData"
+                     type="tns:DeCoupleMbusDeviceByChannelRequestData" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="CleanUpMbusDeviceByChannelAsyncResponse">
+  <xsd:element name="DeCoupleMbusDeviceByChannelAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="common:AsyncResponse"></xsd:extension>
@@ -177,7 +177,7 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="CleanUpMbusDeviceByChannelAsyncRequest">
+  <xsd:element name="DeCoupleMbusDeviceByChannelAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="common:AsyncRequest"></xsd:extension>
@@ -185,16 +185,16 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="CleanUpMbusDeviceByChannelResponse">
+  <xsd:element name="DeCoupleMbusDeviceByChannelResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="tns:CleanUpMbusDeviceByChannelResponseData">
+        <xsd:extension base="tns:DeCoupleMbusDeviceByChannelResponseData">
         </xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:complexType name="CleanUpMbusDeviceByChannelResponseData">
+  <xsd:complexType name="DeCoupleMbusDeviceByChannelResponseData">
     <xsd:complexContent>
       <xsd:extension base="common:Response">
         <xsd:sequence>
@@ -347,7 +347,7 @@
     </xsd:complexContent>
   </xsd:complexType>
 
-  <xsd:complexType name="CleanUpMbusDeviceByChannelRequestData">
+  <xsd:complexType name="DeCoupleMbusDeviceByChannelRequestData">
     <xsd:complexContent>
       <xsd:extension base="common:Command">
         <xsd:sequence>

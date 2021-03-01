@@ -14,14 +14,14 @@ import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.exceptions.InactiveDeviceException;
 import org.opensmartgridplatform.domain.core.repositories.SmartMeterRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CleanUpMbusDeviceByChannelRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
 import org.opensmartgridplatform.domain.smartmetering.exceptions.MbusChannelNotFoundException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.CleanUpMbusDeviceByChannelRequestDataDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.CleanUpMbusDeviceByChannelResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceByChannelRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceByChannelResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceDto;
@@ -193,15 +193,15 @@ public class MBusGatewayService {
         this.smartMeteringDeviceRepository.save(mbusDevice);
     }
 
-    public void cleanUpMbusDeviceByChannel(final DeviceMessageMetadata deviceMessageMetadata,
-            final CleanUpMbusDeviceByChannelRequestData requestData) throws FunctionalException {
+    public void deCoupleMbusDeviceByChannel(final DeviceMessageMetadata deviceMessageMetadata,
+            final DeCoupleMbusDeviceByChannelRequestData requestData) throws FunctionalException {
 
         final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
 
-        LOGGER.debug("cleanUpMbusDeviceByChannel for organizationIdentification: {} for gateway: {}",
+        LOGGER.debug("deCoupleMbusDeviceByChannel for organizationIdentification: {} for gateway: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceIdentification);
 
-        final CleanUpMbusDeviceByChannelRequestDataDto requestDataDto = new CleanUpMbusDeviceByChannelRequestDataDto(
+        final DeCoupleMbusDeviceByChannelRequestDataDto requestDataDto = new DeCoupleMbusDeviceByChannelRequestDataDto(
                 requestData.getChannel());
 
         final SmartMeter gatewayDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
@@ -213,11 +213,11 @@ public class MBusGatewayService {
 
     }
 
-    public void handleCleanUpMbusDeviceByChannelResponse(final DeviceMessageMetadata deviceMessageMetadata,
-            final CleanUpMbusDeviceByChannelResponseDto cleanUpMbusDeviceByChannelResponseDto)
+    public void handleDeCoupleMbusDeviceByChannelResponse(final DeviceMessageMetadata deviceMessageMetadata,
+            final DeCoupleMbusDeviceByChannelResponseDto deCoupleMbusDeviceByChannelResponseDto)
             throws FunctionalException {
 
-        // TODO: Implement clean up
+        // TODO: Implement de couple
     }
 
     /**

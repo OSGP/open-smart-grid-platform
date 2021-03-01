@@ -16,7 +16,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import ma.glasnost.orika.impl.ConfigurableMapper;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.CleanUpMbusDeviceByChannelRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.DeCoupleMbusDeviceByChannelRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ClearAlarmRegisterRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ConfigureDefinableLoadProfileRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.CoupleMbusDeviceByChannelRequest;
@@ -64,7 +64,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.Activity
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualMeterReadsGasRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualMeterReadsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AdministrativeStatusTypeData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CleanUpMbusDeviceByChannelRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DefinableLoadProfileConfigurationData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FindEventsRequestData;
@@ -192,8 +192,8 @@ public class ActionMapperService {
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelRequestData.class,
                 CoupleMbusDeviceByChannelRequestData.class);
         CLASS_MAP.put(
-                org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CleanUpMbusDeviceByChannelRequestData.class,
-                CleanUpMbusDeviceByChannelRequestData.class);
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceByChannelRequestData.class,
+                DeCoupleMbusDeviceByChannelRequestData.class);
         CLASS_MAP.put(org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.ScanMbusChannelsRequestData.class,
                 ScanMbusChannelsRequestData.class);
 
@@ -226,7 +226,7 @@ public class ActionMapperService {
         CLASS_MAP.put(GenerateAndReplaceKeysRequest.class, GenerateAndReplaceKeysRequestData.class);
         CLASS_MAP.put(ConfigureDefinableLoadProfileRequest.class, DefinableLoadProfileConfigurationData.class);
         CLASS_MAP.put(CoupleMbusDeviceByChannelRequest.class, CoupleMbusDeviceByChannelRequestData.class);
-        CLASS_MAP.put(CleanUpMbusDeviceByChannelRequest.class, CleanUpMbusDeviceByChannelRequestData.class);
+        CLASS_MAP.put(DeCoupleMbusDeviceByChannelRequest.class, DeCoupleMbusDeviceByChannelRequestData.class);
         CLASS_MAP.put(GetMbusEncryptionKeyStatusRequest.class, GetMbusEncryptionKeyStatusRequestData.class);
         CLASS_MAP.put(SetDeviceLifecycleStatusByChannelRequest.class,
                 SetDeviceLifecycleStatusByChannelRequestData.class);
@@ -273,12 +273,12 @@ public class ActionMapperService {
     private void mapInstallationRequestData() {
 
         CLASS_TO_MAPPER_MAP.put(CoupleMbusDeviceByChannelRequest.class, this.installationMapper);
-        CLASS_TO_MAPPER_MAP.put(CleanUpMbusDeviceByChannelRequest.class, this.installationMapper);
+        CLASS_TO_MAPPER_MAP.put(DeCoupleMbusDeviceByChannelRequest.class, this.installationMapper);
         CLASS_TO_MAPPER_MAP.put(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelRequestData.class,
                 this.installationMapper);
         CLASS_TO_MAPPER_MAP.put(
-                org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CleanUpMbusDeviceByChannelRequestData.class,
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceByChannelRequestData.class,
                 this.installationMapper);
     }
 

@@ -11,13 +11,13 @@ package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
-public class CleanUpMbusDeviceByChannelResponse extends ActionResponse implements Serializable {
+public class DeCoupleMbusDeviceByChannelResponse extends ActionResponse implements Serializable {
 
     private static final long serialVersionUID = -7800915379658671321L;
 
     private String mbusDeviceIdentification;
 
-    public CleanUpMbusDeviceByChannelResponse(final String mbusDeviceIdentification) {
+    public DeCoupleMbusDeviceByChannelResponse(final String mbusDeviceIdentification) {
         super();
         this.mbusDeviceIdentification = mbusDeviceIdentification;
     }

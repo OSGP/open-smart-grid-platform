@@ -20,8 +20,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.CleanUpMbusDeviceByChannelRequestDataDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.CleanUpMbusDeviceByChannelResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceByChannelRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceByChannelResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,23 +30,23 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class CleanUpMbusDeviceByChannelCommandExecutor
-        extends AbstractCommandExecutor<CleanUpMbusDeviceByChannelRequestDataDto, CleanUpMbusDeviceByChannelResponseDto> {
+public class DeCoupleMbusDeviceByChannelCommandExecutor
+        extends AbstractCommandExecutor<DeCoupleMbusDeviceByChannelRequestDataDto, DeCoupleMbusDeviceByChannelResponseDto> {
 
     @Autowired
     private DeviceChannelsHelper deviceChannelsHelper;
 
-    public CleanUpMbusDeviceByChannelCommandExecutor() {
-        super(CleanUpMbusDeviceByChannelRequestDataDto.class);
+    public DeCoupleMbusDeviceByChannelCommandExecutor() {
+        super(DeCoupleMbusDeviceByChannelRequestDataDto.class);
     }
 
     @Override
-    public CleanUpMbusDeviceByChannelResponseDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
-            final CleanUpMbusDeviceByChannelRequestDataDto cleanUpMbusDeviceByChannelRequestDataDto) throws ProtocolAdapterException {
+    public DeCoupleMbusDeviceByChannelResponseDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
+            final DeCoupleMbusDeviceByChannelRequestDataDto deCoupleMbusDeviceByChannelRequestDataDto) throws ProtocolAdapterException {
 
-        Short channel = cleanUpMbusDeviceByChannelRequestDataDto.getChannel();
+        Short channel = deCoupleMbusDeviceByChannelRequestDataDto.getChannel();
         
-        log.debug("Clean up mbus channel {} on device {}", channel, device.getDeviceIdentification());
+        log.debug("De couple mbus channel {} on device {}", channel, device.getDeviceIdentification());
 
         final ObisCode obisCode = this.deviceChannelsHelper.getObisCode(channel);
         
@@ -56,11 +56,11 @@ public class CleanUpMbusDeviceByChannelCommandExecutor
         
         this.deviceChannelsHelper.deinstallSlave(conn, device, channel, mbusDeviceIdentification, mBusSetup);
 
-        this.emptyEncryptionKey(conn, device, cleanUpMbusDeviceByChannelRequestDataDto, mBusSetup);
+        this.emptyEncryptionKey(conn, device, deCoupleMbusDeviceByChannelRequestDataDto, mBusSetup);
         
         this.resetMbusDeviceDetails(conn, device, channel);
         
-        return new CleanUpMbusDeviceByChannelResponseDto(mbusDeviceIdentification, channel);
+        return new DeCoupleMbusDeviceByChannelResponseDto(mbusDeviceIdentification, channel);
     }
 
     private String getMbusDeviceIdentification(DlmsConnectionManager conn, DlmsDevice device,
@@ -79,7 +79,7 @@ public class CleanUpMbusDeviceByChannelCommandExecutor
     }
 
     private void emptyEncryptionKey(final DlmsConnectionManager conn, final DlmsDevice device,
-            final CleanUpMbusDeviceByChannelRequestDataDto cleanUpMbusDeviceByChannelRequestDataDto, final CosemObjectAccessor mBusSetup) {
+            final DeCoupleMbusDeviceByChannelRequestDataDto deCoupleMbusDeviceByChannelRequestDataDto, final CosemObjectAccessor mBusSetup) {
         // TODO via SetEncryptionKeyExchangeOnGMeterCommandExecutor?
     }
 
@@ -88,7 +88,7 @@ public class CleanUpMbusDeviceByChannelCommandExecutor
 
         MbusChannelElementsDto mbusChannelElementsDto = new MbusChannelElementsDto((short)0, "", "", "", (short)0, (short)0);
         this.deviceChannelsHelper.writeUpdatedMbus(conn,
-                mbusChannelElementsDto, channel, Protocol.forDevice(device), "CleanUpMbusChannel");
+                mbusChannelElementsDto, channel, Protocol.forDevice(device), "DeCoupleMbusDeviceByChannel");
 
     }
 

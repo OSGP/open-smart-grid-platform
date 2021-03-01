@@ -247,10 +247,10 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="CleanUpMbusDeviceByChannelRequest">
+  <xsd:element name="DeCoupleMbusDeviceByChannelRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="sminst:CleanUpMbusDeviceByChannelRequestData"></xsd:extension>
+        <xsd:extension base="sminst:DeCoupleMbusDeviceByChannelRequestData"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -327,7 +327,7 @@
         <xsd:element ref="tns:ConfigureDefinableLoadProfileRequest"/>
         <xsd:element ref="tns:SetMbusUserKeyByChannelRequest"/>
         <xsd:element ref="tns:CoupleMbusDeviceByChannelRequest"/>
-        <xsd:element ref="tns:CleanUpMbusDeviceByChannelRequest"/>
+        <xsd:element ref="tns:DeCoupleMbusDeviceByChannelRequest"/>
         <xsd:element ref="tns:ClearAlarmRegisterRequest"/>
         <xsd:element ref="tns:GetMbusEncryptionKeyStatusByChannelRequest"/>
         <xsd:element ref="tns:SetDeviceLifecycleStatusByChannelRequest"/>
@@ -488,10 +488,10 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="CleanUpMbusDeviceByChannelResponse">
+  <xsd:element name="DeCoupleMbusDeviceByChannelResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="sminst:CleanUpMbusDeviceByChannelResponseData"></xsd:extension>
+        <xsd:extension base="sminst:DeCoupleMbusDeviceByChannelResponseData"></xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -552,7 +552,7 @@
         <xsd:element ref="tns:GetConfigurationObjectResponse"/>
         <xsd:element ref="tns:GetPowerQualityProfileResponse"/>
         <xsd:element ref="tns:CoupleMbusDeviceByChannelResponse"/>
-        <xsd:element ref="tns:CleanUpMbusDeviceByChannelResponse"/>
+        <xsd:element ref="tns:DeCoupleMbusDeviceByChannelResponse"/>
         <xsd:element ref="tns:GetMbusEncryptionKeyStatusByChannelResponse"/>
         <xsd:element ref="tns:SetDeviceLifecycleStatusByChannelResponse"/>
         <xsd:element ref="tns:ScanMbusChannelsResponse"/>

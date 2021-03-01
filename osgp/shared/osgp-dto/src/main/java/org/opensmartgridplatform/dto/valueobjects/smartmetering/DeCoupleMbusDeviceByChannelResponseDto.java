@@ -7,21 +7,21 @@
  */
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
-public class CleanUpMbusDeviceByChannelResponseDto extends ActionResponseDto {
+public class DeCoupleMbusDeviceByChannelResponseDto extends ActionResponseDto {
 
     private static final long serialVersionUID = -4454979905929290745L;
 
     private final String mBusDeviceIdentification;
     private final Short channel;
 
-    public CleanUpMbusDeviceByChannelResponseDto(final String mBusDeviceIdentification, final Short channel) {
+    public DeCoupleMbusDeviceByChannelResponseDto(final String mBusDeviceIdentification, final Short channel) {
         this.mBusDeviceIdentification = mBusDeviceIdentification;
         this.channel = channel;
     }
 
     @Override
     public String toString() {
-        return "CleanUpMbusDeviceByChannelResponseDto [mBusDeviceIdentification="
+        return "DeCoupleMbusDeviceByChannelResponseDto [mBusDeviceIdentification="
                 + this.mBusDeviceIdentification + "]";
     }
 

@@ -12,7 +12,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.me
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.InstallationService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.CleanUpMbusDeviceByChannelResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceByChannelResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -25,29 +25,29 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CleanUpMbusDeviceByChannelResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+public class DeCoupleMbusDeviceByChannelResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
     @Autowired
     private InstallationService installationService;
 
     @Autowired
-    protected CleanUpMbusDeviceByChannelResponseMessageProcessor(
+    protected DeCoupleMbusDeviceByChannelResponseMessageProcessor(
             WebServiceResponseMessageSender responseMessageSender,
             @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
-        super(responseMessageSender, messageProcessorMap, MessageType.CLEAN_UP_MBUS_DEVICE_BY_CHANNEL,
+        super(responseMessageSender, messageProcessorMap, MessageType.DE_COUPLE_MBUS_DEVICE_BY_CHANNEL,
                 ComponentType.DOMAIN_SMART_METERING);
     }
 
     @Override
     protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
-        return responseMessage.getDataObject() instanceof CleanUpMbusDeviceByChannelResponseDto;
+        return responseMessage.getDataObject() instanceof DeCoupleMbusDeviceByChannelResponseDto;
     }
 
     @Override
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessage responseMessage, final OsgpException osgpException) throws FunctionalException {
-        this.installationService.handleCleanUpMbusDeviceByChannelResponse(deviceMessageMetadata,
+        this.installationService.handleDeCoupleMbusDeviceByChannelResponse(deviceMessageMetadata,
                 responseMessage.getResult(), responseMessage.getOsgpException(),
-                (CleanUpMbusDeviceByChannelResponseDto) responseMessage.getDataObject());
+                (DeCoupleMbusDeviceByChannelResponseDto) responseMessage.getDataObject());
     }
 }
