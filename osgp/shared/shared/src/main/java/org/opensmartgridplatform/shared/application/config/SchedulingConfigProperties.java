@@ -22,6 +22,7 @@ public class SchedulingConfigProperties {
     private final String jobStoreDbPassword;
     private final String jobStoreDbDriver;
     private final String maxConnections;
+    private final boolean useProperties;
 
     private SchedulingConfigProperties(final Builder builder) {
         this.jobClass = builder.jobClass;
@@ -33,6 +34,7 @@ public class SchedulingConfigProperties {
         this.jobStoreDbPassword = builder.jobStoreDbPassword;
         this.jobStoreDbDriver = builder.jobStoreDbDriver;
         this.maxConnections = builder.maxConnections;
+        this.useProperties = builder.useProperties;
     }
 
     public static class Builder {
@@ -46,6 +48,7 @@ public class SchedulingConfigProperties {
         private String jobStoreDbPassword = null;
         private String jobStoreDbDriver = null;
         private String maxConnections = DEFAULT_MAX_CONNECTIONS;
+        private boolean useProperties = true;
 
         public SchedulingConfigProperties build() {
             return new SchedulingConfigProperties(this);
@@ -95,6 +98,11 @@ public class SchedulingConfigProperties {
             this.maxConnections = maxConnections;
             return this;
         }
+
+        public Builder withUseProperties(final boolean useProperties) {
+            this.useProperties = useProperties;
+            return this;
+        }
     }
 
     public static Builder newBuilder() {
@@ -135,6 +143,10 @@ public class SchedulingConfigProperties {
 
     public String getMaxConnections() {
         return this.maxConnections;
+    }
+
+    public boolean isUseProperties() {
+        return this.useProperties;
     }
 
 }

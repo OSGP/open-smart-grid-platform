@@ -97,16 +97,6 @@ public class PublicLightingGetLightSensorStatusResponseMessageProcessor extends 
          * case the correlationUid equals
          * OsgpSystemCorrelationUid.CORRELATION_UID.
          *
-         * If however the light sensor status response as handled here comes
-         * from the IEC 60870-5-104 protocol adapter, then the correlation UID
-         * is not matched with the request as long as FLEX-5349 is not done.
-         *
-         * For now, handling the light sensor status response in the ad hoc
-         * management service nothing will be forwarded to the web service
-         * layer. This means retrieving the status from the web service for the
-         * 60870-5-104 probably does not work (if so it probably already did not
-         * work before the introduction of this
-         * PublicLightingGetLightSensorStatusResponseMessageProcessor).
          */
 
         try {

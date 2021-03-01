@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.application.config;
 
+import org.opensmartgridplatform.adapter.protocol.iec60870.infra.CorrelationUidPerDevice;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -51,4 +52,8 @@ public class ApplicationContext extends AbstractConfig {
         return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_MAX_RETRY_COUNT));
     }
 
+    @Bean
+    public CorrelationUidPerDevice correlationUidPerDevice() {
+        return new CorrelationUidPerDevice();
+    }
 }

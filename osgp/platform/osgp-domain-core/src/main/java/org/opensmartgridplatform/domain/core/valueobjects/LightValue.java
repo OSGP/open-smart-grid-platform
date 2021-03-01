@@ -10,8 +10,6 @@ package org.opensmartgridplatform.domain.core.valueobjects;
 import java.io.Serializable;
 
 import org.hibernate.validator.constraints.Range;
-
-import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
 import org.opensmartgridplatform.domain.core.validation.LightValueConstraints;
 
 @LightValueConstraints
@@ -35,7 +33,7 @@ public class LightValue implements Serializable {
     @Range(min = MIN_DIMVALUE, max = MAX_DIMVALUE)
     private final Integer dimValue;
 
-    public LightValue(final Integer index, final boolean on, final Integer dimValue) throws ValidationException {
+    public LightValue(final Integer index, final boolean on, final Integer dimValue) {
         this.index = index;
         this.on = on;
         this.dimValue = dimValue;
