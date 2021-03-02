@@ -48,7 +48,7 @@ public class DeCoupleMBusDeviceCommandExecutor
 
         this.deviceChannelsHelper.deinstallSlave(conn, device, channel, mBusDeviceIdentification, mBusSetup);
 
-        this.deviceChannelsHelper.resetMBusClientAttributeValues(conn, device, channel);
+        this.deviceChannelsHelper.resetMBusClientAttributeValues(conn, channel, this.getClass().getSimpleName());
         
         return new DeCoupleMbusDeviceResponseDto(mBusDeviceIdentification,
                 channel);

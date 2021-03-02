@@ -47,6 +47,10 @@ public class DeviceChannelsHelper {
      */
     private static final String OBIS_CODE_TEMPLATE = "0.%d.24.1.0.255";
 
+    private static final DataObject UINT_8_ZERO = DataObject.newUInteger8Data((short) 0);
+    private static final DataObject UINT_16_ZERO = DataObject.newUInteger16Data(0);
+    private static final DataObject UINT_32_ZERO = DataObject.newUInteger32Data(0L);
+    
     private static final int NUMBER_OF_ATTRIBUTES_MBUS_CLIENT = 5;
     private static final int INDEX_PRIMARY_ADDRESS = 0;
     private static final int INDEX_IDENTIFICATION_NUMBER = 1;
@@ -100,13 +104,20 @@ public class DeviceChannelsHelper {
         return this.dlmsHelper.getWithList(conn, device, attrAddresses);
     }
 
-    protected ChannelElementValuesDto resetMBusClientAttributeValues(final DlmsConnectionManager conn,
-            DlmsDevice device, final short channel) throws ProtocolAdapterException {
+    protected void resetMBusClientAttributeValues(final DlmsConnectionManager conn, final short channel,
+            String executorName) throws ProtocolAdapterException {
 
-        MbusChannelElementsDto mbusChannelElementsDto = new MbusChannelElementsDto((short)0, "", "", "", (short)0, (short)0);
-        return this.writeUpdatedMbus(conn,
-                mbusChannelElementsDto, channel, Protocol.forDevice(device), "DeCoupleMbusDeviceByChannel");
+        final DataObjectAttrExecutors dataObjectExecutors = new DataObjectAttrExecutors(executorName)
+                .addExecutor(
+                        this.getMbusAttributeExecutor(MbusClientAttribute.IDENTIFICATION_NUMBER, UINT_32_ZERO, channel))
+                .addExecutor(this.getMbusAttributeExecutor(MbusClientAttribute.MANUFACTURER_ID, UINT_16_ZERO, channel))
+                .addExecutor(this.getMbusAttributeExecutor(MbusClientAttribute.VERSION, UINT_8_ZERO, channel))
+                .addExecutor(this.getMbusAttributeExecutor(MbusClientAttribute.DEVICE_TYPE, UINT_8_ZERO, channel))
+                .addExecutor(this.getMbusAttributeExecutor(MbusClientAttribute.PRIMARY_ADDRESS, UINT_8_ZERO, channel));
 
+        conn.getDlmsMessageListener().setDescription(String.format("Reset MBus attributes to channel %d", channel));
+
+        dataObjectExecutors.execute(conn);
     }
 
     protected ChannelElementValuesDto makeChannelElementValues(final short channel, final List<GetResult> resultList)
@@ -202,21 +213,26 @@ public class DeviceChannelsHelper {
         final DataObjectAttrExecutors dataObjectExecutors = new DataObjectAttrExecutors(executorName)
                 .addExecutor(this.getMbusAttributeExecutor(MbusClientAttribute.IDENTIFICATION_NUMBER,
                         IdentificationNumberFactory.create(protocol)
-                                .fromLast8Digits(requestDto.getMbusIdentificationNumber())
-                                .asDataObject(),
+                                        .fromLast8Digits(requestDto.getMbusIdentificationNumber())
+                                        .asDataObject(),
                         channel))
                 .addExecutor(this.getMbusAttributeExecutor(MbusClientAttribute.MANUFACTURER_ID,
                         ManufacturerId.fromIdentification(requestDto.getMbusManufacturerIdentification())
-                                .asDataObject(),
+                                        .asDataObject(),
                         channel))
-                .addExecutor(this.getMbusAttributeExecutor(MbusClientAttribute.VERSION,
-                        DataObject.newUInteger8Data(requestDto.getMbusVersion()), channel))
-                .addExecutor(this.getMbusAttributeExecutor(MbusClientAttribute.DEVICE_TYPE,
-                        DataObject.newUInteger8Data(requestDto.getMbusDeviceTypeIdentification()), channel));
+                .addExecutor(
+                        this.getMbusAttributeExecutor(MbusClientAttribute.VERSION,
+                                DataObject.newUInteger8Data(requestDto.getMbusVersion()),
+                                channel))
+                .addExecutor(
+                        this.getMbusAttributeExecutor(MbusClientAttribute.DEVICE_TYPE,
+                                DataObject.newUInteger8Data(requestDto.getMbusDeviceTypeIdentification()),
+                                channel));
 
         if (requestDto.getPrimaryAddress() != null) {
             dataObjectExecutors.addExecutor(this.getMbusAttributeExecutor(MbusClientAttribute.PRIMARY_ADDRESS,
-                    DataObject.newUInteger8Data(requestDto.getPrimaryAddress()), channel));
+                    requestDto == null ? UINT_8_ZERO : DataObject.newUInteger8Data(requestDto.getPrimaryAddress()),
+                    channel));
 
         }
         conn.getDlmsMessageListener()
