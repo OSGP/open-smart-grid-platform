@@ -29,6 +29,8 @@ public class MessageMetadata implements Serializable {
     private String domain;
     private String domainVersion;
     private String ipAddress;
+    private int cellId;
+    private int btsId;
     private int messagePriority;
     private boolean scheduled;
     private Long scheduleTime;
@@ -48,6 +50,8 @@ public class MessageMetadata implements Serializable {
         this.domain = builder.domain;
         this.domainVersion = builder.domainVersion;
         this.ipAddress = builder.ipAddress;
+        this.cellId = builder.cellId;
+        this.btsId = builder.btsId;
         this.messagePriority = builder.messagePriority;
         this.scheduled = builder.scheduled;
         this.scheduleTime = builder.scheduleTime;
@@ -56,29 +60,30 @@ public class MessageMetadata implements Serializable {
         this.jmsxDeliveryCount = builder.jmsxDeliveryCount;
     }
 
-    public static final MessageMetadata fromMessage(final Message message) throws JMSException {
+    public static MessageMetadata fromMessage(final Message message) throws JMSException {
 
         final MessageMetadata metadata = new MessageMetadata();
         metadata.correlationUid = message.getJMSCorrelationID();
         metadata.messageType = message.getJMSType();
         metadata.messagePriority = message.getJMSPriority();
 
-        metadata.deviceIdentification = metadata.getStringProperty(message, Constants.DEVICE_IDENTIFICATION,
-                StringUtils.EMPTY);
-        metadata.organisationIdentification = metadata.getStringProperty(message, Constants.ORGANISATION_IDENTIFICATION,
-                StringUtils.EMPTY);
+        metadata.deviceIdentification = metadata.getStringProperty(message, Constants.DEVICE_IDENTIFICATION);
+        metadata.organisationIdentification = metadata
+                .getStringProperty(message, Constants.ORGANISATION_IDENTIFICATION);
 
-        metadata.domain = metadata.getStringProperty(message, Constants.DOMAIN, StringUtils.EMPTY);
-        metadata.domainVersion = metadata.getStringProperty(message, Constants.DOMAIN_VERSION, StringUtils.EMPTY);
+        metadata.domain = metadata.getStringProperty(message, Constants.DOMAIN);
+        metadata.domainVersion = metadata.getStringProperty(message, Constants.DOMAIN_VERSION);
 
-        metadata.ipAddress = metadata.getStringProperty(message, Constants.IP_ADDRESS, StringUtils.EMPTY);
+        metadata.ipAddress = metadata.getStringProperty(message, Constants.IP_ADDRESS);
+        metadata.cellId = metadata.getIntProperty(message, Constants.CELL_ID);
+        metadata.btsId = metadata.getIntProperty(message, Constants.BTS_ID);
 
-        metadata.scheduleTime = metadata.getLongProperty(message, Constants.SCHEDULE_TIME, null);
-        metadata.scheduled = metadata.getBooleanProperty(message, Constants.IS_SCHEDULED, false);
+        metadata.scheduleTime = metadata.getLongProperty(message, Constants.SCHEDULE_TIME);
+        metadata.scheduled = metadata.getBooleanProperty(message, Constants.IS_SCHEDULED);
 
-        metadata.retryCount = metadata.getIntProperty(message, Constants.RETRY_COUNT, 0);
-        metadata.bypassRetry = metadata.getBooleanProperty(message, Constants.BYPASS_RETRY, false);
-        metadata.jmsxDeliveryCount = metadata.getIntProperty(message, Constants.DELIVERY_COUNT, 0);
+        metadata.retryCount = metadata.getIntProperty(message, Constants.RETRY_COUNT);
+        metadata.bypassRetry = metadata.getBooleanProperty(message, Constants.BYPASS_RETRY);
+        metadata.jmsxDeliveryCount = metadata.getIntProperty(message, Constants.DELIVERY_COUNT);
 
         return metadata;
     }
@@ -111,6 +116,14 @@ public class MessageMetadata implements Serializable {
         return this.ipAddress;
     }
 
+    public int getCellId() {
+        return this.cellId;
+    }
+
+    public int getBtsId() {
+        return this.btsId;
+    }
+
     public String getMessageType() {
         return this.messageType;
     }
@@ -139,27 +152,24 @@ public class MessageMetadata implements Serializable {
         return this.jmsxDeliveryCount;
     }
 
-    private String getStringProperty(final Message message, final String name, final String defaultValue)
-            throws JMSException {
-        return message.propertyExists(name) ? message.getStringProperty(name) : defaultValue;
+    private String getStringProperty(final Message message, final String name) throws JMSException {
+        return message.propertyExists(name) ? message.getStringProperty(name) : StringUtils.EMPTY;
     }
 
-    private Long getLongProperty(final Message message, final String name, final Long defaultValue)
-            throws JMSException {
+    private Long getLongProperty(final Message message, final String name) throws JMSException {
         if (message.propertyExists(name)) {
             return message.getLongProperty(name);
         } else {
-            return defaultValue;
+            return null;
         }
     }
 
-    private int getIntProperty(final Message message, final String name, final int defaultValue) throws JMSException {
-        return message.propertyExists(name) ? message.getIntProperty(name) : defaultValue;
+    private int getIntProperty(final Message message, final String name) throws JMSException {
+        return message.propertyExists(name) ? message.getIntProperty(name) : 0;
     }
 
-    private boolean getBooleanProperty(final Message message, final String name, final boolean defaultValue)
-            throws JMSException {
-        return message.propertyExists(name) ? message.getBooleanProperty(name) : defaultValue;
+    private boolean getBooleanProperty(final Message message, final String name) throws JMSException {
+        return message.propertyExists(name) && message.getBooleanProperty(name);
     }
 
     //@formatter:off
@@ -173,6 +183,8 @@ public class MessageMetadata implements Serializable {
                 ", domain=" + this.domain +
                 ", domainVersion=" + this.domainVersion +
                 ", ipAddress=" + this.ipAddress +
+                ", cellId=" + this.cellId +
+                ", btsId=" + this.btsId +
                 ", messagePriority=" + this.messagePriority +
                 ", scheduled=" + this.scheduled +
                 ", scheduleTime=" + this.scheduleTime +
@@ -192,6 +204,8 @@ public class MessageMetadata implements Serializable {
         private String domain = StringUtils.EMPTY;
         private String domainVersion = StringUtils.EMPTY;
         private String ipAddress = StringUtils.EMPTY;
+        private int cellId = 0;
+        private int btsId = 0;
         private int messagePriority = 0;
         private Long scheduleTime = null;
         private boolean scheduled = false;
@@ -207,6 +221,8 @@ public class MessageMetadata implements Serializable {
             this.domain = otherMetadata.getDomain();
             this.domainVersion = otherMetadata.getDomainVersion();
             this.ipAddress = otherMetadata.getIpAddress();
+            this.cellId = otherMetadata.getCellId();
+            this.btsId = otherMetadata.getBtsId();
             this.messagePriority = otherMetadata.getMessagePriority();
             this.scheduled = otherMetadata.isScheduled();
             this.scheduleTime = otherMetadata.getScheduleTime();
@@ -223,7 +239,8 @@ public class MessageMetadata implements Serializable {
             this.messageType = messageType;
         }
 
-        public Builder() { }
+        public Builder() {
+        }
 
         public Builder withCorrelationUid(final String correlationUid) {
             this.correlationUid = correlationUid;
@@ -257,6 +274,16 @@ public class MessageMetadata implements Serializable {
 
         public Builder withIpAddress(final String ipAddress) {
             this.ipAddress = ipAddress;
+            return this;
+        }
+
+        public Builder withCellId(final int cellId) {
+            this.cellId = cellId;
+            return this;
+        }
+
+        public Builder withBtsId(final int btsId) {
+            this.btsId = btsId;
             return this;
         }
 

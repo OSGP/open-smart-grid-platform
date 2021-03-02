@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.validation.ConstraintViolationException;
 
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.ws.core.application.mapping.DeviceInstallationMapper;
 import org.opensmartgridplatform.adapter.ws.core.application.services.DeviceInstallationService;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
@@ -53,8 +54,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -62,10 +61,10 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
+@Slf4j
 @Endpoint
 public class DeviceInstallationEndpoint {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceInstallationEndpoint.class);
     private static final String DEVICE_INSTALLATION_NAMESPACE = "http://www.opensmartgridplatform.org/schemas/deviceinstallation/2014/10";
     private static final ComponentType COMPONENT_WS_CORE = ComponentType.WS_CORE;
 
@@ -96,7 +95,7 @@ public class DeviceInstallationEndpoint {
             @RequestPayload final GetStatusRequest request, @MessagePriority final String messagePriority)
             throws OsgpException {
 
-        LOGGER.info("Get Status received from organisation: {} for device: {} with message priority: {}.",
+        log.info("Get Status received from organisation: {} for device: {} with message priority: {}.",
                 organisationIdentification, request.getDeviceIdentification(), messagePriority);
 
         final GetStatusAsyncResponse response = new GetStatusAsyncResponse();
@@ -121,7 +120,7 @@ public class DeviceInstallationEndpoint {
     public GetStatusResponse getGetStatusResponse(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final GetStatusAsyncRequest request) throws OsgpException {
 
-        LOGGER.info("Get Status Response received from organisation: {}.", organisationIdentification);
+        log.info("Get Status Response received from organisation: {}.", organisationIdentification);
 
         final GetStatusResponse response = new GetStatusResponse();
 
@@ -148,7 +147,7 @@ public class DeviceInstallationEndpoint {
     public AddDeviceResponse addDevice(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final AddDeviceRequest request) throws OsgpException {
 
-        LOGGER.info("Adding device: {}.", request.getDevice().getDeviceIdentification());
+        log.info("Adding device: {}.", request.getDevice().getDeviceIdentification());
 
         try {
             final Device device = this.deviceInstallationMapper.map(request.getDevice(), Device.class);
@@ -162,7 +161,7 @@ public class DeviceInstallationEndpoint {
         } catch (final AssertionError e) {
             throw new TechnicalException(COMPONENT_WS_CORE, e);
         } catch (final Exception e) {
-            LOGGER.error(EXCEPTION_WHILE_ADDING_DEVICE, e.getMessage(), request.getDevice().getDeviceIdentification(),
+            log.error(EXCEPTION_WHILE_ADDING_DEVICE, e.getMessage(), request.getDevice().getDeviceIdentification(),
                     organisationIdentification, e);
             this.handleException(e);
         }
@@ -175,7 +174,7 @@ public class DeviceInstallationEndpoint {
     public UpdateDeviceResponse updateDevice(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final UpdateDeviceRequest request) throws OsgpException {
 
-        LOGGER.info("Updating device: {}.", request.getDeviceIdentification());
+        log.info("Updating device: {}.", request.getDeviceIdentification());
 
         try {
             final Ssld device = this.deviceInstallationMapper.map(request.getUpdatedDevice(), Ssld.class);
@@ -186,7 +185,7 @@ public class DeviceInstallationEndpoint {
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
-            LOGGER.error(EXCEPTION_WHILE_UPDATING_DEVICE, e.getMessage(),
+            log.error(EXCEPTION_WHILE_UPDATING_DEVICE, e.getMessage(),
                     request.getUpdatedDevice().getDeviceIdentification(), organisationIdentification, e);
             this.handleException(e);
         }
@@ -195,7 +194,7 @@ public class DeviceInstallationEndpoint {
             this.notificationService.sendNotification(organisationIdentification, request.getDeviceIdentification(),
                     null, null, null, NotificationType.DEVICE_UPDATED);
         } catch (final Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
 
         return new UpdateDeviceResponse();
@@ -207,7 +206,7 @@ public class DeviceInstallationEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final AddLightMeasurementDeviceRequest request) throws OsgpException {
 
-        LOGGER.info("Adding light measurement device: {}.",
+        log.info("Adding light measurement device: {}.",
                 request.getLightMeasurementDevice().getDeviceIdentification());
 
         try {
@@ -218,16 +217,16 @@ public class DeviceInstallationEndpoint {
             this.deviceInstallationService.addLightMeasurementDevice(organisationIdentification, lmd,
                     ownerOrganisationIdentification);
         } catch (final ConstraintViolationException e) {
-            LOGGER.error(EXCEPTION_WHILE_ADDING_DEVICE, e.getMessage(),
+            log.error(EXCEPTION_WHILE_ADDING_DEVICE, e.getMessage(),
                     request.getLightMeasurementDevice().getDeviceIdentification(), organisationIdentification, e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final AssertionError e) {
-            LOGGER.error(EXCEPTION_WHILE_ADDING_DEVICE, e.getMessage(),
+            log.error(EXCEPTION_WHILE_ADDING_DEVICE, e.getMessage(),
                     request.getLightMeasurementDevice().getDeviceIdentification(), organisationIdentification, e);
             throw new TechnicalException(COMPONENT_WS_CORE, e);
         } catch (final Exception e) {
-            LOGGER.error(EXCEPTION_WHILE_ADDING_DEVICE, e.getMessage(),
+            log.error(EXCEPTION_WHILE_ADDING_DEVICE, e.getMessage(),
                     request.getLightMeasurementDevice().getDeviceIdentification(), organisationIdentification, e);
             this.handleException(e);
         }
@@ -241,7 +240,7 @@ public class DeviceInstallationEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final UpdateLightMeasurementDeviceRequest request) throws OsgpException {
 
-        LOGGER.info("Updating light measurement device: {}.", request.getDeviceIdentification());
+        log.info("Updating light measurement device: {}.", request.getDeviceIdentification());
 
         try {
             final LightMeasurementDevice device = this.deviceInstallationMapper
@@ -249,11 +248,11 @@ public class DeviceInstallationEndpoint {
 
             this.deviceInstallationService.updateLightMeasurementDevice(organisationIdentification, device);
         } catch (final ConstraintViolationException e) {
-            LOGGER.error("Exception update Device: {} ", e.getMessage(), e);
+            log.error("Exception update Device: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
-            LOGGER.error(EXCEPTION_WHILE_UPDATING_DEVICE, e.getMessage(),
+            log.error(EXCEPTION_WHILE_UPDATING_DEVICE, e.getMessage(),
                     request.getUpdatedLightMeasurementDevice().getDeviceIdentification(), organisationIdentification,
                     e);
             this.handleException(e);
@@ -263,7 +262,7 @@ public class DeviceInstallationEndpoint {
             this.notificationService.sendNotification(organisationIdentification, request.getDeviceIdentification(),
                     null, null, null, NotificationType.DEVICE_UPDATED);
         } catch (final Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
 
         return new UpdateLightMeasurementDeviceResponse();
@@ -275,7 +274,7 @@ public class DeviceInstallationEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final FindRecentDevicesRequest request) throws OsgpException {
 
-        LOGGER.info("Finding recent devices for organisation: {}.", organisationIdentification);
+        log.info("Finding recent devices for organisation: {}.", organisationIdentification);
 
         final FindRecentDevicesResponse response = new FindRecentDevicesResponse();
 
@@ -304,7 +303,7 @@ public class DeviceInstallationEndpoint {
             @RequestPayload final StartDeviceTestRequest request, @MessagePriority final String messagePriority)
             throws OsgpException {
 
-        LOGGER.info(
+        log.info(
                 "Start Device Test Request received from organisation: {} for device: {} with message priority: {}.",
                 organisationIdentification, request.getDeviceIdentification(), messagePriority);
 
@@ -335,7 +334,7 @@ public class DeviceInstallationEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final StartDeviceTestAsyncRequest request) throws OsgpException {
 
-        LOGGER.info("Get Start Device Test Response received from organisation: {} for device: {}.",
+        log.info("Get Start Device Test Response received from organisation: {} for device: {}.",
                 organisationIdentification, request.getAsyncRequest().getDeviceId());
 
         final StartDeviceTestResponse response = new StartDeviceTestResponse();
@@ -362,7 +361,7 @@ public class DeviceInstallationEndpoint {
             @RequestPayload final StopDeviceTestRequest request, @MessagePriority final String messagePriority)
             throws OsgpException {
 
-        LOGGER.info("Stop Device Test Request received from organisation: {} for device: {} with message priority: {}.",
+        log.info("Stop Device Test Request received from organisation: {} for device: {} with message priority: {}.",
                 organisationIdentification, request.getDeviceIdentification(), messagePriority);
 
         final StopDeviceTestAsyncResponse response = new StopDeviceTestAsyncResponse();
@@ -392,7 +391,7 @@ public class DeviceInstallationEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final StopDeviceTestAsyncRequest request) throws OsgpException {
 
-        LOGGER.info("Get Stop Device Test Response received from organisation: {} for device: {}.",
+        log.info("Get Stop Device Test Response received from organisation: {} for device: {}.",
                 organisationIdentification, request.getAsyncRequest().getDeviceId());
 
         final StopDeviceTestResponse response = new StopDeviceTestResponse();
@@ -415,10 +414,10 @@ public class DeviceInstallationEndpoint {
         // exception,
         // otherwise throw new technical exception.
         if (e instanceof OsgpException) {
-            LOGGER.error("Exception occurred: ", e);
+            log.error("Exception occurred: ", e);
             throw (OsgpException) e;
         } else {
-            LOGGER.error("Exception occurred: ", e);
+            log.error("Exception occurred: ", e);
             throw new TechnicalException(COMPONENT_WS_CORE, e);
         }
     }

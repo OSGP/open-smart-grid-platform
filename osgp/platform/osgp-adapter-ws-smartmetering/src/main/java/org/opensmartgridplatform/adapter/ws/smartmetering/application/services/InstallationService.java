@@ -17,6 +17,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AddSmart
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateSmartMeterRequest;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
@@ -50,15 +51,37 @@ public class InstallationService {
         LOGGER.debug("enqueueAddSmartMeterRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService
+                .getCorrelationId(organisationIdentification, deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.ADD_METER.name(), messagePriority,
                 scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).request(addSmartMeterRequest).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).request(addSmartMeterRequest).build();
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    public String enqueueUpdateSmartMeterRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final UpdateSmartMeterRequest updateSmartMeterRequest,
+            final int messagePriority, final Long scheduleTime) {
+
+        LOGGER.debug("enqueueAddSmartMeterRequest called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService
+                .getCorrelationId(organisationIdentification, deviceIdentification);
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, MessageType.ADD_METER.name(), messagePriority,
+                scheduleTime);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).request(updateSmartMeterRequest).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -67,15 +90,16 @@ public class InstallationService {
 
     /**
      * @param organisationIdentification
-     *            the organisation requesting the coupling of devices
+     *         the organisation requesting the coupling of devices
      * @param deviceIdentification
-     *            the identification of the gateway device
+     *         the identification of the gateway device
      * @param mbusDeviceIdentification
-     *            the identification of the m-bus device
+     *         the identification of the m-bus device
      * @param messagePriority
-     *            the priority of the message
+     *         the priority of the message
      * @param scheduleTime
-     *            the time the request should be carried out
+     *         the time the request should be carried out
+     *
      * @return the correlationUid identifying the operation
      */
     public String enqueueCoupleMbusDeviceRequest(@Identification final String organisationIdentification,
@@ -90,15 +114,16 @@ public class InstallationService {
         LOGGER.debug("enqueueCoupleMbusDeviceRequest called with organisation {}, gateway {} and mbus device {}",
                 organisationIdentification, deviceIdentification, mbusDeviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService
+                .getCorrelationId(organisationIdentification, deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.COUPLE_MBUS_DEVICE.name(), messagePriority,
                 scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).request(new CoupleMbusDeviceRequestData(mbusDeviceIdentification)).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .request(new CoupleMbusDeviceRequestData(mbusDeviceIdentification)).build();
 
         final CoupleMbusDeviceRequestData coupleMbusDeviceRequestData = new CoupleMbusDeviceRequestData(
                 mbusDeviceIdentification);
@@ -111,15 +136,16 @@ public class InstallationService {
 
     /**
      * @param organisationIdentification
-     *            the organisation requesting the decoupling of devices
+     *         the organisation requesting the decoupling of devices
      * @param deviceIdentification
-     *            the identification of the gateway device
+     *         the identification of the gateway device
      * @param mbusDeviceIdentification
-     *            the identification of the m-bus device
+     *         the identification of the m-bus device
      * @param messagePriority
-     *            the priority of the message
+     *         the priority of the message
      * @param scheduleTime
-     *            the time the request should be carried out
+     *         the time the request should be carried out
+     *
      * @return the correlationUid identifying the operation
      */
     public String enqueueDeCoupleMbusDeviceRequest(@Identification final String organisationIdentification,
@@ -133,15 +159,16 @@ public class InstallationService {
         LOGGER.debug("enqueueDeCoupleMbusDeviceRequest called with organisation {}, gateway {} and mbus device {}",
                 organisationIdentification, deviceIdentification, mbusDeviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService
+                .getCorrelationId(organisationIdentification, deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.DE_COUPLE_MBUS_DEVICE.name(), messagePriority,
                 scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).request(new DeCoupleMbusDeviceRequestData(mbusDeviceIdentification)).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .request(new DeCoupleMbusDeviceRequestData(mbusDeviceIdentification)).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -150,13 +177,14 @@ public class InstallationService {
 
     /**
      * @param organisationIdentification
-     *            the organisation requesting the coupling of devices
+     *         the organisation requesting the coupling of devices
      * @param deviceIdentification
-     *            the identification of the gateway device
+     *         the identification of the gateway device
      * @param messagePriority
-     *            the priority of the message
+     *         the priority of the message
      * @param scheduleTime
-     *            the time the request should be carried out
+     *         the time the request should be carried out
+     *
      * @return the correlationUid identifying the operation
      */
     public String enqueueCoupleMbusDeviceByChannelRequest(@Identification final String organisationIdentification,
@@ -171,15 +199,16 @@ public class InstallationService {
         LOGGER.debug("enqueueCoupleMbusDeviceByChannelRequest called with organisation {}, gateway {}",
                 organisationIdentification, deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService
+                .getCorrelationId(organisationIdentification, deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.COUPLE_MBUS_DEVICE_BY_CHANNEL.name(),
                 messagePriority, scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).request(new CoupleMbusDeviceByChannelRequestData(channel)).build();
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).request(new CoupleMbusDeviceByChannelRequestData(channel))
+                .build();
 
         this.smartMeteringRequestMessageSender.send(message);
 

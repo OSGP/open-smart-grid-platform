@@ -55,9 +55,9 @@ public class DeviceMappingTest {
         assertThat(smartMeteringDevice.getProtocolName()).isEqualTo(PROTOCOL_NAME);
         assertThat(smartMeteringDevice.getProtocolVersion()).isEqualTo(PROTOCOL_VERSION);
         assertThat(smartMeteringDevice.getSupplier()).isEqualTo(SUPPLIER);
-        assertThat(smartMeteringDevice.isHLS3Active()).isEqualTo(IS_ACTIVE);
-        assertThat(smartMeteringDevice.isHLS4Active()).isEqualTo(IS_ACTIVE);
-        assertThat(smartMeteringDevice.isHLS5Active()).isEqualTo(IS_ACTIVE);
+        assertThat(smartMeteringDevice.isHls3Active()).isEqualTo(IS_ACTIVE);
+        assertThat(smartMeteringDevice.isHls4Active()).isEqualTo(IS_ACTIVE);
+        assertThat(smartMeteringDevice.isHls5Active()).isEqualTo(IS_ACTIVE);
         assertThat(smartMeteringDevice.getMasterKey()).isEqualTo(KEY);
         assertThat(smartMeteringDevice.getGlobalEncryptionUnicastKey()).isEqualTo(KEY);
         assertThat(smartMeteringDevice.getAuthenticationKey()).isEqualTo(KEY);
@@ -150,9 +150,9 @@ public class DeviceMappingTest {
         smartMeteringDevice.setProtocolName(PROTOCOL_NAME);
         smartMeteringDevice.setProtocolVersion(PROTOCOL_VERSION);
         smartMeteringDevice.setSupplier(SUPPLIER);
-        smartMeteringDevice.setHLS3Active(IS_ACTIVE);
-        smartMeteringDevice.setHLS4Active(IS_ACTIVE);
-        smartMeteringDevice.setHLS5Active(IS_ACTIVE);
+        smartMeteringDevice.setHls3Active(IS_ACTIVE);
+        smartMeteringDevice.setHls4Active(IS_ACTIVE);
+        smartMeteringDevice.setHls5Active(IS_ACTIVE);
         smartMeteringDevice.setMasterKey(KEY);
         smartMeteringDevice.setGlobalEncryptionUnicastKey(KEY);
         smartMeteringDevice.setAuthenticationKey(KEY);

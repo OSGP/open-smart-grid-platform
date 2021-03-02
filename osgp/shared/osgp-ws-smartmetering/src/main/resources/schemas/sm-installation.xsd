@@ -18,13 +18,6 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="AddDeviceAsyncResponse">
-    <xsd:complexType>
-      <xsd:complexContent>
-        <xsd:extension base="common:AsyncResponse"/>
-      </xsd:complexContent>
-    </xsd:complexType>
-  </xsd:element>
 
   <xsd:element name="AddDeviceAsyncRequest">
     <xsd:complexType>
@@ -41,6 +34,48 @@
         <xsd:element name="Description" type="xsd:string"
                      minOccurs="0"/>
       </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="AddDeviceAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="UpdateDeviceRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Device" type="tns:Device"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="UpdateDeviceAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="UpdateDeviceResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType"/>
+        <xsd:element name="Description" type="xsd:string"
+                     minOccurs="0"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="UpdateDeviceAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"/>
+      </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
 
@@ -264,6 +299,15 @@
       <xsd:element name="Mbus_default_key" type="xsd:hexBinary"
                    minOccurs="0"/>
 
+      <xsd:element name="IpAddress" type="xsd:string"
+                   minOccurs="0"/>
+
+      <xsd:element name="CellId" type="xsd:int"
+                   minOccurs="0"/>
+
+      <xsd:element name="BtsId" type="xsd:int"
+                   minOccurs="0"/>
+
     </xsd:sequence>
   </xsd:complexType>
 
@@ -329,8 +373,8 @@
         <xsd:element name="eqId" type="xsd:string"/>
         <xsd:element name="ipAddress" type="xsd:string"/>
         <xsd:element name="mdn" type="xsd:string"/>
-        <xsd:element name="btsId" type="xsd:string"/>
-        <xsd:element name="cellId" type="xsd:string"/>
+        <xsd:element name="btsId" type="xsd:int"/>
+        <xsd:element name="cellId" type="xsd:int"/>
         <xsd:element name="status" type="xsd:string"/>
         <xsd:element name="custCode" type="xsd:string"/>
         <xsd:element name="supplierReferenceId" type="xsd:string"/>

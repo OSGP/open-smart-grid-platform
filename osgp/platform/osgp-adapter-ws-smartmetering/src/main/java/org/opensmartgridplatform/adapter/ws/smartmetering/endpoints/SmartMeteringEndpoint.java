@@ -9,10 +9,7 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.endpoints;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.endpoint.WebserviceEndpoint;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
@@ -22,10 +19,10 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.exceptionhandling.UnknownCorrelationUidException;
+import org.springframework.beans.factory.annotation.Autowired;
 
+@Slf4j
 abstract class SmartMeteringEndpoint implements WebserviceEndpoint {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringEndpoint.class);
 
     @Autowired
     protected ResponseUrlService responseUrlService;
@@ -38,20 +35,21 @@ abstract class SmartMeteringEndpoint implements WebserviceEndpoint {
      * otherwise throw new technical exception.
      *
      * @param e
-     *            cause
+     *         cause
+     *
      * @throws OsgpException
      */
     @Override
     public void handleException(final Exception e) throws OsgpException {
         if (e instanceof OsgpException) {
             if (e instanceof UnknownCorrelationUidException) {
-                LOGGER.warn(e.getMessage());
+                log.warn(e.getMessage());
             } else {
-                LOGGER.error("Exception occurred: ", e);
+                log.error("Exception occurred: ", e);
             }
             throw (OsgpException) e;
         } else {
-            LOGGER.error("Exception occurred: ", e);
+            log.error("Exception occurred: ", e);
             throw new TechnicalException(ComponentType.WS_SMART_METERING, e);
         }
     }
