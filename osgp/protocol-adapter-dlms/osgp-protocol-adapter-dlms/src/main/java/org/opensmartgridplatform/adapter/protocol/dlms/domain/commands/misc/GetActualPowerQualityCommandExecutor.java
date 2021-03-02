@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
@@ -26,14 +24,18 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.ClockAttribute;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.DataAttribute;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.RegisterAttribute;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityValueDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityObjectDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityValueDto;
 import org.springframework.stereotype.Component;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -43,9 +45,6 @@ public class GetActualPowerQualityCommandExecutor
     private static final int CLASS_ID_REGISTER = InterfaceClass.REGISTER.id();
     private static final int CLASS_ID_DATA = InterfaceClass.DATA.id();
     private static final int CLASS_ID_CLOCK = InterfaceClass.CLOCK.id();
-    private static final int ATTRIBUTE_ID_TIME = ClockAttribute.TIME.attributeId();
-    private static final int ATTRIBUTE_ID_VALUE = 2;
-    private static final int ATTRIBUTE_ID_SCALER_UNIT = 3;
 
     private static final String PRIVATE = "PRIVATE";
     private static final String PUBLIC = "PUBLIC";
@@ -62,8 +61,8 @@ public class GetActualPowerQualityCommandExecutor
             final ActualPowerQualityRequestDto actualPowerQualityRequestDto) throws ProtocolAdapterException {
 
         final Profile profile = this.determineProfile(actualPowerQualityRequestDto.getProfileType());
-        final AttributeAddress[] attributeAddresses = this.createAttributeAddresses(profile);
 
+        final AttributeAddress[] attributeAddresses = profile.getAttributeAddresses().toArray(new AttributeAddress[0]);
         conn.getDlmsMessageListener()
                 .setDescription("GetActualPowerQuality retrieve attributes: "
                         + JdlmsObjectToStringUtil.describeAttributes(attributeAddresses));
@@ -138,33 +137,6 @@ public class GetActualPowerQualityCommandExecutor
         return new ActualPowerQualityDataDto(powerQualityObjects, powerQualityValues);
     }
 
-    private AttributeAddress[] createAttributeAddresses(final Profile profile) {
-        final List<AttributeAddress> attributeAddresses = new ArrayList<>();
-        for (final PowerQualityObjectMetadata metadata : profile.getMetadatas()) {
-            attributeAddresses
-                    .add(new AttributeAddress(metadata.getClassId(), metadata.getObisCode(), this.getAttributeId(metadata)));
-            if (this.getAttributeIdScalarUnit(metadata) != null) {
-                attributeAddresses.add(new AttributeAddress(metadata.getClassId(), metadata.getObisCode(),
-                        this.getAttributeIdScalarUnit(metadata)));
-            }
-        }
-        return attributeAddresses.toArray(new AttributeAddress[0]);
-    }
-
-    private Integer getAttributeIdScalarUnit(final PowerQualityObjectMetadata metadata) {
-        if (metadata.getClassId() != CLASS_ID_REGISTER) {
-            return null;
-        }
-        return ATTRIBUTE_ID_SCALER_UNIT;
-    }
-
-    private int getAttributeId(final PowerQualityObjectMetadata metadata) {
-        if (metadata.getClassId() == CLASS_ID_CLOCK) {
-            return ATTRIBUTE_ID_TIME;
-        }
-        return ATTRIBUTE_ID_VALUE;
-    }
-
     private Profile determineProfile(final String profileType) {
 
         try {
@@ -177,13 +149,13 @@ public class GetActualPowerQualityCommandExecutor
 
     protected static List<PowerQualityObjectMetadata> getMetadatasPublic() {
         return Stream.of(PowerQualityObjectMetadata.values())
-                .filter(e -> PUBLIC.equals(e.getProfileName()) || e.getClassId()==CLASS_ID_CLOCK)
+                .filter(e -> PUBLIC.equals(e.getProfileName()) || e.getClassId() == CLASS_ID_CLOCK)
                 .collect(Collectors.toList());
     }
 
     protected static List<PowerQualityObjectMetadata> getMetadatasPrivate() {
         return Stream.of(PowerQualityObjectMetadata.values())
-                .filter(e -> PRIVATE.equals(e.getProfileName()) || e.getClassId()==CLASS_ID_CLOCK)
+                .filter(e -> PRIVATE.equals(e.getProfileName()) || e.getClassId() == CLASS_ID_CLOCK)
                 .collect(Collectors.toList());
     }
 
@@ -244,6 +216,24 @@ public class GetActualPowerQualityCommandExecutor
             this.profileName = profileName;
         }
 
+        public List<AttributeAddress> getAttributeAddresses() {
+            final List<AttributeAddress> attributeAddresses = new ArrayList<>();
+            if (this.classId == InterfaceClass.CLOCK.id()) {
+                attributeAddresses.add(this.getAttributeAddress(ClockAttribute.TIME.attributeId()));
+            } else if (this.classId == InterfaceClass.DATA.id()) {
+                attributeAddresses.add(this.getAttributeAddress(DataAttribute.VALUE.attributeId()));
+            } else if (this.classId == InterfaceClass.REGISTER.id()) {
+                attributeAddresses.add(this.getAttributeAddress(RegisterAttribute.VALUE.attributeId()));
+                attributeAddresses.add(this.getAttributeAddress(RegisterAttribute.SCALER_UNIT.attributeId()));
+            } else {
+                log.warn("No attribute addresses returned for interface class of {}", this.name());
+            }
+            return attributeAddresses;
+        }
+
+        public AttributeAddress getAttributeAddress(final int attributeId) {
+            return new AttributeAddress(this.classId, this.obisCode, attributeId);
+        }
     }
 
     private enum Profile {
@@ -259,6 +249,12 @@ public class GetActualPowerQualityCommandExecutor
 
         public List<PowerQualityObjectMetadata> getMetadatas() {
             return this.metadatas;
+        }
+
+        public List<AttributeAddress> getAttributeAddresses() {
+            return this.metadatas.stream()
+                    .flatMap(metadata -> metadata.getAttributeAddresses().stream())
+                    .collect(Collectors.toList());
         }
     }
 }

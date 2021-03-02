@@ -186,8 +186,9 @@ public class DlmsHelper {
     private List<AttributeAddress[]> getMaximizedSubsetsOfParams(final AttributeAddress[] attributeAddresses) {
         int chunk = MAX_CONCURRENT_ATTRIBUTE_ADDRESSES;
         List<AttributeAddress[]> maximizedCurrentSets = new ArrayList<>();
-        for(int i=0;i<attributeAddresses.length;i+=chunk){
-            maximizedCurrentSets.add(Arrays.copyOfRange(attributeAddresses, i, Math.min(attributeAddresses.length,i+chunk)));
+        for (int i = 0; i < attributeAddresses.length; i += chunk) {
+            maximizedCurrentSets
+                    .add(Arrays.copyOfRange(attributeAddresses, i, Math.min(attributeAddresses.length, i + chunk)));
         }
         return maximizedCurrentSets;
     }

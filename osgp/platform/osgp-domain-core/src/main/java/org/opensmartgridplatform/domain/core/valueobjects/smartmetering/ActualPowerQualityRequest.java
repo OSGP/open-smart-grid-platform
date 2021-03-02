@@ -8,9 +8,6 @@
  */
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
-import java.io.Serializable;
-import java.util.Objects;
-
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 

@@ -27,8 +27,8 @@ import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpUnitType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityResponse;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PowerQualityValue;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PowerQualityObject;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PowerQualityValue;
 
 public class ActualPowerQualityResponseMappingTest {
 
@@ -90,9 +90,9 @@ public class ActualPowerQualityResponseMappingTest {
 
         assertThat(actualPowerQualityObjects.size()).as(MAPPED_LIST_SIZE_MESSAGE).isEqualTo(sourcePowerQualityObjects.size());
 
-        IntStream.range(0, actualPowerQualityObjects.size())
-                .forEach(i -> this.assertPowerQualityObject(actualPowerQualityObjects.get(i),
-                        sourcePowerQualityObjects.get(i)));
+        for (int i = 0; i < actualPowerQualityObjects.size(); i++) {
+            this.assertPowerQualityObject(actualPowerQualityObjects.get(i), sourcePowerQualityObjects.get(i));
+        }
     }
 
     private void assertPowerQualityValues(
@@ -131,7 +131,7 @@ public class ActualPowerQualityResponseMappingTest {
     }
 
     private List<PowerQualityValue> makePowerQualityValue(final Serializable... values) {
-        return Arrays.stream(values).map(value -> new PowerQualityValue(value)).collect(Collectors.toList());
+        return Arrays.stream(values).map(PowerQualityValue::new).collect(Collectors.toList());
     }
 
 }

@@ -108,19 +108,18 @@ public class GetActualPowerQualityCommandExecutorTest {
         final GetActualPowerQualityCommandExecutor executor =
                 new GetActualPowerQualityCommandExecutor(this.dlmsHelper);
 
-
         final ActualPowerQualityResponseDto responseDto = executor.execute(this.conn, this.dlmsDevice,
                 this.actualPowerQualityRequestDto);
 
-        assertThat(responseDto.getActualPowerQualityData().getPowerQualityValues().size()).isEqualTo(metadatas.size());
-        assertThat(responseDto.getActualPowerQualityData().getPowerQualityObjects().size()).isEqualTo(metadatas.size());
+        assertThat(responseDto.getActualPowerQualityData().getPowerQualityValues()).hasSize(metadatas.size());
+        assertThat(responseDto.getActualPowerQualityData().getPowerQualityObjects()).hasSize(metadatas.size());
 
         for (int i = 0; i < metadatas.size(); i++) {
             final GetActualPowerQualityCommandExecutor.PowerQualityObjectMetadata metadata = metadatas.get(i);
 
-            Serializable expectedValue = getExpectedValue(i, metadata);
-            String expectedUnit = getExpectedUnit(metadata);
-            
+            Serializable expectedValue = this.getExpectedValue(i, metadata);
+            String expectedUnit = this.getExpectedUnit(metadata);
+
             final PowerQualityObjectDto powerQualityObjectDto = responseDto.getActualPowerQualityData().getPowerQualityObjects().get(i);
             assertThat(powerQualityObjectDto.getName()).isEqualTo(metadata.name());
             assertThat(powerQualityObjectDto.getUnit()).isEqualTo(expectedUnit);
@@ -130,7 +129,7 @@ public class GetActualPowerQualityCommandExecutorTest {
         }
     }
 
-    private Serializable getExpectedValue(int i,
+    private Serializable getExpectedValue(final int i,
             final GetActualPowerQualityCommandExecutor.PowerQualityObjectMetadata metadata) {
         switch (metadata.getClassId()) {
         case CLASS_ID_CLOCK:
@@ -155,7 +154,7 @@ public class GetActualPowerQualityCommandExecutorTest {
 
     private List<GetResult> generateMockedResult(
             final List<GetActualPowerQualityCommandExecutor.PowerQualityObjectMetadata> metadatas, final AccessResultCode resultCode) {
-        return generateMockedResult(metadatas, resultCode, DataObject.newDateTimeData(new CosemDateTime(2018, 12,
+        return this.generateMockedResult(metadatas, resultCode, DataObject.newDateTimeData(new CosemDateTime(2018, 12,
                 31, 23, 0, 0,
                 0)));
     }
