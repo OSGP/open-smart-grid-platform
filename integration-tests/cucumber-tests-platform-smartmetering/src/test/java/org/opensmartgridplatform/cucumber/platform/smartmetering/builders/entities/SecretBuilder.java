@@ -19,6 +19,7 @@ import org.opensmartgridplatform.cucumber.platform.core.builders.CucumberBuilder
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptedSecret;
+import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptionKeyReference;
 import org.opensmartgridplatform.secretmanagement.application.domain.SecretStatus;
 import org.opensmartgridplatform.secretmanagement.application.domain.SecretType;
 
@@ -31,8 +32,9 @@ public class SecretBuilder implements CucumberBuilder<DbEncryptedSecret> {
     private SecretStatus status;
     private String deviceIdentification;
     private Date creationTime;
+    private DbEncryptionKeyReference encryptionKeyReference;
 
-    public SecretBuilder setSecretType(SecretType secretType) {
+    public SecretBuilder withSecretType(SecretType secretType) {
         this.secretType = secretType;
         return this;
     }
@@ -41,7 +43,7 @@ public class SecretBuilder implements CucumberBuilder<DbEncryptedSecret> {
         return this.secretType;
     }
 
-    public SecretBuilder setSecurityKeyType(final SecurityKeyType securityKeyType) {
+    public SecretBuilder withSecurityKeyType(final SecurityKeyType securityKeyType) {
         this.secretType = SecretType.valueOf(securityKeyType.toSecretType().value());
         return this;
     }
@@ -51,28 +53,33 @@ public class SecretBuilder implements CucumberBuilder<DbEncryptedSecret> {
                 org.opensmartgridplatform.ws.schema.core.secret.management.SecretType.valueOf(this.secretType.name()));
     }
 
-    public SecretBuilder setKey(final String key) {
+    public SecretBuilder withKey(final String key) {
         this.key = key;
         return this;
     }
 
-    public SecretBuilder setDlmsDevice(final DlmsDevice dlmsDevice) {
+    public SecretBuilder withDlmsDevice(final DlmsDevice dlmsDevice) {
         this.deviceIdentification = dlmsDevice.getDeviceIdentification();
         return this;
     }
 
-    public SecretBuilder setDeviceIdentification(final String deviceIdentification) {
+    public SecretBuilder withDeviceIdentification(final String deviceIdentification) {
         this.deviceIdentification = deviceIdentification;
         return this;
     }
 
-    public SecretBuilder setSecretStatus(final SecretStatus status) {
+    public SecretBuilder withSecretStatus(final SecretStatus status) {
         this.status = status;
         return this;
     }
 
-    public SecretBuilder setCreationTime(final Date creationTime) {
+    public SecretBuilder withCreationTime(final Date creationTime) {
         this.creationTime = creationTime;
+        return this;
+    }
+
+    public SecretBuilder withEncryptionKeyReference(DbEncryptionKeyReference encryptionKeyReference) {
+        this.encryptionKeyReference = encryptionKeyReference;
         return this;
     }
 
@@ -80,32 +87,32 @@ public class SecretBuilder implements CucumberBuilder<DbEncryptedSecret> {
     public SecretBuilder withSettings(final Map<String, String> inputSettings) {
         if (SecurityKeyType.E_METER_AUTHENTICATION == this.getSecurityKeyType() && inputSettings
                 .containsKey(PlatformSmartmeteringKeys.KEY_DEVICE_AUTHENTICATIONKEY)) {
-            this.setKey(getString(inputSettings, PlatformSmartmeteringKeys.KEY_DEVICE_ENCRYPTIONKEY));
+            this.withKey(getString(inputSettings, PlatformSmartmeteringKeys.KEY_DEVICE_ENCRYPTIONKEY));
         }
 
         if (SecurityKeyType.E_METER_MASTER == this.getSecurityKeyType() && inputSettings
                 .containsKey(PlatformSmartmeteringKeys.KEY_DEVICE_MASTERKEY)) {
-            this.setKey(getString(inputSettings, PlatformSmartmeteringKeys.KEY_DEVICE_MASTERKEY));
+            this.withKey(getString(inputSettings, PlatformSmartmeteringKeys.KEY_DEVICE_MASTERKEY));
         }
 
         if (SecurityKeyType.E_METER_ENCRYPTION == this.getSecurityKeyType() && inputSettings
                 .containsKey(PlatformSmartmeteringKeys.KEY_DEVICE_ENCRYPTIONKEY)) {
-            this.setKey(getString(inputSettings, PlatformSmartmeteringKeys.KEY_DEVICE_ENCRYPTIONKEY));
+            this.withKey(getString(inputSettings, PlatformSmartmeteringKeys.KEY_DEVICE_ENCRYPTIONKEY));
         }
 
         if (SecurityKeyType.G_METER_MASTER == this.getSecurityKeyType() && inputSettings
                 .containsKey(PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY)) {
-            this.setKey(getString(inputSettings, PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY));
+            this.withKey(getString(inputSettings, PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY));
         }
 
         if (SecurityKeyType.G_METER_ENCRYPTION == this.getSecurityKeyType() && inputSettings
                 .containsKey(PlatformSmartmeteringKeys.MBUS_USER_KEY)) {
-            this.setKey(getString(inputSettings, PlatformSmartmeteringKeys.MBUS_USER_KEY));
+            this.withKey(getString(inputSettings, PlatformSmartmeteringKeys.MBUS_USER_KEY));
         }
 
         if (SecurityKeyType.PASSWORD == this.getSecurityKeyType() && inputSettings
                 .containsKey(PlatformSmartmeteringKeys.PASSWORD)) {
-            this.setKey(getString(inputSettings, PlatformSmartmeteringKeys.PASSWORD));
+            this.withKey(getString(inputSettings, PlatformSmartmeteringKeys.PASSWORD));
         }
 
         return this;
@@ -119,6 +126,7 @@ public class SecretBuilder implements CucumberBuilder<DbEncryptedSecret> {
         securityKey.setEncodedSecret(this.key);
         securityKey.setSecretStatus(this.status == null ? SecretStatus.ACTIVE : this.status);
         securityKey.setCreationTime(this.creationTime == null ? new Date() : this.creationTime);
+        securityKey.setEncryptionKeyReference(this.encryptionKeyReference);
         return securityKey;
     }
 

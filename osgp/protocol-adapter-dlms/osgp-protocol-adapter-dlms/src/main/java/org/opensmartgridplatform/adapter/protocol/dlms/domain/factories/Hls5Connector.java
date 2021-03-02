@@ -48,7 +48,7 @@ public class Hls5Connector extends SecureDlmsConnector {
 
     public Hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator, final int responseTimeout,
             final int logicalDeviceAddress, final DlmsDeviceAssociation deviceAssociation,
-            SecretManagementService secretManagementService) {
+            final SecretManagementService secretManagementService) {
         super(responseTimeout, logicalDeviceAddress, deviceAssociation);
         this.recoverKeyProcessInitiator = recoverKeyProcessInitiator;
         this.secretManagementService = secretManagementService;

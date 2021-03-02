@@ -126,17 +126,17 @@ public class DlmsDeviceSteps {
     private final Map<String, SecurityKeyType> securityKeyTypesByInputName = new HashMap<>();
 
     private final List<SecretBuilder> defaultSecretBuilders = Arrays
-            .asList(new SecretBuilder().setSecurityKeyType(E_METER_AUTHENTICATION)
-                                       .setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_A_DB),
-                    new SecretBuilder().setSecurityKeyType(E_METER_ENCRYPTION)
-                                       .setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_E_DB),
-                    new SecretBuilder().setSecurityKeyType(E_METER_MASTER)
-                                       .setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_M_DB),
-                    new SecretBuilder().setSecurityKeyType(PASSWORD).setKey(PlatformSmartmeteringDefaults.PASSWORD),
-                    new SecretBuilder().setSecurityKeyType(G_METER_ENCRYPTION)
-                                       .setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_G_ENCRYPTION),
-                    new SecretBuilder().setSecurityKeyType(G_METER_MASTER)
-                                       .setKey(PlatformSmartmeteringDefaults.SECURITY_KEY_G_MASTER));
+            .asList(new SecretBuilder().withSecurityKeyType(E_METER_AUTHENTICATION)
+                                       .withKey(PlatformSmartmeteringDefaults.SECURITY_KEY_A_DB),
+                    new SecretBuilder().withSecurityKeyType(E_METER_ENCRYPTION)
+                                       .withKey(PlatformSmartmeteringDefaults.SECURITY_KEY_E_DB),
+                    new SecretBuilder().withSecurityKeyType(E_METER_MASTER)
+                                       .withKey(PlatformSmartmeteringDefaults.SECURITY_KEY_M_DB),
+                    new SecretBuilder().withSecurityKeyType(PASSWORD).withKey(PlatformSmartmeteringDefaults.PASSWORD),
+                    new SecretBuilder().withSecurityKeyType(G_METER_ENCRYPTION)
+                                       .withKey(PlatformSmartmeteringDefaults.SECURITY_KEY_G_ENCRYPTION),
+                    new SecretBuilder().withSecurityKeyType(G_METER_MASTER)
+                                       .withKey(PlatformSmartmeteringDefaults.SECURITY_KEY_G_MASTER));
 
     public DlmsDeviceSteps() {
         this.securityKeyTypesByInputName
@@ -269,7 +269,7 @@ public class DlmsDeviceSteps {
     }
 
     @Then("^the keys are not changed in the secret_management database encrypted_secret table$")
-    public void theKeysAreNotChangedInTheOsgpAdapterProtocolDlmsDatabaseSecurityKeyTable() {
+    public void theKeysAreNotChangedInTheSecretManagementDatabaseEncryptedSecretTable() {
         final String keyDeviceIdentification = PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION;
         final String deviceIdentification = (String) ScenarioContext.current().get(keyDeviceIdentification);
         assertThat(deviceIdentification)
@@ -541,11 +541,9 @@ public class DlmsDeviceSteps {
         final DbEncryptionKeyReference encryptionKeyRef = this.encryptionKeyRepository
                 .findByTypeAndValid(EncryptionProviderType.JRE, new Date()).iterator().next();
         secretBuilders.stream().filter(Objects::nonNull)
-                      .map(builder -> builder.setDeviceIdentification(dlmsDevice.getDeviceIdentification()))
-                      .map(SecretBuilder::build).map(key -> {
-            key.setEncryptionKeyReference(encryptionKeyRef);
-            return key;
-        }).forEach(this.encryptedSecretRepository::save);
+                      .map(builder -> builder.withDeviceIdentification(dlmsDevice.getDeviceIdentification())
+                                             .withEncryptionKeyReference(encryptionKeyRef)).map(SecretBuilder::build)
+                      .forEach(this.encryptedSecretRepository::save);
     }
 
     private SecretBuilder getDefaultSecretBuilder(SecurityKeyType keyType) {
@@ -566,7 +564,7 @@ public class DlmsDeviceSteps {
         if (inputSettings.containsKey(keyTypeInputName)) {
             final String inputKey = inputSettings.get(keyTypeInputName);
             if (inputKey != null && !inputKey.trim().isEmpty()) {
-                return new SecretBuilder().setSecurityKeyType(keyType).setKey(inputKey);
+                return new SecretBuilder().withSecurityKeyType(keyType).withKey(inputKey);
             } else {    //secret explicitly set to empty; return null to prevent secret storing
                 return null;
             }
@@ -630,10 +628,10 @@ public class DlmsDeviceSteps {
                 .findByTypeAndValid(EncryptionProviderType.JRE, new Date()).iterator().next();
         for (int i = 0; i < secretTypesToCreate.size(); i++) {
             if (inputSettings.containsKey(keyTypeInputNames.get(i))) {
-                final DbEncryptedSecret secret = new SecretBuilder().setDlmsDevice(new DlmsDevice(deviceIdentification))
-                                                                    .setSecretType(secretTypesToCreate.get(i))
-                                                                    .setKey(inputSettings.get(keyTypeInputNames.get(i)))
-                                                                    .setSecretStatus(SecretStatus.NEW).build();
+                final DbEncryptedSecret secret = new SecretBuilder()
+                        .withDlmsDevice(new DlmsDevice(deviceIdentification)).withSecretType(secretTypesToCreate.get(i))
+                        .withKey(inputSettings.get(keyTypeInputNames.get(i))).withSecretStatus(SecretStatus.NEW)
+                        .build();
                 secret.setEncryptionKeyReference(encryptionKeyRef);
                 this.encryptedSecretRepository.save(secret);
             }

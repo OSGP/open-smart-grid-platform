@@ -46,7 +46,7 @@ public class RecoverKeyProcess implements Runnable {
 
     public RecoverKeyProcess(final DomainHelperService domainHelperService, final int responseTimeout,
             final int logicalDeviceAddress, final DlmsDeviceAssociation deviceAssociation,
-            final Hls5Connector hls5Connector, SecretManagementService secretManagementService) {
+            final Hls5Connector hls5Connector, final SecretManagementService secretManagementService) {
         this.domainHelperService = domainHelperService;
         this.responseTimeout = responseTimeout;
         this.logicalDeviceAddress = logicalDeviceAddress;
