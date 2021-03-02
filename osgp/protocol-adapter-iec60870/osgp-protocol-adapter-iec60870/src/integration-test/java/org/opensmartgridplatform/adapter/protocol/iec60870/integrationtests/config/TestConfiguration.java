@@ -37,6 +37,7 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asduh
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asduhandlers.ShortFloatWithTime56MeasurementAsduHandler;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asduhandlers.SinglePointInformationWithTimeTagAsduHandler;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asduhandlers.SinglePointWithQualityAsduHandler;
+import org.opensmartgridplatform.adapter.protocol.iec60870.infra.CorrelationUidPerDevice;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.networking.Iec60870Client;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderTimestampService;
@@ -176,6 +177,11 @@ public class TestConfiguration {
     @Bean
     public GeneralInterrogationService generalInterrogationService() {
         return new GeneralInterrogationService();
+    }
+
+    @Bean
+    public CorrelationUidPerDevice correlationUidPerDevice() {
+        return new CorrelationUidPerDevice();
     }
 
 }

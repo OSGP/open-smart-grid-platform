@@ -15,6 +15,7 @@ import io.cucumber.junit.CucumberOptions.SnippetType;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(plugin = { "pretty" },
+        tags = { "not @Skip" },
         strict = true,
         features = "src/integration-test/resources/features/",
         snippets = SnippetType.CAMELCASE)
