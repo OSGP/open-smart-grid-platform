@@ -77,7 +77,7 @@ public class InstallationService {
                 .getCorrelationId(organisationIdentification, deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, MessageType.ADD_METER.name(), messagePriority,
+                organisationIdentification, correlationUid, MessageType.UPDATE_METER.name(), messagePriority,
                 scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()

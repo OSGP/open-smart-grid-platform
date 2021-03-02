@@ -23,9 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-/**
- * Class for processing smart metering default response messages
- */
 @Component
 public class AddMeterResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
@@ -50,8 +47,8 @@ public class AddMeterResponseMessageProcessor extends OsgpCoreResponseMessagePro
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessage responseMessage, final OsgpException osgpException) {
 
-        this.installationService.handleAddMeterResponse(deviceMessageMetadata, responseMessage.getResult(),
-                osgpException);
+        this.installationService
+                .handleAddMeterResponse(deviceMessageMetadata, responseMessage.getResult(), osgpException);
     }
 
     @Override

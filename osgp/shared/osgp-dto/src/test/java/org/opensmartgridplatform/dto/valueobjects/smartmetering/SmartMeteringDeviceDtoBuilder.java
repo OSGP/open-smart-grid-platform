@@ -1,15 +1,18 @@
 /**
  * Copyright 2018 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
 import org.opensmartgridplatform.dto.testutil.DateBuilder;
 
-/** Creates instances, for testing purposes only. */
+/**
+ * Creates instances, for testing purposes only.
+ */
 public class SmartMeteringDeviceDtoBuilder {
     private static int counter = 0;
 
@@ -25,10 +28,10 @@ public class SmartMeteringDeviceDtoBuilder {
         dto.setProtocolName("protocolName" + counter);
         dto.setProtocolVersion("protocolVersion" + counter);
         dto.setGlobalEncryptionUnicastKey(("globalEncryptionUnicastKey" + counter).getBytes());
-        dto.setHLS3Active(true);
-        dto.setHLS4Active(true);
-        dto.setHLS5Active(true);
-        dto.setICCId("ICCId" + counter);
+        dto.setHls3Active(true);
+        dto.setHls4Active(true);
+        dto.setHls5Active(true);
+        dto.setIccId("ICCId" + counter);
         dto.setMasterKey(("masterKey" + counter).getBytes());
         dto.setMbusIdentificationNumber(1000L + counter);
         dto.setMbusManufacturerIdentification("mbusManufacturerIdentification" + counter);
@@ -36,6 +39,9 @@ public class SmartMeteringDeviceDtoBuilder {
         dto.setMbusDeviceTypeIdentification((short) (100 + counter));
         dto.setMbusDefaultKey(("defaultKey" + counter).getBytes());
         dto.setSupplier("supplier" + counter);
+        dto.setIpAddress("127.0.0.1");
+        dto.setBtsId(10);
+        dto.setCellId(1);
         return dto;
     }
 }

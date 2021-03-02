@@ -57,8 +57,8 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 @Endpoint
 public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
-    private static final String SMARTMETER_INSTALLATION_NAMESPACE = "http://www.opensmartgridplatform"
-            + ".org/schemas/smartmetering/sm-installation/2014/10";
+    private static final String SMARTMETER_INSTALLATION_NAMESPACE =
+            "http://www.opensmartgridplatform" + ".org/schemas/smartmetering/sm-installation/2014/10";
 
     @Autowired
     private InstallationService installationService;
@@ -142,7 +142,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             @RequestPayload final UpdateDeviceRequest request, @MessagePriority final String messagePriority,
             @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
 
-        log.info("Incoming AddDeviceRequest for meter: {}.", request.getDevice().getDeviceIdentification());
+        log.info("Incoming UpdateDeviceRequest for meter: {}.", request.getDevice().getDeviceIdentification());
 
         UpdateDeviceAsyncResponse response = null;
         try {

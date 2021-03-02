@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.shared.infra.jms;
 
 public enum MessageType {
+    // keep MessageType in alphabetical order.
     ADD_DEVICE,
     ADD_METER,
     CLEAR_ALARM_REGISTER,
@@ -98,6 +99,7 @@ public enum MessageType {
     UPDATE_DEVICE_CDMA_SETTINGS,
     UPDATE_DEVICE_SSL_CERTIFICATION,
     UPDATE_FIRMWARE,
-    UPDATE_KEY
+    UPDATE_KEY,
+    UPDATE_METER;
     // keep MessageType in alphabetical order.
 }

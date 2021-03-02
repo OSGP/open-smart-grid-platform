@@ -225,7 +225,7 @@
         </xsd:simpleType>
       </xsd:element>
 
-      <xsd:element name="ICC_id" minOccurs="0">
+      <xsd:element name="icc_id" minOccurs="0">
         <xsd:simpleType>
           <xsd:restriction base="tns:AlphaNumericType">
             <xsd:maxLength value="20"/>
@@ -257,11 +257,11 @@
         </xsd:simpleType>
       </xsd:element>
 
-      <xsd:element name="HLS3_active" type="xsd:boolean"
+      <xsd:element name="hls3_active" type="xsd:boolean"
                    minOccurs="0"/>
-      <xsd:element name="HLS4_active" type="xsd:boolean"
+      <xsd:element name="hls4_active" type="xsd:boolean"
                    minOccurs="0"/>
-      <xsd:element name="HLS5_active" type="xsd:boolean"
+      <xsd:element name="hls5_active" type="xsd:boolean"
                    minOccurs="0"/>
       <!-- no type restriction for unencrypted keys for now -->
       <xsd:element name="Master_key" type="xsd:hexBinary"
@@ -299,13 +299,13 @@
       <xsd:element name="Mbus_default_key" type="xsd:hexBinary"
                    minOccurs="0"/>
 
-      <xsd:element name="IpAddress" type="xsd:string"
+      <xsd:element name="ipAddress" type="xsd:string"
                    minOccurs="0"/>
 
-      <xsd:element name="CellId" type="xsd:int"
+      <xsd:element name="cellId" type="xsd:int"
                    minOccurs="0"/>
 
-      <xsd:element name="BtsId" type="xsd:int"
+      <xsd:element name="btsId" type="xsd:int"
                    minOccurs="0"/>
 
     </xsd:sequence>

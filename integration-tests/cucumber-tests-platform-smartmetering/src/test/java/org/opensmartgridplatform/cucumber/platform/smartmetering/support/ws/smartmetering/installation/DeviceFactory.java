@@ -41,15 +41,18 @@ public class DeviceFactory {
 
         device.setCommunicationMethod(settings.get(PlatformKeys.KEY_DEVICE_COMMUNICATIONMETHOD));
         device.setCommunicationProvider(settings.get(PlatformKeys.KEY_DEVICE_COMMUNICATIONPROVIDER));
-        device.setICCId(settings.get(PlatformKeys.KEY_DEVICE_ICCID));
+        device.setIccId(settings.get(PlatformKeys.KEY_DEVICE_ICCID));
 
         device.setProtocolName(settings.get(PlatformKeys.KEY_DEVICE_PROTOCOL_NAME));
         device.setProtocolVersion(settings.get(PlatformKeys.KEY_DEVICE_PROTOCOL_VERSION));
         device.setSupplier(settings.get(PlatformKeys.KEY_DEVICE_SUPPLIER));
 
-        device.setHLS3Active(getBoolean(settings, PlatformKeys.KEY_DEVICE_HLS3ACTIVE, PlatformDefaults.DLMS_DEFAULT_HSL3_ACTIVE));
-        device.setHLS4Active(getBoolean(settings, PlatformKeys.KEY_DEVICE_HLS4ACTIVE, PlatformDefaults.DLMS_DEFAULT_HSL4_ACTIVE));
-        device.setHLS5Active(getBoolean(settings, PlatformKeys.KEY_DEVICE_HLS5ACTIVE, PlatformDefaults.DLMS_DEFAULT_HSL5_ACTIVE));
+        device.setHls3Active(getBoolean(settings, PlatformKeys.KEY_DEVICE_HLS3ACTIVE,
+                PlatformDefaults.DLMS_DEFAULT_HSL3_ACTIVE));
+        device.setHls4Active(getBoolean(settings, PlatformKeys.KEY_DEVICE_HLS4ACTIVE,
+                PlatformDefaults.DLMS_DEFAULT_HSL4_ACTIVE));
+        device.setHls5Active(getBoolean(settings, PlatformKeys.KEY_DEVICE_HLS5ACTIVE,
+                PlatformDefaults.DLMS_DEFAULT_HSL5_ACTIVE));
 
         device.setMasterKey(RequestFactoryHelper.hexDecodeDeviceKey(settings.get(PlatformKeys.KEY_DEVICE_MASTERKEY),
                 PlatformKeys.KEY_DEVICE_MASTERKEY));

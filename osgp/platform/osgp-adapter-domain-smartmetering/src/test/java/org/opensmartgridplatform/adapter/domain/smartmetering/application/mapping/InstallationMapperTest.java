@@ -31,7 +31,7 @@ public class InstallationMapperTest {
         source.setDeviceType("typeA");
         source.setCommunicationMethod("skype");
         source.setCommunicationProvider("theInternet");
-        source.setICCId("value");
+        source.setIccId("value");
         source.setProtocolName("protocolName");
         source.setProtocolVersion("latestVersion");
         source.setMasterKey("masterKey".getBytes());
@@ -73,7 +73,7 @@ public class InstallationMapperTest {
         smartMeteringDevice.setDeviceType("typeA");
         smartMeteringDevice.setCommunicationMethod("skype");
         smartMeteringDevice.setCommunicationProvider("theInternet");
-        smartMeteringDevice.setICCId("value");
+        smartMeteringDevice.setIccId("value");
         smartMeteringDevice.setProtocolName("protocolName");
         smartMeteringDevice.setProtocolVersion("latestVersion");
         smartMeteringDevice.setMasterKey("masterKey".getBytes());
@@ -91,15 +91,13 @@ public class InstallationMapperTest {
         smartMeteringDevice.setMbusDefaultKey("mbusDefaultKey".getBytes());
 
         final SmartMeteringDeviceDto smartMeteringDeviceDto = this.mapperFactory.getMapperFacade()
-                .map(smartMeteringDevice, SmartMeteringDeviceDto.class);
+                                                                                .map(smartMeteringDevice,
+                                                                                        SmartMeteringDeviceDto.class);
 
         assertThat(smartMeteringDevice).isNotNull();
         assertThat(smartMeteringDeviceDto).isNotNull();
-        assertThat(smartMeteringDeviceDto).isEqualToIgnoringGivenFields(smartMeteringDevice, "hls3Active", "hls4Active",
-                "hls5Active");
-        assertThat(smartMeteringDeviceDto.isHLS3Active()).isEqualTo(smartMeteringDevice.isHls3Active());
-        assertThat(smartMeteringDeviceDto.isHLS4Active()).isEqualTo(smartMeteringDevice.isHls4Active());
-        assertThat(smartMeteringDeviceDto.isHLS5Active()).isEqualTo(smartMeteringDevice.isHls5Active());
+        assertThat(smartMeteringDeviceDto)
+                .isEqualToIgnoringGivenFields(smartMeteringDevice, "ipAddress", "btsId", "cellId");
 
     }
 
