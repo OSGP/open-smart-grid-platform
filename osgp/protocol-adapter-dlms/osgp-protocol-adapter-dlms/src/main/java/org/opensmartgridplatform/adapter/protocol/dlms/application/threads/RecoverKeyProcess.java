@@ -14,6 +14,7 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Se
 import java.io.IOException;
 import java.util.Arrays;
 
+import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.DlmsConnection;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
@@ -21,12 +22,9 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsDeviceAssociation;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Hls5Connector;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.RecoverKeyException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Slf4j
 public class RecoverKeyProcess implements Runnable {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(RecoverKeyProcess.class);
 
     private final DomainHelperService domainHelperService;
 
@@ -66,16 +64,16 @@ public class RecoverKeyProcess implements Runnable {
     @Override
     public void run() {
         this.checkState();
-        LOGGER.info("Attempting key recovery for device {}", this.deviceIdentification);
+        log.info("Attempting key recovery for device {}", this.deviceIdentification);
 
         final DlmsDevice device = this.findDevice();
         if (!this.secretManagementService.hasNewSecretOfType(this.deviceIdentification, E_METER_AUTHENTICATION)) {
-            LOGGER.error(
+            log.error(
                     "Could not recover keys: device has no new authorisation key registered in secret-mgmt module");
             return;
         }
         if (!this.canConnectUsingNewKeys(device)) {
-            LOGGER.error("Could not recover keys: could not connect to device using new keys");
+            log.error("Could not recover keys: could not connect to device using new keys");
             return;
         }
 
@@ -110,14 +108,14 @@ public class RecoverKeyProcess implements Runnable {
             connection = this.hls5Connector.connectUnchecked(device, null, this.secretManagementService::getNewKey);
             return connection != null;
         } catch (Exception exc) {
-            LOGGER.error("Connection exception: {}", exc.getMessage(), exc);
+            log.error("Connection exception: {}", exc.getMessage(), exc);
             return false;
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
                 } catch (final IOException e) {
-                    LOGGER.warn("Connection exception: {}", e.getMessage(), e);
+                    log.warn("Connection exception: {}", e.getMessage(), e);
                 }
             }
         }
