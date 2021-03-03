@@ -29,6 +29,10 @@ public class ActionDtoBuilder {
         return new ActualMeterReadsDataDto();
     }
 
+    public ActualPowerQualityRequestDto makeActualPowerQualityRequestDto() {
+        return new ActualPowerQualityRequestDto(null);
+    }
+
     public GetAdministrativeStatusDataDto makeGetAdministrativeStatusDataDto() {
         return new GetAdministrativeStatusDataDto();
     }
@@ -88,9 +92,13 @@ public class ActionDtoBuilder {
         final List<WindowElementDto> windowElemenents = new ArrayList<>();
 
         final PushSetupAlarmDto.Builder pushSetupAlarmBuilder = new PushSetupAlarmDto.Builder();
-        pushSetupAlarmBuilder.withLogicalName(cosemCode).withPushObjectList(objectDefinitions)
-                .withSendDestinationAndMethod(destinationAndMethod).withCommunicationWindow(windowElemenents)
-                .withRandomisationStartInterval(1).withNumberOfRetries(1).withRepetitionDelay(1);
+        pushSetupAlarmBuilder.withLogicalName(cosemCode)
+                .withPushObjectList(objectDefinitions)
+                .withSendDestinationAndMethod(destinationAndMethod)
+                .withCommunicationWindow(windowElemenents)
+                .withRandomisationStartInterval(1)
+                .withNumberOfRetries(1)
+                .withRepetitionDelay(1);
         final PushSetupAlarmDto pushAlarm = pushSetupAlarmBuilder.build();
 
         return new SetPushSetupAlarmRequestDto(pushAlarm);
@@ -104,9 +112,13 @@ public class ActionDtoBuilder {
         final List<WindowElementDto> windowElemenents = new ArrayList<>();
 
         final PushSetupSmsDto.Builder pushSetupSmsBuilder = new PushSetupSmsDto.Builder();
-        pushSetupSmsBuilder.withLogicalName(cosemCode).withPushObjectList(objectDefinitions)
-                .withSendDestinationAndMethod(destinationAndMethod).withCommunicationWindow(windowElemenents)
-                .withRandomisationStartInterval(1).withNumberOfRetries(1).withRepetitionDelay(1);
+        pushSetupSmsBuilder.withLogicalName(cosemCode)
+                .withPushObjectList(objectDefinitions)
+                .withSendDestinationAndMethod(destinationAndMethod)
+                .withCommunicationWindow(windowElemenents)
+                .withRandomisationStartInterval(1)
+                .withNumberOfRetries(1)
+                .withRepetitionDelay(1);
         final PushSetupSmsDto setupSms = pushSetupSmsBuilder.build();
 
         return new SetPushSetupSmsRequestDto(setupSms);
