@@ -12,7 +12,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.me
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.InstallationService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceByChannelResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -40,7 +40,7 @@ public class DeCoupleMbusDeviceByChannelResponseMessageProcessor extends OsgpCor
 
     @Override
     protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
-        return responseMessage.getDataObject() instanceof DeCoupleMbusDeviceByChannelResponseDto;
+        return responseMessage.getDataObject() instanceof DeCoupleMbusDeviceResponseDto;
     }
 
     @Override
@@ -48,6 +48,6 @@ public class DeCoupleMbusDeviceByChannelResponseMessageProcessor extends OsgpCor
             final ResponseMessage responseMessage, final OsgpException osgpException) throws FunctionalException {
         this.installationService.handleDeCoupleMbusDeviceByChannelResponse(deviceMessageMetadata,
                 responseMessage.getResult(), responseMessage.getOsgpException(),
-                (DeCoupleMbusDeviceByChannelResponseDto) responseMessage.getDataObject());
+                (DeCoupleMbusDeviceResponseDto) responseMessage.getDataObject());
     }
 }

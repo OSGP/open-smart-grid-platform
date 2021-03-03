@@ -46,13 +46,11 @@ public class DeCoupleMBusDeviceCommandExecutor
         
         final CosemObjectAccessor mBusSetup = new CosemObjectAccessor(conn, obisCode, InterfaceClass.MBUS_CLIENT.id());
 
-        this.deviceChannelsHelper.deinstallSlave(conn, device, channel, mBusDeviceIdentification, mBusSetup);
+        this.deviceChannelsHelper.deinstallSlave(conn, device, channel, mBusSetup);
 
         this.deviceChannelsHelper.resetMBusClientAttributeValues(conn, channel, this.getClass().getSimpleName());
         
         return new DeCoupleMbusDeviceResponseDto(mBusDeviceIdentification,
                 channel);
-
     }
-
 }

@@ -188,7 +188,7 @@ public class DeviceChannelsHelper {
     }
 
     protected void deinstallSlave(final DlmsConnectionManager conn, final DlmsDevice device,
-            final short channel, final String mbusDeviceIdentification, final CosemObjectAccessor mBusSetup)
+            final short channel, final CosemObjectAccessor mBusSetup)
             throws ProtocolAdapterException {
         // in blue book version 10, the parameter is of type integer
         DataObject parameter = DataObject.newInteger8Data((byte) 0);
@@ -201,8 +201,8 @@ public class DeviceChannelsHelper {
             slaveDeinstall = mBusSetup.callMethod(MBusClientMethod.SLAVE_DEINSTALL, parameter);
         }
         if (slaveDeinstall != MethodResultCode.SUCCESS) {
-            log.warn("Slave deinstall was not successfull on device {} for mbus device {} on channel {}",
-                    device.getDeviceIdentification(), mbusDeviceIdentification, channel);
+            log.warn("Slave deinstall was not successfull on device {} on channel {}",
+                    device.getDeviceIdentification(), channel);
         }
     }
     

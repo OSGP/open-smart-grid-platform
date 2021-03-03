@@ -23,6 +23,16 @@ public class DeCoupleMbusDeviceByChannelRequestFactory {
         // Private constructor for utility class.
     }
 
+    public static DeCoupleMbusDeviceByChannelRequest forGatewayAndChannel(final String gatewayDeviceIdentification,
+            final String channel) {
+        final DeCoupleMbusDeviceByChannelRequest request = new DeCoupleMbusDeviceByChannelRequest();
+        request.setDeviceIdentification(gatewayDeviceIdentification);
+        final DeCoupleMbusDeviceByChannelRequestData requestData = new DeCoupleMbusDeviceByChannelRequestData();
+        requestData.setChannel(Short.parseShort(channel));
+        request.setDeCoupleMbusDeviceByChannelRequestData(requestData);
+        return request;
+    }
+
     public static DeCoupleMbusDeviceByChannelRequest fromSettings(final Map<String, String> settings) {
         final DeCoupleMbusDeviceByChannelRequest request = new DeCoupleMbusDeviceByChannelRequest();
         final DeCoupleMbusDeviceByChannelRequestData requestData = new DeCoupleMbusDeviceByChannelRequestData();
