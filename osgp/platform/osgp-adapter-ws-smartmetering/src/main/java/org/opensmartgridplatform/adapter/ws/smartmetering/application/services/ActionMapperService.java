@@ -15,7 +15,6 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ClearAlarmRegisterRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ConfigureDefinableLoadProfileRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.CoupleMbusDeviceByChannelRequest;
@@ -102,6 +101,8 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionTyp
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import ma.glasnost.orika.impl.ConfigurableMapper;
 
 @Service(value = "wsSmartMeteringActionMapperService")
 @Validated
@@ -259,11 +260,11 @@ public class ActionMapperService {
     @PostConstruct
     private void postConstruct() {
 
-        mapAdHocRequestData();
-        mapConfigurationRequestData();
-        mapInstallationRequestData();
-        mapManagementRequestData();
-        mapMonitoringRequestData();
+        this.mapAdHocRequestData();
+        this.mapConfigurationRequestData();
+        this.mapInstallationRequestData();
+        this.mapManagementRequestData();
+        this.mapMonitoringRequestData();
 
     }
 
@@ -340,8 +341,7 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileRequest.class,
                 this.monitoringMapper);
-        CLASS_TO_MAPPER_MAP.put(GetActualPowerQualityRequest.class,
-                this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(GetActualPowerQualityRequest.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityRequest.class,
                 this.monitoringMapper);

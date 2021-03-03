@@ -58,7 +58,7 @@ public class MonitoringService {
             @Identification final String deviceIdentification, final PeriodicMeterReadsQuery requestData,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
-        return enqueueRequestData(organisationIdentification, deviceIdentification, requestData, messagePriority,
+        return this.enqueueRequestData(organisationIdentification, deviceIdentification, requestData, messagePriority,
                 scheduleTime, DeviceFunction.REQUEST_PERIODIC_METER_DATA, MessageType.REQUEST_PERIODIC_METER_DATA);
 
     }
@@ -67,7 +67,7 @@ public class MonitoringService {
             @Identification final String deviceIdentification, final ActualMeterReadsQuery requestData,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
-        return enqueueRequestData(organisationIdentification, deviceIdentification, requestData, messagePriority,
+        return this.enqueueRequestData(organisationIdentification, deviceIdentification, requestData, messagePriority,
                 scheduleTime, DeviceFunction.REQUEST_ACTUAL_METER_DATA, MessageType.REQUEST_ACTUAL_METER_DATA);
     }
 
@@ -75,7 +75,7 @@ public class MonitoringService {
             @Identification final String deviceIdentification, final ReadAlarmRegisterRequest requestData,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
-        return enqueueRequestData(organisationIdentification, deviceIdentification, requestData, messagePriority,
+        return this.enqueueRequestData(organisationIdentification, deviceIdentification, requestData, messagePriority,
                 scheduleTime, DeviceFunction.READ_ALARM_REGISTER, MessageType.READ_ALARM_REGISTER);
     }
 
@@ -83,36 +83,37 @@ public class MonitoringService {
             @Identification final String deviceIdentification, final GetPowerQualityProfileRequest requestData,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
-        return enqueueRequestData(organisationIdentification, deviceIdentification, requestData, messagePriority,
+        return this.enqueueRequestData(organisationIdentification, deviceIdentification, requestData, messagePriority,
                 scheduleTime, DeviceFunction.GET_PROFILE_GENERIC_DATA, MessageType.GET_PROFILE_GENERIC_DATA);
 
     }
 
     public ResponseData dequeueGetPowerQualityProfileDataResponseData(final String correlationUid)
             throws CorrelationUidException {
-        return this.responseDataService
-                .dequeue(correlationUid, GetPowerQualityProfileResponse.class, ComponentType.WS_SMART_METERING);
+        return this.responseDataService.dequeue(correlationUid, GetPowerQualityProfileResponse.class,
+                ComponentType.WS_SMART_METERING);
     }
 
     public String enqueueClearAlarmRegisterRequestData(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final ClearAlarmRegisterRequest requestData,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
-        return enqueueRequestData(organisationIdentification, deviceIdentification, requestData, messagePriority,
+        return this.enqueueRequestData(organisationIdentification, deviceIdentification, requestData, messagePriority,
                 scheduleTime, DeviceFunction.CLEAR_ALARM_REGISTER, MessageType.CLEAR_ALARM_REGISTER);
     }
-    
+
     public String enqueueActualPowerQualityRequestData(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final ActualPowerQualityRequest requestData,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
-        return enqueueRequestData(organisationIdentification, deviceIdentification, requestData, messagePriority,
+        return this.enqueueRequestData(organisationIdentification, deviceIdentification, requestData, messagePriority,
                 scheduleTime, DeviceFunction.GET_ACTUAL_POWER_QUALITY, MessageType.GET_ACTUAL_POWER_QUALITY);
     }
-    
+
     private String enqueueRequestData(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final Serializable requestData,
-            final int messagePriority, final Long scheduleTime, DeviceFunction deviceFunction, MessageType messageType) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime, final DeviceFunction deviceFunction,
+            final MessageType messageType) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -121,23 +122,24 @@ public class MonitoringService {
 
         if (log.isDebugEnabled()) {
             log.debug("Enqueue {} request data called with organisation {} and device {}",
-                    messageType.name().toLowerCase().replace('_', ' '), organisationIdentification, deviceIdentification);
+                    messageType.name().toLowerCase().replace('_', ' '), organisationIdentification,
+                    deviceIdentification);
         }
 
-        final String correlationUid = this.correlationIdProviderService
-                .getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, messageType.name(), messagePriority,
-                scheduleTime);
+                organisationIdentification, correlationUid, messageType.name(), messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(requestData).build();
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .request(requestData)
+                .build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
     }
-
 
 }

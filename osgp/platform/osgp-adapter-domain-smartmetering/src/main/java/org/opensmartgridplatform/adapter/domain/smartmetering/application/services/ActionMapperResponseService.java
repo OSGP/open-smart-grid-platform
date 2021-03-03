@@ -15,7 +15,6 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.CommonMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ManagementMapper;
@@ -73,6 +72,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import ma.glasnost.orika.impl.ConfigurableMapper;
+
 @Service(value = "domainSmartMeteringActionMapperResponseService")
 @Validated
 public class ActionMapperResponseService {
@@ -90,8 +91,7 @@ public class ActionMapperResponseService {
     private CommonMapper commonMapper;
 
     private static final Map<Class<? extends ActionResponseDto>, ConfigurableMapper> classToMapperMap = new HashMap<>();
-    private static final Map<Class<? extends ActionResponseDto>, Class<? extends ActionResponse>> classMap =
-            new HashMap<>();
+    private static final Map<Class<? extends ActionResponseDto>, Class<? extends ActionResponse>> classMap = new HashMap<>();
 
     /**
      * Specifies to whi ch core value object the DTO object needs to be mapped.
@@ -178,9 +178,10 @@ public class ActionMapperResponseService {
 
         if (actionValueResponseObject == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-                    ComponentType.DOMAIN_SMART_METERING, new RuntimeException(
-                    "No Action Value Response Object for Action Value Response DTO Object of class: " + action
-                            .getClass().getName()));
+                    ComponentType.DOMAIN_SMART_METERING,
+                    new RuntimeException(
+                            "No Action Value Response Object for Action Value Response DTO Object of class: "
+                                    + action.getClass().getName()));
         }
 
         return actionValueResponseObject;
@@ -191,9 +192,10 @@ public class ActionMapperResponseService {
 
         if (clazz == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-                    ComponentType.DOMAIN_SMART_METERING, new RuntimeException(
-                    "No Action Value Response Object class for Action Value Response DTO Object class: " + action
-                            .getClass().getName()));
+                    ComponentType.DOMAIN_SMART_METERING,
+                    new RuntimeException(
+                            "No Action Value Response Object class for Action Value Response DTO Object class: "
+                                    + action.getClass().getName()));
         }
         return clazz;
     }
@@ -204,7 +206,7 @@ public class ActionMapperResponseService {
         if (mapper == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
                     ComponentType.DOMAIN_SMART_METERING, new RuntimeException(
-                    "No mapper for Action Value Response DTO Object class: " + action.getClass().getName()));
+                            "No mapper for Action Value Response DTO Object class: " + action.getClass().getName()));
         }
         return mapper;
     }

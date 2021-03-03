@@ -31,9 +31,8 @@ public class ActualPowerQualityResponseMessageProcessor extends OsgpCoreResponse
     private MonitoringService monitoringService;
 
     @Autowired
-    protected ActualPowerQualityResponseMessageProcessor(
-            WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+    protected ActualPowerQualityResponseMessageProcessor(final WebServiceResponseMessageSender responseMessageSender,
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.GET_ACTUAL_POWER_QUALITY,
                 ComponentType.DOMAIN_SMART_METERING);
     }
@@ -47,7 +46,7 @@ public class ActualPowerQualityResponseMessageProcessor extends OsgpCoreResponse
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessage responseMessage, final OsgpException osgpException) throws FunctionalException {
 
-        if (hasRegularResponseObject(responseMessage)) {
+        if (this.hasRegularResponseObject(responseMessage)) {
 
             final ActualPowerQualityResponseDto actualPowerQualityResponseDto = (ActualPowerQualityResponseDto) responseMessage
                     .getDataObject();
@@ -55,8 +54,8 @@ public class ActualPowerQualityResponseMessageProcessor extends OsgpCoreResponse
             this.monitoringService.handleActualPowerQualityResponse(deviceMessageMetadata, responseMessage.getResult(),
                     osgpException, actualPowerQualityResponseDto);
         } else {
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
-                    ComponentType.DOMAIN_SMART_METERING, new OsgpException(ComponentType.DOMAIN_SMART_METERING,
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.DOMAIN_SMART_METERING,
+                    new OsgpException(ComponentType.DOMAIN_SMART_METERING,
                             "DataObject for response message should be of type ActualPowerQualityResponseDto"));
         }
     }

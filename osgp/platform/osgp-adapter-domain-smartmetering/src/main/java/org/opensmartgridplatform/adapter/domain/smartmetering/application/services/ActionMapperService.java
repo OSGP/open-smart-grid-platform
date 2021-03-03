@@ -15,7 +15,6 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.CommonMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ManagementMapper;
@@ -112,6 +111,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import ma.glasnost.orika.impl.ConfigurableMapper;
+
 @Service(value = "domainSmartMeteringActionMapperService")
 @Validated
 public class ActionMapperService {
@@ -142,10 +143,8 @@ public class ActionMapperService {
     private DomainHelperService domainHelperService;
 
     private static final Map<Class<? extends ActionRequest>, ConfigurableMapper> CLASS_TO_MAPPER_MAP = new HashMap<>();
-    private static final Map<Class<? extends ActionRequest>, CustomValueToDtoConverter<? extends ActionRequest, ?
-            extends ActionRequestDto>> CUSTOM_CONVERTER_FOR_CLASS = new HashMap<>();
-    private static final Map<Class<? extends ActionRequest>, Class<? extends ActionRequestDto>> CLASS_MAP =
-            new HashMap<>();
+    private static final Map<Class<? extends ActionRequest>, CustomValueToDtoConverter<? extends ActionRequest, ? extends ActionRequestDto>> CUSTOM_CONVERTER_FOR_CLASS = new HashMap<>();
+    private static final Map<Class<? extends ActionRequest>, Class<? extends ActionRequestDto>> CLASS_MAP = new HashMap<>();
 
     /**
      * Specifies to which DTO object the core object needs to be mapped.
@@ -247,12 +246,12 @@ public class ActionMapperService {
         return new BundleMessagesRequestDto(actionValueObjectDtoList);
     }
 
-    private ActionDto mapActionWithMapper(final SmartMeter smartMeter, final ActionRequest action) throws FunctionalException {
+    private ActionDto mapActionWithMapper(final SmartMeter smartMeter, final ActionRequest action)
+            throws FunctionalException {
         @SuppressWarnings("unchecked")
         // TODO: fix this
-        final CustomValueToDtoConverter<ActionRequest, ActionRequestDto> customValueToDtoConverter =
-                (CustomValueToDtoConverter<ActionRequest, ActionRequestDto>) CUSTOM_CONVERTER_FOR_CLASS.get(
-                        action.getClass());
+        final CustomValueToDtoConverter<ActionRequest, ActionRequestDto> customValueToDtoConverter = (CustomValueToDtoConverter<ActionRequest, ActionRequestDto>) CUSTOM_CONVERTER_FOR_CLASS
+                .get(action.getClass());
 
         if (customValueToDtoConverter != null) {
             return new ActionDto(customValueToDtoConverter.convert(action, smartMeter));
@@ -268,14 +267,13 @@ public class ActionMapperService {
         if (mapper != null) {
             return this.mapActionWithMapper(smartMeter, action, clazz, mapper);
         } else {
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
-                    ComponentType.DOMAIN_SMART_METERING,
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.DOMAIN_SMART_METERING,
                     new AssertionError(String.format("No mapper defined for class: %s", clazz.getName())));
         }
     }
 
-    private ActionDto mapActionWithMapper(final SmartMeter smartMeter, final ActionRequest action, final Class<? extends ActionRequestDto> clazz,
-            final ConfigurableMapper mapper) throws FunctionalException {
+    private ActionDto mapActionWithMapper(final SmartMeter smartMeter, final ActionRequest action,
+            final Class<? extends ActionRequestDto> clazz, final ConfigurableMapper mapper) throws FunctionalException {
         if (action instanceof MbusActionRequest) {
             this.verifyAndFindChannelForMbusRequest((MbusActionRequest) action, smartMeter);
         }
@@ -288,9 +286,9 @@ public class ActionMapperService {
 
         if (actionValueObjectDto == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-                    ComponentType.DOMAIN_SMART_METERING, new RuntimeException(
-                    String.format("Object: %s could not be converted to %s", action.getClass().getName(),
-                            clazz.getName())));
+                    ComponentType.DOMAIN_SMART_METERING,
+                    new RuntimeException(String.format("Object: %s could not be converted to %s",
+                            action.getClass().getName(), clazz.getName())));
         }
         return actionValueObjectDto;
     }

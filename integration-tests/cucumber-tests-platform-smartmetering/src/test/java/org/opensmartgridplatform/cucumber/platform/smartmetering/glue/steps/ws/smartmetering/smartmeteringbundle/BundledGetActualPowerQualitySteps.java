@@ -13,16 +13,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.Map;
 
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActualPowerQualityResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetActualPowerQualityRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityData;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityValue;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityObject;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityValue;
 import org.opensmartgridplatform.cucumber.platform.helpers.SettingsHelper;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.builders.GetActualPowerQualityRequestBuilder;
+
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 
 public class BundledGetActualPowerQualitySteps extends BaseBundleSteps {
 
@@ -36,7 +37,8 @@ public class BundledGetActualPowerQualitySteps extends BaseBundleSteps {
             throws Throwable {
 
         final GetActualPowerQualityRequest action = new GetActualPowerQualityRequestBuilder()
-                .fromParameterMap(parameters).build();
+                .fromParameterMap(parameters)
+                .build();
 
         this.addActionToBundleRequest(action);
     }
@@ -47,24 +49,23 @@ public class BundledGetActualPowerQualitySteps extends BaseBundleSteps {
 
         final Response response = this.getNextBundleResponse();
 
-        assertThat(response)
-                .as("Not a valid response, expected ActualPowerQualityResponse but is :" +
-                        response.getClass().getSimpleName())
-                .isInstanceOf(ActualPowerQualityResponse.class);
+        assertThat(response).as("Not a valid response, expected ActualPowerQualityResponse but is :"
+                + response.getClass().getSimpleName()).isInstanceOf(ActualPowerQualityResponse.class);
 
         final ActualPowerQualityResponse actualPowerQualityResponse = (ActualPowerQualityResponse) response;
-        final ActualPowerQualityData actualPowerQualityData = actualPowerQualityResponse
-                .getActualPowerQualityData();
+        final ActualPowerQualityData actualPowerQualityData = actualPowerQualityResponse.getActualPowerQualityData();
 
-        this.assertEqualPowerQualityObjects(actualPowerQualityData.getPowerQualityObjects().getPowerQualityObject(), values);
-        this.assertEqualPowerQualityValues(actualPowerQualityData.getPowerQualityValues().getPowerQualityValue(), values);
+        this.assertEqualPowerQualityObjects(actualPowerQualityData.getPowerQualityObjects().getPowerQualityObject(),
+                values);
+        this.assertEqualPowerQualityValues(actualPowerQualityData.getPowerQualityValues().getPowerQualityValue(),
+                values);
     }
 
     private void assertEqualPowerQualityObjects(final List<PowerQualityObject> actualPowerQualityObjects,
             final Map<String, String> expectedValues) throws AssertionError {
 
-        final int expectedNumberOfPowerQualityObjects = SettingsHelper
-                .getIntegerValue(expectedValues, NUMBER_OF_POWER_QUALITY_OBJECTS);
+        final int expectedNumberOfPowerQualityObjects = SettingsHelper.getIntegerValue(expectedValues,
+                NUMBER_OF_POWER_QUALITY_OBJECTS);
 
         assertThat(actualPowerQualityObjects.size()).as("Number of power quality objects")
                 .isEqualTo(expectedNumberOfPowerQualityObjects);
@@ -80,16 +81,15 @@ public class BundledGetActualPowerQualitySteps extends BaseBundleSteps {
 
     private void assertEqualPowerQualityObject(final PowerQualityObject actualPowerQualityObject,
             final Map<String, String> expectedValues, final int index) throws AssertionError {
-        final String expectedName = SettingsHelper
-                .getStringValue(expectedValues, POWER_QUALITY_OBJECT_NAME, index);
-        assertThat(actualPowerQualityObject.getName()).as(POWER_QUALITY_OBJECT_NAME + index)
-                                                        .isEqualTo(expectedName);
+        final String expectedName = SettingsHelper.getStringValue(expectedValues, POWER_QUALITY_OBJECT_NAME, index);
+        assertThat(actualPowerQualityObject.getName()).as(POWER_QUALITY_OBJECT_NAME + index).isEqualTo(expectedName);
 
         final String expectedUnit = SettingsHelper.getStringValue(expectedValues, POWER_QUALITY_OBJECT_UNIT, index);
         if (expectedUnit == null) {
             assertThat(actualPowerQualityObject.getUnit()).as(POWER_QUALITY_OBJECT_UNIT + index).isNull();
         } else {
-            assertThat(actualPowerQualityObject.getUnit().value()).as(POWER_QUALITY_OBJECT_UNIT + index).isEqualTo(expectedUnit);
+            assertThat(actualPowerQualityObject.getUnit().value()).as(POWER_QUALITY_OBJECT_UNIT + index)
+                    .isEqualTo(expectedUnit);
         }
     }
 
@@ -99,6 +99,6 @@ public class BundledGetActualPowerQualitySteps extends BaseBundleSteps {
                 NUMBER_OF_POWER_QUALITY_VALUES);
 
         assertThat(powerQualityValues.size()).as(NUMBER_OF_POWER_QUALITY_VALUES)
-                                               .isEqualTo(expectedNumberOfPowerQualityValues);
+                .isEqualTo(expectedNumberOfPowerQualityValues);
     }
 }

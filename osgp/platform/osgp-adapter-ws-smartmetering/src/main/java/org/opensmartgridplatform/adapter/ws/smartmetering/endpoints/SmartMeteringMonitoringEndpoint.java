@@ -132,8 +132,8 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             response.setDeviceIdentification(request.getDeviceIdentification());
             this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
-            log.error("Exception: {} while requesting meter reads for device: {} for organisation {}.",
-                    e.getMessage(), request.getDeviceIdentification(), organisationIdentification, e);
+            log.error("Exception: {} while requesting meter reads for device: {} for organisation {}.", e.getMessage(),
+                    request.getDeviceIdentification(), organisationIdentification, e);
 
             this.handleException(e);
         }
@@ -243,9 +243,9 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
             asyncResponse = gas
                     ? new org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ObjectFactory()
-                    .createActualMeterReadsGasAsyncResponse()
+                            .createActualMeterReadsGasAsyncResponse()
                     : new org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ObjectFactory()
-                    .createActualMeterReadsAsyncResponse();
+                            .createActualMeterReadsAsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceIdentification(deviceIdentification);
             this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
@@ -356,8 +356,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
         } catch (final FunctionalException e) {
             throw e;
         } catch (final Exception e) {
-            log.error(
-                    "Exception: {} while sending RetrieveReadAlarmRegisterRequest of device: {} for organisation {}.",
+            log.error("Exception: {} while sending RetrieveReadAlarmRegisterRequest of device: {} for organisation {}.",
                     e.getMessage(), request.getDeviceIdentification(), organisationIdentification);
 
             this.handleException(e);
@@ -371,8 +370,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final RetrievePushNotificationAlarmRequest request) throws OsgpException {
 
-        log.info("Incoming RetrievePushNotificationAlarmRequest for correlation UID: {}",
-                request.getCorrelationUid());
+        log.info("Incoming RetrievePushNotificationAlarmRequest for correlation UID: {}", request.getCorrelationUid());
 
         RetrievePushNotificationAlarmResponse response = null;
         try {
@@ -408,9 +406,8 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
         GetPowerQualityProfileAsyncResponse response = null;
 
         try {
-            final GetPowerQualityProfileRequest dataRequest = this.monitoringMapper
-                    .map(request,
-                            GetPowerQualityProfileRequest.class);
+            final GetPowerQualityProfileRequest dataRequest = this.monitoringMapper.map(request,
+                    GetPowerQualityProfileRequest.class);
 
             final int msgPrio = MessagePriorityEnum.getMessagePriority(messagePriority);
             final String correlationUid = this.monitoringService.enqueueGetPowerQualityProfileRequest(
@@ -528,19 +525,20 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public ActualPowerQualityAsyncResponse getActualPowerQuality(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityRequest request, @MessagePriority final String messagePriority,
-            @ResponseUrl final String responseUrl, @ScheduleTime final String scheduleTime) throws OsgpException {
+            @RequestPayload final org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityRequest request,
+            @MessagePriority final String messagePriority, @ResponseUrl final String responseUrl,
+            @ScheduleTime final String scheduleTime) throws OsgpException {
 
         log.debug("Incoming ActualPowerQualityRequest for meter: {}.", request.getDeviceIdentification());
 
         ActualPowerQualityAsyncResponse response = null;
         try {
-            final ActualPowerQualityRequest dataRequest = this.monitoringMapper
-                    .map(request,
-                            ActualPowerQualityRequest.class);
+            final ActualPowerQualityRequest dataRequest = this.monitoringMapper.map(request,
+                    ActualPowerQualityRequest.class);
 
             final String correlationUid = this.monitoringService.enqueueActualPowerQualityRequestData(
-                    organisationIdentification, request.getDeviceIdentification(), dataRequest, MessagePriorityEnum.getMessagePriority(messagePriority),
+                    organisationIdentification, request.getDeviceIdentification(), dataRequest,
+                    MessagePriorityEnum.getMessagePriority(messagePriority),
                     this.monitoringMapper.map(scheduleTime, Long.class));
 
             response = new ActualPowerQualityAsyncResponse();

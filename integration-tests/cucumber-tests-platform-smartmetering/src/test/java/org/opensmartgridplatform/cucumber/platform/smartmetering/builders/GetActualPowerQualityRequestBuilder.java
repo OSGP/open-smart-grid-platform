@@ -32,7 +32,7 @@ public class GetActualPowerQualityRequestBuilder {
     }
 
     public GetActualPowerQualityRequest build() {
-        final  GetActualPowerQualityRequest request = new  GetActualPowerQualityRequest();
+        final GetActualPowerQualityRequest request = new GetActualPowerQualityRequest();
         request.setProfileType(this.profileType);
         return request;
     }

@@ -27,7 +27,8 @@ public class ActualPowerQualityRequestFactory {
         final String profileType = getString(requestParameters, PlatformKeys.KEY_POWER_QUALITY_PROFILE_TYPE);
 
         final ActualPowerQualityRequest actualPowerQualityRequest = new ActualPowerQualityRequest();
-        actualPowerQualityRequest.setDeviceIdentification(requestParameters.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
+        actualPowerQualityRequest
+                .setDeviceIdentification(requestParameters.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
         actualPowerQualityRequest.setProfileType(profileType);
         return actualPowerQualityRequest;
     }
@@ -35,7 +36,8 @@ public class ActualPowerQualityRequestFactory {
     public static ActualPowerQualityAsyncRequest fromScenarioContext() {
         final ActualPowerQualityAsyncRequest actualPowerQualityAsyncRequest = new ActualPowerQualityAsyncRequest();
         actualPowerQualityAsyncRequest.setCorrelationUid(RequestFactoryHelper.getCorrelationUidFromScenarioContext());
-        actualPowerQualityAsyncRequest.setDeviceIdentification(RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
+        actualPowerQualityAsyncRequest
+                .setDeviceIdentification(RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
         return actualPowerQualityAsyncRequest;
     }
 

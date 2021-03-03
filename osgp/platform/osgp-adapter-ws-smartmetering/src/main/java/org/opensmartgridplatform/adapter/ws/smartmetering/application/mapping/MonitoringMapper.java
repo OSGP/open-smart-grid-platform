@@ -8,10 +8,11 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AmrProfileStatusCode;
 import org.springframework.stereotype.Component;
+
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.ConfigurableMapper;
 
 @Component(value = "monitoringMapper")
 public class MonitoringMapper extends ConfigurableMapper {
@@ -22,10 +23,13 @@ public class MonitoringMapper extends ConfigurableMapper {
     @Override
     public void configure(final MapperFactory mapperFactory) {
 
-        mapperFactory.classMap(
-                org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.AmrProfileStatusCode.class,
-                AmrProfileStatusCode.class).field("amrProfileStatusCodeFlag", "amrProfileStatusCodeFlags").byDefault()
-                     .register();
+        mapperFactory
+                .classMap(
+                        org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.AmrProfileStatusCode.class,
+                        AmrProfileStatusCode.class)
+                .field("amrProfileStatusCodeFlag", "amrProfileStatusCodeFlags")
+                .byDefault()
+                .register();
 
         // Converter is needed because of instanceOf check to set boolean
         // mbusDevice for a PeriodicMeterReadsQuery object
@@ -57,14 +61,18 @@ public class MonitoringMapper extends ConfigurableMapper {
         mapperFactory.classMap(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileRequest.class,
                 org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileRequest.class)
-                     .fieldAToB(SELECTED_VALUES_CAPTURE_OBJECT, SELECTED_VALUES)
-                     .fieldBToA(SELECTED_VALUES, SELECTED_VALUES_CAPTURE_OBJECT).byDefault().register();
+                .fieldAToB(SELECTED_VALUES_CAPTURE_OBJECT, SELECTED_VALUES)
+                .fieldBToA(SELECTED_VALUES, SELECTED_VALUES_CAPTURE_OBJECT)
+                .byDefault()
+                .register();
 
         mapperFactory.classMap(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPowerQualityProfileRequest.class,
                 org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileRequest.class)
-                     .fieldAToB(SELECTED_VALUES_CAPTURE_OBJECT, SELECTED_VALUES)
-                     .fieldBToA(SELECTED_VALUES, SELECTED_VALUES_CAPTURE_OBJECT).byDefault().register();
+                .fieldAToB(SELECTED_VALUES_CAPTURE_OBJECT, SELECTED_VALUES)
+                .fieldBToA(SELECTED_VALUES, SELECTED_VALUES_CAPTURE_OBJECT)
+                .byDefault()
+                .register();
 
         mapperFactory.getConverterFactory().registerConverter(new ObisCodeValuesConverter());
         mapperFactory.getConverterFactory().registerConverter(new ProfileEntryValueConverter());

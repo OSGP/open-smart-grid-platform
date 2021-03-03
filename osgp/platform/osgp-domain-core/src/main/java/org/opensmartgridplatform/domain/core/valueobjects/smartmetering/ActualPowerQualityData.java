@@ -17,8 +17,8 @@ public class ActualPowerQualityData extends ActionResponse {
     private final List<PowerQualityObject> powerQualityObjects;
     private final List<PowerQualityValue> powerQualityValues;
 
-    public ActualPowerQualityData(
-            final List<PowerQualityObject> powerQualityObjects, final List<PowerQualityValue> powerQualityValues) {
+    public ActualPowerQualityData(final List<PowerQualityObject> powerQualityObjects,
+            final List<PowerQualityValue> powerQualityValues) {
         this.powerQualityObjects = powerQualityObjects;
         this.powerQualityValues = powerQualityValues;
     }

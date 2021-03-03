@@ -15,14 +15,12 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInte
 import java.util.List;
 import java.util.Map;
 
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityValue;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityObject;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityValue;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.helpers.SettingsHelper;
@@ -30,6 +28,9 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smar
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringRequestClient;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringResponseClient;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 public class ActualPowerQualitySteps {
 
@@ -77,45 +78,49 @@ public class ActualPowerQualitySteps {
         assertThat(response).as("ActualPowerQualityResponseData should not be null").isNotNull();
 
         final int expectedNumberOfPowerQualityObjects = getInteger(settings, "NumberOfPowerQualityObjects", 0);
-        final List<PowerQualityObject> actualPowerQualityObjects =
-                response.getActualPowerQualityData().getPowerQualityObjects().getPowerQualityObject();
+        final List<PowerQualityObject> actualPowerQualityObjects = response.getActualPowerQualityData()
+                .getPowerQualityObjects()
+                .getPowerQualityObject();
         assertThat(actualPowerQualityObjects.size()).as("Number of power quality objects")
-                                               .isEqualTo(expectedNumberOfPowerQualityObjects);
+                .isEqualTo(expectedNumberOfPowerQualityObjects);
 
         for (int i = 0; i < expectedNumberOfPowerQualityObjects; i++) {
             final PowerQualityObject actualPowerQualityObject = actualPowerQualityObjects.get(i);
-            final Long expectedNameId = SettingsHelper.getLongValue(settings, "PowerQuality_Name", i+1);
+            final Long expectedNameId = SettingsHelper.getLongValue(settings, "PowerQuality_Name", i + 1);
             if (expectedNameId != null) {
                 this.validatePowerQualityObject(actualPowerQualityObject, settings, i + 1);
             }
         }
 
         final int expectedNumberOfPowerQualityValues = getInteger(settings, "NumberOfPowerQualityValues", 0);
-        final List<PowerQualityValue> powerQualityValues =
-                response.getActualPowerQualityData().getPowerQualityValues().getPowerQualityValue();
+        final List<PowerQualityValue> powerQualityValues = response.getActualPowerQualityData()
+                .getPowerQualityValues()
+                .getPowerQualityValue();
         assertThat(powerQualityValues.size()).as("Number of power quality values")
-                                               .isEqualTo(expectedNumberOfPowerQualityValues);
+                .isEqualTo(expectedNumberOfPowerQualityValues);
 
         if (expectedNumberOfPowerQualityValues > 0) {
             /*
-             * Expected value equals expectedNumberOfPowerQualityObjects, because the
-             * number of PowerQualityValues should match the number of power quality objects
-             * from the buffer.
+             * Expected value equals expectedNumberOfPowerQualityObjects,
+             * because the number of PowerQualityValues should match the number
+             * of power quality objects from the buffer.
              */
-            assertThat(powerQualityValues.size()).as("Number of power quality values").isEqualTo(expectedNumberOfPowerQualityObjects);
+            assertThat(powerQualityValues.size()).as("Number of power quality values")
+                    .isEqualTo(expectedNumberOfPowerQualityObjects);
         }
     }
 
-    private void validatePowerQualityObject(final PowerQualityObject actualPowerQualityObject, final Map<String, String> settings,
-            final int index) {
+    private void validatePowerQualityObject(final PowerQualityObject actualPowerQualityObject,
+            final Map<String, String> settings, final int index) {
 
         final String expectedName = SettingsHelper.getStringValue(settings, "PowerQualityObject_Name", index);
         assertThat(actualPowerQualityObject.getName()).as("LogicalName of PowerQualityObject " + index)
-                                                        .isEqualTo(expectedName);
+                .isEqualTo(expectedName);
 
         final String expectedUnit = SettingsHelper.getStringValue(settings, "PowerQualityObject_Unit", index);
         if (expectedUnit != null) {
-            assertThat(actualPowerQualityObject.getUnit().value()).as("Unit of PowerQualityObject " + index).isEqualTo(expectedUnit);
+            assertThat(actualPowerQualityObject.getUnit().value()).as("Unit of PowerQualityObject " + index)
+                    .isEqualTo(expectedUnit);
         }
     }
 }

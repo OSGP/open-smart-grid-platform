@@ -1,7 +1,7 @@
 /**
  * Copyright 2021 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
@@ -43,9 +43,9 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityValueDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsUnitTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityObjectDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityValueDto;
 
 @ExtendWith(MockitoExtension.class)
 public class GetActualPowerQualityCommandExecutorTest {
@@ -86,27 +86,29 @@ public class GetActualPowerQualityCommandExecutorTest {
     void testOtherReasonResult() throws ProtocolAdapterException {
         this.actualPowerQualityRequestDto = new ActualPowerQualityRequestDto("PRIVATE");
 
-        final List<GetActualPowerQualityCommandExecutor.PowerQualityObjectMetadata> metadatas =
-                GetActualPowerQualityCommandExecutor.getMetadatasPrivate();
+        final List<GetActualPowerQualityCommandExecutor.PowerQualityObjectMetadata> metadatas = GetActualPowerQualityCommandExecutor
+                .getMetadatasPrivate();
 
-        doReturn(this.generateMockedResult(metadatas, AccessResultCode.OTHER_REASON)).when(this.dlmsHelper).getAndCheck(eq(this.conn), eq(this.dlmsDevice),
-                eq("retrieve actual power quality"), any(AttributeAddress.class));
+        doReturn(this.generateMockedResult(metadatas, AccessResultCode.OTHER_REASON)).when(this.dlmsHelper)
+                .getAndCheck(eq(this.conn), eq(this.dlmsDevice), eq("retrieve actual power quality"),
+                        any(AttributeAddress.class));
 
         assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {
-            new GetActualPowerQualityCommandExecutor(this.dlmsHelper).execute(this.conn,
-                    this.dlmsDevice, this.actualPowerQualityRequestDto);
+            new GetActualPowerQualityCommandExecutor(this.dlmsHelper).execute(this.conn, this.dlmsDevice,
+                    this.actualPowerQualityRequestDto);
         });
     }
 
     void executeAndAssert(final String profileType,
-            final List<GetActualPowerQualityCommandExecutor.PowerQualityObjectMetadata> metadatas) throws ProtocolAdapterException {
+            final List<GetActualPowerQualityCommandExecutor.PowerQualityObjectMetadata> metadatas)
+            throws ProtocolAdapterException {
         this.actualPowerQualityRequestDto = new ActualPowerQualityRequestDto(profileType);
 
-        doReturn(this.generateMockedResult(metadatas, AccessResultCode.SUCCESS)).when(this.dlmsHelper).getAndCheck(eq(this.conn), eq(this.dlmsDevice),
-                eq("retrieve actual power quality"), any(AttributeAddress.class));
+        doReturn(this.generateMockedResult(metadatas, AccessResultCode.SUCCESS)).when(this.dlmsHelper)
+                .getAndCheck(eq(this.conn), eq(this.dlmsDevice), eq("retrieve actual power quality"),
+                        any(AttributeAddress.class));
 
-        final GetActualPowerQualityCommandExecutor executor =
-                new GetActualPowerQualityCommandExecutor(this.dlmsHelper);
+        final GetActualPowerQualityCommandExecutor executor = new GetActualPowerQualityCommandExecutor(this.dlmsHelper);
 
         final ActualPowerQualityResponseDto responseDto = executor.execute(this.conn, this.dlmsDevice,
                 this.actualPowerQualityRequestDto);
@@ -117,14 +119,18 @@ public class GetActualPowerQualityCommandExecutorTest {
         for (int i = 0; i < metadatas.size(); i++) {
             final GetActualPowerQualityCommandExecutor.PowerQualityObjectMetadata metadata = metadatas.get(i);
 
-            Serializable expectedValue = this.getExpectedValue(i, metadata);
-            String expectedUnit = this.getExpectedUnit(metadata);
+            final Serializable expectedValue = this.getExpectedValue(i, metadata);
+            final String expectedUnit = this.getExpectedUnit(metadata);
 
-            final PowerQualityObjectDto powerQualityObjectDto = responseDto.getActualPowerQualityData().getPowerQualityObjects().get(i);
+            final PowerQualityObjectDto powerQualityObjectDto = responseDto.getActualPowerQualityData()
+                    .getPowerQualityObjects()
+                    .get(i);
             assertThat(powerQualityObjectDto.getName()).isEqualTo(metadata.name());
             assertThat(powerQualityObjectDto.getUnit()).isEqualTo(expectedUnit);
 
-            final PowerQualityValueDto powerQualityValue = responseDto.getActualPowerQualityData().getPowerQualityValues().get(i);
+            final PowerQualityValueDto powerQualityValue = responseDto.getActualPowerQualityData()
+                    .getPowerQualityValues()
+                    .get(i);
             assertThat(powerQualityValue.getValue()).isEqualTo(expectedValue);
         }
     }
@@ -153,10 +159,10 @@ public class GetActualPowerQualityCommandExecutorTest {
     }
 
     private List<GetResult> generateMockedResult(
-            final List<GetActualPowerQualityCommandExecutor.PowerQualityObjectMetadata> metadatas, final AccessResultCode resultCode) {
-        return this.generateMockedResult(metadatas, resultCode, DataObject.newDateTimeData(new CosemDateTime(2018, 12,
-                31, 23, 0, 0,
-                0)));
+            final List<GetActualPowerQualityCommandExecutor.PowerQualityObjectMetadata> metadatas,
+            final AccessResultCode resultCode) {
+        return this.generateMockedResult(metadatas, resultCode,
+                DataObject.newDateTimeData(new CosemDateTime(2018, 12, 31, 23, 0, 0, 0)));
     }
 
     private List<GetResult> generateMockedResult(

@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -43,14 +42,12 @@ public class ActualPowerQualityResponseMappingTest {
         final List<PowerQualityObject> powerQualityObjects = this.makePowerQualityObjects();
         final List<PowerQualityValue> powerQualityValues = this.makePowerQualityValues();
 
-        final ActualPowerQualityData responseData = new ActualPowerQualityData(powerQualityObjects,
-                powerQualityValues);
+        final ActualPowerQualityData responseData = new ActualPowerQualityData(powerQualityObjects, powerQualityValues);
 
         final ActualPowerQualityResponse source = new ActualPowerQualityResponse(responseData);
 
         // Act
-        final org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActualPowerQualityResponse target
-                = this.monitoringMapper
+        final org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActualPowerQualityResponse target = this.monitoringMapper
                 .map(source,
                         org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActualPowerQualityResponse.class);
 
@@ -60,14 +57,14 @@ public class ActualPowerQualityResponseMappingTest {
 
         this.assertPowerQualityObjects(mappedResponseData.getPowerQualityObjects().getPowerQualityObject(),
                 powerQualityObjects);
-        this.assertPowerQualityValues(mappedResponseData.getPowerQualityValues().getPowerQualityValue(), powerQualityValues);
+        this.assertPowerQualityValues(mappedResponseData.getPowerQualityValues().getPowerQualityValue(),
+                powerQualityValues);
 
     }
 
     @Test
     public void sourceNull() {
-        final org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActualPowerQualityResponse target
-                = this.monitoringMapper
+        final org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActualPowerQualityResponse target = this.monitoringMapper
                 .map(null,
                         org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActualPowerQualityResponse.class);
 
@@ -79,16 +76,17 @@ public class ActualPowerQualityResponseMappingTest {
             final PowerQualityObject sourcePowerQualityObject) throws AssertionError {
 
         assertThat(actualPowerQualityObject.getName()).as(MAPPED_FIELD_VALUE_MESSAGE)
-                                                        .isEqualTo(sourcePowerQualityObject.getName());
+                .isEqualTo(sourcePowerQualityObject.getName());
         assertThat(actualPowerQualityObject.getUnit().value()).as(MAPPED_FIELD_VALUE_MESSAGE)
-                                                      .isEqualTo(sourcePowerQualityObject.getUnit());
+                .isEqualTo(sourcePowerQualityObject.getUnit());
     }
 
     private void assertPowerQualityObjects(
             final List<org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PowerQualityObject> actualPowerQualityObjects,
             final List<PowerQualityObject> sourcePowerQualityObjects) throws AssertionError {
 
-        assertThat(actualPowerQualityObjects.size()).as(MAPPED_LIST_SIZE_MESSAGE).isEqualTo(sourcePowerQualityObjects.size());
+        assertThat(actualPowerQualityObjects.size()).as(MAPPED_LIST_SIZE_MESSAGE)
+                .isEqualTo(sourcePowerQualityObjects.size());
 
         for (int i = 0; i < actualPowerQualityObjects.size(); i++) {
             this.assertPowerQualityObject(actualPowerQualityObjects.get(i), sourcePowerQualityObjects.get(i));
@@ -101,8 +99,9 @@ public class ActualPowerQualityResponseMappingTest {
 
         assertThat(powerQualityValues.size()).as(MAPPED_LIST_SIZE_MESSAGE).isEqualTo(sourcePowerQualityValues.size());
 
-        IntStream.range(0, powerQualityValues.size())
-                .forEach(i -> this.assertPowerQualityValue(powerQualityValues.get(i), sourcePowerQualityValues.get(i)));
+        for (int i = 0; i < powerQualityValues.size(); i++) {
+            this.assertPowerQualityValue(powerQualityValues.get(i), sourcePowerQualityValues.get(i));
+        }
     }
 
     private void assertPowerQualityValue(

@@ -20,8 +20,8 @@ public class ActualPowerQualityRequestMapperTest {
     @Test
     public void testGetActualPowerQualityRequest() {
         final ActualPowerQualityRequest actualPowerQualityRequest = new ActualPowerQualityRequest("PUBLIC");
-        final ActualPowerQualityRequest result = this.mapper
-                .map(actualPowerQualityRequest, ActualPowerQualityRequest.class);
+        final ActualPowerQualityRequest result = this.mapper.map(actualPowerQualityRequest,
+                ActualPowerQualityRequest.class);
         assertThat(result).isNotNull().isInstanceOf(ActualPowerQualityRequest.class);
         assertThat(result.getProfileType()).isEqualTo("PUBLIC");
     }

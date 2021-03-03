@@ -8,7 +8,6 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.CommandExecutorMap;
-
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActivityCalendarDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualMeterReadsDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualMeterReadsDataGasDto;
@@ -17,8 +16,8 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdministrativeSt
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FindEventsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GMeterInfoDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetAdministrativeStatusDataDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetAssociationLnObjectsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetAllAttributeValuesRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetAssociationLnObjectsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsGasRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
@@ -36,8 +35,10 @@ public class CommandExecutorMapStub extends CommandExecutorMap {
 
         this.addCommandExecutor(FindEventsRequestDto.class, new RetrieveEventsBundleCommandExecutorStub());
         this.addCommandExecutor(ActualMeterReadsDataDto.class, new GetActualMeterReadsBundleCommandExecutorStub());
-        this.addCommandExecutor(ActualPowerQualityRequestDto.class, new GetActualPowerQualityBundleCommandExecutorStub());
-        this.addCommandExecutor(ActualMeterReadsDataGasDto.class, new GetActualMeterReadsBundleGasCommandExecutorStub());
+        this.addCommandExecutor(ActualPowerQualityRequestDto.class,
+                new GetActualPowerQualityBundleCommandExecutorStub());
+        this.addCommandExecutor(ActualMeterReadsDataGasDto.class,
+                new GetActualMeterReadsBundleGasCommandExecutorStub());
         this.addCommandExecutor(SpecialDaysRequestDataDto.class, new SetSpecialDaysBundleCommandExecutorStub());
         this.addCommandExecutor(ReadAlarmRegisterDataDto.class, new ReadAlarmRegisterBundleCommandExecutorStub());
         this.addCommandExecutor(GetAdministrativeStatusDataDto.class,
