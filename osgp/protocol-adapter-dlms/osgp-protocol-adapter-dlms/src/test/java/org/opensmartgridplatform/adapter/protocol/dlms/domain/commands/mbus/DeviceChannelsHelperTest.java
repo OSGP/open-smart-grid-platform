@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.openmuc.jdlms.GetResult;
+import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.GetResultImpl;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
@@ -24,6 +25,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementVa
 
 public class DeviceChannelsHelperTest {
 
+    private static final String OBIS_CODE_MBUS_CHANNEL_ONE = "0.1.24.1.0.255";
     private final DlmsHelper dlmsHelper = new DlmsHelper();
     private final DeviceChannelsHelper deviceChannelsHelper = new DeviceChannelsHelper(this.dlmsHelper);
 
@@ -41,6 +43,13 @@ public class DeviceChannelsHelperTest {
             DataObject.newUInteger16Data(MANUFACTURER_IDENTIFICATION));
     private final GetResult version = new GetResultImpl(DataObject.newUInteger8Data(VERSION));
     private final GetResult deviceType = new GetResultImpl(DataObject.newUInteger8Data(DEVICE_TYPE));
+
+    @Test
+    public void testGetObisCode() {
+        final int channel = 1;
+        final ObisCode obisCode = this.deviceChannelsHelper.getObisCode(channel);
+        assertThat(obisCode.asDecimalString()).isEqualTo(OBIS_CODE_MBUS_CHANNEL_ONE);
+    }
 
     @Test
     public void testMakeChannelElementValues() throws Exception {

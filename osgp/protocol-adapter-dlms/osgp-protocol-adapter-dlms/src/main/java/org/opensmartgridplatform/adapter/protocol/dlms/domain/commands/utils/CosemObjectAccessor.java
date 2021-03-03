@@ -24,16 +24,18 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionExce
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeClass;
 import org.opensmartgridplatform.dlms.interfaceclass.method.MethodClass;
+import org.springframework.stereotype.Component;
 
+@Component
 public class CosemObjectAccessor {
 
-    private static final String EXCEPTION_MSG_ACCESS_RESULT_NOT_SUCCESS =
-            "Access result not success but '%s'  while " + "writing attribute %s, classId %s, obisCode %s.";
-    private static final String EXCEPTION_MSG_WRITING_ATTRIBUTE =
-            "An exception occurred while writing attribute %s, " + "classId %s, obisCode %s.";
+    private static final String EXCEPTION_MSG_ACCESS_RESULT_NOT_SUCCESS = "Access result not success but '%s'  while "
+            + "writing attribute %s, classId %s, obisCode %s.";
+    private static final String EXCEPTION_MSG_WRITING_ATTRIBUTE = "An exception occurred while writing attribute %s, "
+            + "classId %s, obisCode %s.";
     private static final String EXCEPTION_MSG_NO_METHOD_RESULT = "No MethodResult received.";
-    private static final String EXCEPTION_MSG_NO_GET_RESULT =
-            "No GetResult received while retrieving attribute %s, " + "classId %s, obisCode %s.";
+    private static final String EXCEPTION_MSG_NO_GET_RESULT = "No GetResult received while retrieving attribute %s, "
+            + "classId %s, obisCode %s.";
 
     private final DlmsConnectionManager connector;
     private final ObisCode obisCode;
@@ -75,9 +77,8 @@ public class CosemObjectAccessor {
         }
 
         if (accessResultCode != AccessResultCode.SUCCESS) {
-            throw new ProtocolAdapterException(
-                    String.format(EXCEPTION_MSG_ACCESS_RESULT_NOT_SUCCESS, accessResultCode.name(), attributeClass,
-                            this.classId, this.obisCode));
+            throw new ProtocolAdapterException(String.format(EXCEPTION_MSG_ACCESS_RESULT_NOT_SUCCESS,
+                    accessResultCode.name(), attributeClass, this.classId, this.obisCode));
         }
     }
 
