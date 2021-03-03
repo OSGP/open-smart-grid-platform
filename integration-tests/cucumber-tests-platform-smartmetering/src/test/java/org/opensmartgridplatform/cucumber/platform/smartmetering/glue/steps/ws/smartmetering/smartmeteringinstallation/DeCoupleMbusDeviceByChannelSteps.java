@@ -54,7 +54,7 @@ public class DeCoupleMbusDeviceByChannelSteps extends AbstractSmartMeteringSteps
 
         assertThat(response.getResult()).as("Result").isNotNull();
         assertThat(response.getResult().name()).as("Result").isEqualTo(status);
-        assertThat(response.getMBusDeviceIdentification()).as("MbusDeviceIdentification").isEqualTo(mbusDevice);
+        assertThat(response.getMbusDeviceIdentification()).as("MbusDeviceIdentification").isEqualTo(mbusDevice);
     }
 
     @Then("^retrieving the DeCouple By Channel response results in an exception$")

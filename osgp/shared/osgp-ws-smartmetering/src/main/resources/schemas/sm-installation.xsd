@@ -198,7 +198,7 @@
     <xsd:complexContent>
       <xsd:extension base="common:Response">
         <xsd:sequence>
-          <xsd:element name="mBusDeviceIdentification" type="common:DeviceIdentification"/>
+          <xsd:element name="mbusDeviceIdentification" type="common:DeviceIdentification"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>

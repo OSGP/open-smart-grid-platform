@@ -266,7 +266,7 @@ public class MBusGatewayService {
     public void handleDeCoupleMbusDeviceResponse(final DeCoupleMbusDeviceResponseDto deCoupleMbusDeviceResponseDto)
             throws FunctionalException {
 
-        final String mbusDeviceIdentification = deCoupleMbusDeviceResponseDto.getmBusDeviceIdentification();
+        final String mbusDeviceIdentification = deCoupleMbusDeviceResponseDto.getMbusDeviceIdentification();
         final SmartMeter mbusDevice = this.domainHelperService.findSmartMeter(mbusDeviceIdentification);
 
         mbusDevice.setChannel(null);
