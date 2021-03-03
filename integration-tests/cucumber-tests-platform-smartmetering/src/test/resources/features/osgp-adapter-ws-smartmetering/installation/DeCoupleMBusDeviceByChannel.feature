@@ -13,11 +13,11 @@ Feature: SmartMetering Installation - De Couple M-Bus Device By Channel
       | GatewayDeviceIdentification | TEST1024000000001 |
       | Channel                     |                 1 |
     And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes
-      | 5 | unsigned             | 9        |
+      | 5 | unsigned             |        9 |
       | 6 | double-long-unsigned | 12056731 |
-      | 7 | long-unsigned        | 12514    |
-      | 8 | unsigned             | 66       |
-      | 9 | unsigned             | 3        |
+      | 7 | long-unsigned        |    12514 |
+      | 8 | unsigned             |       66 |
+      | 9 | unsigned             |        3 |
     When the DeCouple MBus Device By Channel "1" from E-meter "TEST1024000000001" request is received
     Then the DeCouple MBus Device By Channel response is "OK" for device "TESTG102400000001"
     And the G-meter "TESTG102400000001" is DeCoupled from device "TEST1024000000001"

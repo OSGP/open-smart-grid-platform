@@ -11,8 +11,6 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
 import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceByChannelAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceByChannelAsyncResponse;
@@ -27,6 +25,9 @@ import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityExce
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+
 public class DeCoupleMbusDeviceByChannelSteps extends AbstractSmartMeteringSteps {
 
     @Autowired
@@ -36,8 +37,8 @@ public class DeCoupleMbusDeviceByChannelSteps extends AbstractSmartMeteringSteps
     public void theDeCoupleGMeterRequestIsReceived(final String channel, final String eMeter)
             throws WebServiceSecurityException {
 
-        final DeCoupleMbusDeviceByChannelRequest request = DeCoupleMbusDeviceByChannelRequestFactory.forGatewayAndChannel(eMeter,
-                channel);
+        final DeCoupleMbusDeviceByChannelRequest request = DeCoupleMbusDeviceByChannelRequestFactory
+                .forGatewayAndChannel(eMeter, channel);
         final DeCoupleMbusDeviceByChannelAsyncResponse asyncResponse = this.smartMeteringInstallationClient
                 .deCoupleMbusDeviceByChannel(request);
 
@@ -60,8 +61,8 @@ public class DeCoupleMbusDeviceByChannelSteps extends AbstractSmartMeteringSteps
     @Then("^retrieving the DeCouple By Channel response results in an exception$")
     public void retrievingTheDeCoupleResponseResultsInAnException() throws WebServiceSecurityException {
 
-        final DeCoupleMbusDeviceByChannelAsyncRequest asyncRequest =
-                DeCoupleMbusDeviceByChannelRequestFactory.fromScenarioContext();
+        final DeCoupleMbusDeviceByChannelAsyncRequest asyncRequest = DeCoupleMbusDeviceByChannelRequestFactory
+                .fromScenarioContext();
 
         try {
             this.smartMeteringInstallationClient.getDeCoupleMbusDeviceByChannelResponse(asyncRequest);
@@ -75,9 +76,8 @@ public class DeCoupleMbusDeviceByChannelSteps extends AbstractSmartMeteringSteps
     public void theDeCoupleGMeterFromEMeterRequestIsReceivedForAnUnknownDevice(final String channel,
             final String eMeter) throws WebServiceSecurityException {
 
-        final DeCoupleMbusDeviceByChannelRequest request =
-                DeCoupleMbusDeviceByChannelRequestFactory.forGatewayAndChannel(eMeter,
-                channel);
+        final DeCoupleMbusDeviceByChannelRequest request = DeCoupleMbusDeviceByChannelRequestFactory
+                .forGatewayAndChannel(eMeter, channel);
 
         try {
             this.smartMeteringInstallationClient.deCoupleMbusDeviceByChannel(request);

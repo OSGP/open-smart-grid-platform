@@ -136,13 +136,12 @@ public class BundleService {
                 this.mBusGatewayService.handleCoupleMbusDeviceByChannelResponse(deviceMessageMetadata,
                         (CoupleMbusDeviceByChannelResponseDto) action);
             } else if (action instanceof DeCoupleMbusDeviceResponseDto) {
-                this.mBusGatewayService.handleDeCoupleMbusDeviceResponse(
-                        (DeCoupleMbusDeviceResponseDto) action);
+                this.mBusGatewayService.handleDeCoupleMbusDeviceResponse((DeCoupleMbusDeviceResponseDto) action);
             } else if (action instanceof SetDeviceLifecycleStatusByChannelResponseDto) {
                 this.managementService
                         .setDeviceLifecycleStatusByChannel((SetDeviceLifecycleStatusByChannelResponseDto) action);
             } else if (action instanceof EventMessageDataResponseDto) {
-                this.eventService.addEventTypeToEvents(deviceMessageMetadata, (EventMessageDataResponseDto)action);
+                this.eventService.addEventTypeToEvents(deviceMessageMetadata, (EventMessageDataResponseDto) action);
             } else if (action instanceof FirmwareVersionResponseDto) {
                 final List<FirmwareVersion> firmwareVersions = this.configurationMapper
                         .mapAsList(((FirmwareVersionResponseDto) action).getFirmwareVersions(), FirmwareVersion.class);

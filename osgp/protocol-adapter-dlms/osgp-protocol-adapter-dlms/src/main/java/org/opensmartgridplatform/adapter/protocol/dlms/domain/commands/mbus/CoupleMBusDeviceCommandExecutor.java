@@ -50,18 +50,19 @@ public class CoupleMBusDeviceCommandExecutor
 
         if (FindMatchingChannelHelper.matches(requestDto, lastChannelElementValuesRetrieved)) {
             /*
-             * Match found, indicating device is already coupled on this channel: return it.
+             * Match found, indicating device is already coupled on this
+             * channel: return it.
              */
             return new MbusChannelElementsResponseDto(requestDto, lastChannelElementValuesRetrieved.getChannel(),
                     candidateChannelElementValues);
         }
 
-        final ChannelElementValuesDto bestMatch = FindMatchingChannelHelper
-                .bestMatch(requestDto, candidateChannelElementValues);
+        final ChannelElementValuesDto bestMatch = FindMatchingChannelHelper.bestMatch(requestDto,
+                candidateChannelElementValues);
         if (bestMatch != null) {
             /*
-             * Good enough match found indicating a channel the device is already coupled
-             * on: return it.
+             * Good enough match found indicating a channel the device is
+             * already coupled on: return it.
              */
             return new MbusChannelElementsResponseDto(requestDto, bestMatch.getChannel(),
                     candidateChannelElementValues);
@@ -71,29 +72,28 @@ public class CoupleMBusDeviceCommandExecutor
                 .findEmptyChannel(candidateChannelElementValues);
         if (emptyChannelMatch == null) {
             /*
-             * No channel free, all are occupied by M-Bus devices not matching the one to be
-             * coupled here. Return null for the channel.
+             * No channel free, all are occupied by M-Bus devices not matching
+             * the one to be coupled here. Return null for the channel.
              */
             return new MbusChannelElementsResponseDto(requestDto, null, candidateChannelElementValues);
         }
 
         /*
-         * If a free channel is found, write the attribute values from the request to
-         * the M-Bus Client Setup for this channel.
+         * If a free channel is found, write the attribute values from the
+         * request to the M-Bus Client Setup for this channel.
          *
-         * Note that this will not work for wired M-Bus devices. In order to properly
-         * couple a wired M-Bus device the M-Bus Client Setup slave_install method needs
-         * to be invoked so a primary_address is set and its value is transferred to the
-         * M-Bus slave device.
+         * Note that this will not work for wired M-Bus devices. In order to
+         * properly couple a wired M-Bus device the M-Bus Client Setup
+         * slave_install method needs to be invoked so a primary_address is set
+         * and its value is transferred to the M-Bus slave device.
          */
-        final ChannelElementValuesDto updatedChannelElementValues = this.deviceChannelsHelper
-                .writeUpdatedMbus(conn, requestDto, emptyChannelMatch.getChannel(),
-                        Protocol.forDevice(device), "CoupleMBusDevice");
+        final ChannelElementValuesDto updatedChannelElementValues = this.deviceChannelsHelper.writeUpdatedMbus(conn,
+                requestDto, emptyChannelMatch.getChannel(), Protocol.forDevice(device), "CoupleMBusDevice");
 
         /*
-         * Also update the entry in the candidateChannelElementValues list. Take into
-         * account that the candidateChannelElementsValues List is 0-based, while the
-         * channel in emptyChannelMatch is not
+         * Also update the entry in the candidateChannelElementValues list. Take
+         * into account that the candidateChannelElementsValues List is 0-based,
+         * while the channel in emptyChannelMatch is not
          */
         candidateChannelElementValues.set(this.deviceChannelsHelper.correctFirstChannelOffset(emptyChannelMatch),
                 updatedChannelElementValues);

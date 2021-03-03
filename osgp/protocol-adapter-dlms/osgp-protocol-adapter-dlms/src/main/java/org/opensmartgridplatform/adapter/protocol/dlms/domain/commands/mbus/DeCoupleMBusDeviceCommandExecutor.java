@@ -38,19 +38,18 @@ public class DeCoupleMBusDeviceCommandExecutor
     public DeCoupleMbusDeviceResponseDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final DeCoupleMbusDeviceDto decoupleMbusDto) throws ProtocolAdapterException {
 
-        Short channel = decoupleMbusDto.getChannel();
-        String mbusDeviceIdentification = decoupleMbusDto.getMbusDeviceIdentification();
+        final Short channel = decoupleMbusDto.getChannel();
+        final String mbusDeviceIdentification = decoupleMbusDto.getMbusDeviceIdentification();
         log.debug("DeCouple mbus device {} from channel {} on gateway device", mbusDeviceIdentification, channel);
 
         final ObisCode obisCode = this.deviceChannelsHelper.getObisCode(channel);
-        
+
         final CosemObjectAccessor mBusSetup = new CosemObjectAccessor(conn, obisCode, InterfaceClass.MBUS_CLIENT.id());
 
         this.deviceChannelsHelper.deinstallSlave(conn, device, channel, mBusSetup);
 
         this.deviceChannelsHelper.resetMBusClientAttributeValues(conn, channel, this.getClass().getSimpleName());
-        
-        return new DeCoupleMbusDeviceResponseDto(mbusDeviceIdentification,
-                channel);
+
+        return new DeCoupleMbusDeviceResponseDto(mbusDeviceIdentification, channel);
     }
 }

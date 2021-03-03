@@ -40,16 +40,17 @@ public class CoupleMbusDeviceByChannelCommandExecutor
 
         log.info("Retrieving values for mbus channel {} on device {}", requestDto.getChannel(),
                 device.getDeviceIdentification());
-        final List<GetResult> resultList = this.deviceChannelsHelper
-                .getMBusClientAttributeValues(conn, device, requestDto.getChannel());
+        final List<GetResult> resultList = this.deviceChannelsHelper.getMBusClientAttributeValues(conn, device,
+                requestDto.getChannel());
 
         /*
-         * Couple M-Bus device by channel is created to couple the M-Bus device in the
-         * platform based on a new M-Bus device discovered alarm for a particular
-         * channel. As such there is no write action to the M-Bus Client Setup involved,
-         * since the platform depends on the attributes on the gateway device to be able
-         * to determine which M-Bus device was actually involved when the alarm was
-         * triggered for the channel from the request.
+         * Couple M-Bus device by channel is created to couple the M-Bus device
+         * in the platform based on a new M-Bus device discovered alarm for a
+         * particular channel. As such there is no write action to the M-Bus
+         * Client Setup involved, since the platform depends on the attributes
+         * on the gateway device to be able to determine which M-Bus device was
+         * actually involved when the alarm was triggered for the channel from
+         * the request.
          */
         return new CoupleMbusDeviceByChannelResponseDto(
                 this.deviceChannelsHelper.makeChannelElementValues(requestDto.getChannel(), resultList));

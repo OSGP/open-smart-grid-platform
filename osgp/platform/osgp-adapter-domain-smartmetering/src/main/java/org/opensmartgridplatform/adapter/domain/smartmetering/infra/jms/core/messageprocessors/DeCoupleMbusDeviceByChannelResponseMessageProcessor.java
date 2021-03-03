@@ -32,8 +32,8 @@ public class DeCoupleMbusDeviceByChannelResponseMessageProcessor extends OsgpCor
 
     @Autowired
     protected DeCoupleMbusDeviceByChannelResponseMessageProcessor(
-            WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            final WebServiceResponseMessageSender responseMessageSender,
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.DE_COUPLE_MBUS_DEVICE_BY_CHANNEL,
                 ComponentType.DOMAIN_SMART_METERING);
     }

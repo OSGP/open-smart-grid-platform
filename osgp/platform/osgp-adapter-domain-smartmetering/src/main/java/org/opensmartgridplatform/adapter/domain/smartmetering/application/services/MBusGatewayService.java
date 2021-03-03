@@ -14,9 +14,9 @@ import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.exceptions.InactiveDeviceException;
 import org.opensmartgridplatform.domain.core.repositories.SmartMeterRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
 import org.opensmartgridplatform.domain.smartmetering.exceptions.MbusChannelNotFoundException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
@@ -148,26 +148,23 @@ public class MBusGatewayService {
         final DeCoupleMbusDeviceDto deCoupleMbusDeviceDto = new DeCoupleMbusDeviceDto(mbusDeviceIdentification,
                 mbusDevice.getChannel());
         final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(),
-                deviceMessageMetadata.getDeviceIdentification(), gatewayDevice.getIpAddress(),
-                deCoupleMbusDeviceDto);
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                gatewayDevice.getIpAddress(), deCoupleMbusDeviceDto);
         this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
                 deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
-    private SmartMeter findMbusDeviceOnChannel(final SmartMeter gatewayDevice, final short channel) throws FunctionalException {
-        return this.smartMeteringDeviceRepository
-                .getMbusDevicesForGateway(gatewayDevice.getId())
+    private SmartMeter findMbusDeviceOnChannel(final SmartMeter gatewayDevice, final short channel)
+            throws FunctionalException {
+        return this.smartMeteringDeviceRepository.getMbusDevicesForGateway(gatewayDevice.getId())
                 .stream()
                 .filter(smartMeter -> smartMeter.getChannel() == channel)
                 .findFirst()
-                .orElseThrow(() ->
-                    new FunctionalException(FunctionalExceptionType.NO_DEVICE_FOUND_ON_CHANNEL,
-                            ComponentType.DOMAIN_SMART_METERING,
-                            new OsgpException(ComponentType.DOMAIN_SMART_METERING,
-                                    "No matching mbus device found with gatewayDevice: "
-                                            + gatewayDevice.getDeviceIdentification()
-                                            + " and channel: " + channel)));
+                .orElseThrow(() -> new FunctionalException(FunctionalExceptionType.NO_DEVICE_FOUND_ON_CHANNEL,
+                        ComponentType.DOMAIN_SMART_METERING,
+                        new OsgpException(ComponentType.DOMAIN_SMART_METERING,
+                                "No matching mbus device found with gatewayDevice: "
+                                        + gatewayDevice.getDeviceIdentification() + " and channel: " + channel)));
     }
 
     private boolean isMbusDeviceCoupled(final SmartMeter mbusDevice) {
@@ -332,7 +329,7 @@ public class MBusGatewayService {
         if (!values.hasChannel() || !values.hasDeviceTypeIdentification() || !values.hasManufacturerIdentification()) {
             throw new FunctionalException(FunctionalExceptionType.NO_DEVICE_FOUND_ON_CHANNEL,
                     ComponentType.DOMAIN_SMART_METERING, new OsgpException(ComponentType.DOMAIN_SMART_METERING,
-                    "No device was found on channel: " + values.getChannel()));
+                            "No device was found on channel: " + values.getChannel()));
         }
     }
 
