@@ -25,6 +25,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.C
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ConfigureDefinableLoadProfileResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.EncryptionKeyStatus;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.FirmwareVersion;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.FirmwareVersionGas;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GenerateAndReplaceKeysAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GenerateAndReplaceKeysAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GenerateAndReplaceKeysRequest;
@@ -39,6 +40,10 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.G
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetConfigurationObjectResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionGasAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionGasAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionGasRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionGasResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusAsyncRequest;
@@ -111,6 +116,7 @@ import org.opensmartgridplatform.adapter.ws.smartmetering.application.services.C
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EncryptionKeyStatusType;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersionGasResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
@@ -243,6 +249,67 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         return response;
     }
 
+    @PayloadRoot(localPart = "GetFirmwareVersionGasRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public GetFirmwareVersionGasAsyncResponse getFirmwareVersionGas(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final GetFirmwareVersionGasRequest request, @MessagePriority final String messagePriority,
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
+
+        LOGGER.info("GetFirmwareVersionGasRequest received from organisation {} for device {}.",
+                organisationIdentification, request.getDeviceIdentification());
+
+        final GetFirmwareVersionGasAsyncResponse response = new GetFirmwareVersionGasAsyncResponse();
+
+        try {
+            final String correlationUid = this.configurationService.enqueueGetFirmwareRequest(
+                    organisationIdentification, request.getDeviceIdentification(),
+                    MessagePriorityEnum.getMessagePriority(messagePriority),
+                    this.configurationMapper.map(scheduleTime, Long.class));
+            response.setCorrelationUid(correlationUid);
+            response.setDeviceIdentification(request.getDeviceIdentification());
+            this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return response;
+    }
+
+    @PayloadRoot(localPart = "GetFirmwareVersionGasAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public GetFirmwareVersionGasResponse getGetFirmwareVersionGasResponse(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final GetFirmwareVersionGasAsyncRequest request) throws OsgpException {
+
+        LOGGER.info("GetFirmwareVersionGasResponse request received from organisation {} for device: {}.",
+                organisationIdentification, request.getDeviceIdentification());
+
+        final GetFirmwareVersionGasResponse response = new GetFirmwareVersionGasResponse();
+
+        try {
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
+            if (responseData != null) {
+                response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+
+                if (responseData.getMessageData() != null) {
+                    final FirmwareVersionGasResponse firmwareVersionGasResponse =
+                            (FirmwareVersionGasResponse) responseData.getMessageData();
+                    final FirmwareVersionGas firmwareVersionGas = this.configurationMapper.map(
+                            firmwareVersionGasResponse.getFirmwareVersion(), FirmwareVersionGas.class);
+                    response.setFirmwareVersion(firmwareVersionGas);
+                } else {
+                    LOGGER.info("GetFirmwareVersionGas: firmware is null");
+                }
+            }
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return response;
+    }
+
     @PayloadRoot(localPart = "UpdateFirmwareRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
     public UpdateFirmwareAsyncResponse updateFirmware(
@@ -321,8 +388,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AdministrativeStatusType dataRequest =
                 this.configurationMapper.map(
-                        request.getEnabled(),
-                        org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AdministrativeStatusType.class);
+                request.getEnabled(),
+                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AdministrativeStatusType.class);
 
         final String correlationUid = this.configurationService.requestSetAdministrativeStatus(
                 organisationIdentification, request.getDeviceIdentification(), dataRequest,
@@ -416,7 +483,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequest dataRequest =
                 this.configurationMapper.map(
-                        request, org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequest.class);
+                request, org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequest.class);
 
         final String correlationUid = this.configurationService.enqueueSetSpecialDaysRequest(organisationIdentification,
                 dataRequest.getDeviceIdentification(), dataRequest,
@@ -680,8 +747,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupAlarm pushSetupAlarm =
                 this.configurationMapper.map(
-                        requestData.getPushSetupAlarm(),
-                        org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupAlarm.class);
+                requestData.getPushSetupAlarm(),
+                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupAlarm.class);
 
         final String correlationUid = this.configurationService.enqueueSetPushSetupAlarmRequest(
                 organisationIdentification, deviceIdentification, pushSetupAlarm,
@@ -737,8 +804,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupSms pushSetupSms =
                 this.configurationMapper.map(
-                        requestData.getPushSetupSms(),
-                        org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupSms.class);
+                requestData.getPushSetupSms(),
+                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupSms.class);
 
         final String correlationUid = this.configurationService.enqueueSetPushSetupSmsRequest(
                 organisationIdentification, deviceIdentification, pushSetupSms,
@@ -906,8 +973,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         try {
             final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData keySet =
                     this.configurationMapper.map(
-                            request.getSetKeysRequestData(),
-                            org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData.class);
+                    request.getSetKeysRequestData(),
+                    org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData.class);
 
             final String correlationUid = this.configurationService.enqueueReplaceKeysRequest(
                     organisationIdentification, request.getDeviceIdentification(), keySet,
@@ -1297,5 +1364,4 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         }
         return response;
     }
-
 }

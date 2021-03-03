@@ -20,7 +20,6 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ClearAla
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ConfigureDefinableLoadProfileRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.CoupleMbusDeviceByChannelRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.FindEventsRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetOutagesRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GenerateAndReplaceKeysRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetActualMeterReadsGasRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetActualMeterReadsRequest;
@@ -28,9 +27,11 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetAdmin
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetAllAttributeValuesRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetAssociationLnObjectsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetConfigurationObjectRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetFirmwareVersionGasRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetFirmwareVersionRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetMbusEncryptionKeyStatusByChannelRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetMbusEncryptionKeyStatusRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetOutagesRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPeriodicMeterReadsGasRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPeriodicMeterReadsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPowerQualityProfileRequest;
@@ -66,15 +67,16 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.Administ
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DefinableLoadProfileConfigurationData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FindEventsRequestData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetOutagesRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GenerateAndReplaceKeysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetAdministrativeStatusData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetAllAttributeValuesRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetAssociationLnObjectsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfigurationObjectRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetFirmwareVersionGasRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetFirmwareVersionRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetOutagesRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGasRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
@@ -167,6 +169,9 @@ public class ActionMapperService {
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionRequestData.class,
                 GetFirmwareVersionRequestData.class);
         CLASS_MAP.put(
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionGasRequestData.class,
+                GetFirmwareVersionGasRequestData.class);
+        CLASS_MAP.put(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareRequestData.class,
                 UpdateFirmwareRequestData.class);
         CLASS_MAP.put(org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetKeysRequestData.class,
@@ -211,6 +216,7 @@ public class ActionMapperService {
         CLASS_MAP.put(SynchronizeTimeRequest.class, SynchronizeTimeRequestData.class);
         CLASS_MAP.put(GetAllAttributeValuesRequest.class, GetAllAttributeValuesRequestData.class);
         CLASS_MAP.put(GetFirmwareVersionRequest.class, GetFirmwareVersionRequestData.class);
+        CLASS_MAP.put(GetFirmwareVersionGasRequest.class, GetFirmwareVersionGasRequestData.class);
         CLASS_MAP.put(UpdateFirmwareRequest.class, UpdateFirmwareRequestData.class);
         CLASS_MAP.put(SetKeysRequest.class, SetKeysRequestData.class);
         CLASS_MAP.put(GetAssociationLnObjectsRequest.class, GetAssociationLnObjectsRequestData.class);
@@ -255,17 +261,15 @@ public class ActionMapperService {
      */
     @PostConstruct
     private void postConstruct() {
-
-        mapAdHocRequestData();
-        mapConfigurationRequestData();
-        mapInstallationRequestData();
-        mapManagementRequestData();
-        mapMonitoringRequestData();
+        this.mapAdHocRequestData();
+        this.mapConfigurationRequestData();
+        this.mapInstallationRequestData();
+        this.mapManagementRequestData();
+        this.mapMonitoringRequestData();
 
     }
 
     private void mapInstallationRequestData() {
-
         CLASS_TO_MAPPER_MAP.put(CoupleMbusDeviceByChannelRequest.class, this.installationMapper);
         CLASS_TO_MAPPER_MAP.put(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelRequestData.class,
@@ -273,7 +277,6 @@ public class ActionMapperService {
     }
 
     private void mapAdHocRequestData() {
-
         CLASS_TO_MAPPER_MAP.put(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeRequestData.class,
                 this.adhocMapper);
@@ -293,7 +296,6 @@ public class ActionMapperService {
     }
 
     private void mapManagementRequestData() {
-
         CLASS_TO_MAPPER_MAP.put(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.FindEventsRequestData.class,
                 this.managementMapper);
@@ -305,14 +307,10 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetOutagesRequestData.class,
                 this.managementMapper);
-        CLASS_TO_MAPPER_MAP.put(
-                org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetOutagesRequestData.class,
-                this.managementMapper);
         CLASS_TO_MAPPER_MAP.put(GetOutagesRequest.class, this.managementMapper);
     }
 
     private void mapMonitoringRequestData() {
-
         CLASS_TO_MAPPER_MAP.put(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterData.class,
                 this.monitoringMapper);
@@ -345,7 +343,6 @@ public class ActionMapperService {
     }
 
     private void mapConfigurationRequestData() {
-
         CLASS_TO_MAPPER_MAP.put(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SpecialDaysRequestData.class,
                 this.configurationMapper);
@@ -394,6 +391,10 @@ public class ActionMapperService {
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionRequestData.class,
                 this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(GetFirmwareVersionRequest.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionGasRequestData.class,
+                this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(GetFirmwareVersionGasRequest.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(UpdateFirmwareRequest.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetKeysRequestData.class,
