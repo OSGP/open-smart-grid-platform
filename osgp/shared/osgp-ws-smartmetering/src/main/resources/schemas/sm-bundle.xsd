@@ -177,6 +177,13 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+  <xsd:element name="GetFirmwareVersionGasRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:GetFirmwareVersionGasRequestData"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
   <xsd:element name="UpdateFirmwareRequest">
     <xsd:complexType>
       <xsd:complexContent>
@@ -308,6 +315,7 @@
         <xsd:element ref="tns:SetPushSetupSmsRequest"/>
         <xsd:element ref="tns:SynchronizeTimeRequest"/>
         <xsd:element ref="tns:GetFirmwareVersionRequest"/>
+        <xsd:element ref="tns:GetFirmwareVersionGasRequest"/>
         <xsd:element ref="tns:UpdateFirmwareRequest"/>
         <xsd:element ref="tns:GetAllAttributeValuesRequest"/>
         <xsd:element ref="tns:GetSpecificAttributeValueRequest"/>
@@ -442,6 +450,13 @@
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="smconf:GetFirmwareVersionResponseData"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetFirmwareVersionGasResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smconf:GetFirmwareVersionGasResponseData"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>

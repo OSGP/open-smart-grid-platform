@@ -61,6 +61,26 @@
     </xsd:complexContent>
   </xsd:complexType>
 
+  <xsd:complexType name="GetFirmwareVersionGasRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Query">
+        <xsd:sequence>
+          <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="GetFirmwareVersionGasResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
+        <xsd:sequence>
+          <xsd:element name="FirmwareVersions" type="tns:FirmwareVersion" maxOccurs="unbounded"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
   <xsd:element name="UpdateFirmwareRequest">
     <xsd:complexType>
       <xsd:sequence>
