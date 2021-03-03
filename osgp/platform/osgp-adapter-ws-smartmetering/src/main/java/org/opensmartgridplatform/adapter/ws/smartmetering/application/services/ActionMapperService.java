@@ -44,6 +44,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetPushS
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetPushSetupSmsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetSpecialDaysRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SynchronizeTimeRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Action;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.AdhocMapper;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.InstallationMapper;
