@@ -38,7 +38,6 @@ public class DeviceFactory implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        // this.deviceFactoryMap.put(DeviceType.SSLD, this::createSsld);
         this.deviceFactoryMap.put(DeviceType.LIGHT_MEASUREMENT_DEVICE, this::createLightMeasurementDevice);
         this.deviceFactoryMap.put(DeviceType.LIGHT_MEASUREMENT_GATEWAY, this::createLightMeasurementGateway);
     }
@@ -50,14 +49,6 @@ public class DeviceFactory implements InitializingBean {
             LOGGER.warn("Unsupported DeviceType: " + deviceType);
         }
     }
-
-    // private void createSsld(final Protocol protocol, final Map<String,
-    // String> settings) {
-    //// this.platformDeviceFactory.createPlatformDevice(protocol,
-    // DeviceType.SSLD, settings);
-    // this.protocolDeviceFactory.createProtocolDevice(DeviceType.SSLD,
-    // protocol, settings);
-    // }
 
     private void createLightMeasurementDevice(final Protocol protocol, final Map<String, String> settings) {
         this.platformDeviceFactory.createPlatformDevice(DeviceType.LIGHT_MEASUREMENT_DEVICE, protocol, settings);
