@@ -11,11 +11,11 @@ Feature: DistributionAutomation Receive measurement reports
     When Organization test-org connects to device TEST1024000000001
     Then I receive a measurement report for device TEST1024000000001
 
+  @Iec60870MockServerDefaultControlledStation
   Scenario: Update process image of default controlled station
     Given an IEC 60870 RTU
       | DeviceIdentification | TEST1024000000002          |
       | Status               | Active                     |
-      | Profile              | default_controlled_station |
     When Organization test-org connects to device TEST1024000000002
     And I update the information object
       | InformationObjectAddress |            2 |

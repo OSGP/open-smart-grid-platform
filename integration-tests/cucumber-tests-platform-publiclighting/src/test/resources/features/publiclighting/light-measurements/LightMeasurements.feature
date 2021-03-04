@@ -41,7 +41,7 @@ Feature: Light Measurement using IEC-60870 device
   #    When I request the status for the light measurement device
   #    Then the light measurement device status should be returned
  
-  @OslpMockServer @Iec60870LightMeasurementMockServer
+  @OslpMockServer @Iec60870MockServerLightMeasurement
   Scenario Outline: Switch public lighting upon receiving a light measurement event from IEC light measurement device
     Given a light measurement gateway using IEC60870 protocol
       | DeviceIdentification | <LMG> |

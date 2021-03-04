@@ -64,9 +64,6 @@ public class Iec60870DeviceSteps {
         ScenarioContext.current()
                 .put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
         final Map<String, String> rtuSettings = SettingsHelper.addAsDefaults(settings, RTU_60870_DEFAULT_SETTINGS);
-        ScenarioContext.current()
-                .put(PlatformDistributionAutomationKeys.PROFILE,
-                        rtuSettings.get(PlatformDistributionAutomationKeys.PROFILE));
 
         rtuSettings.put(PlatformKeys.KEY_NETWORKADDRESS, this.mockServerConfig.iec60870MockNetworkAddress());
 
