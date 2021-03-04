@@ -12,6 +12,8 @@ import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.converter.ConverterFactory;
 import ma.glasnost.orika.converter.builtin.DateAndTimeConverters.DateToXmlGregorianCalendarConverter;
 import ma.glasnost.orika.impl.ConfigurableMapper;
+import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.ActualPowerQualityDtoConverter;
+import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.PowerQualityValueConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.DlmsMeterValueConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.GetPowerQualityProfileDtoConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.MeterReadsResponseItemDtoConverter;
@@ -36,6 +38,8 @@ public class MonitoringMapper extends ConfigurableMapper {
         converterFactory.registerConverter(new PeriodicMeterReadsResponseItemDtoConverter(mapperFactory));
         converterFactory.registerConverter(new MeterReadsResponseItemDtoConverter(mapperFactory));
         converterFactory.registerConverter(new GetPowerQualityProfileDtoConverter(mapperFactory));
+        converterFactory.registerConverter(new ActualPowerQualityDtoConverter(mapperFactory));
+        converterFactory.registerConverter(new PowerQualityValueConverter());
     }
 
 }

@@ -1,9 +1,10 @@
 /**
  * Copyright 2018 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.shared.infra.jms;
 
@@ -23,6 +24,7 @@ public enum MessageType {
     FIND_EVENTS,
     FIND_SCHEDULED_TASKS,
     GENERATE_AND_REPLACE_KEYS,
+    GET_ACTUAL_POWER_QUALITY,
     GET_ADMINISTRATIVE_STATUS,
     GET_ALL_ATTRIBUTE_VALUES,
     GET_ASSOCIATION_LN_OBJECTS,
@@ -47,6 +49,7 @@ public enum MessageType {
     GET_PROFILE_GENERIC_DATA,
     GET_SPECIFIC_ATTRIBUTE_VALUE,
     GET_STATUS,
+    GET_SUBSCRIPTION_INFORMATION,
     GET_TARIFF_STATUS,
     HANDLE_BUNDLED_ACTIONS,
     PUSH_NOTIFICATION_ALARM,
