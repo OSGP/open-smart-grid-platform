@@ -11,7 +11,7 @@
 
   <artifactId>protocol-adapter-mqtt</artifactId>
   <groupId>org.opensmartgridplatform</groupId>
-  <version>5.8.1-SNAPSHOT</version>
+  <version>5.8.2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>protocol-adapter-mqtt</name>
 
