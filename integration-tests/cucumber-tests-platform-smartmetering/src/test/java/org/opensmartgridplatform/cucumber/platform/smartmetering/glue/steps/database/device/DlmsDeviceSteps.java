@@ -229,7 +229,7 @@ public class DlmsDeviceSteps {
     }
 
     @Then("^the new keys are stored in the secret management database encrypted_secret table$")
-    public void theNewKeysAreStoredInTheOsgpAdapterProtocolDlmsDatabaseSecurityKeyTable() {
+    public void theNewKeysAreStoredInTheSecretManagementDatabaseEncryptedSecretTable() {
         final String keyDeviceIdentification = PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION;
         final String deviceIdentification = (String) ScenarioContext.current().get(keyDeviceIdentification);
         assertThat(deviceIdentification)
@@ -309,7 +309,7 @@ public class DlmsDeviceSteps {
         assertThat(numberOfEncryptionKeys).as("Number of encryption keys").isEqualTo(1);
     }
 
-    private List<DbEncryptedSecret> findAllSecretsForDevice(String deviceIdentification) {
+    private List<DbEncryptedSecret> findAllSecretsForDevice(final String deviceIdentification) {
         final DbEncryptedSecret searchByIdExample = new DbEncryptedSecret();
         searchByIdExample.setDeviceIdentification(deviceIdentification);
         return this.encryptedSecretRepository.findAll(Example.of(searchByIdExample));
@@ -542,11 +542,12 @@ public class DlmsDeviceSteps {
                 .findByTypeAndValid(EncryptionProviderType.JRE, new Date()).iterator().next();
         secretBuilders.stream().filter(Objects::nonNull)
                       .map(builder -> builder.withDeviceIdentification(dlmsDevice.getDeviceIdentification())
-                                             .withEncryptionKeyReference(encryptionKeyRef)).map(SecretBuilder::build)
+                                             .withEncryptionKeyReference(encryptionKeyRef))
+                      .map(SecretBuilder::build)
                       .forEach(this.encryptedSecretRepository::save);
     }
 
-    private SecretBuilder getDefaultSecretBuilder(SecurityKeyType keyType) {
+    private SecretBuilder getDefaultSecretBuilder(final SecurityKeyType keyType) {
         return this.defaultSecretBuilders.stream().filter(sb -> sb.getSecurityKeyType().equals(keyType)).findFirst()
                                          .orElseThrow(() -> new IllegalArgumentException(
                                                  String.format("Unknown secret builder requested for type %s",
@@ -644,7 +645,7 @@ public class DlmsDeviceSteps {
         if (!inputSettings.containsKey(PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION)) {
             throw new IllegalArgumentException("No device identification provided");
         }
-        String deviceIdentification = inputSettings.get(PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION);
+        final String deviceIdentification = inputSettings.get(PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION);
         if (!inputSettings.containsKey(PlatformSmartmeteringKeys.KEY_DEVICE_AUTHENTICATIONKEY) && !inputSettings
                 .containsKey(PlatformSmartmeteringKeys.KEY_DEVICE_ENCRYPTIONKEY)) {
             throw new IllegalArgumentException("No authentication or encryption key provided");
@@ -652,20 +653,21 @@ public class DlmsDeviceSteps {
         Thread.sleep(waitTimeInMillis);
         final DbEncryptionKeyReference encryptionKeyRef = this.encryptionKeyRepository
                 .findByTypeAndValid(EncryptionProviderType.JRE, new Date()).iterator().next();
-        List<SecretType> keyTypesToCheck = Arrays.asList(E_METER_AUTHENTICATION_KEY, E_METER_ENCRYPTION_KEY_UNICAST);
-        for (SecretType secretType : keyTypesToCheck) {
-            String keyInputName = this.getKeyTypeInputName(secretType);
+        final List<SecretType> keyTypesToCheck = Arrays
+                .asList(E_METER_AUTHENTICATION_KEY, E_METER_ENCRYPTION_KEY_UNICAST);
+        for (final SecretType secretType : keyTypesToCheck) {
+            final String keyInputName = this.getKeyTypeInputName(secretType);
             if (inputSettings.containsKey(keyInputName)) {
-                Map<SecretStatus, Integer> expectedNrOfKeysByStatus = new HashMap<>();
+                final Map<SecretStatus, Integer> expectedNrOfKeysByStatus = new HashMap<>();
                 expectedNrOfKeysByStatus.put(SecretStatus.NEW, 0);
                 expectedNrOfKeysByStatus.put(SecretStatus.ACTIVE, 1);
                 expectedNrOfKeysByStatus.put(SecretStatus.EXPIRED, 1);
-                for (SecretStatus secretStatus : expectedNrOfKeysByStatus.keySet()) {
-                    int nrOfKeys = this.encryptedSecretRepository
+                for (final SecretStatus secretStatus : expectedNrOfKeysByStatus.keySet()) {
+                    final int nrOfKeys = this.encryptedSecretRepository
                             .getSecretCount(deviceIdentification, secretType, secretStatus);
                     assertThat(nrOfKeys).isEqualTo(expectedNrOfKeysByStatus.get(secretStatus));
                 }
-                List<DbEncryptedSecret> activeSecretList = this.encryptedSecretRepository
+                final List<DbEncryptedSecret> activeSecretList = this.encryptedSecretRepository
                         .findSecrets(deviceIdentification, secretType, SecretStatus.ACTIVE);
                 assertThat(activeSecretList.get(0).getEncodedSecret()).isEqualTo(inputSettings.get(keyInputName));
             }

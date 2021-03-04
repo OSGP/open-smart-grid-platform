@@ -34,7 +34,7 @@ public class SecretBuilder implements CucumberBuilder<DbEncryptedSecret> {
     private Date creationTime;
     private DbEncryptionKeyReference encryptionKeyReference;
 
-    public SecretBuilder withSecretType(SecretType secretType) {
+    public SecretBuilder withSecretType(final SecretType secretType) {
         this.secretType = secretType;
         return this;
     }
@@ -78,7 +78,7 @@ public class SecretBuilder implements CucumberBuilder<DbEncryptedSecret> {
         return this;
     }
 
-    public SecretBuilder withEncryptionKeyReference(DbEncryptionKeyReference encryptionKeyReference) {
+    public SecretBuilder withEncryptionKeyReference(final DbEncryptionKeyReference encryptionKeyReference) {
         this.encryptionKeyReference = encryptionKeyReference;
         return this;
     }
