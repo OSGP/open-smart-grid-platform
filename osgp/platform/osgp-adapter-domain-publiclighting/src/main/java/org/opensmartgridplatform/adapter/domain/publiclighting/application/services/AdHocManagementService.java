@@ -149,7 +149,6 @@ public class AdHocManagementService extends AbstractService {
         final Instant lastCommunicationTime = this.updateLmdLastCommunicationTime(lightMeasurementDevice)
                 .getLastCommunicationTime();
         if (gateway != null) {
-            // gateway.setLastSuccessfulConnectionTimestamp(lastCommunicationTime);
             this.rtuDeviceRepository.findById(gateway.getId())
                     .ifPresent(rtu -> this.updateGatewayLastCommunicationTime(rtu, lastCommunicationTime));
         }
@@ -196,7 +195,7 @@ public class AdHocManagementService extends AbstractService {
 
         final String actualMessageType = LightMeasurementDevice.LMD_TYPE.equals(device.getDeviceType())
                 ? DeviceFunction.GET_LIGHT_SENSOR_STATUS.name()
-                        : messageType;
+                : messageType;
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, allowedDomainTypeDto), actualMessageType, messagePriority,

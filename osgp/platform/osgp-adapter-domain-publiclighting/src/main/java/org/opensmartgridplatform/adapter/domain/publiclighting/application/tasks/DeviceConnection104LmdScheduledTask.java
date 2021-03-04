@@ -41,8 +41,6 @@ public class DeviceConnection104LmdScheduledTask extends BaseTask implements Run
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceConnection104LmdScheduledTask.class);
 
-    private static final String PROTOCOL = "60870-5-104";
-
     @Autowired
     private int deviceConnection104LmdScheduledTaskMaximumAllowedAge;
 
@@ -54,12 +52,6 @@ public class DeviceConnection104LmdScheduledTask extends BaseTask implements Run
                     .findLightMeasurementGateways(this.deviceConnection104LmdScheduledTaskMaximumAllowedAge);
             this.connectLightMeasurementGateways(gatewaysToConnect);
 
-            // final List<LightMeasurementDevice> devices =
-            // this.findLightMeasurementDevicesByProtocol(PROTOCOL);
-            // final List<LightMeasurementDevice> devicesToConnect =
-            // this.findLightMeasurementDevicesToConnect(devices,
-            // this.deviceConnection104LmdScheduledTaskMaximumAllowedAge);
-            // this.connectLightMeasurementDevices(devicesToConnect);
         } catch (final Exception e) {
             LOGGER.error("Exception caught ensuring active connection to IEC 60870-5-104 light measurement devices", e);
         }
