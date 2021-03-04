@@ -4,6 +4,7 @@ Feature: DistributionAutomation Receive measurement reports
   I want to receive measurement reports from an IEC 60870 device
   So I get updates about the current state of the device
 
+  @Iec60870MockServerDefaultControlledStation
   Scenario: Connect to an IEC 60870 device
     Given an IEC 60870 RTU
       | DeviceIdentification | TEST1024000000001 |
