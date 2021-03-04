@@ -39,8 +39,7 @@ public class DeCoupleMBusDeviceCommandExecutor
             final DeCoupleMbusDeviceDto decoupleMbusDto) throws ProtocolAdapterException {
 
         Short channel = decoupleMbusDto.getChannel();
-        String mbusDeviceIdentification = decoupleMbusDto.getMbusDeviceIdentification();
-        log.debug("DeCouple mbus device {} from channel {} on gateway device", mbusDeviceIdentification, channel);
+        log.debug("DeCouple channel {} on gateway device {}", channel, device.getDeviceIdentification());
 
         final ObisCode obisCode = this.deviceChannelsHelper.getObisCode(channel);
         
@@ -50,7 +49,6 @@ public class DeCoupleMBusDeviceCommandExecutor
 
         this.deviceChannelsHelper.resetMBusClientAttributeValues(conn, channel, this.getClass().getSimpleName());
         
-        return new DeCoupleMbusDeviceResponseDto(mbusDeviceIdentification,
-                channel);
+        return new DeCoupleMbusDeviceResponseDto(channel);
     }
 }

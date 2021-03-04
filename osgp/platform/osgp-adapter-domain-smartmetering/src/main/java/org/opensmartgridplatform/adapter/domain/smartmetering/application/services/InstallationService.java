@@ -8,6 +8,8 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
+import java.util.Optional;
+
 import ma.glasnost.orika.MapperFactory;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.CommonMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
@@ -148,7 +150,8 @@ public class InstallationService {
             final ResponseMessageResultType result, final OsgpException exception,
             final DeCoupleMbusDeviceResponseDto deCoupleMbusDeviceResponseDto) throws FunctionalException {
         if (exception == null) {
-            this.mBusGatewayService.handleDeCoupleMbusDeviceResponse(deCoupleMbusDeviceResponseDto);
+            this.mBusGatewayService.handleDeCoupleMbusDeviceResponse(deviceMessageMetadata,
+                    deCoupleMbusDeviceResponseDto);
         }
         this.handleResponse("deCoupleMbusDevice", deviceMessageMetadata, result, exception);
     }
@@ -158,7 +161,16 @@ public class InstallationService {
             final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException,
             final DeCoupleMbusDeviceResponseDto deCoupleMbusDeviceResponseDto) throws FunctionalException {
 
-        this.mBusGatewayService.handleDeCoupleMbusDeviceResponse(deCoupleMbusDeviceResponseDto);
+        Optional<SmartMeter> mbusDeviceFoundOnChannel =
+                this.mBusGatewayService.handleDeCoupleMbusDeviceResponse(deviceMessageMetadata,
+                deCoupleMbusDeviceResponseDto);
+
+        final String mbusDeviceDeviceIdentification = mbusDeviceFoundOnChannel.isPresent()?
+                mbusDeviceFoundOnChannel.get().getDeviceIdentification():null;
+
+        final DeCoupleMbusDeviceByChannelResponse response =
+                new DeCoupleMbusDeviceByChannelResponse(mbusDeviceDeviceIdentification,
+                        deCoupleMbusDeviceResponseDto.getChannel());
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
@@ -166,8 +178,7 @@ public class InstallationService {
                 .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
                 .withResult(responseMessageResultType)
                 .withOsgpException(osgpException)
-                .withDataObject(this.commonMapper.map(deCoupleMbusDeviceResponseDto,
-                        DeCoupleMbusDeviceByChannelResponse.class))
+                .withDataObject(response)
                 .withMessagePriority(deviceMessageMetadata.getMessagePriority())
                 .build();
 

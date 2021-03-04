@@ -14,25 +14,18 @@ public class DeCoupleMbusDeviceDto implements Serializable, ActionRequestDto {
     private static final long serialVersionUID = 5377631203726277889L;
 
     private final Short channel;
-    private final String mbusDeviceIdentification;
 
-    public DeCoupleMbusDeviceDto(final String mbusDeviceIdentification, final Short channel) {
-        this.mbusDeviceIdentification = mbusDeviceIdentification;
+    public DeCoupleMbusDeviceDto(final Short channel) {
         this.channel = channel;
     }
 
     @Override
     public String toString() {
-        return "DeCoupleMbusDeviceDto [channel=" + this.channel + ", mbusDeviceIdentification="
-                + this.mbusDeviceIdentification + "]";
+        return "DeCoupleMbusDeviceDto [channel=" + this.channel + "]";
     }
 
     public Short getChannel() {
         return this.channel;
-    }
-
-    public String getMbusDeviceIdentification() {
-        return this.mbusDeviceIdentification;
     }
 
 }
