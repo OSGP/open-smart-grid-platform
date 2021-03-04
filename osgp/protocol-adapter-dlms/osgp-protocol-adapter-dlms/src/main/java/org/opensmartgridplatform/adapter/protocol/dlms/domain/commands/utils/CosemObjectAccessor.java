@@ -26,7 +26,6 @@ import org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeClass;
 import org.opensmartgridplatform.dlms.interfaceclass.method.MethodClass;
 import org.springframework.stereotype.Component;
 
-@Component
 public class CosemObjectAccessor {
 
     private static final String EXCEPTION_MSG_ACCESS_RESULT_NOT_SUCCESS = "Access result not success but '%s'  while "
