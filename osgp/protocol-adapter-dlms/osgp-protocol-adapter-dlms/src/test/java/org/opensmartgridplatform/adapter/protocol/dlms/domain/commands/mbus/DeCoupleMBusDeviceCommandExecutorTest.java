@@ -43,11 +43,11 @@ public class DeCoupleMBusDeviceCommandExecutorTest {
     public void test() throws ProtocolAdapterException {
 
         final short channel = (short) 1;
-        final String mbusDeviceIdentification = "G000001";
+        // final String mbusDeviceIdentification = "G000001";
 
         when(this.deviceChannelsHelper.getObisCode(channel)).thenReturn(new ObisCode("0.1.24.1.0.255"));
         when(this.decoupleMbusDto.getChannel()).thenReturn(channel);
-        when(this.decoupleMbusDto.getMbusDeviceIdentification()).thenReturn(mbusDeviceIdentification);
+        // when(this.decoupleMbusDto.getMbusDeviceIdentification()).thenReturn(mbusDeviceIdentification);
         when(this.deviceChannelsHelper.deinstallSlave(eq(this.conn), eq(this.device), any(Short.class),
                 any(CosemObjectAccessor.class))).thenReturn(MethodResultCode.SUCCESS);
 
@@ -56,7 +56,7 @@ public class DeCoupleMBusDeviceCommandExecutorTest {
 
         assertThat(responseDto).isNotNull();
         assertThat(responseDto.getChannel()).isEqualTo(channel);
-        assertThat(responseDto.getMbusDeviceIdentification()).isEqualTo(mbusDeviceIdentification);
+        // assertThat(responseDto.getMbusDeviceIdentification()).isEqualTo(mbusDeviceIdentification);
 
         verify(this.deviceChannelsHelper, times(1)).deinstallSlave(eq(this.conn), eq(this.device), any(Short.class),
                 any(CosemObjectAccessor.class));
