@@ -118,6 +118,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmNot
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EncryptionKeyStatusType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersionGasResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetFirmwareVersionQuery;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
@@ -138,7 +139,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringConfigurationEndpoint.class);
     private static final String SMARTMETER_CONFIGURATION_NAMESPACE =
-            "http://www.opensmartgridplatform" + ".org/schemas/smartmetering/sm-configuration/2014/10";
+            "http://www.opensmartgridplatform.org/schemas/smartmetering/sm-configuration/2014/10";
 
     @Autowired
     private ConfigurationService configurationService;
@@ -176,18 +177,47 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             @RequestPayload final GetFirmwareVersionRequest request, @MessagePriority final String messagePriority,
             @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
 
+        final String deviceIdentification = request.getDeviceIdentification();
+
         LOGGER.info("GetFirmwareVersion Request received from organisation {} for device {}.",
-                organisationIdentification, request.getDeviceIdentification());
+                organisationIdentification, deviceIdentification);
 
         final GetFirmwareVersionAsyncResponse response = new GetFirmwareVersionAsyncResponse();
 
+        return (GetFirmwareVersionAsyncResponse) this.handleGetFirmwareVersion(organisationIdentification,
+                deviceIdentification, new GetFirmwareVersionQuery(), messagePriority,
+                scheduleTime, responseUrl, response);
+    }
+
+    @PayloadRoot(localPart = "GetFirmwareVersionGasRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public GetFirmwareVersionGasAsyncResponse getFirmwareVersionGas(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final GetFirmwareVersionGasRequest request, @MessagePriority final String messagePriority,
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
+
+        final String deviceIdentification = request.getDeviceIdentification();
+
+        LOGGER.info("GetFirmwareVersionGasRequest received from organisation {} for device {}.",
+                organisationIdentification, deviceIdentification);
+
+        final GetFirmwareVersionGasAsyncResponse response = new GetFirmwareVersionGasAsyncResponse();
+
+        return (GetFirmwareVersionGasAsyncResponse) this.handleGetFirmwareVersion(organisationIdentification, deviceIdentification, new GetFirmwareVersionQuery(true), messagePriority,
+                scheduleTime, responseUrl, response);
+    }
+
+    private AsyncResponse handleGetFirmwareVersion(final String organisationIdentification,
+            final String deviceIdentification, final GetFirmwareVersionQuery firmwareVersionQuery,
+            final String messagePriority, final String scheduleTime, final String responseUrl,
+            final AsyncResponse response) throws OsgpException {
         try {
             final String correlationUid = this.configurationService.enqueueGetFirmwareRequest(
-                    organisationIdentification, request.getDeviceIdentification(),
+                    organisationIdentification, deviceIdentification, firmwareVersionQuery,
                     MessagePriorityEnum.getMessagePriority(messagePriority),
                     this.configurationMapper.map(scheduleTime, Long.class));
             response.setCorrelationUid(correlationUid);
-            response.setDeviceIdentification(request.getDeviceIdentification());
+            response.setDeviceIdentification(deviceIdentification);
             this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
             this.handleException(e);
@@ -242,33 +272,6 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
                     LOGGER.info("Get Firmware Version firmware is null");
                 }
             }
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-
-        return response;
-    }
-
-    @PayloadRoot(localPart = "GetFirmwareVersionGasRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public GetFirmwareVersionGasAsyncResponse getFirmwareVersionGas(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetFirmwareVersionGasRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
-
-        LOGGER.info("GetFirmwareVersionGasRequest received from organisation {} for device {}.",
-                organisationIdentification, request.getDeviceIdentification());
-
-        final GetFirmwareVersionGasAsyncResponse response = new GetFirmwareVersionGasAsyncResponse();
-
-        try {
-            final String correlationUid = this.configurationService.enqueueGetFirmwareRequest(
-                    organisationIdentification, request.getDeviceIdentification(),
-                    MessagePriorityEnum.getMessagePriority(messagePriority),
-                    this.configurationMapper.map(scheduleTime, Long.class));
-            response.setCorrelationUid(correlationUid);
-            response.setDeviceIdentification(request.getDeviceIdentification());
-            this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
             this.handleException(e);
         }

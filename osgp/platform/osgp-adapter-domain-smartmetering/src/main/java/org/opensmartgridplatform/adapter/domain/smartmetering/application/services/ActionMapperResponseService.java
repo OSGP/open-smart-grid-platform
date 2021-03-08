@@ -28,6 +28,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.BundleMe
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventMessagesResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FaultResponse;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersionGasResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetAllAttributeValuesResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfigurationObjectResponse;
@@ -50,6 +51,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.BundleMessagesRe
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FaultResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.FirmwareVersionGasResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FirmwareVersionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetAllAttributeValuesResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
@@ -106,6 +108,7 @@ public class ActionMapperResponseService {
         classMap.put(PeriodicMeterReadGasResponseDto.class, PeriodicMeterReadsContainerGas.class);
         classMap.put(GetAllAttributeValuesResponseDto.class, GetAllAttributeValuesResponse.class);
         classMap.put(FirmwareVersionResponseDto.class, FirmwareVersionResponse.class);
+        classMap.put(FirmwareVersionGasResponseDto.class, FirmwareVersionGasResponse.class);
         classMap.put(UpdateFirmwareResponseDto.class, UpdateFirmwareResponse.class);
         classMap.put(AssociationLnObjectsResponseDto.class, AssociationLnObjectsResponseData.class);
         classMap.put(GetConfigurationObjectResponseDto.class, GetConfigurationObjectResponse.class);

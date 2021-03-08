@@ -22,6 +22,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.Administ
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DefinableLoadProfileConfigurationData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfigurationObjectRequest;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetFirmwareVersionQuery;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupAlarm;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupSms;
@@ -64,10 +65,11 @@ public class ConfigurationService {
     }
 
     public String enqueueGetFirmwareRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final int messagePriority, final Long scheduleTime)
-            throws FunctionalException {
+            @Identification final String deviceIdentification, final GetFirmwareVersionQuery requestData,
+            final int messagePriority, final Long scheduleTime) throws FunctionalException {
         return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
-                scheduleTime, DeviceFunction.GET_FIRMWARE_VERSION, MessageType.GET_FIRMWARE_VERSION, Optional.empty());
+                scheduleTime, DeviceFunction.GET_FIRMWARE_VERSION, MessageType.GET_FIRMWARE_VERSION,
+                Optional.of(requestData));
     }
 
     public String enqueueUpdateFirmwareRequest(@Identification final String organisationIdentification,

@@ -14,6 +14,7 @@ import org.opensmartgridplatform.adapter.domain.smartmetering.application.servic
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
+import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionGasDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -33,9 +34,8 @@ public class GetFirmwareVersionResponseMessageProcessor extends OsgpCoreResponse
     private ConfigurationService configurationService;
 
     @Autowired
-    protected GetFirmwareVersionResponseMessageProcessor(
-            WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+    protected GetFirmwareVersionResponseMessageProcessor(final WebServiceResponseMessageSender responseMessageSender,
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.GET_FIRMWARE_VERSION,
                 ComponentType.DOMAIN_SMART_METERING);
     }
@@ -51,15 +51,18 @@ public class GetFirmwareVersionResponseMessageProcessor extends OsgpCoreResponse
             final ResponseMessage responseMessage, final OsgpException osgpException) throws FunctionalException {
 
         if (responseMessage.getDataObject() instanceof ArrayList) {
-            @SuppressWarnings("unchecked")
-            final List<FirmwareVersionDto> firmwareVersionList = (List<FirmwareVersionDto>) responseMessage
-                    .getDataObject();
+            @SuppressWarnings("unchecked") final List<FirmwareVersionDto> firmwareVersionList =
+                    (List<FirmwareVersionDto>) responseMessage.getDataObject();
 
             this.configurationService.handleGetFirmwareVersionResponse(deviceMessageMetadata,
                     responseMessage.getResult(), osgpException, firmwareVersionList);
+        } else if (responseMessage.getDataObject() instanceof FirmwareVersionGasDto) {
+            this.configurationService.handleGetFirmwareVersionGasResponse(deviceMessageMetadata,
+                    responseMessage.getResult(), osgpException,
+                    (FirmwareVersionGasDto) responseMessage.getDataObject());
         } else {
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
-                    ComponentType.DOMAIN_SMART_METERING, new OsgpException(ComponentType.DOMAIN_SMART_METERING,
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.DOMAIN_SMART_METERING,
+                    new OsgpException(ComponentType.DOMAIN_SMART_METERING,
                             "DataObject for response message should be of type ArrayList"));
         }
     }

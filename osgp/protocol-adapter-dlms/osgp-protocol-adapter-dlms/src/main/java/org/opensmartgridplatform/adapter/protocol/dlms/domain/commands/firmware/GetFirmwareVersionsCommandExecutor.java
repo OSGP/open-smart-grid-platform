@@ -28,12 +28,14 @@ import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FirmwareVersionResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersionQueryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GetFirmwareVersionsCommandExecutor extends AbstractCommandExecutor<Void, List<FirmwareVersionDto>> {
+public class GetFirmwareVersionsCommandExecutor
+        extends AbstractCommandExecutor<GetFirmwareVersionQueryDto, List<FirmwareVersionDto>> {
 
     private static final int CLASS_ID = 1;
     private static final int ATTRIBUTE_ID = 2;
@@ -67,9 +69,10 @@ public class GetFirmwareVersionsCommandExecutor extends AbstractCommandExecutor<
     }
 
     @Override
-    public Void fromBundleRequestInput(final ActionRequestDto bundleInput) throws ProtocolAdapterException {
+    public GetFirmwareVersionQueryDto fromBundleRequestInput(final ActionRequestDto bundleInput)
+            throws ProtocolAdapterException {
         this.checkActionRequestType(bundleInput);
-        return null;
+        return new GetFirmwareVersionQueryDto();
     }
 
     @Override
@@ -80,7 +83,11 @@ public class GetFirmwareVersionsCommandExecutor extends AbstractCommandExecutor<
 
     @Override
     public List<FirmwareVersionDto> execute(final DlmsConnectionManager conn, final DlmsDevice device,
-            final Void useless) throws ProtocolAdapterException {
+            final GetFirmwareVersionQueryDto queryDto) throws ProtocolAdapterException {
+        if (queryDto != null && queryDto.isMbusQuery()) {
+            throw new IllegalArgumentException("GetFirmwareVersion called with query object for Gas meter.");
+        }
+
         if (Protocol.forDevice(device).isSmr5()) {
             return this.getFirmwareVersions(conn, device, FOR_SMR_5);
         }
