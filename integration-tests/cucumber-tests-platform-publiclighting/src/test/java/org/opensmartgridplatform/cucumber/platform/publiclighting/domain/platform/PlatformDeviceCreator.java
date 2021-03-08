@@ -13,8 +13,9 @@ import java.util.Map;
 import java.util.function.BiFunction;
 
 import org.opensmartgridplatform.cucumber.platform.helpers.Protocol;
+import org.opensmartgridplatform.domain.core.entities.Device;
 
 @FunctionalInterface
-public interface PlatformDeviceCreator<T> extends BiFunction<Protocol, Map<String, String>, T> {
+public interface PlatformDeviceCreator<T extends Device> extends BiFunction<Protocol, Map<String, String>, T> {
 
 }

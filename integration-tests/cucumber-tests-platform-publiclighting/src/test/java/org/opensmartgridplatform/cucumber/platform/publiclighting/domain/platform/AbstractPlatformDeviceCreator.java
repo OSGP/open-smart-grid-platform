@@ -20,6 +20,7 @@ import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.helpers.Protocol;
 import org.opensmartgridplatform.domain.core.entities.Device;
+import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.DomainInfo;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
@@ -28,28 +29,26 @@ import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.DomainInfoRepository;
 import org.opensmartgridplatform.domain.core.repositories.OrganisationRepository;
 import org.opensmartgridplatform.domain.core.repositories.ProtocolInfoRepository;
+import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public abstract class AbstractPlatformDeviceCreator<T> implements PlatformDeviceCreator<T> {
+public abstract class AbstractPlatformDeviceCreator<T extends Device> implements PlatformDeviceCreator<T> {
 
     @Autowired
     private DeviceRepository deviceRepository;
 
     @Autowired
-    OrganisationRepository organisationRepository;
+    private OrganisationRepository organisationRepository;
 
     @Autowired
-    DeviceAuthorizationRepository deviceAuthorizationRepository;
+    private DeviceAuthorizationRepository deviceAuthorizationRepository;
 
     @Autowired
-    protected ProtocolInfoRepository protocolInfoRepository;
+    private ProtocolInfoRepository protocolInfoRepository;
 
     @Autowired
-    protected DomainInfoRepository domainInfoRepository;
-
-    @Override
-    public abstract T apply(Protocol protocol, Map<String, String> settings);
+    private DomainInfoRepository domainInfoRepository;
 
     protected InetAddress networkAddress(final Map<String, String> settings) {
         try {
@@ -96,6 +95,13 @@ public abstract class AbstractPlatformDeviceCreator<T> implements PlatformDevice
     protected Organisation ownerOrganisation() {
         return this.organisationRepository
                 .findByOrganisationIdentification(PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
+    }
+
+    protected DeviceAuthorization addDeviceAuthorization(final Device device) {
+        DeviceAuthorization deviceAuthorization = device.addAuthorization(this.ownerOrganisation(),
+                DeviceFunctionGroup.OWNER);
+        deviceAuthorization = this.deviceAuthorizationRepository.save(deviceAuthorization);
+        return deviceAuthorization;
     }
 
 }

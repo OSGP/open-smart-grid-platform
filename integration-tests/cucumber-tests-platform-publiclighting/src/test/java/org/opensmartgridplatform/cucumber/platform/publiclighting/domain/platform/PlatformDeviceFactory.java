@@ -14,9 +14,7 @@ import java.util.Map;
 
 import org.opensmartgridplatform.cucumber.platform.helpers.DeviceType;
 import org.opensmartgridplatform.cucumber.platform.helpers.Protocol;
-import org.opensmartgridplatform.cucumber.platform.publiclighting.domain.protocol.ProtocolDeviceFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opensmartgridplatform.domain.core.entities.Device;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,15 +22,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class PlatformDeviceFactory implements InitializingBean {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolDeviceFactory.class);
+    @Autowired
+    private LmdDeviceCreator lmdCreator;
 
     @Autowired
-    LmdDeviceCreator lmdCreator;
+    private LmgDeviceCreator lmgCreator;
 
-    @Autowired
-    LmgDeviceCreator lmgCreator;
-
-    private final Map<DeviceType, PlatformDeviceCreator<?>> factoryMap = new HashMap<>();
+    private final Map<DeviceType, PlatformDeviceCreator<? extends Device>> factoryMap = new HashMap<>();
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -40,14 +36,13 @@ public class PlatformDeviceFactory implements InitializingBean {
         this.factoryMap.put(DeviceType.LIGHT_MEASUREMENT_GATEWAY, this.lmgCreator);
     }
 
-    public Object createPlatformDevice(final DeviceType deviceType, final Protocol protocol,
+    public Device createPlatformDevice(final DeviceType deviceType, final Protocol protocol,
             final Map<String, String> settings) {
 
         if (this.factoryMap.containsKey(deviceType)) {
             return this.factoryMap.get(deviceType).apply(protocol, settings);
         } else {
-            LOGGER.warn("Unsupported DeviceType: {}", deviceType);
-            return null;
+            throw new UnsupportedOperationException("Unsupported DeviceType: " + deviceType);
         }
     }
 }

@@ -13,10 +13,8 @@ import java.util.Map;
 
 import org.opensmartgridplatform.cucumber.platform.helpers.DeviceType;
 import org.opensmartgridplatform.cucumber.platform.helpers.Protocol;
-import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.RtuDevice;
 import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,9 +36,7 @@ public class LmgDeviceCreator extends AbstractPlatformDeviceCreator<RtuDevice> {
 
         device = this.rtuDeviceRepository.save(device);
 
-        DeviceAuthorization deviceAuthorization = device.addAuthorization(this.ownerOrganisation(),
-                DeviceFunctionGroup.OWNER);
-        deviceAuthorization = this.deviceAuthorizationRepository.save(deviceAuthorization);
+        this.addDeviceAuthorization(device);
 
         return device;
     }

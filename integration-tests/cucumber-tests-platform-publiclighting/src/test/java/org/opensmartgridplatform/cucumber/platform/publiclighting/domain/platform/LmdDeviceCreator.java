@@ -13,10 +13,8 @@ import java.util.Map;
 
 import org.opensmartgridplatform.cucumber.platform.helpers.DeviceType;
 import org.opensmartgridplatform.cucumber.platform.helpers.Protocol;
-import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.LightMeasurementDevice;
 import org.opensmartgridplatform.domain.core.repositories.LightMeasurementDeviceRepository;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -37,9 +35,7 @@ public class LmdDeviceCreator extends AbstractPlatformDeviceCreator<LightMeasure
 
         device = this.lmdRepository.save(device);
 
-        DeviceAuthorization deviceAuthorization = device.addAuthorization(this.ownerOrganisation(),
-                DeviceFunctionGroup.OWNER);
-        deviceAuthorization = this.deviceAuthorizationRepository.save(deviceAuthorization);
+        this.addDeviceAuthorization(device);
 
         return device;
     }
