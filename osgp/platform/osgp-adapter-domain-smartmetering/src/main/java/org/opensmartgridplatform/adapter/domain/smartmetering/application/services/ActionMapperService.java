@@ -15,7 +15,6 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.CommonMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ManagementMapper;
@@ -30,6 +29,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActionRe
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActivityCalendarData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualMeterReadsGasRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualMeterReadsRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AdministrativeStatusTypeData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.BundleMessageRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ClearAlarmRegisterData;
@@ -73,6 +73,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActivityCalendarDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualMeterReadsDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdministrativeStatusTypeDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearAlarmRegisterRequestDto;
@@ -112,15 +113,15 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import ma.glasnost.orika.impl.ConfigurableMapper;
+
 @Service(value = "domainSmartMeteringActionMapperService")
 @Validated
 public class ActionMapperService {
 
     private static final Map<Class<? extends ActionRequest>, ConfigurableMapper> CLASS_TO_MAPPER_MAP = new HashMap<>();
-    private static final Map<Class<? extends ActionRequest>, CustomValueToDtoConverter<? extends ActionRequest, ?
-            extends ActionRequestDto>> CUSTOM_CONVERTER_FOR_CLASS = new HashMap<>();
-    private static final Map<Class<? extends ActionRequest>, Class<? extends ActionRequestDto>> CLASS_MAP =
-            new HashMap<>();
+    private static final Map<Class<? extends ActionRequest>, CustomValueToDtoConverter<? extends ActionRequest, ? extends ActionRequestDto>> CUSTOM_CONVERTER_FOR_CLASS = new HashMap<>();
+    private static final Map<Class<? extends ActionRequest>, Class<? extends ActionRequestDto>> CLASS_MAP = new HashMap<>();
 
     /**
      * Specifies to which DTO object the core object needs to be mapped.
@@ -161,6 +162,7 @@ public class ActionMapperService {
                 SetDeviceLifecycleStatusByChannelRequestDataDto.class);
         CLASS_MAP.put(ScanMbusChannelsRequestData.class, ScanMbusChannelsRequestDataDto.class);
         CLASS_MAP.put(GetOutagesRequestData.class, GetOutagesRequestDto.class);
+        CLASS_MAP.put(ActualPowerQualityRequest.class, ActualPowerQualityRequestDto.class);
     }
 
     @Autowired
@@ -229,6 +231,7 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(SetDeviceLifecycleStatusByChannelRequestData.class, this.managementMapper);
         CLASS_TO_MAPPER_MAP.put(ScanMbusChannelsRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(GetOutagesRequestData.class, this.managementMapper);
+        CLASS_TO_MAPPER_MAP.put(ActualPowerQualityRequest.class, this.monitoringMapper);
     }
 
     public BundleMessagesRequestDto mapAllActions(final BundleMessageRequest bundleMessageRequest,
@@ -283,9 +286,9 @@ public class ActionMapperService {
 
         if (actionValueObjectDto == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-                    ComponentType.DOMAIN_SMART_METERING, new RuntimeException(
-                    String.format("Object: %s could not be converted to %s", action.getClass().getName(),
-                            clazz.getName())));
+                    ComponentType.DOMAIN_SMART_METERING,
+                    new RuntimeException(String.format("Object: %s could not be converted to %s",
+                            action.getClass().getName(), clazz.getName())));
         }
         return actionValueObjectDto;
     }

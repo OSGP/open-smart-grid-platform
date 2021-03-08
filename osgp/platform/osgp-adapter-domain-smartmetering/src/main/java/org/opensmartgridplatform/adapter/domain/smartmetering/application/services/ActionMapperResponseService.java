@@ -15,12 +15,12 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.CommonMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ManagementMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActionResponse;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AdministrativeStatusTypeResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmRegister;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AssociationLnObjectsResponseData;
@@ -44,6 +44,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ScanMbus
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQualityResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdministrativeStatusTypeResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmRegisterResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AssociationLnObjectsResponseDto;
@@ -73,6 +74,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import ma.glasnost.orika.impl.ConfigurableMapper;
+
 @Service(value = "domainSmartMeteringActionMapperResponseService")
 @Validated
 public class ActionMapperResponseService {
@@ -90,8 +93,7 @@ public class ActionMapperResponseService {
     private CommonMapper commonMapper;
 
     private static final Map<Class<? extends ActionResponseDto>, ConfigurableMapper> classToMapperMap = new HashMap<>();
-    private static final Map<Class<? extends ActionResponseDto>, Class<? extends ActionResponse>> classMap =
-            new HashMap<>();
+    private static final Map<Class<? extends ActionResponseDto>, Class<? extends ActionResponse>> classMap = new HashMap<>();
 
     /**
      * Specifies to whi ch core value object the DTO object needs to be mapped.
@@ -113,6 +115,7 @@ public class ActionMapperResponseService {
         classMap.put(AssociationLnObjectsResponseDto.class, AssociationLnObjectsResponseData.class);
         classMap.put(GetConfigurationObjectResponseDto.class, GetConfigurationObjectResponse.class);
         classMap.put(GetPowerQualityProfileResponseDto.class, GetPowerQualityProfileResponse.class);
+        classMap.put(ActualPowerQualityResponseDto.class, ActualPowerQualityResponse.class);
         classMap.put(CoupleMbusDeviceByChannelResponseDto.class, CoupleMbusDeviceByChannelResponse.class);
         classMap.put(GetMbusEncryptionKeyStatusResponseDto.class, GetMbusEncryptionKeyStatusResponseData.class);
         classMap.put(GetMbusEncryptionKeyStatusByChannelResponseDto.class,
@@ -143,6 +146,7 @@ public class ActionMapperResponseService {
         classToMapperMap.put(AssociationLnObjectsResponseDto.class, this.commonMapper);
         classToMapperMap.put(GetConfigurationObjectResponseDto.class, this.configurationMapper);
         classToMapperMap.put(GetPowerQualityProfileResponseDto.class, this.monitoringMapper);
+        classToMapperMap.put(ActualPowerQualityResponseDto.class, this.monitoringMapper);
         classToMapperMap.put(CoupleMbusDeviceByChannelResponseDto.class, this.commonMapper);
         classToMapperMap.put(GetMbusEncryptionKeyStatusResponseDto.class, this.configurationMapper);
         classToMapperMap.put(GetMbusEncryptionKeyStatusByChannelResponseDto.class, this.configurationMapper);
@@ -177,9 +181,10 @@ public class ActionMapperResponseService {
 
         if (actionValueResponseObject == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-                    ComponentType.DOMAIN_SMART_METERING, new RuntimeException(
-                    "No Action Value Response Object for Action Value Response DTO Object of class: " + action
-                            .getClass().getName()));
+                    ComponentType.DOMAIN_SMART_METERING,
+                    new RuntimeException(
+                            "No Action Value Response Object for Action Value Response DTO Object of class: "
+                                    + action.getClass().getName()));
         }
 
         return actionValueResponseObject;
@@ -190,9 +195,10 @@ public class ActionMapperResponseService {
 
         if (clazz == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-                    ComponentType.DOMAIN_SMART_METERING, new RuntimeException(
-                    "No Action Value Response Object class for Action Value Response DTO Object class: " + action
-                            .getClass().getName()));
+                    ComponentType.DOMAIN_SMART_METERING,
+                    new RuntimeException(
+                            "No Action Value Response Object class for Action Value Response DTO Object class: "
+                                    + action.getClass().getName()));
         }
         return clazz;
     }
@@ -203,7 +209,7 @@ public class ActionMapperResponseService {
         if (mapper == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
                     ComponentType.DOMAIN_SMART_METERING, new RuntimeException(
-                    "No mapper for Action Value Response DTO Object class: " + action.getClass().getName()));
+                            "No mapper for Action Value Response DTO Object class: " + action.getClass().getName()));
         }
         return mapper;
     }
