@@ -15,8 +15,10 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.CommonMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
+import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.InstallationMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ManagementMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActionResponse;
@@ -74,8 +76,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import ma.glasnost.orika.impl.ConfigurableMapper;
-
 @Service(value = "domainSmartMeteringActionMapperResponseService")
 @Validated
 public class ActionMapperResponseService {
@@ -91,6 +91,9 @@ public class ActionMapperResponseService {
 
     @Autowired
     private CommonMapper commonMapper;
+
+    @Autowired
+    private InstallationMapper installationMapper;
 
     private static final Map<Class<? extends ActionResponseDto>, ConfigurableMapper> classToMapperMap = new HashMap<>();
     private static final Map<Class<? extends ActionResponseDto>, Class<? extends ActionResponse>> classMap = new HashMap<>();
@@ -148,7 +151,7 @@ public class ActionMapperResponseService {
         classToMapperMap.put(GetPowerQualityProfileResponseDto.class, this.monitoringMapper);
         classToMapperMap.put(ActualPowerQualityResponseDto.class, this.monitoringMapper);
         classToMapperMap.put(CoupleMbusDeviceByChannelResponseDto.class, this.commonMapper);
-        classToMapperMap.put(DeCoupleMbusDeviceResponseDto.class, this.commonMapper);
+        classToMapperMap.put(DeCoupleMbusDeviceResponseDto.class, this.installationMapper);
         classToMapperMap.put(GetMbusEncryptionKeyStatusResponseDto.class, this.configurationMapper);
         classToMapperMap.put(GetMbusEncryptionKeyStatusByChannelResponseDto.class, this.configurationMapper);
         classToMapperMap.put(SetDeviceLifecycleStatusByChannelResponseDto.class, this.managementMapper);
