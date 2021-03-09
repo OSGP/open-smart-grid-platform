@@ -151,11 +151,18 @@ public class MBusGatewayService {
                 deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
-    private Optional<SmartMeter> findMbusDeviceOnChannel(final SmartMeter gatewayDevice, final short channel)
-            throws FunctionalException {
-        return this.smartMeteringDeviceRepository.getMbusDevicesForGateway(gatewayDevice.getId())
+    private Optional<SmartMeter> findMbusDeviceOnChannel(final String gatewayDeviceIdentification, final Short channel,
+            final ChannelElementValuesDto channelElementValuesDto) throws FunctionalException {
+
+        return this.smartMeteringDeviceRepository
+                .getMbusDevicesForGateway(gatewayDeviceIdentification,
+                        Long.valueOf(channelElementValuesDto.getIdentificationNumber()),
+                        channelElementValuesDto.getManufacturerIdentification(),
+                        Short.valueOf(channelElementValuesDto.getVersion()),
+                        Short.valueOf(channelElementValuesDto.getDeviceTypeIdentification()),
+                        Short.valueOf(channelElementValuesDto.getPrimaryAddress()))
                 .stream()
-                .filter(smartMeter -> smartMeter.getChannel() == channel)
+                .filter(smartMeter -> smartMeter.getChannel() == channelElementValuesDto.getChannel())
                 .findFirst();
     }
 
@@ -257,8 +264,10 @@ public class MBusGatewayService {
             final DeCoupleMbusDeviceResponseDto deCoupleMbusDeviceResponseDto) throws FunctionalException {
         final SmartMeter gatewayDevice = this.domainHelperService
                 .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
-        final Optional<SmartMeter> mbusDeviceFoundOnChannel = this.findMbusDeviceOnChannel(gatewayDevice,
-                deCoupleMbusDeviceResponseDto.getChannel());
+
+        final Optional<SmartMeter> mbusDeviceFoundOnChannel = this.findMbusDeviceOnChannel(
+                gatewayDevice.getDeviceIdentification(), deCoupleMbusDeviceResponseDto.getChannel(),
+                deCoupleMbusDeviceResponseDto.getChannelElementValues());
 
         if (!mbusDeviceFoundOnChannel.isPresent()) {
             return mbusDeviceFoundOnChannel;

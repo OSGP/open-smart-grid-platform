@@ -58,6 +58,11 @@ public class DeCoupleMBusDeviceCommandExecutorTest {
         assertThat(responseDto.getChannel()).isEqualTo(channel);
         // assertThat(responseDto.getMbusDeviceIdentification()).isEqualTo(mbusDeviceIdentification);
 
+        verify(this.deviceChannelsHelper, times(1)).getMBusClientAttributeValues(eq(this.conn), eq(this.device),
+                any(Short.class));
+
+        verify(this.deviceChannelsHelper, times(1)).makeChannelElementValues(eq(channel), any());
+
         verify(this.deviceChannelsHelper, times(1)).deinstallSlave(eq(this.conn), eq(this.device), any(Short.class),
                 any(CosemObjectAccessor.class));
         verify(this.deviceChannelsHelper, times(1)).resetMBusClientAttributeValues(eq(this.conn), any(Short.class),

@@ -8,6 +8,9 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
+import java.util.List;
+
+import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.CosemObjectAccessor;
@@ -15,6 +18,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,12 +47,21 @@ public class DeCoupleMBusDeviceCommandExecutor
 
         final ObisCode obisCode = this.deviceChannelsHelper.getObisCode(channel);
 
+        // Get the current channel element values before resetting the channel
+        final List<GetResult> resultList = this.deviceChannelsHelper.getMBusClientAttributeValues(conn, device,
+                channel);
+
+        final ChannelElementValuesDto channelElementValues = this.deviceChannelsHelper.makeChannelElementValues(channel,
+                resultList);
+
+        // Deinstall and reset channel
         final CosemObjectAccessor mBusSetup = new CosemObjectAccessor(conn, obisCode, InterfaceClass.MBUS_CLIENT.id());
 
         this.deviceChannelsHelper.deinstallSlave(conn, device, channel, mBusSetup);
 
         this.deviceChannelsHelper.resetMBusClientAttributeValues(conn, channel, this.getClass().getSimpleName());
 
-        return new DeCoupleMbusDeviceResponseDto(channel);
+        // return the channel element values as before decoupling
+        return new DeCoupleMbusDeviceResponseDto(channel, channelElementValues);
     }
 }

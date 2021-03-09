@@ -3,15 +3,21 @@ Feature: SmartMetering Installation - De Couple M-Bus Device By Channel
   As a grid operator
   I want to be able to de couple an M-Bus device by channel to a smart meter
 
+  @SLIM-2579
   Scenario: DeCouple device from E-meter by channel
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
     And a dlms device
-      | DeviceIdentification        | TESTG102400000001 |
-      | DeviceType                  | SMART_METER_G     |
-      | GatewayDeviceIdentification | TEST1024000000001 |
-      | Channel                     |                 1 |
+      | DeviceIdentification           | TESTG102400000001 |
+      | DeviceType                     | SMART_METER_G     |
+      | GatewayDeviceIdentification    | TEST1024000000001 |
+      | Channel                        |                 1 |
+      | MbusIdentificationNumber       |          12056731 |
+      | MbusPrimaryAddress             |                 9 |
+      | MbusManufacturerIdentification | LGB               |
+      | MbusVersion                    |                66 |
+      | MbusDeviceTypeIdentification   |                 3 |
     And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes
       | 5 | unsigned             |        9 |
       | 6 | double-long-unsigned | 12056731 |
@@ -31,11 +37,11 @@ Feature: SmartMetering Installation - De Couple M-Bus Device By Channel
       | DeviceIdentification | TESTG102400000001 |
       | DeviceType           | SMART_METER_G     |
     And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes
-      | 5 | unsigned             | 9        |
+      | 5 | unsigned             |        9 |
       | 6 | double-long-unsigned | 12056731 |
-      | 7 | long-unsigned        | 12514    |
-      | 8 | unsigned             | 66       |
-      | 9 | unsigned             | 3        |
+      | 7 | long-unsigned        |    12514 |
+      | 8 | unsigned             |       66 |
+      | 9 | unsigned             |        3 |
     When the DeCouple MBus Device By Channel "1" from E-meter "TEST1024000000001" request is received
     Then the DeCouple MBus Device By Channel response is "OK" for device "NULL"
     And the G-meter "TESTG102400000001" is DeCoupled from device "TEST1024000000001"
