@@ -11,21 +11,15 @@ public class DeCoupleMbusDeviceResponseDto extends ActionResponseDto {
 
     private static final long serialVersionUID = -4454979905929290745L;
 
-    private final Short channel;
     private ChannelElementValuesDto channelElementValues;
 
-    public DeCoupleMbusDeviceResponseDto(final Short channel, final ChannelElementValuesDto channelElementValues) {
-        this.channel = channel;
+    public DeCoupleMbusDeviceResponseDto(final ChannelElementValuesDto channelElementValues) {
         this.channelElementValues = channelElementValues;
     }
 
     @Override
     public String toString() {
-        return "DeCoupleMbusDeviceResponseDto [channel=" + this.channel + "]";
-    }
-
-    public Short getChannel() {
-        return this.channel;
+        return "DeCoupleMbusDeviceResponseDto [channel=" + this.channelElementValues.getChannel() + "]";
     }
 
     public ChannelElementValuesDto getChannelElementValues() {

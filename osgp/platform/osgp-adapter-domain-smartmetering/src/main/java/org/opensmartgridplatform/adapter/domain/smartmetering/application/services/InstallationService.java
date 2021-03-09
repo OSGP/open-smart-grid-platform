@@ -151,8 +151,7 @@ public class InstallationService {
             final ResponseMessageResultType result, final OsgpException exception,
             final DeCoupleMbusDeviceResponseDto deCoupleMbusDeviceResponseDto) throws FunctionalException {
         if (exception == null) {
-            this.mBusGatewayService.handleDeCoupleMbusDeviceResponse(deviceMessageMetadata,
-                    deCoupleMbusDeviceResponseDto);
+            this.mBusGatewayService.handleDeCoupleMbusDeviceResponse(deCoupleMbusDeviceResponseDto);
         }
         this.handleResponse("deCoupleMbusDevice", deviceMessageMetadata, result, exception);
     }
@@ -163,14 +162,14 @@ public class InstallationService {
             final DeCoupleMbusDeviceResponseDto deCoupleMbusDeviceResponseDto) throws FunctionalException {
 
         final Optional<SmartMeter> mbusDeviceFoundOnChannel = this.mBusGatewayService
-                .handleDeCoupleMbusDeviceResponse(deviceMessageMetadata, deCoupleMbusDeviceResponseDto);
+                .handleDeCoupleMbusDeviceResponse(deCoupleMbusDeviceResponseDto);
 
         final String mbusDeviceDeviceIdentification = mbusDeviceFoundOnChannel.isPresent()
                 ? mbusDeviceFoundOnChannel.get().getDeviceIdentification()
                 : null;
 
         final DeCoupleMbusDeviceByChannelResponse response = new DeCoupleMbusDeviceByChannelResponse(
-                mbusDeviceDeviceIdentification, deCoupleMbusDeviceResponseDto.getChannel());
+                mbusDeviceDeviceIdentification, deCoupleMbusDeviceResponseDto.getChannelElementValues().getChannel());
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())

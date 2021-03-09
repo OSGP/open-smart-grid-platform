@@ -28,28 +28,6 @@ public interface SmartMeterRepository extends JpaRepository<SmartMeter, Long> {
     List<SmartMeter> getMbusDevicesForGateway(Long deviceId);
 
     /**
-     * @param gatewayDeviceIdentification
-     *            the identification of the gateway device
-     * @param mbusIdentificationNumber
-     *            the identification number of the mbus device
-     * @param mbusManufacturerIdentification
-     *            the identification for the manufacturer of the mbus device
-     * @param mbusVersion
-     *            the version of the mbus device
-     * @param mbusDeviceTypeIdentification
-     *            the identification for the devicetype of the mbus device
-     * @param mbusPrimaryAddress
-     *            the primary address of the mbus device
-     * @return the list of mbus devices with the given device attributes
-     */
-    @Query("select s from SmartMeter s where s.gatewayDevice.deviceIdentification = ?1 "
-            + " and s.mbusIdentificationNumber = ?2  and s.mbusManufacturerIdentification = ?3 "
-            + " and s.mbusVersion = ?4 and s.mbusDeviceTypeIdentification = ?5 and s.mbusPrimaryAddress = ?6")
-    List<SmartMeter> getMbusDevicesForGateway(final String gatewayDeviceIdentification, Long mbusIdentificationNumber,
-            String musbManufacturerIdentification, Short mbusVersion, Short mbusDeviceTypeIdentification,
-            Short mbusPrimaryAddress);
-
-    /**
      * @param mbusIdentificationNumber
      *            the identification number of the mbus device
      * @param mbusManufacturerIdentification
@@ -59,5 +37,4 @@ public interface SmartMeterRepository extends JpaRepository<SmartMeter, Long> {
      */
     @Query("select s from SmartMeter s where s.mbusIdentificationNumber = ?1 and s.mbusManufacturerIdentification = ?2")
     SmartMeter findByMBusIdentificationNumber(Long mbusIdentificationNumber, String mbusManufacturerIdentification);
-
 }

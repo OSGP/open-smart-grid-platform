@@ -151,19 +151,12 @@ public class MBusGatewayService {
                 deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
-    private Optional<SmartMeter> findMbusDeviceOnChannel(final String gatewayDeviceIdentification, final Short channel,
-            final ChannelElementValuesDto channelElementValuesDto) throws FunctionalException {
+    private Optional<SmartMeter> findByMBusIdentificationNumber(final ChannelElementValuesDto channelElementValuesDto) {
+        final SmartMeter mbusDevice = this.smartMeteringDeviceRepository.findByMBusIdentificationNumber(
+                Long.valueOf(channelElementValuesDto.getIdentificationNumber()),
+                channelElementValuesDto.getManufacturerIdentification());
 
-        return this.smartMeteringDeviceRepository
-                .getMbusDevicesForGateway(gatewayDeviceIdentification,
-                        Long.valueOf(channelElementValuesDto.getIdentificationNumber()),
-                        channelElementValuesDto.getManufacturerIdentification(),
-                        Short.valueOf(channelElementValuesDto.getVersion()),
-                        Short.valueOf(channelElementValuesDto.getDeviceTypeIdentification()),
-                        Short.valueOf(channelElementValuesDto.getPrimaryAddress()))
-                .stream()
-                .filter(smartMeter -> smartMeter.getChannel() == channelElementValuesDto.getChannel())
-                .findFirst();
+        return Optional.ofNullable(mbusDevice);
     }
 
     private boolean isMbusDeviceCoupled(final SmartMeter mbusDevice) {
@@ -256,17 +249,11 @@ public class MBusGatewayService {
      * Updates the M-Bus device identified in the input part of the
      * {@code deCoupleMbusResponseDto}.
      *
-     * @param deviceMessageMetadata
      * @param deCoupleMbusDeviceResponseDto
      * @throws FunctionalException
      */
-    public Optional<SmartMeter> handleDeCoupleMbusDeviceResponse(final DeviceMessageMetadata deviceMessageMetadata,
-            final DeCoupleMbusDeviceResponseDto deCoupleMbusDeviceResponseDto) throws FunctionalException {
-        final SmartMeter gatewayDevice = this.domainHelperService
-                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
-
-        final Optional<SmartMeter> mbusDeviceFoundOnChannel = this.findMbusDeviceOnChannel(
-                gatewayDevice.getDeviceIdentification(), deCoupleMbusDeviceResponseDto.getChannel(),
+    public Optional<SmartMeter> handleDeCoupleMbusDeviceResponse(final DeCoupleMbusDeviceResponseDto deCoupleMbusDeviceResponseDto) {
+        final Optional<SmartMeter> mbusDeviceFoundOnChannel = this.findByMBusIdentificationNumber(
                 deCoupleMbusDeviceResponseDto.getChannelElementValues());
 
         if (!mbusDeviceFoundOnChannel.isPresent()) {

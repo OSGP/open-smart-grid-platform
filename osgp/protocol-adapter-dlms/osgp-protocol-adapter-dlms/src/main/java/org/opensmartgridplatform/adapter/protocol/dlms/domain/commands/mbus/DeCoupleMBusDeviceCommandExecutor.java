@@ -62,6 +62,6 @@ public class DeCoupleMBusDeviceCommandExecutor
         this.deviceChannelsHelper.resetMBusClientAttributeValues(conn, channel, this.getClass().getSimpleName());
 
         // return the channel element values as before decoupling
-        return new DeCoupleMbusDeviceResponseDto(channel, channelElementValues);
+        return new DeCoupleMbusDeviceResponseDto(channelElementValues);
     }
 }
