@@ -22,7 +22,6 @@ Feature: SmartMetering Bundle - GetFirmwareVersion
       | FirmwareModuleVersionFunc | M57 4836               |
       | FirmwareIsForSmartMeters  | true                   |
 
-  @Jaco
   Scenario: Retrieve the firmware version of a mbus device in a bundle request
     Given a dlms device
       | DeviceIdentification | TEST1027000000001 |

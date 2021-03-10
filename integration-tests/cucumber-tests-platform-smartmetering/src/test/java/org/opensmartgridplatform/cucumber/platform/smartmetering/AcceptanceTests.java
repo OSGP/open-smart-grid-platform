@@ -14,7 +14,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(features = { "classpath:features/functional-exceptions", "classpath:features/osgp-adapter-ws-core",
-        "classpath:features/osgp-adapter-ws-smartmetering" }, tags = { "@Jaco" }, glue = {
+        "classpath:features/osgp-adapter-ws-smartmetering" }, tags = { "not @Skip", "not @NightlyBuildOnly" }, glue = {
         "classpath:org.opensmartgridplatform.cucumber.platform.glue",
         "classpath:org.opensmartgridplatform.cucumber.platform.common.glue",
         "classpath:org.opensmartgridplatform.cucumber.platform.smartmetering.glue" }, plugin = { "pretty",
