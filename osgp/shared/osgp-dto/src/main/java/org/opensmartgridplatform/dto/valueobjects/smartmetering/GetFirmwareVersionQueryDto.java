@@ -17,12 +17,15 @@ public class GetFirmwareVersionQueryDto implements Serializable {
 
     private final ChannelDto channel;
 
+    private final String mbusDeviceIdentification;
+
     public GetFirmwareVersionQueryDto() {
-        this(null);
+        this(null, null);
     }
 
-    public GetFirmwareVersionQueryDto(final ChannelDto channel) {
+    public GetFirmwareVersionQueryDto(final ChannelDto channel, final String mbusDeviceIdentification) {
         this.channel = channel;
+        this.mbusDeviceIdentification = mbusDeviceIdentification;
     }
 
     public boolean isMbusQuery() {
@@ -31,6 +34,10 @@ public class GetFirmwareVersionQueryDto implements Serializable {
 
     public ChannelDto getChannel() {
         return this.channel;
+    }
+
+    public String getMbusDeviceIdentification() {
+        return this.mbusDeviceIdentification;
     }
 
 }

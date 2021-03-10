@@ -14,6 +14,7 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 
 import java.util.Map;
 
+import io.cucumber.java.en.Then;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -22,8 +23,6 @@ import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.FirmwareModuleRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import io.cucumber.java.en.Then;
 
 public class DeviceFirmwareModuleSteps {
 
@@ -94,9 +93,10 @@ public class DeviceFirmwareModuleSteps {
         final String sec = getNullOrNonEmptyString(settings, PlatformKeys.FIRMWARE_MODULE_VERSION_SEC, null);
         final String mBusDriverActive = getNullOrNonEmptyString(settings,
                 PlatformKeys.FIRMWARE_MODULE_VERSION_M_BUS_DRIVER_ACTIVE, null);
+        final String simpleVersionInfo = getNullOrNonEmptyString(settings, PlatformKeys.SIMPLE_VERSION_INFO, null);
 
         final FirmwareModuleData firmwareModuleData = new FirmwareModuleData(comm, func, ma, mbus, sec,
-                mBusDriverActive);
+                mBusDriverActive, simpleVersionInfo);
         return firmwareModuleData.getVersionsByModule(this.firmwareModuleRepository, isForSmartMeters);
     }
 }

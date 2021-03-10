@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import io.cucumber.java.en.Given;
 import org.opensmartgridplatform.cucumber.core.DateTimeHelper;
 import org.opensmartgridplatform.cucumber.core.ReadSettingsHelper;
 import org.opensmartgridplatform.domain.core.entities.ScheduledTask;
@@ -31,8 +32,6 @@ import org.opensmartgridplatform.domain.core.valueobjects.FirmwareUpdateMessageD
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import io.cucumber.java.en.Given;
 
 public class ScheduledTaskSteps extends BaseDeviceSteps {
 
@@ -59,12 +58,12 @@ public class ScheduledTaskSteps extends BaseDeviceSteps {
                 DEFAULT_CORRELATION_UID);
         final String messageType = MessageType.UPDATE_FIRMWARE.toString();
         final int messagePriority = 4;
-        final Long scheduleTime = DateTimeHelper
-                .getDateTime(ReadSettingsHelper.getString(settings, KEY_SCHEDULED_TIME, DEFAULT_SCHEDULED_TIME))
-                .getMillis();
+        final Long scheduleTime = DateTimeHelper.getDateTime(
+                ReadSettingsHelper.getString(settings, KEY_SCHEDULED_TIME, DEFAULT_SCHEDULED_TIME)).getMillis();
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, messageType, messagePriority, scheduleTime);
-        final FirmwareModuleData firmwareModuleData = new FirmwareModuleData(null, "FW-01", null, null, null, null);
+        final FirmwareModuleData firmwareModuleData = new FirmwareModuleData(null, "FW-01", null, null, null, null,
+                null);
         final String firmwareUrl = "firmware-url";
         final Serializable messageData = new FirmwareUpdateMessageDataContainer(firmwareModuleData, firmwareUrl);
         return new ScheduledTask(deviceMessageMetadata, "CORE", "1.0", messageData, new Timestamp(scheduleTime));

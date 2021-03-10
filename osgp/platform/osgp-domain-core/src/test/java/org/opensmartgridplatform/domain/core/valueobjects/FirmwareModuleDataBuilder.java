@@ -12,11 +12,8 @@ public class FirmwareModuleDataBuilder {
 
     public FirmwareModuleData build() {
         counter += 1;
-        return new FirmwareModuleData("moduleVersionComm" + counter,
-                "moduleVersionFunc" + counter,
-                "moduleVersionMa" + counter,
-                "moduleVersionMbus" + counter,
-                "moduleVersionSec" + counter,
-                "moduleVersionMBusDriverActive" + counter);
+        return new FirmwareModuleData("moduleVersionComm" + counter, "moduleVersionFunc" + counter,
+                "moduleVersionMa" + counter, "moduleVersionMbus" + counter, "moduleVersionSec" + counter,
+                "moduleVersionMBusDriverActive" + counter, "moduleVersionSimple" + counter);
     }
 }

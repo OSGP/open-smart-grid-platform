@@ -562,6 +562,7 @@
         <xsd:element ref="tns:GetAllAttributeValuesResponse"/>
         <xsd:element ref="tns:GetSpecificAttributeValueResponse"/>
         <xsd:element ref="tns:GetFirmwareVersionResponse"/>
+        <xsd:element ref="tns:GetFirmwareVersionGasResponse"/>
         <xsd:element ref="tns:UpdateFirmwareResponse"/>
         <xsd:element ref="tns:AssociationLnObjectsResponse"/>
         <xsd:element ref="tns:GetConfigurationObjectResponse"/>

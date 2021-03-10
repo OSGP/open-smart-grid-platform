@@ -167,6 +167,7 @@ public class PlatformDefaults {
     public static final String FIRMWARE_MODULE_VERSION_MBUS = "4";
     public static final String FIRMWARE_MODULE_VERSION_SEC = "5";
     public static final String FIRMWARE_MODULE_VERSION_M_BUS_DRIVER_ACTIVE = "6";
+    public static final String FIRMWARE_MODULE_VERSION_SIMPLE = "7";
     public static final String FIRMWARE_INSTALLED_BY = "Test User";
     public static final String FIRMWARE_INSTALLATION_DATE = "now";
     public static final Boolean FIRMWARE_FILE_EXISTS = true;

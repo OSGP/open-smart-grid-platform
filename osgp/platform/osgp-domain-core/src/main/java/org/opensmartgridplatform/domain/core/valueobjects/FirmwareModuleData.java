@@ -56,6 +56,11 @@ public class FirmwareModuleData implements Serializable {
      * FirmwareFile should equal {@link #moduleVersionMBusDriverActive}.
      */
     public static final String MODULE_DESCRIPTION_MBUS_DRIVER_ACTIVE = "m_bus_driver_active_firmware";
+    /**
+     * Description of the FirmwareModule for which the module version in a
+     * FirmwareFile should equal {@link #moduleVersionSimple}.
+     */
+    public static final String MODULE_DESCRIPTION_SIMPLE_VERSION_INFO = "simple_version_info";
 
     private final String moduleVersionComm;
     private final String moduleVersionFunc;
@@ -63,16 +68,18 @@ public class FirmwareModuleData implements Serializable {
     private final String moduleVersionMbus;
     private final String moduleVersionSec;
     private final String moduleVersionMBusDriverActive;
+    private final String moduleVersionSimple;
 
     public FirmwareModuleData(final String moduleVersionComm, final String moduleVersionFunc,
             final String moduleVersionMa, final String moduleVersionMbus, final String moduleVersionSec,
-            final String moduleVersionMBusDriverActive) {
+            final String moduleVersionMBusDriverActive, final String moduleVersionSimple) {
         this.moduleVersionComm = moduleVersionComm;
         this.moduleVersionFunc = moduleVersionFunc;
         this.moduleVersionMa = moduleVersionMa;
         this.moduleVersionMbus = moduleVersionMbus;
         this.moduleVersionSec = moduleVersionSec;
         this.moduleVersionMBusDriverActive = moduleVersionMBusDriverActive;
+        this.moduleVersionSimple = moduleVersionSimple;
     }
 
     public String getModuleVersionComm() {
@@ -97,6 +104,10 @@ public class FirmwareModuleData implements Serializable {
 
     public String getModuleVersionMBusDriverActive() {
         return this.moduleVersionMBusDriverActive;
+    }
+
+    public String getModuleVersionSimple() {
+        return this.moduleVersionSimple;
     }
 
     /**
@@ -140,6 +151,8 @@ public class FirmwareModuleData implements Serializable {
                 MODULE_DESCRIPTION_SEC);
         this.addVersionForModuleIfNonBlank(versionsByModule, firmwareModuleRepository,
                 this.moduleVersionMBusDriverActive, MODULE_DESCRIPTION_MBUS_DRIVER_ACTIVE);
+        this.addVersionForModuleIfNonBlank(versionsByModule, firmwareModuleRepository, this.moduleVersionSimple,
+                MODULE_DESCRIPTION_SIMPLE_VERSION_INFO);
         return versionsByModule;
     }
 

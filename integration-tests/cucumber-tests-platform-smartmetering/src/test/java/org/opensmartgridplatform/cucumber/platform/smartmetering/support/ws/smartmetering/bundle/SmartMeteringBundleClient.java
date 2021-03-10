@@ -33,8 +33,8 @@ public class SmartMeteringBundleClient extends SmartMeteringBaseClient {
 
         final String correlationUid = asyncRequest.getCorrelationUid();
         this.waitForNotification(correlationUid);
-
-        return (BundleResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
+        final Object o = this.getTemplate().marshalSendAndReceive(asyncRequest);
+        return (BundleResponse) o;
     }
 
     private WebServiceTemplate getTemplate() throws WebServiceSecurityException {

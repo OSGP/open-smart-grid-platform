@@ -637,9 +637,10 @@ public class ConfigurationService {
                             deviceMessageMetadata.getOrganisationIdentification(),
                             gatewayDevice.getDeviceIdentification(),
                             gatewayDevice.getIpAddress(),
-                            new GetFirmwareVersionQueryDto(ChannelDto.fromNumber(smartMeter.getChannel()))),
-                    deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
-                    deviceMessageMetadata.getScheduleTime());
+                            new GetFirmwareVersionQueryDto(ChannelDto.fromNumber(smartMeter.getChannel()),
+                                    deviceMessageMetadata.getDeviceIdentification())),
+                    deviceMessageMetadata.getMessageType(),
+                    deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
         } else {
             this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                             deviceMessageMetadata.getOrganisationIdentification(),

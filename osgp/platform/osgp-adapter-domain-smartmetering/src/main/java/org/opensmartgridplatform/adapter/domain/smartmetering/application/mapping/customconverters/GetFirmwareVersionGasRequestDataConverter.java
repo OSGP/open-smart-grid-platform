@@ -70,6 +70,7 @@ public class GetFirmwareVersionGasRequestDataConverter
                     new AssertionError("Retrieving firmware version for gas meter. No gateway device found."));
         }
 
-        return new GetFirmwareVersionGasRequestDto(ChannelDto.fromNumber(gasMeter.getChannel()));
+        return new GetFirmwareVersionGasRequestDto(ChannelDto.fromNumber(gasMeter.getChannel()),
+                gasRequestData.getDeviceIdentification());
     }
 }

@@ -172,7 +172,7 @@
     <xsd:complexContent>
       <xsd:extension base="common:Response">
         <xsd:sequence>
-          <xsd:element name="FirmwareVersions" type="tns:FirmwareVersionGas" />
+          <xsd:element name="FirmwareVersion" type="tns:FirmwareVersionGas"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>

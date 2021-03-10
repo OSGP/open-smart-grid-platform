@@ -21,3 +21,28 @@ Feature: SmartMetering Bundle - GetFirmwareVersion
       | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
       | FirmwareModuleVersionFunc | M57 4836               |
       | FirmwareIsForSmartMeters  | true                   |
+
+  @Jaco
+  Scenario: Retrieve the firmware version of a mbus device in a bundle request
+    Given a dlms device
+      | DeviceIdentification | TEST1027000000001 |
+      | DeviceType           | SMART_METER_E     |
+      | Protocol             | SMR               |
+      | ProtocolVersion      | 5.1               |
+      | Port                 | 1027              |
+    And a dlms device
+      | DeviceIdentification        | TEST1027000000002 |
+      | DeviceType                  | SMART_METER_G     |
+      | GatewayDeviceIdentification | TEST1027000000001 |
+      | Channel                     | 2                 |
+      | MbusPrimaryAddress          | 2                 |
+    And a bundle request
+      | DeviceIdentification | TEST1027000000001 |
+    And the bundle request contains a get firmware version gas action
+      | DeviceIdentification | TEST1027000000002 |
+    When the bundle request is received
+    Then the bundle response should contain a get firmware version gas response
+      | SimpleVersionInfo | GeenIdee |
+    And the database should be updated with the device firmware version
+      | DeviceIdentification | TEST1027000000002 |
+      | SimpleVersionInfo    | GeenIdee          |

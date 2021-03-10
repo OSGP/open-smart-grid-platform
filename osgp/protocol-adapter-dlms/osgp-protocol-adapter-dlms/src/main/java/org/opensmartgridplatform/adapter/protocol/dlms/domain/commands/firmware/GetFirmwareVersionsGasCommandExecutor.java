@@ -21,6 +21,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.ExtendedRegisterAttribute;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareModuleType;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionGasDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
@@ -28,7 +30,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDt
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FirmwareVersionGasResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersionGasRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersionQueryDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -39,14 +40,15 @@ import org.springframework.stereotype.Component;
 public class GetFirmwareVersionsGasCommandExecutor
         extends AbstractCommandExecutor<GetFirmwareVersionQueryDto, FirmwareVersionGasDto> {
 
-    private static final int CLASS_ID = 4;
-    private static final int ATTRIBUTE_ID = 2;
+    private static final int CLASS_ID = InterfaceClass.EXTENDED_REGISTER.id();
+    private static final int ATTRIBUTE_ID = ExtendedRegisterAttribute.VALUE.attributeId();
+    public static final String OBIS_CODE_TEMPLATE = "0.%d.24.2.11.255";
 
     private final DlmsHelper dlmsHelper;
 
     @Autowired
     public GetFirmwareVersionsGasCommandExecutor(final DlmsHelper dlmsHelper) {
-        super(GetFirmwareVersionRequestDto.class);
+        super(GetFirmwareVersionGasRequestDto.class);
         this.dlmsHelper = dlmsHelper;
     }
 
@@ -58,7 +60,8 @@ public class GetFirmwareVersionsGasCommandExecutor
 
         final GetFirmwareVersionGasRequestDto getFirmwareVersionGasRequestDto =
                 (GetFirmwareVersionGasRequestDto) bundleInput;
-        return new GetFirmwareVersionQueryDto(getFirmwareVersionGasRequestDto.getChannel());
+        return new GetFirmwareVersionQueryDto(getFirmwareVersionGasRequestDto.getChannel(),
+                getFirmwareVersionGasRequestDto.getMbusDeviceIdentification());
     }
 
     @Override
@@ -77,16 +80,18 @@ public class GetFirmwareVersionsGasCommandExecutor
 
         if (Protocol.forDevice(device).isSmr5()) {
             final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID,
-                    new ObisCode(String.format("0.%s.24.2.11.255", queryDto.getChannel().getChannelNumber())),
+                    new ObisCode(String.format(OBIS_CODE_TEMPLATE, queryDto.getChannel().getChannelNumber())),
                     ATTRIBUTE_ID);
-            return this.getSimpleVersionInfo(conn, device, attributeAddress);
+            final String version = this.getSimpleVersionInfo(conn, device, attributeAddress);
+            return new FirmwareVersionGasDto(FirmwareModuleType.SIMPLE_VERSION_INFO, version,
+                    queryDto.getMbusDeviceIdentification());
         }
 
         throw new FunctionalException(FunctionalExceptionType.OPERATION_NOT_SUPPORTED_BY_PLATFORM_FOR_PROTOCOL,
                 ComponentType.DOMAIN_SMART_METERING);
     }
 
-    private FirmwareVersionGasDto getSimpleVersionInfo(final DlmsConnectionManager conn, final DlmsDevice device,
+    private String getSimpleVersionInfo(final DlmsConnectionManager conn, final DlmsDevice device,
             final AttributeAddress attributeAddress) throws ProtocolAdapterException {
 
         conn.getDlmsMessageListener().setDescription(
@@ -96,9 +101,8 @@ public class GetFirmwareVersionsGasCommandExecutor
         final List<GetResult> results = this.dlmsHelper.getAndCheck(conn, device, "retrieve firmware versions",
                 attributeAddress);
 
-        final String version = this.dlmsHelper.readString(results.get(0).getResultData(),
+        return this.dlmsHelper.readString(results.get(0).getResultData(),
                 FirmwareModuleType.SIMPLE_VERSION_INFO.getDescription());
 
-        return new FirmwareVersionGasDto(FirmwareModuleType.SIMPLE_VERSION_INFO, version);
     }
 }
