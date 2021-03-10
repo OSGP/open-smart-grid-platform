@@ -252,20 +252,23 @@ public class MBusGatewayService {
      * @param deCoupleMbusDeviceResponseDto
      * @throws FunctionalException
      */
-    public Optional<SmartMeter> handleDeCoupleMbusDeviceResponse(final DeCoupleMbusDeviceResponseDto deCoupleMbusDeviceResponseDto) {
+    public void handleDeCoupleMbusDeviceResponse(final DeCoupleMbusDeviceResponseDto deCoupleMbusDeviceResponseDto) {
         final Optional<SmartMeter> mbusDeviceFoundOnChannel = this.findByMBusIdentificationNumber(
                 deCoupleMbusDeviceResponseDto.getChannelElementValues());
 
         if (!mbusDeviceFoundOnChannel.isPresent()) {
-            return mbusDeviceFoundOnChannel;
+            return;
         }
 
         final SmartMeter mbusDevice = mbusDeviceFoundOnChannel.get();
+
+        deCoupleMbusDeviceResponseDto.setMbusDeviceIdentification(mbusDevice.getDeviceIdentification());
+
         mbusDevice.setChannel(null);
         mbusDevice.setMbusPrimaryAddress(null);
         mbusDevice.updateGatewayDevice(null);
 
-        return Optional.of(this.smartMeteringDeviceRepository.save(mbusDevice));
+        this.smartMeteringDeviceRepository.save(mbusDevice);
     }
 
     private MbusChannelElementsDto makeMbusChannelElementsDto(final SmartMeter mbusDevice) {

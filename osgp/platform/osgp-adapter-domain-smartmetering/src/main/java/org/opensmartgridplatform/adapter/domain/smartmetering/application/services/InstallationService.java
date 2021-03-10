@@ -8,8 +8,7 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
-import java.util.Optional;
-
+import ma.glasnost.orika.MapperFactory;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.CommonMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
@@ -38,8 +37,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import ma.glasnost.orika.MapperFactory;
 
 @Service(value = "domainSmartMeteringInstallationService")
 public class InstallationService {
@@ -161,15 +158,11 @@ public class InstallationService {
             final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException,
             final DeCoupleMbusDeviceResponseDto deCoupleMbusDeviceResponseDto) throws FunctionalException {
 
-        final Optional<SmartMeter> mbusDeviceFoundOnChannel = this.mBusGatewayService
+        this.mBusGatewayService
                 .handleDeCoupleMbusDeviceResponse(deCoupleMbusDeviceResponseDto);
 
-        final String mbusDeviceDeviceIdentification = mbusDeviceFoundOnChannel.isPresent()
-                ? mbusDeviceFoundOnChannel.get().getDeviceIdentification()
-                : null;
-
         final DeCoupleMbusDeviceByChannelResponse response = new DeCoupleMbusDeviceByChannelResponse(
-                mbusDeviceDeviceIdentification, deCoupleMbusDeviceResponseDto.getChannelElementValues().getChannel());
+                deCoupleMbusDeviceResponseDto.getMbusDeviceIdentification(), deCoupleMbusDeviceResponseDto.getChannelElementValues().getChannel());
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())

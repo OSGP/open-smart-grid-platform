@@ -13,20 +13,15 @@ import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.converter.ConverterFactory;
 import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.DeCoupleMbusDeviceByChannelResponseConverter;
-import org.opensmartgridplatform.domain.core.repositories.SmartMeterRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component(value = "installationMapper")
 public class InstallationMapper extends ConfigurableMapper {
 
-    @Autowired
-    private SmartMeterRepository smartMeteringDeviceRepository;
-
     @Override
     public final void configure(final MapperFactory mapperFactory) {
         ConverterFactory converterFactory = mapperFactory.getConverterFactory();
-        converterFactory.registerConverter(new DeCoupleMbusDeviceByChannelResponseConverter(smartMeteringDeviceRepository));
+        converterFactory.registerConverter(new DeCoupleMbusDeviceByChannelResponseConverter());
     }
 
 }
