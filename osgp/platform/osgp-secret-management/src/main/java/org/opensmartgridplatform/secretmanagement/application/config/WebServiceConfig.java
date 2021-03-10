@@ -8,6 +8,8 @@
  */
 package org.opensmartgridplatform.secretmanagement.application.config;
 
+import java.util.Properties;
+
 import org.opensmartgridplatform.secretmanagement.application.exception.DetailSoapFaultMappingExceptionResolver;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -17,14 +19,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.ws.config.annotation.EnableWs;
 import org.springframework.ws.config.annotation.WsConfigurerAdapter;
+import org.springframework.ws.server.EndpointExceptionResolver;
 import org.springframework.ws.soap.server.endpoint.SoapFaultDefinition;
 import org.springframework.ws.soap.server.endpoint.SoapFaultMappingExceptionResolver;
 import org.springframework.ws.transport.http.MessageDispatcherServlet;
 import org.springframework.ws.wsdl.wsdl11.DefaultWsdl11Definition;
 import org.springframework.xml.xsd.XsdSchemaCollection;
 import org.springframework.xml.xsd.commons.CommonsXsdSchemaCollection;
-
-import java.util.Properties;
 
 @EnableWs
 @Configuration
@@ -39,8 +40,8 @@ public class WebServiceConfig extends WsConfigurerAdapter {
 
     @Bean
     public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(
-            ApplicationContext applicationContext) {
-        MessageDispatcherServlet servlet = new MessageDispatcherServlet();
+            final ApplicationContext applicationContext) {
+        final MessageDispatcherServlet servlet = new MessageDispatcherServlet();
         servlet.setApplicationContext(applicationContext);
         servlet.setTransformWsdlLocations(true);
         return new ServletRegistrationBean<>(servlet, SECRET_MANAGEMENT_WS_BASE_PATH);
@@ -52,8 +53,8 @@ public class WebServiceConfig extends WsConfigurerAdapter {
      * http://localhost:8080/ws/SecretManagement/secretManagement.wsdl
      */
     @Bean(name = "secretManagement")
-    public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchemaCollection secretManagementSchemas) {
-        DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
+    public DefaultWsdl11Definition defaultWsdl11Definition(final XsdSchemaCollection secretManagementSchemas) {
+        final DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
         wsdl11Definition.setPortTypeName(SECRET_MANAGEMENT_PORT);
         wsdl11Definition.setLocationUri(SECRET_MANAGEMENT_URI);
         wsdl11Definition.setTargetNamespace(SECRET_MANAGEMENT_NS);
@@ -63,20 +64,20 @@ public class WebServiceConfig extends WsConfigurerAdapter {
 
     @Bean
     public XsdSchemaCollection secretManagementSchemas() {
-        CommonsXsdSchemaCollection sc = new CommonsXsdSchemaCollection();
+        final CommonsXsdSchemaCollection sc = new CommonsXsdSchemaCollection();
         sc.setXsds(new ClassPathResource(SECRET_MANAGEMENT_SCHEMA_LOC));
         return sc;
     }
 
     @Bean
-    public SoapFaultMappingExceptionResolver exceptionResolver() {
-        SoapFaultMappingExceptionResolver exceptionResolver = new DetailSoapFaultMappingExceptionResolver();
+    public EndpointExceptionResolver exceptionResolver() {
+        final SoapFaultMappingExceptionResolver exceptionResolver = new DetailSoapFaultMappingExceptionResolver();
 
-        SoapFaultDefinition faultDefinition = new SoapFaultDefinition();
+        final SoapFaultDefinition faultDefinition = new SoapFaultDefinition();
         faultDefinition.setFaultCode(SoapFaultDefinition.SERVER);
         exceptionResolver.setDefaultFault(faultDefinition);
 
-        Properties errorMappings = new Properties();
+        final Properties errorMappings = new Properties();
         errorMappings.setProperty(Exception.class.getName(), SoapFaultDefinition.SERVER.toString());
         errorMappings.setProperty(TechnicalException.class.getName(),
                 SoapFaultDefinition.SERVER.toString());

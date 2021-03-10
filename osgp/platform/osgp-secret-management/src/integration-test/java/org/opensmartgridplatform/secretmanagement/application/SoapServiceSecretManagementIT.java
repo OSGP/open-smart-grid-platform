@@ -10,6 +10,7 @@ package org.opensmartgridplatform.secretmanagement.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.ws.test.server.RequestCreators.withPayload;
+import static org.springframework.ws.test.server.RequestCreators.withSoapEnvelope;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -103,6 +104,7 @@ public class SoapServiceSecretManagementIT {
          */
         assertThat(this.secretRepository.count()).isEqualTo(2);
         final Resource request = new ClassPathResource("test-requests/getSecrets.xml");
+        final Resource envelope = new ClassPathResource("test-requests/getSecretsEnvelope.xml");
         this.mockWebServiceClient.sendRequest(withPayload(request)).andExpect((request2, response) -> {
             final OutputStream outStream = new ByteArrayOutputStream();
             response.writeTo(outStream);
@@ -111,6 +113,17 @@ public class SoapServiceSecretManagementIT {
             assertThat(outputString.contains("E_METER_AUTHENTICATION")).isTrue();
             assertThat(outputString.contains("E_METER_ENCRYPTION_KEY_UNICAST")).isTrue();
 
+        });
+    }
+
+    @Test
+    public void getSecretsWithCorrelationUidInHeader() throws IOException {
+        final Resource envelope = new ClassPathResource("test-requests/getSecretsEnvelope.xml");
+        this.mockWebServiceClient.sendRequest(withSoapEnvelope(envelope)).andExpect((request2, response) -> {
+            final OutputStream outStream = new ByteArrayOutputStream();
+            response.writeTo(outStream);
+            final String outputString = outStream.toString();
+            assertThat(outputString.contains(">123456</ns:correlationUid>")).isTrue();
         });
     }
 
@@ -256,11 +269,11 @@ public class SoapServiceSecretManagementIT {
             response.writeTo(outputStream);
             assertThat(outputStream.toString()).contains("Result>OK");
         });
-        List<DbEncryptedSecret> authKeys = this.secretRepository.findSecrets(DEVICE_IDENTIFICATION,
+        final List<DbEncryptedSecret> authKeys = this.secretRepository.findSecrets(DEVICE_IDENTIFICATION,
                 SecretType.E_METER_AUTHENTICATION_KEY,
                 SecretStatus.NEW);
         assertThat(authKeys).hasSize(1);
-        DbEncryptedSecret authKey = authKeys.get(0);
+        final DbEncryptedSecret authKey = authKeys.get(0);
         assertThat(authKey.getEncodedSecret()).hasSize(64);
     }
 
