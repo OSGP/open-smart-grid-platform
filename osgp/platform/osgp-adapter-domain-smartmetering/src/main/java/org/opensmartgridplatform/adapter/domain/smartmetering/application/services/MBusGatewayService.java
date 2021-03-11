@@ -34,18 +34,17 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service(value = "domainSmartMeteringMBusGatewayService")
 @Transactional(value = "transactionManager")
 public class MBusGatewayService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(MBusGatewayService.class);
 
     private static final int MAXIMUM_NUMBER_OF_MBUS_CHANNELS = 4;
 
@@ -80,7 +79,7 @@ public class MBusGatewayService {
         final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
         final String mbusDeviceIdentification = requestData.getMbusDeviceIdentification();
 
-        LOGGER.debug("coupleMbusDevice for organizationIdentification: {} for gateway: {}, m-bus device {} ",
+        log.debug("coupleMbusDevice for organizationIdentification: {} for gateway: {}, m-bus device {} ",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceIdentification, mbusDeviceIdentification);
 
         try {
@@ -110,7 +109,7 @@ public class MBusGatewayService {
         final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
         final String mbusDeviceIdentification = requestData.getMbusDeviceIdentification();
 
-        LOGGER.debug("deCoupleMbusDevice for organizationIdentification: {} for gateway: {}, m-bus device {} ",
+        log.debug("deCoupleMbusDevice for organizationIdentification: {} for gateway: {}, m-bus device {} ",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceIdentification, mbusDeviceIdentification);
 
         final SmartMeter gatewayDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
@@ -140,7 +139,7 @@ public class MBusGatewayService {
         final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
         final SmartMeter gatewayDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
-        LOGGER.debug("deCoupleMbusDeviceByChannel for organizationIdentification: {} for gateway: {}, channel {} ",
+        log.debug("deCoupleMbusDeviceByChannel for organizationIdentification: {} for gateway: {}, channel {} ",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceIdentification, requestData.getChannel());
 
         final DeCoupleMbusDeviceDto deCoupleMbusDeviceDto = new DeCoupleMbusDeviceDto(requestData.getChannel());
@@ -178,7 +177,7 @@ public class MBusGatewayService {
 
         final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
 
-        LOGGER.debug("getMBusDeviceOnChannel for organizationIdentification: {} for gateway: {}",
+        log.debug("getMBusDeviceOnChannel for organizationIdentification: {} for gateway: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceIdentification);
 
         final CoupleMbusDeviceByChannelRequestDataDto requestDataDto = new CoupleMbusDeviceByChannelRequestDataDto(
@@ -344,7 +343,7 @@ public class MBusGatewayService {
      */
     private void checkAndHandleIfGivenMBusAlreadyCoupled(final SmartMeter mbusDevice) throws FunctionalException {
         if (mbusDevice.getGatewayDevice() != null) {
-            LOGGER.info("The given M-bus device {} is already coupled to gateway {} on channel {}",
+            log.info("The given M-bus device {} is already coupled to gateway {} on channel {}",
                     mbusDevice.getDeviceIdentification(), mbusDevice.getGatewayDevice().getDeviceIdentification(),
                     mbusDevice.getChannel());
 
@@ -371,7 +370,7 @@ public class MBusGatewayService {
 
     private void checkAndHandleInactiveMbusDevice(final SmartMeter mbusDevice) throws FunctionalException {
         if (!mbusDevice.getDeviceLifecycleStatus().equals(DeviceLifecycleStatus.IN_USE)) {
-            LOGGER.info("The given M-bus device {} is inactive", mbusDevice.getDeviceIdentification());
+            log.info("The given M-bus device {} is inactive", mbusDevice.getDeviceIdentification());
 
             throw new FunctionalException(FunctionalExceptionType.INACTIVE_DEVICE, ComponentType.DOMAIN_SMART_METERING,
                     new InactiveDeviceException(mbusDevice.getDeviceIdentification()));

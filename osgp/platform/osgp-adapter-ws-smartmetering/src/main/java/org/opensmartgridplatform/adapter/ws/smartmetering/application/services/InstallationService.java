@@ -23,17 +23,16 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.validation.Identification;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service(value = "wsSmartMeteringInstallationService")
 @Validated
 public class InstallationService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(InstallationService.class);
 
     @Autowired
     private DomainHelperService domainHelperService;
@@ -48,8 +47,8 @@ public class InstallationService {
             @Identification final String deviceIdentification, final AddSmartMeterRequest addSmartMeterRequest,
             final int messagePriority, final Long scheduleTime) {
 
-        LOGGER.debug("enqueueAddSmartMeterRequest called with organisation {} and device {}",
-                organisationIdentification, deviceIdentification);
+        log.debug("enqueueAddSmartMeterRequest called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
@@ -90,7 +89,7 @@ public class InstallationService {
 
         this.domainHelperService.checkAllowed(organisation, device, DeviceFunction.COUPLE_MBUS_DEVICE);
 
-        LOGGER.debug("enqueueCoupleMbusDeviceRequest called with organisation {}, gateway {} and mbus device {}",
+        log.debug("enqueueCoupleMbusDeviceRequest called with organisation {}, gateway {} and mbus device {}",
                 organisationIdentification, deviceIdentification, mbusDeviceIdentification);
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
@@ -135,7 +134,7 @@ public class InstallationService {
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
         this.domainHelperService.checkAllowed(organisation, device, DeviceFunction.DE_COUPLE_MBUS_DEVICE);
 
-        LOGGER.debug("enqueueDeCoupleMbusDeviceRequest called with organisation {}, gateway {} and mbus device {}",
+        log.debug("enqueueDeCoupleMbusDeviceRequest called with organisation {}, gateway {} and mbus device {}",
                 organisationIdentification, deviceIdentification, mbusDeviceIdentification);
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
@@ -175,7 +174,7 @@ public class InstallationService {
 
         this.domainHelperService.checkAllowed(organisation, device, DeviceFunction.COUPLE_MBUS_DEVICE_BY_CHANNEL);
 
-        LOGGER.debug("enqueueCoupleMbusDeviceByChannelRequest called with organisation {}, gateway {}",
+        log.debug("enqueueCoupleMbusDeviceByChannelRequest called with organisation {}, gateway {}",
                 organisationIdentification, deviceIdentification);
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
@@ -215,7 +214,7 @@ public class InstallationService {
 
         this.domainHelperService.checkAllowed(organisation, device, DeviceFunction.DE_COUPLE_MBUS_DEVICE_BY_CHANNEL);
 
-        LOGGER.debug("enqueueDeCoupleMbusDeviceByChannelRequest called with organisation {}, gateway {}",
+        log.debug("enqueueDeCoupleMbusDeviceByChannelRequest called with organisation {}, gateway {}",
                 organisationIdentification, deviceIdentification);
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,

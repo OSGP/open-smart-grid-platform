@@ -32,11 +32,12 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.ImageTransferAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.method.ImageTransferMethod;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 class ImageTransfer {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ImageTransfer.class);
+
     private static final double LOGGER_PERCENTAGE_STEP = 5.0;
 
     private static final String EXCEPTION_MSG_WAITING_FOR_IMAGE_ACTIVATION = "An error occurred while waiting for "
@@ -138,7 +139,7 @@ class ImageTransfer {
                 .callMethod(ImageTransferMethod.IMAGE_TRANSFER_INITIATE, parameter);
 
         if (resultCode != MethodResultCode.SUCCESS) {
-            LOGGER.warn("Method IMAGE_TRANSFER_INITIATE gave result {}", resultCode);
+            log.warn("Method IMAGE_TRANSFER_INITIATE gave result {}", resultCode);
         }
     }
 
@@ -170,7 +171,7 @@ class ImageTransfer {
     public void transferMissingImageBlocks() throws ProtocolAdapterException {
         int blockNumber;
         while ((blockNumber = this.getImageFirstNotTransferredBlockNumber()) < this.numberOfBlocks()) {
-            LOGGER.info("Retransferring block {}.", blockNumber);
+            log.info("Retransferring block {}.", blockNumber);
             this.imageBlockTransfer(blockNumber);
         }
     }
@@ -228,7 +229,7 @@ class ImageTransfer {
              * situation encountered, leaving the flow to continue, since image
              * verification should already have been successful.
              */
-            LOGGER.error(EXCEPTION_MSG_IMAGE_TO_ACTIVATE_NOT_OK);
+            log.error(EXCEPTION_MSG_IMAGE_TO_ACTIVATE_NOT_OK);
             return true;
         }
 
@@ -245,14 +246,14 @@ class ImageTransfer {
                     && imageToActivateSize == this.imageData.length) {
                 final String imageDescription = this.describeImageInfo(imageToActivateSize,
                         imageToActivateIdentification, imageSignature);
-                LOGGER.info("Found matching image to activate info element ({})", imageDescription);
+                log.info("Found matching image to activate info element ({})", imageDescription);
                 return true;
             } else {
                 final String imageToActivateDescription = this.describeImageInfo(imageToActivateSize,
                         imageToActivateIdentification, imageSignature);
                 final String imageDescription = this.describeImageInfo(this.imageData.length, this.imageIdentifier,
                         Arrays.copyOf(this.imageData, imageSignature.length));
-                LOGGER.info("Retrieved an image to activate info element ({}) with value not matching the image being "
+                log.info("Retrieved an image to activate info element ({}) with value not matching the image being "
                         + "transferred ({}).", imageToActivateDescription, imageDescription);
             }
         }
@@ -262,7 +263,7 @@ class ImageTransfer {
          * continue, since image verification should already have been
          * successful.
          */
-        LOGGER.warn("No image to activate info element matched the firmware image being transferred.");
+        log.warn("No image to activate info element matched the firmware image being transferred.");
         return true;
     }
 
@@ -355,7 +356,7 @@ class ImageTransfer {
 
     private int numberOfBlocks() throws ProtocolAdapterException {
         final int blocks = (int) Math.ceil((double) this.getImageSize() / this.getImageBlockSize());
-        LOGGER.info("Calculated number of blocks: {} / {} = {}", this.getImageSize(), this.getImageBlockSize(), blocks);
+        log.info("Calculated number of blocks: {} / {} = {}", this.getImageSize(), this.getImageBlockSize(), blocks);
         return blocks;
     }
 
@@ -447,7 +448,7 @@ class ImageTransfer {
                 parameter);
 
         if (resultCode != MethodResultCode.SUCCESS) {
-            LOGGER.info("Method IMAGE_BLOCK_TRANSFER gave result {} for block {}", resultCode, blockNumber);
+            log.info("Method IMAGE_BLOCK_TRANSFER gave result {} for block {}", resultCode, blockNumber);
         }
     }
 
@@ -461,8 +462,8 @@ class ImageTransfer {
     private void logUploadPercentage(final int block, final int totalBlocks) {
         final int step = (int) Math.round(totalBlocks / (100 / LOGGER_PERCENTAGE_STEP));
         if (step != 0 && block % step == 0) {
-            LOGGER.info("Firmware upload progress {}%. ({} / {})", ((double) block / step) * LOGGER_PERCENTAGE_STEP,
-                    block, totalBlocks);
+            log.info("Firmware upload progress {}%. ({} / {})", ((double) block / step) * LOGGER_PERCENTAGE_STEP, block,
+                    totalBlocks);
         }
     }
 
@@ -574,7 +575,7 @@ class ImageTransfer {
                     this.disconnect();
                 }
 
-                LOGGER.info("Waiting for status change.");
+                log.info("Waiting for status change.");
                 final int doSleep = (this.slept + this.pollingInterval < this.timeout) ? this.pollingInterval
                         : this.timeout - this.slept;
                 Thread.sleep(doSleep);

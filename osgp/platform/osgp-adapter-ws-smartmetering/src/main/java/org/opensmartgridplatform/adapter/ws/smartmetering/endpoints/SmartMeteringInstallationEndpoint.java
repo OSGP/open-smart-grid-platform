@@ -46,18 +46,18 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Endpoint
 public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringInstallationEndpoint.class);
     private static final String SMARTMETER_INSTALLATION_NAMESPACE = "http://www.opensmartgridplatform.org/schemas/smartmetering/sm-installation/2014/10";
 
     @Autowired
@@ -76,7 +76,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             @RequestPayload final AddDeviceRequest request, @MessagePriority final String messagePriority,
             @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
 
-        LOGGER.info("Incoming AddDeviceRequest for meter: {}.", request.getDevice().getDeviceIdentification());
+        log.info("Incoming AddDeviceRequest for meter: {}.", request.getDevice().getDeviceIdentification());
 
         AddDeviceAsyncResponse response = null;
         try {
@@ -96,7 +96,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final ConstraintViolationException e) {
 
-            LOGGER.error("Exception: {} while adding device: {} for organisation {}.", e.getMessage(),
+            log.error("Exception: {} while adding device: {} for organisation {}.", e.getMessage(),
                     request.getDevice().getDeviceIdentification(), organisationIdentification, e);
 
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
@@ -104,7 +104,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
         } catch (final Exception e) {
 
-            LOGGER.error("Exception: {} while adding device: {} for organisation {}.", e.getMessage(),
+            log.error("Exception: {} while adding device: {} for organisation {}.", e.getMessage(),
                     request.getDevice().getDeviceIdentification(), organisationIdentification, e);
 
             this.handleException(e);
@@ -159,7 +159,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
         final String deviceIdentification = request.getDeviceIdentification();
         final String mbusDeviceIdentification = request.getMbusDeviceIdentification();
-        LOGGER.info("Incoming CoupleMbusDeviceRequest for meter: {} and mbus device {}.", deviceIdentification,
+        log.info("Incoming CoupleMbusDeviceRequest for meter: {} and mbus device {}.", deviceIdentification,
                 mbusDeviceIdentification);
 
         CoupleMbusDeviceAsyncResponse response = null;
@@ -175,7 +175,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             response.setDeviceIdentification(deviceIdentification);
             this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
-            LOGGER.error("Exception while coupling devices: {} and {} for organisation {}.", deviceIdentification,
+            log.error("Exception while coupling devices: {} and {} for organisation {}.", deviceIdentification,
                     mbusDeviceIdentification, organisationIdentification, e);
             this.handleException(e);
         }
@@ -236,7 +236,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
         final String deviceIdentification = request.getDeviceIdentification();
         final String mbusDeviceIdentification = request.getMbusDeviceIdentification();
-        LOGGER.info("Incoming DeCoupleMbusDeviceRequest for meter: {} and mbus device {}.", deviceIdentification,
+        log.info("Incoming DeCoupleMbusDeviceRequest for meter: {} and mbus device {}.", deviceIdentification,
                 mbusDeviceIdentification);
 
         DeCoupleMbusDeviceAsyncResponse response = null;
@@ -253,7 +253,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
 
-            LOGGER.error("Exception: {} while decoupling devices: {} and {} for organisation {}.", e.getMessage(),
+            log.error("Exception: {} while decoupling devices: {} and {} for organisation {}.", e.getMessage(),
                     deviceIdentification, mbusDeviceIdentification, organisationIdentification, e);
 
             this.handleException(e);
@@ -316,7 +316,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
         final String deviceIdentification = request.getDeviceIdentification();
         final short channel = request.getCoupleMbusDeviceByChannelRequestData().getChannel();
-        LOGGER.info("Incoming CoupleMbusDeviceByChannelRequest for device: {} and channel {}.", deviceIdentification,
+        log.info("Incoming CoupleMbusDeviceByChannelRequest for device: {} and channel {}.", deviceIdentification,
                 channel);
 
         CoupleMbusDeviceByChannelAsyncResponse response = null;
@@ -332,7 +332,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             response.setDeviceIdentification(deviceIdentification);
             this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
-            LOGGER.error("Exception while coupling on channel: {} for device: {} for organisation {}.", channel,
+            log.error("Exception while coupling on channel: {} for device: {} for organisation {}.", channel,
                     deviceIdentification, organisationIdentification, e);
             this.handleException(e);
         }
@@ -397,7 +397,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
         final String deviceIdentification = request.getDeviceIdentification();
         final short channel = request.getDeCoupleMbusDeviceByChannelRequestData().getChannel();
-        LOGGER.info("Incoming DeCoupleMbusDeviceByChannelRequest for device: {} and channel {}.", deviceIdentification,
+        log.info("Incoming DeCoupleMbusDeviceByChannelRequest for device: {} and channel {}.", deviceIdentification,
                 channel);
 
         DeCoupleMbusDeviceByChannelAsyncResponse response = null;
@@ -413,7 +413,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             response.setDeviceIdentification(deviceIdentification);
             this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
-            LOGGER.error("Exception while cleaning up on channel: {} for device: {} for organisation {}.", channel,
+            log.error("Exception while cleaning up on channel: {} for device: {} for organisation {}.", channel,
                     deviceIdentification, organisationIdentification, e);
             this.handleException(e);
         }

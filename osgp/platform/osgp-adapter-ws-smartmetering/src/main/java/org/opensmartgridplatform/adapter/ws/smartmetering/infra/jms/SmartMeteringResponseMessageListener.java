@@ -15,16 +15,15 @@ import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.NotificationType;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component(value = "wsSmartMeteringInboundDomainResponsesMessageListener")
 public class SmartMeteringResponseMessageListener implements MessageListener {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringResponseMessageListener.class);
 
     @Autowired
     @Qualifier(value = "wsSmartMeteringInboundDomainResponsesMessageProcessorMap")
@@ -37,17 +36,17 @@ public class SmartMeteringResponseMessageListener implements MessageListener {
     @Override
     public void onMessage(final Message message) {
         try {
-            LOGGER.info("Received message of type: {}", message.getJMSType());
+            log.info("Received message of type: {}", message.getJMSType());
 
             final String messageType = message.getJMSType();
             final ObjectMessage objectMessage = (ObjectMessage) message;
             final String correlationUid = objectMessage.getJMSCorrelationID();
-            LOGGER.info("objectMessage CorrelationUID: {}", correlationUid);
+            log.info("objectMessage CorrelationUID: {}", correlationUid);
 
             // Temporary if instead of message processor.
             if (messageType.equals(NotificationType.FIND_EVENTS.toString())) {
                 // Save the events to the database.
-                LOGGER.info("Saving events for FIND_EVENTS");
+                log.info("Saving events for FIND_EVENTS");
 
             }
 
@@ -57,7 +56,7 @@ public class SmartMeteringResponseMessageListener implements MessageListener {
             processor.processMessage(objectMessage);
 
         } catch (final JMSException ex) {
-            LOGGER.error("Exception: {} ", ex.getMessage(), ex);
+            log.error("Exception: {} ", ex.getMessage(), ex);
         }
     }
 }
