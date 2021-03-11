@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.DeCoupleMbusDeviceByChannelRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.DeCoupleMbusDeviceByChannelResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 
@@ -41,7 +42,7 @@ public class BundledDeCoupleMbusDeviceByChannelSteps extends BaseBundleSteps {
         assertThat(((DeCoupleMbusDeviceByChannelResponse) response).getMbusDeviceIdentification())
                 .as("MbusDeviceIdentification")
                 .isEqualTo(mbusDeviceIdentification);
-        // assertThat(response.getResult()).as("Result").isEqualTo(result);
+        assertThat(response.getResult()).as("Result").isEqualTo(OsgpResultType.valueOf(result));
 
     }
 
@@ -55,7 +56,7 @@ public class BundledDeCoupleMbusDeviceByChannelSteps extends BaseBundleSteps {
         assertThat(((DeCoupleMbusDeviceByChannelResponse) response).getMbusDeviceIdentification())
                 .as("MbusDeviceIdentification")
                 .isNull();
-        assertThat(response.getResult()).as("Result").isEqualTo(result);
+        assertThat(response.getResult()).as("Result").isEqualTo(OsgpResultType.valueOf(result));
 
     }
 

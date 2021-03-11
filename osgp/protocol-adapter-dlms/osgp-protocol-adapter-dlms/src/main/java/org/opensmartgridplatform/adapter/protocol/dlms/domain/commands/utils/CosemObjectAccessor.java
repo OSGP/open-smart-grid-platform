@@ -24,7 +24,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionExce
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeClass;
 import org.opensmartgridplatform.dlms.interfaceclass.method.MethodClass;
-import org.springframework.stereotype.Component;
 
 public class CosemObjectAccessor {
 

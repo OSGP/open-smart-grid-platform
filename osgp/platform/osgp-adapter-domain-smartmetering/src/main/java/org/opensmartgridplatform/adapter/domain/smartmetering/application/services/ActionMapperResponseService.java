@@ -15,7 +15,6 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.CommonMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.InstallationMapper;
@@ -75,6 +74,8 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionTyp
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import ma.glasnost.orika.impl.ConfigurableMapper;
 
 @Service(value = "domainSmartMeteringActionMapperResponseService")
 @Validated

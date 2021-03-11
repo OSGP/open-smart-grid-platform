@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2021 Alliander N.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -9,18 +9,19 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping;
 
+import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.DeCoupleMbusDeviceByChannelResponseConverter;
+import org.springframework.stereotype.Component;
+
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.converter.ConverterFactory;
 import ma.glasnost.orika.impl.ConfigurableMapper;
-import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.DeCoupleMbusDeviceByChannelResponseConverter;
-import org.springframework.stereotype.Component;
 
 @Component(value = "installationMapper")
 public class InstallationMapper extends ConfigurableMapper {
 
     @Override
     public final void configure(final MapperFactory mapperFactory) {
-        ConverterFactory converterFactory = mapperFactory.getConverterFactory();
+        final ConverterFactory converterFactory = mapperFactory.getConverterFactory();
         converterFactory.registerConverter(new DeCoupleMbusDeviceByChannelResponseConverter());
     }
 

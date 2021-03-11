@@ -10,7 +10,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
 import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
@@ -26,6 +25,8 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDevi
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Slf4j
 @Component
 public class DeCoupleMBusDeviceCommandExecutor
@@ -39,7 +40,8 @@ public class DeCoupleMBusDeviceCommandExecutor
     }
 
     @Override
-    public ActionResponseDto asBundleResponse(final DeCoupleMbusDeviceResponseDto executionResult) throws ProtocolAdapterException {
+    public ActionResponseDto asBundleResponse(final DeCoupleMbusDeviceResponseDto executionResult)
+            throws ProtocolAdapterException {
         return new DeCoupleMbusDeviceResponseDto(executionResult.getChannelElementValues());
     }
 

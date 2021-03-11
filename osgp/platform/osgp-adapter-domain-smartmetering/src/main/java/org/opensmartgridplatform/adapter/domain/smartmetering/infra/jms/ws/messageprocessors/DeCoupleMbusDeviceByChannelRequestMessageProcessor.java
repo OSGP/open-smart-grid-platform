@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2021 Alliander N.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -29,7 +29,7 @@ public class DeCoupleMbusDeviceByChannelRequestMessageProcessor extends BaseRequ
 
     @Autowired
     protected DeCoupleMbusDeviceByChannelRequestMessageProcessor(
-            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(messageProcessorMap, MessageType.DE_COUPLE_MBUS_DEVICE_BY_CHANNEL);
     }
 

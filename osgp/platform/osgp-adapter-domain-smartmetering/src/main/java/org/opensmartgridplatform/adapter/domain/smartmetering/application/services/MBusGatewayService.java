@@ -266,8 +266,9 @@ public class MBusGatewayService {
 
         deCoupleMbusDeviceResponseDto.setMbusDeviceIdentification(mbusDevice.getDeviceIdentification());
 
-        if (mbusDevice.getGatewayDevice() != null
-                && mbusDevice.getGatewayDevice().getDeviceIdentification().equals(deviceMessageMetadata.getDeviceIdentification())) {
+        if (mbusDevice.getGatewayDevice() != null && mbusDevice.getGatewayDevice()
+                .getDeviceIdentification()
+                .equals(deviceMessageMetadata.getDeviceIdentification())) {
             mbusDevice.setChannel(null);
             mbusDevice.setMbusPrimaryAddress(null);
             mbusDevice.updateGatewayDevice(null);

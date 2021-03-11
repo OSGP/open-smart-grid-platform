@@ -22,7 +22,7 @@ public class DeCoupleMbusDeviceResponseDto extends ActionResponseDto {
     @Override
     public String toString() {
         return "DeCoupleMbusDeviceResponseDto [channel=" + this.channelElementValues.getChannel()
-                + ", mbusDeviceIdentification=" + mbusDeviceIdentification + "]";
+                + ", mbusDeviceIdentification=" + this.mbusDeviceIdentification + "]";
     }
 
     public ChannelElementValuesDto getChannelElementValues() {
@@ -30,10 +30,10 @@ public class DeCoupleMbusDeviceResponseDto extends ActionResponseDto {
     }
 
     public String getMbusDeviceIdentification() {
-        return mbusDeviceIdentification;
+        return this.mbusDeviceIdentification;
     }
 
-    public void setMbusDeviceIdentification(String mbusDeviceIdentification) {
+    public void setMbusDeviceIdentification(final String mbusDeviceIdentification) {
         this.mbusDeviceIdentification = mbusDeviceIdentification;
     }
 }
