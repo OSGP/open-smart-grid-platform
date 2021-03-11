@@ -34,7 +34,7 @@ public class DeCoupleMbusDeviceByChannelSteps extends AbstractSmartMeteringSteps
     private SmartMeteringInstallationClient smartMeteringInstallationClient;
 
     @When("^the DeCouple MBus Device By Channel \"([^\"]*)\" from E-meter \"([^\"]*)\" request is received$")
-    public void theDeCoupleGMeterRequestIsReceived(final String channel, final String eMeter)
+    public void theDeCoupleMbusDeviceByChannelResponseIsForDevice(final String channel, final String eMeter)
             throws WebServiceSecurityException {
 
         final DeCoupleMbusDeviceByChannelRequest request = DeCoupleMbusDeviceByChannelRequestFactory

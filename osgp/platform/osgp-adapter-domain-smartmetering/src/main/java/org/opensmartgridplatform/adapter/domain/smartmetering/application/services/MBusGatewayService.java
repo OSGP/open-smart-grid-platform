@@ -253,8 +253,8 @@ public class MBusGatewayService {
      * @throws FunctionalException
      */
     public void handleDeCoupleMbusDeviceResponse(final DeCoupleMbusDeviceResponseDto deCoupleMbusDeviceResponseDto) {
-        final Optional<SmartMeter> mbusDeviceFoundOnChannel = this.findByMBusIdentificationNumber(
-                deCoupleMbusDeviceResponseDto.getChannelElementValues());
+        final Optional<SmartMeter> mbusDeviceFoundOnChannel = this
+                .findByMBusIdentificationNumber(deCoupleMbusDeviceResponseDto.getChannelElementValues());
 
         if (!mbusDeviceFoundOnChannel.isPresent()) {
             return;
@@ -269,6 +269,25 @@ public class MBusGatewayService {
         mbusDevice.updateGatewayDevice(null);
 
         this.smartMeteringDeviceRepository.save(mbusDevice);
+    }
+
+    /**
+     * Finds the M-Bus device identified in the input part of the
+     * {@code deCoupleMbusResponseDto}.
+     *
+     * @param deCoupleMbusDeviceResponseDto
+     * @throws FunctionalException
+     */
+    public void handleDeCoupleMbusDeviceByChannelResponse(
+            final DeCoupleMbusDeviceResponseDto deCoupleMbusDeviceResponseDto) {
+
+        final Optional<SmartMeter> mbusDeviceFoundOnChannel = this
+                .findByMBusIdentificationNumber(deCoupleMbusDeviceResponseDto.getChannelElementValues());
+
+        if (mbusDeviceFoundOnChannel.isPresent()) {
+            deCoupleMbusDeviceResponseDto
+                    .setMbusDeviceIdentification(mbusDeviceFoundOnChannel.get().getDeviceIdentification());
+        }
     }
 
     private MbusChannelElementsDto makeMbusChannelElementsDto(final SmartMeter mbusDevice) {
