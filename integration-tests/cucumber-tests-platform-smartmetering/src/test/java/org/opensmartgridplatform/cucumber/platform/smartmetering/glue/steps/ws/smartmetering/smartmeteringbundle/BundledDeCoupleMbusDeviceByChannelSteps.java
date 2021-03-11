@@ -55,7 +55,7 @@ public class BundledDeCoupleMbusDeviceByChannelSteps extends BaseBundleSteps {
         assertThat(((DeCoupleMbusDeviceByChannelResponse) response).getMbusDeviceIdentification())
                 .as("MbusDeviceIdentification")
                 .isNull();
-        // assertThat(response.getResult()).as("Result").isEqualTo(result);
+        assertThat(response.getResult()).as("Result").isEqualTo(result);
 
     }
 

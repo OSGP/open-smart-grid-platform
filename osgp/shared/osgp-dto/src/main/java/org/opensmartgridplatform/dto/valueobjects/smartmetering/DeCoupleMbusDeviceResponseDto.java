@@ -15,6 +15,7 @@ public class DeCoupleMbusDeviceResponseDto extends ActionResponseDto {
     private final ChannelElementValuesDto channelElementValues;
 
     public DeCoupleMbusDeviceResponseDto(final ChannelElementValuesDto channelElementValues) {
+        super("Decouple Mbus Device was successful");
         this.channelElementValues = channelElementValues;
     }
 

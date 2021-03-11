@@ -249,10 +249,12 @@ public class MBusGatewayService {
      * Updates the M-Bus device identified in the input part of the
      * {@code deCoupleMbusResponseDto}.
      *
+     * @param deviceMessageMetadata
      * @param deCoupleMbusDeviceResponseDto
      * @throws FunctionalException
      */
-    public void handleDeCoupleMbusDeviceResponse(final DeCoupleMbusDeviceResponseDto deCoupleMbusDeviceResponseDto) {
+    public void handleDeCoupleMbusDeviceResponse(final DeviceMessageMetadata deviceMessageMetadata,
+            final DeCoupleMbusDeviceResponseDto deCoupleMbusDeviceResponseDto) {
         final Optional<SmartMeter> mbusDeviceFoundOnChannel = this
                 .findByMBusIdentificationNumber(deCoupleMbusDeviceResponseDto.getChannelElementValues());
 
@@ -264,29 +266,13 @@ public class MBusGatewayService {
 
         deCoupleMbusDeviceResponseDto.setMbusDeviceIdentification(mbusDevice.getDeviceIdentification());
 
-        mbusDevice.setChannel(null);
-        mbusDevice.setMbusPrimaryAddress(null);
-        mbusDevice.updateGatewayDevice(null);
+        if (mbusDevice.getGatewayDevice() != null
+                && mbusDevice.getGatewayDevice().getDeviceIdentification().equals(deviceMessageMetadata.getDeviceIdentification())) {
+            mbusDevice.setChannel(null);
+            mbusDevice.setMbusPrimaryAddress(null);
+            mbusDevice.updateGatewayDevice(null);
 
-        this.smartMeteringDeviceRepository.save(mbusDevice);
-    }
-
-    /**
-     * Finds the M-Bus device identified in the input part of the
-     * {@code deCoupleMbusResponseDto}.
-     *
-     * @param deCoupleMbusDeviceResponseDto
-     * @throws FunctionalException
-     */
-    public void handleDeCoupleMbusDeviceByChannelResponse(
-            final DeCoupleMbusDeviceResponseDto deCoupleMbusDeviceResponseDto) {
-
-        final Optional<SmartMeter> mbusDeviceFoundOnChannel = this
-                .findByMBusIdentificationNumber(deCoupleMbusDeviceResponseDto.getChannelElementValues());
-
-        if (mbusDeviceFoundOnChannel.isPresent()) {
-            deCoupleMbusDeviceResponseDto
-                    .setMbusDeviceIdentification(mbusDeviceFoundOnChannel.get().getDeviceIdentification());
+            this.smartMeteringDeviceRepository.save(mbusDevice);
         }
     }
 

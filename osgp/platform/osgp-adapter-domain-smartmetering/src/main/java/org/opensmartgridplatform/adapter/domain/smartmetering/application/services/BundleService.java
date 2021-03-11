@@ -136,7 +136,7 @@ public class BundleService {
                 this.mBusGatewayService.handleCoupleMbusDeviceByChannelResponse(deviceMessageMetadata,
                         (CoupleMbusDeviceByChannelResponseDto) action);
             } else if (action instanceof DeCoupleMbusDeviceResponseDto) {
-                this.mBusGatewayService.handleDeCoupleMbusDeviceResponse(
+                this.mBusGatewayService.handleDeCoupleMbusDeviceResponse(deviceMessageMetadata,
                         (DeCoupleMbusDeviceResponseDto) action);
             } else if (action instanceof SetDeviceLifecycleStatusByChannelResponseDto) {
                 this.managementService

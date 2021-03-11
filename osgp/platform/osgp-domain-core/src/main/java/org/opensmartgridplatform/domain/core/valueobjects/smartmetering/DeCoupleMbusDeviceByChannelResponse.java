@@ -19,7 +19,7 @@ public class DeCoupleMbusDeviceByChannelResponse extends ActionResponse implemen
     private final String mbusDeviceIdentification;
 
     public DeCoupleMbusDeviceByChannelResponse(final String mbusDeviceIdentification, final Short channel) {
-        super();
+        super(OsgpResultType.OK, null, "Decouple Mbus Device By Channel was successful");
         this.mbusDeviceIdentification = mbusDeviceIdentification;
         this.channel = channel;
     }

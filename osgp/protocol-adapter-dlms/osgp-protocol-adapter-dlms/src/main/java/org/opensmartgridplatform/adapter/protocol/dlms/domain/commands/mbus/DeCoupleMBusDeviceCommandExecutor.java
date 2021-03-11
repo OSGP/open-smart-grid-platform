@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
@@ -18,13 +19,12 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -36,6 +36,11 @@ public class DeCoupleMBusDeviceCommandExecutor
 
     public DeCoupleMBusDeviceCommandExecutor() {
         super(DeCoupleMbusDeviceDto.class);
+    }
+
+    @Override
+    public ActionResponseDto asBundleResponse(final DeCoupleMbusDeviceResponseDto executionResult) throws ProtocolAdapterException {
+        return new DeCoupleMbusDeviceResponseDto(executionResult.getChannelElementValues());
     }
 
     @Override
