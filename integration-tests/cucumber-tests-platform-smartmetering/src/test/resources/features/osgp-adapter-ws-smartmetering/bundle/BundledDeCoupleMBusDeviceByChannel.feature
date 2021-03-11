@@ -1,4 +1,4 @@
-@SmartMetering @Platform @NightlyBuildOnly
+@SmartMetering @Platform
 Feature: SmartMetering Bundle - De Couple M-Bus Device By Channel
   As a grid operator
   I want to be able to de couple an M-Bus device by channel to a smart meter
