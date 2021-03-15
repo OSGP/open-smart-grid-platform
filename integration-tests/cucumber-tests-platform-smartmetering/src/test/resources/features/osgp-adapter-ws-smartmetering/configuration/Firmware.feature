@@ -67,6 +67,28 @@ Feature: SmartMetering Configuration - Firmware
       | FirmwareModuleVersionMbda | M00 0000               |
       | FirmwareIsForSmartMeters  | true                   |
 
+  Scenario: Get the firmware version from SMR 5.1 gas meter
+    Given a dlms device
+      | DeviceIdentification | TEST1027000000001 |
+      | DeviceType           | SMART_METER_E     |
+      | Protocol             | SMR               |
+      | ProtocolVersion      | 5.1               |
+      | Port                 | 1027              |
+    And a dlms device
+      | DeviceIdentification        | TEST1027000000002 |
+      | DeviceType                  | SMART_METER_G     |
+      | GatewayDeviceIdentification | TEST1027000000001 |
+      | Channel                     | 3                |
+      | FirmwareModuleVersionSimple | V 1.1             |
+    When the get firmware version gas request is received
+      | DeviceIdentification | TEST1027000000002 |
+    Then the firmware version gas result should be returned
+      | DeviceIdentification | TEST1027000000002 |
+      | SimpleVersionInfo    | 00400011          |
+    And the database should be updated with the device firmware version
+      | DeviceIdentification | TEST1027000000002 |
+      | SimpleVersionInfo    | 00400011          |
+
   @NightlyBuildOnly
   Scenario: successful upgrade of firmware
     Given a manufacturer

@@ -41,7 +41,7 @@ Feature: SmartMetering Bundle - GetFirmwareVersion
       | DeviceIdentification | TEST1027000000002 |
     When the bundle request is received
     Then the bundle response should contain a get firmware version gas response
-      | SimpleVersionInfo | GeenIdee |
+      | SimpleVersionInfo | 19180706 |
     And the database should be updated with the device firmware version
       | DeviceIdentification | TEST1027000000002 |
-      | SimpleVersionInfo    | GeenIdee          |
+      | SimpleVersionInfo    | 19180706          |

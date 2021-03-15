@@ -43,7 +43,7 @@ public class GetFirmwareVersionResponseMessageProcessor extends OsgpCoreResponse
     @Override
     protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
         final Object dataObject = responseMessage.getDataObject();
-        return dataObject instanceof ArrayList;
+        return dataObject instanceof ArrayList || dataObject instanceof FirmwareVersionGasDto;
     }
 
     @Override

@@ -715,10 +715,7 @@ public class ConfigurationService {
                 deviceMessageMetadata.getMessagePriority()).build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
 
-        final SmartMeter smartMeter = this.domainHelperService.findSmartMeter(
-                deviceMessageMetadata.getDeviceIdentification());
-        final Device gatewayDevice = smartMeter.getGatewayDevice();
-        this.firmwareService.saveFirmwareVersionsReturnedFromDevice(gatewayDevice.getDeviceIdentification(),
+        this.firmwareService.saveFirmwareVersionsReturnedFromDevice(firmwareVersionGas.getMbusDeviceIdentification(),
                 Arrays.asList(firmwareVersion));
     }
 
