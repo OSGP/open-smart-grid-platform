@@ -33,7 +33,7 @@ public class FirmwareVersionGasConverter extends
         firmwareVersion.setFirmwareModuleType(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.FirmwareModuleGasType.valueOf(
                         source.getFirmwareModuleType().getDescription()));
-        firmwareVersion.setVersion(source.getVersion());
+        firmwareVersion.setVersion(source.getVersion().getBytes());
 
         return firmwareVersion;
     }
@@ -48,7 +48,7 @@ public class FirmwareVersionGasConverter extends
         }
 
         final FirmwareModuleType type = FirmwareModuleType.forDescription(source.getFirmwareModuleType().name());
-        final String version = source.getVersion();
+        final String version = new String(source.getVersion());
 
         return new FirmwareVersion(type, version);
     }

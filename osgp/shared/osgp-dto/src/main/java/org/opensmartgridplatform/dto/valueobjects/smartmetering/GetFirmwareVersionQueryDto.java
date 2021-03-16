@@ -11,6 +11,9 @@ package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
+import lombok.Getter;
+
+@Getter
 public class GetFirmwareVersionQueryDto implements Serializable {
 
     private static final long serialVersionUID = 3789304613810680161L;
@@ -31,13 +34,4 @@ public class GetFirmwareVersionQueryDto implements Serializable {
     public boolean isMbusQuery() {
         return this.channel != null;
     }
-
-    public ChannelDto getChannel() {
-        return this.channel;
-    }
-
-    public String getMbusDeviceIdentification() {
-        return this.mbusDeviceIdentification;
-    }
-
 }

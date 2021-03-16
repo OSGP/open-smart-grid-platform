@@ -23,6 +23,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.ExtendedRegisterAttribute;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareModuleType;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
@@ -37,8 +39,8 @@ import org.springframework.stereotype.Component;
 public class GetFirmwareVersionsCommandExecutor
         extends AbstractCommandExecutor<GetFirmwareVersionQueryDto, List<FirmwareVersionDto>> {
 
-    private static final int CLASS_ID = 1;
-    private static final int ATTRIBUTE_ID = 2;
+    private static final int CLASS_ID = InterfaceClass.DATA.id();
+    private static final int ATTRIBUTE_ID = ExtendedRegisterAttribute.VALUE.attributeId();
 
     private static final ObisCode OBIS_CODE_ACTIVE_FIRMWARE_VERSION = new ObisCode("1.0.0.2.0.255");
     private static final ObisCode OBIS_CODE_MODULE_ACTIVE_FIRMWARE_VERSION = new ObisCode("1.1.0.2.0.255");

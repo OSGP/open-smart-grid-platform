@@ -30,6 +30,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dto.valueobjects.FirmwareModuleType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClockStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
@@ -246,6 +247,15 @@ public class DlmsHelperTest {
         final String logMessage = this.dlmsHelper.getDebugInfoBitStringBytes(new byte[] { -110, 64 });
 
         assertThat(logMessage).isEqualTo(expected);
+    }
+
+    @Test
+    public void testByteArrayToHexString() throws ProtocolAdapterException {
+        byte[] bytes = new byte[] {25, 24, 7, 118};
+        DataObject dataObject = DataObject.newOctetStringData(bytes);
+        String hexString = dlmsHelper.readHexString(dataObject, "reading a Hexadecimal String");
+
+        assertThat(hexString).isEqualTo("19180776");
     }
 
     private void assertGetWithListException(final Class<? extends Exception> jdlmsExceptionClazz,

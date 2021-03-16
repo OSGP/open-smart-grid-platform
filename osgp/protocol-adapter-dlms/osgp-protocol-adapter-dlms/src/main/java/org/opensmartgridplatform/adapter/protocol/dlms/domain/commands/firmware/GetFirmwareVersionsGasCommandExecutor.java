@@ -82,8 +82,8 @@ public class GetFirmwareVersionsGasCommandExecutor
             final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID,
                     new ObisCode(String.format(OBIS_CODE_TEMPLATE, queryDto.getChannel().getChannelNumber())),
                     ATTRIBUTE_ID);
-            final String version = this.getSimpleVersionInfo(conn, device, attributeAddress);
-            return new FirmwareVersionGasDto(FirmwareModuleType.SIMPLE_VERSION_INFO, version,
+            final String versionAsHexString = this.getSimpleVersionInfoAsHexString(conn, device, attributeAddress);
+            return new FirmwareVersionGasDto(FirmwareModuleType.SIMPLE_VERSION_INFO, versionAsHexString,
                     queryDto.getMbusDeviceIdentification());
         }
 
@@ -91,7 +91,7 @@ public class GetFirmwareVersionsGasCommandExecutor
                 ComponentType.DOMAIN_SMART_METERING);
     }
 
-    private String getSimpleVersionInfo(final DlmsConnectionManager conn, final DlmsDevice device,
+    private String getSimpleVersionInfoAsHexString(final DlmsConnectionManager conn, final DlmsDevice device,
             final AttributeAddress attributeAddress) throws ProtocolAdapterException {
 
         conn.getDlmsMessageListener().setDescription(
@@ -101,7 +101,7 @@ public class GetFirmwareVersionsGasCommandExecutor
         final List<GetResult> results = this.dlmsHelper.getAndCheck(conn, device, "retrieve firmware versions",
                 attributeAddress);
 
-        return this.dlmsHelper.readString(results.get(0).getResultData(),
+        return this.dlmsHelper.readHexString(results.get(0).getResultData(),
                 FirmwareModuleType.SIMPLE_VERSION_INFO.getDescription());
 
     }

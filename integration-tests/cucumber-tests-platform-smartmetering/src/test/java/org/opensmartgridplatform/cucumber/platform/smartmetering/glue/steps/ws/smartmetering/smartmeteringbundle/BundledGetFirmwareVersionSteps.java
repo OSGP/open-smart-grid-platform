@@ -1,9 +1,10 @@
 /**
  * Copyright 2018 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringbundle;
 
@@ -57,8 +58,8 @@ public class BundledGetFirmwareVersionSteps extends BaseBundleSteps {
 
         final Response response = this.getNextBundleResponse();
 
-        assertThat(response instanceof GetFirmwareVersionResponse).as(
-                "response should be a GetFirmwareVersionResponse object").isTrue();
+        assertThat(response).as("response should be a GetFirmwareVersionResponse object").isInstanceOf(
+                GetFirmwareVersionResponse.class);
 
         final GetFirmwareVersionResponse getFirmwareVersionResponse = (GetFirmwareVersionResponse) response;
 
@@ -73,8 +74,8 @@ public class BundledGetFirmwareVersionSteps extends BaseBundleSteps {
 
         final Response response = this.getNextBundleResponse();
 
-        assertThat(response instanceof GetFirmwareVersionGasResponse).as(
-                "response should be a GetFirmwareVersionGasResponse object").isTrue();
+        assertThat(response).as("response should be a GetFirmwareVersionGasResponse object").isInstanceOf(
+                GetFirmwareVersionGasResponse.class);
 
         final GetFirmwareVersionGasResponse getFirmwareVersionGasResponse = (GetFirmwareVersionGasResponse) response;
 

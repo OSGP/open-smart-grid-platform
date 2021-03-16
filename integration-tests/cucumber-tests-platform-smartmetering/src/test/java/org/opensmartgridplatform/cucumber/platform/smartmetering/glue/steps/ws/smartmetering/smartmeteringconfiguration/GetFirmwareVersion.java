@@ -16,6 +16,8 @@ import java.util.Map;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.index.qual.SameLen;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.FirmwareVersion;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.FirmwareVersionGas;
@@ -42,9 +44,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+@Slf4j
 public class GetFirmwareVersion {
-    protected static final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareVersion.class);
-
     @Autowired
     private SmartMeteringConfigurationClient smartMeteringConfigurationClient;
 
@@ -65,7 +66,7 @@ public class GetFirmwareVersion {
 
         assertThat(getFirmwareVersionAsyncResponse).as(
                 "Get firmware version asyncResponse should not be null").isNotNull();
-        LOGGER.info("Get firmware version asyncResponse is received {}", getFirmwareVersionAsyncResponse);
+        log.info("Get firmware version asyncResponse is received {}", getFirmwareVersionAsyncResponse);
 
         ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
                 getFirmwareVersionAsyncResponse.getCorrelationUid());
@@ -80,8 +81,8 @@ public class GetFirmwareVersion {
                 this.smartMeteringConfigurationClient.getFirmwareVersionGas(
                 gasRequest);
 
-        assertThat(gasAsyncResponse).as("Get firmware version asyncResponse should not be null").isNotNull();
-        LOGGER.info("Get firmware version asyncResponse is received {}", gasAsyncResponse);
+        assertThat(gasAsyncResponse).as("Get firmware version gas asyncResponse should not be null").isNotNull();
+        log.info("Get firmware version gas asyncResponse is received {}", gasAsyncResponse);
 
         ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
                 gasAsyncResponse.getCorrelationUid());
@@ -167,7 +168,7 @@ public class GetFirmwareVersion {
         assertThat(firmwareVersionGas.getVersion()).as("The received firmware version is null").isNotNull();
 
         final String moduleDescription = firmwareVersionGas.getFirmwareModuleType().name();
-        final String moduleVersion = firmwareVersionGas.getVersion();
+        final String moduleVersion = new String(firmwareVersionGas.getVersion());
 
         final FirmwareModule firmwareModule = this.firmwareModuleRepository.findByDescriptionIgnoreCase(
                 moduleDescription);

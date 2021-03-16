@@ -21,12 +21,11 @@ public class FirmwareVersionGasConverter extends CustomConverter<FirmwareVersion
     public FirmwareVersion convert(final FirmwareVersionGasDto source,
             final Type<? extends FirmwareVersion> destinationType, final MappingContext context) {
 
-        if (source != null) {
-
-            return new FirmwareVersion(org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleType.valueOf(
-                    source.getFirmwareModuleType().name()), source.getVersion());
+        if (source == null) {
+            return null;
         }
 
-        return null;
+        return new FirmwareVersion(org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleType.valueOf(
+                source.getFirmwareModuleType().name()), source.getVersion());
     }
 }

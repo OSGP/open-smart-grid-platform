@@ -222,8 +222,7 @@ public class ConfigurationService {
     /**
      * Checks if the organization (identified by the organisationIdentification)
      * is allowed to execute this function. Creates a correlation id, sends the
-     * get firmware request from the ws-adapter to the domain-adapter and
-     * returns the correlation id.
+     * request from the ws-adapter to the domain-adapter and returns the correlation id.
      *
      * @param organisationIdentification
      *         {@link String} containing the organization identification

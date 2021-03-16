@@ -180,7 +180,7 @@
 
   <xsd:complexType name="FirmwareVersionGas">
     <xsd:sequence>
-      <xsd:element name="Version" type="xsd:string"/>
+      <xsd:element name="Version" type="xsd:hexBinary"/>
       <xsd:element name="FirmwareModuleType" type="tns:FirmwareModuleGasType"/>
     </xsd:sequence>
   </xsd:complexType>

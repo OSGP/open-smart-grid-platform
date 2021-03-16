@@ -9,8 +9,10 @@
  */
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
+import lombok.Getter;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionGasDto;
 
+@Getter
 public class FirmwareVersionGasResponseDto extends ActionResponseDto {
 
     private static final long serialVersionUID = -2050652405322188213L;
@@ -20,9 +22,4 @@ public class FirmwareVersionGasResponseDto extends ActionResponseDto {
     public FirmwareVersionGasResponseDto(final FirmwareVersionGasDto firmwareVersion) {
         this.firmwareVersion = firmwareVersion;
     }
-
-    public FirmwareVersionGasDto getFirmwareVersion() {
-        return this.firmwareVersion;
-    }
-
 }
