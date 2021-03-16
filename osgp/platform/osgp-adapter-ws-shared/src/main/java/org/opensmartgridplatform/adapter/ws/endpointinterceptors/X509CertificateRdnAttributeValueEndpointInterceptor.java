@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.naming.NamingException;
+import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 
 import org.slf4j.Logger;
@@ -82,12 +83,18 @@ public class X509CertificateRdnAttributeValueEndpointInterceptor extends Endpoin
     private String getRdnAttributeValueFromX509Certificate(final X509Certificate certificate) {
         try {
             final String subjectDn = certificate.getSubjectDN().getName();
-            final Rdn rdn = new Rdn(subjectDn);
-            return (String) rdn.toAttributes().get(this.attributeId).get();
+            final LdapName ldapName = new LdapName(subjectDn);
+            for (final Rdn rdn : ldapName.getRdns()) {
+                final String rdnType = rdn.getType();
+                if (rdnType.equalsIgnoreCase(this.attributeId)) {
+                    return (String) rdn.toAttributes().get(this.attributeId).get();
+                }
+            }
         } catch (final NamingException e) {
             LOGGER.info("Getting CN from X509 certificate failed.", e);
-            return "";
         }
+
+        return "";
     }
 
     /**
