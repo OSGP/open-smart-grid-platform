@@ -91,7 +91,7 @@ public class BundleServiceTest {
             // The execution is stopped. The number of responses is equal to the
             // actions performed before the point the exception is thrown. See
             // also the order of the ArrayList in method 'makeActions'.
-            assertThat(dto.getAllResponses().size()).isEqualTo(8);
+            assertThat(dto.getAllResponses().size()).isEqualTo(9);
         }
 
         // Reset the point where the exception was thrown.
@@ -191,6 +191,7 @@ public class BundleServiceTest {
     private List<ActionDto> makeActions() {
         final List<ActionDto> actions = new ArrayList<>();
         actions.add(new ActionDto(this.builder.makeActualMeterReadsDataDtoAction()));
+        actions.add(new ActionDto(this.builder.makeActualPowerQualityRequestDto()));
         actions.add(new ActionDto(this.builder.makePeriodicMeterReadsGasRequestDataDto()));
         actions.add(new ActionDto(this.builder.makePeriodicMeterReadsRequestDataDto()));
         actions.add(new ActionDto(this.builder.makeSpecialDaysRequestDataDto()));

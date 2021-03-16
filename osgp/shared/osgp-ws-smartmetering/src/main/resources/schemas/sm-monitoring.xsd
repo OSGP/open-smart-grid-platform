@@ -536,4 +536,101 @@
     </xsd:sequence>
   </xsd:complexType>
 
+  <!-- ActualPowerQuality -->
+
+  <xsd:element name="ActualPowerQualityRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="tns:ActualPowerQualityRequestData">
+          <xsd:sequence>
+            <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="ActualPowerQualityRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Query">
+        <xsd:sequence>
+          <xsd:element name="ProfileType" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="ActualPowerQualityResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="tns:ActualPowerQualityResponseData"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="ActualPowerQualityResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
+        <xsd:sequence>
+          <xsd:element name="ActualPowerQualityData" type="tns:ActualPowerQualityData"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="ActualPowerQualityData">
+    <xsd:sequence>
+      <xsd:sequence>
+        <xsd:element name="PowerQualityObjects" type="tns:PowerQualityObjects"/>
+        <xsd:element name="PowerQualityValues" type="tns:PowerQualityValues"/>
+      </xsd:sequence>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="PowerQualityObjects">
+    <xsd:sequence>
+      <xsd:element type="tns:PowerQualityObject" name="PowerQualityObject"
+                   minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="PowerQualityObject">
+    <xsd:sequence>
+      <xsd:element type="xsd:string" name="Name" />
+      <xsd:element type="common:OsgpUnitType" name="unit" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="PowerQualityValues">
+    <xsd:sequence>
+      <xsd:element type="tns:PowerQualityValue" name="PowerQualityValue"
+                   minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="PowerQualityValue">
+    <xsd:choice maxOccurs="1">
+      <xsd:element name="StringValue" type="xsd:string" />
+      <xsd:element name="DateValue" type="xsd:dateTime" />
+      <xsd:element name="FloatValue" type="xsd:decimal" />
+      <xsd:element name="LongValue" type="xsd:long" />
+    </xsd:choice>
+  </xsd:complexType>
+
+  <xsd:element name="ActualPowerQualityAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="ActualPowerQualityAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"></xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
 </xsd:schema>

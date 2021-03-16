@@ -10,7 +10,7 @@
 <jxb:bindings version="2.0" xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
   xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-  <jxb:globalBindings typesafeEnumMemberName="generateName"/>
+  <jxb:globalBindings typesafeEnumMemberName="generateName" choiceContentProperty="true"/>
 
   <jxb:bindings schemaLocation="../schemas/sm-management.xsd">
     <jxb:schemaBindings>
