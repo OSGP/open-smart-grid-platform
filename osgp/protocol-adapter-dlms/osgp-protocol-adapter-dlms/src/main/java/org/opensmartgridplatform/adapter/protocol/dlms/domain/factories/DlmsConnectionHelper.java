@@ -40,14 +40,14 @@ public class DlmsConnectionHelper {
      * Returns an open connection to the device, taking care of details like initializing the invocation counter when
      * required.
      */
-    public DlmsConnectionManager createConnectionForDevice(final DlmsDevice device,
+    public DlmsConnectionManager createConnectionForDevice(final String correlationUid, final DlmsDevice device,
             final DlmsMessageListener messageListener) throws OsgpException {
         if (device.needsInvocationCounter() && !device.isInvocationCounterInitialized()) {
-            this.invocationCounterManager.initializeInvocationCounter(device);
+            this.invocationCounterManager.initializeInvocationCounter(correlationUid, device);
         }
 
         try {
-            return this.connectionFactory.getConnection(device, messageListener);
+            return this.connectionFactory.getConnection(correlationUid, device, messageListener);
         } catch (final ConnectionException e) {
             if (device.needsInvocationCounter() && this.indicatesInvocationCounterOutOfSync(e)) {
                 this.resetInvocationCounter(device);

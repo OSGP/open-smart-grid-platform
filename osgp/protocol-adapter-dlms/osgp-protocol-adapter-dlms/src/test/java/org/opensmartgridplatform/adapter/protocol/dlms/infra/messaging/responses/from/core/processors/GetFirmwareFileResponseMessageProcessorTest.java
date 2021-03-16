@@ -106,7 +106,7 @@ public class GetFirmwareFileResponseMessageProcessorTest {
         when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class))).thenReturn(this.dlmsDevice);
         when(this.dlmsConnectionManagerMock.getDlmsMessageListener()).thenReturn(this.dlmsMessageListenerMock);
         when(this.connectionHelper
-                .createConnectionForDevice(same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
+                .createConnectionForDevice(any(), same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
                 .thenReturn(this.dlmsConnectionManagerMock);
         when(this.firmwareService.updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDevice, firmwareFileDto))
                 .thenReturn(updateFirmwareResponseDto);
@@ -152,7 +152,7 @@ public class GetFirmwareFileResponseMessageProcessorTest {
         when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class))).thenReturn(this.dlmsDevice);
         when(this.dlmsConnectionManagerMock.getDlmsMessageListener()).thenReturn(this.dlmsMessageListenerMock);
         when(this.connectionHelper
-                .createConnectionForDevice(same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
+                .createConnectionForDevice(any(), same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
                 .thenReturn(this.dlmsConnectionManagerMock);
         when(this.firmwareService.updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDevice, firmwareFileDto))
                 .thenThrow(new ProtocolAdapterException("Firmware file fw is not available."));

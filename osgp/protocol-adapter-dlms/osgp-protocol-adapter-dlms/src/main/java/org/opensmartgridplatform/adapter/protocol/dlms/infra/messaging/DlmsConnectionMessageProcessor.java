@@ -18,7 +18,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -58,15 +57,16 @@ public abstract class DlmsConnectionMessageProcessor {
     public DlmsConnectionManager createConnectionForDevice(final DlmsDevice device,
             final MessageMetadata messageMetadata) throws OsgpException {
 
-        throttlingService.openConnection();
+        this.throttlingService.openConnection();
 
         final DlmsMessageListener dlmsMessageListener = this
                 .createMessageListenerForDeviceConnection(device, messageMetadata);
 
         try {
-            return this.dlmsConnectionHelper.createConnectionForDevice(device, dlmsMessageListener);
-        } catch (Exception e) {
-            throttlingService.closeConnection();
+            return this.dlmsConnectionHelper.createConnectionForDevice(messageMetadata.getCorrelationUid(), device,
+                    dlmsMessageListener);
+        } catch (final Exception e) {
+            this.throttlingService.closeConnection();
             throw e;
         }
     }
@@ -154,14 +154,14 @@ public abstract class DlmsConnectionMessageProcessor {
         logger.debug("deviceIdentification: {}", messageMetadata.getDeviceIdentification());
     }
 
-    protected void assertRequestObjectType(final Class<?> expected, final Serializable requestObject)
+    /*protected void assertRequestObjectType(final Class<?> expected, final Serializable requestObject)
             throws ProtocolAdapterException {
         if (!expected.isInstance(requestObject)) {
             throw new ProtocolAdapterException(
                     String.format("The request object has an incorrect type. %s expected but %s was found.",
                             expected.getCanonicalName(), requestObject.getClass().getCanonicalName()));
         }
-    }
+    }*/
 
     protected void sendResponseMessage(final MessageMetadata messageMetadata, final ResponseMessageResultType result,
             final Exception exception, final DeviceResponseMessageSender responseMessageSender,

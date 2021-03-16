@@ -14,6 +14,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RequestWithMetadata;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ import org.springframework.stereotype.Component;
  * Class for processing Synchronize Time Request messages
  */
 @Component
-public class SynchronizeTimeRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class SynchronizeTimeRequestMessageProcessor extends DeviceRequestMessageProcessor<SynchronizeTimeRequestDto> {
 
     @Autowired
     private AdhocService adhocService;
@@ -34,10 +35,8 @@ public class SynchronizeTimeRequestMessageProcessor extends DeviceRequestMessage
 
     @Override
     protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
-            final Serializable requestObject) throws ProtocolAdapterException {
-        this.assertRequestObjectType(SynchronizeTimeRequestDto.class, requestObject);
-
-        this.adhocService.synchronizeTime(conn, device, (SynchronizeTimeRequestDto) requestObject);
+            final RequestWithMetadata<SynchronizeTimeRequestDto> request) throws ProtocolAdapterException {
+        this.adhocService.synchronizeTime(conn, device, request.getRequestObject());
         return null;
     }
 }

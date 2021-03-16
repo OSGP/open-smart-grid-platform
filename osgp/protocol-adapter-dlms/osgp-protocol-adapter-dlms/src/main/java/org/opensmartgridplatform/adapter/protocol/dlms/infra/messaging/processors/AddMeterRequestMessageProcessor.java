@@ -12,6 +12,7 @@ import java.io.Serializable;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.InstallationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RequestWithMetadata;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -22,7 +23,7 @@ import org.springframework.stereotype.Component;
  * Class for processing add meter request messages
  */
 @Component
-public class AddMeterRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class AddMeterRequestMessageProcessor extends DeviceRequestMessageProcessor<SmartMeteringDeviceDto> {
 
     @Autowired
     private InstallationService installationService;
@@ -37,14 +38,17 @@ public class AddMeterRequestMessageProcessor extends DeviceRequestMessageProcess
     }
 
     @Override
-    protected Serializable handleMessage(final DlmsDevice device, final Serializable requestObject)
+    protected Serializable handleMessage(final DlmsDevice device, final RequestWithMetadata<SmartMeteringDeviceDto> request)
             throws OsgpException {
-        this.assertRequestObjectType(SmartMeteringDeviceDto.class, requestObject);
-
-        final SmartMeteringDeviceDto smartMeteringDevice = (SmartMeteringDeviceDto) requestObject;
-        this.installationService.addMeter(smartMeteringDevice);
+        final String correlationUid = request.getMetadata().getCorrelationUid();
+        this.installationService.addMeter(correlationUid, request.getRequestObject());
 
         // No return object.
         return null;
+    }
+
+    @Override
+    protected boolean requiresExistingDevice() {
+        return false;
     }
 }

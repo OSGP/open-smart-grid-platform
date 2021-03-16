@@ -13,6 +13,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Conf
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RequestWithMetadata;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -23,7 +24,7 @@ import org.springframework.stereotype.Component;
  * Class for processing the Set Administrative Status request message
  */
 @Component
-public class SetAdministrativeStatusRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class SetAdministrativeStatusRequestMessageProcessor extends DeviceRequestMessageProcessor<AdministrativeStatusTypeDto> {
 
     @Autowired
     private ConfigurationService configurationService;
@@ -34,13 +35,8 @@ public class SetAdministrativeStatusRequestMessageProcessor extends DeviceReques
 
     @Override
     protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException {
-
-        this.assertRequestObjectType(AdministrativeStatusTypeDto.class, requestObject);
-
-        final AdministrativeStatusTypeDto administrativeStatusType = (AdministrativeStatusTypeDto) requestObject;
-
-        this.configurationService.requestSetAdministrativeStatus(conn, device, administrativeStatusType);
+            final RequestWithMetadata<AdministrativeStatusTypeDto> request) throws OsgpException {
+        this.configurationService.requestSetAdministrativeStatus(conn, device, request.getRequestObject());
         return null;
     }
 

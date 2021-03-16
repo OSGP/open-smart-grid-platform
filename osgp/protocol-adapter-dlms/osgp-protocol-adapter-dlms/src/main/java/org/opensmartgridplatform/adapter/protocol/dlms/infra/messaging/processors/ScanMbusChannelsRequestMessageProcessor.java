@@ -13,6 +13,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Adho
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RequestWithMetadata;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ScanMbusChannelsRequestDataDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -20,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ScanMbusChannelsRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class ScanMbusChannelsRequestMessageProcessor extends DeviceRequestMessageProcessor<ScanMbusChannelsRequestDataDto> {
 
     @Autowired
     private AdhocService adhocService;
@@ -31,10 +32,7 @@ public class ScanMbusChannelsRequestMessageProcessor extends DeviceRequestMessag
 
     @Override
     protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException {
-
-        this.assertRequestObjectType(ScanMbusChannelsRequestDataDto.class, requestObject);
-
+            final RequestWithMetadata<ScanMbusChannelsRequestDataDto> request) throws OsgpException {
         return this.adhocService.scanMbusChannels(conn, device);
     }
 }

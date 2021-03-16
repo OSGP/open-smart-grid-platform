@@ -66,31 +66,32 @@ public class InstallationService {
     @Autowired
     private CoupleMbusDeviceByChannelCommandExecutor coupleMbusDeviceByChannelCommandExecutor;
 
-    public void addMeter(final SmartMeteringDeviceDto smartMeteringDevice) throws FunctionalException {
+    public void addMeter(final String correlationUid, final SmartMeteringDeviceDto smartMeteringDevice) throws FunctionalException {
         if (smartMeteringDevice.getDeviceIdentification() == null) {
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.PROTOCOL_DLMS,
                     new IllegalArgumentException("Provided device does not contain device identification"));
         }
-        this.storeAndActivateKeys(smartMeteringDevice);
+        this.storeAndActivateKeys(correlationUid, smartMeteringDevice);
         final DlmsDevice dlmsDevice = this.installationMapper.map(smartMeteringDevice, DlmsDevice.class);
         this.dlmsDeviceRepository.save(dlmsDevice);
     }
 
-    private void storeAndActivateKeys(final SmartMeteringDeviceDto deviceDto) throws FunctionalException {
+    private void storeAndActivateKeys(final String correlationUid, final SmartMeteringDeviceDto deviceDto) throws FunctionalException {
         final Map<SecurityKeyType, byte[]> keysByType = new EnumMap<>(SecurityKeyType.class);
         final List<SecurityKeyType> keyTypesToStore = this.determineKeyTypesToStore(deviceDto);
-        for (SecurityKeyType keyType : keyTypesToStore) {
+        for (final SecurityKeyType keyType : keyTypesToStore) {
             final byte[] key = this.getKeyFromDeviceDto(deviceDto, keyType);
             if (ArrayUtils.isNotEmpty(key)) {
                 keysByType.put(keyType, this.encryptionService.rsaDecrypt(key));
             } else {
-                Exception rootCause = new NoSuchElementException(keyType.name());
+                final Exception rootCause = new NoSuchElementException(keyType.name());
                 throw new FunctionalException(FunctionalExceptionType.KEY_NOT_PRESENT, ComponentType.PROTOCOL_DLMS,
                         rootCause);
             }
         }
-        this.secretManagementService.storeNewKeys(deviceDto.getDeviceIdentification(), keysByType);
-        this.secretManagementService.activateNewKeys(deviceDto.getDeviceIdentification(), keyTypesToStore);
+        this.secretManagementService.storeNewKeys(correlationUid, deviceDto.getDeviceIdentification(), keysByType);
+        this.secretManagementService.activateNewKeys(correlationUid, deviceDto.getDeviceIdentification(),
+                keyTypesToStore);
     }
 
     private List<SecurityKeyType> determineKeyTypesToStore(final SmartMeteringDeviceDto deviceDto)

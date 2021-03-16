@@ -12,6 +12,7 @@ import java.io.Serializable;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RequestWithMetadata;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceCommunicationSettingsRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -19,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SetDeviceCommunicationSettingsRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class SetDeviceCommunicationSettingsRequestMessageProcessor extends DeviceRequestMessageProcessor<SetDeviceCommunicationSettingsRequestDto> {
 
     @Autowired
     private ManagementService managementService;
@@ -34,14 +35,10 @@ public class SetDeviceCommunicationSettingsRequestMessageProcessor extends Devic
     }
 
     @Override
-    protected Serializable handleMessage(final DlmsDevice device, final Serializable requestObject)
+    protected Serializable handleMessage(final DlmsDevice device, final RequestWithMetadata<SetDeviceCommunicationSettingsRequestDto> request)
             throws OsgpException {
 
-        this.assertRequestObjectType(SetDeviceCommunicationSettingsRequestDto.class, requestObject);
-
-        final SetDeviceCommunicationSettingsRequestDto deviceCommunicationSettings = (SetDeviceCommunicationSettingsRequestDto) requestObject;
-
-        this.managementService.setDeviceCommunicationSettings(device, deviceCommunicationSettings);
+        this.managementService.setDeviceCommunicationSettings(device, request.getRequestObject());
 
         // No response data
         return null;

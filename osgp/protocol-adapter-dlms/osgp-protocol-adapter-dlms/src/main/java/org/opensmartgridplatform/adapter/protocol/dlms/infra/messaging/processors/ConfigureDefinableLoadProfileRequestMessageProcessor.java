@@ -13,6 +13,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Conf
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RequestWithMetadata;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DefinableLoadProfileConfigurationDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -20,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ConfigureDefinableLoadProfileRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class ConfigureDefinableLoadProfileRequestMessageProcessor extends DeviceRequestMessageProcessor<DefinableLoadProfileConfigurationDto> {
 
     @Autowired
     private ConfigurationService configurationService;
@@ -31,13 +32,8 @@ public class ConfigureDefinableLoadProfileRequestMessageProcessor extends Device
 
     @Override
     protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException {
-
-        this.assertRequestObjectType(DefinableLoadProfileConfigurationDto.class, requestObject);
-
-        final DefinableLoadProfileConfigurationDto definableLoadProfileConfiguration = (DefinableLoadProfileConfigurationDto) requestObject;
-        this.configurationService.configureDefinableLoadProfile(conn, device, definableLoadProfileConfiguration);
-
+            final RequestWithMetadata<DefinableLoadProfileConfigurationDto> request) throws OsgpException {
+        this.configurationService.configureDefinableLoadProfile(conn, device, request.getRequestObject());
         return null;
     }
 }

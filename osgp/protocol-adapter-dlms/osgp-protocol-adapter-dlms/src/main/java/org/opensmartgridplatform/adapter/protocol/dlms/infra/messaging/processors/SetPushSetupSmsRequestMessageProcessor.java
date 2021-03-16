@@ -13,6 +13,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Conf
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RequestWithMetadata;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupSmsDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -23,7 +24,7 @@ import org.springframework.stereotype.Component;
  * Class for processing set push setup sms request messages
  */
 @Component
-public class SetPushSetupSmsRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class SetPushSetupSmsRequestMessageProcessor extends DeviceRequestMessageProcessor<PushSetupSmsDto> {
 
     @Autowired
     private ConfigurationService configurationService;
@@ -34,12 +35,8 @@ public class SetPushSetupSmsRequestMessageProcessor extends DeviceRequestMessage
 
     @Override
     protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException {
-
-        this.assertRequestObjectType(PushSetupSmsDto.class, requestObject);
-
-        final PushSetupSmsDto pushSetupSms = (PushSetupSmsDto) requestObject;
-        this.configurationService.setPushSetupSms(conn, device, pushSetupSms);
+            final RequestWithMetadata<PushSetupSmsDto> request) throws OsgpException {
+        this.configurationService.setPushSetupSms(conn, device, request.getRequestObject());
         return null;
     }
 }

@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import lombok.Setter;
 import org.bouncycastle.util.encoders.Hex;
 import org.openmuc.jdlms.AuthenticationMechanism;
 import org.openmuc.jdlms.DlmsConnection;
@@ -49,12 +50,13 @@ public class RecoverKeyProcess implements Runnable {
     private final int logicalDeviceAddress;
 
     private final int clientId;
-
-    private String deviceIdentification;
-
     private DlmsDevice device;
-
+    @Setter
+    private String deviceIdentification;
+    @Setter
     private String ipAddress;
+    @Setter
+    private String correlationUid;
 
     @Autowired
     private SecretManagementService secretManagementService;
@@ -67,43 +69,38 @@ public class RecoverKeyProcess implements Runnable {
         this.clientId = deviceAssociation.getClientId();
     }
 
-    public void setDeviceIdentification(final String deviceIdentification) {
-        this.deviceIdentification = deviceIdentification;
-    }
-
-    public void setIpAddress(final String ipAddress) {
-        this.ipAddress = ipAddress;
-    }
-
     @Override
     public void run() {
         this.checkState();
 
-        LOGGER.info("Attempting key recovery for device {}", this.deviceIdentification);
+        LOGGER.info("[{}] Attempting key recovery for device {}", this.correlationUid, this.deviceIdentification);
 
         try {
             this.findDevice();
         } catch (final Exception e) {
-            LOGGER.error("Could not find device", e);
+            LOGGER.error("[{}] Could not find device", this.correlationUid, e);
             //why try to find device if you don't do anything with the result?!?
             //shouldn't we throw an exception here?
         }
 
-        if (!this.secretManagementService.hasNewSecretOfType(this.deviceIdentification, E_METER_AUTHENTICATION)) {
-            LOGGER.warn("Could not recover keys: device has no new authorisation key registered in secret-mgmt module");
+        if (!this.secretManagementService
+                .hasNewSecretOfType(this.correlationUid, this.deviceIdentification, E_METER_AUTHENTICATION)) {
+            LOGGER.warn(
+                    "[{}] Could not recover keys: device has no new authorisation key registered in secret-mgmt module",
+                    this.correlationUid);
             return;
         }
 
         if (this.canConnectUsingNewKeys()) {
-            List<SecurityKeyType> keyTypesToActivate=Arrays.asList(E_METER_ENCRYPTION,E_METER_AUTHENTICATION);
+            final List<SecurityKeyType> keyTypesToActivate = Arrays.asList(E_METER_ENCRYPTION, E_METER_AUTHENTICATION);
             try {
-                this.secretManagementService.activateNewKeys(this.deviceIdentification, keyTypesToActivate);
-            } catch (Exception e) {
+                this.secretManagementService
+                        .activateNewKeys(this.correlationUid, this.deviceIdentification, keyTypesToActivate);
+            } catch (final Exception e) {
                 throw new RecoverKeyException(e);
             }
         } else {
-            LOGGER.warn("Could not recover keys: could not connect to device using new keys");
-            //shouldn't we try to connect using 'old' keys? or send key change to device again?
+            LOGGER.warn("[{}] Could not recover keys: could not connect to device using new keys", this.correlationUid);
         }
     }
 
@@ -153,8 +150,9 @@ public class RecoverKeyProcess implements Runnable {
      *         with the device.
      */
     private DlmsConnection createConnectionUsingNewKeys() throws IOException, FunctionalException {
-        Map<SecurityKeyType, byte[]> keys = this.secretManagementService
-                .getNewKeys(this.deviceIdentification, Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION));
+        final Map<SecurityKeyType, byte[]> keys = this.secretManagementService
+                .getNewKeys(this.correlationUid, this.deviceIdentification,
+                        Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION));
         final byte[] authenticationKey = Hex.decode(keys.get(E_METER_AUTHENTICATION));
         final byte[] encryptionKey = Hex.decode(keys.get(E_METER_ENCRYPTION));
 

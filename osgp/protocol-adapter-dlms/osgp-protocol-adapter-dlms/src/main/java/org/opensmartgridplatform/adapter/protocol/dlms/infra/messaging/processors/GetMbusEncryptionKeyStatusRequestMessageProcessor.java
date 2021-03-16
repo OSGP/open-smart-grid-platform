@@ -13,6 +13,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Conf
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RequestWithMetadata;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -23,7 +24,7 @@ import org.springframework.stereotype.Component;
  * Class for processing the get M-Bus encryption keys status request message
  */
 @Component
-public class GetMbusEncryptionKeyStatusRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class GetMbusEncryptionKeyStatusRequestMessageProcessor extends DeviceRequestMessageProcessor<GetMbusEncryptionKeyStatusRequestDto> {
 
     @Autowired
     private ConfigurationService configurationService;
@@ -34,10 +35,7 @@ public class GetMbusEncryptionKeyStatusRequestMessageProcessor extends DeviceReq
 
     @Override
     protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException {
-
-        this.assertRequestObjectType(GetMbusEncryptionKeyStatusRequestDto.class, requestObject);
-        final GetMbusEncryptionKeyStatusRequestDto request = (GetMbusEncryptionKeyStatusRequestDto) requestObject;
-        return this.configurationService.requestGetMbusEncryptionKeyStatus(conn, device, request);
+            final RequestWithMetadata<GetMbusEncryptionKeyStatusRequestDto> request) throws OsgpException {
+        return this.configurationService.requestGetMbusEncryptionKeyStatus(conn, device, request.getRequestObject());
     }
 }

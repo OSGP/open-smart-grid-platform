@@ -14,6 +14,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Moni
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RequestWithMetadata;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -24,7 +25,7 @@ import org.springframework.stereotype.Component;
  * Class for processing Power Quality Profile request messages.
  */
 @Component
-public class GetPowerQualityProfileRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class GetPowerQualityProfileRequestMessageProcessor extends DeviceRequestMessageProcessor<GetPowerQualityProfileRequestDataDto> {
 
     @Autowired
     private MonitoringService monitoringService;
@@ -35,13 +36,7 @@ public class GetPowerQualityProfileRequestMessageProcessor extends DeviceRequest
 
     @Override
     protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException {
-
-        this.assertRequestObjectType(GetPowerQualityProfileRequestDataDto.class, requestObject);
-
-        final GetPowerQualityProfileRequestDataDto getPowerQualityProfileRequestDataDto =
-                (GetPowerQualityProfileRequestDataDto) requestObject;
-
-        return this.monitoringService.requestPowerQualityProfile(conn, device, getPowerQualityProfileRequestDataDto);
+            final RequestWithMetadata<GetPowerQualityProfileRequestDataDto> request) throws OsgpException {
+        return this.monitoringService.requestPowerQualityProfile(conn, device, request.getRequestObject());
     }
 }

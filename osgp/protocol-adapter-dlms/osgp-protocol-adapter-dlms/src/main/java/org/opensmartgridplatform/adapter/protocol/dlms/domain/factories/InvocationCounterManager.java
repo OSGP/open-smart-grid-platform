@@ -46,8 +46,8 @@ public class InvocationCounterManager {
      * Updates the device instance with the invocation counter value on the actual device.
      * Should only be called for a device that actually has an invocation counter stored on the device itself.
      */
-    public void initializeInvocationCounter(final DlmsDevice device) throws OsgpException {
-        this.initializeWithInvocationCounterStoredOnDevice(device);
+    public void initializeInvocationCounter(final String correlationUid, final DlmsDevice device) throws OsgpException {
+        this.initializeWithInvocationCounterStoredOnDevice(correlationUid, device);
         this.deviceRepository.save(device);
 
         // At this point proceeding to create a new connection will fail due to a current limitation in the OpenMUC
@@ -57,9 +57,9 @@ public class InvocationCounterManager {
         throw new DeviceSessionTerminatedAfterReadingInvocationCounterException(device.getDeviceIdentification());
     }
 
-    private void initializeWithInvocationCounterStoredOnDevice(final DlmsDevice device) throws OsgpException {
+    private void initializeWithInvocationCounterStoredOnDevice(final String correlationUid, final DlmsDevice device) throws OsgpException {
         try (final DlmsConnectionManager connectionManager = this.connectionFactory
-                .getPublicClientConnection(device, null)) {
+                .getPublicClientConnection(correlationUid, device, null)) {
             device.setInvocationCounter(this.getInvocationCounter(connectionManager));
             LOGGER.info("Property invocationCounter of device {} initialized to the value of the invocation counter "
                     + "stored on the device: {}", device.getDeviceIdentification(), device.getInvocationCounter());

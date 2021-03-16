@@ -13,6 +13,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Moni
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RequestWithMetadata;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearAlarmRegisterRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -23,7 +24,7 @@ import org.springframework.stereotype.Component;
  * Class for processing the clear alarm register request message
  */
 @Component
-public class ClearAlarmRegisterRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class ClearAlarmRegisterRequestMessageProcessor extends DeviceRequestMessageProcessor<ClearAlarmRegisterRequestDto> {
 
     @Autowired
     private MonitoringService monitoringService;
@@ -34,13 +35,8 @@ public class ClearAlarmRegisterRequestMessageProcessor extends DeviceRequestMess
 
     @Override
     protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException {
-
-        this.assertRequestObjectType(ClearAlarmRegisterRequestDto.class, requestObject);
-
-        final ClearAlarmRegisterRequestDto clearAlarmRegisterRequestDto = (ClearAlarmRegisterRequestDto) requestObject;
-
-        this.monitoringService.setClearAlarmRegister(conn, device, clearAlarmRegisterRequestDto);
+            final RequestWithMetadata<ClearAlarmRegisterRequestDto> request) throws OsgpException {
+        this.monitoringService.setClearAlarmRegister(conn, device, request.getRequestObject());
         return null;
     }
 

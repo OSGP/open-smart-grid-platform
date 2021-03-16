@@ -15,6 +15,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Conf
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RequestWithMetadata;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisationSettingsRequestDataDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -25,7 +26,7 @@ import org.springframework.stereotype.Component;
  * Class for processing Set Configuration Request messages
  */
 @Component
-public class SetRandomisationSettingsMessageProcessor extends DeviceRequestMessageProcessor {
+public class SetRandomisationSettingsMessageProcessor extends DeviceRequestMessageProcessor<SetRandomisationSettingsRequestDataDto> {
 
     @Autowired
     private ConfigurationService configurationService;
@@ -36,14 +37,8 @@ public class SetRandomisationSettingsMessageProcessor extends DeviceRequestMessa
 
     @Override
     protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException {
-
-        this.assertRequestObjectType(SetRandomisationSettingsRequestDataDto.class, requestObject);
-
-        final SetRandomisationSettingsRequestDataDto setRandomisationSettingsRequestDataDto =
-                (SetRandomisationSettingsRequestDataDto) requestObject;
-
-        this.configurationService.requestSetRandomizationSettings(conn, device, setRandomisationSettingsRequestDataDto);
+            final RequestWithMetadata<SetRandomisationSettingsRequestDataDto> request) throws OsgpException {
+        this.configurationService.requestSetRandomizationSettings(conn, device, request.getRequestObject());
         return null;
     }
 

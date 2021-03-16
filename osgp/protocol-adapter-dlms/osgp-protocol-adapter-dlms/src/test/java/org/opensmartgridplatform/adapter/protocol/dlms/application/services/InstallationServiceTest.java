@@ -51,10 +51,10 @@ public class InstallationServiceTest {
         when(this.dlmsDeviceRepository.save(dlmsDevice)).thenReturn(dlmsDevice);
         when(this.encryptionHelperService.rsaDecrypt(any())).thenReturn(new byte[16]);
         // WHEN
-        this.testService.addMeter(deviceDto);
+        this.testService.addMeter("test", deviceDto);
         //THEN
-        verify(this.secretManagementService, times(1)).storeNewKeys(any(), any());
-        verify(this.secretManagementService, times(1)).activateNewKeys(any(), any());
+        verify(this.secretManagementService, times(1)).storeNewKeys(any(), any(), any());
+        verify(this.secretManagementService, times(1)).activateNewKeys(any(), any(), any());
     }
 
     @Test
@@ -68,10 +68,10 @@ public class InstallationServiceTest {
         when(this.dlmsDeviceRepository.save(dlmsDevice)).thenReturn(dlmsDevice);
         when(this.encryptionHelperService.rsaDecrypt(any())).thenReturn(new byte[16]);
         // WHEN
-        this.testService.addMeter(deviceDto);
+        this.testService.addMeter("test", deviceDto);
         //THEN
-        verify(this.secretManagementService, times(1)).storeNewKeys(any(), any());
-        verify(this.secretManagementService, times(1)).activateNewKeys(any(), any());
+        verify(this.secretManagementService, times(1)).storeNewKeys(any(), any(), any());
+        verify(this.secretManagementService, times(1)).activateNewKeys(any(), any(), any());
     }
 
     @Test
@@ -81,7 +81,7 @@ public class InstallationServiceTest {
         deviceDto.setDeviceIdentification("Test");
         // WHEN
         Assertions.assertThatExceptionOfType(FunctionalException.class)
-                  .isThrownBy(() -> this.testService.addMeter(deviceDto));
+                  .isThrownBy(() -> this.testService.addMeter("test", deviceDto));
     }
 
     @Test
@@ -95,7 +95,7 @@ public class InstallationServiceTest {
         deviceDto.setMbusDefaultKey(new byte[16]);
         // WHEN
         Assertions.assertThatExceptionOfType(FunctionalException.class)
-                  .isThrownBy(() -> this.testService.addMeter(deviceDto));
+                  .isThrownBy(() -> this.testService.addMeter("test", deviceDto));
     }
 
     @Test
@@ -105,6 +105,6 @@ public class InstallationServiceTest {
         deviceDto.setMbusDefaultKey(new byte[16]);
         // WHEN
         Assertions.assertThatExceptionOfType(FunctionalException.class)
-                  .isThrownBy(() -> this.testService.addMeter(deviceDto));
+                  .isThrownBy(() -> this.testService.addMeter("test", deviceDto));
     }
 }

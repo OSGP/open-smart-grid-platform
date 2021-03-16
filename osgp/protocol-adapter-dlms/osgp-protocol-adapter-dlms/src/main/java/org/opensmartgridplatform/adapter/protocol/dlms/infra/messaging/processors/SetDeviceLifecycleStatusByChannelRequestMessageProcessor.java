@@ -13,6 +13,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Mana
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RequestWithMetadata;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelRequestDataDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -20,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SetDeviceLifecycleStatusByChannelRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class SetDeviceLifecycleStatusByChannelRequestMessageProcessor extends DeviceRequestMessageProcessor<SetDeviceLifecycleStatusByChannelRequestDataDto> {
 
     @Autowired
     private ManagementService managementService;
@@ -31,11 +32,7 @@ public class SetDeviceLifecycleStatusByChannelRequestMessageProcessor extends De
 
     @Override
     protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException {
-
-        this.assertRequestObjectType(SetDeviceLifecycleStatusByChannelRequestDataDto.class, requestObject);
-        final SetDeviceLifecycleStatusByChannelRequestDataDto requestDto = (SetDeviceLifecycleStatusByChannelRequestDataDto) requestObject;
-        return this.managementService.setDeviceLifecycleStatusByChannel(conn, device, requestDto);
-
+            final RequestWithMetadata<SetDeviceLifecycleStatusByChannelRequestDataDto> request) throws OsgpException {
+        return this.managementService.setDeviceLifecycleStatusByChannel(conn, device, request.getRequestObject());
     }
 }

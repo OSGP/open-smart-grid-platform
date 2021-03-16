@@ -23,12 +23,14 @@ public class Hls5ConnectorStub extends Hls5Connector {
     }
 
     @Override
-    protected void setSecurity(final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder) {
+    protected void setSecurity(final String correlationUid, final DlmsDevice device,
+            final TcpConnectionBuilder tcpConnectionBuilder) {
         //
     }
 
     @Override
-    public DlmsConnection connect(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener) {
+    public DlmsConnection connect(final String correlationUid, final DlmsDevice device,
+            final DlmsMessageListener dlmsMessageListener) {
         return new DlmsConnectionStub();
     }
 }

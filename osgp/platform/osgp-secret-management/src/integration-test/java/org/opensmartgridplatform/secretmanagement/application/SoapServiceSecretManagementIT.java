@@ -221,25 +221,7 @@ public class SoapServiceSecretManagementIT {
         final Resource activateRequest = new ClassPathResource("test-requests/activateSecrets.xml");
         //Store secrets
         this.mockWebServiceClient.sendRequest(withPayload(activateRequest))
-                                 .andExpect(ResponseMatchers.serverOrReceiverFault("Could not activate new secrets"));
-    }
-
-    @Test
-    public void getSecretsRequestNoSecretTypes() {
-
-        /**
-         * Note that the output depends, besides the value of the keys, also on both the db key and the soap key.
-         */
-        assertThat(this.secretRepository.count()).isEqualTo(2);
-
-        final Resource request = new ClassPathResource("test-requests/invalidGetSecrets.xml");
-
-        try {
-            this.mockWebServiceClient.sendRequest(withPayload(request))
-                                     .andExpect(ResponseMatchers.serverOrReceiverFault("Missing input: secret types"));
-        } catch (final Exception exc) {
-            Assertions.fail("Error", exc);
-        }
+                                 .andExpect(ResponseMatchers.serverOrReceiverFault());
     }
 
     @Test
@@ -269,9 +251,8 @@ public class SoapServiceSecretManagementIT {
             response.writeTo(outputStream);
             assertThat(outputStream.toString()).contains("Result>OK");
         });
-        final List<DbEncryptedSecret> authKeys = this.secretRepository.findSecrets(DEVICE_IDENTIFICATION,
-                SecretType.E_METER_AUTHENTICATION_KEY,
-                SecretStatus.NEW);
+        final List<DbEncryptedSecret> authKeys = this.secretRepository
+                .findSecrets(DEVICE_IDENTIFICATION, SecretType.E_METER_AUTHENTICATION_KEY, SecretStatus.NEW);
         assertThat(authKeys).hasSize(1);
         final DbEncryptedSecret authKey = authKeys.get(0);
         assertThat(authKey.getEncodedSecret()).hasSize(64);

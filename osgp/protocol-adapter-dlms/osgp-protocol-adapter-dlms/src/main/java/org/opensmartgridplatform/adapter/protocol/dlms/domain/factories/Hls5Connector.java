@@ -58,7 +58,8 @@ public class Hls5Connector extends SecureDlmsConnector {
     }
 
     @Override
-    public DlmsConnection connect(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
+    public DlmsConnection connect(final String correlationUid, final DlmsDevice device,
+            final DlmsMessageListener dlmsMessageListener)
             throws OsgpException {
 
         // Make sure neither device or device.getIpAddress() is null.
@@ -66,14 +67,16 @@ public class Hls5Connector extends SecureDlmsConnector {
         this.checkIpAddress(device);
 
         try {
-            return this.createConnection(device, dlmsMessageListener);
+            return this.createConnection(correlationUid, device, dlmsMessageListener);
         } catch (final UnknownHostException e) { // Unknown IP, unrecoverable.
             LOGGER.error("The IP address is not found: {}", device.getIpAddress(), e);
             throw new TechnicalException(ComponentType.PROTOCOL_DLMS,
                     "The IP address is not found: " + device.getIpAddress());
         } catch (final IOException e) { //Queue key recovery process
-            if (this.secretManagementService.hasNewSecretOfType(device.getDeviceIdentification(), E_METER_ENCRYPTION)) {
-                this.recoverKeyProcessInitiator.initiate(device.getDeviceIdentification(), device.getIpAddress());
+            if (this.secretManagementService.hasNewSecretOfType(correlationUid, device.getDeviceIdentification(),
+                    E_METER_ENCRYPTION)) {
+                this.recoverKeyProcessInitiator.initiate(correlationUid, device.getDeviceIdentification(),
+                        device.getIpAddress());
             }
 
             final String msg = String
@@ -90,15 +93,17 @@ public class Hls5Connector extends SecureDlmsConnector {
     }
 
     @Override
-    protected void setSecurity(final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder)
+    protected void setSecurity(final String correlationUid, final DlmsDevice device,
+            final TcpConnectionBuilder tcpConnectionBuilder)
             throws OsgpException {
 
         final String deviceIdentification = device.getDeviceIdentification();
         final byte[] dlmsAuthenticationKey;
         final byte[] dlmsEncryptionKey;
         try {
-            Map<SecurityKeyType, byte[]> encryptedKeys = this.secretManagementService
-                    .getKeys(deviceIdentification, Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION));
+            final Map<SecurityKeyType, byte[]> encryptedKeys = this.secretManagementService
+                    .getKeys(correlationUid, deviceIdentification, Arrays.asList(E_METER_AUTHENTICATION,
+                            E_METER_ENCRYPTION));
             dlmsAuthenticationKey = encryptedKeys.get(E_METER_AUTHENTICATION);
             dlmsEncryptionKey = encryptedKeys.get(E_METER_ENCRYPTION);
         } catch (final EncrypterException e) {
@@ -147,7 +152,7 @@ public class Hls5Connector extends SecureDlmsConnector {
         }
         tcpConnectionBuilder.setSystemTitle(manufacturerId, device.getDeviceId());
 
-        long frameCounter = device.getInvocationCounter();
+        final long frameCounter = device.getInvocationCounter();
 
         tcpConnectionBuilder.setFrameCounter(frameCounter);
         LOGGER.debug("Framecounter for device {} set to {}", device.getDeviceIdentification(), frameCounter);

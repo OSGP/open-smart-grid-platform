@@ -21,7 +21,8 @@ import org.slf4j.LoggerFactory;
 public abstract class DlmsConnector {
     private static final Logger LOGGER = LoggerFactory.getLogger(DlmsConnector.class);
 
-    public abstract DlmsConnection connect(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
+    public abstract DlmsConnection connect(final String correlationUid, final DlmsDevice device,
+            final DlmsMessageListener dlmsMessageListener)
             throws OsgpException;
 
     protected void checkDevice(final DlmsDevice device) {

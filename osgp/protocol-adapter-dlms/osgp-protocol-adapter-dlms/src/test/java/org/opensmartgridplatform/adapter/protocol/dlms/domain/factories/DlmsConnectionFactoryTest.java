@@ -55,9 +55,9 @@ public class DlmsConnectionFactoryTest {
     public void returnsConnectionManagerForHls5Device() throws Exception {
         final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true).build();
         final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
-        when(this.hls5Connector.connect(device, listener)).thenReturn(this.connection);
+        when(this.hls5Connector.connect("test", device, listener)).thenReturn(this.connection);
 
-        final DlmsConnectionManager result = this.factory.getConnection(device, listener);
+        final DlmsConnectionManager result = this.factory.getConnection("test", device, listener);
 
         final DlmsConnectionManager expected = this.newConnectionManager(device, listener, this.hls5Connector);
         assertThat(result).isEqualToComparingFieldByField(expected);
@@ -71,7 +71,7 @@ public class DlmsConnectionFactoryTest {
         final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
         assertThatExceptionOfType(FunctionalException.class).isThrownBy(() -> {
-            this.factory.getConnection(device, listener);
+            this.factory.getConnection("test", device, listener);
         });
     }
 
@@ -81,7 +81,7 @@ public class DlmsConnectionFactoryTest {
         final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
         assertThatExceptionOfType(FunctionalException.class).isThrownBy(() -> {
-            this.factory.getConnection(device, listener);
+            this.factory.getConnection("test", device, listener);
         });
     }
 
@@ -89,9 +89,9 @@ public class DlmsConnectionFactoryTest {
     public void returnsConnectionManagerForLls1Device() throws Exception {
         final DlmsDevice device = new DlmsDeviceBuilder().withLls1Active(true).build();
         final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
-        when(this.lls1Connector.connect(device, listener)).thenReturn(this.connection);
+        when(this.lls1Connector.connect("test", device, listener)).thenReturn(this.connection);
 
-        final DlmsConnectionManager result = this.factory.getConnection(device, listener);
+        final DlmsConnectionManager result = this.factory.getConnection("test", device, listener);
 
         final DlmsConnectionManager expected = this.newConnectionManager(device, listener, this.lls1Connector);
         assertThat(result).isEqualToComparingFieldByField(expected);
@@ -102,9 +102,9 @@ public class DlmsConnectionFactoryTest {
     public void returnsConnectionManagerForLls0Device() throws Exception {
         final DlmsDevice device = new DlmsDeviceBuilder().withLls1Active(false).build();
         final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
-        when(this.lls0Connector.connect(device, listener)).thenReturn(this.connection);
+        when(this.lls0Connector.connect("test", device, listener)).thenReturn(this.connection);
 
-        final DlmsConnectionManager result = this.factory.getConnection(device, listener);
+        final DlmsConnectionManager result = this.factory.getConnection("test", device, listener);
 
         final DlmsConnectionManager expected = this.newConnectionManager(device, listener, this.lls0Connector);
         assertThat(result).isEqualToComparingFieldByField(expected);
@@ -115,9 +115,9 @@ public class DlmsConnectionFactoryTest {
     public void returnsPublicClientConnectionManagerForDevice() throws Exception {
         final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true).build();
         final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
-        when(this.lls0Connector.connect(device, listener)).thenReturn(this.connection);
+        when(this.lls0Connector.connect("test", device, listener)).thenReturn(this.connection);
 
-        final DlmsConnectionManager result = this.factory.getPublicClientConnection(device, listener);
+        final DlmsConnectionManager result = this.factory.getPublicClientConnection("test", device, listener);
 
         final DlmsConnectionManager expected = this.newConnectionManager(device, listener, this.lls0Connector);
         assertThat(result).isEqualToComparingFieldByField(expected);
@@ -126,7 +126,7 @@ public class DlmsConnectionFactoryTest {
 
     private DlmsConnectionManager newConnectionManager(final DlmsDevice device, final DlmsMessageListener listener,
             final DlmsConnector connector) throws OsgpException {
-        final DlmsConnectionManager connectionManager = new DlmsConnectionManager(connector, device, listener,
+        final DlmsConnectionManager connectionManager = new DlmsConnectionManager(connector, "test", device, listener,
                 this.domainHelperService);
         connectionManager.connect();
         return connectionManager;

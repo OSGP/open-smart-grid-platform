@@ -44,6 +44,7 @@ public class DlmsConnectionManager implements AutoCloseable {
         }
     };
 
+    private final String correlationUid;
     private final DlmsConnector connector;
     private final DlmsDevice device;
     private final DlmsMessageListener dlmsMessageListener;
@@ -51,8 +52,9 @@ public class DlmsConnectionManager implements AutoCloseable {
 
     private DlmsConnection dlmsConnection;
 
-    public DlmsConnectionManager(final DlmsConnector connector, final DlmsDevice device,
+    public DlmsConnectionManager(final DlmsConnector connector, final String correlationUid, final DlmsDevice device,
             final DlmsMessageListener dlmsMessageListener, final DomainHelperService domainHelperService) {
+        this.correlationUid = correlationUid;
         this.connector = connector;
         this.device = device;
         this.domainHelperService = domainHelperService;
@@ -118,7 +120,7 @@ public class DlmsConnectionManager implements AutoCloseable {
             throw new IllegalStateException("Cannot create a new connection because a connection already exists.");
         }
 
-        this.dlmsConnection = this.connector.connect(this.device, this.dlmsMessageListener);
+        this.dlmsConnection = this.connector.connect(this.correlationUid, this.device, this.dlmsMessageListener);
     }
 
     /**
@@ -138,7 +140,7 @@ public class DlmsConnectionManager implements AutoCloseable {
         if (!this.device.isIpAddressIsStatic()) {
             this.device.setIpAddress(this.domainHelperService.getDeviceIpAddressFromSessionProvider(this.device));
         }
-        this.dlmsConnection = this.connector.connect(this.device, this.dlmsMessageListener);
+        this.dlmsConnection = this.connector.connect(this.correlationUid, this.device, this.dlmsMessageListener);
     }
 
     /**

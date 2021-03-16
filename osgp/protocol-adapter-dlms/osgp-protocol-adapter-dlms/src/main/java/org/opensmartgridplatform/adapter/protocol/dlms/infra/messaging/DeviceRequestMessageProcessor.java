@@ -17,6 +17,7 @@ import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.SilentException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -36,7 +37,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * construction. The Singleton instance is added to the HashMap of
  * MessageProcessors after dependency injection has completed.
  */
-public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessageProcessor implements MessageProcessor {
+public abstract class DeviceRequestMessageProcessor<S extends Serializable> extends DlmsConnectionMessageProcessor
+        implements MessageProcessor {
+    /**
+     * Constant to signal that message processor doesn't (have to) send a response.
+     */
+    protected static final String NO_RESPONSE = "NO-RESPONSE";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRequestMessageProcessor.class);
 
@@ -80,49 +86,68 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
         LOGGER.debug("Processing {} request message", this.messageType);
 
         MessageMetadata messageMetadata = null;
-        DlmsConnectionManager conn = null;
+        final DlmsConnectionManager conn = null;
         DlmsDevice device = null;
 
         try {
             messageMetadata = MessageMetadata.fromMessage(message);
 
-            /**
-             * The happy flow for addMeter requires that the dlmsDevice does not
-             * exist. Because the findDlmsDevice below throws a runtime
-             * exception, we skip this call in the addMeter flow. The
-             * AddMeterRequestMessageProcessor will throw the appropriate
-             * 'dlmsDevice already exists' error if the dlmsDevice does exists!
-             */
-            if (!MessageType.ADD_METER.name().equals(messageMetadata.getMessageType())) {
+            if (this.requiresExistingDevice()) {
                 device = this.domainHelperService.findDlmsDevice(messageMetadata);
             }
 
-            LOGGER.info("{} called for device: {} for organisation: {}", message.getJMSType(),
-                    messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification());
+            LOGGER.info("{} called for device: {} for organisation: {}, correlationUID=", message.getJMSType(),
+                    messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification(),
+                    messageMetadata.getCorrelationUid());
 
-            final Serializable response;
-            if (this.usesDeviceConnection()) {
-                conn = this.createConnectionForDevice(device, messageMetadata);
-                response = this.handleMessage(conn, device, message.getObject());
-            } else {
-                response = this.handleMessage(device, message.getObject());
-            }
-
-            // Send response
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, this.responseMessageSender,
-                    response);
+            final RequestWithMetadata<S> request = this.createRequestWithMetadata(message, messageMetadata);
+            final Serializable response = this.getResponse(conn, device, request);
+            this.sendResponse(messageMetadata, response);
         } catch (final JMSException exception) {
             this.logJmsException(LOGGER, exception, messageMetadata);
         } catch (final Exception exception) {
-            // Return original request + exception
-            if (!(exception instanceof SilentException)) {
-                LOGGER.error("Unexpected exception during {}", this.messageType.name(), exception);
-            }
-
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, exception,
-                    this.responseMessageSender, message.getObject());
+            this.sendErrorResponse(messageMetadata, exception, message.getObject());
         } finally {
             this.doConnectionPostProcessing(device, conn);
+        }
+    }
+
+    protected Serializable getResponse(DlmsConnectionManager conn, final DlmsDevice device,
+            final RequestWithMetadata request) throws OsgpException {
+        if (this.usesDeviceConnection()) {
+            conn = this.createConnectionForDevice(device, request.getMetadata());
+            return this.handleMessage(conn, device, request);
+        } else {
+            return this.handleMessage(device, request);
+        }
+    }
+
+    protected void sendResponse(final MessageMetadata metadata, final Serializable response) {
+        if (!NO_RESPONSE.equals(response)) {
+            this.sendResponseMessage(metadata, ResponseMessageResultType.OK, null, this.responseMessageSender,
+                    response);
+        }
+    }
+
+    protected void sendErrorResponse(final MessageMetadata metadata, final Exception exception,
+            final Serializable requestObject) {
+        // Return original request + exception
+        if (!(exception instanceof SilentException)) {
+            final String errorMessage = String
+                    .format("Unexpected exception during %s, correlationUID=%s", this.messageType.name(),
+                            metadata.getCorrelationUid());
+            LOGGER.error(errorMessage, exception);
+        }
+        this.sendResponseMessage(metadata, ResponseMessageResultType.NOT_OK, exception, this.responseMessageSender,
+                requestObject);
+    }
+
+    protected RequestWithMetadata<S> createRequestWithMetadata(final ObjectMessage message,
+            final MessageMetadata messageMetadata) throws JMSException, ProtocolAdapterException {
+        try {
+            return new RequestWithMetadata<>(messageMetadata, (S) message.getObject());
+        } catch (final ClassCastException cce) {
+            throw new ProtocolAdapterException("The request object has an incorrect type", cce);
         }
     }
 
@@ -142,13 +167,13 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
      * @return A serializable object to be put on the response queue.
      */
     protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException {
+            final RequestWithMetadata<S> requestObject) throws OsgpException {
         throw new UnsupportedOperationException(
                 "handleMessage(DlmsConnection, DlmsDevice, Serializable) should be overriden by a subclass, or "
                         + "usesDeviceConnection should return false.");
     }
 
-    protected Serializable handleMessage(final DlmsDevice device, final Serializable requestObject)
+    protected Serializable handleMessage(final DlmsDevice device, final RequestWithMetadata<S> requestObject)
             throws OsgpException {
         throw new UnsupportedOperationException(
                 "handleMessage(Serializable) should be overriden by a subclass, or usesDeviceConnection should return"
@@ -162,6 +187,10 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
      * @return Use device connection in handleMessage.
      */
     protected boolean usesDeviceConnection() {
+        return true;
+    }
+
+    protected boolean requiresExistingDevice() {
         return true;
     }
 }

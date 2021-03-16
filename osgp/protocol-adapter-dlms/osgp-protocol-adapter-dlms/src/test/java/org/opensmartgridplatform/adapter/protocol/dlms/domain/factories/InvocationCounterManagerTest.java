@@ -56,7 +56,7 @@ class InvocationCounterManagerTest {
         final DlmsDevice device = new DlmsDeviceBuilder().build();
 
         final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
-        when(this.connectionFactory.getPublicClientConnection(device, null)).thenReturn(connectionManager);
+        when(this.connectionFactory.getPublicClientConnection("test", device, null)).thenReturn(connectionManager);
 
         final DataObject dataObject = DataObject.newInteger32Data(123);
         when(this.dlmsHelper
@@ -64,7 +64,7 @@ class InvocationCounterManagerTest {
                 .thenReturn(dataObject);
 
         try {
-            this.manager.initializeInvocationCounter(device);
+            this.manager.initializeInvocationCounter("test", device);
             fail("Should throw exception");
         } catch (final DeviceSessionTerminatedAfterReadingInvocationCounterException e) {
             // expected

@@ -62,9 +62,11 @@ public class DlmsConnectionFactory {
      * @throws OsgpException
      *         in case of a TechnicalException or FunctionalException
      */
-    public DlmsConnectionManager getConnection(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
+    public DlmsConnectionManager getConnection(final String correlationUid, final DlmsDevice device,
+            final DlmsMessageListener dlmsMessageListener)
             throws OsgpException {
-        return this.newConnectionWithSecurityLevel(device, dlmsMessageListener, SecurityLevel.forDevice(device));
+        return this.newConnectionWithSecurityLevel(correlationUid, device, dlmsMessageListener,
+                SecurityLevel.forDevice(device));
     }
 
     /**
@@ -87,15 +89,15 @@ public class DlmsConnectionFactory {
      * @throws OsgpException
      *         in case of a TechnicalException or FunctionalException
      */
-    public DlmsConnectionManager getPublicClientConnection(final DlmsDevice device,
+    public DlmsConnectionManager getPublicClientConnection(final String correlationUid, final DlmsDevice device,
             final DlmsMessageListener dlmsMessageListener) throws OsgpException {
-        return this.newConnectionWithSecurityLevel(device, dlmsMessageListener, SecurityLevel.LLS0);
+        return this.newConnectionWithSecurityLevel(correlationUid, device, dlmsMessageListener, SecurityLevel.LLS0);
     }
 
-    private DlmsConnectionManager newConnectionWithSecurityLevel(final DlmsDevice device,
+    private DlmsConnectionManager newConnectionWithSecurityLevel(final String correlationUid, final DlmsDevice device,
             final DlmsMessageListener dlmsMessageListener, final SecurityLevel securityLevel) throws OsgpException {
         final DlmsConnectionManager connectionManager = new DlmsConnectionManager(this.connectorFor(securityLevel),
-                device, dlmsMessageListener, this.domainHelperService);
+                correlationUid, device, dlmsMessageListener, this.domainHelperService);
         connectionManager.connect();
         return connectionManager;
     }

@@ -41,7 +41,8 @@ public class Lls0Connector extends DlmsConnector {
     }
 
     @Override
-    public DlmsConnection connect(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
+    public DlmsConnection connect(final String correlationUid, final DlmsDevice device,
+            final DlmsMessageListener dlmsMessageListener)
             throws OsgpException {
 
         // Make sure neither device or device.getIpAddress() is null.

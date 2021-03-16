@@ -66,15 +66,15 @@ public class SecretManagementServiceTest {
     @Test
     public void testGetKeys() {
         //SETUP
-        List<SecurityKeyType> keyTypes = Arrays.asList(KEY_TYPE);
-        GetSecretsResponse response = new GetSecretsResponse();
+        final List<SecurityKeyType> keyTypes = Arrays.asList(KEY_TYPE);
+        final GetSecretsResponse response = new GetSecretsResponse();
         response.setResult(OsgpResultType.OK);
         response.setTypedSecrets(new TypedSecrets());
         response.getTypedSecrets().getTypedSecret().add(TYPED_SECRET);
-        when(this.secretManagementClient.getSecretsRequest(any())).thenReturn(response);
+        when(this.secretManagementClient.getSecretsRequest(any(), any())).thenReturn(response);
         when(this.rsaEncrypter.decrypt(SOAP_SECRET)).thenReturn(UNENCRYPTED_SECRET);
         //EXECUTE
-        Map<SecurityKeyType, byte[]> result = this.testService.getKeys(DEVICE_IDENTIFICATION, keyTypes);
+        final Map<SecurityKeyType, byte[]> result = this.testService.getKeys("test", DEVICE_IDENTIFICATION, keyTypes);
         //ASSERT
         assertThat(result).isNotNull();
         assertThat(result.size()).isEqualTo(1);
@@ -84,55 +84,55 @@ public class SecretManagementServiceTest {
 
     @Test
     public void testStoreNewKeys() {
-        Map<SecurityKeyType, byte[]> keys = new HashMap<>();
+        final Map<SecurityKeyType, byte[]> keys = new HashMap<>();
         keys.put(KEY_TYPE, UNENCRYPTED_SECRET);
-        StoreSecretsResponse response = new StoreSecretsResponse();
+        final StoreSecretsResponse response = new StoreSecretsResponse();
         response.setResult(OsgpResultType.OK);
         when(this.rsaEncrypter.encrypt(UNENCRYPTED_SECRET)).thenReturn(SOAP_SECRET);
-        when(this.secretManagementClient.storeSecretsRequest(any())).thenReturn(response);
+        when(this.secretManagementClient.storeSecretsRequest(any(), any())).thenReturn(response);
         //EXECUTE
-        this.testService.storeNewKeys(DEVICE_IDENTIFICATION, keys);
+        this.testService.storeNewKeys("test", DEVICE_IDENTIFICATION, keys);
         //ASSERT
-        verify(this.secretManagementClient,times(1)).storeSecretsRequest(any());
+        verify(this.secretManagementClient, times(1)).storeSecretsRequest(any(), any());
     }
 
     @Test
     public void testActivateKeys() throws ProtocolAdapterException {
-        List<SecurityKeyType> keyTypes = Arrays.asList(KEY_TYPE);
-        ArgumentCaptor<ActivateSecretsRequest> activateSecretsCaptor = ArgumentCaptor
+        final List<SecurityKeyType> keyTypes = Arrays.asList(KEY_TYPE);
+        final ArgumentCaptor<ActivateSecretsRequest> activateSecretsCaptor = ArgumentCaptor
                 .forClass(ActivateSecretsRequest.class);
         //EXECUTE
-        this.testService.activateNewKeys(DEVICE_IDENTIFICATION, keyTypes);
+        this.testService.activateNewKeys("test", DEVICE_IDENTIFICATION, keyTypes);
         //ASSERT
-        verify(this.secretManagementClient).activateSecretsRequest(activateSecretsCaptor.capture());
-        ActivateSecretsRequest capturedArgument = activateSecretsCaptor.getValue();
+        verify(this.secretManagementClient).activateSecretsRequest(any(), activateSecretsCaptor.capture());
+        final ActivateSecretsRequest capturedArgument = activateSecretsCaptor.getValue();
         assertThat(capturedArgument.getDeviceId()).isEqualTo(DEVICE_IDENTIFICATION);
         assertThat(capturedArgument.getSecretTypes().getSecretType().get(0)).isEqualTo(KEY_TYPE.toSecretType());
     }
 
     @Test
     public void testGenerateAndStoreKeys() {
-        List<SecurityKeyType> keyTypes = Arrays.asList(KEY_TYPE);
-        GenerateAndStoreSecretsResponse response = new GenerateAndStoreSecretsResponse();
+        final List<SecurityKeyType> keyTypes = Arrays.asList(KEY_TYPE);
+        final GenerateAndStoreSecretsResponse response = new GenerateAndStoreSecretsResponse();
         response.setResult(OsgpResultType.OK);
         response.setTypedSecrets(new TypedSecrets());
         response.getTypedSecrets().getTypedSecret().add(TYPED_SECRET);
-        when(this.secretManagementClient.generateAndStoreSecrets(any())).thenReturn(response);
+        when(this.secretManagementClient.generateAndStoreSecrets(any(), any())).thenReturn(response);
         when(this.rsaEncrypter.decrypt(SOAP_SECRET)).thenReturn(UNENCRYPTED_SECRET);
         //EXECUTE
-        Map<SecurityKeyType, byte[]> keys = this.testService
-                .generate128BitsKeysAndStoreAsNewKeys(DEVICE_IDENTIFICATION, keyTypes);
+        final Map<SecurityKeyType, byte[]> keys = this.testService
+                .generate128BitsKeysAndStoreAsNewKeys("test", DEVICE_IDENTIFICATION, keyTypes);
         //ASSERT
         assertThat(keys.get(KEY_TYPE)).isEqualTo(UNENCRYPTED_SECRET);
     }
 
     @Test
     public void testHasNewKey() {
-        HasNewSecretResponse response = new HasNewSecretResponse();
+        final HasNewSecretResponse response = new HasNewSecretResponse();
         response.setHasNewSecret(true);
-        when(this.secretManagementClient.hasNewSecretRequest(any())).thenReturn(response);
+        when(this.secretManagementClient.hasNewSecretRequest(any(), any())).thenReturn(response);
         //EXECUTE
-        boolean result = this.testService.hasNewSecretOfType(DEVICE_IDENTIFICATION, KEY_TYPE);
+        final boolean result = this.testService.hasNewSecretOfType("test", DEVICE_IDENTIFICATION, KEY_TYPE);
         //ASSERT
         assertThat(result).isTrue();
     }

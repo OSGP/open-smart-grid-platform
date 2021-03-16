@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors;
 
@@ -14,6 +15,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RequestWithMetadata;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecificAttributeValueRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -21,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GetSpecificAttributeValueRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class GetSpecificAttributeValueRequestMessageProcessor extends DeviceRequestMessageProcessor<SpecificAttributeValueRequestDto> {
 
     @Autowired
     private AdhocService adhocService;
@@ -32,12 +34,7 @@ public class GetSpecificAttributeValueRequestMessageProcessor extends DeviceRequ
 
     @Override
     protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
-            final Serializable requestObject) throws ProtocolAdapterException, FunctionalException {
-
-        this.assertRequestObjectType(SpecificAttributeValueRequestDto.class, requestObject);
-
-        final SpecificAttributeValueRequestDto specificConfigurationObjectRequestDataDto = (SpecificAttributeValueRequestDto) requestObject;
-
-        return this.adhocService.getSpecificAttributeValue(conn, device, specificConfigurationObjectRequestDataDto);
+            final RequestWithMetadata<SpecificAttributeValueRequestDto> request) throws ProtocolAdapterException, FunctionalException {
+        return this.adhocService.getSpecificAttributeValue(conn, device, request.getRequestObject());
     }
 }

@@ -12,6 +12,7 @@ import org.openmuc.jdlms.MethodResultCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.BundleService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ConfigurationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.CorrelatedObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.security.SetEncryptionKeyExchangeOnGMeterCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -44,7 +45,8 @@ import org.springframework.stereotype.Component;
  * in the former case it can be looked up by device identification).
  */
 @Component()
-public class SetMbusUserKeyByChannelCommandExecutor extends AbstractCommandExecutor<GMeterInfoDto, MethodResultCode> {
+public class SetMbusUserKeyByChannelCommandExecutor
+        extends AbstractCommandExecutor<CorrelatedObject<GMeterInfoDto>, MethodResultCode> {
 
     @Autowired
     private ConfigurationService configurationService;
@@ -61,11 +63,12 @@ public class SetMbusUserKeyByChannelCommandExecutor extends AbstractCommandExecu
             final ActionRequestDto actionRequestDto) throws OsgpException {
 
         this.checkActionRequestType(actionRequestDto);
-        final SetMbusUserKeyByChannelRequestDataDto setMbusUserKeyByChannelRequestData =
-                (SetMbusUserKeyByChannelRequestDataDto) actionRequestDto;
+        final CorrelatedObject<SetMbusUserKeyByChannelRequestDataDto> setMbusUserKeyByChannelRequestData =
+                (CorrelatedObject<SetMbusUserKeyByChannelRequestDataDto>) actionRequestDto;
         final GMeterInfoDto gMeterInfo = this.configurationService
-                .getMbusKeyExchangeData(conn, device, setMbusUserKeyByChannelRequestData);
-        final MethodResultCode executionResult = this.execute(conn, device, gMeterInfo);
+                .getMbusKeyExchangeData(conn, device, setMbusUserKeyByChannelRequestData.getObject());
+        final MethodResultCode executionResult = this
+                .execute(conn, device, CorrelatedObject.from(setMbusUserKeyByChannelRequestData, gMeterInfo));
         return this.asBundleResponse(executionResult);
     }
 
@@ -77,7 +80,7 @@ public class SetMbusUserKeyByChannelCommandExecutor extends AbstractCommandExecu
 
     @Override
     public MethodResultCode execute(final DlmsConnectionManager conn, final DlmsDevice device,
-            final GMeterInfoDto gMeterInfo) throws ProtocolAdapterException, FunctionalException {
+            final CorrelatedObject<GMeterInfoDto> gMeterInfo) throws ProtocolAdapterException, FunctionalException {
         return this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, gMeterInfo);
     }
 }
