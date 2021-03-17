@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class LmgDeviceCreator extends AbstractPlatformDeviceCreator<RtuDevice> {
+public class LightMeasurementRtuDeviceCreator extends AbstractPlatformDeviceCreator<RtuDevice> {
 
     @Autowired
     private RtuDeviceRepository rtuDeviceRepository;
@@ -27,7 +27,7 @@ public class LmgDeviceCreator extends AbstractPlatformDeviceCreator<RtuDevice> {
     @Override
     public RtuDevice apply(final Protocol protocol, final Map<String, String> settings) {
         RtuDevice device = new RtuDevice(this.deviceIdentification(settings));
-        device.setDeviceType(DeviceType.LIGHT_MEASUREMENT_GATEWAY.getType());
+        device.setDeviceType(DeviceType.LIGHT_MEASUREMENT_RTU.getPlatformDeviceType());
         device.setNetworkAddress(this.networkAddress(settings));
         device.setDeviceLifecycleStatus(this.deviceLifecycleStatus(settings));
         device.setActivated(this.activated(settings));

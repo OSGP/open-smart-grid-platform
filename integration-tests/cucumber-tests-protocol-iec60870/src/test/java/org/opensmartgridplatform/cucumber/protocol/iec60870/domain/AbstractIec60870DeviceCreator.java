@@ -25,55 +25,51 @@ public abstract class AbstractIec60870DeviceCreator implements ProtocolDeviceCre
     private static final String KEY_INFORMATION_OBJECT_ADDRESS = "InformationObjectAddress";
 
     private static final String DEFAULT_DEVICE_IDENTIFICATION = "IEC60870-DVC-1";
-    private static final String DEFAULT_GATEWAY_DEVICE_IDENTIFICATION = "IEC60870-GW-1";
+    private static final String DEFAULT_GATEWAY_DEVICE_IDENTIFICATION = "IEC60870-RTU-1";
     private static final int DEFAULT_COMMON_ADDRESS = 1;
     private static final int DEFAULT_PORT = 62404;
     private static final int DEFAULT_INFORMATION_OBJECT_ADDRESS = 1;
 
-    @Override
-    public abstract Iec60870Device apply(Map<String, String> settings);
-
     protected abstract DeviceType deviceType();
 
+    protected String deviceIdentification() {
+        return DEFAULT_DEVICE_IDENTIFICATION;
+    }
+
     protected String deviceIdentification(final Map<String, String> settings) {
-        return ReadSettingsHelper.getString(settings, KEY_DEVICE_IDENTIFICATION, this.defaultDeviceIdentification());
+        return ReadSettingsHelper.getString(settings, KEY_DEVICE_IDENTIFICATION, this.deviceIdentification());
+    }
+
+    protected String gatewayDeviceIdentification() {
+        return DEFAULT_GATEWAY_DEVICE_IDENTIFICATION;
     }
 
     protected String gatewayDeviceIdentification(final Map<String, String> settings) {
         return ReadSettingsHelper.getString(settings, KEY_GATEWAY_DEVICE_IDENTIFICATION,
-                this.defaultGatewayDeviceIdentification());
+                this.gatewayDeviceIdentification());
     }
 
-    protected Integer port(final Map<String, String> settings) {
-        return ReadSettingsHelper.getInteger(settings, KEY_PORT, this.defaultPort());
-    }
-
-    protected Integer commonAddress(final Map<String, String> settings) {
-        return ReadSettingsHelper.getInteger(settings, KEY_COMMON_ADDRESS, this.defaultCommonAddress());
-    }
-
-    protected Integer informationObjectAddress(final Map<String, String> settings) {
-        return ReadSettingsHelper.getInteger(settings, KEY_INFORMATION_OBJECT_ADDRESS,
-                this.defaultInformationObjectAddress());
-    }
-
-    protected String defaultDeviceIdentification() {
-        return DEFAULT_DEVICE_IDENTIFICATION;
-    }
-
-    protected String defaultGatewayDeviceIdentification() {
-        return DEFAULT_GATEWAY_DEVICE_IDENTIFICATION;
-    }
-
-    protected int defaultPort() {
+    protected int port() {
         return DEFAULT_PORT;
     }
 
-    protected int defaultCommonAddress() {
+    protected Integer port(final Map<String, String> settings) {
+        return ReadSettingsHelper.getInteger(settings, KEY_PORT, this.port());
+    }
+
+    protected int commonAddress() {
         return DEFAULT_COMMON_ADDRESS;
     }
 
-    protected int defaultInformationObjectAddress() {
+    protected Integer commonAddress(final Map<String, String> settings) {
+        return ReadSettingsHelper.getInteger(settings, KEY_COMMON_ADDRESS, this.commonAddress());
+    }
+
+    protected int informationObjectAddress() {
         return DEFAULT_INFORMATION_OBJECT_ADDRESS;
+    }
+
+    protected Integer informationObjectAddress(final Map<String, String> settings) {
+        return ReadSettingsHelper.getInteger(settings, KEY_INFORMATION_OBJECT_ADDRESS, this.informationObjectAddress());
     }
 }

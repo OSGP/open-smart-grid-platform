@@ -16,9 +16,9 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.D
 import org.springframework.stereotype.Component;
 
 @Component
-public class Iec60870LmgDeviceCreator extends AbstractIec60870DeviceCreator {
+public class Iec60870LightMeasurementRtuDeviceCreator extends AbstractIec60870DeviceCreator {
 
-    private static final String DEFAULT_DEVICE_IDENTIFICATION = "LMG-1";
+    private static final String DEFAULT_DEVICE_IDENTIFICATION = "RTU-1";
 
     @Override
     public Iec60870Device apply(final Map<String, String> settings) {
@@ -30,11 +30,11 @@ public class Iec60870LmgDeviceCreator extends AbstractIec60870DeviceCreator {
 
     @Override
     protected DeviceType deviceType() {
-        return DeviceType.LIGHT_MEASUREMENT_GATEWAY;
+        return DeviceType.LIGHT_MEASUREMENT_RTU;
     }
 
     @Override
-    protected String defaultDeviceIdentification() {
+    protected String deviceIdentification() {
         return DEFAULT_DEVICE_IDENTIFICATION;
     }
 }

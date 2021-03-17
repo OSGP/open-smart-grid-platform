@@ -35,13 +35,13 @@ class LightMeasurementGatewayDeviceResponseServiceTest {
     private static final String CORRELATION_UID = "TEST-CORR-1";
 
     @InjectMocks
-    private LightMeasurementGatewayDeviceResponseService lightMeasurementGatewayDeviceResponseService;
+    private LightMeasurementRtuDeviceResponseService lightMeasurementGatewayDeviceResponseService;
 
     @Mock
     private Iec60870DeviceRepository iec60870DeviceRepository;
 
     @Mock
-    private LightMeasurementDeviceResponseService lightMeasurementDeviceResponseService;
+    private LightSensorDeviceResponseService lightMeasurementDeviceResponseService;
 
     @Test
     void processShouldDelegateProcessingReportsForEachDeviceBehindTheGateway() {

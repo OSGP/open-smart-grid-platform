@@ -33,16 +33,6 @@ public class Iec60870Database {
         this.repository.deleteAllInBatch();
     }
 
-    @Transactional(value = "txMgrIec60870", readOnly = true)
-    public boolean isIec60870DeviceTableEmpty() {
-        return this.repository.findAll().size() == 0;
-    }
-
-    @Transactional("txMgrIec60870")
-    public Iec60870Device addIec60870Device(final Iec60870Device device) {
-        return this.repository.save(device);
-    }
-
     @Transactional("txMgrIec60870")
     public Iec60870Device addIec60870Device(final DeviceType deviceType, final Map<String, String> settings) {
         final Iec60870Device device = this.factory.create(deviceType, settings);

@@ -34,13 +34,13 @@ import org.springframework.data.util.Optionals;
 import org.springframework.stereotype.Service;
 
 @Service
-public class LightMeasurementDeviceResponseService extends AbstractDeviceResponseService {
+public class LightSensorDeviceResponseService extends AbstractDeviceResponseService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LightMeasurementDeviceResponseService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LightSensorDeviceResponseService.class);
 
-    private static final String ERROR_PREFIX = "Error while processing measurement report for light measurement device:";
+    private static final String ERROR_PREFIX = "Error while processing measurement report for light sensor:";
 
-    private static final DeviceType DEVICE_TYPE = DeviceType.LIGHT_MEASUREMENT_DEVICE;
+    private static final DeviceType DEVICE_TYPE = DeviceType.LIGHT_SENSOR;
 
     @Autowired
     private Iec60870DeviceRepository iec60870DeviceRepository;
@@ -51,7 +51,7 @@ public class LightMeasurementDeviceResponseService extends AbstractDeviceRespons
     @Autowired
     private CorrelationUidPerDevice correlationUidPerDevice;
 
-    public LightMeasurementDeviceResponseService() {
+    public LightSensorDeviceResponseService() {
         super(DEVICE_TYPE);
     }
 

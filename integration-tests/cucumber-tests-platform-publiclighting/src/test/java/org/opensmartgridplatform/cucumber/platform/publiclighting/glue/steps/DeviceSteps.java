@@ -14,8 +14,8 @@ import java.util.Map;
 import org.opensmartgridplatform.cucumber.platform.helpers.DeviceType;
 import org.opensmartgridplatform.cucumber.platform.helpers.Protocol;
 import org.opensmartgridplatform.cucumber.platform.helpers.Protocol.ProtocolType;
-import org.opensmartgridplatform.cucumber.platform.publiclighting.domain.DeviceFactory;
 import org.opensmartgridplatform.cucumber.platform.helpers.ProtocolHelper;
+import org.opensmartgridplatform.cucumber.platform.publiclighting.domain.DeviceFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
@@ -27,12 +27,12 @@ public class DeviceSteps {
     @Autowired
     DeviceFactory deviceFactory;
 
-    @ParameterType("light measurement device|light measurement gateway")
+    @ParameterType("light measurement device|light measurement RTU")
     public DeviceType deviceType(final String deviceType) {
         return DeviceType.valueOf(StringUtils.replace(deviceType, " ", "_").toUpperCase());
     }
 
-    @ParameterType("IEC60870")
+    @ParameterType(".*")
     public Protocol protocol(final String protocolName) {
         return ProtocolHelper.getProtocol(ProtocolType.valueOf(protocolName));
     }

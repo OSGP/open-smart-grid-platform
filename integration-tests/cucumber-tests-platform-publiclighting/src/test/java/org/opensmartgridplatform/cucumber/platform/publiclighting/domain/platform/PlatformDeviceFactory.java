@@ -26,14 +26,14 @@ public class PlatformDeviceFactory implements InitializingBean {
     private LmdDeviceCreator lmdCreator;
 
     @Autowired
-    private LmgDeviceCreator lmgCreator;
+    private LightMeasurementRtuDeviceCreator lmgCreator;
 
     private final Map<DeviceType, PlatformDeviceCreator<? extends Device>> factoryMap = new HashMap<>();
 
     @Override
     public void afterPropertiesSet() throws Exception {
         this.factoryMap.put(DeviceType.LIGHT_MEASUREMENT_DEVICE, this.lmdCreator);
-        this.factoryMap.put(DeviceType.LIGHT_MEASUREMENT_GATEWAY, this.lmgCreator);
+        this.factoryMap.put(DeviceType.LIGHT_MEASUREMENT_RTU, this.lmgCreator);
     }
 
     public Device createPlatformDevice(final DeviceType deviceType, final Protocol protocol,

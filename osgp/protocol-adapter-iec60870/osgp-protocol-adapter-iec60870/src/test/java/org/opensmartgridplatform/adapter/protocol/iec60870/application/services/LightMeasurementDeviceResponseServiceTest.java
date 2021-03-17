@@ -34,7 +34,7 @@ class LightMeasurementDeviceResponseServiceTest {
     private static final String CORRELATION_UID = "TEST-CORR-1";
 
     @InjectMocks
-    private LightMeasurementDeviceResponseService lightMeasurementDeviceResponseService;
+    private LightSensorDeviceResponseService lightMeasurementDeviceResponseService;
 
     @Mock
     private Iec60870DeviceRepository iec60870DeviceRepository;

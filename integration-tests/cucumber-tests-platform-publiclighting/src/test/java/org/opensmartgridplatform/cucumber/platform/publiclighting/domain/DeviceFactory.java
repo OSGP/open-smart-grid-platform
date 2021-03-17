@@ -38,7 +38,7 @@ public class DeviceFactory implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         this.deviceFactoryMap.put(DeviceType.LIGHT_MEASUREMENT_DEVICE, this::createLightMeasurementDevice);
-        this.deviceFactoryMap.put(DeviceType.LIGHT_MEASUREMENT_GATEWAY, this::createLightMeasurementGateway);
+        this.deviceFactoryMap.put(DeviceType.LIGHT_MEASUREMENT_RTU, this::createLightMeasurementRtu);
     }
 
     public Collection<AbstractEntity> createDevice(final DeviceType deviceType, final Protocol protocol,
@@ -59,12 +59,10 @@ public class DeviceFactory implements InitializingBean {
                         settings));
     }
 
-    private Collection<AbstractEntity> createLightMeasurementGateway(final Protocol protocol,
+    private Collection<AbstractEntity> createLightMeasurementRtu(final Protocol protocol,
             final Map<String, String> settings) {
         return Arrays.asList(
-                this.platformDeviceFactory.createPlatformDevice(DeviceType.LIGHT_MEASUREMENT_GATEWAY, protocol,
-                        settings),
-                this.protocolDeviceFactory.createProtocolDevice(DeviceType.LIGHT_MEASUREMENT_GATEWAY, protocol,
-                        settings));
+                this.platformDeviceFactory.createPlatformDevice(DeviceType.LIGHT_MEASUREMENT_RTU, protocol, settings),
+                this.protocolDeviceFactory.createProtocolDevice(DeviceType.LIGHT_MEASUREMENT_RTU, protocol, settings));
     }
 }

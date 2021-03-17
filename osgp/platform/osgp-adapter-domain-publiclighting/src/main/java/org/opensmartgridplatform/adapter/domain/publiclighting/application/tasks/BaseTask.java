@@ -7,8 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.tasks;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
 import java.net.InetAddress;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -16,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -56,6 +53,8 @@ import org.springframework.util.CollectionUtils;
 public class BaseTask {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseTask.class);
+
+    private boolean firstRun = true;
 
     @Autowired
     @Qualifier("domainPublicLightingOutboundOsgpCoreRequestsMessageSender")
@@ -152,8 +151,7 @@ public class BaseTask {
         LOGGER.info("Trying to find connectable light measurement devices for protocol {}", protocol);
 
         final List<LightMeasurementDevice> lightMeasurementDevices = this.lightMeasurementDeviceRepository
-                .findByInMaintenanceAndProtocolInfoProtocolAndDeviceLifecycleStatusIn(false, protocol,
-                        EnumSet.of(DeviceLifecycleStatus.IN_USE, DeviceLifecycleStatus.REGISTERED));
+                .findByProtocolInfoProtocolAndDeviceLifecycleStatus(protocol, DeviceLifecycleStatus.IN_USE);
 
         if (lightMeasurementDevices.isEmpty()) {
             LOGGER.warn("No connectable light measurement devices found for protocol {}", protocol);
@@ -172,13 +170,10 @@ public class BaseTask {
         return devices.stream().map(Device::getDeviceIdentification).sorted().collect(Collectors.joining(", "));
     }
 
-    /**
-     * Determine the up time of the JVM and test if the JVM was started
-     * recently.
-     */
-    protected boolean isFirstRun() {
-        final RuntimeMXBean mx = ManagementFactory.getRuntimeMXBean();
-        return mx.getUptime() < 10 * 60 * 1000;
+    private boolean isFirstRun() {
+        final boolean result = this.firstRun;
+        this.firstRun = false;
+        return result;
     }
 
     /**
@@ -381,6 +376,7 @@ public class BaseTask {
             LOGGER.info("No light measurement devices to connect with");
             return;
         }
+
         final String deviceIdentifications = this.deviceIdentifications(devicesToConnect);
         LOGGER.info("Sending requests to ensure active connections with the following light measurement devices: {}",
                 deviceIdentifications);
@@ -406,16 +402,15 @@ public class BaseTask {
     }
 
     protected void sendConnectRequestToDevice(final LightMeasurementDevice lightMeasurementDevice) {
-        final String deviceIdentification = lightMeasurementDevice.getDeviceIdentification();
-        final String organisation = lightMeasurementDevice.getOwner() == null ? ""
-                : lightMeasurementDevice.getOwner().getOrganisationIdentification();
+        final String deviceIdentification = getDeviceIdentification(lightMeasurementDevice);
+        final String organisation = getOwnerOrganisation(lightMeasurementDevice);
         // Creating message with OSGP System CorrelationUID. This way the
         // responses for scheduled tasks can be filtered out.
         final String correlationUid = OsgpSystemCorrelationUid.CORRELATION_UID;
         final String messageType = DeviceFunction.GET_LIGHT_SENSOR_STATUS.name();
         final DomainTypeDto domain = DomainTypeDto.PUBLIC_LIGHTING;
 
-        final String ipAddress = this.getIpAddress(lightMeasurementDevice);
+        final String ipAddress = getIpAddress(lightMeasurementDevice);
         if (ipAddress == null) {
             LOGGER.warn("Unable to create connect request because no IP address is known for device: {}",
                     deviceIdentification);
@@ -428,22 +423,38 @@ public class BaseTask {
                 ipAddress);
     }
 
-    private String getIpAddress(final LightMeasurementDevice lightMeasurementDevice) {
-        final String gatewayIpAddress = this.getGatewayIpAddress(lightMeasurementDevice);
+    private static String getDeviceIdentification(final LightMeasurementDevice device) {
+        if (device.getGatewayDevice() != null) {
+            return device.getGatewayDevice().getDeviceIdentification();
+        } else {
+            return device.getDeviceIdentification();
+        }
+    }
+
+    private static String getOwnerOrganisation(final LightMeasurementDevice device) {
+        if (device.getOwner() == null) {
+            return "";
+        } else {
+            return device.getOwner().getOrganisationIdentification();
+        }
+    }
+
+    private static String getIpAddress(final Device lightMeasurementDevice) {
+        final String gatewayIpAddress = getGatewayIpAddress(lightMeasurementDevice);
         if (gatewayIpAddress != null) {
             return gatewayIpAddress;
         }
-        return this.getHostAddress(lightMeasurementDevice.getNetworkAddress());
+        return getHostAddress(lightMeasurementDevice.getNetworkAddress());
     }
 
-    private String getGatewayIpAddress(final LightMeasurementDevice lightMeasurementDevice) {
+    private static String getGatewayIpAddress(final Device lightMeasurementDevice) {
         if (lightMeasurementDevice.getGatewayDevice() == null) {
             return null;
         }
-        return this.getHostAddress(lightMeasurementDevice.getGatewayDevice().getNetworkAddress());
+        return getHostAddress(lightMeasurementDevice.getGatewayDevice().getNetworkAddress());
     }
 
-    private String getHostAddress(final InetAddress inetAddress) {
+    private static String getHostAddress(final InetAddress inetAddress) {
         if (inetAddress == null) {
             return null;
         }

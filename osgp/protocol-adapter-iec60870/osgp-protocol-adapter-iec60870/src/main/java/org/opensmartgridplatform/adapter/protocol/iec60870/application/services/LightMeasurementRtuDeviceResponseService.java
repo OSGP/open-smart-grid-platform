@@ -24,76 +24,74 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 @Service
-public class LightMeasurementGatewayDeviceResponseService extends AbstractDeviceResponseService {
+public class LightMeasurementRtuDeviceResponseService extends AbstractDeviceResponseService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LightMeasurementGatewayDeviceResponseService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LightMeasurementRtuDeviceResponseService.class);
 
-    private static final String ERROR_PREFIX = "Error while processing measurement report for light measurement gateway: ";
+    private static final String ERROR_PREFIX = "Error while processing measurement report for light measurement RTU: ";
 
-    private static final DeviceType DEVICE_TYPE = DeviceType.LIGHT_MEASUREMENT_GATEWAY;
+    private static final DeviceType DEVICE_TYPE = DeviceType.LIGHT_MEASUREMENT_RTU;
 
     @Autowired
     private Iec60870DeviceRepository iec60870DeviceRepository;
 
     @Autowired
-    private LightMeasurementDeviceResponseService lightMeasurementDeviceResponseService;
+    private LightSensorDeviceResponseService lightMeasurementDeviceResponseService;
 
-    public LightMeasurementGatewayDeviceResponseService() {
+    public LightMeasurementRtuDeviceResponseService() {
         super(DEVICE_TYPE);
     }
 
     @Override
     public void process(final MeasurementReportDto measurementReport, final ResponseMetadata responseMetadata) {
-        final String gatewayDeviceIdentification = responseMetadata.getDeviceIdentification();
-        LOGGER.info("Received measurement report {} for light measurement gateway {}.", measurementReport,
-                gatewayDeviceIdentification);
+        final String rtuDeviceIdentification = responseMetadata.getDeviceIdentification();
+        LOGGER.info("Received measurement report {} for light measurement RTU {}.", measurementReport,
+                rtuDeviceIdentification);
 
-        this.findLightMeasurementDevicesAndThen(gatewayDeviceIdentification,
+        this.findLightSensorsAndThen(rtuDeviceIdentification,
                 device -> this.processMeasurementReportForDevice(measurementReport, responseMetadata, device,
-                        gatewayDeviceIdentification));
+                        rtuDeviceIdentification));
     }
 
     private void processMeasurementReportForDevice(final MeasurementReportDto measurementReport,
             final ResponseMetadata responseMetadata, final Iec60870Device device,
-            final String gatewayDeviceIdentification) {
+            final String rtuDeviceIdentification) {
 
-        LOGGER.info("Processing measurement report for light measurement device {} with gateway {}",
-                device.getDeviceIdentification(), gatewayDeviceIdentification);
+        LOGGER.info("Processing measurement report for light sensor {} on RTU {}", device.getDeviceIdentification(),
+                rtuDeviceIdentification);
         this.lightMeasurementDeviceResponseService.sendLightSensorStatusResponse(measurementReport, device,
                 responseMetadata, ERROR_PREFIX);
     }
 
     @Override
     public void processEvent(final MeasurementReportDto measurementReport, final ResponseMetadata responseMetadata) {
-        final String gatewayDeviceIdentification = responseMetadata.getDeviceIdentification();
-        LOGGER.info("Received event {} for light measurement gateway {}.", measurementReport,
-                gatewayDeviceIdentification);
+        final String rtuDeviceIdentification = responseMetadata.getDeviceIdentification();
+        LOGGER.info("Received event {} for light measurement RTU {}.", measurementReport, rtuDeviceIdentification);
 
-        this.findLightMeasurementDevicesAndThen(gatewayDeviceIdentification, device -> this
-                .processEventForDevice(measurementReport, responseMetadata, device, gatewayDeviceIdentification));
+        this.findLightSensorsAndThen(rtuDeviceIdentification, device -> this
+                .processEventForDevice(measurementReport, responseMetadata, device, rtuDeviceIdentification));
     }
 
     private void processEventForDevice(final MeasurementReportDto measurementReport,
             final ResponseMetadata responseMetadata, final Iec60870Device device,
-            final String gatewayDeviceIdentification) {
+            final String rtuDeviceIdentification) {
 
-        LOGGER.info("Processing event for light measurement device {} with gateway {}",
-                device.getDeviceIdentification(), gatewayDeviceIdentification);
+        LOGGER.info("Processing event for light sensor {} on RTU {}", device.getDeviceIdentification(),
+                rtuDeviceIdentification);
         this.lightMeasurementDeviceResponseService.sendEvent(measurementReport, device, responseMetadata, ERROR_PREFIX);
     }
 
-    private void findLightMeasurementDevicesAndThen(final String gatewayDeviceIdentification,
+    private void findLightSensorsAndThen(final String rtuDeviceIdentification,
             final Consumer<? super Iec60870Device> actionPerDevice) {
 
         final List<Iec60870Device> lightMeasurementDevices = this.iec60870DeviceRepository
-                .findByGatewayDeviceIdentification(gatewayDeviceIdentification)
+                .findByGatewayDeviceIdentification(rtuDeviceIdentification)
                 .stream()
-                .filter(device -> DeviceType.LIGHT_MEASUREMENT_DEVICE == device.getDeviceType())
+                .filter(device -> DeviceType.LIGHT_SENSOR == device.getDeviceType())
                 .collect(Collectors.toList());
 
         if (CollectionUtils.isEmpty(lightMeasurementDevices)) {
-            LOGGER.warn("No light measurement devices found for light measurement gateway {}",
-                    gatewayDeviceIdentification);
+            LOGGER.warn("No light sensors found for light measurement RTU {}", rtuDeviceIdentification);
             return;
         }
 

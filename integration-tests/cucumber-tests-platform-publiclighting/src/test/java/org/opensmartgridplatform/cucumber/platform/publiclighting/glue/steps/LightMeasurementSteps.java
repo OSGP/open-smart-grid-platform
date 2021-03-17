@@ -1,22 +1,24 @@
+/**
+ * Copyright 2021 Alliander N.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.EntityNotFoundException;
-
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60870Device;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
 import org.opensmartgridplatform.cucumber.core.ReadSettingsHelper;
 import org.opensmartgridplatform.cucumber.core.Wait;
-import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.database.core.EventSpecifications;
 import org.opensmartgridplatform.cucumber.platform.database.logging.DeviceLogItemSpecifications;
 import org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.mocks.OslpDeviceSteps;
-import org.opensmartgridplatform.cucumber.platform.publiclighting.mocks.oslpdevice.DeviceSimulatorException;
 import org.opensmartgridplatform.cucumber.protocol.iec60870.mock.Iec60870MockServer;
 import org.opensmartgridplatform.domain.core.entities.Event;
 import org.opensmartgridplatform.domain.core.repositories.EventRepository;
@@ -40,6 +42,8 @@ public class LightMeasurementSteps {
             + "Single-point information with time tag CP56Time2a\nCause of transmission: SPONTANEOUS";
 
     private static final String KEY_DEVICE_IDENTIFICATION = PlatformKeys.KEY_DEVICE_IDENTIFICATION;
+    private static final String KEY_INFORMATION_OBJECT_ADDRESS = "InformationObjectAddress";
+    private static final String KEY_SINGLE_POINT_INFORMATION = "SinglePointInformation";
     private static final String KEY_LIGHTMEASUREMENT_EVENT = "LightMeasurementEvent";
     private static final String KEY_TRANSITION = "TransitionType";
 
@@ -55,38 +59,34 @@ public class LightMeasurementSteps {
     private Iec60870MockServer iec60870MockServer;
 
     @Autowired
-    private Iec60870DeviceRepository iec60870DeviceRepository;
-
-    @Autowired
     private OslpDeviceSteps oslpDeviceSteps;
 
-    @Given("an existing connection with the light measurement gateway")
-    public void givenAnExistingConnectionWithTheLightMeasurementGateway(final Map<String, String> parameters) {
+    @Given("an existing connection with the RTU")
+    public void givenAnExistingConnectionWithTheRTU(final Map<String, String> parameters) {
 
-        final String lmgIdentification = getDeviceIdentification(parameters);
+        final String deviceIdentification = getDeviceIdentification(parameters);
 
-        this.waitForIec60870Connection(lmgIdentification);
+        this.waitForIec60870Connection(deviceIdentification);
     }
 
-    @When("the light measurement gateway sends a light measurement event for the light measurement device")
-    public void whenTheLightMeasurementDeviceSendsALightMeasurementEvent(final Map<String, String> parameters) {
+    @When("the RTU sends a light measurement event")
+    public void whenTheRtuSendsALightMeasurementEvent(final Map<String, String> parameters) {
 
-        final String lmdIdentification = getDeviceIdentification(parameters);
-        final int lmdInformationObjectAddress = this.getInformationObjectAddress(lmdIdentification);
-        final boolean lmdEventValue = getEventType(parameters) == EventType.LIGHT_SENSOR_REPORTS_DARK;
+        final int informationObjectAddress = getInformationObjectAddress(parameters);
+        final boolean singlePointInformation = getSinglePointInformation(parameters);
 
         this.iec60870MockServer.getRtuSimulator()
-                .updateInformationObject(lmdInformationObjectAddress,
-                        Iec60870InformationObjectType.SINGLE_POINT_INFORMATION_WITH_QUALITY, lmdEventValue);
+                .updateInformationObject(informationObjectAddress,
+                        Iec60870InformationObjectType.SINGLE_POINT_INFORMATION_WITH_QUALITY, singlePointInformation);
     }
 
     @Then("the device message for the light measurement event should be logged")
     public void theDeviceMessageForTheLightMeasurementEventShouldBeLogged(final Map<String, String> parameters) {
 
-        final String lmgIdentification = getDeviceIdentification(parameters);
+        final String deviceIdentification = getDeviceIdentification(parameters);
 
         final Specification<DeviceLogItem> specification = DeviceLogItemSpecifications
-                .hasDeviceIdentification(lmgIdentification)
+                .hasDeviceIdentification(deviceIdentification)
                 .and(DeviceLogItemSpecifications.hasDecodedMessageContaining(EVENT_MESSAGE));
 
         this.verifyDeviceLogItemCreated(specification);
@@ -95,27 +95,13 @@ public class LightMeasurementSteps {
     @Then("the light measurement event should be logged")
     public void theLightMeasurementEventShouldBeLogged(final Map<String, String> parameters) {
 
-        final String lmdIdentification = getDeviceIdentification(parameters);
-        final EventType lmdEventType = getEventType(parameters);
+        final String deviceIdentification = getDeviceIdentification(parameters);
+        final EventType eventType = getEventType(parameters);
 
-        final Specification<Event> specification = EventSpecifications.isFromDevice(lmdIdentification)
-                .and(EventSpecifications.hasEventType(lmdEventType));
+        final Specification<Event> specification = EventSpecifications.isFromDevice(deviceIdentification)
+                .and(EventSpecifications.hasEventType(eventType));
 
         this.verifyEventCreated(specification);
-    }
-
-    @Then("a set transition message should be sent to the OSLP SSLD")
-    public void thenASetTransitionMessageShouldBeSentToTheOslpSsld(final Map<String, String> parameters)
-            throws DeviceSimulatorException {
-        final String deviceUid = PlatformDefaults.DEVICE_UID;
-        this.oslpDeviceSteps.theSpecificDeviceReturnsASetTransitionResponseOverOslp("OK", PROTOCOL_OSLP_ELSTER,
-                deviceUid);
-
-        final Map<String, String> map = new HashMap<>();
-        map.put("TransitionType", getTransitionType(parameters));
-        map.put("Time", null);
-        map.put(PlatformKeys.KEY_DEVICE_UID, deviceUid);
-        this.oslpDeviceSteps.aSetTransitionOslpMessageIsSentToDevice(PROTOCOL_OSLP_ELSTER, "SSLD-1", map);
     }
 
     private void waitForIec60870Connection(final String deviceIdentification) {
@@ -142,6 +128,14 @@ public class LightMeasurementSteps {
         return ReadSettingsHelper.getString(parameters, KEY_DEVICE_IDENTIFICATION);
     }
 
+    private static int getInformationObjectAddress(final Map<String, String> parameters) {
+        return ReadSettingsHelper.getInteger(parameters, KEY_INFORMATION_OBJECT_ADDRESS);
+    }
+
+    private static boolean getSinglePointInformation(final Map<String, String> parameters) {
+        return ReadSettingsHelper.getBoolean(parameters, KEY_SINGLE_POINT_INFORMATION);
+    }
+
     private static EventType getEventType(final Map<String, String> parameters) {
         final String event = ReadSettingsHelper.getString(parameters, KEY_LIGHTMEASUREMENT_EVENT).toUpperCase();
         switch (event) {
@@ -152,21 +146,5 @@ public class LightMeasurementSteps {
         default:
             throw new UnsupportedOperationException("Unsupported value for mapping event to EventType: " + event);
         }
-    }
-
-    private static String getTransitionType(final Map<String, String> parameters) {
-        final String transition = ReadSettingsHelper.getString(parameters, KEY_TRANSITION).toUpperCase();
-        if ("DAY_NIGHT".equals(transition) || "NIGHT_DAY".equals(transition)) {
-            return transition;
-        } else {
-            throw new UnsupportedOperationException("Unsupported value for Transition: " + transition);
-        }
-    }
-
-    private int getInformationObjectAddress(final String deviceIdentification) {
-        final Iec60870Device lmd = this.iec60870DeviceRepository.findByDeviceIdentification(deviceIdentification)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Iec60870 Light Measurement not found for identification: " + deviceIdentification));
-        return lmd.getInformationObjectAddress();
     }
 }

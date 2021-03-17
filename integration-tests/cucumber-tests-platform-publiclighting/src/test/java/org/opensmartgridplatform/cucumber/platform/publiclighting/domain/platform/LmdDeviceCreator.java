@@ -27,7 +27,7 @@ public class LmdDeviceCreator extends AbstractPlatformDeviceCreator<LightMeasure
     @Override
     public LightMeasurementDevice apply(final Protocol protocol, final Map<String, String> settings) {
         LightMeasurementDevice device = new LightMeasurementDevice(this.deviceIdentification(settings));
-        device.setDeviceType(DeviceType.LIGHT_MEASUREMENT_DEVICE.getType());
+        device.setDeviceType(DeviceType.LIGHT_MEASUREMENT_DEVICE.getPlatformDeviceType());
         device.updateGatewayDevice(this.gatewayDevice(settings));
         device.setDeviceLifecycleStatus(this.deviceLifecycleStatus(settings));
         device.setActivated(this.activated(settings));
