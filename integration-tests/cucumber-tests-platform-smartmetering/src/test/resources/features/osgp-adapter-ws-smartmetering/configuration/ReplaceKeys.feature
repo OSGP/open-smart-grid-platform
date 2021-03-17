@@ -45,7 +45,7 @@ Feature: SmartMetering Configuration - Replace Keys
       | Encryption_key       | 867424ac75b6d53c89276d304608321f0a1f6e401f453f84adf3477c7ee1623c |
     When the get actual meter reads request is received
       | DeviceIdentification | TEST1024000000001 |
-    Then after 5 minutes, the new keys are recovered
+    Then after 15 seconds, the new keys are recovered
       | DeviceIdentification | TEST1024000000001 |
       | Authentication_key   | c19fe80a22a0f6c5cdaad0826c4d204f23694ded08d811b66e9b845d9f2157d2 |
       | Encryption_key       | 867424ac75b6d53c89276d304608321f0a1f6e401f453f84adf3477c7ee1623c |

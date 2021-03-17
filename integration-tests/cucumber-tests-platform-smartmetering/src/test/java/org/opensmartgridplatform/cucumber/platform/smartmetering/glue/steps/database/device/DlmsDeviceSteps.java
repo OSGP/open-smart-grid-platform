@@ -639,9 +639,9 @@ public class DlmsDeviceSteps {
         }
     }
 
-    @Then("after 5 minutes, the new keys are recovered")
+    @Then("after 15 seconds, the new keys are recovered")
     public void newKeysAreRecovered(final Map<String, String> inputSettings) throws InterruptedException {
-        final long waitTimeInMillis = 5 * 60 * 1000;
+        final long waitTimeInMillis = 15 * 1000;
         if (!inputSettings.containsKey(PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION)) {
             throw new IllegalArgumentException("No device identification provided");
         }
@@ -651,8 +651,8 @@ public class DlmsDeviceSteps {
             throw new IllegalArgumentException("No authentication or encryption key provided");
         }
         Thread.sleep(waitTimeInMillis);
-        final DbEncryptionKeyReference encryptionKeyRef = this.encryptionKeyRepository
-                .findByTypeAndValid(EncryptionProviderType.JRE, new Date()).iterator().next();
+        //final DbEncryptionKeyReference encryptionKeyRef = this.encryptionKeyRepository
+        //        .findByTypeAndValid(EncryptionProviderType.JRE, new Date()).iterator().next();
         final List<SecretType> keyTypesToCheck = Arrays
                 .asList(E_METER_AUTHENTICATION_KEY, E_METER_ENCRYPTION_KEY_UNICAST);
         for (final SecretType secretType : keyTypesToCheck) {
