@@ -203,6 +203,9 @@ public class InstallationService {
      *            the priority of the message
      * @param scheduleTime
      *            the time the request should be carried out
+     * @param channel
+     *            the channel on the gateway device that should be cleared
+     *            (decoupled)
      * @return the correlationUid identifying the operation
      */
     public String enqueueDeCoupleMbusDeviceByChannelRequest(@Identification final String organisationIdentification,

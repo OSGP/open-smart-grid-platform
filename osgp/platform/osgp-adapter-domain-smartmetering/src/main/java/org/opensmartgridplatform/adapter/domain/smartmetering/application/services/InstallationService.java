@@ -160,7 +160,10 @@ public class InstallationService {
             final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException,
             final DeCoupleMbusDeviceResponseDto deCoupleMbusDeviceResponseDto) throws FunctionalException {
 
-        this.mBusGatewayService.handleDeCoupleMbusDeviceResponse(deviceMessageMetadata, deCoupleMbusDeviceResponseDto);
+        if (osgpException == null) {
+            this.mBusGatewayService.handleDeCoupleMbusDeviceResponse(deviceMessageMetadata,
+                    deCoupleMbusDeviceResponseDto);
+        }
 
         final DeCoupleMbusDeviceByChannelResponse response = new DeCoupleMbusDeviceByChannelResponse(
                 deCoupleMbusDeviceResponseDto.getMbusDeviceIdentification(),

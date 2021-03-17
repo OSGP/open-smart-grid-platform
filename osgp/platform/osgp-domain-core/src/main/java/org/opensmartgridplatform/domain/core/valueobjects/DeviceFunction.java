@@ -8,14 +8,15 @@
 package org.opensmartgridplatform.domain.core.valueobjects;
 
 public enum DeviceFunction {
+    // add new DeviceFunctions in alphabetical order.
     ADD_EVENT_NOTIFICATION,
     ADD_METER,
-    DE_COUPLE_MBUS_DEVICE_BY_CHANNEL,
     CLEAR_ALARM_REGISTER,
     CONFIGURE_DEFINABLE_LOAD_PROFILE,
     COUPLE_MBUS_DEVICE,
     COUPLE_MBUS_DEVICE_BY_CHANNEL,
     DE_COUPLE_MBUS_DEVICE,
+    DE_COUPLE_MBUS_DEVICE_BY_CHANNEL,
     DISABLE_DEBUGGING,
     ENABLE_DEBUGGING,
     FIND_EVENTS,
@@ -93,5 +94,4 @@ public enum DeviceFunction {
     UPDATE_FIRMWARE,
     UPDATE_KEY,
     START_SELF_TEST;
-    // add new DeviceFunctions in alphabetical order.
 }

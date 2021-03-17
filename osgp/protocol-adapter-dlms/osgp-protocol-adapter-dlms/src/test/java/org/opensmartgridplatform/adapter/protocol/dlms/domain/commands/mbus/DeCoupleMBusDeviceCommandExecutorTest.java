@@ -39,13 +39,13 @@ public class DeCoupleMBusDeviceCommandExecutorTest {
     private DeviceChannelsHelper deviceChannelsHelper;
 
     @Mock
-    DlmsConnectionManager conn;
+    private DlmsConnectionManager conn;
 
     @Mock
-    DlmsDevice device;
+    private DlmsDevice device;
 
     @Mock
-    DeCoupleMbusDeviceDto decoupleMbusDto;
+    private DeCoupleMbusDeviceDto decoupleMbusDto;
 
     @InjectMocks
     private DeCoupleMBusDeviceCommandExecutor commandExecutor = new DeCoupleMBusDeviceCommandExecutor();

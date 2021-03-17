@@ -213,24 +213,28 @@ public class DlmsDeviceSteps {
                 .isEqualTo(getShort(settings, PlatformSmartmeteringKeys.MBUS_DEVICE_TYPE_IDENTIFICATION, null));
     }
 
-    @Then("the smart meter is decoupled from gateway device in the core database")
+    @Then("^the smart meter is not decoupled from gateway device in the core database$")
+    public void theSmartMeterIsNotDeCoupledInTheCoreDatabase(final Map<String, String> settings) {
+        final SmartMeter smartMeter = this.smartMeterRepository
+                .findByDeviceIdentification(settings.get(PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION));
+
+        assertThat(smartMeter).isNotNull();
+        assertThat(smartMeter.getChannel()).isEqualTo(getShort(settings, PlatformSmartmeteringKeys.CHANNEL));
+        assertThat(smartMeter.getMbusPrimaryAddress())
+                .isEqualTo(getShort(settings, PlatformSmartmeteringKeys.MBUS_PRIMARY_ADDRESS, null));
+        assertThat(smartMeter.getGatewayDevice().getDeviceIdentification())
+                .isEqualTo(settings.get(PlatformSmartmeteringKeys.GATEWAY_DEVICE_IDENTIFICATION));
+    }
+
+    @Then("^the smart meter is decoupled from gateway device in the core database$")
     public void theSmartMeterIsDecoupledFromGatewayDeviceInTheCoreDatabase(final Map<String, String> settings) {
         final SmartMeter smartMeter = this.smartMeterRepository
                 .findByDeviceIdentification(settings.get(PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION));
 
         assertThat(smartMeter).isNotNull();
-        assertThat(smartMeter.getSupplier()).isEqualTo(settings.get(PlatformSmartmeteringKeys.SUPPLIER));
         assertThat(smartMeter.getChannel()).isNull();
         assertThat(smartMeter.getGatewayDevice()).isNull();
         assertThat(smartMeter.getMbusPrimaryAddress()).isNull();
-        assertThat(smartMeter.getMbusIdentificationNumber())
-                .isEqualTo(getLong(settings, PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER, null));
-        assertThat(smartMeter.getMbusManufacturerIdentification())
-                .isEqualTo(settings.get(PlatformSmartmeteringKeys.MBUS_MANUFACTURER_IDENTIFICATION));
-        assertThat(smartMeter.getMbusVersion())
-                .isEqualTo(getShort(settings, PlatformSmartmeteringKeys.MBUS_VERSION, null));
-        assertThat(smartMeter.getMbusDeviceTypeIdentification())
-                .isEqualTo(getShort(settings, PlatformSmartmeteringKeys.MBUS_DEVICE_TYPE_IDENTIFICATION, null));
     }
 
     @Then("^the dlms device with identification \"([^\"]*)\" does not exist$")

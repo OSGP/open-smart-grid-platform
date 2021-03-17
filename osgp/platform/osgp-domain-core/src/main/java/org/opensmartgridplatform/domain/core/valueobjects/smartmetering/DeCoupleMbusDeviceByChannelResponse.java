@@ -26,7 +26,7 @@ public class DeCoupleMbusDeviceByChannelResponse extends ActionResponse implemen
 
     @Override
     public String toString() {
-        return "DeCoupleMbusDeviceByChannelResponseData [channel=" + this.channel + ", mbusDeviceIdentification="
+        return "DeCoupleMbusDeviceByChannelResponse [channel=" + this.channel + ", mbusDeviceIdentification="
                 + this.mbusDeviceIdentification + "]";
     }
 

@@ -49,7 +49,7 @@ public class BundledDeCoupleMbusDeviceByChannelSteps extends BaseBundleSteps {
     }
 
     @Then("^the decouple mbus device by channel bundle response is \"([^\"]*)\" without Mbus Device$")
-    public void theDecoupleMbusDeviceByChannelBundleResponseIsWithMbusDevice(final String result) throws Throwable {
+    public void theDecoupleMbusDeviceByChannelBundleResponseIsWithoutMbusDevice(final String result) throws Throwable {
 
         final Response response = this.getNextBundleResponse();
 

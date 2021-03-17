@@ -172,7 +172,7 @@
   <xsd:element name="DeCoupleMbusDeviceByChannelAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncResponse"></xsd:extension>
+        <xsd:extension base="common:AsyncResponse" />
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -180,7 +180,7 @@
   <xsd:element name="DeCoupleMbusDeviceByChannelAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncRequest"></xsd:extension>
+        <xsd:extension base="common:AsyncRequest" />
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -197,7 +197,7 @@
   <xsd:complexType name="DeCoupleMbusDeviceByChannelResponseData">
     <xsd:complexContent>
       <xsd:extension base="common:Response">
-        <xsd:sequence>
+        <xsd:sequence minOccurs="0" >
           <xsd:element name="mbusDeviceIdentification" type="common:DeviceIdentification"/>
         </xsd:sequence>
       </xsd:extension>

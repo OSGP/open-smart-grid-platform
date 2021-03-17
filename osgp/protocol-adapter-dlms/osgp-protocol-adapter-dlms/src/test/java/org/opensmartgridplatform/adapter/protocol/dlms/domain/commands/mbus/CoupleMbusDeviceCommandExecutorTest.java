@@ -38,10 +38,10 @@ public class CoupleMbusDeviceCommandExecutorTest {
     private DeviceChannelsHelper deviceChannelsHelper;
 
     @Mock
-    DlmsConnectionManager conn;
+    private DlmsConnectionManager conn;
 
     @Mock
-    DlmsDevice device;
+    private DlmsDevice device;
 
     @InjectMocks
     private CoupleMBusDeviceCommandExecutor commandExecutor = new CoupleMBusDeviceCommandExecutor();

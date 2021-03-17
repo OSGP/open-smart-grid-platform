@@ -377,7 +377,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
      * @param organisationIdentification
      *            the organization requesting the coupling of devices
      * @param request
-     *            the CoupleMbusDeviceByChannelRequest containing the
+     *            the DeCoupleMbusDeviceByChannelRequest containing the
      *            gatewayDeviceIdentification and channel
      * @param messagePriority
      *            the priority of the message
@@ -434,17 +434,18 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
         DeCoupleMbusDeviceByChannelResponse response = null;
         try {
-            response = new DeCoupleMbusDeviceByChannelResponse();
             final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
                     ComponentType.WS_SMART_METERING);
 
             this.throwExceptionIfResultNotOk(responseData, "De Couple Mbus Device By Channel");
 
             if (responseData.getMessageData() instanceof String) {
+                response = new DeCoupleMbusDeviceByChannelResponse();
                 response.setResultString((String) responseData.getMessageData());
+            } else {
+                response = this.installationMapper.map(responseData.getMessageData(),
+                        DeCoupleMbusDeviceByChannelResponse.class);
             }
-            response = this.installationMapper.map(responseData.getMessageData(),
-                    DeCoupleMbusDeviceByChannelResponse.class);
 
             response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
 

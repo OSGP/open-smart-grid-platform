@@ -227,9 +227,7 @@ public class DeviceChannelsHelper {
 
         if (requestDto.getPrimaryAddress() != null) {
             dataObjectExecutors.addExecutor(this.getMbusAttributeExecutor(MbusClientAttribute.PRIMARY_ADDRESS,
-                    requestDto == null ? UINT_8_ZERO : DataObject.newUInteger8Data(requestDto.getPrimaryAddress()),
-                    channel));
-
+                    DataObject.newUInteger8Data(requestDto.getPrimaryAddress()), channel));
         }
         conn.getDlmsMessageListener()
                 .setDescription(String.format("Write updated MBus attributes to channel %d, set attributes: %s",
