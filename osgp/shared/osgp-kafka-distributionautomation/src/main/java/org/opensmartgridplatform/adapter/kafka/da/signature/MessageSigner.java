@@ -24,6 +24,7 @@ import java.security.Signature;
 import java.security.SignatureException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Objects;
 import java.util.Optional;
@@ -55,6 +56,9 @@ public class MessageSigner {
     public static final String DEFAULT_SIGNATURE_PROVIDER = "SunRsaSign";
     public static final String DEFAULT_SIGNATURE_KEY_ALGORITHM = "RSA";
     public static final int DEFAULT_SIGNATURE_KEY_SIZE = 2048;
+
+    // Two magic bytes (0xC3, 0x01) followed by an 8-byte fingerprint
+    public static final int AVRO_HEADER_LENGTH = 10;
 
     private boolean isSigningEnabled;
 
@@ -153,7 +157,8 @@ public class MessageSigner {
         try {
             message.setSignature(null);
             synchronized (this.signingSignature) {
-                this.signingSignature.update(this.toByteBuffer(message));
+                final byte[] messageBytes = this.toSchemalessBytes(this.toByteBuffer(message));
+                this.signingSignature.update(messageBytes);
                 return this.signingSignature.sign();
             }
         } catch (final SignatureException e) {
@@ -200,7 +205,8 @@ public class MessageSigner {
         try {
             message.setSignature(null);
             synchronized (this.verificationSignature) {
-                this.verificationSignature.update(this.toByteBuffer(message));
+                final byte[] messageBytes = this.toSchemalessBytes(this.toByteBuffer(message));
+                this.verificationSignature.update(messageBytes);
                 return this.verificationSignature.verify(signatureBytes);
             }
         } catch (final SignatureException e) {
@@ -208,6 +214,19 @@ public class MessageSigner {
         } finally {
             message.setSignature(messageSignature);
         }
+    }
+
+    private boolean hasAvroHeader(final byte[] bytes) {
+        return bytes.length >= AVRO_HEADER_LENGTH && (bytes[0] & 0xFF) == 0xC3 && (bytes[1] & 0xFF) == 0x01;
+    }
+
+    private byte[] toSchemalessBytes(final ByteBuffer byteBuffer) {
+        final byte[] bytes = new byte[byteBuffer.remaining()];
+        byteBuffer.get(bytes);
+        if (this.hasAvroHeader(bytes)) {
+            return Arrays.copyOfRange(bytes, AVRO_HEADER_LENGTH, bytes.length);
+        }
+        return bytes;
     }
 
     private ByteBuffer toByteBuffer(final Message message) {
