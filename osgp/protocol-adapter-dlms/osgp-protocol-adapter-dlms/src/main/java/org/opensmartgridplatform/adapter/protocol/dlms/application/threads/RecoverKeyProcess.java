@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Hex;
 import org.openmuc.jdlms.AuthenticationMechanism;
 import org.openmuc.jdlms.DlmsConnection;
@@ -35,13 +36,10 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+@Slf4j
 public class RecoverKeyProcess implements Runnable {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(RecoverKeyProcess.class);
 
     private final DomainHelperService domainHelperService;
 
@@ -73,19 +71,17 @@ public class RecoverKeyProcess implements Runnable {
     public void run() {
         this.checkState();
 
-        LOGGER.info("[{}] Attempting key recovery for device {}", this.correlationUid, this.deviceIdentification);
+        log.info("[{}] Attempting key recovery for device {}", this.correlationUid, this.deviceIdentification);
 
         try {
             this.findDevice();
         } catch (final Exception e) {
-            LOGGER.error("[{}] Could not find device", this.correlationUid, e);
-            //why try to find device if you don't do anything with the result?!?
-            //shouldn't we throw an exception here?
+            log.error("[{}] Could not find device", this.correlationUid, e);
         }
 
         if (!this.secretManagementService
                 .hasNewSecretOfType(this.correlationUid, this.deviceIdentification, E_METER_AUTHENTICATION)) {
-            LOGGER.warn(
+            log.warn(
                     "[{}] Could not recover keys: device has no new authorisation key registered in secret-mgmt module",
                     this.correlationUid);
             return;
@@ -100,7 +96,7 @@ public class RecoverKeyProcess implements Runnable {
                 throw new RecoverKeyException(e);
             }
         } else {
-            LOGGER.warn("[{}] Could not recover keys: could not connect to device using new keys", this.correlationUid);
+            log.warn("[{}] Could not recover keys: could not connect to device using new keys", this.correlationUid);
         }
     }
 
@@ -127,14 +123,14 @@ public class RecoverKeyProcess implements Runnable {
             connection = this.createConnectionUsingNewKeys();
             return true;
         } catch (final Exception e) {
-            LOGGER.warn("Connection exception: {}", e.getMessage(), e);
+            log.warn("Connection exception: {}", e.getMessage(), e);
             return false;
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
                 } catch (final IOException e) {
-                    LOGGER.warn("Connection exception: {}", e.getMessage(), e);
+                    log.warn("Connection exception: {}", e.getMessage(), e);
                 }
             }
         }
@@ -175,7 +171,7 @@ public class RecoverKeyProcess implements Runnable {
                 tcpConnectionBuilder.setChallengeLength(challengeLength);
             }
         } catch (final IllegalArgumentException e) {
-            LOGGER.error("Exception occurred: Invalid key format");
+            log.error("Exception occurred: Invalid key format");
             throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT, ComponentType.PROTOCOL_DLMS,
                     e);
         }

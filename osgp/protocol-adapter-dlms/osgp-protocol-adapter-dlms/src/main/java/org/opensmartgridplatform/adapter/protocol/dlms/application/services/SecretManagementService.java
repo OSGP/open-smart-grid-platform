@@ -45,7 +45,8 @@ import org.springframework.stereotype.Service;
 /**
  * Service for storing, activating and retrieving device keys.
  * Also performs RSA encryption/decryption operations for SOAP messaging purposes.
- */ public class SecretManagementService {
+ */
+public class SecretManagementService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SecretManagementService.class);
     private final RsaEncrypter soapRsaEncrypter;
@@ -60,6 +61,7 @@ import org.springframework.stereotype.Service;
     /**
      * Retrieve an active key of a certain type for a specified device
      *
+     * @param correlationUid the correlation UID of the original request
      * @param deviceIdentification
      *         the device identification string of the device
      * @param keyType
@@ -78,6 +80,7 @@ import org.springframework.stereotype.Service;
     /**
      * Retrieves the active keys of requested types for a specified device
      *
+     * @param correlationUid the correlation UID of the original request
      * @param deviceIdentification
      *         the device identification string of the device
      * @param keyTypes
@@ -96,6 +99,7 @@ import org.springframework.stereotype.Service;
     /**
      * Retrieve a new (not yet activated) key of a certain type for a specified device
      *
+     * @param correlationUid the correlation UID of the original request
      * @param deviceIdentification
      *         the device identification string of the device
      * @param keyType
@@ -114,6 +118,7 @@ import org.springframework.stereotype.Service;
     /**
      * Retrieves the new (not yet activated) keys of requested types for a specified device
      *
+     * @param correlationUid the correlation UID of the original request
      * @param deviceIdentification
      *         the device identification string of the device
      * @param keyTypes
@@ -123,8 +128,7 @@ import org.springframework.stereotype.Service;
      */
     public Map<SecurityKeyType, byte[]> getNewKeys(final String correlationUid, final String deviceIdentification,
             final List<SecurityKeyType> keyTypes) {
-        final GetNewSecretsRequest request = this
-                .createGetNewSecretsRequest(deviceIdentification, keyTypes);
+        final GetNewSecretsRequest request = this.createGetNewSecretsRequest(deviceIdentification, keyTypes);
         final GetNewSecretsResponse response = this.secretManagementClient
                 .getNewSecretsRequest(correlationUid, request);
         this.validateGetNewResponse(keyTypes, response);
@@ -185,6 +189,7 @@ import org.springframework.stereotype.Service;
      * sure to activate it by calling
      * {@link #activateNewKey(String, String, SecurityKeyType)}.
      *
+     * @param correlationUid the correlation UID of the original request
      * @param deviceIdentification
      *         DLMS device id
      * @param key
@@ -212,8 +217,7 @@ import org.springframework.stereotype.Service;
             ts.setSecret(this.encryptSoapSecret(entry.getValue(), true));
             typedSecretList.add(ts);
         }
-        final StoreSecretsRequest request = this
-                .createStoreSecretsRequest(deviceIdentification, typedSecrets);
+        final StoreSecretsRequest request = this.createStoreSecretsRequest(deviceIdentification, typedSecrets);
         StoreSecretsResponse response = null;
         try {
             response = this.secretManagementClient.storeSecretsRequest(correlationUid, request);
@@ -252,6 +256,7 @@ import org.springframework.stereotype.Service;
      * {@link #storeNewKeys(String, String, Map)} after it has
      * been confirmed to be set on the device.
      *
+     * @param correlationUid the correlation UID of the original request
      * @param deviceIdentification
      *         DLMS device id
      * @param keyType
@@ -296,6 +301,9 @@ import org.springframework.stereotype.Service;
      * The master keys (DLMS master or M-Bus Default) cannot be changed on a
      * device, but can be generated for use in tests or with simulated devices.
      *
+     * @param correlationUid the correlation UID of the original request
+     * @param deviceIdentification the device identification for which to generate the keys
+     * @param keyTypes the requested key types
      * @return a new 128bits key, unencrypted.
      */
     public Map<SecurityKeyType, byte[]> generate128BitsKeysAndStoreAsNewKeys(final String correlationUid,
@@ -313,8 +321,8 @@ import org.springframework.stereotype.Service;
         return this.convertSoapSecretsToSecretMapByType(typedSecrets.getTypedSecret());
     }
 
-    private GenerateAndStoreSecretsRequest createGenerateAndStoreSecretsRequest(
-            final String deviceIdentification, final SecretTypes secretTypes) {
+    private GenerateAndStoreSecretsRequest createGenerateAndStoreSecretsRequest(final String deviceIdentification,
+            final SecretTypes secretTypes) {
         final GenerateAndStoreSecretsRequest request = new GenerateAndStoreSecretsRequest();
         request.setDeviceId(deviceIdentification);
         request.setSecretTypes(secretTypes);

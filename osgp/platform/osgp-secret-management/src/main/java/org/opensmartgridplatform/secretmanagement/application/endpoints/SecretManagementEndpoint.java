@@ -48,6 +48,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.springframework.ws.soap.server.endpoint.annotation.SoapHeader;
+import org.springframework.xml.transform.StringSource;
 
 @Endpoint
 @Slf4j
@@ -58,8 +59,9 @@ public class SecretManagementEndpoint {
     }
 
     private static final String NAMESPACE_URI =
-            "http://www.opensmartgridplatform" + ".org/schemas/security/secretmanagement";
-    private static final String CORRELATION_HEADER = "{" + NAMESPACE_URI + "}correlationUid";
+            "http://www.opensmartgridplatform.org/schemas/security/secretmanagement";
+    private static final String CORRELATION_UID = "correlationUid";
+    private static final String CORRELATION_HEADER = "{" + NAMESPACE_URI + "}"+CORRELATION_UID;
 
     private final SecretManagementService secretManagementService;
     private final SoapEndpointDataTypeConverter converter;
@@ -80,8 +82,11 @@ public class SecretManagementEndpoint {
             final SaajSoapMessage soapResponse = (SaajSoapMessage) messageContext.getResponse();
             final org.springframework.ws.soap.SoapHeader responseHeader = soapResponse.getSoapHeader();
             final TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            final String headerXml = String
+                    .format("<%1$s xmlns=\"%2$s\">%3$s</%1$s>", CORRELATION_UID, NAMESPACE_URI, header.getText());
+            final StringSource headerSource = new StringSource(headerXml);
             final Transformer transformer = transformerFactory.newTransformer();
-            transformer.transform(header.getSource(), responseHeader.getResult());
+            transformer.transform(headerSource, responseHeader.getResult());
         }
     }
 

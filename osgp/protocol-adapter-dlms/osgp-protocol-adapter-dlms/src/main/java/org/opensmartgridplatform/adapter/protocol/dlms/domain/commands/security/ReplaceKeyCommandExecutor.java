@@ -144,9 +144,10 @@ public class ReplaceKeyCommandExecutor extends AbstractCommandExecutor<Correlate
             final MethodParameter methodParameterAuth = SecurityUtils
                     .keyChangeMethodParamFor(decryptedMasterKey, decryptedKey, replaceKeyInput.getKeyId());
 
+            final String format = "ReplaceKey for %s %s , call method: %s";
             conn.getDlmsMessageListener().setDescription(
-                    "ReplaceKey for " + replaceKeyInput.getSecurityKeyType() + " " + replaceKeyInput.getKeyId()
-                            + ", call method: " + JdlmsObjectToStringUtil.describeMethod(methodParameterAuth));
+                    String.format(format, replaceKeyInput.getSecurityKeyType(), replaceKeyInput.getKeyId(),
+                            JdlmsObjectToStringUtil.describeMethod(methodParameterAuth)));
 
             final MethodResultCode methodResultCode = conn.getConnection().action(methodParameterAuth).getResultCode();
 
