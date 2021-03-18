@@ -439,15 +439,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
             this.throwExceptionIfResultNotOk(responseData, "De Couple Mbus Device By Channel");
 
-            if (responseData.getMessageData() instanceof String) {
-                response = new DeCoupleMbusDeviceByChannelResponse();
-                response.setResultString((String) responseData.getMessageData());
-            } else {
-                response = this.installationMapper.map(responseData.getMessageData(),
-                        DeCoupleMbusDeviceByChannelResponse.class);
-            }
-
-            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+            response = this.installationMapper.map(responseData.getMessageData(),
+                    DeCoupleMbusDeviceByChannelResponse.class);
 
         } catch (final Exception e) {
             this.handleException(e);

@@ -315,7 +315,7 @@ public class MBusGatewayService {
     private void checkAndHandleIfMbusDeviceNotFound(final SmartMeter mbusDevice,
             final CoupleMbusDeviceByChannelResponseDto responseDto) throws FunctionalException {
         if (mbusDevice == null) {
-            throw new FunctionalException(FunctionalExceptionType.NO_DEVICE_FOUND_ON_CHANNEL,
+            throw new FunctionalException(FunctionalExceptionType.NO_MATCHING_MBUS_DEVICE_FOUND,
                     ComponentType.DOMAIN_SMART_METERING,
                     new OsgpException(ComponentType.DOMAIN_SMART_METERING,
                             "No matching mbus device found with mbusIdentificationNumber: "
