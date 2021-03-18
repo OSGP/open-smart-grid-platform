@@ -123,7 +123,7 @@ public class SoapServiceSecretManagementIT {
             final OutputStream outStream = new ByteArrayOutputStream();
             response.writeTo(outStream);
             final String outputString = outStream.toString();
-            assertThat(outputString.contains(">123456</ns:correlationUid>")).isTrue();
+            assertThat(outputString.contains(">123456</correlationUid>")).isTrue();
         });
     }
 
