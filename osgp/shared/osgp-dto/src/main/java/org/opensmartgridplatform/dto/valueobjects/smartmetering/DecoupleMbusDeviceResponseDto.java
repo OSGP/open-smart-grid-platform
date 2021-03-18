@@ -7,6 +7,9 @@
  */
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
+import lombok.Getter;
+
+@Getter
 public class DecoupleMbusDeviceResponseDto extends ActionResponseDto {
 
     private static final long serialVersionUID = -4454979905929290745L;
@@ -23,14 +26,6 @@ public class DecoupleMbusDeviceResponseDto extends ActionResponseDto {
     public String toString() {
         return "DecoupleMbusDeviceResponseDto [channel=" + this.channelElementValues.getChannel()
                 + ", mbusDeviceIdentification=" + this.mbusDeviceIdentification + "]";
-    }
-
-    public ChannelElementValuesDto getChannelElementValues() {
-        return this.channelElementValues;
-    }
-
-    public String getMbusDeviceIdentification() {
-        return this.mbusDeviceIdentification;
     }
 
     public void setMbusDeviceIdentification(final String mbusDeviceIdentification) {

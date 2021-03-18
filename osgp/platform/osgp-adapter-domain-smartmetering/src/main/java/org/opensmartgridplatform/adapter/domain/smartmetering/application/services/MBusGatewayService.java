@@ -10,7 +10,9 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.servi
 import java.util.List;
 import java.util.Optional;
 
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
+import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.exceptions.InactiveDeviceException;
 import org.opensmartgridplatform.domain.core.repositories.SmartMeterRepository;
@@ -38,8 +40,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service(value = "domainSmartMeteringMBusGatewayService")
@@ -119,7 +119,7 @@ public class MBusGatewayService {
 
         // If Mbus device is already decoupled, return response OK, otherwise,
         // decouple it.
-        if (this.isMbusDeviceCoupled(mbusDevice)) {
+        if (!this.isMbusDeviceCoupled(mbusDevice)) {
             this.installationService.handleResponse("decoupleMbusDevice", deviceMessageMetadata,
                     ResponseMessageResultType.OK, null);
         } else {
@@ -154,6 +154,12 @@ public class MBusGatewayService {
         final SmartMeter mbusDevice = this.smartMeteringDeviceRepository.findByMBusIdentificationNumber(
                 Long.valueOf(channelElementValuesDto.getIdentificationNumber()),
                 channelElementValuesDto.getManufacturerIdentification());
+
+        return Optional.ofNullable(mbusDevice);
+    }
+    private Optional<SmartMeter> findByGatewayDeviceAndChannel(final Device gatewayDevice, final Short channel) {
+        final SmartMeter mbusDevice =
+                this.smartMeteringDeviceRepository.findByGatewayDeviceAndChannel(gatewayDevice, channel);
 
         return Optional.ofNullable(mbusDevice);
     }
@@ -253,21 +259,28 @@ public class MBusGatewayService {
      * @throws FunctionalException
      */
     public void handleDecoupleMbusDeviceResponse(final DeviceMessageMetadata deviceMessageMetadata,
-            final DecoupleMbusDeviceResponseDto decoupleMbusDeviceResponseDto) {
-        final Optional<SmartMeter> mbusDeviceFoundOnChannel = this
+            final DecoupleMbusDeviceResponseDto decoupleMbusDeviceResponseDto) throws FunctionalException {
+        final Optional<SmartMeter> mbusDeviceOnDeviceChannel = this
                 .findByMBusIdentificationNumber(decoupleMbusDeviceResponseDto.getChannelElementValues());
 
-        if (!mbusDeviceFoundOnChannel.isPresent()) {
+        if (mbusDeviceOnDeviceChannel.isPresent()) {
+            // Add the M-Bus device found on the meter to the response
+            final SmartMeter mbusDevice = mbusDeviceOnDeviceChannel.get();
+            decoupleMbusDeviceResponseDto.setMbusDeviceIdentification(mbusDevice.getDeviceIdentification());
+        }
+
+        // Decouple the M-Bus Device found on gateway device and the channel from the database
+        final SmartMeter gatewayDevice =
+                this.domainHelperService.findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+        final Short channelInRequest = decoupleMbusDeviceResponseDto.getChannelElementValues().getChannel();
+
+        final Optional<SmartMeter> optionalMbusDevice = this.findByGatewayDeviceAndChannel(gatewayDevice, channelInRequest);
+        if (!optionalMbusDevice.isPresent()) {
             return;
         }
 
-        final SmartMeter mbusDevice = mbusDeviceFoundOnChannel.get();
-
-        decoupleMbusDeviceResponseDto.setMbusDeviceIdentification(mbusDevice.getDeviceIdentification());
-
-        if (mbusDevice.getGatewayDevice() != null && mbusDevice.getGatewayDevice()
-                .getDeviceIdentification()
-                .equals(deviceMessageMetadata.getDeviceIdentification())) {
+        final SmartMeter mbusDevice = optionalMbusDevice.get();
+        if (mbusDevice.getGatewayDevice() != null && mbusDevice.getGatewayDevice().equals(gatewayDevice)) {
             mbusDevice.setChannel(null);
             mbusDevice.setMbusPrimaryAddress(null);
             mbusDevice.updateGatewayDevice(null);
