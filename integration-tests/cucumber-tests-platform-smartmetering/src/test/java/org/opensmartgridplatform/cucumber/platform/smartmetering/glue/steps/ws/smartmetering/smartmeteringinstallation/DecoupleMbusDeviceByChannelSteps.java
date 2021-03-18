@@ -10,8 +10,8 @@
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringinstallation;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceByChannelAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceByChannelAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceByChannelRequest;
@@ -33,26 +33,26 @@ public class DecoupleMbusDeviceByChannelSteps extends AbstractSmartMeteringSteps
     @Autowired
     private SmartMeteringInstallationClient smartMeteringInstallationClient;
 
-    @When("^the Decouple MBus Device By Channel \"([^\"]*)\" from E-meter \"([^\"]*)\" request is received$")
-    public void theDecoupleMbusDeviceByChannelFromEmeterRequestIsReceived(final String channel, final String eMeter)
+    @When("^the Decouple M-Bus Device By Channel \"([^\"]*)\" from E-meter \"([^\"]*)\" request is received$")
+    public void theDeCoupleMbusDeviceByChannelFromEmeterRequestIsReceived(final String channel, final String eMeter)
             throws WebServiceSecurityException {
 
         final DecoupleMbusDeviceByChannelRequest request = DecoupleMbusDeviceByChannelRequestFactory
-                .forGatewayAndChannel(eMeter, channel);
+                .fromGatewayAndChannel(eMeter, channel);
         final DecoupleMbusDeviceByChannelAsyncResponse asyncResponse = this.smartMeteringInstallationClient
                 .decoupleMbusDeviceByChannel(request);
 
         this.checkAndSaveCorrelationId(asyncResponse.getCorrelationUid());
     }
 
-    @Then("^the Decouple MBus Device By Channel response is \"([^\"]*)\" for device \"([^\"]*)\"$")
+    @Then("^the Decouple M-Bus Device By Channel response is \"([^\"]*)\" for device \"([^\"]*)\"$")
     public void theDecoupleResponseIs(final String status, final String mbusDevice) throws WebServiceSecurityException {
 
         final DecoupleMbusDeviceByChannelResponse response = this.getAndCheckResponse(status);
         assertThat(response.getMbusDeviceIdentification()).as("MbusDeviceIdentification").isEqualTo(mbusDevice);
     }
 
-    @Then("^the Decouple MBus Device By Channel response is \"([^\"]*)\" without M-Bus device$")
+    @Then("^the Decouple M-Bus Device By Channel response is \"([^\"]*)\" without M-Bus device$")
     public void theDecoupleResponseIsWithoutMBusDevice(final String status) throws WebServiceSecurityException {
 
         final DecoupleMbusDeviceByChannelResponse response = this.getAndCheckResponse(status);
@@ -79,22 +79,22 @@ public class DecoupleMbusDeviceByChannelSteps extends AbstractSmartMeteringSteps
 
         try {
             this.smartMeteringInstallationClient.getDecoupleMbusDeviceByChannelResponse(asyncRequest);
-            Assertions.fail("A SoapFaultClientException should be thrown");
+            fail("A SoapFaultClientException should be thrown");
         } catch (final SoapFaultClientException e) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
         }
     }
 
-    @When("^the Decouple MBus Device By Channel \"([^\"]*)\" from E-meter \"([^\"]*)\" request is received for an unknown gateway$")
+    @When("^the Decouple M-Bus Device By Channel \"([^\"]*)\" from E-meter \"([^\"]*)\" request is received for an unknown gateway$")
     public void theDecoupleGMeterFromEMeterRequestIsReceivedForAnUnknownDevice(final String channel,
             final String eMeter) throws WebServiceSecurityException {
 
         final DecoupleMbusDeviceByChannelRequest request = DecoupleMbusDeviceByChannelRequestFactory
-                .forGatewayAndChannel(eMeter, channel);
+                .fromGatewayAndChannel(eMeter, channel);
 
         try {
             this.smartMeteringInstallationClient.decoupleMbusDeviceByChannel(request);
-            Assertions.fail("A SoapFaultClientException should be thrown");
+            fail("A SoapFaultClientException should be thrown");
         } catch (final SoapFaultClientException e) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
         }

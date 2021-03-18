@@ -50,7 +50,7 @@ public class CoupleMbusDeviceByChannelCommandExecutorTest {
     private CoupleMbusDeviceByChannelCommandExecutor commandExecutor = new CoupleMbusDeviceByChannelCommandExecutor();
 
     @Test
-    public void test() throws ProtocolAdapterException {
+    public void testHappyFlow() throws ProtocolAdapterException {
 
         final short channel = (short) 1;
         final Short primaryAddress = 9;

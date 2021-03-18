@@ -23,7 +23,7 @@ public class DecoupleMbusDeviceByChannelRequestFactory {
         // Private constructor for utility class.
     }
 
-    public static DecoupleMbusDeviceByChannelRequest forGatewayAndChannel(final String gatewayDeviceIdentification,
+    public static DecoupleMbusDeviceByChannelRequest fromGatewayAndChannel(final String gatewayDeviceIdentification,
             final String channel) {
         final DecoupleMbusDeviceByChannelRequest request = new DecoupleMbusDeviceByChannelRequest();
         request.setDeviceIdentification(gatewayDeviceIdentification);

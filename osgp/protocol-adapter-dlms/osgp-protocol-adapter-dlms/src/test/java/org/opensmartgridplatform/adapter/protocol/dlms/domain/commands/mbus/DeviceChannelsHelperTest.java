@@ -86,7 +86,7 @@ public class DeviceChannelsHelperTest {
     @Test
     void testDeinstallSlave() throws ProtocolAdapterException {
 
-        // succesful deinstall with signed integer parameter
+        // successful deinstall with signed integer parameter
         when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
         when(this.mBusSetup.callMethod(eq(MBusClientMethod.SLAVE_DEINSTALL), any()))
                 .thenReturn(MethodResultCode.SUCCESS);
@@ -102,7 +102,8 @@ public class DeviceChannelsHelperTest {
     @Test
     void testDeinstallSlave2() throws ProtocolAdapterException {
 
-        // succesful deinstall with unsigned integer parameter after unsuccesful
+        // successful deinstall with unsigned integer parameter after
+        // unsuccessful
         // attempt with signed integer (TYPE_UNMATCHED)
         when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
         when(this.mBusSetup.callMethod(eq(MBusClientMethod.SLAVE_DEINSTALL), any(DataObject.class)))

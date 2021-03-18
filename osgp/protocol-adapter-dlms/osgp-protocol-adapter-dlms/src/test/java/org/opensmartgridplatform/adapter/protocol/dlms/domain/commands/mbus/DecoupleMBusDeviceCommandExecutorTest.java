@@ -51,7 +51,7 @@ public class DecoupleMBusDeviceCommandExecutorTest {
     private DecoupleMBusDeviceCommandExecutor commandExecutor = new DecoupleMBusDeviceCommandExecutor();
 
     @Test
-    public void test() throws ProtocolAdapterException {
+    public void testHappyFlow() throws ProtocolAdapterException {
 
         final short channel = (short) 1;
         final ChannelElementValuesDto channelElementValuesDto = mock(ChannelElementValuesDto.class);

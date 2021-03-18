@@ -24,8 +24,8 @@ import io.cucumber.java.en.Then;
 
 public class BundledDecoupleMbusDeviceByChannelSteps extends BaseBundleSteps {
 
-    @Given("^the bundle request contains a decouple mbus device by channel action$")
-    public void theBundleRequestContainsADecoupleMbusDeviceByChannelAction(final Map<String, String> parameters)
+    @Given("^the bundle request contains a Decouple M-Bus Device By Channel action$")
+    public void theBundleRequestContainsADeCoupleMbusDeviceByChannelAction(final Map<String, String> parameters)
             throws Throwable {
 
         final DecoupleMbusDeviceByChannelRequest action = new DecoupleMbusDeviceByChannelRequest();
@@ -33,7 +33,7 @@ public class BundledDecoupleMbusDeviceByChannelSteps extends BaseBundleSteps {
         this.addActionToBundleRequest(action);
     }
 
-    @Then("^the decouple mbus device by channel bundle response is \"([^\"]*)\" with Mbus Device \"([^\"]*)\"$")
+    @Then("^the Decouple M-Bus Device By Channel bundle response is \"([^\"]*)\" with Mbus Device \"([^\"]*)\"$")
     public void theDecoupleMbusDeviceByChannelBundleResponseIsWithMbusDevice(final String result,
             final String mbusDeviceIdentification) throws Throwable {
 
@@ -48,7 +48,7 @@ public class BundledDecoupleMbusDeviceByChannelSteps extends BaseBundleSteps {
 
     }
 
-    @Then("^the decouple mbus device by channel bundle response is \"([^\"]*)\" without Mbus Device$")
+    @Then("^the Decouple M-Bus Device By Channel bundle response is \"([^\"]*)\" without Mbus Device$")
     public void theDecoupleMbusDeviceByChannelBundleResponseIsWithoutMbusDevice(final String result) throws Throwable {
 
         final Response response = this.getNextBundleResponse();
