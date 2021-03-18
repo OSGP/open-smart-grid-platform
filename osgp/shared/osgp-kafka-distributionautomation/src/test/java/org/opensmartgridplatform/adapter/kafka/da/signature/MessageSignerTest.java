@@ -32,6 +32,8 @@ import com.alliander.messaging.MessageId;
 
 class MessageSignerTest {
 
+    private static final boolean IS_SIGNING_ENABLED = true;
+
     private static final String SIGNATURE_ALGORITHM = "SHA256withRSA";
     private static final String SIGNATURE_PROVIDER = "SunRsaSign";
     private static final String SIGNATURE_KEY_ALGORITHM = "RSA";
@@ -44,6 +46,7 @@ class MessageSignerTest {
     private static final Random RANDOM = new SecureRandom();
 
     private final MessageSigner messageSigner = MessageSigner.newBuilder()
+            .signingEnabled(IS_SIGNING_ENABLED)
             .signatureAlgorithm(SIGNATURE_ALGORITHM)
             .signatureProvider(SIGNATURE_PROVIDER)
             .signatureKeyAlgorithm(SIGNATURE_KEY_ALGORITHM)
@@ -102,13 +105,14 @@ class MessageSignerTest {
     private String fromPemResource(final String name) {
         return new BufferedReader(
                 new InputStreamReader(this.getClass().getResourceAsStream(name), StandardCharsets.ISO_8859_1)).lines()
-                .collect(Collectors.joining(System.lineSeparator()));
+                        .collect(Collectors.joining(System.lineSeparator()));
     }
 
     @Test
     void worksWithKeysFromPemEncodedResources() {
 
         final MessageSigner messageSignerWithKeysFromResources = MessageSigner.newBuilder()
+                .signingEnabled(IS_SIGNING_ENABLED)
                 .signatureAlgorithm(SIGNATURE_ALGORITHM)
                 .signatureProvider(SIGNATURE_PROVIDER)
                 .signatureKeyAlgorithm(SIGNATURE_KEY_ALGORITHM)
@@ -122,6 +126,14 @@ class MessageSignerTest {
         final boolean signatureWasVerified = messageSignerWithKeysFromResources.verify(message);
 
         assertThat(signatureWasVerified).isTrue();
+    }
+
+    @Test
+    void signingCanBeDisabled() {
+        final MessageSigner messageSigner = MessageSigner.newBuilder().signingEnabled(!IS_SIGNING_ENABLED).build();
+
+        assertThat(messageSigner.canSignMessages()).isFalse();
+        assertThat(messageSigner.canVerifyMessageSignatures()).isFalse();
     }
 
     private Message message() {
