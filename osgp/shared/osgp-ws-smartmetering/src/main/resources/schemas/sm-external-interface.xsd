@@ -37,7 +37,7 @@
           <xsd:element ref="bun:GetActualMeterReadsGasRequest"/>
           <xsd:element ref="adm:SetMaintenanceStateRequest"/>
           <xsd:element ref="bun:SynchronizeTimeRequest"/>
-          <xsd:element ref="ins:DeCoupleMbusDeviceByChannelRequest"/>
+          <xsd:element ref="ins:DecoupleMbusDeviceByChannelRequest"/>
         </xsd:choice>
       </xsd:sequence>
     </xsd:complexType>
@@ -59,7 +59,7 @@
           <xsd:element ref="bun:ActualMeterReadsGasResponse"/>
           <xsd:element ref="con:GetPushNotificationAlarmResponse"/>
           <xsd:element ref="bun:FindEventsResponse"/>
-          <xsd:element ref="ins:DeCoupleMbusDeviceByChannelResponse"/>
+          <xsd:element ref="ins:DecoupleMbusDeviceByChannelResponse"/>
           <xsd:element ref="bun:ActionResponse"/>
           <xsd:element ref="bun:FaultResponse"/>
         </xsd:choice>

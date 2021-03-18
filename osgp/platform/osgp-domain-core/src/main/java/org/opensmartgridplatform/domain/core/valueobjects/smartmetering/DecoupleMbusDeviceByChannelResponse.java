@@ -11,14 +11,14 @@ package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
-public class DeCoupleMbusDeviceByChannelResponse extends ActionResponse implements Serializable {
+public class DecoupleMbusDeviceByChannelResponse extends ActionResponse implements Serializable {
 
     private static final long serialVersionUID = -7800915379658671321L;
 
     private final Short channel;
     private final String mbusDeviceIdentification;
 
-    public DeCoupleMbusDeviceByChannelResponse(final String mbusDeviceIdentification, final Short channel) {
+    public DecoupleMbusDeviceByChannelResponse(final String mbusDeviceIdentification, final Short channel) {
         super(OsgpResultType.OK, null, "Decouple Mbus Device By Channel was successful");
         this.mbusDeviceIdentification = mbusDeviceIdentification;
         this.channel = channel;
@@ -26,7 +26,7 @@ public class DeCoupleMbusDeviceByChannelResponse extends ActionResponse implemen
 
     @Override
     public String toString() {
-        return "DeCoupleMbusDeviceByChannelResponse [channel=" + this.channel + ", mbusDeviceIdentification="
+        return "DecoupleMbusDeviceByChannelResponse [channel=" + this.channel + ", mbusDeviceIdentification="
                 + this.mbusDeviceIdentification + "]";
     }
 

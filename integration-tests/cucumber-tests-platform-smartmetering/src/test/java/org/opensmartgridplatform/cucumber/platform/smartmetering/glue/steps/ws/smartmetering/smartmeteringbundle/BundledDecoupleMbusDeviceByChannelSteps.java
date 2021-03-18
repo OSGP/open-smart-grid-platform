@@ -13,8 +13,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
 
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.DeCoupleMbusDeviceByChannelRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.DeCoupleMbusDeviceByChannelResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.DecoupleMbusDeviceByChannelRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.DecoupleMbusDeviceByChannelResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
@@ -22,13 +22,13 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartme
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 
-public class BundledDeCoupleMbusDeviceByChannelSteps extends BaseBundleSteps {
+public class BundledDecoupleMbusDeviceByChannelSteps extends BaseBundleSteps {
 
     @Given("^the bundle request contains a decouple mbus device by channel action$")
-    public void theBundleRequestContainsADeCoupleMbusDeviceByChannelAction(final Map<String, String> parameters)
+    public void theBundleRequestContainsADecoupleMbusDeviceByChannelAction(final Map<String, String> parameters)
             throws Throwable {
 
-        final DeCoupleMbusDeviceByChannelRequest action = new DeCoupleMbusDeviceByChannelRequest();
+        final DecoupleMbusDeviceByChannelRequest action = new DecoupleMbusDeviceByChannelRequest();
         action.setChannel(Short.valueOf(parameters.get(PlatformSmartmeteringKeys.CHANNEL)));
         this.addActionToBundleRequest(action);
     }
@@ -39,9 +39,9 @@ public class BundledDeCoupleMbusDeviceByChannelSteps extends BaseBundleSteps {
 
         final Response response = this.getNextBundleResponse();
 
-        assertThat(response).as("Not a valid response").isInstanceOf(DeCoupleMbusDeviceByChannelResponse.class);
+        assertThat(response).as("Not a valid response").isInstanceOf(DecoupleMbusDeviceByChannelResponse.class);
 
-        assertThat(((DeCoupleMbusDeviceByChannelResponse) response).getMbusDeviceIdentification())
+        assertThat(((DecoupleMbusDeviceByChannelResponse) response).getMbusDeviceIdentification())
                 .as("MbusDeviceIdentification")
                 .isEqualTo(mbusDeviceIdentification);
         assertThat(response.getResult()).as("Result").isEqualTo(OsgpResultType.valueOf(result));
@@ -53,9 +53,9 @@ public class BundledDeCoupleMbusDeviceByChannelSteps extends BaseBundleSteps {
 
         final Response response = this.getNextBundleResponse();
 
-        assertThat(response).as("Not a valid response").isInstanceOf(DeCoupleMbusDeviceByChannelResponse.class);
+        assertThat(response).as("Not a valid response").isInstanceOf(DecoupleMbusDeviceByChannelResponse.class);
 
-        assertThat(((DeCoupleMbusDeviceByChannelResponse) response).getMbusDeviceIdentification())
+        assertThat(((DecoupleMbusDeviceByChannelResponse) response).getMbusDeviceIdentification())
                 .as("MbusDeviceIdentification")
                 .isNull();
         assertThat(response.getResult()).as("Result").isEqualTo(OsgpResultType.valueOf(result));

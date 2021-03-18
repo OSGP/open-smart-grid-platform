@@ -9,19 +9,19 @@ package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
-public class DeCoupleMbusDeviceDto implements Serializable, ActionRequestDto {
+public class DecoupleMbusDeviceDto implements Serializable, ActionRequestDto {
 
     private static final long serialVersionUID = 5377631203726277889L;
 
     private final Short channel;
 
-    public DeCoupleMbusDeviceDto(final Short channel) {
+    public DecoupleMbusDeviceDto(final Short channel) {
         this.channel = channel;
     }
 
     @Override
     public String toString() {
-        return "DeCoupleMbusDeviceDto [channel=" + this.channel + "]";
+        return "DecoupleMbusDeviceDto [channel=" + this.channel + "]";
     }
 
     public Short getChannel() {

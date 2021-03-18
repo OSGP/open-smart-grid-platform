@@ -277,11 +277,11 @@
 			</xsd:complexContent>
 		</xsd:complexType>
 	</xsd:element>
-	<xsd:element name="DeCoupleMbusDeviceByChannelRequest">
+	<xsd:element name="DecoupleMbusDeviceByChannelRequest">
 		<xsd:complexType>
 			<xsd:complexContent>
 				<xsd:extension
-					base="sminst:DeCoupleMbusDeviceByChannelRequestData" />
+					base="sminst:DecoupleMbusDeviceByChannelRequestData" />
 			</xsd:complexContent>
 		</xsd:complexType>
 	</xsd:element>
@@ -365,7 +365,7 @@
 				<xsd:element ref="tns:SetMbusUserKeyByChannelRequest" />
 				<xsd:element ref="tns:CoupleMbusDeviceByChannelRequest" />
 				<xsd:element
-					ref="tns:DeCoupleMbusDeviceByChannelRequest" />
+					ref="tns:DecoupleMbusDeviceByChannelRequest" />
 				<xsd:element ref="tns:ClearAlarmRegisterRequest" />
 				<xsd:element
 					ref="tns:GetMbusEncryptionKeyStatusByChannelRequest" />
@@ -552,11 +552,11 @@
 			</xsd:complexContent>
 		</xsd:complexType>
 	</xsd:element>
-	<xsd:element name="DeCoupleMbusDeviceByChannelResponse">
+	<xsd:element name="DecoupleMbusDeviceByChannelResponse">
 		<xsd:complexType>
 			<xsd:complexContent>
 				<xsd:extension
-					base="sminst:DeCoupleMbusDeviceByChannelResponseData" />
+					base="sminst:DecoupleMbusDeviceByChannelResponseData" />
 			</xsd:complexContent>
 		</xsd:complexType>
 	</xsd:element>
@@ -622,7 +622,7 @@
 				<xsd:element ref="tns:ActualPowerQualityResponse" />
 				<xsd:element ref="tns:CoupleMbusDeviceByChannelResponse" />
 				<xsd:element
-					ref="tns:DeCoupleMbusDeviceByChannelResponse" />
+					ref="tns:DecoupleMbusDeviceByChannelResponse" />
 				<xsd:element
 					ref="tns:GetMbusEncryptionKeyStatusByChannelResponse" />
 				<xsd:element

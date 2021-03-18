@@ -197,7 +197,7 @@ public class DeviceSteps extends BaseDeviceSteps {
         });
     }
 
-    @Then("^the G-meter \"([^\"]*)\" is DeCoupled from device \"([^\"]*)\"$")
+    @Then("^the G-meter \"([^\"]*)\" is Decoupled from device \"([^\"]*)\"$")
     public void theGMeterIsDecoupledFromDevice(final String gMeter, final String eMeter) {
         Wait.until(() -> {
             final SmartMeter mbusDevice = this.smartMeterRepository.findByDeviceIdentification(gMeter);

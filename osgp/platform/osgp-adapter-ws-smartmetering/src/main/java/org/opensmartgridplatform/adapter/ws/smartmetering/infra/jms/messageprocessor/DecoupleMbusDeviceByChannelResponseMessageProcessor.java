@@ -13,9 +13,9 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DeCoupleMbusDeviceByChannelResponseMessageProcessor extends DomainResponseMessageProcessor {
+public class DecoupleMbusDeviceByChannelResponseMessageProcessor extends DomainResponseMessageProcessor {
 
-    protected DeCoupleMbusDeviceByChannelResponseMessageProcessor() {
-        super(MessageType.DE_COUPLE_MBUS_DEVICE_BY_CHANNEL);
+    protected DecoupleMbusDeviceByChannelResponseMessageProcessor() {
+        super(MessageType.DECOUPLE_MBUS_DEVICE_BY_CHANNEL);
     }
 }

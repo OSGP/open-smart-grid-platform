@@ -27,7 +27,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmReg
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AssociationLnObjectsResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.BundleMessagesResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponse;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceByChannelResponse;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceByChannelResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventMessagesResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FaultResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
@@ -51,7 +51,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmRegisterRes
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AssociationLnObjectsResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FaultResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FirmwareVersionResponseDto;
@@ -120,7 +120,7 @@ public class ActionMapperResponseService {
         classMap.put(GetPowerQualityProfileResponseDto.class, GetPowerQualityProfileResponse.class);
         classMap.put(ActualPowerQualityResponseDto.class, ActualPowerQualityResponse.class);
         classMap.put(CoupleMbusDeviceByChannelResponseDto.class, CoupleMbusDeviceByChannelResponse.class);
-        classMap.put(DeCoupleMbusDeviceResponseDto.class, DeCoupleMbusDeviceByChannelResponse.class);
+        classMap.put(DecoupleMbusDeviceResponseDto.class, DecoupleMbusDeviceByChannelResponse.class);
         classMap.put(GetMbusEncryptionKeyStatusResponseDto.class, GetMbusEncryptionKeyStatusResponseData.class);
         classMap.put(GetMbusEncryptionKeyStatusByChannelResponseDto.class,
                 GetMbusEncryptionKeyStatusByChannelResponseData.class);
@@ -152,7 +152,7 @@ public class ActionMapperResponseService {
         classToMapperMap.put(GetPowerQualityProfileResponseDto.class, this.monitoringMapper);
         classToMapperMap.put(ActualPowerQualityResponseDto.class, this.monitoringMapper);
         classToMapperMap.put(CoupleMbusDeviceByChannelResponseDto.class, this.commonMapper);
-        classToMapperMap.put(DeCoupleMbusDeviceResponseDto.class, this.installationMapper);
+        classToMapperMap.put(DecoupleMbusDeviceResponseDto.class, this.installationMapper);
         classToMapperMap.put(GetMbusEncryptionKeyStatusResponseDto.class, this.configurationMapper);
         classToMapperMap.put(GetMbusEncryptionKeyStatusByChannelResponseDto.class, this.configurationMapper);
         classToMapperMap.put(SetDeviceLifecycleStatusByChannelResponseDto.class, this.managementMapper);

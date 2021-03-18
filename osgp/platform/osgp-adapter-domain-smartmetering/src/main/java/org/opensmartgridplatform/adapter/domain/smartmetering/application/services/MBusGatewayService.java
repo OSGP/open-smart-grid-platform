@@ -17,14 +17,14 @@ import org.opensmartgridplatform.domain.core.repositories.SmartMeterRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceByChannelRequestData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceByChannelRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceRequestData;
 import org.opensmartgridplatform.domain.smartmetering.exceptions.MbusChannelNotFoundException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -103,13 +103,13 @@ public class MBusGatewayService {
         }
     }
 
-    public void deCoupleMbusDevice(final DeviceMessageMetadata deviceMessageMetadata,
-            final DeCoupleMbusDeviceRequestData requestData) throws FunctionalException {
+    public void decoupleMbusDevice(final DeviceMessageMetadata deviceMessageMetadata,
+            final DecoupleMbusDeviceRequestData requestData) throws FunctionalException {
 
         final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
         final String mbusDeviceIdentification = requestData.getMbusDeviceIdentification();
 
-        log.debug("deCoupleMbusDevice for organizationIdentification: {} for gateway: {}, m-bus device {} ",
+        log.debug("decoupleMbusDevice for organizationIdentification: {} for gateway: {}, m-bus device {} ",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceIdentification, mbusDeviceIdentification);
 
         final SmartMeter gatewayDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
@@ -119,33 +119,33 @@ public class MBusGatewayService {
 
         // If Mbus device is already decoupled, return response OK, otherwise,
         // decouple it.
-        if (!this.isMbusDeviceCoupled(mbusDevice)) {
-            this.installationService.handleResponse("deCoupleMbusDevice", deviceMessageMetadata,
+        if (this.isMbusDeviceCoupled(mbusDevice)) {
+            this.installationService.handleResponse("decoupleMbusDevice", deviceMessageMetadata,
                     ResponseMessageResultType.OK, null);
         } else {
-            final DeCoupleMbusDeviceDto deCoupleMbusDeviceDto = new DeCoupleMbusDeviceDto(mbusDevice.getChannel());
+            final DecoupleMbusDeviceDto decoupleMbusDeviceDto = new DecoupleMbusDeviceDto(mbusDevice.getChannel());
             final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                     deviceMessageMetadata.getOrganisationIdentification(),
                     deviceMessageMetadata.getDeviceIdentification(), gatewayDevice.getIpAddress(),
-                    deCoupleMbusDeviceDto);
+                    decoupleMbusDeviceDto);
             this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
                     deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
         }
     }
 
-    public void deCoupleMbusDeviceByChannel(final DeviceMessageMetadata deviceMessageMetadata,
-            final DeCoupleMbusDeviceByChannelRequestData requestData) throws FunctionalException {
+    public void decoupleMbusDeviceByChannel(final DeviceMessageMetadata deviceMessageMetadata,
+            final DecoupleMbusDeviceByChannelRequestData requestData) throws FunctionalException {
 
         final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
         final SmartMeter gatewayDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
-        log.debug("deCoupleMbusDeviceByChannel for organizationIdentification: {} for gateway: {}, channel {} ",
+        log.debug("decoupleMbusDeviceByChannel for organizationIdentification: {} for gateway: {}, channel {} ",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceIdentification, requestData.getChannel());
 
-        final DeCoupleMbusDeviceDto deCoupleMbusDeviceDto = new DeCoupleMbusDeviceDto(requestData.getChannel());
+        final DecoupleMbusDeviceDto decoupleMbusDeviceDto = new DecoupleMbusDeviceDto(requestData.getChannel());
         final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                gatewayDevice.getIpAddress(), deCoupleMbusDeviceDto);
+                gatewayDevice.getIpAddress(), decoupleMbusDeviceDto);
         this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
                 deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
@@ -246,16 +246,16 @@ public class MBusGatewayService {
 
     /**
      * Updates the M-Bus device identified in the input part of the
-     * {@code deCoupleMbusResponseDto}.
+     * {@code decoupleMbusResponseDto}.
      *
      * @param deviceMessageMetadata
-     * @param deCoupleMbusDeviceResponseDto
+     * @param decoupleMbusDeviceResponseDto
      * @throws FunctionalException
      */
-    public void handleDeCoupleMbusDeviceResponse(final DeviceMessageMetadata deviceMessageMetadata,
-            final DeCoupleMbusDeviceResponseDto deCoupleMbusDeviceResponseDto) {
+    public void handleDecoupleMbusDeviceResponse(final DeviceMessageMetadata deviceMessageMetadata,
+            final DecoupleMbusDeviceResponseDto decoupleMbusDeviceResponseDto) {
         final Optional<SmartMeter> mbusDeviceFoundOnChannel = this
-                .findByMBusIdentificationNumber(deCoupleMbusDeviceResponseDto.getChannelElementValues());
+                .findByMBusIdentificationNumber(decoupleMbusDeviceResponseDto.getChannelElementValues());
 
         if (!mbusDeviceFoundOnChannel.isPresent()) {
             return;
@@ -263,7 +263,7 @@ public class MBusGatewayService {
 
         final SmartMeter mbusDevice = mbusDeviceFoundOnChannel.get();
 
-        deCoupleMbusDeviceResponseDto.setMbusDeviceIdentification(mbusDevice.getDeviceIdentification());
+        decoupleMbusDeviceResponseDto.setMbusDeviceIdentification(mbusDevice.getDeviceIdentification());
 
         if (mbusDevice.getGatewayDevice() != null && mbusDevice.getGatewayDevice()
                 .getDeviceIdentification()

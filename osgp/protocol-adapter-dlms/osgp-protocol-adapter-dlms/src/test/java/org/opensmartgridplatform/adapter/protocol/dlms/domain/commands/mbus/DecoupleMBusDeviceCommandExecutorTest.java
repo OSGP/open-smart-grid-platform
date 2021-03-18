@@ -29,11 +29,11 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceResponseDto;
 
 @ExtendWith(MockitoExtension.class)
-public class DeCoupleMBusDeviceCommandExecutorTest {
+public class DecoupleMBusDeviceCommandExecutorTest {
 
     @Mock
     private DeviceChannelsHelper deviceChannelsHelper;
@@ -45,10 +45,10 @@ public class DeCoupleMBusDeviceCommandExecutorTest {
     private DlmsDevice device;
 
     @Mock
-    private DeCoupleMbusDeviceDto decoupleMbusDto;
+    private DecoupleMbusDeviceDto decoupleMbusDto;
 
     @InjectMocks
-    private DeCoupleMBusDeviceCommandExecutor commandExecutor = new DeCoupleMBusDeviceCommandExecutor();
+    private DecoupleMBusDeviceCommandExecutor commandExecutor = new DecoupleMBusDeviceCommandExecutor();
 
     @Test
     public void test() throws ProtocolAdapterException {
@@ -63,7 +63,7 @@ public class DeCoupleMBusDeviceCommandExecutorTest {
         when(this.deviceChannelsHelper.makeChannelElementValues(eq(channel), anyList()))
                 .thenReturn(channelElementValuesDto);
 
-        final DeCoupleMbusDeviceResponseDto responseDto = this.commandExecutor.execute(this.conn, this.device,
+        final DecoupleMbusDeviceResponseDto responseDto = this.commandExecutor.execute(this.conn, this.device,
                 this.decoupleMbusDto);
 
         assertThat(responseDto).isNotNull();

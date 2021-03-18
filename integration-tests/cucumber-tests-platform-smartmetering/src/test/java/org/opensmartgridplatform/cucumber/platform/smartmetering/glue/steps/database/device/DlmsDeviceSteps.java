@@ -214,7 +214,7 @@ public class DlmsDeviceSteps {
     }
 
     @Then("^the smart meter is not decoupled from gateway device in the core database$")
-    public void theSmartMeterIsNotDeCoupledInTheCoreDatabase(final Map<String, String> settings) {
+    public void theSmartMeterIsNotDecoupledInTheCoreDatabase(final Map<String, String> settings) {
         final SmartMeter smartMeter = this.smartMeterRepository
                 .findByDeviceIdentification(settings.get(PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION));
 

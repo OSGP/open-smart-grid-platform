@@ -27,14 +27,14 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.Co
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceAsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceAsyncResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceByChannelAsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceByChannelAsyncResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceByChannelRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceByChannelResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceByChannelAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceByChannelAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceByChannelRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceByChannelResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceResponse;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.InstallationMapper;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.services.InstallationService;
 import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
@@ -217,7 +217,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
      * @param organisationIdentification
      *            the organisation requesting the coupling of devices
      * @param request
-     *            the DeCoupleMbusDeviceRequest containing the
+     *            the DecoupleMbusDeviceRequest containing the
      *            deviceIdentification, mbusDeviceIdentification and channel
      * @param messagePriority
      *            the priority of the message
@@ -227,23 +227,23 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
      *         deviceIdentification
      * @throws OsgpException
      */
-    @PayloadRoot(localPart = "DeCoupleMbusDeviceRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
+    @PayloadRoot(localPart = "DecoupleMbusDeviceRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
     @ResponsePayload
-    public DeCoupleMbusDeviceAsyncResponse deCoupleMbusDevice(
+    public DecoupleMbusDeviceAsyncResponse decoupleMbusDevice(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final DeCoupleMbusDeviceRequest request, @MessagePriority final String messagePriority,
+            @RequestPayload final DecoupleMbusDeviceRequest request, @MessagePriority final String messagePriority,
             @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
 
         final String deviceIdentification = request.getDeviceIdentification();
         final String mbusDeviceIdentification = request.getMbusDeviceIdentification();
-        log.info("Incoming DeCoupleMbusDeviceRequest for meter: {} and mbus device {}.", deviceIdentification,
+        log.info("Incoming DecoupleMbusDeviceRequest for meter: {} and mbus device {}.", deviceIdentification,
                 mbusDeviceIdentification);
 
-        DeCoupleMbusDeviceAsyncResponse response = null;
+        DecoupleMbusDeviceAsyncResponse response = null;
         try {
-            response = new DeCoupleMbusDeviceAsyncResponse();
+            response = new DecoupleMbusDeviceAsyncResponse();
 
-            final String correlationUid = this.installationService.enqueueDeCoupleMbusDeviceRequest(
+            final String correlationUid = this.installationService.enqueueDecoupleMbusDeviceRequest(
                     organisationIdentification, deviceIdentification, mbusDeviceIdentification,
                     MessagePriorityEnum.getMessagePriority(messagePriority),
                     this.installationMapper.map(scheduleTime, Long.class));
@@ -268,18 +268,18 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
      *         message
      * @throws OsgpException
      */
-    @PayloadRoot(localPart = "DeCoupleMbusDeviceAsyncRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
+    @PayloadRoot(localPart = "DecoupleMbusDeviceAsyncRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
     @ResponsePayload
-    public DeCoupleMbusDeviceResponse getDeCoupleMbusDeviceResponse(
-            @RequestPayload final DeCoupleMbusDeviceAsyncRequest request) throws OsgpException {
+    public DecoupleMbusDeviceResponse getDecoupleMbusDeviceResponse(
+            @RequestPayload final DecoupleMbusDeviceAsyncRequest request) throws OsgpException {
 
-        DeCoupleMbusDeviceResponse response = null;
+        DecoupleMbusDeviceResponse response = null;
         try {
-            response = new DeCoupleMbusDeviceResponse();
+            response = new DecoupleMbusDeviceResponse();
             final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
                     ComponentType.WS_SMART_METERING);
 
-            this.throwExceptionIfResultNotOk(responseData, "DeCouple Mbus Device");
+            this.throwExceptionIfResultNotOk(responseData, "Decouple Mbus Device");
 
             response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
             if (responseData.getMessageData() instanceof String) {
@@ -377,7 +377,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
      * @param organisationIdentification
      *            the organization requesting the coupling of devices
      * @param request
-     *            the DeCoupleMbusDeviceByChannelRequest containing the
+     *            the DecoupleMbusDeviceByChannelRequest containing the
      *            gatewayDeviceIdentification and channel
      * @param messagePriority
      *            the priority of the message
@@ -387,24 +387,24 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
      *         deviceIdentification
      * @throws OsgpException
      */
-    @PayloadRoot(localPart = "DeCoupleMbusDeviceByChannelRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
+    @PayloadRoot(localPart = "DecoupleMbusDeviceByChannelRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
     @ResponsePayload
-    public DeCoupleMbusDeviceByChannelAsyncResponse deCoupleMbusDeviceByChannel(
+    public DecoupleMbusDeviceByChannelAsyncResponse decoupleMbusDeviceByChannel(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final DeCoupleMbusDeviceByChannelRequest request,
+            @RequestPayload final DecoupleMbusDeviceByChannelRequest request,
             @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
             @ResponseUrl final String responseUrl) throws OsgpException {
 
         final String deviceIdentification = request.getDeviceIdentification();
-        final short channel = request.getDeCoupleMbusDeviceByChannelRequestData().getChannel();
-        log.info("Incoming DeCoupleMbusDeviceByChannelRequest for device: {} and channel {}.", deviceIdentification,
+        final short channel = request.getDecoupleMbusDeviceByChannelRequestData().getChannel();
+        log.info("Incoming DecoupleMbusDeviceByChannelRequest for device: {} and channel {}.", deviceIdentification,
                 channel);
 
-        DeCoupleMbusDeviceByChannelAsyncResponse response = null;
+        DecoupleMbusDeviceByChannelAsyncResponse response = null;
         try {
-            response = new DeCoupleMbusDeviceByChannelAsyncResponse();
+            response = new DecoupleMbusDeviceByChannelAsyncResponse();
 
-            final String correlationUid = this.installationService.enqueueDeCoupleMbusDeviceByChannelRequest(
+            final String correlationUid = this.installationService.enqueueDecoupleMbusDeviceByChannelRequest(
                     organisationIdentification, deviceIdentification,
                     MessagePriorityEnum.getMessagePriority(messagePriority),
                     this.installationMapper.map(scheduleTime, Long.class), channel);
@@ -427,20 +427,20 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
      *         message
      * @throws OsgpException
      */
-    @PayloadRoot(localPart = "DeCoupleMbusDeviceByChannelAsyncRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
+    @PayloadRoot(localPart = "DecoupleMbusDeviceByChannelAsyncRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
     @ResponsePayload
-    public DeCoupleMbusDeviceByChannelResponse getDeCoupleMbusDeviceByChannelResponse(
-            @RequestPayload final DeCoupleMbusDeviceByChannelAsyncRequest request) throws OsgpException {
+    public DecoupleMbusDeviceByChannelResponse getDecoupleMbusDeviceByChannelResponse(
+            @RequestPayload final DecoupleMbusDeviceByChannelAsyncRequest request) throws OsgpException {
 
-        DeCoupleMbusDeviceByChannelResponse response = null;
+        DecoupleMbusDeviceByChannelResponse response = null;
         try {
             final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
                     ComponentType.WS_SMART_METERING);
 
-            this.throwExceptionIfResultNotOk(responseData, "De Couple Mbus Device By Channel");
+            this.throwExceptionIfResultNotOk(responseData, "Decouple Mbus Device By Channel");
 
             response = this.installationMapper.map(responseData.getMessageData(),
-                    DeCoupleMbusDeviceByChannelResponse.class);
+                    DecoupleMbusDeviceByChannelResponse.class);
 
         } catch (final Exception e) {
             this.handleException(e);

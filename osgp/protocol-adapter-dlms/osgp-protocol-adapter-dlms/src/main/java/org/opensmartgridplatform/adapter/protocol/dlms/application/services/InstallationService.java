@@ -23,7 +23,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.InstallationMapper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.CoupleMBusDeviceCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.CoupleMbusDeviceByChannelCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.DeCoupleMBusDeviceCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.DecoupleMBusDeviceCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -31,8 +31,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsD
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
@@ -61,7 +61,7 @@ public class InstallationService {
     private CoupleMBusDeviceCommandExecutor coupleMBusDeviceCommandExecutor;
 
     @Autowired
-    private DeCoupleMBusDeviceCommandExecutor deCoupleMBusDeviceCommandExecutor;
+    private DecoupleMBusDeviceCommandExecutor decoupleMBusDeviceCommandExecutor;
 
     @Autowired
     private CoupleMbusDeviceByChannelCommandExecutor coupleMbusDeviceByChannelCommandExecutor;
@@ -138,8 +138,8 @@ public class InstallationService {
         return this.coupleMbusDeviceByChannelCommandExecutor.execute(conn, device, requestDto);
     }
 
-    public DeCoupleMbusDeviceResponseDto deCoupleMbusDevice(final DlmsConnectionManager conn, final DlmsDevice device,
-            final DeCoupleMbusDeviceDto deCoupleMbusDeviceDto) throws ProtocolAdapterException {
-        return this.deCoupleMBusDeviceCommandExecutor.execute(conn, device, deCoupleMbusDeviceDto);
+    public DecoupleMbusDeviceResponseDto decoupleMbusDevice(final DlmsConnectionManager conn, final DlmsDevice device,
+            final DecoupleMbusDeviceDto decoupleMbusDeviceDto) throws ProtocolAdapterException {
+        return this.decoupleMBusDeviceCommandExecutor.execute(conn, device, decoupleMbusDeviceDto);
     }
 }

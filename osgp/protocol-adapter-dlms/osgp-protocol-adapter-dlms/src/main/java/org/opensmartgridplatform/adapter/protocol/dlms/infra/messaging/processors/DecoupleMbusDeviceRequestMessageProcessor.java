@@ -13,29 +13,29 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Inst
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DeCoupleMbusDeviceRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class DecoupleMbusDeviceRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
     @Autowired
     private InstallationService installationService;
 
-    protected DeCoupleMbusDeviceRequestMessageProcessor() {
-        super(MessageType.DE_COUPLE_MBUS_DEVICE);
+    protected DecoupleMbusDeviceRequestMessageProcessor() {
+        super(MessageType.DECOUPLE_MBUS_DEVICE);
     }
 
     @Override
     protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException {
 
-        this.assertRequestObjectType(DeCoupleMbusDeviceDto.class, requestObject);
+        this.assertRequestObjectType(DecoupleMbusDeviceDto.class, requestObject);
 
-        final DeCoupleMbusDeviceDto deCoupleMbusDeviceDto = (DeCoupleMbusDeviceDto) requestObject;
-        return this.installationService.deCoupleMbusDevice(conn, device, deCoupleMbusDeviceDto);
+        final DecoupleMbusDeviceDto decoupleMbusDeviceDto = (DecoupleMbusDeviceDto) requestObject;
+        return this.installationService.decoupleMbusDevice(conn, device, decoupleMbusDeviceDto);
     }
 }

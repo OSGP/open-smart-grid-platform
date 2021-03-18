@@ -17,7 +17,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
  * this class holds the information needed beside the metadata of a request to
  * decouple a device and a m-bus device
  */
-public class DeCoupleMbusDeviceRequestData implements Serializable, ActionRequest {
+public class DecoupleMbusDeviceRequestData implements Serializable, ActionRequest {
 
     private static final long serialVersionUID = -1152385333807906318L;
     private final String mbusDeviceIdentification;
@@ -27,7 +27,7 @@ public class DeCoupleMbusDeviceRequestData implements Serializable, ActionReques
      *            the mbus device that needs to be decoupled to the device in
      *            the metadata information of the request
      */
-    public DeCoupleMbusDeviceRequestData(final String mbusDeviceIdentification) {
+    public DecoupleMbusDeviceRequestData(final String mbusDeviceIdentification) {
         this.mbusDeviceIdentification = mbusDeviceIdentification;
 
     }
@@ -50,6 +50,6 @@ public class DeCoupleMbusDeviceRequestData implements Serializable, ActionReques
 
     @Override
     public DeviceFunction getDeviceFunction() {
-        return DeviceFunction.DE_COUPLE_MBUS_DEVICE;
+        return DeviceFunction.DECOUPLE_MBUS_DEVICE;
     }
 }

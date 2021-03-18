@@ -15,29 +15,29 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Inst
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DeCoupleMbusDeviceByChannelRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class DecoupleMbusDeviceByChannelRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
     @Autowired
     private InstallationService installationService;
 
-    protected DeCoupleMbusDeviceByChannelRequestMessageProcessor() {
-        super(MessageType.DE_COUPLE_MBUS_DEVICE_BY_CHANNEL);
+    protected DecoupleMbusDeviceByChannelRequestMessageProcessor() {
+        super(MessageType.DECOUPLE_MBUS_DEVICE_BY_CHANNEL);
     }
 
     @Override
     protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException {
 
-        this.assertRequestObjectType(DeCoupleMbusDeviceDto.class, requestObject);
+        this.assertRequestObjectType(DecoupleMbusDeviceDto.class, requestObject);
 
-        final DeCoupleMbusDeviceDto requestDto = (DeCoupleMbusDeviceDto) requestObject;
-        return this.installationService.deCoupleMbusDevice(conn, device, requestDto);
+        final DecoupleMbusDeviceDto requestDto = (DecoupleMbusDeviceDto) requestObject;
+        return this.installationService.decoupleMbusDevice(conn, device, requestDto);
     }
 }

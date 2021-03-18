@@ -12,12 +12,12 @@ package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 
-public class DeCoupleMbusDeviceByChannelRequestData implements ActionRequest {
+public class DecoupleMbusDeviceByChannelRequestData implements ActionRequest {
 
     private static final long serialVersionUID = 1522902244442651253L;
     private short channel;
 
-    public DeCoupleMbusDeviceByChannelRequestData(final short channel) {
+    public DecoupleMbusDeviceByChannelRequestData(final short channel) {
         this.channel = channel;
     }
 
@@ -32,7 +32,7 @@ public class DeCoupleMbusDeviceByChannelRequestData implements ActionRequest {
 
     @Override
     public DeviceFunction getDeviceFunction() {
-        return DeviceFunction.DE_COUPLE_MBUS_DEVICE_BY_CHANNEL;
+        return DeviceFunction.DECOUPLE_MBUS_DEVICE_BY_CHANNEL;
     }
 
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Alliander N.V.
+ * Copyright 2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -12,7 +12,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.me
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.InstallationService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -25,29 +25,29 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DeCoupleMbusDeviceByChannelResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+public class DecoupleMbusDeviceResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
     @Autowired
     private InstallationService installationService;
 
     @Autowired
-    protected DeCoupleMbusDeviceByChannelResponseMessageProcessor(
-            final WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
-        super(responseMessageSender, messageProcessorMap, MessageType.DE_COUPLE_MBUS_DEVICE_BY_CHANNEL,
+    protected DecoupleMbusDeviceResponseMessageProcessor(
+            WebServiceResponseMessageSender responseMessageSender,
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+        super(responseMessageSender, messageProcessorMap, MessageType.DECOUPLE_MBUS_DEVICE,
                 ComponentType.DOMAIN_SMART_METERING);
     }
 
     @Override
     protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
-        return responseMessage.getDataObject() instanceof DeCoupleMbusDeviceResponseDto;
+        return responseMessage.getDataObject() instanceof DecoupleMbusDeviceResponseDto;
     }
 
     @Override
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessage responseMessage, final OsgpException osgpException) throws FunctionalException {
-        this.installationService.handleDeCoupleMbusDeviceByChannelResponse(deviceMessageMetadata,
-                responseMessage.getResult(), responseMessage.getOsgpException(),
-                (DeCoupleMbusDeviceResponseDto) responseMessage.getDataObject());
+
+        this.installationService.handleDecoupleMbusDeviceResponse(deviceMessageMetadata, responseMessage.getResult(),
+                responseMessage.getOsgpException(), (DecoupleMbusDeviceResponseDto) responseMessage.getDataObject());
     }
 }

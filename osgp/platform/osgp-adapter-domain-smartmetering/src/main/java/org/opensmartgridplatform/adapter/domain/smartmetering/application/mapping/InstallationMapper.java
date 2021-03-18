@@ -9,7 +9,7 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping;
 
-import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.DeCoupleMbusDeviceByChannelResponseConverter;
+import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.DecoupleMbusDeviceByChannelResponseConverter;
 import org.springframework.stereotype.Component;
 
 import ma.glasnost.orika.MapperFactory;
@@ -22,7 +22,7 @@ public class InstallationMapper extends ConfigurableMapper {
     @Override
     public final void configure(final MapperFactory mapperFactory) {
         final ConverterFactory converterFactory = mapperFactory.getConverterFactory();
-        converterFactory.registerConverter(new DeCoupleMbusDeviceByChannelResponseConverter());
+        converterFactory.registerConverter(new DecoupleMbusDeviceByChannelResponseConverter());
     }
 
 }

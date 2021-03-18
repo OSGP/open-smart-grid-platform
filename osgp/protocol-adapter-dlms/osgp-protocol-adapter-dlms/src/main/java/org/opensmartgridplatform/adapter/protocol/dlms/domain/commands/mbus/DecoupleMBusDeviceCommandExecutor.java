@@ -20,8 +20,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,28 +29,28 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class DeCoupleMBusDeviceCommandExecutor
-        extends AbstractCommandExecutor<DeCoupleMbusDeviceDto, DeCoupleMbusDeviceResponseDto> {
+public class DecoupleMBusDeviceCommandExecutor
+        extends AbstractCommandExecutor<DecoupleMbusDeviceDto, DecoupleMbusDeviceResponseDto> {
 
     @Autowired
     private DeviceChannelsHelper deviceChannelsHelper;
 
-    public DeCoupleMBusDeviceCommandExecutor() {
-        super(DeCoupleMbusDeviceDto.class);
+    public DecoupleMBusDeviceCommandExecutor() {
+        super(DecoupleMbusDeviceDto.class);
     }
 
     @Override
-    public ActionResponseDto asBundleResponse(final DeCoupleMbusDeviceResponseDto executionResult)
+    public ActionResponseDto asBundleResponse(final DecoupleMbusDeviceResponseDto executionResult)
             throws ProtocolAdapterException {
-        return new DeCoupleMbusDeviceResponseDto(executionResult.getChannelElementValues());
+        return new DecoupleMbusDeviceResponseDto(executionResult.getChannelElementValues());
     }
 
     @Override
-    public DeCoupleMbusDeviceResponseDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
-            final DeCoupleMbusDeviceDto decoupleMbusDto) throws ProtocolAdapterException {
+    public DecoupleMbusDeviceResponseDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
+            final DecoupleMbusDeviceDto decoupleMbusDto) throws ProtocolAdapterException {
 
         final Short channel = decoupleMbusDto.getChannel();
-        log.debug("DeCouple channel {} on gateway device {}", channel, device.getDeviceIdentification());
+        log.debug("Decouple channel {} on gateway device {}", channel, device.getDeviceIdentification());
 
         final ObisCode obisCode = this.deviceChannelsHelper.getObisCode(channel);
 
@@ -69,6 +69,6 @@ public class DeCoupleMBusDeviceCommandExecutor
         this.deviceChannelsHelper.resetMBusClientAttributeValues(conn, channel, this.getClass().getSimpleName());
 
         // return the channel element values as before decoupling
-        return new DeCoupleMbusDeviceResponseDto(channelElementValues);
+        return new DecoupleMbusDeviceResponseDto(channelElementValues);
     }
 }

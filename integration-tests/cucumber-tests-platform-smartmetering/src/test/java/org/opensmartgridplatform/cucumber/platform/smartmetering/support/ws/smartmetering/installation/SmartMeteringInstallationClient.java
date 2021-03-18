@@ -19,14 +19,14 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.Co
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceAsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceAsyncResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceByChannelAsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceByChannelAsyncResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceByChannelRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceByChannelResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DeCoupleMbusDeviceResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceByChannelAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceByChannelAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceByChannelRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceByChannelResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceResponse;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.SmartMeteringBaseClient;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.opensmartgridplatform.shared.infra.ws.DefaultWebServiceTemplateFactory;
@@ -75,14 +75,14 @@ public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
         return (CoupleMbusDeviceResponse) webServiceTemplate.marshalSendAndReceive(asyncRequest);
     }
 
-    public DeCoupleMbusDeviceAsyncResponse deCoupleMbusDevice(final DeCoupleMbusDeviceRequest request)
+    public DecoupleMbusDeviceAsyncResponse decoupleMbusDevice(final DecoupleMbusDeviceRequest request)
             throws WebServiceSecurityException {
         final WebServiceTemplate webServiceTemplate = this.smartMeteringInstallationWebServiceTemplateFactory
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
-        return (DeCoupleMbusDeviceAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
+        return (DecoupleMbusDeviceAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
 
-    public DeCoupleMbusDeviceResponse getDeCoupleMbusDeviceResponse(final DeCoupleMbusDeviceAsyncRequest asyncRequest)
+    public DecoupleMbusDeviceResponse getDecoupleMbusDeviceResponse(final DecoupleMbusDeviceAsyncRequest asyncRequest)
             throws WebServiceSecurityException {
 
         final String correlationUid = asyncRequest.getCorrelationUid();
@@ -90,7 +90,7 @@ public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
 
         final WebServiceTemplate webServiceTemplate = this.smartMeteringInstallationWebServiceTemplateFactory
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
-        return (DeCoupleMbusDeviceResponse) webServiceTemplate.marshalSendAndReceive(asyncRequest);
+        return (DecoupleMbusDeviceResponse) webServiceTemplate.marshalSendAndReceive(asyncRequest);
     }
 
     public CoupleMbusDeviceByChannelAsyncResponse coupleMbusDeviceByChannel(
@@ -111,22 +111,22 @@ public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
         return (CoupleMbusDeviceByChannelResponse) webServiceTemplate.marshalSendAndReceive(asyncRequest);
     }
 
-    public DeCoupleMbusDeviceByChannelAsyncResponse deCoupleMbusDeviceByChannel(
-            final DeCoupleMbusDeviceByChannelRequest request) throws WebServiceSecurityException {
+    public DecoupleMbusDeviceByChannelAsyncResponse decoupleMbusDeviceByChannel(
+            final DecoupleMbusDeviceByChannelRequest request) throws WebServiceSecurityException {
         final WebServiceTemplate webServiceTemplate = this.smartMeteringInstallationWebServiceTemplateFactory
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
-        return (DeCoupleMbusDeviceByChannelAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
+        return (DecoupleMbusDeviceByChannelAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
 
-    public DeCoupleMbusDeviceByChannelResponse getDeCoupleMbusDeviceByChannelResponse(
-            final DeCoupleMbusDeviceByChannelAsyncRequest asyncRequest) throws WebServiceSecurityException {
+    public DecoupleMbusDeviceByChannelResponse getDecoupleMbusDeviceByChannelResponse(
+            final DecoupleMbusDeviceByChannelAsyncRequest asyncRequest) throws WebServiceSecurityException {
 
         final String correlationUid = asyncRequest.getCorrelationUid();
         this.waitForNotification(correlationUid);
 
         final WebServiceTemplate webServiceTemplate = this.smartMeteringInstallationWebServiceTemplateFactory
                 .getTemplate(this.getOrganizationIdentification(), this.getUserName());
-        return (DeCoupleMbusDeviceByChannelResponse) webServiceTemplate.marshalSendAndReceive(asyncRequest);
+        return (DecoupleMbusDeviceByChannelResponse) webServiceTemplate.marshalSendAndReceive(asyncRequest);
     }
 
 }
