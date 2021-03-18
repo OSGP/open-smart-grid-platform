@@ -437,7 +437,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
                     ComponentType.WS_SMART_METERING);
 
-            this.throwExceptionIfResultNotOk(responseData, "De Couple Mbus Device By Channel");
+            this.throwExceptionIfResultNotOk(responseData, "Decouple Mbus Device By Channel");
 
             response = this.installationMapper.map(responseData.getMessageData(),
                     DeCoupleMbusDeviceByChannelResponse.class);

@@ -19,11 +19,7 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smar
 
 public class DeCoupleMbusDeviceByChannelRequestFactory {
 
-    private DeCoupleMbusDeviceByChannelRequestFactory() {
-        // Private constructor for utility class.
-    }
-
-    public static DeCoupleMbusDeviceByChannelRequest forGatewayAndChannel(final String gatewayDeviceIdentification,
+    public static DeCoupleMbusDeviceByChannelRequest fromGatewayAndChannel(final String gatewayDeviceIdentification,
             final String channel) {
         final DeCoupleMbusDeviceByChannelRequest request = new DeCoupleMbusDeviceByChannelRequest();
         request.setDeviceIdentification(gatewayDeviceIdentification);

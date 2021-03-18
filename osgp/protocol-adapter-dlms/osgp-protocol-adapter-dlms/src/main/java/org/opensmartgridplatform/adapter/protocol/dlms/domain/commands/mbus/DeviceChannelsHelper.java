@@ -192,18 +192,18 @@ public class DeviceChannelsHelper {
         // in blue book version 10, the parameter is of type integer
         DataObject parameter = DataObject.newInteger8Data((byte) 0);
         conn.getDlmsMessageListener().setDescription("Call slave deinstall method");
-        MethodResultCode slaveDeinstall = mBusSetup.callMethod(MBusClientMethod.SLAVE_DEINSTALL, parameter);
-        if (slaveDeinstall == MethodResultCode.TYPE_UNMATCHED) {
+        MethodResultCode slaveDeinstallResultCode = mBusSetup.callMethod(MBusClientMethod.SLAVE_DEINSTALL, parameter);
+        if (slaveDeinstallResultCode == MethodResultCode.TYPE_UNMATCHED) {
             // in blue book version 12, the parameter is of type unsigned, we
             // will try again with that type
             parameter = DataObject.newUInteger8Data((byte) 0);
-            slaveDeinstall = mBusSetup.callMethod(MBusClientMethod.SLAVE_DEINSTALL, parameter);
+            slaveDeinstallResultCode = mBusSetup.callMethod(MBusClientMethod.SLAVE_DEINSTALL, parameter);
         }
-        if (slaveDeinstall != MethodResultCode.SUCCESS) {
+        if (slaveDeinstallResultCode != MethodResultCode.SUCCESS) {
             log.warn("Slave deinstall was not successfull on device {} on channel {}", device.getDeviceIdentification(),
                     channel);
         }
-        return slaveDeinstall;
+        return slaveDeinstallResultCode;
     }
 
     protected ChannelElementValuesDto writeUpdatedMbus(final DlmsConnectionManager conn,

@@ -257,23 +257,20 @@ public class MBusGatewayService {
         final Optional<SmartMeter> mbusDeviceFoundOnChannel = this
                 .findByMBusIdentificationNumber(deCoupleMbusDeviceResponseDto.getChannelElementValues());
 
-        if (!mbusDeviceFoundOnChannel.isPresent()) {
-            return;
-        }
+        mbusDeviceFoundOnChannel.ifPresent(mbusDevice -> {
 
-        final SmartMeter mbusDevice = mbusDeviceFoundOnChannel.get();
+            deCoupleMbusDeviceResponseDto.setMbusDeviceIdentification(mbusDevice.getDeviceIdentification());
 
-        deCoupleMbusDeviceResponseDto.setMbusDeviceIdentification(mbusDevice.getDeviceIdentification());
+            if (mbusDevice.getGatewayDevice() != null && mbusDevice.getGatewayDevice()
+                    .getDeviceIdentification()
+                    .equals(deviceMessageMetadata.getDeviceIdentification())) {
+                mbusDevice.setChannel(null);
+                mbusDevice.setMbusPrimaryAddress(null);
+                mbusDevice.updateGatewayDevice(null);
 
-        if (mbusDevice.getGatewayDevice() != null && mbusDevice.getGatewayDevice()
-                .getDeviceIdentification()
-                .equals(deviceMessageMetadata.getDeviceIdentification())) {
-            mbusDevice.setChannel(null);
-            mbusDevice.setMbusPrimaryAddress(null);
-            mbusDevice.updateGatewayDevice(null);
-
-            this.smartMeteringDeviceRepository.save(mbusDevice);
-        }
+                this.smartMeteringDeviceRepository.save(mbusDevice);
+            }
+        });
     }
 
     private MbusChannelElementsDto makeMbusChannelElementsDto(final SmartMeter mbusDevice) {

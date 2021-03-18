@@ -20,22 +20,21 @@ import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DeCoupleMbusDeviceByChannelResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
-    @Autowired
     private InstallationService installationService;
 
-    @Autowired
     protected DeCoupleMbusDeviceByChannelResponseMessageProcessor(
             final WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap messageProcessorMap,
+            final InstallationService installationService) {
         super(responseMessageSender, messageProcessorMap, MessageType.DE_COUPLE_MBUS_DEVICE_BY_CHANNEL,
                 ComponentType.DOMAIN_SMART_METERING);
+        this.installationService = installationService;
     }
 
     @Override

@@ -27,7 +27,7 @@ import org.opensmartgridplatform.dlms.interfaceclass.method.MethodClass;
 
 public class CosemObjectAccessor {
 
-    private static final String EXCEPTION_MSG_ACCESS_RESULT_NOT_SUCCESS = "Access result not success but '%s'  while "
+    private static final String EXCEPTION_MSG_ACCESS_RESULT_NOT_SUCCESS = "Access result was not successful (%s) while "
             + "writing attribute %s, classId %s, obisCode %s.";
     private static final String EXCEPTION_MSG_WRITING_ATTRIBUTE = "An exception occurred while writing attribute %s, "
             + "classId %s, obisCode %s.";

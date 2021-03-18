@@ -16,21 +16,19 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DeCoupleMbusDeviceByChannelRequestMessageProcessor extends BaseRequestMessageProcessor {
 
-    @Autowired
-    @Qualifier("domainSmartMeteringInstallationService")
     private InstallationService installationService;
 
-    @Autowired
     protected DeCoupleMbusDeviceByChannelRequestMessageProcessor(
-            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap messageProcessorMap,
+            @Qualifier("domainSmartMeteringInstallationService") final InstallationService installationService) {
         super(messageProcessorMap, MessageType.DE_COUPLE_MBUS_DEVICE_BY_CHANNEL);
+        this.installationService = installationService;
     }
 
     @Override

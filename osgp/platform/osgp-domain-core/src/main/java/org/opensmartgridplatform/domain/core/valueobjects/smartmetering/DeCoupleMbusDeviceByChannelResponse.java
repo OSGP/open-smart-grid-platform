@@ -11,6 +11,9 @@ package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
+import lombok.Getter;
+
+@Getter
 public class DeCoupleMbusDeviceByChannelResponse extends ActionResponse implements Serializable {
 
     private static final long serialVersionUID = -7800915379658671321L;
@@ -30,11 +33,4 @@ public class DeCoupleMbusDeviceByChannelResponse extends ActionResponse implemen
                 + this.mbusDeviceIdentification + "]";
     }
 
-    public Short getChannel() {
-        return this.channel;
-    }
-
-    public String getMbusDeviceIdentification() {
-        return this.mbusDeviceIdentification;
-    }
 }

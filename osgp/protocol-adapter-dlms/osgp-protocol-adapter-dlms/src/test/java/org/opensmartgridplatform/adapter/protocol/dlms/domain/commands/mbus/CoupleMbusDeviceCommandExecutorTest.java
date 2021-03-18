@@ -18,6 +18,7 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,6 +35,15 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelEleme
 @ExtendWith(MockitoExtension.class)
 public class CoupleMbusDeviceCommandExecutorTest {
 
+    private short channel;
+    private Short primaryAddress;
+    private String mbusDeviceIdentification;
+    private String manufacturerIdentification;
+    private short version;
+    private short deviceTypeIdentification;
+    private String identificationNumber;
+    private List<ChannelElementValuesDto> candidateChannelElementValues;
+
     @Mock
     private DeviceChannelsHelper deviceChannelsHelper;
 
@@ -46,16 +56,19 @@ public class CoupleMbusDeviceCommandExecutorTest {
     @InjectMocks
     private CoupleMBusDeviceCommandExecutor commandExecutor = new CoupleMBusDeviceCommandExecutor();
 
-    private short channel = (short) 1;
-    private Short primaryAddress = 9;
-    private String mbusDeviceIdentification = "G00009";
-    private String manufacturerIdentification = "manufacturerIdentification";
-    private short version = 123;
-    private short deviceTypeIdentification = 456;
-    private String identificationNumber = "identificationNumber";
-    private List<ChannelElementValuesDto> candidateChannelElementValues = Arrays
-            .asList(new ChannelElementValuesDto(this.channel, this.primaryAddress, this.identificationNumber,
-                    this.manufacturerIdentification, this.version, this.deviceTypeIdentification));
+    @BeforeEach
+    public void setUp() {
+        this.channel = (short) 1;
+        this.primaryAddress = 9;
+        this.mbusDeviceIdentification = "G00009";
+        this.manufacturerIdentification = "manufacturerIdentification";
+        this.version = 123;
+        this.deviceTypeIdentification = 456;
+        this.identificationNumber = "identificationNumber";
+        this.candidateChannelElementValues = Arrays
+                .asList(new ChannelElementValuesDto(this.channel, this.primaryAddress, this.identificationNumber,
+                        this.manufacturerIdentification, this.version, this.deviceTypeIdentification));
+    }
 
     @Test
     public void testExactMatch() throws ProtocolAdapterException {
