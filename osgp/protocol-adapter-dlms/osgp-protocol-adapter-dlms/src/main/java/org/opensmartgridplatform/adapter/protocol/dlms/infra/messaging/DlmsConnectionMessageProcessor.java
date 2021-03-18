@@ -154,15 +154,6 @@ public abstract class DlmsConnectionMessageProcessor {
         logger.debug("deviceIdentification: {}", messageMetadata.getDeviceIdentification());
     }
 
-    /*protected void assertRequestObjectType(final Class<?> expected, final Serializable requestObject)
-            throws ProtocolAdapterException {
-        if (!expected.isInstance(requestObject)) {
-            throw new ProtocolAdapterException(
-                    String.format("The request object has an incorrect type. %s expected but %s was found.",
-                            expected.getCanonicalName(), requestObject.getClass().getCanonicalName()));
-        }
-    }*/
-
     protected void sendResponseMessage(final MessageMetadata messageMetadata, final ResponseMessageResultType result,
             final Exception exception, final DeviceResponseMessageSender responseMessageSender,
             final Serializable responseObject) {

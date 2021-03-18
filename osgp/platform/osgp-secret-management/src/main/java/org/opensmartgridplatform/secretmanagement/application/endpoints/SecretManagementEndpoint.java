@@ -60,8 +60,6 @@ public class SecretManagementEndpoint {
     private static final String NAMESPACE_URI =
             "http://www.opensmartgridplatform" + ".org/schemas/security/secretmanagement";
     private static final String CORRELATION_HEADER = "{" + NAMESPACE_URI + "}correlationUid";
-    private static final String STR_MISSING_SECRET_TYPES = "Missing input: secret types";
-    private static final String STR_MISSING_TYPED_SECRETS = "Missing input: typed secrets";
 
     private final SecretManagementService secretManagementService;
     private final SoapEndpointDataTypeConverter converter;

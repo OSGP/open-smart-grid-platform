@@ -96,7 +96,7 @@ public abstract class DeviceRequestMessageProcessor<S extends Serializable> exte
                 device = this.domainHelperService.findDlmsDevice(messageMetadata);
             }
 
-            LOGGER.info("{} called for device: {} for organisation: {}, correlationUID=", message.getJMSType(),
+            LOGGER.info("{} called for device: {} for organisation: {}, correlationUID={}", message.getJMSType(),
                     messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification(),
                     messageMetadata.getCorrelationUid());
 
@@ -113,7 +113,7 @@ public abstract class DeviceRequestMessageProcessor<S extends Serializable> exte
     }
 
     protected Serializable getResponse(DlmsConnectionManager conn, final DlmsDevice device,
-            final RequestWithMetadata request) throws OsgpException {
+            final RequestWithMetadata<S> request) throws OsgpException {
         if (this.usesDeviceConnection()) {
             conn = this.createConnectionForDevice(device, request.getMetadata());
             return this.handleMessage(conn, device, request);

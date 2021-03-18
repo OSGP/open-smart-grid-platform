@@ -4,11 +4,10 @@ import java.io.Serializable;
 
 import lombok.Getter;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RequestWithMetadata;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @Getter
-public class CorrelatedObject<T> implements ActionRequestDto {
+public class CorrelatedObject<T> {
     private static final long serialVersionUID = -6205572886092338803L;
     private final String correlationUid;
     private final T object;
@@ -18,7 +17,8 @@ public class CorrelatedObject<T> implements ActionRequestDto {
         this.object = object;
     }
 
-    public static <T> CorrelatedObject<T> from(final CorrelatedObject<?> correlationSource, final T object) {
+    public static <T> CorrelatedObject<T> from(final CorrelatedObject<?> correlationSource,
+            final T object) {
         return from(correlationSource.correlationUid, object);
     }
 

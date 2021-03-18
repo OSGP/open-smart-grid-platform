@@ -124,7 +124,7 @@ import org.springframework.stereotype.Service;
     public Map<SecurityKeyType, byte[]> getNewKeys(final String correlationUid, final String deviceIdentification,
             final List<SecurityKeyType> keyTypes) {
         final GetNewSecretsRequest request = this
-                .createGetNewSecretsRequest(correlationUid, deviceIdentification, keyTypes);
+                .createGetNewSecretsRequest(deviceIdentification, keyTypes);
         final GetNewSecretsResponse response = this.secretManagementClient
                 .getNewSecretsRequest(correlationUid, request);
         this.validateGetNewResponse(keyTypes, response);
@@ -159,8 +159,8 @@ import org.springframework.stereotype.Service;
         return request;
     }
 
-    private GetNewSecretsRequest createGetNewSecretsRequest(final String correlationUid,
-            final String deviceIdentification, final List<SecurityKeyType> keyTypes) {
+    private GetNewSecretsRequest createGetNewSecretsRequest(final String deviceIdentification,
+            final List<SecurityKeyType> keyTypes) {
         final GetNewSecretsRequest request = new GetNewSecretsRequest();
         request.setDeviceId(deviceIdentification);
         request.setSecretTypes(new SecretTypes());
@@ -213,7 +213,7 @@ import org.springframework.stereotype.Service;
             typedSecretList.add(ts);
         }
         final StoreSecretsRequest request = this
-                .createStoreSecretsRequest(correlationUid, deviceIdentification, typedSecrets);
+                .createStoreSecretsRequest(deviceIdentification, typedSecrets);
         StoreSecretsResponse response = null;
         try {
             response = this.secretManagementClient.storeSecretsRequest(correlationUid, request);
@@ -237,8 +237,8 @@ import org.springframework.stereotype.Service;
         }
     }
 
-    private StoreSecretsRequest createStoreSecretsRequest(final String correlationUid,
-            final String deviceIdentification, final TypedSecrets typedSecrets) {
+    private StoreSecretsRequest createStoreSecretsRequest(final String deviceIdentification,
+            final TypedSecrets typedSecrets) {
         final StoreSecretsRequest request = new StoreSecretsRequest();
         request.setDeviceId(deviceIdentification);
         request.setTypedSecrets(typedSecrets);
@@ -302,7 +302,7 @@ import org.springframework.stereotype.Service;
             final String deviceIdentification, final List<SecurityKeyType> keyTypes) {
         final SecretTypes secretTypes = new SecretTypes();
         final GenerateAndStoreSecretsRequest request = this
-                .createGenerateAndStoreSecretsRequest(correlationUid, deviceIdentification, secretTypes);
+                .createGenerateAndStoreSecretsRequest(deviceIdentification, secretTypes);
         secretTypes.getSecretType().addAll(keyTypes.stream().map(SecurityKeyType::toSecretType).collect(toList()));
 
         final GenerateAndStoreSecretsResponse response = this.secretManagementClient
@@ -313,7 +313,7 @@ import org.springframework.stereotype.Service;
         return this.convertSoapSecretsToSecretMapByType(typedSecrets.getTypedSecret());
     }
 
-    private GenerateAndStoreSecretsRequest createGenerateAndStoreSecretsRequest(final String correlationUid,
+    private GenerateAndStoreSecretsRequest createGenerateAndStoreSecretsRequest(
             final String deviceIdentification, final SecretTypes secretTypes) {
         final GenerateAndStoreSecretsRequest request = new GenerateAndStoreSecretsRequest();
         request.setDeviceId(deviceIdentification);
