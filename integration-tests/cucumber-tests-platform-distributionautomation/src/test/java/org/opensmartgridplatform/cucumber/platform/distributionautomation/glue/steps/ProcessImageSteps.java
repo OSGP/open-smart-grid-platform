@@ -15,7 +15,7 @@ import static org.opensmartgridplatform.cucumber.platform.distributionautomation
 import java.util.Map;
 
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
-import org.opensmartgridplatform.cucumber.platform.distributionautomation.mocks.iec60870.Iec60870MockServer;
+import org.opensmartgridplatform.cucumber.protocol.iec60870.mock.Iec60870MockServer;
 import org.opensmartgridplatform.iec60870.Iec60870InformationObjectType;
 import org.springframework.beans.factory.annotation.Autowired;
 

@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.platform.distributionautomation.mocks.iec60870;
+package org.opensmartgridplatform.cucumber.protocol.iec60870.mock;
 
 import org.openmuc.j60870.ASduType;
 import org.opensmartgridplatform.iec60870.Iec60870AsduHandler;

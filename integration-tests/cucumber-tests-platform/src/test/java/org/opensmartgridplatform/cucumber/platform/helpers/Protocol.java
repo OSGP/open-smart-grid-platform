@@ -14,7 +14,6 @@ public class Protocol {
     private final String version;
 
     public Protocol(final ProtocolType type, final String protocol, final String version) {
-        super();
         this.type = type;
         this.protocol = protocol;
         this.version = version;
@@ -35,7 +34,8 @@ public class Protocol {
     public enum ProtocolType {
         OSLP,
         DSMR,
-        DLMS;
+        DLMS,
+        IEC60870;
     }
 
 }

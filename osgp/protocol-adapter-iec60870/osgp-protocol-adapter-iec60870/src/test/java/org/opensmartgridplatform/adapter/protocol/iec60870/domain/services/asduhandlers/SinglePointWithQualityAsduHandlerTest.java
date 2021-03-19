@@ -26,7 +26,7 @@ import org.openmuc.j60870.CauseOfTransmission;
 import org.openmuc.j60870.ie.IeSinglePointWithQuality;
 import org.openmuc.j60870.ie.InformationObject;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.Iec60870AsduConverterService;
-import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.LightMeasurementGatewayDeviceResponseService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.LightMeasurementRtuDeviceResponseService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.LogItemFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.ResponseMetadataFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.DeviceResponseServiceRegistry;
@@ -46,7 +46,7 @@ import org.opensmartgridplatform.dto.da.measurements.elements.BitmaskMeasurement
 public class SinglePointWithQualityAsduHandlerTest {
 
     private static final String GATEWAY_DEVICE_IDENTIFICATION = "TEST-GATEWAY-1";
-    private static final DeviceType GATEWAY_DEVICE_TYPE = DeviceType.LIGHT_MEASUREMENT_GATEWAY;
+    private static final DeviceType GATEWAY_DEVICE_TYPE = DeviceType.LIGHT_MEASUREMENT_RTU;
     private static final int LMD_1_IOA = 1;
     private static final boolean LMD_1_ON = true;
     private static final int LMD_2_IOA = 2;
@@ -71,7 +71,7 @@ public class SinglePointWithQualityAsduHandlerTest {
     private LogItemFactory logItemFactory;
 
     @Mock
-    private LightMeasurementGatewayDeviceResponseService deviceResponseService;
+    private LightMeasurementRtuDeviceResponseService deviceResponseService;
 
     @Mock
     private DeviceResponseServiceRegistry deviceResponseServiceMap;
@@ -88,7 +88,7 @@ public class SinglePointWithQualityAsduHandlerTest {
     @Test
     public void testHandleAsduShouldSendMeasurementReportAndLogItem() throws Exception {
         // Arrange
-        when(this.deviceResponseServiceMap.forDeviceType(DeviceType.LIGHT_MEASUREMENT_GATEWAY))
+        when(this.deviceResponseServiceMap.forDeviceType(DeviceType.LIGHT_MEASUREMENT_RTU))
                 .thenReturn(this.deviceResponseService);
 
         final ASdu asdu = this.createAsdu();

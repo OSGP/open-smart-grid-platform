@@ -5,9 +5,9 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.platform.distributionautomation.config;
+package org.opensmartgridplatform.cucumber.protocol.iec60870.config;
 
-import org.opensmartgridplatform.cucumber.platform.distributionautomation.mocks.iec60870.Iec60870MockServer;
+import org.opensmartgridplatform.cucumber.protocol.iec60870.mock.Iec60870MockServer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +31,8 @@ public class Iec60870MockServerConfig {
 
     @Bean(destroyMethod = "stop", initMethod = "start")
     public Iec60870MockServer iec60870MockServer() {
-        return new Iec60870MockServer(this.port, this.connectionTimeout);
+        final Iec60870MockServer mockServer = new Iec60870MockServer(this.port, this.connectionTimeout);
+
+        return mockServer;
     }
 }

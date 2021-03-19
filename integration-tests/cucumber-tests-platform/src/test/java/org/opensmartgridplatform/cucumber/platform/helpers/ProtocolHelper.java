@@ -21,6 +21,7 @@ public class ProtocolHelper {
         allProtocols.put(ProtocolType.OSLP, new Protocol(ProtocolType.OSLP, "OSLP", "1.0"));
         allProtocols.put(ProtocolType.DSMR, new Protocol(ProtocolType.DSMR, "DSMR", "4.2.2"));
         allProtocols.put(ProtocolType.DLMS, new Protocol(ProtocolType.DLMS, "DLMS", "1.0"));
+        allProtocols.put(ProtocolType.IEC60870, new Protocol(ProtocolType.IEC60870, "60870-5-104", "1.0"));
     }
 
     public static Map<Protocol.ProtocolType, Protocol> getAllProtocols() {

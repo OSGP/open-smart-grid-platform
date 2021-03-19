@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.platform.distributionautomation.config;
+package org.opensmartgridplatform.cucumber.protocol.iec60870.config;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -21,17 +21,18 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 @Configuration
-@EnableJpaRepositories(entityManagerFactoryRef = "entityMgrFactIec60870", transactionManagerRef = "txMgrIec60870", basePackageClasses = {
-        Iec60870DeviceRepository.class })
-public class AdapterProtocolIec60870PersistenceConfig extends ApplicationPersistenceConfiguration {
+@EnableJpaRepositories(entityManagerFactoryRef = "entityMgrFactIec60870",
+        transactionManagerRef = "txMgrIec60870",
+        basePackageClasses = { Iec60870DeviceRepository.class })
+public class Iec60870PersistenceConfig extends ApplicationPersistenceConfiguration {
 
-    public AdapterProtocolIec60870PersistenceConfig() {
+    public Iec60870PersistenceConfig() {
     }
 
-    @Value("${db.name.osgp_adapter_protocol_iec60870}")
+    @Value("${iec60870.db.name.osgp.adapter.protocol}")
     private String databaseName;
 
-    @Value("${entitymanager.packages.to.scan.iec60870}")
+    @Value("${iec60870.entitymanager.packages.to.scan}")
     private String entitymanagerPackagesToScan;
 
     @Override

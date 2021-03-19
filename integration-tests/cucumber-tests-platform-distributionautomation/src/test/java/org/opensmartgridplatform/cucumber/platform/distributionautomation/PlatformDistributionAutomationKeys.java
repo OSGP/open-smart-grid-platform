@@ -13,7 +13,6 @@ public class PlatformDistributionAutomationKeys {
 
     public static final String BAY_IDENTIFICATION = "bay identification";
     public static final String BAY_POSITION = "bay position";
-    public static final String COMMON_ADDRESS = "CommonAddress";
     public static final String DESCRIPTION = "description";
     public static final String FEEDER_NUMBER = "feeder number";
     public static final String FEEDER_NAME = "feeder name";
@@ -29,7 +28,6 @@ public class PlatformDistributionAutomationKeys {
     public static final String MQTT_TOPIC = "MqttTopic";
     public static final String NUMBER_OF_ELEMENTS = "numberOfElements";
     public static final String PAYLOAD = "payload";
-    public static final String PORT = "Port";
     public static final String PROFILE = "Profile";
     public static final String SUBSTATION_IDENTIFICATION = "substation identification";
     public static final String SUBSTATION_NAME = "substation name";

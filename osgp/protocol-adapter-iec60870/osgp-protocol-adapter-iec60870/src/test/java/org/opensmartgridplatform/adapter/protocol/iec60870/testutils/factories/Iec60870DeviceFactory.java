@@ -51,13 +51,13 @@ public class Iec60870DeviceFactory {
 
     public static Iec60870Device createLightMeasurementDevice(final String deviceIdentification,
             final String gatewayDeviceIdentification) {
-        final Iec60870Device device = new Iec60870Device(deviceIdentification, DeviceType.LIGHT_MEASUREMENT_DEVICE);
+        final Iec60870Device device = new Iec60870Device(deviceIdentification, DeviceType.LIGHT_SENSOR);
         device.setGatewayDeviceIdentification(gatewayDeviceIdentification);
         return device;
     }
 
     public static Iec60870Device createLightMeasurementGatewayDevice(final String deviceIdentification) {
-        final Iec60870Device device = new Iec60870Device(deviceIdentification, DeviceType.LIGHT_MEASUREMENT_GATEWAY);
+        final Iec60870Device device = new Iec60870Device(deviceIdentification, DeviceType.LIGHT_MEASUREMENT_RTU);
         device.setCommonAddress(Integer.parseInt(DEFAULT_COMMON_ADDRESS));
         device.setPort(Integer.parseInt(DEFAULT_PORT));
         return device;
@@ -119,14 +119,14 @@ public class Iec60870DeviceFactory {
     private static Map<String, String> getGatewayDeviceSettings() {
         final Map<String, String> settings = new HashMap<>();
         settings.put(KEY_DEVICE_IDENTIFICATION, GATEWAY_DEVICE_IDENTIFICATION);
-        settings.put(KEY_DEVICE_TYPE, DeviceType.LIGHT_MEASUREMENT_GATEWAY.name());
+        settings.put(KEY_DEVICE_TYPE, DeviceType.LIGHT_MEASUREMENT_RTU.name());
         return settings;
     }
 
     private static Map<String, String> getLightMeasurementDevice1Settings() {
         final Map<String, String> settings = new HashMap<>();
         settings.put(KEY_DEVICE_IDENTIFICATION, LMD_1_DEVICE_IDENTIFICATION);
-        settings.put(KEY_DEVICE_TYPE, DeviceType.LIGHT_MEASUREMENT_DEVICE.name());
+        settings.put(KEY_DEVICE_TYPE, DeviceType.LIGHT_SENSOR.name());
         settings.put(KEY_GATEWAY_DEVICE_IDENTIFICATION, GATEWAY_DEVICE_IDENTIFICATION);
         settings.put(KEY_INFORMATION_OBJECT_ADDRESS, LMD_1_IOA);
         return settings;
@@ -135,7 +135,7 @@ public class Iec60870DeviceFactory {
     private static Map<String, String> getLightMeasurementDevice2Settings() {
         final Map<String, String> settings = new HashMap<>();
         settings.put(KEY_DEVICE_IDENTIFICATION, LMD_2_DEVICE_IDENTIFICATION);
-        settings.put(KEY_DEVICE_TYPE, DeviceType.LIGHT_MEASUREMENT_DEVICE.name());
+        settings.put(KEY_DEVICE_TYPE, DeviceType.LIGHT_SENSOR.name());
         settings.put(KEY_GATEWAY_DEVICE_IDENTIFICATION, GATEWAY_DEVICE_IDENTIFICATION);
         settings.put(KEY_INFORMATION_OBJECT_ADDRESS, LMD_2_IOA);
         return settings;
