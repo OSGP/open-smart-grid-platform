@@ -25,7 +25,7 @@ import io.cucumber.java.en.Given;
 public class DeviceSteps {
 
     @Autowired
-    DeviceFactory deviceFactory;
+    private DeviceFactory deviceFactory;
 
     @ParameterType("light measurement device|light measurement RTU")
     public DeviceType deviceType(final String deviceType) {

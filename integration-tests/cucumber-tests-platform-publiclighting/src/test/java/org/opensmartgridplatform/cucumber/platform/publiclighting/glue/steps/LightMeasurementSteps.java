@@ -18,7 +18,6 @@ import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.database.core.EventSpecifications;
 import org.opensmartgridplatform.cucumber.platform.database.logging.DeviceLogItemSpecifications;
-import org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.mocks.OslpDeviceSteps;
 import org.opensmartgridplatform.cucumber.protocol.iec60870.mock.Iec60870MockServer;
 import org.opensmartgridplatform.domain.core.entities.Event;
 import org.opensmartgridplatform.domain.core.repositories.EventRepository;
@@ -45,9 +44,6 @@ public class LightMeasurementSteps {
     private static final String KEY_INFORMATION_OBJECT_ADDRESS = "InformationObjectAddress";
     private static final String KEY_SINGLE_POINT_INFORMATION = "SinglePointInformation";
     private static final String KEY_LIGHTMEASUREMENT_EVENT = "LightMeasurementEvent";
-    private static final String KEY_TRANSITION = "TransitionType";
-
-    private static final String PROTOCOL_OSLP_ELSTER = "OSLP_ELSTER";
 
     @Autowired
     private DeviceLogItemSlicingRepository deviceLogItemRepository;
@@ -57,9 +53,6 @@ public class LightMeasurementSteps {
 
     @Autowired
     private Iec60870MockServer iec60870MockServer;
-
-    @Autowired
-    private OslpDeviceSteps oslpDeviceSteps;
 
     @Given("an existing connection with the RTU")
     public void givenAnExistingConnectionWithTheRTU(final Map<String, String> parameters) {

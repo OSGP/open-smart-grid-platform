@@ -40,10 +40,10 @@ public class DeviceConnection104LmdScheduledTask extends BaseTask implements Run
         LOGGER.info("Ensuring active connections with IEC 60870-5-104 light measurement devices");
         try {
             final List<LightMeasurementDevice> devices = this.findLightMeasurementDevicesByProtocol(PROTOCOL);
-            final List<LightMeasurementDevice> deviceToConnect = this.findLightMeasurementDevicesToConnect(devices,
+            final List<LightMeasurementDevice> devicesToConnect = this.findLightMeasurementDevicesToConnect(devices,
                     this.deviceConnection104LmdScheduledTaskMaximumAllowedAge);
 
-            this.connectLightMeasurementDevices(deviceToConnect);
+            this.connectLightMeasurementDevices(devicesToConnect);
         } catch (final Exception e) {
             LOGGER.error("Exception caught ensuring active connection to IEC 60870-5-104 light measurement devices", e);
         }
