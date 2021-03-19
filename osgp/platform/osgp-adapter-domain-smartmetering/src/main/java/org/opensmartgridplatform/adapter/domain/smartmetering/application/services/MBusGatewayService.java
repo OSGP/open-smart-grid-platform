@@ -280,7 +280,7 @@ public class MBusGatewayService {
         }
 
         final SmartMeter mbusDevice = optionalMbusDevice.get();
-        if (mbusDevice.getGatewayDevice() != null && mbusDevice.getGatewayDevice().equals(gatewayDevice)) {
+        if (mbusDevice.getGatewayDevice() != null) {
             mbusDevice.setChannel(null);
             mbusDevice.setMbusPrimaryAddress(null);
             mbusDevice.updateGatewayDevice(null);
