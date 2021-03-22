@@ -289,6 +289,16 @@
       </dependency>
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-iec60870</artifactId>
+        <version>${osgp.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-protocol-adapter-iec60870</artifactId>
+        <version>${osgp.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-iec61850</artifactId>
         <version>${osgp.version}</version>
       </dependency>
@@ -319,6 +329,13 @@
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
         <artifactId>cucumber-tests-platform-common</artifactId>
+        <version>${osgp.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>cucumber-tests-protocol-iec60870</artifactId>
         <version>${osgp.version}</version>
         <type>test-jar</type>
         <scope>test</scope>
@@ -822,6 +839,12 @@
         <groupId>org.apache.ant</groupId>
         <artifactId>ant-junit</artifactId>
         <version>${ant.junit.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.sun</groupId>
+            <artifactId>tools</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>args4j</groupId>

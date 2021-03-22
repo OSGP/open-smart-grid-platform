@@ -95,6 +95,7 @@ public class PlatformDefaults {
     public static final String DEFAULT_MANUFACTURER_CODE = "Test";
     public static final String DEFAULT_MANUFACTURER_NAME = "Test";
     public static final Boolean DEFAULT_MANUFACTURER_USE_PREFIX = false;
+    public static final String DEFAULT_NETWORK_ADDRESS = "127.0.0.1";
     public static final String DEFAULT_NEW_ORGANIZATION_IDENTIFICATION = "NewOrganization";
     public static final String DEFAULT_NEW_ORGANIZATION_NAME = "New Organization";
     public static final Boolean DEFAULT_ON = true;

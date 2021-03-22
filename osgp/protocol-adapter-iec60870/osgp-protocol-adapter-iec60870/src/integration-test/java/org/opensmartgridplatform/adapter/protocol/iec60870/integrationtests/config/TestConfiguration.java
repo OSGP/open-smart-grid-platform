@@ -17,8 +17,8 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.Iec60870LightMeasurementService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.Iec60870LoggingService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.Iec60870MeasurementReportingService;
-import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.LightMeasurementDeviceResponseService;
-import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.LightMeasurementGatewayDeviceResponseService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.LightSensorDeviceResponseService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.LightMeasurementRtuDeviceResponseService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.ResponseMetadataFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.AsduConverterService;
@@ -161,12 +161,12 @@ public class TestConfiguration {
 
     @Bean
     public DeviceResponseService lightMeasurementDeviceResponseService() {
-        return new LightMeasurementDeviceResponseService();
+        return new LightSensorDeviceResponseService();
     }
 
     @Bean
     public DeviceResponseService lightMeasurementGatewayDeviceResponseService() {
-        return new LightMeasurementGatewayDeviceResponseService();
+        return new LightMeasurementRtuDeviceResponseService();
     }
 
     @Bean

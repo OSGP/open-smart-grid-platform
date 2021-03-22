@@ -7,7 +7,6 @@
  */
 package org.opensmartgridplatform.domain.core.repositories;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.opensmartgridplatform.domain.core.entities.LightMeasurementDevice;
@@ -19,6 +18,6 @@ import org.springframework.stereotype.Repository;
 public interface LightMeasurementDeviceRepository extends JpaRepository<LightMeasurementDevice, Long> {
     LightMeasurementDevice findByDeviceIdentification(String deviceIdentification);
 
-    List<LightMeasurementDevice> findByInMaintenanceAndProtocolInfoProtocolAndDeviceLifecycleStatusIn(
-            boolean inMaintenance, String protocol, Collection<DeviceLifecycleStatus> deviceLifecycleStatuses);
+    List<LightMeasurementDevice> findByProtocolInfoProtocolAndDeviceLifecycleStatus(String protocol,
+            DeviceLifecycleStatus deviceLifecycleStatus);
 }

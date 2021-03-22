@@ -8,10 +8,12 @@
 package org.opensmartgridplatform.iec60870;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.openmuc.j60870.Server;
+import org.openmuc.j60870.ie.IeTime56;
 import org.openmuc.j60870.ie.InformationElement;
 import org.opensmartgridplatform.iec60870.factory.InformationElementFactory;
 import org.slf4j.Logger;
@@ -91,17 +93,22 @@ public class Iec60870Server {
 
         boolean valueChanged = true;
         if (this.processImage.containsKey(informationObjectAddress)) {
-            valueChanged = this.hasChanged(informationElements, this.processImage.get(informationObjectAddress));
+            valueChanged = hasChanged(informationElements, this.processImage.get(informationObjectAddress));
         }
 
         this.processImage.put(informationObjectAddress, informationElements);
 
         if (valueChanged) {
-            this.iec60870ServerEventListener.sendInformationUpdateEvent(informationObjectAddress, informationElements);
+            LOGGER.info("Sending information update event for IOA {}.", informationObjectAddress);
+            final InformationElement[][] eventInformationElements = addTimestamp(informationElements);
+            this.iec60870ServerEventListener.sendInformationUpdateEvent(informationObjectAddress,
+                    eventInformationElements);
+        } else {
+            LOGGER.info("Value not changed for IOA {}.", informationObjectAddress);
         }
     }
 
-    private boolean hasChanged(final InformationElement[][] newValue, final InformationElement[][] oldValue) {
+    private static boolean hasChanged(final InformationElement[][] newValue, final InformationElement[][] oldValue) {
 
         if (newValue.length != oldValue.length) {
             return true;
@@ -117,6 +124,12 @@ public class Iec60870Server {
             }
         }
         return false;
+    }
+
+    private static InformationElement[][] addTimestamp(final InformationElement[][] informationElements) {
+        final InformationElement[][] result = Arrays.copyOf(informationElements, 2);
+        result[1] = new InformationElement[] { new IeTime56(System.currentTimeMillis()) };
+        return result;
     }
 
 }

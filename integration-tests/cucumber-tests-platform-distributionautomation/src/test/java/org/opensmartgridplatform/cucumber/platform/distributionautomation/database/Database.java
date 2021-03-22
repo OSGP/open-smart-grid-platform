@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.opensmartgridplatform.adapter.kafka.da.domain.repositories.LocationRepository;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.repositories.MqttDeviceRepository;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
@@ -23,9 +22,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class Database {
-
-    @Autowired
-    private Iec60870DeviceRepository iec60870DeviceRepository;
 
     @Autowired
     private MqttDeviceRepository mqttDeviceRepository;
@@ -61,9 +57,6 @@ public class Database {
 
     public void prepareDatabaseForScenario() {
         // Removes all test related data from the various databases
-
-        // Remove from osgp_adapter_protocol_iec60870
-        this.iec60870DeviceRepository.deleteAll();
 
         // Remove from osgp_adapter_protocol_mqtt
         this.mqttDeviceRepository.deleteAll();

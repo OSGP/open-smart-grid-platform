@@ -12,12 +12,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.exceptions.ClientConnectionAlreadyInCacheException;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnection;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCache;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCache;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceConnection;
 
-public class ClientConnectionCacheTest {
+class ClientConnectionCacheTest {
 
     private final static String KEY = "TestKey";
 
@@ -29,7 +26,7 @@ public class ClientConnectionCacheTest {
     }
 
     @Test
-    public void shouldBeAbleToAddConnectionToCache() throws ClientConnectionAlreadyInCacheException {
+    void shouldBeAbleToAddConnectionToCache() throws ClientConnectionAlreadyInCacheException {
         // Arrange
         final ClientConnection connection = new DeviceConnection(null, null);
 
@@ -41,7 +38,7 @@ public class ClientConnectionCacheTest {
     }
 
     @Test
-    public void shouldBeAbleToRemoveConnectionFromCache() throws ClientConnectionAlreadyInCacheException {
+    void shouldBeAbleToRemoveConnectionFromCache() throws ClientConnectionAlreadyInCacheException {
         // Arrange
         final ClientConnection connection = new DeviceConnection(null, null);
         this.cache.addConnection(KEY, connection);

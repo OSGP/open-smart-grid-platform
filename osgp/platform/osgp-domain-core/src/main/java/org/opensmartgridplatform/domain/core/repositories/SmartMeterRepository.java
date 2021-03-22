@@ -9,6 +9,7 @@ package org.opensmartgridplatform.domain.core.repositories;
 
 import java.util.List;
 
+import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -37,4 +38,7 @@ public interface SmartMeterRepository extends JpaRepository<SmartMeter, Long> {
      */
     @Query("select s from SmartMeter s where s.mbusIdentificationNumber = ?1 and s.mbusManufacturerIdentification = ?2")
     SmartMeter findByMBusIdentificationNumber(Long mbusIdentificationNumber, String mbusManufacturerIdentification);
+
+    @Query("select s from SmartMeter s where s.gatewayDevice = ?1 and s.channel = ?2")
+    SmartMeter findByGatewayDeviceAndChannel(Device gatewayDevice, Short channel);
 }

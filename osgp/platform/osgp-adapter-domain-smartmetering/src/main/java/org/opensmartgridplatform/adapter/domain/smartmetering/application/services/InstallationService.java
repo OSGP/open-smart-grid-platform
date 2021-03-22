@@ -8,7 +8,6 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
-import ma.glasnost.orika.MapperFactory;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.CommonMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
@@ -17,10 +16,12 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AddSmart
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceByChannelRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceByChannelResponse;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.DeCoupleMbusDeviceResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -35,6 +36,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import ma.glasnost.orika.MapperFactory;
 
 @Service(value = "domainSmartMeteringInstallationService")
 public class InstallationService {
@@ -114,9 +117,9 @@ public class InstallationService {
     }
 
     @Transactional(value = "transactionManager")
-    public void deCoupleMbusDevice(final DeviceMessageMetadata deviceMessageMetadata,
-            final DeCoupleMbusDeviceRequestData requestData) throws FunctionalException {
-        this.mBusGatewayService.deCoupleMbusDevice(deviceMessageMetadata, requestData);
+    public void decoupleMbusDevice(final DeviceMessageMetadata deviceMessageMetadata,
+            final DecoupleMbusDeviceRequestData requestData) throws FunctionalException {
+        this.mBusGatewayService.decoupleMbusDevice(deviceMessageMetadata, requestData);
     }
 
     @Transactional(value = "transactionManager")
@@ -136,13 +139,47 @@ public class InstallationService {
     }
 
     @Transactional(value = "transactionManager")
-    public void handleDeCoupleMbusDeviceResponse(final DeviceMessageMetadata deviceMessageMetadata,
+    public void decoupleMbusDeviceByChannel(final DeviceMessageMetadata deviceMessageMetadata,
+            final DecoupleMbusDeviceByChannelRequestData requestData) throws FunctionalException {
+        this.mBusGatewayService.decoupleMbusDeviceByChannel(deviceMessageMetadata, requestData);
+    }
+
+    @Transactional(value = "transactionManager")
+    public void handleDecoupleMbusDeviceResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType result, final OsgpException exception,
-            final DeCoupleMbusDeviceResponseDto deCoupleMbusDeviceResponseDto) throws FunctionalException {
+            final DecoupleMbusDeviceResponseDto decoupleMbusDeviceResponseDto) throws FunctionalException {
         if (exception == null) {
-            this.mBusGatewayService.handleDeCoupleMbusDeviceResponse(deCoupleMbusDeviceResponseDto);
+            this.mBusGatewayService.handleDecoupleMbusDeviceResponse(deviceMessageMetadata,
+                    decoupleMbusDeviceResponseDto);
         }
-        this.handleResponse("deCoupleMbusDevice", deviceMessageMetadata, result, exception);
+        this.handleResponse("decoupleMbusDevice", deviceMessageMetadata, result, exception);
+    }
+
+    @Transactional(value = "transactionManager")
+    public void handleDecoupleMbusDeviceByChannelResponse(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException,
+            final DecoupleMbusDeviceResponseDto decoupleMbusDeviceResponseDto) throws FunctionalException {
+
+        if (osgpException == null) {
+            this.mBusGatewayService.handleDecoupleMbusDeviceResponse(deviceMessageMetadata,
+                    decoupleMbusDeviceResponseDto);
+        }
+
+        final DecoupleMbusDeviceByChannelResponse response = new DecoupleMbusDeviceByChannelResponse(
+                decoupleMbusDeviceResponseDto.getMbusDeviceIdentification(),
+                decoupleMbusDeviceResponseDto.getChannelElementValues().getChannel());
+
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(responseMessageResultType)
+                .withOsgpException(osgpException)
+                .withDataObject(response)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
+
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
     @Transactional(value = "transactionManager")

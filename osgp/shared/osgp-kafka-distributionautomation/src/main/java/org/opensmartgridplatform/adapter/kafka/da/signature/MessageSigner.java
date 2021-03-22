@@ -56,18 +56,24 @@ public class MessageSigner {
     public static final String DEFAULT_SIGNATURE_KEY_ALGORITHM = "RSA";
     public static final int DEFAULT_SIGNATURE_KEY_SIZE = 2048;
 
-    private final String signatureAlgorithm;
-    private final String signatureProvider;
-    private final String signatureKeyAlgorithm;
-    private final int signatureKeySize;
+    private boolean isSigningEnabled;
 
-    private final Signature signingSignature;
-    private final Signature verificationSignature;
+    private String signatureAlgorithm;
+    private String signatureProvider;
+    private String signatureKeyAlgorithm;
+    private int signatureKeySize;
 
-    private final PrivateKey signingKey;
-    private final PublicKey verificationKey;
+    private Signature signingSignature;
+    private Signature verificationSignature;
+
+    private PrivateKey signingKey;
+    private PublicKey verificationKey;
 
     private MessageSigner(final Builder builder) {
+        this.isSigningEnabled = builder.isSigningEnabled;
+        if (!this.isSigningEnabled) {
+            return;
+        }
         this.signatureAlgorithm = builder.signatureAlgorithm;
         this.signatureKeyAlgorithm = builder.signatureKeyAlgorithm;
         this.signatureKeySize = builder.signatureKeySize;
@@ -94,7 +100,7 @@ public class MessageSigner {
     }
 
     public boolean canSignMessages() {
-        return this.signingSignature != null;
+        return this.isSigningEnabled && this.signingSignature != null;
     }
 
     /**
@@ -113,8 +119,10 @@ public class MessageSigner {
      *             if the signing process throws a SignatureException.
      */
     public void sign(final Message message) {
-        final byte[] signatureBytes = this.signature(message);
-        message.setSignature(ByteBuffer.wrap(signatureBytes));
+        if (this.isSigningEnabled) {
+            final byte[] signatureBytes = this.signature(message);
+            message.setSignature(ByteBuffer.wrap(signatureBytes));
+        }
     }
 
     /**
@@ -156,7 +164,7 @@ public class MessageSigner {
     }
 
     public boolean canVerifyMessageSignatures() {
-        return this.verificationSignature != null;
+        return this.isSigningEnabled && this.verificationSignature != null;
     }
 
     /**
@@ -208,6 +216,10 @@ public class MessageSigner {
         } catch (final IOException e) {
             throw new UncheckedIOException("Unable to determine ByteBuffer for Message", e);
         }
+    }
+
+    public boolean signingEnabled() {
+        return this.isSigningEnabled;
     }
 
     public String signatureAlgorithm() {
@@ -331,6 +343,8 @@ public class MessageSigner {
 
         private static final Pattern PEM_REMOVAL_PATTERN = Pattern.compile("-----(?:BEGIN|END) .*?-----|\\r|\\n");
 
+        private boolean isSigningEnabled;
+
         private String signatureAlgorithm = DEFAULT_SIGNATURE_ALGORITHM;
         private String signatureProvider = DEFAULT_SIGNATURE_PROVIDER;
         private String signatureKeyAlgorithm = DEFAULT_SIGNATURE_KEY_ALGORITHM;
@@ -338,6 +352,11 @@ public class MessageSigner {
 
         private PrivateKey signingKey = null;
         private PublicKey verificationKey = null;
+
+        public Builder signingEnabled(final boolean signingEnabled) {
+            this.isSigningEnabled = signingEnabled;
+            return this;
+        }
 
         public Builder signatureAlgorithm(final String signatureAlgorithm) {
             this.signatureAlgorithm = Objects.requireNonNull(signatureAlgorithm);

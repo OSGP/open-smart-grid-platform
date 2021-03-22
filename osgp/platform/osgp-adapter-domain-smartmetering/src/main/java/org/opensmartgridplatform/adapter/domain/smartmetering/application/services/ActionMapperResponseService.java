@@ -18,6 +18,7 @@ import javax.annotation.PostConstruct;
 import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.CommonMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
+import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.InstallationMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ManagementMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActionResponse;
@@ -27,6 +28,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmReg
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AssociationLnObjectsResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.BundleMessagesResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponse;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceByChannelResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventMessagesResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FaultResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersionGasResponse;
@@ -51,6 +53,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmRegisterRes
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AssociationLnObjectsResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FaultResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FirmwareVersionGasResponseDto;
@@ -91,6 +94,9 @@ public class ActionMapperResponseService {
     @Autowired
     private CommonMapper commonMapper;
 
+    @Autowired
+    private InstallationMapper installationMapper;
+
     private static final Map<Class<? extends ActionResponseDto>, ConfigurableMapper> classToMapperMap = new HashMap<>();
     private static final Map<Class<? extends ActionResponseDto>, Class<? extends ActionResponse>> classMap = new HashMap<>();
 
@@ -116,6 +122,7 @@ public class ActionMapperResponseService {
         classMap.put(GetPowerQualityProfileResponseDto.class, GetPowerQualityProfileResponse.class);
         classMap.put(ActualPowerQualityResponseDto.class, ActualPowerQualityResponse.class);
         classMap.put(CoupleMbusDeviceByChannelResponseDto.class, CoupleMbusDeviceByChannelResponse.class);
+        classMap.put(DecoupleMbusDeviceResponseDto.class, DecoupleMbusDeviceByChannelResponse.class);
         classMap.put(GetMbusEncryptionKeyStatusResponseDto.class, GetMbusEncryptionKeyStatusResponseData.class);
         classMap.put(GetMbusEncryptionKeyStatusByChannelResponseDto.class,
                 GetMbusEncryptionKeyStatusByChannelResponseData.class);
@@ -148,6 +155,7 @@ public class ActionMapperResponseService {
         classToMapperMap.put(GetPowerQualityProfileResponseDto.class, this.monitoringMapper);
         classToMapperMap.put(ActualPowerQualityResponseDto.class, this.monitoringMapper);
         classToMapperMap.put(CoupleMbusDeviceByChannelResponseDto.class, this.commonMapper);
+        classToMapperMap.put(DecoupleMbusDeviceResponseDto.class, this.installationMapper);
         classToMapperMap.put(GetMbusEncryptionKeyStatusResponseDto.class, this.configurationMapper);
         classToMapperMap.put(GetMbusEncryptionKeyStatusByChannelResponseDto.class, this.configurationMapper);
         classToMapperMap.put(SetDeviceLifecycleStatusByChannelResponseDto.class, this.managementMapper);

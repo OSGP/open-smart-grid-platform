@@ -20,6 +20,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.BundleMe
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FirmwareVersionGasResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FirmwareVersionResponseDto;
@@ -136,11 +137,14 @@ public class BundleService {
             if (action instanceof CoupleMbusDeviceByChannelResponseDto) {
                 this.mBusGatewayService.handleCoupleMbusDeviceByChannelResponse(deviceMessageMetadata,
                         (CoupleMbusDeviceByChannelResponseDto) action);
+            } else if (action instanceof DecoupleMbusDeviceResponseDto) {
+                this.mBusGatewayService.handleDecoupleMbusDeviceResponse(deviceMessageMetadata,
+                        (DecoupleMbusDeviceResponseDto) action);
             } else if (action instanceof SetDeviceLifecycleStatusByChannelResponseDto) {
                 this.managementService
                         .setDeviceLifecycleStatusByChannel((SetDeviceLifecycleStatusByChannelResponseDto) action);
             } else if (action instanceof EventMessageDataResponseDto) {
-                this.eventService.addEventTypeToEvents(deviceMessageMetadata, (EventMessageDataResponseDto)action);
+                this.eventService.addEventTypeToEvents(deviceMessageMetadata, (EventMessageDataResponseDto) action);
             } else if (action instanceof FirmwareVersionResponseDto) {
                 final List<FirmwareVersion> firmwareVersions = this.configurationMapper.mapAsList(
                         ((FirmwareVersionResponseDto) action).getFirmwareVersions(), FirmwareVersion.class);

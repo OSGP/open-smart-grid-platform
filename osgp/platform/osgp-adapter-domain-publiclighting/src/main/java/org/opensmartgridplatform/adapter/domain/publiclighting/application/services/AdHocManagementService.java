@@ -23,6 +23,7 @@ import org.opensmartgridplatform.domain.core.entities.DeviceOutputSetting;
 import org.opensmartgridplatform.domain.core.entities.Event;
 import org.opensmartgridplatform.domain.core.entities.LightMeasurementDevice;
 import org.opensmartgridplatform.domain.core.entities.RelayStatus;
+import org.opensmartgridplatform.domain.core.entities.RtuDevice;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
 import org.opensmartgridplatform.domain.core.repositories.EventRepository;
@@ -148,10 +149,15 @@ public class AdHocManagementService extends AbstractService {
         final Instant lastCommunicationTime = this.updateLmdLastCommunicationTime(lightMeasurementDevice)
                 .getLastCommunicationTime();
         if (gateway != null) {
-            gateway.setLastSuccessfulConnectionTimestamp(Date.from(lastCommunicationTime));
             this.rtuDeviceRepository.findById(gateway.getId())
-                    .ifPresent(rtu -> rtu.messageReceived(lastCommunicationTime));
+                    .ifPresent(rtu -> this.updateGatewayLastCommunicationTime(rtu, lastCommunicationTime));
         }
+    }
+
+    private void updateGatewayLastCommunicationTime(final RtuDevice rtuDevice, final Instant lastCommunicationTime) {
+        rtuDevice.setLastSuccessfulConnectionTimestamp(lastCommunicationTime);
+        rtuDevice.messageReceived(lastCommunicationTime);
+        this.rtuDeviceRepository.save(rtuDevice);
     }
 
     // === GET STATUS ===
@@ -189,7 +195,7 @@ public class AdHocManagementService extends AbstractService {
 
         final String actualMessageType = LightMeasurementDevice.LMD_TYPE.equals(device.getDeviceType())
                 ? DeviceFunction.GET_LIGHT_SENSOR_STATUS.name()
-                        : messageType;
+                : messageType;
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, allowedDomainTypeDto), actualMessageType, messagePriority,
@@ -382,6 +388,13 @@ public class AdHocManagementService extends AbstractService {
         LOGGER.info("Trying to update lastCommunicationTime for light measurement device: {} at DateTime: {}",
                 lmd.getDeviceIdentification(), Date.from(now));
         lmd.setLastCommunicationTime(now);
+
+        final Device gateway = lmd.getGatewayDevice();
+        if (gateway != null) {
+            this.rtuDeviceRepository.findById(gateway.getId())
+                    .ifPresent(rtu -> this.updateGatewayLastCommunicationTime(rtu, now));
+        }
+
         return this.lightMeasurementDeviceRepository.save(lmd);
     }
 

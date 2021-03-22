@@ -87,6 +87,7 @@ public class DeviceManagementMapper extends ConfigurableMapper {
         mapperFactory.getConverterFactory().registerConverter(new EventTypeConverter());
         mapperFactory.getConverterFactory().registerConverter(new SmartMeterConverter());
         mapperFactory.getConverterFactory().registerConverter(new DeviceConverter());
+        mapperFactory.getConverterFactory().registerConverter(new RtuDeviceConverter());
         mapperFactory.getConverterFactory().registerConverter(new LightMeasurementDeviceConverter());
         mapperFactory.getConverterFactory().registerConverter(new SsldConverter(this.ssldRepository));
     }
