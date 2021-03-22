@@ -13,29 +13,29 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Inst
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestDataDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CoupleMbusDeviceByChannelRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class DecoupleMbusDeviceRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
     @Autowired
     private InstallationService installationService;
 
-    protected CoupleMbusDeviceByChannelRequestMessageProcessor() {
-        super(MessageType.COUPLE_MBUS_DEVICE_BY_CHANNEL);
+    protected DecoupleMbusDeviceRequestMessageProcessor() {
+        super(MessageType.DECOUPLE_MBUS_DEVICE);
     }
 
     @Override
     protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException {
 
-        this.assertRequestObjectType(CoupleMbusDeviceByChannelRequestDataDto.class, requestObject);
+        this.assertRequestObjectType(DecoupleMbusDeviceDto.class, requestObject);
 
-        final CoupleMbusDeviceByChannelRequestDataDto requestDto = (CoupleMbusDeviceByChannelRequestDataDto) requestObject;
-        return this.installationService.coupleMbusDeviceByChannel(conn, device, requestDto);
+        final DecoupleMbusDeviceDto decoupleMbusDeviceDto = (DecoupleMbusDeviceDto) requestObject;
+        return this.installationService.decoupleMbusDevice(conn, device, decoupleMbusDeviceDto);
     }
 }

@@ -10,7 +10,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.mess
 
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.InstallationService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.BaseRequestMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceRequestData;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
@@ -24,16 +24,16 @@ import org.springframework.stereotype.Component;
  * to decouple a device and a m-bus device
  */
 @Component
-public class DeCoupleMbusDeviceRequestMessageProcessor extends BaseRequestMessageProcessor {
+public class DecoupleMbusDeviceRequestMessageProcessor extends BaseRequestMessageProcessor {
 
     @Autowired
     @Qualifier("domainSmartMeteringInstallationService")
     private InstallationService installationService;
 
     @Autowired
-    protected DeCoupleMbusDeviceRequestMessageProcessor(
+    protected DecoupleMbusDeviceRequestMessageProcessor(
             @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
-        super(messageProcessorMap, MessageType.DE_COUPLE_MBUS_DEVICE);
+        super(messageProcessorMap, MessageType.DECOUPLE_MBUS_DEVICE);
     }
 
     /*
@@ -46,8 +46,8 @@ public class DeCoupleMbusDeviceRequestMessageProcessor extends BaseRequestMessag
     @Override
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
             throws FunctionalException {
-        final DeCoupleMbusDeviceRequestData requestData = (DeCoupleMbusDeviceRequestData) dataObject;
-        this.installationService.deCoupleMbusDevice(deviceMessageMetadata, requestData);
+        final DecoupleMbusDeviceRequestData requestData = (DecoupleMbusDeviceRequestData) dataObject;
+        this.installationService.decoupleMbusDevice(deviceMessageMetadata, requestData);
     }
 
 }

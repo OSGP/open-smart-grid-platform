@@ -15,10 +15,10 @@ import org.springframework.stereotype.Component;
  * Class for processing smart metering decouple mbus device response messages
  */
 @Component
-public class DeCoupleMbusDeviceResponseMessageProcessor extends DomainResponseMessageProcessor {
+public class DecoupleMbusDeviceResponseMessageProcessor extends DomainResponseMessageProcessor {
 
-    protected DeCoupleMbusDeviceResponseMessageProcessor() {
-        super(MessageType.DE_COUPLE_MBUS_DEVICE);
+    protected DecoupleMbusDeviceResponseMessageProcessor() {
+        super(MessageType.DECOUPLE_MBUS_DEVICE);
     }
 
 }

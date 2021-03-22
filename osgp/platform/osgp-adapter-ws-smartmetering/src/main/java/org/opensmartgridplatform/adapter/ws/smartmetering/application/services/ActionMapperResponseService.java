@@ -45,6 +45,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmReg
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AssociationLnObjectsResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.BundleMessagesResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponse;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceByChannelResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventMessagesResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FaultResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
@@ -117,6 +118,7 @@ public class ActionMapperResponseService {
         CLASS_TO_MAPPER_MAP.put(GetPowerQualityProfileResponse.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(ActualPowerQualityResponse.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(CoupleMbusDeviceByChannelResponse.class, this.installationMapper);
+        CLASS_TO_MAPPER_MAP.put(DecoupleMbusDeviceByChannelResponse.class, this.installationMapper);
         CLASS_TO_MAPPER_MAP.put(GetMbusEncryptionKeyStatusResponseData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(GetMbusEncryptionKeyStatusByChannelResponseData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SetDeviceLifecycleStatusByChannelResponseData.class, this.managementMapper);
@@ -154,6 +156,8 @@ public class ActionMapperResponseService {
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActualPowerQualityResponse.class);
         CLASS_MAP.put(CoupleMbusDeviceByChannelResponse.class,
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.CoupleMbusDeviceByChannelResponse.class);
+        CLASS_MAP.put(DecoupleMbusDeviceByChannelResponse.class,
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.DecoupleMbusDeviceByChannelResponse.class);
         CLASS_MAP.put(GetMbusEncryptionKeyStatusResponseData.class, GetMbusEncryptionKeyStatusResponse.class);
         CLASS_MAP.put(GetMbusEncryptionKeyStatusByChannelResponseData.class,
                 GetMbusEncryptionKeyStatusByChannelResponse.class);
