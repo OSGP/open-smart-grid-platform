@@ -33,6 +33,7 @@ public class GeneralInterrogationService {
 
     public void sendGeneralInterrogation(final ClientConnection deviceConnection, final RequestMetadata requestMetadata)
             throws IOException {
+        final String connectedDevice = deviceConnection.getConnectionParameters().getDeviceIdentification();
         final int commonAddress = deviceConnection.getConnectionParameters().getCommonAddress();
 
         deviceConnection.getConnection()
@@ -45,8 +46,8 @@ public class GeneralInterrogationService {
                 ORIGINATOR_ADDRESS, commonAddress,
                 new InformationObject(0, new IeQualifierOfInterrogation(QUALIFIER_OF_INTERROGATION_ID)));
 
-        final LogItem logItem = new LogItem(requestMetadata.getDeviceIdentification(),
-                requestMetadata.getOrganisationIdentification(), false, asdu.toString());
+        final LogItem logItem = new LogItem(connectedDevice, requestMetadata.getOrganisationIdentification(), false,
+                asdu.toString());
 
         this.loggingService.log(logItem);
     }
