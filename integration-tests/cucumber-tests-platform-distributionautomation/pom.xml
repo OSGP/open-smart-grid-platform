@@ -126,6 +126,11 @@
     </dependency>
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
+      <artifactId>cucumber-tests-protocol-iec60870</artifactId>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-adapter-kafka-distributionautomation</artifactId>
       <classifier>classes</classifier>
     </dependency>

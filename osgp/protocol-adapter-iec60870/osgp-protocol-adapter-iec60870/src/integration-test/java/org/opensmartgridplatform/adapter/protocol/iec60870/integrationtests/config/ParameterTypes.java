@@ -14,7 +14,7 @@ import io.cucumber.java.ParameterType;
 
 public class ParameterTypes {
 
-    @ParameterType("DISTRIBUTION_AUTOMATION_DEVICE|LIGHT_MEASUREMENT_GATEWAY|LIGHT_MEASUREMENT_DEVICE")
+    @ParameterType("DISTRIBUTION_AUTOMATION_DEVICE|LIGHT_MEASUREMENT_RTU|LIGHT_SENSOR")
     public DeviceType deviceType(final String deviceType) {
         return DeviceType.valueOf(deviceType);
     }

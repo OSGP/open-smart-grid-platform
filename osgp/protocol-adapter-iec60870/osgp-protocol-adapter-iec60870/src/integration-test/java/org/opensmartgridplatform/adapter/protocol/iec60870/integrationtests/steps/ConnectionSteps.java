@@ -104,9 +104,9 @@ public class ConnectionSteps {
                 new DeviceConnection(this.connection, this.connectionParameters));
     }
 
-    @Given("an active connection with the light measurement gateway {string}")
+    @Given("an active connection with the light measurement rtu {string}")
     public void anActiveConnectionWithTheControlledStation(final String deviceIdentification) throws Exception {
-        this.givenIec60870DeviceIsConnected(deviceIdentification, DeviceType.LIGHT_MEASUREMENT_GATEWAY);
+        this.givenIec60870DeviceIsConnected(deviceIdentification, DeviceType.LIGHT_MEASUREMENT_RTU);
     }
 
     @When("I connect to IEC60870 device {string}")

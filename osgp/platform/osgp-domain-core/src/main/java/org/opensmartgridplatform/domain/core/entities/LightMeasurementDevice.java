@@ -9,16 +9,11 @@ package org.opensmartgridplatform.domain.core.entities;
 
 import java.time.Instant;
 import java.util.Objects;
-import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.OneToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
 
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 import org.opensmartgridplatform.domain.core.valueobjects.Address;
 import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
 import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
@@ -48,10 +43,6 @@ public class LightMeasurementDevice extends Device {
 
     @Column
     private Instant lastCommunicationTime;
-
-    @OneToMany(mappedBy = "id", cascade = { CascadeType.MERGE, CascadeType.PERSIST }, orphanRemoval = true)
-    @LazyCollection(LazyCollectionOption.TRUE)
-    private Set<Device> devices;
 
     public LightMeasurementDevice() {
         // Default constructor.

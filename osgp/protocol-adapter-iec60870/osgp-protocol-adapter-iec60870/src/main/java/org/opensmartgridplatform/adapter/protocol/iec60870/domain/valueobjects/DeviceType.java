@@ -9,6 +9,6 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects;
 
 public enum DeviceType {
     DISTRIBUTION_AUTOMATION_DEVICE,
-    LIGHT_MEASUREMENT_GATEWAY,
-    LIGHT_MEASUREMENT_DEVICE;
+    LIGHT_MEASUREMENT_RTU,
+    LIGHT_SENSOR;
 }

@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.services;
 
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -16,24 +17,22 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AddSmartMeterRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DeCoupleMbusDeviceRequestData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateSmartMeterRequest;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceByChannelRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetSubscriptionInformationRequestData;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.validation.Identification;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+@Slf4j
 @Service(value = "wsSmartMeteringInstallationService")
 @Validated
 public class InstallationService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(InstallationService.class);
 
     @Autowired
     private DomainHelperService domainHelperService;
@@ -48,8 +47,8 @@ public class InstallationService {
             @Identification final String deviceIdentification, final AddSmartMeterRequest addSmartMeterRequest,
             final int messagePriority, final Long scheduleTime) {
 
-        LOGGER.debug("enqueueAddSmartMeterRequest called with organisation {} and device {}",
-                organisationIdentification, deviceIdentification);
+        log.debug("enqueueAddSmartMeterRequest called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
 
         final String correlationUid = this.correlationIdProviderService
                 .getCorrelationId(organisationIdentification, deviceIdentification);
@@ -60,28 +59,6 @@ public class InstallationService {
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(addSmartMeterRequest).build();
-
-        this.smartMeteringRequestMessageSender.send(message);
-
-        return correlationUid;
-    }
-
-    public String enqueueUpdateSmartMeterRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final UpdateSmartMeterRequest updateSmartMeterRequest,
-            final int messagePriority, final Long scheduleTime) {
-
-        LOGGER.debug("enqueueAddSmartMeterRequest called with organisation {} and device {}",
-                organisationIdentification, deviceIdentification);
-
-        final String correlationUid = this.correlationIdProviderService
-                .getCorrelationId(organisationIdentification, deviceIdentification);
-
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, MessageType.UPDATE_METER.name(), messagePriority,
-                scheduleTime);
-
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(updateSmartMeterRequest).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -111,7 +88,7 @@ public class InstallationService {
 
         this.domainHelperService.checkAllowed(organisation, device, DeviceFunction.COUPLE_MBUS_DEVICE);
 
-        LOGGER.debug("enqueueCoupleMbusDeviceRequest called with organisation {}, gateway {} and mbus device {}",
+        log.debug("enqueueCoupleMbusDeviceRequest called with organisation {}, gateway {} and mbus device {}",
                 organisationIdentification, deviceIdentification, mbusDeviceIdentification);
 
         final String correlationUid = this.correlationIdProviderService
@@ -148,27 +125,27 @@ public class InstallationService {
      *
      * @return the correlationUid identifying the operation
      */
-    public String enqueueDeCoupleMbusDeviceRequest(@Identification final String organisationIdentification,
+    public String enqueueDecoupleMbusDeviceRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Identification final String mbusDeviceIdentification,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
-        this.domainHelperService.checkAllowed(organisation, device, DeviceFunction.DE_COUPLE_MBUS_DEVICE);
+        this.domainHelperService.checkAllowed(organisation, device, DeviceFunction.DECOUPLE_MBUS_DEVICE);
 
-        LOGGER.debug("enqueueDeCoupleMbusDeviceRequest called with organisation {}, gateway {} and mbus device {}",
+        log.debug("enqueueDecoupleMbusDeviceRequest called with organisation {}, gateway {} and mbus device {}",
                 organisationIdentification, deviceIdentification, mbusDeviceIdentification);
 
         final String correlationUid = this.correlationIdProviderService
                 .getCorrelationId(organisationIdentification, deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, MessageType.DE_COUPLE_MBUS_DEVICE.name(), messagePriority,
+                organisationIdentification, correlationUid, MessageType.DECOUPLE_MBUS_DEVICE.name(), messagePriority,
                 scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata)
-                .request(new DeCoupleMbusDeviceRequestData(mbusDeviceIdentification)).build();
+                .request(new DecoupleMbusDeviceRequestData(mbusDeviceIdentification)).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -196,7 +173,7 @@ public class InstallationService {
 
         this.domainHelperService.checkAllowed(organisation, device, DeviceFunction.COUPLE_MBUS_DEVICE_BY_CHANNEL);
 
-        LOGGER.debug("enqueueCoupleMbusDeviceByChannelRequest called with organisation {}, gateway {}",
+        log.debug("enqueueCoupleMbusDeviceByChannelRequest called with organisation {}, gateway {}",
                 organisationIdentification, deviceIdentification);
 
         final String correlationUid = this.correlationIdProviderService
@@ -209,6 +186,72 @@ public class InstallationService {
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(new CoupleMbusDeviceByChannelRequestData(channel))
                 .build();
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    /**
+     * @param organisationIdentification
+     *         the organisation requesting the coupling of devices
+     * @param deviceIdentification
+     *         the identification of the gateway device
+     * @param messagePriority
+     *         the priority of the message
+     * @param scheduleTime
+     *         the time the request should be carried out
+     * @param channel
+     *         the channel on the gateway device that should be cleared
+     *         (decoupled)
+     *
+     * @return the correlationUid identifying the operation
+     */
+    public String enqueueDecoupleMbusDeviceByChannelRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final int messagePriority, final Long scheduleTime,
+            final short channel) throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.checkAllowed(organisation, device, DeviceFunction.DECOUPLE_MBUS_DEVICE_BY_CHANNEL);
+
+        log.debug("enqueueDecoupleMbusDeviceByChannelRequest called with organisation {}, gateway {}",
+                organisationIdentification, deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService
+                .getCorrelationId(organisationIdentification, deviceIdentification);
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, MessageType.DECOUPLE_MBUS_DEVICE_BY_CHANNEL.name(),
+                messagePriority, scheduleTime);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .request(new DecoupleMbusDeviceByChannelRequestData(channel)).build();
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    public String enqueueSetSubscriptionInformationRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification,
+            final SetSubscriptionInformationRequestData setSubscriptionInformationRequestData,
+            final int messagePriority, final Long scheduleTime) {
+
+        log.debug("enqueueAddSmartMeterRequest called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService
+                .getCorrelationId(organisationIdentification, deviceIdentification);
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, MessageType.SET_SUBSCRIPTION_INFORMATION.name(),
+                messagePriority, scheduleTime);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+                .deviceMessageMetadata(deviceMessageMetadata).request(setSubscriptionInformationRequestData).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 

@@ -563,7 +563,7 @@
   <xsd:element name="ActualPowerQualityResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="tns:ActualPowerQualityResponseData"></xsd:extension>
+        <xsd:extension base="tns:ActualPowerQualityResponseData" />
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -620,7 +620,7 @@
   <xsd:element name="ActualPowerQualityAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncResponse"></xsd:extension>
+        <xsd:extension base="common:AsyncResponse" />
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -628,7 +628,7 @@
   <xsd:element name="ActualPowerQualityAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncRequest"></xsd:extension>
+        <xsd:extension base="common:AsyncRequest" />
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
