@@ -18,7 +18,6 @@ public class FirmwareVersionGasResponse extends ActionResponse {
     private final FirmwareVersion firmwareVersion;
 
     public FirmwareVersionGasResponse(final FirmwareVersion firmwareVersion) {
-        super();
         this.firmwareVersion = firmwareVersion;
     }
 

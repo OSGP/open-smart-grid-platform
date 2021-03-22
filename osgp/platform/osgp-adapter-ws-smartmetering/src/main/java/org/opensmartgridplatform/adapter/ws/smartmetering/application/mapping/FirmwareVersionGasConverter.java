@@ -9,12 +9,16 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
+import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleType;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion;
 
+@Slf4j
 public class FirmwareVersionGasConverter extends
         BidirectionalConverter<FirmwareVersion,
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.FirmwareVersionGas> {
@@ -33,7 +37,11 @@ public class FirmwareVersionGasConverter extends
         firmwareVersion.setFirmwareModuleType(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.FirmwareModuleGasType.valueOf(
                         source.getFirmwareModuleType().getDescription()));
-        firmwareVersion.setVersion(source.getVersion().getBytes());
+        try {
+            firmwareVersion.setVersion(Hex.decodeHex(source.getVersion()));
+        } catch (DecoderException e) {
+            log.error("Simple version info is not a valid HexString", e);
+        }
 
         return firmwareVersion;
     }

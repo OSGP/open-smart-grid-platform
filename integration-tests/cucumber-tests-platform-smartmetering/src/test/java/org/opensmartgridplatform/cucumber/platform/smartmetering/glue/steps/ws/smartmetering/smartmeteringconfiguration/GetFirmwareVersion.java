@@ -17,6 +17,7 @@ import java.util.Map;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Hex;
 import org.checkerframework.checker.index.qual.SameLen;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.FirmwareVersion;
@@ -146,14 +147,16 @@ public class GetFirmwareVersion {
 
             final FirmwareModule firmwareModule = this.firmwareModuleRepository.findByDescriptionIgnoreCase(
                     moduleDescription);
+
             assertThat(firmwareModule).as(
                     "Received version \"" + moduleVersion + "\" for unknown firmware module \"" + moduleDescription
                             + "\"").isNotNull();
 
-            final String expectedVersion = expectedVersionsByModule.get(firmwareModule);
-            assertThat(expectedVersion).as(
+            assertThat(moduleVersion).as(
                     "Received version \"" + moduleVersion + "\" for firmware module \"" + moduleDescription
                             + "\" which was not expected").isNotNull();
+
+            final String expectedVersion = expectedVersionsByModule.get(firmwareModule);
             assertThat(moduleVersion).as("Version for firmware module \"" + moduleDescription + "\"").isEqualTo(
                     expectedVersion);
         }
@@ -168,7 +171,7 @@ public class GetFirmwareVersion {
         assertThat(firmwareVersionGas.getVersion()).as("The received firmware version is null").isNotNull();
 
         final String moduleDescription = firmwareVersionGas.getFirmwareModuleType().name();
-        final String moduleVersion = new String(firmwareVersionGas.getVersion());
+        final String moduleVersion = Hex.encodeHexString(firmwareVersionGas.getVersion());
 
         final FirmwareModule firmwareModule = this.firmwareModuleRepository.findByDescriptionIgnoreCase(
                 moduleDescription);
@@ -177,12 +180,11 @@ public class GetFirmwareVersion {
                 String.format("Received version \"%s\" for unknown firmware module \"%s\"", moduleVersion,
                         moduleDescription)).isNotNull();
 
-        final String expectedVersion = getNullOrNonEmptyString(settings, PlatformKeys.SIMPLE_VERSION_INFO, null);
-
-        assertThat(expectedVersion).as(
+        assertThat(moduleVersion).as(
                 String.format("Received version \"%s\" for unknown firmware module \"%s\"", moduleVersion,
                         moduleDescription)).isNotNull();
 
+        final String expectedVersion = getNullOrNonEmptyString(settings, PlatformKeys.SIMPLE_VERSION_INFO, null);
         assertThat(moduleVersion).as(String.format("Version for firmware module \"%s\"", moduleDescription)).isEqualTo(
                 expectedVersion);
     }

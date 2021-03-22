@@ -196,7 +196,7 @@
   <xsd:element name="GetFirmwareVersionRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:Identification"/>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -228,7 +228,7 @@
   <xsd:element name="GetFirmwareVersionGasRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:Identification"/>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
