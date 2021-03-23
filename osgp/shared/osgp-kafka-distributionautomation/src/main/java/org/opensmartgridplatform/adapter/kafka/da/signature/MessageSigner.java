@@ -62,6 +62,8 @@ public class MessageSigner {
 
     private boolean isSigningEnabled;
 
+    private boolean isStripHeaders;
+
     private String signatureAlgorithm;
     private String signatureProvider;
     private String signatureKeyAlgorithm;
@@ -78,6 +80,7 @@ public class MessageSigner {
         if (!this.isSigningEnabled) {
             return;
         }
+        this.isStripHeaders = builder.isStripHeaders;
         this.signatureAlgorithm = builder.signatureAlgorithm;
         this.signatureKeyAlgorithm = builder.signatureKeyAlgorithm;
         this.signatureKeySize = builder.signatureKeySize;
@@ -157,7 +160,12 @@ public class MessageSigner {
         try {
             message.setSignature(null);
             synchronized (this.signingSignature) {
-                final byte[] messageBytes = this.toSchemalessBytes(this.toByteBuffer(message));
+                byte[] messageBytes;
+                if (this.isStripHeaders) {
+                    messageBytes = this.toSchemalessBytes(this.toByteBuffer(message));
+                } else {
+                    messageBytes = this.toByteBuffer(message).array();
+                }
                 this.signingSignature.update(messageBytes);
                 return this.signingSignature.sign();
             }
@@ -205,7 +213,12 @@ public class MessageSigner {
         try {
             message.setSignature(null);
             synchronized (this.verificationSignature) {
-                final byte[] messageBytes = this.toSchemalessBytes(this.toByteBuffer(message));
+                byte[] messageBytes;
+                if (this.isStripHeaders) {
+                    messageBytes = this.toSchemalessBytes(this.toByteBuffer(message));
+                } else {
+                    messageBytes = this.toByteBuffer(message).array();
+                }
                 this.verificationSignature.update(messageBytes);
                 return this.verificationSignature.verify(signatureBytes);
             }
@@ -239,6 +252,10 @@ public class MessageSigner {
 
     public boolean signingEnabled() {
         return this.isSigningEnabled;
+    }
+
+    public boolean stripHeaders() {
+        return this.isStripHeaders;
     }
 
     public String signatureAlgorithm() {
@@ -364,6 +381,8 @@ public class MessageSigner {
 
         private boolean isSigningEnabled;
 
+        private boolean isStripHeaders;
+
         private String signatureAlgorithm = DEFAULT_SIGNATURE_ALGORITHM;
         private String signatureProvider = DEFAULT_SIGNATURE_PROVIDER;
         private String signatureKeyAlgorithm = DEFAULT_SIGNATURE_KEY_ALGORITHM;
@@ -374,6 +393,11 @@ public class MessageSigner {
 
         public Builder signingEnabled(final boolean signingEnabled) {
             this.isSigningEnabled = signingEnabled;
+            return this;
+        }
+
+        public Builder stripHeaders(final boolean stripHeaders) {
+            this.isStripHeaders = stripHeaders;
             return this;
         }
 
@@ -469,5 +493,6 @@ public class MessageSigner {
         public MessageSigner build() {
             return new MessageSigner(this);
         }
+
     }
 }

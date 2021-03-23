@@ -43,6 +43,7 @@ public class LowVoltageMessageProducerConfig extends AbstractKafkaProducerConfig
     @Bean
     public MessageSigner messageSigner(
             @Value("${distributionautomation.kafka.message.signing.enabled}") final boolean signingEnabled,
+            @Value("${distributionautomation.kafka.message.signing.strip.headers}") final boolean stripHeaders,
             @Value("${distributionautomation.kafka.message.signature.algorithm:SHA256withRSA}") final String signatureAlgorithm,
             @Value("${distributionautomation.kafka.message.signature.provider:SunRsaSign}") final String signatureProvider,
             @Value("${distributionautomation.kafka.message.signature.key.algorithm:RSA}") final String signatureKeyAlgorithm,
@@ -52,6 +53,7 @@ public class LowVoltageMessageProducerConfig extends AbstractKafkaProducerConfig
 
         return MessageSigner.newBuilder()
                 .signingEnabled(signingEnabled)
+                .stripHeaders(stripHeaders)
                 .signatureAlgorithm(signatureAlgorithm)
                 .signatureProvider(signatureProvider)
                 .signatureKeyAlgorithm(signatureKeyAlgorithm)

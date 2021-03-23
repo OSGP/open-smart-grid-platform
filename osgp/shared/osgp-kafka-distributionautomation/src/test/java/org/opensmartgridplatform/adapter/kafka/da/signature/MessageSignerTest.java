@@ -34,6 +34,8 @@ class MessageSignerTest {
 
     private static final boolean IS_SIGNING_ENABLED = true;
 
+    private static final boolean IS_STRIP_HEADERS = true;
+
     private static final String SIGNATURE_ALGORITHM = "SHA256withRSA";
     private static final String SIGNATURE_PROVIDER = "SunRsaSign";
     private static final String SIGNATURE_KEY_ALGORITHM = "RSA";
@@ -47,6 +49,7 @@ class MessageSignerTest {
 
     private final MessageSigner messageSigner = MessageSigner.newBuilder()
             .signingEnabled(IS_SIGNING_ENABLED)
+            .stripHeaders(IS_STRIP_HEADERS)
             .signatureAlgorithm(SIGNATURE_ALGORITHM)
             .signatureProvider(SIGNATURE_PROVIDER)
             .signatureKeyAlgorithm(SIGNATURE_KEY_ALGORITHM)
