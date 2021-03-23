@@ -478,7 +478,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
             @ResponseUrl final String responseUrl) throws OsgpException {
 
-        log.info("Incoming SetSubscriptionInformation for meter: {}.", request.getDevice().getDeviceIdentification());
+        log.info("Incoming SetSubscriptionInformation for meter: {}.", request.getDeviceIdentification());
 
         SetSubscriptionInformationAsyncResponse response = null;
         try {
@@ -507,7 +507,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
         } catch (final Exception e) {
 
             log.error("Exception: {} while updating device: {} for organisation {}.", e.getMessage(),
-                    request.getDevice().getDeviceIdentification(), organisationIdentification, e);
+                    request.getDeviceIdentification(), organisationIdentification, e);
 
             this.handleException(e);
         }
