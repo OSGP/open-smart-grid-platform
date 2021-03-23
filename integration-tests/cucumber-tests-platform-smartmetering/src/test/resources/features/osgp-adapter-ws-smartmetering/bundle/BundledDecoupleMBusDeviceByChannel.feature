@@ -73,7 +73,7 @@ Feature: SmartMetering Bundle - Decouple M-Bus Device By Channel
       | 8 | unsigned             |       66 |
       | 9 | unsigned             |        3 |
     And a dlms device
-      | DeviceIdentification           | TESTG102400000001 |
+      | DeviceIdentification           | TESTG102400000002 |
       | DeviceType                     | SMART_METER_G     |
       | GatewayDeviceIdentification    | TEST1024000000001 |
       | Channel                        |                 1 |
@@ -83,7 +83,7 @@ Feature: SmartMetering Bundle - Decouple M-Bus Device By Channel
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
     When the bundle request is received
-    Then the Decouple M-Bus Device By Channel bundle response is "OK" with Mbus Device "TESTG102400000001"
+    Then the Decouple M-Bus Device By Channel bundle response is "OK" with Mbus Device "TESTG102400000002"
     And the values for classid 72 obiscode "0-1:24.1.0" on device simulator "TEST1024000000001" are
       | 5 | unsigned             | 0 |
       | 6 | double-long-unsigned | 0 |
@@ -91,7 +91,7 @@ Feature: SmartMetering Bundle - Decouple M-Bus Device By Channel
       | 8 | unsigned             | 0 |
       | 9 | unsigned             | 0 |
     And the smart meter is decoupled from gateway device in the core database
-      | DeviceIdentification           | TESTG102400000001 |
+      | DeviceIdentification           | TESTG102400000002 |
 
   Scenario: Decouple M-Bus Device By Channel on a administratively coupled E-meter, different from one in channel
     Given a bundle request

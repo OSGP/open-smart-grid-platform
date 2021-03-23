@@ -284,7 +284,7 @@ public class MBusGatewayService {
             mbusDevice.setChannel(null);
             mbusDevice.setMbusPrimaryAddress(null);
             mbusDevice.updateGatewayDevice(null);
-            this.smartMeteringDeviceRepository.save(mbusDevice);
+            this.smartMeteringDeviceRepository.saveAndFlush(mbusDevice);
         }
     }
 
