@@ -27,6 +27,30 @@ import com.alliander.data.scadameasurementpublishedevent.Message;
 @Configuration
 public class LowVoltageMessageProducerConfig extends AbstractKafkaProducerConfig<String, Message> {
 
+    @Value("${distributionautomation.kafka.message.signing.enabled}")
+    boolean isSigningEnabled;
+
+    @Value("${distributionautomation.kafka.message.signing.strip.headers}")
+    boolean isStripHeaders;
+
+    @Value("${distributionautomation.kafka.message.signature.algorithm:SHA256withRSA}")
+    String signatureAlgorithm;
+
+    @Value("${distributionautomation.kafka.message.signature.provider:SunRsaSign}")
+    String signatureProvider;
+
+    @Value("${distributionautomation.kafka.message.signature.key.algorithm:RSA}")
+    String signatureKeyAlgorithm;
+
+    @Value("${distributionautomation.kafka.message.signature.key.size:2048}")
+    int signatureKeySize;
+
+    @Value("${distributionautomation.kafka.message.signature.key.private:#{null}}")
+    Resource signingKeyResource;
+
+    @Value("${distributionautomation.kafka.message.signature.key.public:#{null}}")
+    Resource verificationKeyResource;
+
     @Autowired
     public LowVoltageMessageProducerConfig(final Environment environment,
             @Value("${distributionautomation.kafka.common.properties.prefix}") final String propertiesPrefix,
@@ -42,24 +66,33 @@ public class LowVoltageMessageProducerConfig extends AbstractKafkaProducerConfig
 
     @Bean
     public MessageSigner messageSigner(
-            @Value("${distributionautomation.kafka.message.signing.enabled}") final boolean signingEnabled,
-            @Value("${distributionautomation.kafka.message.signing.strip.headers}") final boolean stripHeaders,
-            @Value("${distributionautomation.kafka.message.signature.algorithm:SHA256withRSA}") final String signatureAlgorithm,
-            @Value("${distributionautomation.kafka.message.signature.provider:SunRsaSign}") final String signatureProvider,
-            @Value("${distributionautomation.kafka.message.signature.key.algorithm:RSA}") final String signatureKeyAlgorithm,
-            @Value("${distributionautomation.kafka.message.signature.key.size:2048}") final int signatureKeySize,
-            @Value("${distributionautomation.kafka.message.signature.key.private:#{null}}") final Resource signingKeyResource,
-            @Value("${distributionautomation.kafka.message.signature.key.public:#{null}}") final Resource verificationKeyResource) {
+    // @Value("${distributionautomation.kafka.message.signing.enabled}") final
+    // boolean signingEnabled,
+    // @Value("${distributionautomation.kafka.message.signing.strip.headers}")
+    // final boolean stripHeaders,
+    // @Value("${distributionautomation.kafka.message.signature.algorithm:SHA256withRSA}")
+    // final String signatureAlgorithm,
+    // @Value("${distributionautomation.kafka.message.signature.provider:SunRsaSign}")
+    // final String signatureProvider,
+    // @Value("${distributionautomation.kafka.message.signature.key.algorithm:RSA}")
+    // final String signatureKeyAlgorithm,
+    // @Value("${distributionautomation.kafka.message.signature.key.size:2048}")
+    // final int signatureKeySize,
+    // @Value("${distributionautomation.kafka.message.signature.key.private:#{null}}")
+    // final Resource signingKeyResource,
+    // @Value("${distributionautomation.kafka.message.signature.key.public:#{null}}")
+    // final Resource verificationKeyResource
+    ) {
 
         return MessageSigner.newBuilder()
-                .signingEnabled(signingEnabled)
-                .stripHeaders(stripHeaders)
-                .signatureAlgorithm(signatureAlgorithm)
-                .signatureProvider(signatureProvider)
-                .signatureKeyAlgorithm(signatureKeyAlgorithm)
-                .signatureKeySize(signatureKeySize)
-                .signingKey(this.readKeyFromPemResource(signingKeyResource, "private signing key"))
-                .verificationKey(this.readKeyFromPemResource(verificationKeyResource, "public verification key"))
+                .signingEnabled(this.isSigningEnabled)
+                .stripHeaders(this.isStripHeaders)
+                .signatureAlgorithm(this.signatureAlgorithm)
+                .signatureProvider(this.signatureProvider)
+                .signatureKeyAlgorithm(this.signatureKeyAlgorithm)
+                .signatureKeySize(this.signatureKeySize)
+                .signingKey(this.readKeyFromPemResource(this.signingKeyResource, "private signing key"))
+                .verificationKey(this.readKeyFromPemResource(this.verificationKeyResource, "public verification key"))
                 .build();
     }
 
