@@ -45,10 +45,18 @@
     </xsd:complexType>
   </xsd:element>
 
+  <xsd:element name="GetSubscriptionInformationRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="xsd:string"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
   <xsd:element name="SetSubscriptionInformationRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="xsd:string" minOccurs="0"/>
+        <xsd:element name="DeviceIdentification" type="xsd:string"/>
         <xsd:element name="IpAddress" type="xsd:string" minOccurs="0"/>
         <xsd:element name="CellId" type="xsd:int" minOccurs="0"/>
         <xsd:element name="BtsId" type="xsd:int" minOccurs="0"/>
@@ -68,8 +76,9 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"/>
-        <xsd:element name="Description" type="xsd:string"
-                     minOccurs="0"/>
+        <xsd:element name="IpAddress" type="xsd:string"/>
+        <xsd:element name="CellId" type="xsd:int"/>
+        <xsd:element name="BtsId" type="xsd:int"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -414,30 +423,5 @@
       <xsd:element name="DeviceTypeIdentification" type="xsd:unsignedByte"/>
     </xsd:sequence>
   </xsd:complexType>
-
-  <xsd:element name="GetSubscriptionInformationRequest">
-    <xsd:complexType>
-      <xsd:sequence>
-      </xsd:sequence>
-    </xsd:complexType>
-  </xsd:element>
-
-  <xsd:element name="GetSubscriptionInformationResponse">
-    <xsd:complexType>
-      <xsd:sequence>
-        <xsd:element name="meid" type="xsd:string"/>
-        <xsd:element name="esn" type="xsd:string"/>
-        <xsd:element name="uimid" type="xsd:string"/>
-        <xsd:element name="eqId" type="xsd:string"/>
-        <xsd:element name="ipAddress" type="xsd:string"/>
-        <xsd:element name="mdn" type="xsd:string"/>
-        <xsd:element name="btsId" type="xsd:int"/>
-        <xsd:element name="cellId" type="xsd:int"/>
-        <xsd:element name="status" type="xsd:string"/>
-        <xsd:element name="custCode" type="xsd:string"/>
-        <xsd:element name="supplierReferenceId" type="xsd:string"/>
-      </xsd:sequence>
-    </xsd:complexType>
-  </xsd:element>
 
 </xsd:schema>

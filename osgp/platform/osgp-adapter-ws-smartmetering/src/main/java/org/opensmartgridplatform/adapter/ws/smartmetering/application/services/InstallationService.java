@@ -240,7 +240,7 @@ public class InstallationService {
             final SetSubscriptionInformationRequestData setSubscriptionInformationRequestData,
             final int messagePriority, final Long scheduleTime) {
 
-        log.debug("enqueueAddSmartMeterRequest called with organisation {} and device {}", organisationIdentification,
+        log.info("enqueueAddSmartMeterRequest called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
 
         final String correlationUid = this.correlationIdProviderService

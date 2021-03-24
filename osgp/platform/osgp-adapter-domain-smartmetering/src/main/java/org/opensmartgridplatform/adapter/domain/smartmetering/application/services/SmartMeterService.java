@@ -8,6 +8,11 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+
+import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.MapperFactory;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
@@ -32,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service(value = "domainSmartMeteringSmartMeterService")
 @Transactional(value = "transactionManager")
 public class SmartMeterService {
@@ -83,8 +89,41 @@ public class SmartMeterService {
         return this.mapperFactory.getMapperFacade().map(smartMeteringDevice, SmartMeter.class);
     }
 
+    public SmartMeter updateSubscriptionInformation(final String deviceIdentification, final String ipAddress,
+            final Integer btsId, final Integer cellId) throws FunctionalException {
+        final SmartMeter smartMeter = this.smartMeteringDeviceRepository
+                .findByDeviceIdentification(deviceIdentification);
+
+        if (smartMeter == null) {
+            throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE, ComponentType.DOMAIN_SMART_METERING);
+        }
+
+        if (ipAddress != null) {
+            try {
+                smartMeter.setNetworkAddress(InetAddress.getByAddress(ipAddress.getBytes(StandardCharsets.UTF_8)));
+                log.info("Device {} network address updated to {} ", deviceIdentification, ipAddress);
+            } catch (UnknownHostException e) {
+                log.error("Invalid ip address found {} for device {}", ipAddress, deviceIdentification);
+                throw new FunctionalException(FunctionalExceptionType.INVALID_IP_ADDRESS,
+                        ComponentType.DOMAIN_SMART_METERING);
+            }
+        }
+
+        if (btsId != null) {
+            smartMeter.setBtsId(btsId);
+            log.info("Device {} BtsId updated to {} ", deviceIdentification, btsId);
+        }
+
+        if (cellId != null) {
+            smartMeter.setCellId(cellId);
+            log.info("Device {} CellId updated to {} ", deviceIdentification, cellId);
+        }
+
+        return this.smartMeteringDeviceRepository.save(smartMeter);
+    }
+
     private ProtocolInfo getProtocolInfo(final SmartMeteringDevice smartMeteringDevice) throws FunctionalException {
-        
+
         final ProtocolInfo protocolInfo = this.protocolInfoRepository
                 .findByProtocolAndProtocolVersion(smartMeteringDevice.getProtocolInfoLookupName(),
                         smartMeteringDevice.getProtocolVersion());

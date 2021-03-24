@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.domain.core.entities;
 
@@ -13,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -193,6 +193,12 @@ public class Device extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     private IntegrationType integrationType = IntegrationType.WEB_SERVICE;
 
+    @Column
+    private Integer cellId;
+
+    @Column
+    private Integer btsId;
+
     public Device() {
         // Default constructor
     }
@@ -218,12 +224,8 @@ public class Device extends AbstractEntity {
     }
 
     public void removeAuthorization(final Organisation organisation, final DeviceFunctionGroup functionGroup) {
-        for (final Iterator<DeviceAuthorization> iter = this.authorizations.listIterator(); iter.hasNext();) {
-            final DeviceAuthorization da = iter.next();
-            if (da.getFunctionGroup().equals(functionGroup) && da.getOrganisation().equals(organisation)) {
-                iter.remove();
-            }
-        }
+        this.authorizations.removeIf(
+                da -> da.getFunctionGroup().equals(functionGroup) && da.getOrganisation().equals(organisation));
     }
 
     public void addOrganisation(final String organisationIdentification) {
@@ -356,7 +358,7 @@ public class Device extends AbstractEntity {
      * code.
      *
      * @param id
-     *            The id.
+     *         The id.
      */
     public void setId(final Long id) {
         this.id = id;
@@ -433,9 +435,8 @@ public class Device extends AbstractEntity {
     }
 
     public Map<FirmwareModule, String> getFirmwareVersions() {
-        return this.deviceFirmwareModules.stream()
-                .collect(Collectors.toMap(DeviceFirmwareModule::getFirmwareModule,
-                        DeviceFirmwareModule::getModuleVersion));
+        return this.deviceFirmwareModules.stream().collect(
+                Collectors.toMap(DeviceFirmwareModule::getFirmwareModule, DeviceFirmwareModule::getModuleVersion));
     }
 
     public void setFirmwareVersions(final Map<FirmwareModule, String> firmwareVersions) {
@@ -446,10 +447,8 @@ public class Device extends AbstractEntity {
         if (firmwareVersions == null) {
             return Collections.emptySet();
         }
-        return firmwareVersions.entrySet()
-                .stream()
-                .map(e -> new DeviceFirmwareModule(this, e.getKey(), e.getValue()))
-                .collect(Collectors.toSet());
+        return firmwareVersions.entrySet().stream().map(e -> new DeviceFirmwareModule(this, e.getKey(), e.getValue()))
+                               .collect(Collectors.toSet());
     }
 
     public void setFirmwareVersions(final Collection<DeviceFirmwareModule> deviceFirmwareModules) {
@@ -528,6 +527,22 @@ public class Device extends AbstractEntity {
 
     public void setIntegrationType(final IntegrationType integrationType) {
         this.integrationType = integrationType;
+    }
+
+    public Integer getCellId() {
+        return cellId;
+    }
+
+    public void setCellId(Integer cellId) {
+        this.cellId = cellId;
+    }
+
+    public Integer getBtsId() {
+        return btsId;
+    }
+
+    public void setBtsId(Integer btsId) {
+        this.btsId = btsId;
     }
 
 }

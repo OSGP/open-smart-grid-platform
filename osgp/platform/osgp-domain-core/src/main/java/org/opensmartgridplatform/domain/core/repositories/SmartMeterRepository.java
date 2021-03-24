@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SmartMeterRepository extends JpaRepository<SmartMeter, Long> {
+
     SmartMeter findByDeviceIdentification(String deviceIdentification);
 
     /**

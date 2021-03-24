@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
+import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.MapperFactory;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.CommonMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
@@ -21,6 +22,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.Decouple
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceByChannelResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetSubscriptionInformationRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetSubscriptionInformationResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceResponseDto;
@@ -32,17 +34,14 @@ import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service(value = "domainSmartMeteringInstallationService")
 public class InstallationService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(InstallationService.class);
 
     @Autowired
     @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
@@ -73,8 +72,7 @@ public class InstallationService {
             final AddSmartMeterRequest addSmartMeterRequest) throws FunctionalException {
         final String organisationId = deviceMessageMetadata.getOrganisationIdentification();
         final String deviceId = deviceMessageMetadata.getDeviceIdentification();
-        LOGGER.debug("addMeter for organisationIdentification: {} for deviceIdentification: {}", organisationId,
-                deviceId);
+        log.debug("addMeter for organisationIdentification: {} for deviceIdentification: {}", organisationId, deviceId);
         final SmartMeteringDevice smartMeteringDevice = addSmartMeterRequest.getDevice();
 
         final SmartMeter smartMeter = this.smartMeterService.getSmartMeter(deviceId, smartMeteringDevice);
@@ -85,21 +83,26 @@ public class InstallationService {
     }
 
     public void updateSubscriptionInformation(final DeviceMessageMetadata deviceMessageMetadata,
-            final SetSubscriptionInformationRequestData requestData) {
+            final SetSubscriptionInformationRequestData requestData) throws FunctionalException {
         final String organisationId = deviceMessageMetadata.getOrganisationIdentification();
         final String deviceId = deviceMessageMetadata.getDeviceIdentification();
-        LOGGER.info("updateSubscriptionInformation for organisationIdentification: {} for deviceIdentification: {}. "
-                + "New ipAdress = {} ", organisationId, deviceId, requestData.getIpAddress());
+
+        final SmartMeter updatedSmartMeter = this.smartMeterService
+                .updateSubscriptionInformation(deviceMessageMetadata.getDeviceIdentification(),
+                        requestData.getIpAddress(), requestData.getBtsId(), requestData.getCellId());
+
+        log.info("updateSubscriptionInformation for organisationIdentification: {} for deviceIdentification: {}. "
+                + "New ipAdress = {} ", organisationId, deviceId, updatedSmartMeter.getIpAddress());
+
+        SetSubscriptionInformationResponseData responseData = new SetSubscriptionInformationResponseData(
+                updatedSmartMeter.getIpAddress(), updatedSmartMeter.getCellId(), updatedSmartMeter.getBtsId());
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
                 deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
                 deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
                 deviceMessageMetadata.getDeviceIdentification()).withResult(ResponseMessageResultType.OK)
-                                                               /*  .withDataObject(this.commonMapper
-                                                                         .map(dataObject, UpdateSmartMeterRes.class))*/
-                                                               .withMessagePriority(
-                                                                       deviceMessageMetadata.getMessagePriority())
-                                                               .build();
+                                                               .withDataObject(responseData).withMessagePriority(
+                        deviceMessageMetadata.getMessagePriority()).build();
 
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
@@ -109,7 +112,7 @@ public class InstallationService {
      * database, the meter should be removed from the core database as well.
      */
     public void removeMeter(final DeviceMessageMetadata deviceMessageMetadata) {
-        LOGGER.warn("Removing meter {} for organization {}, because adding it to the protocol database failed with "
+        log.warn("Removing meter {} for organization {}, because adding it to the protocol database failed with "
                         + "correlation UID {}", deviceMessageMetadata.getDeviceIdentification(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getCorrelationUid());
 
@@ -220,7 +223,7 @@ public class InstallationService {
     public void handleResponse(final String methodName, final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
-        LOGGER.debug("{} for MessageType: {}", methodName, deviceMessageMetadata.getMessageType());
+        log.debug("{} for MessageType: {}", methodName, deviceMessageMetadata.getMessageType());
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
                 deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
@@ -237,7 +240,7 @@ public class InstallationService {
     private ResponseMessageResultType getResponseMessageResultType(final ResponseMessageResultType deviceResult,
             final OsgpException exception) {
         if (exception != null) {
-            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
+            log.error("Device Response not ok. Unexpected Exception", exception);
             return ResponseMessageResultType.NOT_OK;
         }
         return deviceResult;

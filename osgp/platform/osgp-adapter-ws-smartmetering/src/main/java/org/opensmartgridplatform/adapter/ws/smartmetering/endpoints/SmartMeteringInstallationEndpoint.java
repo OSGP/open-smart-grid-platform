@@ -496,10 +496,11 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
             this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
+
         } catch (final ConstraintViolationException e) {
 
-            log.error("Exception: {} while updating device: {} for organisation {}.", e.getMessage(),
-                    request.getDeviceIdentification(), organisationIdentification, e);
+            log.error("Exception: {} while setting subcription information for device: {} for organisation {}.",
+                    e.getMessage(), request.getDeviceIdentification(), organisationIdentification, e);
 
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
@@ -521,16 +522,16 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
         SetSubscriptionInformationResponse response = null;
         try {
-            response = new SetSubscriptionInformationResponse();
+
             final ResponseData responseData = this.responseDataService
                     .dequeue(request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
-            this.throwExceptionIfResultNotOk(responseData, "Add Device");
+            this.throwExceptionIfResultNotOk(responseData, "Set Subscription Information");
+
+            response = this.installationMapper
+                    .map(responseData.getMessageData(), SetSubscriptionInformationResponse.class);
 
             response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
-            if (responseData.getMessageData() instanceof String) {
-                response.setDescription((String) responseData.getMessageData());
-            }
 
         } catch (final Exception e) {
             this.handleException(e);
