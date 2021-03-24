@@ -36,6 +36,7 @@
     <osgp-ws-secret-management-version>${project.parent.version}</osgp-ws-secret-management-version>
     <com.h2database>1.4.200</com.h2database>
     <failOnMissingWebXml>false</failOnMissingWebXml>
+    <spring.version>5.3.1</spring.version>
   </properties>
 
   <build>
