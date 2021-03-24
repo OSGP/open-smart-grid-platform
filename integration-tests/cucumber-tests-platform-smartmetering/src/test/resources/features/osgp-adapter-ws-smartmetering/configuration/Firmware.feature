@@ -78,7 +78,7 @@ Feature: SmartMetering Configuration - Firmware
       | DeviceIdentification        | TEST1027000000002 |
       | DeviceType                  | SMART_METER_G     |
       | GatewayDeviceIdentification | TEST1027000000001 |
-      | Channel                     | 2                 |
+      | Channel                     | 3                 |
       | FirmwareModuleVersionSimple | 19180706          |
     When the get firmware version gas request is received
       | DeviceIdentification | TEST1027000000002 |
