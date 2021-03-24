@@ -58,7 +58,8 @@ public class Iec60870Client implements Client {
         final ClientConnectionBuilder clientConnectionBuilder = new ClientConnectionBuilder(address).setPort(port);
 
         try {
-            LOGGER.info("Connecting to device: {}...", deviceIdentification);
+            LOGGER.info("Connecting to device '{}' using ip address '{}' and port '{}'...", deviceIdentification,
+                    address, port);
             final Connection connection = clientConnectionBuilder.build();
             connection.startDataTransfer(asduListener, this.connectionTimeout);
             LOGGER.info("Connected to device: {}", deviceIdentification);
