@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
+package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping;
 
 import java.util.ArrayList;
 import java.util.List;

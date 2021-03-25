@@ -6,14 +6,13 @@
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
 
-package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
+package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
-import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ClockStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CosemDate;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CosemDateTime;

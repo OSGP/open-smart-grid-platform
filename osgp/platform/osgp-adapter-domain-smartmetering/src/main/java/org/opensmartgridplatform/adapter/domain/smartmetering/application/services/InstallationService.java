@@ -70,13 +70,19 @@ public class InstallationService {
 
     public void addMeter(final DeviceMessageMetadata deviceMessageMetadata,
             final AddSmartMeterRequest addSmartMeterRequest) throws FunctionalException {
+
         final String organisationId = deviceMessageMetadata.getOrganisationIdentification();
-        final String deviceId = deviceMessageMetadata.getDeviceIdentification();
-        log.debug("addMeter for organisationIdentification: {} for deviceIdentification: {}", organisationId, deviceId);
+        final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
+        log.debug("addMeter for organisationIdentification: {} for deviceIdentification: {}", organisationId,
+                deviceIdentification);
         final SmartMeteringDevice smartMeteringDevice = addSmartMeterRequest.getDevice();
 
-        final SmartMeter smartMeter = this.smartMeterService.getSmartMeter(deviceId, smartMeteringDevice);
+        this.smartMeterService.validateNonExistingSmartMeter(deviceIdentification);
+
+        final SmartMeter smartMeter = this.smartMeterService.convertSmartMeter(smartMeteringDevice);
+
         this.smartMeterService.storeMeter(organisationId, addSmartMeterRequest, smartMeter);
+
         this.osgpCoreRequestMessageSender.send(this.getRequestMessage(deviceMessageMetadata, smartMeteringDevice),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
                 deviceMessageMetadata.getScheduleTime());

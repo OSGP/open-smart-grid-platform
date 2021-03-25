@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
+package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,7 +14,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AccessRight;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AccessSelectorList;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AssociationLnListElement;

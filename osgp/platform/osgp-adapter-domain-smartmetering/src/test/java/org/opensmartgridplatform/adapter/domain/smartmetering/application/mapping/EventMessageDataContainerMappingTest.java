@@ -7,7 +7,7 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
-package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
+package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -6,7 +6,6 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,7 +34,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionTyp
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
-public class EventServiceTest {
+class EventServiceTest {
 
     @Mock
     private DomainHelperService domainHelperService;
@@ -49,17 +48,19 @@ public class EventServiceTest {
     void setUp() throws FunctionalException {
         eventService = new EventService(domainHelperService);
 
-        deviceMessageMetadata =
-                DeviceMessageMetadata.newBuilder().withCorrelationUid(RandomStringUtils.randomAlphabetic(10))
-                                     .withDeviceIdentification(RandomStringUtils.randomAlphabetic(10))
-                                     .withOrganisationIdentification(RandomStringUtils.randomAlphabetic(10))
-                                     .withMessageType(RandomStringUtils.randomAlphabetic(10)).build();
+        deviceMessageMetadata = DeviceMessageMetadata.newBuilder()
+                                                     .withCorrelationUid(RandomStringUtils.randomAlphabetic(10))
+                                                     .withDeviceIdentification(RandomStringUtils.randomAlphabetic(10))
+                                                     .withOrganisationIdentification(
+                                                             RandomStringUtils.randomAlphabetic(10))
+                                                     .withMessageType(RandomStringUtils.randomAlphabetic(10)).build();
 
-        when(domainHelperService.findSmartMeter(deviceMessageMetadata.getDeviceIdentification())).thenReturn(smartMeter);
+        when(domainHelperService.findSmartMeter(deviceMessageMetadata.getDeviceIdentification()))
+                .thenReturn(smartMeter);
     }
 
     @Test
-    public void testWrongEventCode() {
+    void testWrongEventCode() {
         FunctionalException functionalException = Assertions.assertThrows(FunctionalException.class, () -> {
             this.assertEventType(266, "SMART_METER_E", "SMR", "iskr", EventTypeDto.POWER_FAILURE);
         });
@@ -67,7 +68,7 @@ public class EventServiceTest {
     }
 
     @Test
-    public void testDeviceType() throws FunctionalException {
+    void testDeviceType() throws FunctionalException {
         this.assertEventType(1, "XXXXXXX", "SMR", "iskr", EventTypeDto.POWER_FAILURE);
         this.assertEventType(1, "SMART_METER_E", "SMR", "iskr", EventTypeDto.POWER_FAILURE);
         this.assertEventType(1, "SMART_METER_G", "SMR", "iskr", EventTypeDto.POWER_FAILURE_G);
@@ -76,7 +77,7 @@ public class EventServiceTest {
     }
 
     @Test
-    public void testProtocolNoMatch() throws FunctionalException {
+    void testProtocolNoMatch() throws FunctionalException {
         this.assertEventType(1, "SMART_METER_E", "XXX", "iskr", EventTypeDto.POWER_FAILURE);
         this.assertEventType(80, "SMART_METER_E", "DSMR", "iskr", EventTypeDto.PV_VOLTAGE_SAG_L1);
         this.assertEventType(81, "SMART_METER_E", "DSMR", "iskr", EventTypeDto.PV_VOLTAGE_SAG_L2);
@@ -97,12 +98,12 @@ public class EventServiceTest {
     }
 
     @Test
-    public void testManufacturerNoMatch() throws FunctionalException {
+    void testManufacturerNoMatch() throws FunctionalException {
         this.assertEventType(1, "SMART_METER_E", "SMR", "XXX", EventTypeDto.POWER_FAILURE);
     }
 
     @Test
-    public void testAddEventTypeToEvents() throws FunctionalException {
+    void testAddEventTypeToEvents() throws FunctionalException {
         this.assertEventType(255, "", "", "", EventTypeDto.EVENTLOG_CLEARED);
         this.assertEventType(1, "SMART_METER_E", "", "", EventTypeDto.POWER_FAILURE);
         this.assertEventType(1, "SMART_METER_G", "", "", EventTypeDto.POWER_FAILURE_G);
