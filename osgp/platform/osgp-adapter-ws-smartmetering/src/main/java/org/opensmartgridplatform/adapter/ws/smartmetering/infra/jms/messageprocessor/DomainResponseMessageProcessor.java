@@ -137,7 +137,7 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
             // Logging is enough, sending the notification will be done
             // automatically by the resend notification job
             LOGGER.warn(
-                    "Delivering notification with correlationUid: {} and notification type: {} did not complete successfully.",
+                    "Delivering notification with correlationUid: {} and notification type: {} failed.",
                     correlationUid, notificationType, e);
         }
     }

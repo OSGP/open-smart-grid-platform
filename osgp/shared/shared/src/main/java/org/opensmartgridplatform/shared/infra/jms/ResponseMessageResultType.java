@@ -12,9 +12,9 @@ public enum ResponseMessageResultType {
     NOT_FOUND("NOT FOUND"),
     NOT_OK("NOT OK");
 
-    private String value;
+    private final String value;
 
-    private ResponseMessageResultType(final String value) {
+    ResponseMessageResultType(final String value) {
         this.value = value;
     }
 

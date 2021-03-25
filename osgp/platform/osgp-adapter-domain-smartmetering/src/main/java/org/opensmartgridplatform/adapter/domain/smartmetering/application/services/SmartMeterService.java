@@ -10,7 +10,6 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.servi
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 
 import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.MapperFactory;
@@ -100,7 +99,7 @@ public class SmartMeterService {
 
         if (ipAddress != null) {
             try {
-                smartMeter.setNetworkAddress(InetAddress.getByAddress(ipAddress.getBytes(StandardCharsets.UTF_8)));
+                smartMeter.setNetworkAddress(InetAddress.getByName(ipAddress));
                 log.info("Device {} network address updated to {} ", deviceIdentification, ipAddress);
             } catch (UnknownHostException e) {
                 log.error("Invalid ip address found {} for device {}", ipAddress, deviceIdentification);
