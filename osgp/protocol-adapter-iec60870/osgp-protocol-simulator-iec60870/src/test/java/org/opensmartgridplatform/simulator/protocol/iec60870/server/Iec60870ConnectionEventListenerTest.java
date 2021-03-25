@@ -18,20 +18,20 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
 import org.openmuc.j60870.Connection;
 import org.opensmartgridplatform.iec60870.Iec60870AsduHandlerRegistry;
 import org.opensmartgridplatform.iec60870.Iec60870ConnectionEventListener;
 import org.opensmartgridplatform.iec60870.Iec60870ConnectionRegistry;
-import org.opensmartgridplatform.simulator.protocol.iec60870.domain.profile.DefaultControlledStationAsduFactory;
+import org.opensmartgridplatform.simulator.protocol.iec60870.domain.defaultcontrolledstation.DefaultControlledStationAsduFactory;
 import org.opensmartgridplatform.simulator.protocol.iec60870.server.handlers.Iec60870InterrogationCommandAsduHandler;
 import org.opensmartgridplatform.simulator.protocol.iec60870.server.handlers.Iec60870SingleCommandAsduHandler;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-public class Iec60870ConnectionEventListenerTest {
+class Iec60870ConnectionEventListenerTest {
+
     @Mock
     private Iec60870ConnectionRegistry iec60870ConnectionRegistry;
 
@@ -52,14 +52,13 @@ public class Iec60870ConnectionEventListenerTest {
     private Iec60870ConnectionEventListener iec60870ConnectionEventListener;
 
     @BeforeEach
-    public void setup() throws IOException {
-        MockitoAnnotations.initMocks(this);
+    void setup() throws IOException {
         this.iec60870ConnectionEventListener = new Iec60870ConnectionEventListener(this.connection,
                 this.iec60870ConnectionRegistry, this.iec60870AsduHandlerRegistry);
     }
 
     @Test
-    public void interrogationCommandShouldBeHandledByInterrogationCommandHandler() throws Exception {
+    void interrogationCommandShouldBeHandledByInterrogationCommandHandler() throws Exception {
         // Arrange
         final ASdu asdu = this.iec60870AsduFactory.createInterrogationCommandAsdu();
         when(this.iec60870AsduHandlerRegistry.getHandler(ASduType.C_IC_NA_1))
@@ -73,7 +72,7 @@ public class Iec60870ConnectionEventListenerTest {
     }
 
     @Test
-    public void singleCommandShouldBeHandledBySingleCommandHandler() throws Exception {
+    void singleCommandShouldBeHandledBySingleCommandHandler() throws Exception {
         // Arrange
         final ASdu asdu = this.iec60870AsduFactory.createSingleCommandAsdu();
         when(this.iec60870AsduHandlerRegistry.getHandler(ASduType.C_SC_NA_1)).thenReturn(this.singleCommandHandler);
