@@ -11,8 +11,9 @@ import org.openmuc.j60870.ASdu;
 import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870AsduGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
-//@Component
+@Component
 @Profile("light_measurement_device")
 public class LightMeasurementEventAsduGenerator implements Iec60870AsduGenerator {
 
