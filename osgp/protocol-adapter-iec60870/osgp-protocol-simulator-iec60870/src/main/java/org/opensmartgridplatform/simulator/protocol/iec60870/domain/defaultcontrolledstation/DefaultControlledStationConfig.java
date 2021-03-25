@@ -47,10 +47,10 @@ public class DefaultControlledStationConfig {
     @ConditionalOnProperty("job.asdu.generator.enabled")
     @Profile("default_controlled_station")
     public Iec60870AsduGeneratorService defaultControlledStationAsduGeneratorService(
-            final Iec60870ConnectionRegistry iec60870ConnectionRegistry, final String cronExpression) {
-        LOGGER.info("ASDU generator in simulator is enabled");
+            final Iec60870ConnectionRegistry iec60870ConnectionRegistry) {
+        LOGGER.info("Default controlled station ASDU generator in simulator is enabled");
 
-        final CronTrigger cronTrigger = new CronTrigger(cronExpression, TimeZone.getTimeZone("UTC"));
+        final CronTrigger cronTrigger = new CronTrigger(this.cronExpression, TimeZone.getTimeZone("UTC"));
         final Iec60870AsduGenerator generator = this.defaultControlledStationMeasurementAsduGenerator();
 
         return new Iec60870AsduGeneratorService(iec60870ConnectionRegistry, cronTrigger, generator);
