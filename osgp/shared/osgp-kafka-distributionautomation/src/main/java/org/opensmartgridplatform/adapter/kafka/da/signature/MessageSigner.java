@@ -60,9 +60,9 @@ public class MessageSigner {
     // Two magic bytes (0xC3, 0x01) followed by an 8-byte fingerprint
     public static final int AVRO_HEADER_LENGTH = 10;
 
-    private boolean isSigningEnabled;
+    private boolean signingEnabled;
 
-    private boolean isStripHeaders;
+    private boolean stripHeaders;
 
     private String signatureAlgorithm;
     private String signatureProvider;
@@ -76,11 +76,11 @@ public class MessageSigner {
     private PublicKey verificationKey;
 
     private MessageSigner(final Builder builder) {
-        this.isSigningEnabled = builder.isSigningEnabled;
-        if (!this.isSigningEnabled) {
+        this.signingEnabled = builder.signingEnabled;
+        if (!this.signingEnabled) {
             return;
         }
-        this.isStripHeaders = builder.isStripHeaders;
+        this.stripHeaders = builder.stripHeaders;
         this.signatureAlgorithm = builder.signatureAlgorithm;
         this.signatureKeyAlgorithm = builder.signatureKeyAlgorithm;
         this.signatureKeySize = builder.signatureKeySize;
@@ -107,7 +107,7 @@ public class MessageSigner {
     }
 
     public boolean canSignMessages() {
-        return this.isSigningEnabled && this.signingSignature != null;
+        return this.signingEnabled && this.signingSignature != null;
     }
 
     /**
@@ -126,7 +126,7 @@ public class MessageSigner {
      *             if the signing process throws a SignatureException.
      */
     public void sign(final Message message) {
-        if (this.isSigningEnabled) {
+        if (this.signingEnabled) {
             final byte[] signatureBytes = this.signature(message);
             message.setSignature(ByteBuffer.wrap(signatureBytes));
         }
@@ -161,8 +161,8 @@ public class MessageSigner {
             message.setSignature(null);
             synchronized (this.signingSignature) {
                 byte[] messageBytes;
-                if (this.isStripHeaders) {
-                    messageBytes = this.toSchemalessBytes(this.toByteBuffer(message));
+                if (this.stripHeaders) {
+                    messageBytes = this.stripHeaders(this.toByteBuffer(message));
                 } else {
                     messageBytes = this.toByteBuffer(message).array();
                 }
@@ -177,7 +177,7 @@ public class MessageSigner {
     }
 
     public boolean canVerifyMessageSignatures() {
-        return this.isSigningEnabled && this.verificationSignature != null;
+        return this.signingEnabled && this.verificationSignature != null;
     }
 
     /**
@@ -214,8 +214,8 @@ public class MessageSigner {
             message.setSignature(null);
             synchronized (this.verificationSignature) {
                 byte[] messageBytes;
-                if (this.isStripHeaders) {
-                    messageBytes = this.toSchemalessBytes(this.toByteBuffer(message));
+                if (this.stripHeaders) {
+                    messageBytes = this.stripHeaders(this.toByteBuffer(message));
                 } else {
                     messageBytes = this.toByteBuffer(message).array();
                 }
@@ -233,7 +233,7 @@ public class MessageSigner {
         return bytes.length >= AVRO_HEADER_LENGTH && (bytes[0] & 0xFF) == 0xC3 && (bytes[1] & 0xFF) == 0x01;
     }
 
-    private byte[] toSchemalessBytes(final ByteBuffer byteBuffer) {
+    private byte[] stripHeaders(final ByteBuffer byteBuffer) {
         final byte[] bytes = new byte[byteBuffer.remaining()];
         byteBuffer.get(bytes);
         if (this.hasAvroHeader(bytes)) {
@@ -250,12 +250,12 @@ public class MessageSigner {
         }
     }
 
-    public boolean signingEnabled() {
-        return this.isSigningEnabled;
+    public boolean isSigningEnabled() {
+        return this.signingEnabled;
     }
 
-    public boolean stripHeaders() {
-        return this.isStripHeaders;
+    public boolean isStripHeaders() {
+        return this.stripHeaders;
     }
 
     public String signatureAlgorithm() {
@@ -379,9 +379,9 @@ public class MessageSigner {
 
         private static final Pattern PEM_REMOVAL_PATTERN = Pattern.compile("-----(?:BEGIN|END) .*?-----|\\r|\\n");
 
-        private boolean isSigningEnabled;
+        private boolean signingEnabled;
 
-        private boolean isStripHeaders;
+        private boolean stripHeaders;
 
         private String signatureAlgorithm = DEFAULT_SIGNATURE_ALGORITHM;
         private String signatureProvider = DEFAULT_SIGNATURE_PROVIDER;
@@ -392,12 +392,12 @@ public class MessageSigner {
         private PublicKey verificationKey = null;
 
         public Builder signingEnabled(final boolean signingEnabled) {
-            this.isSigningEnabled = signingEnabled;
+            this.signingEnabled = signingEnabled;
             return this;
         }
 
         public Builder stripHeaders(final boolean stripHeaders) {
-            this.isStripHeaders = stripHeaders;
+            this.stripHeaders = stripHeaders;
             return this;
         }
 

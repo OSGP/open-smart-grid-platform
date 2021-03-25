@@ -28,28 +28,28 @@ import com.alliander.data.scadameasurementpublishedevent.Message;
 public class LowVoltageMessageProducerConfig extends AbstractKafkaProducerConfig<String, Message> {
 
     @Value("${distributionautomation.kafka.message.signing.enabled}")
-    boolean isSigningEnabled;
+    private boolean signingEnabled;
 
     @Value("${distributionautomation.kafka.message.signing.strip.headers}")
-    boolean isStripHeaders;
+    private boolean stripHeaders;
 
     @Value("${distributionautomation.kafka.message.signature.algorithm:SHA256withRSA}")
-    String signatureAlgorithm;
+    private String signatureAlgorithm;
 
     @Value("${distributionautomation.kafka.message.signature.provider:SunRsaSign}")
-    String signatureProvider;
+    private String signatureProvider;
 
     @Value("${distributionautomation.kafka.message.signature.key.algorithm:RSA}")
-    String signatureKeyAlgorithm;
+    private String signatureKeyAlgorithm;
 
     @Value("${distributionautomation.kafka.message.signature.key.size:2048}")
-    int signatureKeySize;
+    private int signatureKeySize;
 
     @Value("${distributionautomation.kafka.message.signature.key.private:#{null}}")
-    Resource signingKeyResource;
+    private Resource signingKeyResource;
 
     @Value("${distributionautomation.kafka.message.signature.key.public:#{null}}")
-    Resource verificationKeyResource;
+    private Resource verificationKeyResource;
 
     @Autowired
     public LowVoltageMessageProducerConfig(final Environment environment,
@@ -67,8 +67,8 @@ public class LowVoltageMessageProducerConfig extends AbstractKafkaProducerConfig
     @Bean
     public MessageSigner messageSigner() {
         return MessageSigner.newBuilder()
-                .signingEnabled(this.isSigningEnabled)
-                .stripHeaders(this.isStripHeaders)
+                .signingEnabled(this.signingEnabled)
+                .stripHeaders(this.stripHeaders)
                 .signatureAlgorithm(this.signatureAlgorithm)
                 .signatureProvider(this.signatureProvider)
                 .signatureKeyAlgorithm(this.signatureKeyAlgorithm)
