@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.simulator.protocol.iec60870.domain.profile;
+package org.opensmartgridplatform.simulator.protocol.iec60870.domain.defaultcontrolledstation;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -29,10 +29,10 @@ import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870Asdu
 import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870AsduFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
 
-@Configuration
+@Component
 @Profile("default_controlled_station")
 public class DefaultControlledStationAsduFactory implements Iec60870AsduFactory {
 
