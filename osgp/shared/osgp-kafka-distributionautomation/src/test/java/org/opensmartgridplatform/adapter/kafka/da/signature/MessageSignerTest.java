@@ -32,7 +32,9 @@ import com.alliander.messaging.MessageId;
 
 class MessageSignerTest {
 
-    private static final boolean IS_SIGNING_ENABLED = true;
+    private static final boolean SIGNING_ENABLED = true;
+
+    private static final boolean STRIP_HEADERS = true;
 
     private static final String SIGNATURE_ALGORITHM = "SHA256withRSA";
     private static final String SIGNATURE_PROVIDER = "SunRsaSign";
@@ -46,7 +48,8 @@ class MessageSignerTest {
     private static final Random RANDOM = new SecureRandom();
 
     private final MessageSigner messageSigner = MessageSigner.newBuilder()
-            .signingEnabled(IS_SIGNING_ENABLED)
+            .signingEnabled(SIGNING_ENABLED)
+            .stripHeaders(STRIP_HEADERS)
             .signatureAlgorithm(SIGNATURE_ALGORITHM)
             .signatureProvider(SIGNATURE_PROVIDER)
             .signatureKeyAlgorithm(SIGNATURE_KEY_ALGORITHM)
@@ -112,7 +115,7 @@ class MessageSignerTest {
     void worksWithKeysFromPemEncodedResources() {
 
         final MessageSigner messageSignerWithKeysFromResources = MessageSigner.newBuilder()
-                .signingEnabled(IS_SIGNING_ENABLED)
+                .signingEnabled(SIGNING_ENABLED)
                 .signatureAlgorithm(SIGNATURE_ALGORITHM)
                 .signatureProvider(SIGNATURE_PROVIDER)
                 .signatureKeyAlgorithm(SIGNATURE_KEY_ALGORITHM)
@@ -130,7 +133,7 @@ class MessageSignerTest {
 
     @Test
     void signingCanBeDisabled() {
-        final MessageSigner messageSigner = MessageSigner.newBuilder().signingEnabled(!IS_SIGNING_ENABLED).build();
+        final MessageSigner messageSigner = MessageSigner.newBuilder().signingEnabled(!SIGNING_ENABLED).build();
 
         assertThat(messageSigner.canSignMessages()).isFalse();
         assertThat(messageSigner.canVerifyMessageSignatures()).isFalse();
