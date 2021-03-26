@@ -18,6 +18,7 @@ import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870Asdu
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -67,6 +68,7 @@ public class Iec60870SimulatorConfig {
      * to the application's properties.
      */
     @Bean
+    @ConditionalOnProperty("job.asdu.generator.enabled")
     public Iec60870AsduGeneratorService asduGeneratorService(
             final Iec60870ConnectionRegistry iec60870ConnectionRegistry,
             final Iec60870AsduGenerator iec60870AsduGenerator) {
