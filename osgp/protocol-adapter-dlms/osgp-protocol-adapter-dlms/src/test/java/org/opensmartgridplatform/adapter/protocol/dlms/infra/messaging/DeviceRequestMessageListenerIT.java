@@ -8,7 +8,6 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
@@ -23,7 +22,6 @@ import javax.jms.ObjectMessage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -42,7 +40,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  */
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = MessagingTestConfiguration.class)
-public class DeviceRequestMessageListenerIT {
+class DeviceRequestMessageListenerIT {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRequestMessageListenerIT.class);
 
@@ -53,24 +51,21 @@ public class DeviceRequestMessageListenerIT {
     private DeviceResponseMessageSender protocolDlmsOutboundOsgpCoreResponsesMessageSender;
 
     @Autowired
-    private ThrottlingService throttlingService;
-
-    @Autowired
     private DomainHelperService domainHelperService;
 
     @Test
-    public void testProcessRequestMessages() throws JMSException, OsgpException {
+    void testProcessRequestMessages() throws JMSException, OsgpException {
 
         // SETUP
 
-        DlmsDevice dlmsDevice = new DlmsDevice();
+        final DlmsDevice dlmsDevice = new DlmsDevice();
         dlmsDevice.setDeviceIdentification("1");
         dlmsDevice.setIpAddress("127.0.0.1");
         dlmsDevice.setHls5Active(true);
 
-        when(domainHelperService.findDlmsDevice(any(String.class), any(String.class))).thenReturn(dlmsDevice);
-        when(domainHelperService.findDlmsDevice(any(MessageMetadata.class))).thenReturn(dlmsDevice);
-        doNothing().when(protocolDlmsOutboundOsgpCoreResponsesMessageSender).send(any(ResponseMessage.class));
+        when(this.domainHelperService.findDlmsDevice(any(String.class), any(String.class))).thenReturn(dlmsDevice);
+        when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class))).thenReturn(dlmsDevice);
+        doNothing().when(this.protocolDlmsOutboundOsgpCoreResponsesMessageSender).send(any(ResponseMessage.class));
 
         // EXECUTE
 
@@ -82,16 +77,12 @@ public class DeviceRequestMessageListenerIT {
 
             final ObjectMessage message = new ObjectMessageBuilder().withDeviceIdentification("osgp").withMessageType(
                     MessageType.GET_PROFILE_GENERIC_DATA.toString()).withObject(
-                    new GetPowerQualityProfileRequestDataDto("PUBLIC", new Date(), new Date(), null)).build();
+                            new GetPowerQualityProfileRequestDataDto("PUBLIC", new Date(), new Date(), null)).build();
 
-            listener.onMessage(message);
+            this.listener.onMessage(message);
         }
 
-        verify(protocolDlmsOutboundOsgpCoreResponsesMessageSender, times(200)).send(any(ResponseMessage.class));
-
-        assertThat(throttlingService.toString())
-                .isEqualTo("ThrottlingService. maxOpenConnections = 10, maxNewConnectionRequests=30, resetTime=2000");
-
+        verify(this.protocolDlmsOutboundOsgpCoreResponsesMessageSender, times(200)).send(any(ResponseMessage.class));
     }
 
 }
