@@ -23,6 +23,8 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smar
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.installation.SmartMeteringInstallationClient;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.cucumber.java.en.Given;
@@ -31,6 +33,8 @@ import io.cucumber.java.en.When;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SetSubscriptionInformationSteps extends AbstractSmartMeteringSteps {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SetSubscriptionInformationSteps.class);
 
     @Autowired
     private SmartMeteringInstallationClient smartMeteringInstallationClient;
@@ -41,6 +45,9 @@ public class SetSubscriptionInformationSteps extends AbstractSmartMeteringSteps 
     @Given("^a dlms device$")
     public void aDlmsDevice(final Map<String, String> inputSettings) {
         final Device device = this.dlmsDeviceSteps.createDeviceInCoreDatabase(inputSettings);
+
+        LOGGER.info("Created new Device for SetSubscriptionInformationSteps {}", device.getDeviceIdentification());
+
         this.dlmsDeviceSteps.setScenarioContextForDevice(inputSettings, device);
 
         this.dlmsDeviceSteps.createDeviceAuthorisationInCoreDatabase(device);
