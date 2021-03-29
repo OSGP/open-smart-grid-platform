@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms;
 import javax.jms.ObjectMessage;
 
 import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.springframework.beans.factory.annotation.Autowired;

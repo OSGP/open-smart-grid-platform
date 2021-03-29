@@ -9,7 +9,6 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.endpoints;
 
-import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.endpoint.WebserviceEndpoint;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
@@ -20,6 +19,8 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.exceptionhandling.UnknownCorrelationUidException;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 abstract class SmartMeteringEndpoint implements WebserviceEndpoint {

@@ -12,18 +12,16 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.PrimaryKeyJoinColumn;
 
-import lombok.EqualsAndHashCode;
 import org.opensmartgridplatform.domain.core.valueobjects.Address;
 import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
+
+import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @PrimaryKeyJoinColumn(name = "id")
 public class SmartMeter extends Device {
 
-    /**
-     * Serial Version UID
-     */
     private static final long serialVersionUID = -3526823976188640681L;
 
     @Column(length = 50)
@@ -86,7 +84,7 @@ public class SmartMeter extends Device {
      * the channel is {@code null}.
      *
      * @return the M-Bus channel this smart meter is connected on, on its
-     *         gateway device, or {@code null}.
+     * gateway device, or {@code null}.
      */
     public Short getChannel() {
         return this.channel;

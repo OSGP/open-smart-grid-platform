@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.Device;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 
-public class DeviceMappingTest {
+class DeviceMappingTest {
 
     private static final String DEVICE_IDENTIFICATION = "nr1";
     private static final String DEVICE_TYPE = "typeA";
@@ -40,10 +40,6 @@ public class DeviceMappingTest {
     private final Date deliveryDateSmartMeteringDevice = new Date();
     private XMLGregorianCalendar deliveryDateDevice;
 
-    /**
-     * Method to check the mapping of a Device object to a SmartMeteringDevice
-     * object.
-     */
     private void checkDeviceToSmartMeteringDeviceMapping(final SmartMeteringDevice smartMeteringDevice) {
 
         assertThat(smartMeteringDevice).isNotNull();
@@ -71,10 +67,6 @@ public class DeviceMappingTest {
         assertThat(dateTime.getDayOfMonth()).isEqualTo(this.deliveryDateDevice.getDay());
     }
 
-    /**
-     * Method to check the mapping of a SmartMeteringDevice object to a Device
-     * object.
-     */
     private void checkSmartMeteringDeviceToDeviceMapping(final Device device) {
 
         assertThat(device).isNotNull();
@@ -102,19 +94,10 @@ public class DeviceMappingTest {
         assertThat(device.getDeliveryDate().getDay()).isEqualTo(dateTime.getDayOfMonth());
     }
 
-    /**
-     * Method to convert a Date to a DateTime object so it can be used for
-     * assertEquals statements.
-     */
     private DateTime createDateTime(final Date date) {
-
-        final DateTime dateTime = new DateTime(date);
-        return dateTime;
+        return new DateTime(date);
     }
 
-    /**
-     * Method to create an instance of Device.
-     */
     private Device createDevice() {
 
         final Device device = new Device();
@@ -164,7 +147,7 @@ public class DeviceMappingTest {
      * Needed to initialize a XMLGregorianCalendar instance
      */
     @BeforeEach
-    public void init() {
+    void init() {
         try {
             this.deliveryDateDevice = DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar());
         } catch (final DatatypeConfigurationException e) {
@@ -172,12 +155,8 @@ public class DeviceMappingTest {
         }
     }
 
-    /**
-     * Test to see if a Device object can be mapped to a SmartMeteringDevice
-     * object
-     */
     @Test
-    public void testDeviceMapping() {
+    void testDeviceMapping() {
 
         // build test data
         final Device device = this.createDevice();
@@ -189,11 +168,8 @@ public class DeviceMappingTest {
         this.checkDeviceToSmartMeteringDeviceMapping(smartMeteringDevice);
     }
 
-    /**
-     * Test to see if a SmartMeteringDevice can be mapped to a Device
-     */
     @Test
-    public void testSmartMeteringDeviceMapping() {
+    void testSmartMeteringDeviceMapping() {
         // build test data
         final SmartMeteringDevice smartMeteringDevice = this.createSmartMeteringDevice();
 

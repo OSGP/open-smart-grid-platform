@@ -306,7 +306,7 @@ public class Device extends AbstractEntity {
      * Get the organisations that are authorized for this device.
      *
      * @return List of OrganisationIdentification of organisations that are
-     *         authorized for this device.
+     * authorized for this device.
      */
     @Transient
     public List<String> getOrganisations() {
@@ -435,8 +435,9 @@ public class Device extends AbstractEntity {
     }
 
     public Map<FirmwareModule, String> getFirmwareVersions() {
-        return this.deviceFirmwareModules.stream().collect(
-                Collectors.toMap(DeviceFirmwareModule::getFirmwareModule, DeviceFirmwareModule::getModuleVersion));
+        return this.deviceFirmwareModules.stream()
+                .collect(Collectors.toMap(DeviceFirmwareModule::getFirmwareModule,
+                        DeviceFirmwareModule::getModuleVersion));
     }
 
     public void setFirmwareVersions(final Map<FirmwareModule, String> firmwareVersions) {
@@ -447,8 +448,10 @@ public class Device extends AbstractEntity {
         if (firmwareVersions == null) {
             return Collections.emptySet();
         }
-        return firmwareVersions.entrySet().stream().map(e -> new DeviceFirmwareModule(this, e.getKey(), e.getValue()))
-                               .collect(Collectors.toSet());
+        return firmwareVersions.entrySet()
+                .stream()
+                .map(e -> new DeviceFirmwareModule(this, e.getKey(), e.getValue()))
+                .collect(Collectors.toSet());
     }
 
     public void setFirmwareVersions(final Collection<DeviceFirmwareModule> deviceFirmwareModules) {
@@ -530,18 +533,18 @@ public class Device extends AbstractEntity {
     }
 
     public Integer getCellId() {
-        return cellId;
+        return this.cellId;
     }
 
-    public void setCellId(Integer cellId) {
+    public void setCellId(final Integer cellId) {
         this.cellId = cellId;
     }
 
     public Integer getBtsId() {
-        return btsId;
+        return this.btsId;
     }
 
-    public void setBtsId(Integer btsId) {
+    public void setBtsId(final Integer btsId) {
         this.btsId = btsId;
     }
 

@@ -32,8 +32,9 @@ public class AddMeterResponseMessageProcessor extends OsgpCoreResponseMessagePro
     private InstallationService installationService;
 
     @Autowired
-    protected AddMeterResponseMessageProcessor(WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+    protected AddMeterResponseMessageProcessor(final WebServiceResponseMessageSender responseMessageSender,
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
+            final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.ADD_METER, ComponentType.DOMAIN_SMART_METERING);
     }
 
@@ -47,8 +48,8 @@ public class AddMeterResponseMessageProcessor extends OsgpCoreResponseMessagePro
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessage responseMessage, final OsgpException osgpException) {
 
-        this.installationService
-                .handleAddMeterResponse(deviceMessageMetadata, responseMessage.getResult(), osgpException);
+        this.installationService.handleAddMeterResponse(deviceMessageMetadata, responseMessage.getResult(),
+                osgpException);
     }
 
     @Override

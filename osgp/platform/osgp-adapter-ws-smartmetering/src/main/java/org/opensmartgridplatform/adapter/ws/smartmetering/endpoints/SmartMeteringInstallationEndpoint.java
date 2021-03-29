@@ -10,7 +10,6 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.endpoints;
 
 import javax.validation.ConstraintViolationException;
 
-import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
@@ -59,12 +58,14 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Slf4j
 @Endpoint
 public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
-    private static final String SMARTMETER_INSTALLATION_NAMESPACE =
-            "http://www.opensmartgridplatform" + ".org/schemas/smartmetering/sm-installation/2014/10";
+    private static final String SMARTMETER_INSTALLATION_NAMESPACE = "http://www.opensmartgridplatform"
+            + ".org/schemas/smartmetering/sm-installation/2014/10";
 
     @Autowired
     private InstallationService installationService;
@@ -87,15 +88,15 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
         AddDeviceAsyncResponse response = null;
         try {
             response = new AddDeviceAsyncResponse();
-            final SmartMeteringDevice device = this.installationMapper
-                    .map(request.getDevice(), SmartMeteringDevice.class);
+            final SmartMeteringDevice device = this.installationMapper.map(request.getDevice(),
+                    SmartMeteringDevice.class);
             final DeviceModel deviceModel = new DeviceModel(request.getDeviceModel().getManufacturer(),
                     request.getDeviceModel().getModelCode(), "");
             final AddSmartMeterRequest addSmartMeterRequest = new AddSmartMeterRequest(device, deviceModel);
-            final String correlationUid = this.installationService
-                    .enqueueAddSmartMeterRequest(organisationIdentification, device.getDeviceIdentification(),
-                            addSmartMeterRequest, MessagePriorityEnum.getMessagePriority(messagePriority),
-                            this.installationMapper.map(scheduleTime, Long.class));
+            final String correlationUid = this.installationService.enqueueAddSmartMeterRequest(
+                    organisationIdentification, device.getDeviceIdentification(), addSmartMeterRequest,
+                    MessagePriorityEnum.getMessagePriority(messagePriority),
+                    this.installationMapper.map(scheduleTime, Long.class));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDevice().getDeviceIdentification());
@@ -126,8 +127,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
         AddDeviceResponse response = null;
         try {
             response = new AddDeviceResponse();
-            final ResponseData responseData = this.responseDataService
-                    .dequeue(request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
             this.throwExceptionIfResultNotOk(responseData, "Add Device");
 
@@ -154,7 +155,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
      *         the time the request is scheduled for
      *
      * @return a response containing a correlationUid and the
-     *         deviceIdentification
+     * deviceIdentification
      *
      * @throws OsgpException
      */
@@ -174,10 +175,10 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
         try {
             response = new CoupleMbusDeviceAsyncResponse();
 
-            final String correlationUid = this.installationService
-                    .enqueueCoupleMbusDeviceRequest(organisationIdentification, deviceIdentification,
-                            mbusDeviceIdentification, MessagePriorityEnum.getMessagePriority(messagePriority),
-                            this.installationMapper.map(scheduleTime, Long.class));
+            final String correlationUid = this.installationService.enqueueCoupleMbusDeviceRequest(
+                    organisationIdentification, deviceIdentification, mbusDeviceIdentification,
+                    MessagePriorityEnum.getMessagePriority(messagePriority),
+                    this.installationMapper.map(scheduleTime, Long.class));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(deviceIdentification);
@@ -195,7 +196,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
      *         the request message containing the correlationUid
      *
      * @return the response message containing the OsgpResultType and optional a
-     *         message
+     * message
      *
      * @throws OsgpException
      */
@@ -207,8 +208,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
         CoupleMbusDeviceResponse response = null;
         try {
             response = new CoupleMbusDeviceResponse();
-            final ResponseData responseData = this.responseDataService
-                    .dequeue(request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
             this.throwExceptionIfResultNotOk(responseData, "Couple Mbus Device");
 
@@ -235,7 +236,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
      *         the time the request is scheduled for
      *
      * @return a response containing a correlationUid and the
-     *         deviceIdentification
+     * deviceIdentification
      *
      * @throws OsgpException
      */
@@ -255,10 +256,10 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
         try {
             response = new DecoupleMbusDeviceAsyncResponse();
 
-            final String correlationUid = this.installationService
-                    .enqueueDecoupleMbusDeviceRequest(organisationIdentification, deviceIdentification,
-                            mbusDeviceIdentification, MessagePriorityEnum.getMessagePriority(messagePriority),
-                            this.installationMapper.map(scheduleTime, Long.class));
+            final String correlationUid = this.installationService.enqueueDecoupleMbusDeviceRequest(
+                    organisationIdentification, deviceIdentification, mbusDeviceIdentification,
+                    MessagePriorityEnum.getMessagePriority(messagePriority),
+                    this.installationMapper.map(scheduleTime, Long.class));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(deviceIdentification);
@@ -278,7 +279,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
      *         the request message containing the correlationUid
      *
      * @return the response message containing the OsgpResultType and optional a
-     *         message
+     * message
      *
      * @throws OsgpException
      */
@@ -290,8 +291,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
         DecoupleMbusDeviceResponse response = null;
         try {
             response = new DecoupleMbusDeviceResponse();
-            final ResponseData responseData = this.responseDataService
-                    .dequeue(request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
             this.throwExceptionIfResultNotOk(responseData, "Decouple Mbus Device");
 
@@ -318,7 +319,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
      *         the time the request is scheduled for
      *
      * @return a response containing a correlationUid and the
-     *         deviceIdentification
+     * deviceIdentification
      *
      * @throws OsgpException
      */
@@ -339,10 +340,10 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
         try {
             response = new CoupleMbusDeviceByChannelAsyncResponse();
 
-            final String correlationUid = this.installationService
-                    .enqueueCoupleMbusDeviceByChannelRequest(organisationIdentification, deviceIdentification,
-                            MessagePriorityEnum.getMessagePriority(messagePriority),
-                            this.installationMapper.map(scheduleTime, Long.class), channel);
+            final String correlationUid = this.installationService.enqueueCoupleMbusDeviceByChannelRequest(
+                    organisationIdentification, deviceIdentification,
+                    MessagePriorityEnum.getMessagePriority(messagePriority),
+                    this.installationMapper.map(scheduleTime, Long.class), channel);
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(deviceIdentification);
@@ -360,7 +361,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
      *         the request message containing the correlationUid
      *
      * @return the response message containing the OsgpResultType and optional a
-     *         message
+     * message
      *
      * @throws OsgpException
      */
@@ -372,16 +373,16 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
         CoupleMbusDeviceByChannelResponse response = null;
         try {
             response = new CoupleMbusDeviceByChannelResponse();
-            final ResponseData responseData = this.responseDataService
-                    .dequeue(request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
             this.throwExceptionIfResultNotOk(responseData, "Couple Mbus Device By Channel");
 
             if (responseData.getMessageData() instanceof String) {
                 response.setResultString((String) responseData.getMessageData());
             }
-            response = this.installationMapper
-                    .map(responseData.getMessageData(), CoupleMbusDeviceByChannelResponse.class);
+            response = this.installationMapper.map(responseData.getMessageData(),
+                    CoupleMbusDeviceByChannelResponse.class);
 
             response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
 
@@ -403,7 +404,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
      *         the time the request is scheduled for
      *
      * @return a response containing a correlationUid and the
-     *         deviceIdentification
+     * deviceIdentification
      *
      * @throws OsgpException
      */
@@ -424,10 +425,10 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
         try {
             response = new DecoupleMbusDeviceByChannelAsyncResponse();
 
-            final String correlationUid = this.installationService
-                    .enqueueDecoupleMbusDeviceByChannelRequest(organisationIdentification, deviceIdentification,
-                            MessagePriorityEnum.getMessagePriority(messagePriority),
-                            this.installationMapper.map(scheduleTime, Long.class), channel);
+            final String correlationUid = this.installationService.enqueueDecoupleMbusDeviceByChannelRequest(
+                    organisationIdentification, deviceIdentification,
+                    MessagePriorityEnum.getMessagePriority(messagePriority),
+                    this.installationMapper.map(scheduleTime, Long.class), channel);
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(deviceIdentification);
@@ -445,7 +446,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
      *         the request message containing the correlationUid
      *
      * @return the response message containing the OsgpResultType and optional a
-     *         message
+     * message
      *
      * @throws OsgpException
      */
@@ -456,13 +457,13 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
         DecoupleMbusDeviceByChannelResponse response = null;
         try {
-            final ResponseData responseData = this.responseDataService
-                    .dequeue(request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
             this.throwExceptionIfResultNotOk(responseData, "Decouple Mbus Device By Channel");
 
-            response = this.installationMapper
-                    .map(responseData.getMessageData(), DecoupleMbusDeviceByChannelResponse.class);
+            response = this.installationMapper.map(responseData.getMessageData(),
+                    DecoupleMbusDeviceByChannelResponse.class);
 
         } catch (final Exception e) {
             this.handleException(e);
@@ -484,14 +485,13 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
         try {
             response = new SetSubscriptionInformationAsyncResponse();
 
-            SetSubscriptionInformationRequestData requestData = new SetSubscriptionInformationRequestData(
+            final SetSubscriptionInformationRequestData requestData = new SetSubscriptionInformationRequestData(
                     request.getIpAddress(), request.getCellId(), request.getBtsId());
 
-            final String correlationUid = this.installationService
-                    .enqueueSetSubscriptionInformationRequest(organisationIdentification,
-                            request.getDeviceIdentification(), requestData,
-                            MessagePriorityEnum.getMessagePriority(messagePriority),
-                            this.installationMapper.map(scheduleTime, Long.class));
+            final String correlationUid = this.installationService.enqueueSetSubscriptionInformationRequest(
+                    organisationIdentification, request.getDeviceIdentification(), requestData,
+                    MessagePriorityEnum.getMessagePriority(messagePriority),
+                    this.installationMapper.map(scheduleTime, Long.class));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
@@ -523,13 +523,13 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
         SetSubscriptionInformationResponse response = null;
         try {
 
-            final ResponseData responseData = this.responseDataService
-                    .dequeue(request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
+                    ComponentType.WS_SMART_METERING);
 
             this.throwExceptionIfResultNotOk(responseData, "Set Subscription Information");
 
-            response = this.installationMapper
-                    .map(responseData.getMessageData(), SetSubscriptionInformationResponse.class);
+            response = this.installationMapper.map(responseData.getMessageData(),
+                    SetSubscriptionInformationResponse.class);
 
             response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
 

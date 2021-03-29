@@ -1,15 +1,13 @@
 /**
  * Copyright 2014-2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,14 +33,17 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.DayProfileDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SeasonProfileDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.WeekProfileDto;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+
 // Test mapping of ActivityCalendar objects
-public class ActivityCalendarMappingTest {
+class ActivityCalendarMappingTest {
 
     private final ConfigurationMapper configurationMapper = new ConfigurationMapper();
     private CosemDateTime cosemDateTime;
 
     @BeforeEach
-    public void init() {
+    void init() {
         this.cosemDateTime = new CosemDateTime(new CosemDate(2016, 3, 16), new CosemTime(11, 45, 33), 1,
                 new ClockStatus(ClockStatus.STATUS_NOT_SPECIFIED));
     }
@@ -51,21 +52,20 @@ public class ActivityCalendarMappingTest {
     // may ever be null. Tests to make sure a NullPointerException is thrown
     // when one is.
     @Test
-    public void testNullCosemDateTime() {
+    void testNullCosemDateTime() {
         final String calendarName = "calendar";
         final CosemDateTime activePassiveCalendarTime = null;
         final List<SeasonProfile> seasonProfileList = new ArrayList<>();
 
-        assertThatExceptionOfType(NullPointerException.class).isThrownBy(() -> {
-            new ActivityCalendar(calendarName, activePassiveCalendarTime, seasonProfileList);
-        });
+        assertThatExceptionOfType(NullPointerException.class).isThrownBy(
+                () -> new ActivityCalendar(calendarName, activePassiveCalendarTime, seasonProfileList));
     }
 
     // Neither the CosemDateTime or List<SeasonProfile> of a ActivityCalendar
     // may ever be null. Tests to make sure a NullPointerException is thrown
     // when one is.
     @Test
-    public void testNullList() {
+    void testNullList() {
         final String calendarName = "calendar";
         final CosemDateTime activePassiveCalendarTime = new CosemDateTime();
         final List<SeasonProfile> seasonProfileList = null;
@@ -77,10 +77,10 @@ public class ActivityCalendarMappingTest {
 
     // Test mapping with a CosemDateTime object AND an empty list
     @Test
-    public void testWithCosemDateTimeAndEmptyList() {
+    void testWithCosemDateTimeAndEmptyList() {
         // build test data
         final ActivityCalendar activityCalendar = new ActivityCalendarBuilder().withCosemDateTime(this.cosemDateTime)
-                                                                               .build();
+                .build();
 
         // actual mapping
         final ActivityCalendarDto activityCalendarDto = this.configurationMapper.map(activityCalendar,
@@ -101,7 +101,7 @@ public class ActivityCalendarMappingTest {
 
     // Test the mapping of a complete ActivityCalendar object
     @Test
-    public void testCompleteMapping() {
+    void testCompleteMapping() {
         // build test data
         final ActivityCalendar activityCalendar = new ActivityCalendarBuilder().withCosemDateTime(this.cosemDateTime)
                 .withFilledList()

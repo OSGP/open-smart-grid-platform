@@ -8,8 +8,6 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
-import lombok.extern.slf4j.Slf4j;
-import ma.glasnost.orika.MapperFactory;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.CommonMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
@@ -38,6 +36,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.extern.slf4j.Slf4j;
+import ma.glasnost.orika.MapperFactory;
 
 @Slf4j
 @Service(value = "domainSmartMeteringInstallationService")
@@ -73,11 +74,13 @@ public class InstallationService {
 
         final String organisationId = deviceMessageMetadata.getOrganisationIdentification();
         final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
+
         log.debug("addMeter for organisationIdentification: {} for deviceIdentification: {}", organisationId,
                 deviceIdentification);
+
         final SmartMeteringDevice smartMeteringDevice = addSmartMeterRequest.getDevice();
 
-        this.smartMeterService.validateNonExistingSmartMeter(deviceIdentification);
+        this.smartMeterService.validateSmartMeterDoesNotExist(deviceIdentification);
 
         final SmartMeter smartMeter = this.smartMeterService.convertSmartMeter(smartMeteringDevice);
 
@@ -90,25 +93,28 @@ public class InstallationService {
 
     public void updateSubscriptionInformation(final DeviceMessageMetadata deviceMessageMetadata,
             final SetSubscriptionInformationRequestData requestData) throws FunctionalException {
+
         final String organisationId = deviceMessageMetadata.getOrganisationIdentification();
-        final String deviceId = deviceMessageMetadata.getDeviceIdentification();
+        final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
 
-        final SmartMeter updatedSmartMeter = this.smartMeterService
-                .updateSubscriptionInformation(deviceMessageMetadata.getDeviceIdentification(),
-                        requestData.getIpAddress(), requestData.getBtsId(), requestData.getCellId());
+        final SmartMeter updatedSmartMeter = this.smartMeterService.updateSubscriptionInformation(
+                deviceMessageMetadata.getDeviceIdentification(), requestData.getIpAddress(), requestData.getBtsId(),
+                requestData.getCellId());
 
-        log.info("updateSubscriptionInformation for organisationIdentification: {} for deviceIdentification: {}. "
-                + "New ipAdress = {} ", organisationId, deviceId, updatedSmartMeter.getIpAddress());
+        log.debug("updateSubscriptionInformation for organisationIdentification: {} for deviceIdentification: {}. "
+                + "New ipAdress = {} ", organisationId, deviceIdentification, updatedSmartMeter.getIpAddress());
 
         SetSubscriptionInformationResponseData responseData = new SetSubscriptionInformationResponseData(
                 updatedSmartMeter.getIpAddress(), updatedSmartMeter.getCellId(), updatedSmartMeter.getBtsId());
 
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
-                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
-                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
-                deviceMessageMetadata.getDeviceIdentification()).withResult(ResponseMessageResultType.OK)
-                                                               .withDataObject(responseData).withMessagePriority(
-                        deviceMessageMetadata.getMessagePriority()).build();
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(ResponseMessageResultType.OK)
+                .withDataObject(responseData)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
 
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
@@ -176,8 +182,8 @@ public class InstallationService {
             final ResponseMessageResultType result, final OsgpException exception,
             final DecoupleMbusDeviceResponseDto decoupleMbusDeviceResponseDto) throws FunctionalException {
         if (exception == null) {
-            this.mBusGatewayService
-                    .handleDecoupleMbusDeviceResponse(deviceMessageMetadata, decoupleMbusDeviceResponseDto);
+            this.mBusGatewayService.handleDecoupleMbusDeviceResponse(deviceMessageMetadata,
+                    decoupleMbusDeviceResponseDto);
         }
         this.handleResponse("decoupleMbusDevice", deviceMessageMetadata, result, exception);
     }
@@ -188,21 +194,23 @@ public class InstallationService {
             final DecoupleMbusDeviceResponseDto decoupleMbusDeviceResponseDto) throws FunctionalException {
 
         if (osgpException == null) {
-            this.mBusGatewayService
-                    .handleDecoupleMbusDeviceResponse(deviceMessageMetadata, decoupleMbusDeviceResponseDto);
+            this.mBusGatewayService.handleDecoupleMbusDeviceResponse(deviceMessageMetadata,
+                    decoupleMbusDeviceResponseDto);
         }
 
         final DecoupleMbusDeviceByChannelResponse response = new DecoupleMbusDeviceByChannelResponse(
                 decoupleMbusDeviceResponseDto.getMbusDeviceIdentification(),
                 decoupleMbusDeviceResponseDto.getChannelElementValues().getChannel());
 
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
-                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
-                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
-                deviceMessageMetadata.getDeviceIdentification()).withResult(responseMessageResultType)
-                                                               .withOsgpException(osgpException)
-                                                               .withDataObject(response).withMessagePriority(
-                        deviceMessageMetadata.getMessagePriority()).build();
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(responseMessageResultType)
+                .withOsgpException(osgpException)
+                .withDataObject(response)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
 
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
@@ -214,13 +222,15 @@ public class InstallationService {
 
         this.mBusGatewayService.handleCoupleMbusDeviceByChannelResponse(deviceMessageMetadata, dataObject);
 
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
-                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
-                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
-                deviceMessageMetadata.getDeviceIdentification()).withResult(responseMessageResultType)
-                                                               .withOsgpException(osgpException).withDataObject(
-                        this.commonMapper.map(dataObject, CoupleMbusDeviceByChannelResponse.class)).withMessagePriority(
-                        deviceMessageMetadata.getMessagePriority()).build();
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(responseMessageResultType)
+                .withOsgpException(osgpException)
+                .withDataObject(this.commonMapper.map(dataObject, CoupleMbusDeviceByChannelResponse.class))
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
 
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
@@ -231,14 +241,14 @@ public class InstallationService {
 
         log.debug("{} for MessageType: {}", methodName, deviceMessageMetadata.getMessageType());
 
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
-                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
-                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
-                deviceMessageMetadata.getDeviceIdentification()).withResult(
-                this.getResponseMessageResultType(deviceResult, exception)).withOsgpException(exception)
-                                                               .withMessagePriority(
-                                                                       deviceMessageMetadata.getMessagePriority())
-                                                               .build();
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(this.getResponseMessageResultType(deviceResult, exception))
+                .withOsgpException(exception)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
 
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }

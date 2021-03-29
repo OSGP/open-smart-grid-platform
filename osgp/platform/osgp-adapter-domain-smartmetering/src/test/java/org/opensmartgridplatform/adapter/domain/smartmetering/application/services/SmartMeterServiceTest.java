@@ -8,13 +8,6 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -36,6 +29,13 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AddSmart
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class SmartMeterServiceTest {
@@ -66,9 +66,9 @@ class SmartMeterServiceTest {
         when(this.smartMeterRepository.findByDeviceIdentification(deviceIdentification)).thenReturn(new SmartMeter());
 
         try {
-            this.smartMeterService.validateNonExistingSmartMeter(deviceIdentification);
+            this.smartMeterService.validateSmartMeterDoesNotExist(deviceIdentification);
             fail("Should throw FunctionalException");
-        } catch (FunctionalException e) {
+        } catch (final FunctionalException e) {
             assertThat(e.getExceptionType()).isEqualTo(FunctionalExceptionType.EXISTING_DEVICE);
         }
     }
@@ -87,7 +87,7 @@ class SmartMeterServiceTest {
         try {
             this.smartMeterService.storeMeter(organisationIdentification, addSmartMeterRequest, smartMeter);
             fail("Should throw FunctionalException");
-        } catch (FunctionalException e) {
+        } catch (final FunctionalException e) {
             assertThat(e.getExceptionType()).isEqualTo(FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION);
         }
     }
@@ -103,12 +103,12 @@ class SmartMeterServiceTest {
 
         final Manufacturer manufacturer = new Manufacturer();
 
-        ProtocolInfo protocolInfo = mock(ProtocolInfo.class);
+        final ProtocolInfo protocolInfo = mock(ProtocolInfo.class);
 
         when(this.protocolInfoRepository.findByProtocolAndProtocolVersion(any(), any())).thenReturn(protocolInfo);
         when(this.manufacturerRepository.findByCode(any())).thenReturn(manufacturer);
-        when(this.deviceModelRepository.findByManufacturerAndModelCode(any(), any()))
-                .thenReturn(new org.opensmartgridplatform.domain.core.entities.DeviceModel());
+        when(this.deviceModelRepository.findByManufacturerAndModelCode(any(), any())).thenReturn(
+                new org.opensmartgridplatform.domain.core.entities.DeviceModel());
         when(this.smartMeterRepository.save(any())).thenReturn(smartMeter);
 
         this.smartMeterService.storeMeter(organisationIdentification, addSmartMeterRequest, smartMeter);
@@ -134,7 +134,7 @@ class SmartMeterServiceTest {
         try {
             this.smartMeterService.updateSubscriptionInformation(deviceIdentification, ipAddress, btsId, cellId);
             fail("Should throw FunctionalException");
-        } catch (FunctionalException e) {
+        } catch (final FunctionalException e) {
             assertThat(e.getExceptionType()).isEqualTo(FunctionalExceptionType.EXISTING_DEVICE);
         }
     }
@@ -152,7 +152,7 @@ class SmartMeterServiceTest {
         try {
             this.smartMeterService.updateSubscriptionInformation(deviceIdentification, ipAddress, btsId, cellId);
             fail("Should throw FunctionalException");
-        } catch (FunctionalException e) {
+        } catch (final FunctionalException e) {
             assertThat(e.getExceptionType()).isEqualTo(FunctionalExceptionType.INVALID_IP_ADDRESS);
         }
     }
@@ -173,7 +173,7 @@ class SmartMeterServiceTest {
 
         this.smartMeterService.updateSubscriptionInformation(deviceIdentification, ipAddress, btsId, cellId);
 
-        verify(this.smartMeterRepository).save(saveCaptor.capture());
+        verify(this.smartMeterRepository).save(this.saveCaptor.capture());
 
         final SmartMeter updatedSmartMeter = this.saveCaptor.getValue();
         assertThat(updatedSmartMeter.getIpAddress()).isEqualTo(ipAddress);

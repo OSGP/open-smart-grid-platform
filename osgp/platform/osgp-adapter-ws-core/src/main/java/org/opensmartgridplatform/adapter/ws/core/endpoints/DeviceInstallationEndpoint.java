@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.core.endpoints;
 
@@ -11,7 +12,6 @@ import java.util.List;
 
 import javax.validation.ConstraintViolationException;
 
-import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.ws.core.application.mapping.DeviceInstallationMapper;
 import org.opensmartgridplatform.adapter.ws.core.application.services.DeviceInstallationService;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
@@ -61,15 +61,20 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Slf4j
 @Endpoint
 public class DeviceInstallationEndpoint {
 
-    private static final String DEVICE_INSTALLATION_NAMESPACE = "http://www.opensmartgridplatform.org/schemas/deviceinstallation/2014/10";
+    private static final String DEVICE_INSTALLATION_NAMESPACE = "http://www.opensmartgridplatform"
+            + ".org/schemas/deviceinstallation/2014/10";
     private static final ComponentType COMPONENT_WS_CORE = ComponentType.WS_CORE;
 
-    private static final String EXCEPTION_WHILE_ADDING_DEVICE = "Exception: {} while adding device: {} for organisation {}.";
-    private static final String EXCEPTION_WHILE_UPDATING_DEVICE = "Exception: {} while updating device: {} for organisation {}.";
+    private static final String EXCEPTION_WHILE_ADDING_DEVICE = "Exception: {} while adding device: {} for "
+            + "organisation {}.";
+    private static final String EXCEPTION_WHILE_UPDATING_DEVICE = "Exception: {} while updating device: {} for "
+            + "organisation {}.";
 
     private DeviceInstallationService deviceInstallationService;
     private DeviceInstallationMapper deviceInstallationMapper;
@@ -81,10 +86,9 @@ public class DeviceInstallationEndpoint {
     }
 
     @Autowired
-    public DeviceInstallationEndpoint(@Qualifier(
-            value = "wsCoreDeviceInstallationService") final DeviceInstallationService deviceInstallationService,
-            @Qualifier(
-                    value = "coreDeviceInstallationMapper") final DeviceInstallationMapper deviceInstallationMapper) {
+    public DeviceInstallationEndpoint(@Qualifier(value = "wsCoreDeviceInstallationService")
+    final DeviceInstallationService deviceInstallationService, @Qualifier(value = "coreDeviceInstallationMapper")
+    final DeviceInstallationMapper deviceInstallationMapper) {
         this.deviceInstallationService = deviceInstallationService;
         this.deviceInstallationMapper = deviceInstallationMapper;
     }
@@ -125,8 +129,8 @@ public class DeviceInstallationEndpoint {
         final GetStatusResponse response = new GetStatusResponse();
 
         try {
-            final ResponseMessage message = this.deviceInstallationService
-                    .dequeueGetStatusResponse(request.getAsyncRequest().getCorrelationUid());
+            final ResponseMessage message = this.deviceInstallationService.dequeueGetStatusResponse(
+                    request.getAsyncRequest().getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
                 final DeviceStatus deviceStatus = (DeviceStatus) message.getDataObject();
@@ -206,8 +210,7 @@ public class DeviceInstallationEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final AddLightMeasurementDeviceRequest request) throws OsgpException {
 
-        log.info("Adding light measurement device: {}.",
-                request.getLightMeasurementDevice().getDeviceIdentification());
+        log.info("Adding light measurement device: {}.", request.getLightMeasurementDevice().getDeviceIdentification());
 
         try {
             final LightMeasurementDevice lmd = this.deviceInstallationMapper.map(request.getLightMeasurementDevice(),
@@ -243,8 +246,8 @@ public class DeviceInstallationEndpoint {
         log.info("Updating light measurement device: {}.", request.getDeviceIdentification());
 
         try {
-            final LightMeasurementDevice device = this.deviceInstallationMapper
-                    .map(request.getUpdatedLightMeasurementDevice(), LightMeasurementDevice.class);
+            final LightMeasurementDevice device = this.deviceInstallationMapper.map(
+                    request.getUpdatedLightMeasurementDevice(), LightMeasurementDevice.class);
 
             this.deviceInstallationService.updateLightMeasurementDevice(organisationIdentification, device);
         } catch (final ConstraintViolationException e) {
@@ -279,8 +282,8 @@ public class DeviceInstallationEndpoint {
         final FindRecentDevicesResponse response = new FindRecentDevicesResponse();
 
         try {
-            final List<Device> recentDevices = this.deviceInstallationService
-                    .findRecentDevices(organisationIdentification);
+            final List<Device> recentDevices = this.deviceInstallationService.findRecentDevices(
+                    organisationIdentification);
             response.getDevices()
                     .addAll(this.deviceInstallationMapper.mapAsList(recentDevices,
                             org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.Device.class));
@@ -303,8 +306,7 @@ public class DeviceInstallationEndpoint {
             @RequestPayload final StartDeviceTestRequest request, @MessagePriority final String messagePriority)
             throws OsgpException {
 
-        log.info(
-                "Start Device Test Request received from organisation: {} for device: {} with message priority: {}.",
+        log.info("Start Device Test Request received from organisation: {} for device: {} with message priority: {}.",
                 organisationIdentification, request.getDeviceIdentification(), messagePriority);
 
         final StartDeviceTestAsyncResponse response = new StartDeviceTestAsyncResponse();
@@ -340,8 +342,8 @@ public class DeviceInstallationEndpoint {
         final StartDeviceTestResponse response = new StartDeviceTestResponse();
 
         try {
-            final ResponseMessage message = this.deviceInstallationService
-                    .dequeueStartDeviceTestResponse(request.getAsyncRequest().getCorrelationUid());
+            final ResponseMessage message = this.deviceInstallationService.dequeueStartDeviceTestResponse(
+                    request.getAsyncRequest().getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
             }
@@ -397,8 +399,8 @@ public class DeviceInstallationEndpoint {
         final StopDeviceTestResponse response = new StopDeviceTestResponse();
 
         try {
-            final ResponseMessage message = this.deviceInstallationService
-                    .dequeueStopDeviceTestResponse(request.getAsyncRequest().getCorrelationUid());
+            final ResponseMessage message = this.deviceInstallationService.dequeueStopDeviceTestResponse(
+                    request.getAsyncRequest().getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
             }

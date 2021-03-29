@@ -17,9 +17,7 @@ import javax.jms.Message;
 import org.apache.commons.lang3.StringUtils;
 
 public class MessageMetadata implements Serializable {
-    /**
-     * Generated serial version uid
-     */
+
     private static final long serialVersionUID = 5481771135195782979L;
 
     private String deviceIdentification;
@@ -68,8 +66,8 @@ public class MessageMetadata implements Serializable {
         metadata.messagePriority = message.getJMSPriority();
 
         metadata.deviceIdentification = metadata.getStringProperty(message, Constants.DEVICE_IDENTIFICATION);
-        metadata.organisationIdentification = metadata
-                .getStringProperty(message, Constants.ORGANISATION_IDENTIFICATION);
+        metadata.organisationIdentification = metadata.getStringProperty(message,
+                Constants.ORGANISATION_IDENTIFICATION);
 
         metadata.domain = metadata.getStringProperty(message, Constants.DOMAIN);
         metadata.domainVersion = metadata.getStringProperty(message, Constants.DOMAIN_VERSION);
@@ -78,7 +76,7 @@ public class MessageMetadata implements Serializable {
         metadata.cellId = metadata.getIntProperty(message, Constants.CELL_ID);
         metadata.btsId = metadata.getIntProperty(message, Constants.BTS_ID);
 
-        metadata.scheduleTime = metadata.getLongProperty(message, Constants.SCHEDULE_TIME);
+        metadata.scheduleTime = metadata.getLongProperty(message);
         metadata.scheduled = metadata.getBooleanProperty(message, Constants.IS_SCHEDULED);
 
         metadata.retryCount = metadata.getIntProperty(message, Constants.RETRY_COUNT);
@@ -156,9 +154,9 @@ public class MessageMetadata implements Serializable {
         return message.propertyExists(name) ? message.getStringProperty(name) : StringUtils.EMPTY;
     }
 
-    private Long getLongProperty(final Message message, final String name) throws JMSException {
-        if (message.propertyExists(name)) {
-            return message.getLongProperty(name);
+    private Long getLongProperty(final Message message) throws JMSException {
+        if (message.propertyExists(Constants.SCHEDULE_TIME)) {
+            return message.getLongProperty(Constants.SCHEDULE_TIME);
         } else {
             return null;
         }

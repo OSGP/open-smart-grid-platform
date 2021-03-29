@@ -28,7 +28,8 @@ public class SetSubscriptionInformationRequestMessageProcessor extends BaseReque
 
     @Autowired
     protected SetSubscriptionInformationRequestMessageProcessor(
-            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
+            final MessageProcessorMap messageProcessorMap) {
         super(messageProcessorMap, MessageType.SET_SUBSCRIPTION_INFORMATION);
     }
 

@@ -31,7 +31,7 @@ public class SmartMeteringDeviceDtoBuilder {
         dto.setHls3Active(true);
         dto.setHls4Active(true);
         dto.setHls5Active(true);
-        dto.setIccId("ICCId" + counter);
+        dto.setIccId("IccId" + counter);
         dto.setMasterKey(("masterKey" + counter).getBytes());
         dto.setMbusIdentificationNumber(1000L + counter);
         dto.setMbusManufacturerIdentification("mbusManufacturerIdentification" + counter);

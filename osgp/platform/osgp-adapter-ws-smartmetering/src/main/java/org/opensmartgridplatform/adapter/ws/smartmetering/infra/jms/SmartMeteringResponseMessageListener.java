@@ -13,12 +13,13 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
-import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component(value = "wsSmartMeteringInboundDomainResponsesMessageListener")
@@ -41,8 +42,8 @@ public class SmartMeteringResponseMessageListener implements MessageListener {
             final String correlationUid = objectMessage.getJMSCorrelationID();
             log.info("objectMessage CorrelationUID: {}", correlationUid);
 
-            final MessageProcessor processor = this.domainResponseMessageProcessorMap
-                    .getMessageProcessor(objectMessage);
+            final MessageProcessor processor = this.domainResponseMessageProcessorMap.getMessageProcessor(
+                    objectMessage);
 
             processor.processMessage(objectMessage);
 

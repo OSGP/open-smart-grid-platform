@@ -9,23 +9,23 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Date;
 
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 
-public class InstallationMapperTest {
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.DefaultMapperFactory;
+import static org.assertj.core.api.Assertions.assertThat;
+
+class InstallationMapperTest {
 
     private final MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
 
     @Test
-    public void mapsSmartMeteringDeviceToSmartMeter() {
+    void mapsSmartMeteringDeviceToSmartMeter() {
         final SmartMeteringDevice source = new SmartMeteringDevice();
         source.setDeviceIdentification("device1");
         source.setDeviceType("typeA");
@@ -67,7 +67,7 @@ public class InstallationMapperTest {
     }
 
     @Test
-    public void testSmartMeteringDeviceToSmartMeteringDeviceDtoMapping() {
+    void testSmartMeteringDeviceToSmartMeteringDeviceDtoMapping() {
         final SmartMeteringDevice smartMeteringDevice = new SmartMeteringDevice();
         smartMeteringDevice.setDeviceIdentification("device1");
         smartMeteringDevice.setDeviceType("typeA");
@@ -91,12 +91,10 @@ public class InstallationMapperTest {
         smartMeteringDevice.setMbusDefaultKey("mbusDefaultKey".getBytes());
 
         final SmartMeteringDeviceDto smartMeteringDeviceDto = this.mapperFactory.getMapperFacade()
-                                                                                .map(smartMeteringDevice,
-                                                                                        SmartMeteringDeviceDto.class);
+                .map(smartMeteringDevice, SmartMeteringDeviceDto.class);
 
         assertThat(smartMeteringDevice).isNotNull();
-        assertThat(smartMeteringDeviceDto).isNotNull();
-        assertThat(smartMeteringDeviceDto)
+        assertThat(smartMeteringDeviceDto).isNotNull()
                 .isEqualToIgnoringGivenFields(smartMeteringDevice, "ipAddress", "btsId", "cellId");
 
     }
