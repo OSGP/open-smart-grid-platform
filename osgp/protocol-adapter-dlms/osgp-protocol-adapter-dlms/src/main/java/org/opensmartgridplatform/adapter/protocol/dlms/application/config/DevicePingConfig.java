@@ -28,7 +28,7 @@ public class DevicePingConfig {
     @Value("${device.ping.size:-1}")
     private int size;
 
-    @Value("${device.ping.timeout:#{null}}")
+    @Value("#{T(java.time.Duration).parse('${device.ping.timeout:PT0S}')}")
     private Duration timeout;
 
     @Value("${device.ping.lookup.host.names:false}")
