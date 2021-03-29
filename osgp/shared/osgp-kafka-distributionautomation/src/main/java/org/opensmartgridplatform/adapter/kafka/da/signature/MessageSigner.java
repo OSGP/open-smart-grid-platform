@@ -24,6 +24,7 @@ import java.security.Signature;
 import java.security.SignatureException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Objects;
 import java.util.Optional;
@@ -56,7 +57,12 @@ public class MessageSigner {
     public static final String DEFAULT_SIGNATURE_KEY_ALGORITHM = "RSA";
     public static final int DEFAULT_SIGNATURE_KEY_SIZE = 2048;
 
-    private boolean isSigningEnabled;
+    // Two magic bytes (0xC3, 0x01) followed by an 8-byte fingerprint
+    public static final int AVRO_HEADER_LENGTH = 10;
+
+    private boolean signingEnabled;
+
+    private boolean stripHeaders;
 
     private String signatureAlgorithm;
     private String signatureProvider;
@@ -70,10 +76,11 @@ public class MessageSigner {
     private PublicKey verificationKey;
 
     private MessageSigner(final Builder builder) {
-        this.isSigningEnabled = builder.isSigningEnabled;
-        if (!this.isSigningEnabled) {
+        this.signingEnabled = builder.signingEnabled;
+        if (!this.signingEnabled) {
             return;
         }
+        this.stripHeaders = builder.stripHeaders;
         this.signatureAlgorithm = builder.signatureAlgorithm;
         this.signatureKeyAlgorithm = builder.signatureKeyAlgorithm;
         this.signatureKeySize = builder.signatureKeySize;
@@ -100,7 +107,7 @@ public class MessageSigner {
     }
 
     public boolean canSignMessages() {
-        return this.isSigningEnabled && this.signingSignature != null;
+        return this.signingEnabled && this.signingSignature != null;
     }
 
     /**
@@ -119,7 +126,7 @@ public class MessageSigner {
      *             if the signing process throws a SignatureException.
      */
     public void sign(final Message message) {
-        if (this.isSigningEnabled) {
+        if (this.signingEnabled) {
             final byte[] signatureBytes = this.signature(message);
             message.setSignature(ByteBuffer.wrap(signatureBytes));
         }
@@ -153,7 +160,13 @@ public class MessageSigner {
         try {
             message.setSignature(null);
             synchronized (this.signingSignature) {
-                this.signingSignature.update(this.toByteBuffer(message));
+                byte[] messageBytes;
+                if (this.stripHeaders) {
+                    messageBytes = this.stripHeaders(this.toByteBuffer(message));
+                } else {
+                    messageBytes = this.toByteBuffer(message).array();
+                }
+                this.signingSignature.update(messageBytes);
                 return this.signingSignature.sign();
             }
         } catch (final SignatureException e) {
@@ -164,7 +177,7 @@ public class MessageSigner {
     }
 
     public boolean canVerifyMessageSignatures() {
-        return this.isSigningEnabled && this.verificationSignature != null;
+        return this.signingEnabled && this.verificationSignature != null;
     }
 
     /**
@@ -200,7 +213,13 @@ public class MessageSigner {
         try {
             message.setSignature(null);
             synchronized (this.verificationSignature) {
-                this.verificationSignature.update(this.toByteBuffer(message));
+                byte[] messageBytes;
+                if (this.stripHeaders) {
+                    messageBytes = this.stripHeaders(this.toByteBuffer(message));
+                } else {
+                    messageBytes = this.toByteBuffer(message).array();
+                }
+                this.verificationSignature.update(messageBytes);
                 return this.verificationSignature.verify(signatureBytes);
             }
         } catch (final SignatureException e) {
@@ -208,6 +227,19 @@ public class MessageSigner {
         } finally {
             message.setSignature(messageSignature);
         }
+    }
+
+    private boolean hasAvroHeader(final byte[] bytes) {
+        return bytes.length >= AVRO_HEADER_LENGTH && (bytes[0] & 0xFF) == 0xC3 && (bytes[1] & 0xFF) == 0x01;
+    }
+
+    private byte[] stripHeaders(final ByteBuffer byteBuffer) {
+        final byte[] bytes = new byte[byteBuffer.remaining()];
+        byteBuffer.get(bytes);
+        if (this.hasAvroHeader(bytes)) {
+            return Arrays.copyOfRange(bytes, AVRO_HEADER_LENGTH, bytes.length);
+        }
+        return bytes;
     }
 
     private ByteBuffer toByteBuffer(final Message message) {
@@ -218,8 +250,12 @@ public class MessageSigner {
         }
     }
 
-    public boolean signingEnabled() {
-        return this.isSigningEnabled;
+    public boolean isSigningEnabled() {
+        return this.signingEnabled;
+    }
+
+    public boolean isStripHeaders() {
+        return this.stripHeaders;
     }
 
     public String signatureAlgorithm() {
@@ -343,7 +379,9 @@ public class MessageSigner {
 
         private static final Pattern PEM_REMOVAL_PATTERN = Pattern.compile("-----(?:BEGIN|END) .*?-----|\\r|\\n");
 
-        private boolean isSigningEnabled;
+        private boolean signingEnabled;
+
+        private boolean stripHeaders;
 
         private String signatureAlgorithm = DEFAULT_SIGNATURE_ALGORITHM;
         private String signatureProvider = DEFAULT_SIGNATURE_PROVIDER;
@@ -354,7 +392,12 @@ public class MessageSigner {
         private PublicKey verificationKey = null;
 
         public Builder signingEnabled(final boolean signingEnabled) {
-            this.isSigningEnabled = signingEnabled;
+            this.signingEnabled = signingEnabled;
+            return this;
+        }
+
+        public Builder stripHeaders(final boolean stripHeaders) {
+            this.stripHeaders = stripHeaders;
             return this;
         }
 
@@ -450,5 +493,6 @@ public class MessageSigner {
         public MessageSigner build() {
             return new MessageSigner(this);
         }
+
     }
 }

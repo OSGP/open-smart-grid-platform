@@ -13,8 +13,8 @@ import org.openmuc.j60870.ASduType;
 import org.opensmartgridplatform.cucumber.protocol.iec60870.database.Iec60870Database;
 import org.opensmartgridplatform.cucumber.protocol.iec60870.mock.Iec60870MockServer;
 import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870AsduFactory;
-import org.opensmartgridplatform.simulator.protocol.iec60870.domain.profile.DefaultControlledStationAsduFactory;
-import org.opensmartgridplatform.simulator.protocol.iec60870.domain.profile.LightMeasurementDeviceAsduFactory;
+import org.opensmartgridplatform.simulator.protocol.iec60870.domain.defaultcontrolledstation.DefaultControlledStationAsduFactory;
+import org.opensmartgridplatform.simulator.protocol.iec60870.domain.lightmeasurementdevice.LightMeasurementDeviceAsduFactory;
 import org.opensmartgridplatform.simulator.protocol.iec60870.server.handlers.Iec60870InterrogationCommandAsduHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 

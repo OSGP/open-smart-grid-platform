@@ -293,7 +293,19 @@
       <xsd:element name="eventType" type="tns:EventType"/>
       <xsd:element name="EventLogCategory" type="tns:EventLogCategory"/>
       <xsd:element name="eventCounter" type="xsd:int" minOccurs="0"/>
-      <xsd:element name="eventDetails" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="eventDetails" type="tns:EventDetail"
+                   maxOccurs="unbounded" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- Certain events require or contain more details than just
+   a description and a category. For example, specification of
+   a particular channel number, alarm number, relay number,
+   port number, formula number, version number, etc -->
+  <xsd:complexType name="EventDetail">
+    <xsd:sequence>
+      <xsd:element name="name" type="xsd:string"/>
+      <xsd:element name="value" type="xsd:string"/>
     </xsd:sequence>
   </xsd:complexType>
 

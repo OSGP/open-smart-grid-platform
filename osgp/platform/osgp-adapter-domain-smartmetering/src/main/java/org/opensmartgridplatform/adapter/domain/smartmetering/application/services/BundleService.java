@@ -79,6 +79,7 @@ public class BundleService {
         // Parameterless constructor required for transactions...
     }
 
+    @Transactional(value = "transactionManager")
     public void handleBundle(final DeviceMessageMetadata deviceMessageMetadata,
             final BundleMessageRequest bundleMessageDataContainer) throws FunctionalException {
 
@@ -100,6 +101,7 @@ public class BundleService {
                 deviceMessageMetadata.bypassRetry());
     }
 
+    @Transactional(value = "transactionManager")
     public void handleBundleResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException,
             final BundleMessagesRequestDto bundleResponseMessageDataContainerDto) throws FunctionalException {
