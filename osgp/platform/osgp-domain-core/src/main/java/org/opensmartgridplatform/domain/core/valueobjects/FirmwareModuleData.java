@@ -1,9 +1,10 @@
 /**
  * Copyright 2014-2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.domain.core.valueobjects;
 
@@ -16,8 +17,6 @@ import org.opensmartgridplatform.domain.core.entities.FirmwareModule;
 import org.opensmartgridplatform.domain.core.repositories.FirmwareModuleRepository;
 
 public class FirmwareModuleData implements Serializable {
-
-    private static final long serialVersionUID = 3479817852183883103L;
 
     /**
      * Description of the FirmwareModule for which the module version in a
@@ -61,7 +60,7 @@ public class FirmwareModuleData implements Serializable {
      * FirmwareFile should equal {@link #moduleVersionSimple}.
      */
     public static final String MODULE_DESCRIPTION_SIMPLE_VERSION_INFO = "simple_version_info";
-
+    private static final long serialVersionUID = 3479817852183883103L;
     private final String moduleVersionComm;
     private final String moduleVersionFunc;
     private final String moduleVersionMa;
@@ -127,6 +126,7 @@ public class FirmwareModuleData implements Serializable {
      *            {@value #MODULE_DESCRIPTION_FUNC_SMART_METERING} firmware
      *            module; otherwise it is mapped to the
      *            {@value #MODULE_DESCRIPTION_FUNC} firmware module.
+     *
      * @return firmware module versions by module.
      */
     public Map<FirmwareModule, String> getVersionsByModule(final FirmwareModuleRepository firmwareModuleRepository,
@@ -170,7 +170,8 @@ public class FirmwareModuleData implements Serializable {
         return "FirmwareModuleData [moduleVersionComm=" + this.moduleVersionComm + ", moduleVersionFunc="
                 + this.moduleVersionFunc + ", moduleVersionMa=" + this.moduleVersionMa + ", moduleVersionMbus="
                 + this.moduleVersionMbus + ", moduleVersionSec=" + this.moduleVersionSec
-                + ", moduleVersionMBusDriverActive=" + this.moduleVersionMBusDriverActive + "]";
+                + ", moduleVersionMBusDriverActive=" + this.moduleVersionMBusDriverActive + ", moduleVersionSimple="
+                + this.moduleVersionSimple + "]";
     }
 
 }

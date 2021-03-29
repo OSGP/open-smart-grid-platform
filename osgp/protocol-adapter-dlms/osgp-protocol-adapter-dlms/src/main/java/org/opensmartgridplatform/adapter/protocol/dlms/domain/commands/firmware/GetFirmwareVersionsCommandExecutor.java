@@ -8,8 +8,6 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware;
 
-import static java.util.Arrays.asList;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +23,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.DataAttribute;
-import org.opensmartgridplatform.dlms.interfaceclass.attribute.ExtendedRegisterAttribute;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareModuleType;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
@@ -35,6 +32,8 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersi
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import static java.util.Arrays.asList;
 
 @Component
 public class GetFirmwareVersionsCommandExecutor
@@ -58,10 +57,10 @@ public class GetFirmwareVersionsCommandExecutor
             new AttributeAddress(CLASS_ID, OBIS_CODE_COMMUNICATION_MODULE_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID),
             new AttributeAddress(CLASS_ID, OBIS_CODE_MBUS_DRIVER_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID));
 
-    private static final AttributeAddress[] FOR_DSMR_4_2_2 = ALL_ATTRIBUTE_ADDRESSES.subList(0, 3).toArray(
-            new AttributeAddress[3]);
-    private static final AttributeAddress[] FOR_SMR_5 = ALL_ATTRIBUTE_ADDRESSES.subList(0, 4).toArray(
-            new AttributeAddress[4]);
+    private static final AttributeAddress[] FOR_DSMR_4_2_2 = ALL_ATTRIBUTE_ADDRESSES.subList(0, 3)
+            .toArray(new AttributeAddress[3]);
+    private static final AttributeAddress[] FOR_SMR_5 = ALL_ATTRIBUTE_ADDRESSES.subList(0, 4)
+            .toArray(new AttributeAddress[4]);
 
     private final DlmsHelper dlmsHelper;
 
@@ -99,8 +98,9 @@ public class GetFirmwareVersionsCommandExecutor
 
     private List<FirmwareVersionDto> getFirmwareVersions(final DlmsConnectionManager conn, final DlmsDevice device,
             final AttributeAddress[] attributes) throws ProtocolAdapterException {
-        conn.getDlmsMessageListener().setDescription(
-                "GetFirmwareVersions, retrieve attributes: " + JdlmsObjectToStringUtil.describeAttributes(attributes));
+        conn.getDlmsMessageListener()
+                .setDescription("GetFirmwareVersions, retrieve attributes: "
+                        + JdlmsObjectToStringUtil.describeAttributes(attributes));
 
         final List<GetResult> results = this.dlmsHelper.getAndCheck(conn, device, "retrieve firmware versions",
                 attributes);

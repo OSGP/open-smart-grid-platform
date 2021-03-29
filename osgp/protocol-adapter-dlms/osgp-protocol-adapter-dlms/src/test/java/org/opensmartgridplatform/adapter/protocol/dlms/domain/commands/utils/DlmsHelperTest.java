@@ -8,12 +8,6 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -30,11 +24,16 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.dto.valueobjects.FirmwareModuleType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClockStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemTimeDto;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class DlmsHelperTest {
 
@@ -92,9 +91,9 @@ public class DlmsHelperTest {
     }
 
     /*
-     * this test is here because the jDMLS code throws a NullPointerException instead of a
-     * ResponseTimeoutException (specific type of IOException
-     * via NonFatalJDlmsException and JDlmsException).
+     * this test is here because the jDMLS code throws a NullPointerException
+     * instead of a ResponseTimeoutException (specific type of IOException via
+     * NonFatalJDlmsException and JDlmsException).
      */
     @Test
     public void testGetWithListException() throws IOException {
@@ -251,9 +250,9 @@ public class DlmsHelperTest {
 
     @Test
     public void testByteArrayToHexString() throws ProtocolAdapterException {
-        byte[] bytes = new byte[] {25, 24, 7, 118};
-        DataObject dataObject = DataObject.newOctetStringData(bytes);
-        String hexString = dlmsHelper.readHexString(dataObject, "reading a Hexadecimal String");
+        final byte[] bytes = new byte[] { 25, 24, 7, 118 };
+        final DataObject dataObject = DataObject.newOctetStringData(bytes);
+        final String hexString = this.dlmsHelper.readHexString(dataObject, "reading a Hexadecimal String");
 
         assertThat(hexString).isEqualTo("19180776");
     }

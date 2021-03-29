@@ -27,14 +27,14 @@ Feature: SmartMetering Bundle - GetFirmwareVersion
       | DeviceIdentification | TEST1027000000001 |
       | DeviceType           | SMART_METER_E     |
       | Protocol             | SMR               |
-      | ProtocolVersion      | 5.1               |
-      | Port                 | 1027              |
+      | ProtocolVersion      |               5.1 |
+      | Port                 |              1027 |
     And a dlms device
       | DeviceIdentification        | TEST1027000000002 |
       | DeviceType                  | SMART_METER_G     |
       | GatewayDeviceIdentification | TEST1027000000001 |
-      | Channel                     | 2                 |
-      | MbusPrimaryAddress          | 2                 |
+      | Channel                     |                 2 |
+      | MbusPrimaryAddress          |                 2 |
     And a bundle request
       | DeviceIdentification | TEST1027000000001 |
     And the bundle request contains a get firmware version gas action
@@ -44,4 +44,4 @@ Feature: SmartMetering Bundle - GetFirmwareVersion
       | SimpleVersionInfo | 19180706 |
     And the database should be updated with the device firmware version
       | DeviceIdentification | TEST1027000000002 |
-      | SimpleVersionInfo    | 19180706          |
+      | SimpleVersionInfo    |          19180706 |

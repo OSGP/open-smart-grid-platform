@@ -236,6 +236,7 @@ public class ConfigurationService {
      *         used to check if the organisation is allowed to execute this request on the given device
      * @param messageType
      *         messageType is added to the message metadata
+     * @param requestObject contains request data if applicable
      *
      * @return the correlation id belonging to the request
      *

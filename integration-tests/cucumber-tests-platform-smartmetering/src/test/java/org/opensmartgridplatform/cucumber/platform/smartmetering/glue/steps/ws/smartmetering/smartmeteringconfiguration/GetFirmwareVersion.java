@@ -55,12 +55,11 @@ public class GetFirmwareVersion {
 
     @When("^the get firmware version request is received$")
     public void theGetFirmwareVersionRequestIsReceived(final Map<String, String> requestData) throws Throwable {
-        final GetFirmwareVersionRequest getFirmwareVersionRequest = GetFirmwareVersionRequestFactory.fromParameterMap(
-                requestData);
+        final GetFirmwareVersionRequest getFirmwareVersionRequest = GetFirmwareVersionRequestFactory
+                .fromParameterMap(requestData);
 
-        final GetFirmwareVersionAsyncResponse getFirmwareVersionAsyncResponse =
-                this.smartMeteringConfigurationClient.getFirmwareVersion(
-                getFirmwareVersionRequest);
+        final GetFirmwareVersionAsyncResponse getFirmwareVersionAsyncResponse = this.smartMeteringConfigurationClient
+                .getFirmwareVersion(getFirmwareVersionRequest);
 
         assertThat(getFirmwareVersionAsyncResponse).as("Get firmware version asyncResponse should not be null")
                 .isNotNull();
@@ -73,12 +72,11 @@ public class GetFirmwareVersion {
 
     @When("^the get firmware version gas request is received$")
     public void theGetFirmwareVersionGasRequestIsReceived(final Map<String, String> requestData) throws Throwable {
-        final GetFirmwareVersionGasRequest gasRequest = GetFirmwareVersionGasRequestFactory.fromParameterMap(
-                requestData);
+        final GetFirmwareVersionGasRequest gasRequest = GetFirmwareVersionGasRequestFactory
+                .fromParameterMap(requestData);
 
-        final GetFirmwareVersionGasAsyncResponse gasAsyncResponse =
-                this.smartMeteringConfigurationClient.getFirmwareVersionGas(
-                gasRequest);
+        final GetFirmwareVersionGasAsyncResponse gasAsyncResponse = this.smartMeteringConfigurationClient
+                .getFirmwareVersionGas(gasRequest);
 
         assertThat(gasAsyncResponse).as("Get firmware version gas asyncResponse should not be null").isNotNull();
         log.info("Get firmware version gas asyncResponse is received {}", gasAsyncResponse);
@@ -89,12 +87,11 @@ public class GetFirmwareVersion {
 
     @Then("^the firmware version result should be returned$")
     public void theFirmwareVersionResultShouldBeReturned(final Map<String, String> settings) throws Throwable {
-        final GetFirmwareVersionAsyncRequest getFirmwareVersionAsyncRequest =
-                FirmwareVersionRequestFactory.fromScenarioContext();
+        final GetFirmwareVersionAsyncRequest getFirmwareVersionAsyncRequest = FirmwareVersionRequestFactory
+                .fromScenarioContext();
 
-        final GetFirmwareVersionResponse getFirmwareVersionResponse =
-                this.smartMeteringConfigurationClient.retrieveGetFirmwareVersionResponse(
-                getFirmwareVersionAsyncRequest);
+        final GetFirmwareVersionResponse getFirmwareVersionResponse = this.smartMeteringConfigurationClient
+                .retrieveGetFirmwareVersionResponse(getFirmwareVersionAsyncRequest);
 
         assertThat(getFirmwareVersionResponse.getResult()).as("Get firmware version response has result null")
                 .isNotNull();
@@ -111,9 +108,8 @@ public class GetFirmwareVersion {
         gasAsyncRequest.setCorrelationUid(RequestFactoryHelper.getCorrelationUidFromScenarioContext());
         gasAsyncRequest.setDeviceIdentification(settings.get(PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION));
 
-        final GetFirmwareVersionGasResponse gasResponse =
-                this.smartMeteringConfigurationClient.retrieveGetFirmwareVersionGasResponse(
-                gasAsyncRequest);
+        final GetFirmwareVersionGasResponse gasResponse = this.smartMeteringConfigurationClient
+                .retrieveGetFirmwareVersionGasResponse(gasAsyncRequest);
 
         assertThat(gasResponse.getResult()).as("Get firmware version response has result null").isNotNull();
         assertThat(gasResponse.getResult()).as("Response should be OK").isEqualTo(OsgpResultType.OK);
@@ -126,9 +122,8 @@ public class GetFirmwareVersion {
     public void checkFirmwareVersionResult(final Map<String, String> settings,
             final List<FirmwareVersion> firmwareVersions) {
 
-        final Map<FirmwareModule, String> expectedVersionsByModule =
-                this.deviceFirmwareModuleSteps.getFirmwareModuleVersions(
-                settings, true);
+        final Map<FirmwareModule, String> expectedVersionsByModule = this.deviceFirmwareModuleSteps
+                .getFirmwareModuleVersions(settings, true);
 
         assertThat(firmwareVersions.size()).as("Number of firmware modules").isEqualTo(expectedVersionsByModule.size());
 
@@ -140,16 +135,14 @@ public class GetFirmwareVersion {
             final String moduleDescription = receivedFirmwareVersion.getFirmwareModuleType().name();
             final String moduleVersion = receivedFirmwareVersion.getVersion();
 
-            final FirmwareModule firmwareModule = this.firmwareModuleRepository.findByDescriptionIgnoreCase(
-                    moduleDescription);
+            final FirmwareModule firmwareModule = this.firmwareModuleRepository
+                    .findByDescriptionIgnoreCase(moduleDescription);
 
-            assertThat(firmwareModule).as(
-                    "Received version \"" + moduleVersion + "\" for unknown firmware module \"" + moduleDescription
-                            + "\"").isNotNull();
+            assertThat(firmwareModule).as("Received version \"" + moduleVersion + "\" for unknown firmware module \""
+                    + moduleDescription + "\"").isNotNull();
 
-            assertThat(moduleVersion).as(
-                    "Received version \"" + moduleVersion + "\" for firmware module \"" + moduleDescription
-                            + "\" which was not expected").isNotNull();
+            assertThat(moduleVersion).as("Received version \"" + moduleVersion + "\" for firmware module \""
+                    + moduleDescription + "\" which was not expected").isNotNull();
 
             final String expectedVersion = expectedVersionsByModule.get(firmwareModule);
             assertThat(moduleVersion).as("Version for firmware module \"" + moduleDescription + "\"")
@@ -168,16 +161,14 @@ public class GetFirmwareVersion {
         final String moduleDescription = firmwareVersionGas.getFirmwareModuleType().name();
         final String moduleVersion = Hex.encodeHexString(firmwareVersionGas.getVersion());
 
-        final FirmwareModule firmwareModule = this.firmwareModuleRepository.findByDescriptionIgnoreCase(
-                moduleDescription);
+        final FirmwareModule firmwareModule = this.firmwareModuleRepository
+                .findByDescriptionIgnoreCase(moduleDescription);
 
-        assertThat(firmwareModule).as(
-                String.format("Received version \"%s\" for unknown firmware module \"%s\"", moduleVersion,
-                        moduleDescription)).isNotNull();
+        assertThat(firmwareModule).as(String.format("Received version \"%s\" for unknown firmware module \"%s\"",
+                moduleVersion, moduleDescription)).isNotNull();
 
-        assertThat(moduleVersion).as(
-                String.format("Received version \"%s\" for unknown firmware module \"%s\"", moduleVersion,
-                        moduleDescription)).isNotNull();
+        assertThat(moduleVersion).as(String.format("Received version \"%s\" for unknown firmware module \"%s\"",
+                moduleVersion, moduleDescription)).isNotNull();
 
         final String expectedVersion = getNullOrNonEmptyString(settings, PlatformKeys.SIMPLE_VERSION_INFO, null);
         assertThat(moduleVersion).as(String.format("Version for firmware module \"%s\"", moduleDescription))
