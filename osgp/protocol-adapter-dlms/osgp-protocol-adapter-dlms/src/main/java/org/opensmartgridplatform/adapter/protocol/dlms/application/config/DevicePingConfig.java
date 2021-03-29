@@ -35,7 +35,7 @@ public class DevicePingConfig {
     private Boolean lookupNamesForHostAddresses;
 
     public boolean pingingEnabled() {
-        return this.pingingEnabled();
+        return this.pingingEnabled;
     }
 
     @Bean
