@@ -20,9 +20,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60870Device;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.PendingRequestsQueue;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LightMeasurementService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
-import org.opensmartgridplatform.adapter.protocol.iec60870.infra.CorrelationUidPerDevice;
 import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories.Iec60870DeviceFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories.MeasurementReportFactory;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementReportDto;
@@ -43,7 +43,7 @@ class LightMeasurementDeviceResponseServiceTest {
     private LightMeasurementService lightMeasurementService;
 
     @Mock
-    private CorrelationUidPerDevice correlationUidPerDevice;
+    private PendingRequestsQueue pendingRequestsQueue;
 
     @Test
     void sendLightSensorStatusResponseShouldDequeueCorrelationUid() {
@@ -62,7 +62,7 @@ class LightMeasurementDeviceResponseServiceTest {
         this.lightMeasurementDeviceResponseService.sendLightSensorStatusResponse(measurementReportDto,
                 lightMeasurementDevice1, responseMetadata, "");
 
-        verify(this.correlationUidPerDevice).dequeue(eq(Iec60870DeviceFactory.LMD_1_DEVICE_IDENTIFICATION));
+        verify(this.pendingRequestsQueue).dequeue(eq(Iec60870DeviceFactory.LMD_1_DEVICE_IDENTIFICATION));
 
     }
 
