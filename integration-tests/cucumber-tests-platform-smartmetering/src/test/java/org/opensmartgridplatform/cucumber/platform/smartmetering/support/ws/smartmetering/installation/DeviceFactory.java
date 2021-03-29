@@ -8,11 +8,6 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.installation;
 
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getLong;
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShort;
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
-
 import java.util.Map;
 
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.Device;
@@ -21,6 +16,11 @@ import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.helpers.SettingsHelper;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.RequestFactoryHelper;
+
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getLong;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShort;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 public class DeviceFactory {
 
