@@ -611,6 +611,13 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+  <xsd:element name="GetModemInfoResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smman:GetModemInfoResponseData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
 
   <xsd:complexType name="AllResponses">
     <xsd:sequence>
@@ -647,6 +654,7 @@
           ref="tns:SetDeviceLifecycleStatusByChannelResponse" />
         <xsd:element ref="tns:ScanMbusChannelsResponse" />
         <xsd:element ref="tns:GetOutagesResponse" />
+        <xsd:element ref="tns:GetModemInfoResponse" />
       </xsd:choice>
     </xsd:sequence>
   </xsd:complexType>

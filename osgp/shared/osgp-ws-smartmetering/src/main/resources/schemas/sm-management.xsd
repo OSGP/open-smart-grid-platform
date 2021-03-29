@@ -655,4 +655,81 @@
     </xsd:complexContent>
   </xsd:complexType>
 
+  <xsd:complexType name="GetModemInfoResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
+        <xsd:sequence>
+          <xsd:element name="Operator" type="common:AlphaNumericType"/>
+          <xsd:element name="ModemRegistrationStatus" type="tns:ModemRegistrationStatus"/>
+          <xsd:element name="CircuitSwitchedStatus" type="tns:CircuitSwitchedStatus"/>
+          <xsd:element name="PacketSwitchedStatus" type="tns:PacketSwitchedStatus"/>
+          <xsd:element name="CellId" type="common:AlphaNumericType"/>
+          <xsd:element name="LocationId" type="common:AlphaNumericType"/>
+          <xsd:element name="SignalQuality" type="common:AlphaNumericType"/>
+          <xsd:element name="BitErrorRate" type="common:AlphaNumericType"/>
+          <xsd:element name="MobileCountryCode" type="common:AlphaNumericType"/>
+          <xsd:element name="MobileNetworkCode" type="common:AlphaNumericType"/>
+          <xsd:element name="ChannelNumber" type="common:AlphaNumericType"/>
+          <xsd:element name="NumberOfAdjacentCells" type="common:AlphaNumericType"/>
+          <xsd:element name="AdjacantCellId" type="common:AlphaNumericType"/>
+          <xsd:element name="AdjacantCellSignalQuality" type="common:AlphaNumericType"/>
+          <xsd:element name="CaptureTime" type="xsd:dateTime"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:simpleType name="ModemRegistrationStatus">
+    <xsd:restriction base="xsd:string">
+      <!-- 0 - Not registered -->
+      <xsd:enumeration value="NOT_REGISTERED"/>
+      <!-- 1 - Registered home network -->
+      <xsd:enumeration value="REGISTERED_HOME_NETWORK"/>
+      <!-- 2 - Not registered, but MT is currently search new operator to register to -->
+      <xsd:enumeration value="NOT_REGISTERED_CURRENT_SEARCH_OPERATOR_TO_REGISTER_TO"/>
+      <!-- 3 - Registration denied -->
+      <xsd:enumeration value="REGISTRATION_DENIED"/>
+      <!-- 4 - Unknown -->
+      <xsd:enumeration value="UNKNOWN"/>
+      <!-- 5 - Registered roaming -->
+      <xsd:enumeration value="REGISTERED_ROAMING"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="CircuitSwitchedStatus">
+    <xsd:restriction base="xsd:string">
+      <!-- 0 - Inactive -->
+      <xsd:enumeration value="INACTIVE"/>
+      <!-- 1 - Incoming call -->
+      <xsd:enumeration value="INCOMING_CALL"/>
+      <!-- 2 - Active -->
+      <xsd:enumeration value="ACTIVE"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="PacketSwitchedStatus">
+    <xsd:restriction base="xsd:string">
+      <!-- 0 - Inactiva -->
+      <xsd:enumeration value="INACTIVE"/>
+      <!-- 1 - GPRS -->
+      <xsd:enumeration value="GPRS"/>
+      <!-- 2 - EDGE -->
+      <xsd:enumeration value="EDGE"/>
+      <!-- 3 - UMTS -->
+      <xsd:enumeration value="UMTS"/>
+      <!-- 4 - HSDPA -->
+      <xsd:enumeration value="HSDPA"/>
+      <!-- 5 - LTE -->
+      <xsd:enumeration value="LTE"/>
+      <!-- 6 - CDMA -->
+      <xsd:enumeration value="CDMA"/>
+      <!-- 7 - LTE Cat M1 -->
+      <xsd:enumeration value="LTE_CAT_M18"/>
+      <!-- 8 - LTE NB-IoT -->
+      <xsd:enumeration value="LTE_NB_IOT"/>
+      <!-- 9-255 - Reserved -->
+      <xsd:enumeration value="RESERVED"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
 </xsd:schema>
