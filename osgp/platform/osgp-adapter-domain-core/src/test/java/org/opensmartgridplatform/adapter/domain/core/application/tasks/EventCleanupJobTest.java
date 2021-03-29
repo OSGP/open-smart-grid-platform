@@ -50,6 +50,7 @@ public class EventCleanupJobTest {
     public void initMocksAndSetProperties() {
         MockitoAnnotations.initMocks(this);
 
+        ReflectionTestUtils.setField(this.eventCleanupJob, "eventCleanupEnabled", true);
         ReflectionTestUtils.setField(this.eventCleanupJob, "eventRetentionPeriodInMonths", 1);
         ReflectionTestUtils.setField(this.eventCleanupJob, "csvFileLocation",
                 this.folder.resolve(JUST_A_FILE).getParent().toString());
