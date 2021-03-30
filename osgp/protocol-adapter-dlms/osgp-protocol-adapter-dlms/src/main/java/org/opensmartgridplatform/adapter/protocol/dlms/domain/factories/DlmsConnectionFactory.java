@@ -43,59 +43,62 @@ public class DlmsConnectionFactory {
     }
 
     /**
-     * Returns an open connection to the device using the appropriate security settings.
+     * Returns an open connection to the device using the appropriate security
+     * settings.
      *
      * @param device
-     *         The device to connect to. This reference can be updated when
-     *         the invalid but correctable connection credentials are
-     *         detected.
+     *            The device to connect to. This reference can be updated when
+     *            the invalid but correctable connection credentials are
+     *            detected.
      * @param dlmsMessageListener
-     *         A message listener that will be provided to the
-     *         {@link DlmsConnection} that is initialized if the given
-     *         {@code device} is in {@link DlmsDevice#isInDebugMode() debug
-     *         mode}. If this is {@code null} no DLMS device communication
-     *         debug logging will be done.
+     *            A message listener that will be provided to the
+     *            {@link DlmsConnection} that is initialized if the given
+     *            {@code device} is in {@link DlmsDevice#isInDebugMode() debug
+     *            mode}. If this is {@code null} no DLMS device communication
+     *            debug logging will be done.
      *
      * @return a manager providing access to an open DLMS connection as well as
      *         an optional message listener active in the connection.
      *
      * @throws OsgpException
-     *         in case of a TechnicalException or FunctionalException
+     *             in case of a TechnicalException or FunctionalException
      */
-    public DlmsConnectionManager getConnection(final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
-            throws OsgpException {
-        return this.newConnectionWithSecurityLevel(device, dlmsMessageListener, SecurityLevel.forDevice(device));
+    public DlmsConnectionManager getConnection(final String correlationUid, final DlmsDevice device,
+            final DlmsMessageListener dlmsMessageListener) throws OsgpException {
+        return this.newConnectionWithSecurityLevel(correlationUid, device, dlmsMessageListener,
+                SecurityLevel.forDevice(device));
     }
 
     /**
-     * Returns an open connection to the device using its Public client association.
+     * Returns an open connection to the device using its Public client
+     * association.
      *
      * @param device
-     *         The device to connect to. This reference can be updated when
-     *         the invalid but correctable connection credentials are
-     *         detected.
+     *            The device to connect to. This reference can be updated when
+     *            the invalid but correctable connection credentials are
+     *            detected.
      * @param dlmsMessageListener
-     *         A message listener that will be provided to the
-     *         {@link DlmsConnection} that is initialized if the given
-     *         {@code device} is in {@link DlmsDevice#isInDebugMode() debug
-     *         mode}. If this is {@code null} no DLMS device communication
-     *         debug logging will be done.
+     *            A message listener that will be provided to the
+     *            {@link DlmsConnection} that is initialized if the given
+     *            {@code device} is in {@link DlmsDevice#isInDebugMode() debug
+     *            mode}. If this is {@code null} no DLMS device communication
+     *            debug logging will be done.
      *
      * @return a manager providing access to an open DLMS connection as well as
      *         an optional message listener active in the connection.
      *
      * @throws OsgpException
-     *         in case of a TechnicalException or FunctionalException
+     *             in case of a TechnicalException or FunctionalException
      */
-    public DlmsConnectionManager getPublicClientConnection(final DlmsDevice device,
+    public DlmsConnectionManager getPublicClientConnection(final String correlationUid, final DlmsDevice device,
             final DlmsMessageListener dlmsMessageListener) throws OsgpException {
-        return this.newConnectionWithSecurityLevel(device, dlmsMessageListener, SecurityLevel.LLS0);
+        return this.newConnectionWithSecurityLevel(correlationUid, device, dlmsMessageListener, SecurityLevel.LLS0);
     }
 
-    private DlmsConnectionManager newConnectionWithSecurityLevel(final DlmsDevice device,
+    private DlmsConnectionManager newConnectionWithSecurityLevel(final String correlationUid, final DlmsDevice device,
             final DlmsMessageListener dlmsMessageListener, final SecurityLevel securityLevel) throws OsgpException {
         final DlmsConnectionManager connectionManager = new DlmsConnectionManager(this.connectorFor(securityLevel),
-                device, dlmsMessageListener, this.domainHelperService);
+                correlationUid, device, dlmsMessageListener, this.domainHelperService);
         connectionManager.connect();
         return connectionManager;
     }

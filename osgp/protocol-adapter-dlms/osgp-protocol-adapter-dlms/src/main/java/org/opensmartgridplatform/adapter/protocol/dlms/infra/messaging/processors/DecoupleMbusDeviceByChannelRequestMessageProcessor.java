@@ -15,6 +15,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Inst
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RequestWithMetadata;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -22,7 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DecoupleMbusDeviceByChannelRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class DecoupleMbusDeviceByChannelRequestMessageProcessor
+        extends DeviceRequestMessageProcessor<DecoupleMbusDeviceDto> {
 
     @Autowired
     private InstallationService installationService;
@@ -33,11 +35,7 @@ public class DecoupleMbusDeviceByChannelRequestMessageProcessor extends DeviceRe
 
     @Override
     protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException {
-
-        this.assertRequestObjectType(DecoupleMbusDeviceDto.class, requestObject);
-
-        final DecoupleMbusDeviceDto requestDto = (DecoupleMbusDeviceDto) requestObject;
-        return this.installationService.decoupleMbusDevice(conn, device, requestDto);
+            final RequestWithMetadata<DecoupleMbusDeviceDto> request) throws OsgpException {
+        return this.installationService.decoupleMbusDevice(conn, device, request.getRequestObject());
     }
 }

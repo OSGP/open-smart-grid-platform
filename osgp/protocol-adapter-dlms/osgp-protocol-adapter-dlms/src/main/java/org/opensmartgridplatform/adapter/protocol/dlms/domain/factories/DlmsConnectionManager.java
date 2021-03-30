@@ -44,6 +44,7 @@ public class DlmsConnectionManager implements AutoCloseable {
         }
     };
 
+    private final String correlationUid;
     private final DlmsConnector connector;
     private final DlmsDevice device;
     private final DlmsMessageListener dlmsMessageListener;
@@ -51,8 +52,9 @@ public class DlmsConnectionManager implements AutoCloseable {
 
     private DlmsConnection dlmsConnection;
 
-    public DlmsConnectionManager(final DlmsConnector connector, final DlmsDevice device,
+    public DlmsConnectionManager(final DlmsConnector connector, final String correlationUid, final DlmsDevice device,
             final DlmsMessageListener dlmsMessageListener, final DomainHelperService domainHelperService) {
+        this.correlationUid = correlationUid;
         this.connector = connector;
         this.device = device;
         this.domainHelperService = domainHelperService;
@@ -68,7 +70,7 @@ public class DlmsConnectionManager implements AutoCloseable {
      *         connect}.
      *
      * @throws IllegalStateException
-     *         when there is no connection available.
+     *             when there is no connection available.
      */
     public DlmsConnection getConnection() {
         if (!this.isConnected()) {
@@ -90,7 +92,7 @@ public class DlmsConnectionManager implements AutoCloseable {
      * reference.
      *
      * @throws IOException
-     *         When an exception occurs while disconnecting.
+     *             When an exception occurs while disconnecting.
      */
     public void disconnect() throws IOException {
         if (this.dlmsConnection != null) {
@@ -108,17 +110,17 @@ public class DlmsConnectionManager implements AutoCloseable {
      * before {@link #getConnection() getConnection} is called.
      *
      * @throws IllegalStateException
-     *         When there is already a connection set.
+     *             When there is already a connection set.
      * @throws OsgpException
-     *         in case of a TechnicalException (When an exceptions occurs
-     *         while creating the exception) or a FunctionalException
+     *             in case of a TechnicalException (When an exceptions occurs
+     *             while creating the exception) or a FunctionalException
      */
     public void connect() throws OsgpException {
         if (this.dlmsConnection != null) {
             throw new IllegalStateException("Cannot create a new connection because a connection already exists.");
         }
 
-        this.dlmsConnection = this.connector.connect(this.device, this.dlmsMessageListener);
+        this.dlmsConnection = this.connector.connect(this.correlationUid, this.device, this.dlmsMessageListener);
     }
 
     /**
@@ -126,9 +128,9 @@ public class DlmsConnectionManager implements AutoCloseable {
      * before {@link #getConnection() getConnection} is called.
      *
      * @throws OsgpException
-     *         in case of a TechnicalException (When an exceptions
-     *         occurs while creating the exception), a FunctionalException or a
-     *         ProtocolAdapterException
+     *             in case of a TechnicalException (When an exceptions occurs
+     *             while creating the exception), a FunctionalException or a
+     *             ProtocolAdapterException
      */
     public void reconnect() throws OsgpException {
         if (this.dlmsConnection != null) {
@@ -138,7 +140,7 @@ public class DlmsConnectionManager implements AutoCloseable {
         if (!this.device.isIpAddressIsStatic()) {
             this.device.setIpAddress(this.domainHelperService.getDeviceIpAddressFromSessionProvider(this.device));
         }
-        this.dlmsConnection = this.connector.connect(this.device, this.dlmsMessageListener);
+        this.dlmsConnection = this.connector.connect(this.correlationUid, this.device, this.dlmsMessageListener);
     }
 
     /**

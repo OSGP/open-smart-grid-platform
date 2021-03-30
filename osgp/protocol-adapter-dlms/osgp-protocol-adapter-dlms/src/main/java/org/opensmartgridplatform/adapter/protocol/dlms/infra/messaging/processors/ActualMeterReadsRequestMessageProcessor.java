@@ -13,6 +13,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Moni
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RequestWithMetadata;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -20,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ActualMeterReadsRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class ActualMeterReadsRequestMessageProcessor extends DeviceRequestMessageProcessor<ActualMeterReadsQueryDto> {
 
     @Autowired
     private MonitoringService monitoringService;
@@ -31,11 +32,7 @@ public class ActualMeterReadsRequestMessageProcessor extends DeviceRequestMessag
 
     @Override
     protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException {
-
-        this.assertRequestObjectType(ActualMeterReadsQueryDto.class, requestObject);
-
-        final ActualMeterReadsQueryDto actualMeterReadsRequest = (ActualMeterReadsQueryDto) requestObject;
-        return this.monitoringService.requestActualMeterReads(conn, device, actualMeterReadsRequest);
+            final RequestWithMetadata<ActualMeterReadsQueryDto> request) throws OsgpException {
+        return this.monitoringService.requestActualMeterReads(conn, device, request.getRequestObject());
     }
 }

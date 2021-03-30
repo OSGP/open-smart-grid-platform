@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors;
 
@@ -13,6 +14,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Conf
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RequestWithMetadata;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActivityCalendarDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -23,7 +25,7 @@ import org.springframework.stereotype.Component;
  * Class for processing set Activity Calendar request messages
  */
 @Component
-public class SetActivityCalendarRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class SetActivityCalendarRequestMessageProcessor extends DeviceRequestMessageProcessor<ActivityCalendarDto> {
 
     @Autowired
     private ConfigurationService configurationService;
@@ -34,12 +36,7 @@ public class SetActivityCalendarRequestMessageProcessor extends DeviceRequestMes
 
     @Override
     protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException {
-
-        this.assertRequestObjectType(ActivityCalendarDto.class, requestObject);
-
-        final ActivityCalendarDto activityCalendarDto = (ActivityCalendarDto) requestObject;
-
-        return this.configurationService.setActivityCalendar(conn, device, activityCalendarDto);
+            final RequestWithMetadata<ActivityCalendarDto> request) throws OsgpException {
+        return this.configurationService.setActivityCalendar(conn, device, request.getRequestObject());
     }
 }

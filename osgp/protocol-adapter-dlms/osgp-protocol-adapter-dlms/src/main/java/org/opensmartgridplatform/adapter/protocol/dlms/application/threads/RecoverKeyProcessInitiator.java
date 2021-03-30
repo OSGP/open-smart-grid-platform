@@ -13,11 +13,11 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Provider;
 
 public class RecoverKeyProcessInitiator {
-    private ScheduledExecutorService executorService;
+    private final ScheduledExecutorService executorService;
 
-    private Provider<RecoverKeyProcess> recoverKeyProcessProvider;
+    private final Provider<RecoverKeyProcess> recoverKeyProcessProvider;
 
-    private int recoverKeyDelay;
+    private final int recoverKeyDelay;
 
     public RecoverKeyProcessInitiator(final ScheduledExecutorService executorService,
             final Provider<RecoverKeyProcess> recoverKeyProcessProvider, final int recoverKeyDelay) {
@@ -26,8 +26,9 @@ public class RecoverKeyProcessInitiator {
         this.recoverKeyDelay = recoverKeyDelay;
     }
 
-    public void initiate(final String deviceIdentification, final String ipAddress) {
+    public void initiate(final String correlationUid, final String deviceIdentification, final String ipAddress) {
         final RecoverKeyProcess process = this.recoverKeyProcessProvider.get();
+        process.setCorrelationUid(correlationUid);
         process.setDeviceIdentification(deviceIdentification);
         process.setIpAddress(ipAddress);
         this.executorService.schedule(process, this.recoverKeyDelay, TimeUnit.MILLISECONDS);

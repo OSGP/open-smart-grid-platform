@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 import java.util.List;
 
 import org.openmuc.jdlms.AccessResultCode;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.CorrelatedObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm.SetAlarmNotificationsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.GetConfigurationObjectCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.SetConfigurationObjectCommandExecutor;
@@ -162,8 +163,9 @@ public class ConfigurationService {
             final SetConfigurationObjectRequestDto setConfigurationObjectRequest) throws ProtocolAdapterException {
 
         // Configuration Object towards the Smart Meter
-        final ConfigurationObjectDto configurationObject =
-                setConfigurationObjectRequest.getSetConfigurationObjectRequestData().getConfigurationObject();
+        final ConfigurationObjectDto configurationObject = setConfigurationObjectRequest
+                .getSetConfigurationObjectRequestData()
+                .getConfigurationObject();
 
         final GprsOperationModeTypeDto gprsOperationModeType = configurationObject.getGprsOperationMode();
         final ConfigurationFlagsDto configurationFlags = configurationObject.getConfigurationFlags();
@@ -221,7 +223,7 @@ public class ConfigurationService {
     }
 
     public String setEncryptionKeyExchangeOnGMeter(final DlmsConnectionManager conn, final DlmsDevice device,
-            final GMeterInfoDto gMeterInfo) throws ProtocolAdapterException {
+            final CorrelatedObject<GMeterInfoDto> gMeterInfo) throws ProtocolAdapterException {
 
         LOGGER.info("Device for Set Encryption Key Exchange On G-Meter is: {}", device);
         this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, gMeterInfo);
@@ -229,14 +231,16 @@ public class ConfigurationService {
     }
 
     public String setMbusUserKeyByChannel(final DlmsConnectionManager conn, final DlmsDevice device,
-            final SetMbusUserKeyByChannelRequestDataDto setMbusUserKeyByChannelRequestDataDto) throws OsgpException {
+            final CorrelatedObject<SetMbusUserKeyByChannelRequestDataDto> setMbusUserKeyByChannelRequestData)
+            throws OsgpException {
 
         LOGGER.info("Device for Set M-Bus User Key By Channel is: {}", device);
 
         final GMeterInfoDto gMeterInfo = this.getMbusKeyExchangeData(conn, device,
-                setMbusUserKeyByChannelRequestDataDto);
+                setMbusUserKeyByChannelRequestData.getObject());
 
-        this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, gMeterInfo);
+        this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device,
+                CorrelatedObject.from(setMbusUserKeyByChannelRequestData, gMeterInfo));
 
         return "Set M-Bus User Key By Channel Result is OK for device id: " + device.getDeviceIdentification();
     }
@@ -244,9 +248,8 @@ public class ConfigurationService {
     public GMeterInfoDto getMbusKeyExchangeData(final DlmsConnectionManager conn, final DlmsDevice device,
             final SetMbusUserKeyByChannelRequestDataDto setMbusUserKeyByChannelRequestData) throws OsgpException {
 
-        final GetMBusDeviceOnChannelRequestDataDto mbusDeviceOnChannelRequest =
-                new GetMBusDeviceOnChannelRequestDataDto(
-                        device.getDeviceIdentification(), setMbusUserKeyByChannelRequestData.getChannel());
+        final GetMBusDeviceOnChannelRequestDataDto mbusDeviceOnChannelRequest = new GetMBusDeviceOnChannelRequestDataDto(
+                device.getDeviceIdentification(), setMbusUserKeyByChannelRequestData.getChannel());
         final ChannelElementValuesDto channelElementValues = this.getMBusDeviceOnChannelCommandExecutor.execute(conn,
                 device, mbusDeviceOnChannelRequest);
 
@@ -384,11 +387,11 @@ public class ConfigurationService {
                 getMbusEncryptionKeyStatusByChannelRequest);
     }
 
-    public void requestSetRandomizationSettings(DlmsConnectionManager conn, DlmsDevice device,
-            SetRandomisationSettingsRequestDataDto setRandomisationSettingsRequestDataDto)
+    public void requestSetRandomizationSettings(final DlmsConnectionManager conn, final DlmsDevice device,
+            final SetRandomisationSettingsRequestDataDto setRandomisationSettingsRequestDataDto)
             throws ProtocolAdapterException {
 
-        AccessResultCode accessResultCode = this.setRandomisationSettingsCommandExecutor.execute(conn, device,
+        final AccessResultCode accessResultCode = this.setRandomisationSettingsCommandExecutor.execute(conn, device,
                 setRandomisationSettingsRequestDataDto);
 
         if (AccessResultCode.SUCCESS != accessResultCode) {

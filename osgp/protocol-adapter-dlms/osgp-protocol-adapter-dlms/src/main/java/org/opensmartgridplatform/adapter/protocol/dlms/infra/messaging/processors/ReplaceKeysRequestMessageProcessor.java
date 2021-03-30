@@ -13,6 +13,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Conf
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RequestWithMetadata;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeysRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -20,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ReplaceKeysRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class ReplaceKeysRequestMessageProcessor extends DeviceRequestMessageProcessor<SetKeysRequestDto> {
 
     @Autowired
     private ConfigurationService configurationService;
@@ -31,12 +32,8 @@ public class ReplaceKeysRequestMessageProcessor extends DeviceRequestMessageProc
 
     @Override
     protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException {
-
-        this.assertRequestObjectType(SetKeysRequestDto.class, requestObject);
-
-        final SetKeysRequestDto keySet = (SetKeysRequestDto) requestObject;
-        this.configurationService.replaceKeys(conn, device, keySet);
+            final RequestWithMetadata<SetKeysRequestDto> request) throws OsgpException {
+        this.configurationService.replaceKeys(conn, device, request.getRequestObject());
 
         return null;
     }

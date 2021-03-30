@@ -13,6 +13,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Conf
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RequestWithMetadata;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -23,7 +24,7 @@ import org.springframework.stereotype.Component;
  * Class for processing Special Days Request messages
  */
 @Component
-public class SpecialDaysRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class SpecialDaysRequestMessageProcessor extends DeviceRequestMessageProcessor<SpecialDaysRequestDto> {
 
     @Autowired
     private ConfigurationService configurationService;
@@ -34,13 +35,8 @@ public class SpecialDaysRequestMessageProcessor extends DeviceRequestMessageProc
 
     @Override
     protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException {
-
-        this.assertRequestObjectType(SpecialDaysRequestDto.class, requestObject);
-
-        final SpecialDaysRequestDto specialDaysRequest = (SpecialDaysRequestDto) requestObject;
-
-        this.configurationService.setSpecialDays(conn, device, specialDaysRequest);
+            final RequestWithMetadata<SpecialDaysRequestDto> request) throws OsgpException {
+        this.configurationService.setSpecialDays(conn, device, request.getRequestObject());
         return null;
     }
 }

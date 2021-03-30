@@ -12,6 +12,7 @@ import java.io.Serializable;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RequestWithMetadata;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class DisableDebuggingRequestMessageProcessor extends DeviceRequestMessag
     }
 
     @Override
-    protected Serializable handleMessage(final DlmsDevice device, final Serializable requestObject)
+    protected Serializable handleMessage(final DlmsDevice device, final RequestWithMetadata requestObject)
             throws OsgpException {
 
         this.managementService.changeInDebugMode(device, false);

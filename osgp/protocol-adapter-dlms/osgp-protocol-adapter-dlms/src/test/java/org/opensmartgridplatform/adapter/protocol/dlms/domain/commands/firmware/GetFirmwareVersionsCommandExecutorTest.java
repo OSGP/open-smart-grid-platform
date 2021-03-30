@@ -58,7 +58,7 @@ public class GetFirmwareVersionsCommandExecutorTest {
     @BeforeEach
     public void setUp() {
         this.executor = new GetFirmwareVersionsCommandExecutor(this.helperService);
-        this.connectionHolder = new DlmsConnectionManager(null, null, this.listener, null);
+        this.connectionHolder = new DlmsConnectionManager(null, null, null, this.listener, null);
     }
 
     @Test
