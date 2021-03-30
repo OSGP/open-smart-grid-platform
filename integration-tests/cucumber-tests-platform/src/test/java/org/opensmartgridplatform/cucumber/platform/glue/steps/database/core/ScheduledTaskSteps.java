@@ -1,9 +1,10 @@
 /**
  * Copyright 2019 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
@@ -37,18 +38,13 @@ import io.cucumber.java.en.Given;
 public class ScheduledTaskSteps extends BaseDeviceSteps {
 
     private static final Map<String, Function<Map<String, String>, ScheduledTask>> SCHEDULED_TASK_CREATOR_MAP = new HashMap<>();
+
     static {
         SCHEDULED_TASK_CREATOR_MAP.put("UPDATE_FIRMWARE", m -> createUpdateFirmwareScheduledTask(m));
     }
 
     @Autowired
     private ScheduledTaskRepository scheduledTaskRepository;
-
-    @Given("a scheduled {string} task")
-    public void givenAScheduledTask(final String messageType, final Map<String, String> settings) {
-        final ScheduledTask scheduledTask = SCHEDULED_TASK_CREATOR_MAP.get(messageType).apply(settings);
-        this.scheduledTaskRepository.save(scheduledTask);
-    }
 
     private static ScheduledTask createUpdateFirmwareScheduledTask(final Map<String, String> settings) {
         final String deviceIdentification = ReadSettingsHelper.getString(settings, KEY_DEVICE_IDENTIFICATION,
@@ -64,9 +60,16 @@ public class ScheduledTaskSteps extends BaseDeviceSteps {
                 .getMillis();
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, messageType, messagePriority, scheduleTime);
-        final FirmwareModuleData firmwareModuleData = new FirmwareModuleData(null, "FW-01", null, null, null, null);
+        final FirmwareModuleData firmwareModuleData = new FirmwareModuleData(null, "FW-01", null, null, null, null,
+                null);
         final String firmwareUrl = "firmware-url";
         final Serializable messageData = new FirmwareUpdateMessageDataContainer(firmwareModuleData, firmwareUrl);
         return new ScheduledTask(deviceMessageMetadata, "CORE", "1.0", messageData, new Timestamp(scheduleTime));
+    }
+
+    @Given("a scheduled {string} task")
+    public void givenAScheduledTask(final String messageType, final Map<String, String> settings) {
+        final ScheduledTask scheduledTask = SCHEDULED_TASK_CREATOR_MAP.get(messageType).apply(settings);
+        this.scheduledTaskRepository.save(scheduledTask);
     }
 }

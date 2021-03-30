@@ -21,6 +21,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.Administ
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.AllResponses;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.BundleResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.FindEventsResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetFirmwareVersionGasResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetFirmwareVersionResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetMbusEncryptionKeyStatusByChannelResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetMbusEncryptionKeyStatusResponse;
@@ -48,6 +49,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMb
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceByChannelResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventMessagesResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FaultResponse;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersionGasResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetAllAttributeValuesResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfigurationObjectResponse;
@@ -112,6 +114,7 @@ public class ActionMapperResponseService {
         CLASS_TO_MAPPER_MAP.put(PeriodicMeterReadsContainerGas.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(GetAllAttributeValuesResponse.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(FirmwareVersionResponse.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(FirmwareVersionGasResponse.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(UpdateFirmwareResponse.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(AssociationLnObjectsResponseData.class, this.adhocMapper);
         CLASS_TO_MAPPER_MAP.put(GetConfigurationObjectResponse.class, this.configurationMapper);
@@ -144,6 +147,7 @@ public class ActionMapperResponseService {
         CLASS_MAP.put(GetAllAttributeValuesResponse.class,
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetAllAttributeValuesResponse.class);
         CLASS_MAP.put(FirmwareVersionResponse.class, GetFirmwareVersionResponse.class);
+        CLASS_MAP.put(FirmwareVersionGasResponse.class, GetFirmwareVersionGasResponse.class);
         CLASS_MAP.put(UpdateFirmwareResponse.class,
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.UpdateFirmwareResponse.class);
         CLASS_MAP.put(AssociationLnObjectsResponseData.class,
