@@ -9,6 +9,9 @@
 
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,13 +36,11 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.DayProfileDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SeasonProfileDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.WeekProfileDto;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-
 // Test mapping of ActivityCalendar objects
 class ActivityCalendarMappingTest {
 
     private final ConfigurationMapper configurationMapper = new ConfigurationMapper();
+
     private CosemDateTime cosemDateTime;
 
     @BeforeEach

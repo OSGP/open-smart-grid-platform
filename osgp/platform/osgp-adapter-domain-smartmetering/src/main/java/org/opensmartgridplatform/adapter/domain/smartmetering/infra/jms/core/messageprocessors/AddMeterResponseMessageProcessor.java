@@ -17,24 +17,22 @@ import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class AddMeterResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AddMeterResponseMessageProcessor.class);
 
     @Autowired
     private InstallationService installationService;
 
     @Autowired
     protected AddMeterResponseMessageProcessor(final WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
-            final MessageProcessorMap messageProcessorMap) {
+            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
         super(responseMessageSender, messageProcessorMap, MessageType.ADD_METER, ComponentType.DOMAIN_SMART_METERING);
     }
 
@@ -57,7 +55,7 @@ public class AddMeterResponseMessageProcessor extends OsgpCoreResponseMessagePro
         try {
             this.installationService.removeMeter(deviceMessageMetadata);
         } catch (final Exception ex) {
-            LOGGER.error("Error removing meter {} for organization {} from core database with correlation UID {}",
+            log.error("Error removing meter {} for organization {} from core database with correlation UID {}",
                     deviceMessageMetadata.getDeviceIdentification(),
                     deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getCorrelationUid(),
                     ex);

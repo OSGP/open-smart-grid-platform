@@ -42,16 +42,22 @@ class SmartMeterServiceTest {
 
     @Mock
     private SmartMeterRepository smartMeterRepository;
+
     @Mock
     private ProtocolInfoRepository protocolInfoRepository;
+
     @Mock
     private ManufacturerRepository manufacturerRepository;
+
     @Mock
     private DeviceModelRepository deviceModelRepository;
+
     @Mock
     private OrganisationRepository organisationRepository;
+
     @Mock
     private DeviceAuthorizationRepository deviceAuthorizationRepository;
+
     @Captor
     private ArgumentCaptor<SmartMeter> saveCaptor;
 

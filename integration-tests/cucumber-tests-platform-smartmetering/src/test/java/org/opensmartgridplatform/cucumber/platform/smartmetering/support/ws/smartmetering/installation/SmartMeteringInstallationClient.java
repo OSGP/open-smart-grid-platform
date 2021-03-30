@@ -48,7 +48,7 @@ public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
     public AddDeviceAsyncResponse addDevice(final AddDeviceRequest request) throws WebServiceSecurityException {
         final WebServiceTemplate webServiceTemplate =
                 this.smartMeteringInstallationWebServiceTemplateFactory.getTemplate(
-                this.getOrganizationIdentification(), this.getUserName());
+                        this.getOrganizationIdentification(), this.getUserName());
         return (AddDeviceAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
 
@@ -60,7 +60,7 @@ public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
 
         final WebServiceTemplate webServiceTemplate =
                 this.smartMeteringInstallationWebServiceTemplateFactory.getTemplate(
-                this.getOrganizationIdentification(), this.getUserName());
+                        this.getOrganizationIdentification(), this.getUserName());
         return (AddDeviceResponse) webServiceTemplate.marshalSendAndReceive(asyncRequest);
     }
 
@@ -68,7 +68,7 @@ public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
             throws WebServiceSecurityException {
         final WebServiceTemplate webServiceTemplate =
                 this.smartMeteringInstallationWebServiceTemplateFactory.getTemplate(
-                this.getOrganizationIdentification(), this.getUserName());
+                        this.getOrganizationIdentification(), this.getUserName());
         return (CoupleMbusDeviceAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
 
@@ -80,7 +80,7 @@ public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
 
         final WebServiceTemplate webServiceTemplate =
                 this.smartMeteringInstallationWebServiceTemplateFactory.getTemplate(
-                this.getOrganizationIdentification(), this.getUserName());
+                        this.getOrganizationIdentification(), this.getUserName());
         return (CoupleMbusDeviceResponse) webServiceTemplate.marshalSendAndReceive(asyncRequest);
     }
 
@@ -88,7 +88,7 @@ public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
             throws WebServiceSecurityException {
         final WebServiceTemplate webServiceTemplate =
                 this.smartMeteringInstallationWebServiceTemplateFactory.getTemplate(
-                this.getOrganizationIdentification(), this.getUserName());
+                        this.getOrganizationIdentification(), this.getUserName());
         return (DecoupleMbusDeviceAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
 
@@ -100,7 +100,7 @@ public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
 
         final WebServiceTemplate webServiceTemplate =
                 this.smartMeteringInstallationWebServiceTemplateFactory.getTemplate(
-                this.getOrganizationIdentification(), this.getUserName());
+                        this.getOrganizationIdentification(), this.getUserName());
         return (DecoupleMbusDeviceResponse) webServiceTemplate.marshalSendAndReceive(asyncRequest);
     }
 
@@ -108,7 +108,7 @@ public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
             final CoupleMbusDeviceByChannelRequest request) throws WebServiceSecurityException {
         final WebServiceTemplate webServiceTemplate =
                 this.smartMeteringInstallationWebServiceTemplateFactory.getTemplate(
-                this.getOrganizationIdentification(), this.getUserName());
+                        this.getOrganizationIdentification(), this.getUserName());
         return (CoupleMbusDeviceByChannelAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
 
@@ -120,7 +120,7 @@ public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
 
         final WebServiceTemplate webServiceTemplate =
                 this.smartMeteringInstallationWebServiceTemplateFactory.getTemplate(
-                this.getOrganizationIdentification(), this.getUserName());
+                        this.getOrganizationIdentification(), this.getUserName());
         return (CoupleMbusDeviceByChannelResponse) webServiceTemplate.marshalSendAndReceive(asyncRequest);
     }
 
@@ -128,7 +128,7 @@ public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
             final DecoupleMbusDeviceByChannelRequest request) throws WebServiceSecurityException {
         final WebServiceTemplate webServiceTemplate =
                 this.smartMeteringInstallationWebServiceTemplateFactory.getTemplate(
-                this.getOrganizationIdentification(), this.getUserName());
+                        this.getOrganizationIdentification(), this.getUserName());
         return (DecoupleMbusDeviceByChannelAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
 
@@ -140,7 +140,7 @@ public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
 
         final WebServiceTemplate webServiceTemplate =
                 this.smartMeteringInstallationWebServiceTemplateFactory.getTemplate(
-                this.getOrganizationIdentification(), this.getUserName());
+                        this.getOrganizationIdentification(), this.getUserName());
         return (DecoupleMbusDeviceByChannelResponse) webServiceTemplate.marshalSendAndReceive(asyncRequest);
     }
 
@@ -148,7 +148,7 @@ public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
             final SetSubscriptionInformationRequest request) throws WebServiceSecurityException {
         final WebServiceTemplate webServiceTemplate =
                 this.smartMeteringInstallationWebServiceTemplateFactory.getTemplate(
-                this.getOrganizationIdentification(), this.getUserName());
+                        this.getOrganizationIdentification(), this.getUserName());
         return (SetSubscriptionInformationAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
 
@@ -160,7 +160,7 @@ public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
 
         final WebServiceTemplate webServiceTemplate =
                 this.smartMeteringInstallationWebServiceTemplateFactory.getTemplate(
-                this.getOrganizationIdentification(), this.getUserName());
+                        this.getOrganizationIdentification(), this.getUserName());
         return (SetSubscriptionInformationResponse) webServiceTemplate.marshalSendAndReceive(asyncRequest);
     }
 

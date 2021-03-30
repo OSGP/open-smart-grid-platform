@@ -8,6 +8,8 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringinstallation;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Map;
 
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.SetSubscriptionInformationAsyncRequest;
@@ -25,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class SetSubscriptionInformationSteps extends AbstractSmartMeteringSteps {
 
@@ -41,7 +42,7 @@ public class SetSubscriptionInformationSteps extends AbstractSmartMeteringSteps 
 
         final SetSubscriptionInformationAsyncResponse asyncResponse =
                 this.smartMeteringInstallationClient.setSubscriptionInformation(
-                request);
+                        request);
 
         this.checkAndSaveCorrelationId(asyncResponse.getCorrelationUid());
     }
@@ -56,10 +57,10 @@ public class SetSubscriptionInformationSteps extends AbstractSmartMeteringSteps 
 
         final SetSubscriptionInformationAsyncRequest setSubscriptionInformationAsyncRequest =
                 SetSubscriptionInformationRequestFactory
-                .fromScenarioContext(extendedParameters);
+                        .fromScenarioContext(extendedParameters);
         final SetSubscriptionInformationResponse response =
                 this.smartMeteringInstallationClient.getSetSubscriptionInformationResponse(
-                setSubscriptionInformationAsyncRequest);
+                        setSubscriptionInformationAsyncRequest);
 
         assertThat(response.getResult()).as("Result").isNotNull();
         assertThat(response.getResult().name()).as("Result").isEqualTo(responseSettings.get("Result"));

@@ -40,7 +40,9 @@ class EventServiceTest {
     private DomainHelperService domainHelperService;
 
     private EventService eventService;
+
     private DeviceMessageMetadata deviceMessageMetadata;
+
     @Mock
     private SmartMeter smartMeter;
 

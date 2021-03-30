@@ -26,9 +26,10 @@ public class SetSubscriptionInformationRequestFactory {
         return request;
     }
 
-    public static SetSubscriptionInformationAsyncRequest fromScenarioContext(final Map<String, String> reponseSettings) {
+    public static SetSubscriptionInformationAsyncRequest fromScenarioContext(
+            final Map<String, String> responseSettings) {
         final String correlationUid = RequestFactoryHelper.getCorrelationUidFromScenarioContext();
-        final String deviceIdentification = RequestFactoryHelper.getDeviceIdentificationFromStepData(reponseSettings);
+        final String deviceIdentification = RequestFactoryHelper.getDeviceIdentificationFromStepData(responseSettings);
         final SetSubscriptionInformationAsyncRequest setSubscriptionInformationAsyncRequest =
                 new SetSubscriptionInformationAsyncRequest();
         setSubscriptionInformationAsyncRequest.setCorrelationUid(correlationUid);
