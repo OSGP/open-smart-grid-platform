@@ -21,8 +21,6 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.s
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.installation.SetSubscriptionInformationRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.installation.SmartMeteringInstallationClient;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.cucumber.java.en.Then;
@@ -30,9 +28,7 @@ import io.cucumber.java.en.When;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SetSubscriptionInformationSteps extends AbstractSmartMeteringSteps {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetSubscriptionInformationSteps.class);
-
+    
     @Autowired
     private SmartMeteringInstallationClient smartMeteringInstallationClient;
 
