@@ -1,10 +1,10 @@
-@SmartMetering @Platform
+@SmartMetering @Platform @Coenos
 Feature: SmartMetering Installation - Set Subscription Information
   As a grid operator
   I want to be able to be able to update the subscription information of a smart meter
 
   Scenario: Set Subscription Information
-    Given a dlms device
+    Given a smart meter
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
     When receiving a smartmetering set subscription information request

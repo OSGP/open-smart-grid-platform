@@ -17,17 +17,14 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.Se
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.helpers.SettingsHelper;
-import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.device.DlmsDeviceSteps;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.AbstractSmartMeteringSteps;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.installation.SetSubscriptionInformationRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.installation.SmartMeteringInstallationClient;
-import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,20 +35,6 @@ public class SetSubscriptionInformationSteps extends AbstractSmartMeteringSteps 
 
     @Autowired
     private SmartMeteringInstallationClient smartMeteringInstallationClient;
-
-    @Autowired
-    private DlmsDeviceSteps dlmsDeviceSteps;
-
-    @Given("^a dlms device$")
-    public void aDlmsDevice(final Map<String, String> inputSettings) {
-        final Device device = this.dlmsDeviceSteps.createDeviceInCoreDatabase(inputSettings);
-
-        LOGGER.info("Created new Device for SetSubscriptionInformationSteps {}", device.getDeviceIdentification());
-
-        this.dlmsDeviceSteps.setScenarioContextForDevice(inputSettings, device);
-
-        this.dlmsDeviceSteps.createDeviceAuthorisationInCoreDatabase(device);
-    }
 
     @When("^receiving a smartmetering set subscription information request$")
     public void receivingASmartmeteringSetSubscriptionInformationRequest(final Map<String, String> requestSettings)
