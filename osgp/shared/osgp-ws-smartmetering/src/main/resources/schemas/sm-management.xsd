@@ -655,6 +655,38 @@
     </xsd:complexContent>
   </xsd:complexType>
 
+  <xsd:complexType name="GetModemInfoRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Query"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="GetModemInfoRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
+        <xsd:element name="GetModemInfoRequestData"
+          type="tns:GetModemInfoRequestData"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="GetModemInfoAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="GetModemInfoAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
   <xsd:complexType name="GetModemInfoResponseData">
     <xsd:complexContent>
       <xsd:extension base="common:Response">

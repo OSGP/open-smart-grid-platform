@@ -331,6 +331,14 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+  <xsd:element name="GetModemInfoRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smman:GetModemInfoRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
 
   <xsd:complexType name="Actions">
     <xsd:sequence>
@@ -387,6 +395,8 @@
         <xsd:element ref="tns:ScanMbusChannelsRequest" />
         <xsd:element
           ref="tns:SetRandomisationSettingsRequest" />
+        <xsd:element
+          ref="tns:GetModemInfoRequest" />
       </xsd:choice>
     </xsd:sequence>
   </xsd:complexType>
