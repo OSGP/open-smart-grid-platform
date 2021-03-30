@@ -1,7 +1,7 @@
 @SmartMetering @Platform
 Feature: SmartMetering Installation - Set Subscription Information
   As a grid operator
-  I want to be able to be able to update the subscription information of a smart meter
+  I want to be able to update the subscription information of a smart meter
 
   Scenario: Set Subscription Information
     Given a smart meter
