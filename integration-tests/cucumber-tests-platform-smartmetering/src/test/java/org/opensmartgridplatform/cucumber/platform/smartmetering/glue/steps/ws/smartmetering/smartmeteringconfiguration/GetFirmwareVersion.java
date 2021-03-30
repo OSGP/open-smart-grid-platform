@@ -8,6 +8,9 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getNullOrNonEmptyString;
+
 import java.util.List;
 import java.util.Map;
 
@@ -39,8 +42,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import lombok.extern.slf4j.Slf4j;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getNullOrNonEmptyString;
 
 @Slf4j
 public class GetFirmwareVersion {
