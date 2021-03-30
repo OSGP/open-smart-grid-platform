@@ -687,6 +687,16 @@
     </xsd:complexType>
   </xsd:element>
 
+  <xsd:element name="GetModemInfoResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType"/>
+        <xsd:element name="GetModemInfoResponseData"
+          type="tns:GetModemInfoResponseData"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
   <xsd:complexType name="GetModemInfoResponseData">
     <xsd:complexContent>
       <xsd:extension base="common:Response">
