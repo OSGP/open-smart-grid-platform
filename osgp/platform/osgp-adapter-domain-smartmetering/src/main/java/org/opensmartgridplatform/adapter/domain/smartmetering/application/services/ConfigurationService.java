@@ -732,7 +732,7 @@ public class ConfigurationService {
 
     public void handleGetFirmwareVersionGasResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType deviceResult, final OsgpException exception,
-            final FirmwareVersionGasDto firmwareVersionGas) throws FunctionalException {
+            final FirmwareVersionGasDto firmwareVersionGas) {
         LOGGER.info("handleGetFirmwareVersionGasResponse for MessageType: {}", deviceMessageMetadata.getMessageType());
 
         ResponseMessageResultType result = deviceResult;

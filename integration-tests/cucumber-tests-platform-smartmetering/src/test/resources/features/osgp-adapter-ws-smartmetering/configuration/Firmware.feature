@@ -9,8 +9,8 @@ Feature: SmartMetering Configuration - Firmware
       | DeviceIdentification      | TEST1024000000001 |
       | DeviceType                | SMART_METER_E     |
       | Protocol                  | DSMR              |
-      | ProtocolVersion           | 4.2.2             |
-      | Port                      | 1024              |
+      | ProtocolVersion           |             4.2.2 |
+      | Port                      |              1024 |
       | FirmwareModuleVersionComm | V 1.1             |
       | FirmwareModuleVersionMa   | V 1.2             |
       | FirmwareModuleVersionFunc | V 1.3             |
@@ -40,8 +40,8 @@ Feature: SmartMetering Configuration - Firmware
       | DeviceIdentification      | TEST1027000000001 |
       | DeviceType                | SMART_METER_E     |
       | Protocol                  | SMR               |
-      | ProtocolVersion           | 5.1               |
-      | Port                      | 1027              |
+      | ProtocolVersion           |               5.1 |
+      | Port                      |              1027 |
       | FirmwareModuleVersionComm | V 1.1             |
       | FirmwareModuleVersionMa   | V 1.2             |
       | FirmwareModuleVersionFunc | V 1.3             |
@@ -72,8 +72,8 @@ Feature: SmartMetering Configuration - Firmware
       | DeviceIdentification | TEST1027000000001 |
       | DeviceType           | SMART_METER_E     |
       | Protocol             | SMR               |
-      | ProtocolVersion      | 5.1               |
-      | Port                 | 1027              |
+      | ProtocolVersion      |               5.1 |
+      | Port                 |              1027 |
     And a dlms device
       | DeviceIdentification        | TEST1027000000002 |
       | DeviceType                  | SMART_METER_G     |

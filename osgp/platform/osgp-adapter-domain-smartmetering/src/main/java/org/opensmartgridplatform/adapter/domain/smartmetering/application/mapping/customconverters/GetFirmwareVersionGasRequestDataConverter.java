@@ -29,12 +29,17 @@ public class GetFirmwareVersionGasRequestDataConverter
     private DomainHelperService domainHelperService;
 
     /**
-     * This overridden convert is used from the bundle flow where the deviceIdentification from the bundle is used to
-     * fetch and supply the SmartMeter, which is an E meter. Since the channel is needed to enrich the DTO, the G
-     * meter is fetched with the deviceIdentification supplied as field of the request.
+     * This overridden convert is used from the bundle flow where the
+     * deviceIdentification from the bundle is used to fetch and supply the
+     * SmartMeter, which is an E meter. Since the channel is needed to enrich
+     * the DTO, the G meter is fetched with the deviceIdentification supplied as
+     * field of the request.
      *
-     * @param gasRequestData request containing the deviceIdentification of the G meter
-     * @param eMeter E meter supplied by the bundle process, not used for G meter requests
+     * @param gasRequestData
+     *            request containing the deviceIdentification of the G meter
+     * @param eMeter
+     *            E meter supplied by the bundle process, not used for G meter
+     *            requests
      *
      * @return DTO containing the channel of the G meter
      *

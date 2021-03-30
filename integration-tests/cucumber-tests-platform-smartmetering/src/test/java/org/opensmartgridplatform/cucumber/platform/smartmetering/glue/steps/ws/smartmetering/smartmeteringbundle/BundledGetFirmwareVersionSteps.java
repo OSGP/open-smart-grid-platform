@@ -14,8 +14,6 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 import java.util.List;
 import java.util.Map;
 
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetFirmwareVersionGasRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetFirmwareVersionGasResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetFirmwareVersionRequest;
@@ -27,6 +25,9 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartme
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration.GetFirmwareVersion;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 
 public class BundledGetFirmwareVersionSteps extends BaseBundleSteps {
 
@@ -58,8 +59,7 @@ public class BundledGetFirmwareVersionSteps extends BaseBundleSteps {
 
         final Response response = this.getNextBundleResponse();
 
-        assertThat(response).as("response should be a GetFirmwareVersionResponse object").isInstanceOf(
-                GetFirmwareVersionResponse.class);
+        assertThat(response).isInstanceOf(GetFirmwareVersionResponse.class);
 
         final GetFirmwareVersionResponse getFirmwareVersionResponse = (GetFirmwareVersionResponse) response;
 
@@ -74,8 +74,7 @@ public class BundledGetFirmwareVersionSteps extends BaseBundleSteps {
 
         final Response response = this.getNextBundleResponse();
 
-        assertThat(response).as("response should be a GetFirmwareVersionGasResponse object").isInstanceOf(
-                GetFirmwareVersionGasResponse.class);
+        assertThat(response).isInstanceOf(GetFirmwareVersionGasResponse.class);
 
         final GetFirmwareVersionGasResponse getFirmwareVersionGasResponse = (GetFirmwareVersionGasResponse) response;
 

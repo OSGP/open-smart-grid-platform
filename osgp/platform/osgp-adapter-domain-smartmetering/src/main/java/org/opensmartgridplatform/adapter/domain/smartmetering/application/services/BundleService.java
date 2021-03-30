@@ -146,15 +146,14 @@ public class BundleService {
             } else if (action instanceof EventMessageDataResponseDto) {
                 this.eventService.addEventTypeToEvents(deviceMessageMetadata, (EventMessageDataResponseDto) action);
             } else if (action instanceof FirmwareVersionResponseDto) {
-                final List<FirmwareVersion> firmwareVersions = this.configurationMapper.mapAsList(
-                        ((FirmwareVersionResponseDto) action).getFirmwareVersions(), FirmwareVersion.class);
+                final List<FirmwareVersion> firmwareVersions = this.configurationMapper
+                        .mapAsList(((FirmwareVersionResponseDto) action).getFirmwareVersions(), FirmwareVersion.class);
                 this.firmwareService.saveFirmwareVersionsReturnedFromDevice(
                         deviceMessageMetadata.getDeviceIdentification(), firmwareVersions);
             } else if (action instanceof FirmwareVersionGasResponseDto) {
-                final FirmwareVersionGasResponseDto firmwareVersionGasResponseDto =
-                        (FirmwareVersionGasResponseDto) action;
-                final FirmwareVersion firmwareVersion = this.configurationMapper.map(
-                        firmwareVersionGasResponseDto.getFirmwareVersion(), FirmwareVersion.class);
+                final FirmwareVersionGasResponseDto firmwareVersionGasResponseDto = (FirmwareVersionGasResponseDto) action;
+                final FirmwareVersion firmwareVersion = this.configurationMapper
+                        .map(firmwareVersionGasResponseDto.getFirmwareVersion(), FirmwareVersion.class);
                 this.firmwareService.saveFirmwareVersionsReturnedFromDevice(
                         firmwareVersionGasResponseDto.getFirmwareVersion().getMbusDeviceIdentification(),
                         Arrays.asList(firmwareVersion));

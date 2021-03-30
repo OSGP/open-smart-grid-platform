@@ -8,6 +8,11 @@
  */
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getNullOrNonEmptyString;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
+
 import java.util.Map;
 
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
@@ -20,10 +25,6 @@ import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.cucumber.java.en.Then;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getNullOrNonEmptyString;
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 public class DeviceFirmwareModuleSteps {
 

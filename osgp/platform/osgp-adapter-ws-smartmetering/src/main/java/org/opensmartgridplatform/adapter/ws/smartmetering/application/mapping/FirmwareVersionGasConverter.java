@@ -9,19 +9,19 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
-import lombok.extern.slf4j.Slf4j;
-import ma.glasnost.orika.MappingContext;
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleType;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion;
 
+import lombok.extern.slf4j.Slf4j;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
+
 @Slf4j
 public class FirmwareVersionGasConverter extends
-        BidirectionalConverter<FirmwareVersion,
-                org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.FirmwareVersionGas> {
+        BidirectionalConverter<FirmwareVersion, org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.FirmwareVersionGas> {
 
     @Override
     public org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.FirmwareVersionGas convertTo(
@@ -35,11 +35,11 @@ public class FirmwareVersionGasConverter extends
 
         final org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.FirmwareVersionGas firmwareVersion = new org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.FirmwareVersionGas();
         firmwareVersion.setFirmwareModuleType(
-                org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.FirmwareModuleGasType.valueOf(
-                        source.getFirmwareModuleType().getDescription()));
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.FirmwareModuleGasType
+                        .valueOf(source.getFirmwareModuleType().getDescription()));
         try {
             firmwareVersion.setVersion(Hex.decodeHex(source.getVersion()));
-        } catch (DecoderException e) {
+        } catch (final DecoderException e) {
             log.error("Simple version info is not a valid HexString", e);
         }
 
@@ -56,7 +56,7 @@ public class FirmwareVersionGasConverter extends
         }
 
         final FirmwareModuleType type = FirmwareModuleType.forDescription(source.getFirmwareModuleType().name());
-        final String version = new String(source.getVersion());
+        final String version = Hex.encodeHexString(source.getVersion());
 
         return new FirmwareVersion(type, version);
     }

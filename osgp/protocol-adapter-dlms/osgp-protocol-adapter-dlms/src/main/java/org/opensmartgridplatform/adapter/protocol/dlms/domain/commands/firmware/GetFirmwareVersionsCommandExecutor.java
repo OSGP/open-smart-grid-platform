@@ -8,6 +8,8 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware;
 
+import static java.util.Arrays.asList;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,8 +34,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersi
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import static java.util.Arrays.asList;
 
 @Component
 public class GetFirmwareVersionsCommandExecutor

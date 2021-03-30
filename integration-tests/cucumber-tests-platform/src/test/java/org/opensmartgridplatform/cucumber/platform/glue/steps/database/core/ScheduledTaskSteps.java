@@ -8,6 +8,15 @@
  */
 package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 
+import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.DEFAULT_CORRELATION_UID;
+import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION;
+import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION;
+import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.DEFAULT_SCHEDULED_TIME;
+import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_CORRELATION_UID;
+import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_DEVICE_IDENTIFICATION;
+import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION;
+import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_SCHEDULED_TIME;
+
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -25,14 +34,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.cucumber.java.en.Given;
-import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.DEFAULT_CORRELATION_UID;
-import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION;
-import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION;
-import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.DEFAULT_SCHEDULED_TIME;
-import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_CORRELATION_UID;
-import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_DEVICE_IDENTIFICATION;
-import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION;
-import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_SCHEDULED_TIME;
 
 public class ScheduledTaskSteps extends BaseDeviceSteps {
 

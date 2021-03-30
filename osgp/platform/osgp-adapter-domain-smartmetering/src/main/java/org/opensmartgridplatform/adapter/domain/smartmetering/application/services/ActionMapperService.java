@@ -253,9 +253,8 @@ public class ActionMapperService {
             throws FunctionalException {
         @SuppressWarnings("unchecked")
         // TODO: fix this
-        final CustomValueToDtoConverter<ActionRequest, ActionRequestDto> customValueToDtoConverter =
-                (CustomValueToDtoConverter<ActionRequest, ActionRequestDto>) CUSTOM_CONVERTER_FOR_CLASS.get(
-                action.getClass());
+        final CustomValueToDtoConverter<ActionRequest, ActionRequestDto> customValueToDtoConverter = (CustomValueToDtoConverter<ActionRequest, ActionRequestDto>) CUSTOM_CONVERTER_FOR_CLASS
+                .get(action.getClass());
 
         if (customValueToDtoConverter != null) {
             return new ActionDto(customValueToDtoConverter.convert(action, smartMeter));

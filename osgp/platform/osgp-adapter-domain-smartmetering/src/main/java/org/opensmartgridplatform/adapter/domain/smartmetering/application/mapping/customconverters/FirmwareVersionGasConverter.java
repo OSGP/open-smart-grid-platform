@@ -9,11 +9,12 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters;
 
+import org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion;
+import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionGasDto;
+
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
-import org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion;
-import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionGasDto;
 
 public class FirmwareVersionGasConverter extends CustomConverter<FirmwareVersionGasDto, FirmwareVersion> {
 
@@ -25,7 +26,7 @@ public class FirmwareVersionGasConverter extends CustomConverter<FirmwareVersion
             return null;
         }
 
-        return new FirmwareVersion(org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleType.valueOf(
-                source.getFirmwareModuleType().name()), source.getVersion());
+        return new FirmwareVersion(org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleType
+                .valueOf(source.getFirmwareModuleType().name()), source.getVersion());
     }
 }
