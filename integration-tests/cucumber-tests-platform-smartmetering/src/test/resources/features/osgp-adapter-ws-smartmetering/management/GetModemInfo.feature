@@ -14,6 +14,7 @@ Feature: SmartMetering Management - Get Modem Info
       | 8 | unsigned             |       66 |
       | 9 | unsigned             |        3 |
     When a get modem info request is received
+      | DeviceIdentification | TEST1024000000001 |
     Then the get modem info response is returned
       | Operator                  | 1 |
       | ModemRegistrationStatus   | 1 |

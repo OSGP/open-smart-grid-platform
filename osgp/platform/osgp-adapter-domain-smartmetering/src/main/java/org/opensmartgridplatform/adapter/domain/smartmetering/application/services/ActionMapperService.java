@@ -45,6 +45,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfi
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetFirmwareVersionRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetModemInfoRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetOutagesRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MbusActionRequest;
@@ -88,6 +89,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfiguration
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetModemInfoRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetOutagesRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
@@ -189,6 +191,7 @@ public class ActionMapperService {
         CLASS_MAP.put(ScanMbusChannelsRequestData.class, ScanMbusChannelsRequestDataDto.class);
         CLASS_MAP.put(GetOutagesRequestData.class, GetOutagesRequestDto.class);
         CLASS_MAP.put(ActualPowerQualityRequest.class, ActualPowerQualityRequestDto.class);
+        CLASS_MAP.put(GetModemInfoRequestData.class, GetModemInfoRequestDto.class);
     }
 
     /**
@@ -237,6 +240,7 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(ScanMbusChannelsRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(GetOutagesRequestData.class, this.managementMapper);
         CLASS_TO_MAPPER_MAP.put(ActualPowerQualityRequest.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(GetModemInfoRequestData.class, this.managementMapper);
     }
 
     public BundleMessagesRequestDto mapAllActions(final BundleMessageRequest bundleMessageRequest,

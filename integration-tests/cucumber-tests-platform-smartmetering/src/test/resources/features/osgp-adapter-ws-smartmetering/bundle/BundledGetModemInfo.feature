@@ -1,4 +1,4 @@
-@SmartMetering @Platform @GetModemInfo
+@SmartMetering @Platform @GetModemInfo1
 Feature: SmartMetering Bundle - Get Modem Info
   As a grid operator
   I want to be able to get the modem info of a smart meter
