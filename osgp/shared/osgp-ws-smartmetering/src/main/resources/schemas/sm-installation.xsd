@@ -57,9 +57,17 @@
         <xsd:complexType>
             <xsd:sequence>
                 <xsd:element name="DeviceIdentification" type="xsd:string"/>
+                <xsd:element name="MeId" type="xsd:string" minOccurs="0"/>
+                <xsd:element name="Esn" type="xsd:string" minOccurs="0"/>
+                <xsd:element name="UimId" type="xsd:string" minOccurs="0"/>
+                <xsd:element name="EqId" type="xsd:string" minOccurs="0"/>
                 <xsd:element name="IpAddress" type="xsd:string" minOccurs="0"/>
-                <xsd:element name="CellId" type="xsd:int" minOccurs="0"/>
+                <xsd:element name="Mdn" type="xsd:string" minOccurs="0"/>
                 <xsd:element name="BtsId" type="xsd:int" minOccurs="0"/>
+                <xsd:element name="CellId" type="xsd:int" minOccurs="0"/>
+                <xsd:element name="Status" type="xsd:string" minOccurs="0"/>
+                <xsd:element name="CustCode" type="xsd:string" minOccurs="0"/>
+                <xsd:element name="SupplierReferenceId" type="xsd:string" minOccurs="0"/>
             </xsd:sequence>
         </xsd:complexType>
     </xsd:element>
@@ -76,9 +84,17 @@
         <xsd:complexType>
             <xsd:sequence>
                 <xsd:element name="Result" type="common:OsgpResultType"/>
+                <xsd:element name="MeId" type="xsd:string"/>
+                <xsd:element name="Esn" type="xsd:string"/>
+                <xsd:element name="UimId" type="xsd:string"/>
+                <xsd:element name="EqId" type="xsd:string"/>
                 <xsd:element name="IpAddress" type="xsd:string"/>
-                <xsd:element name="CellId" type="xsd:int"/>
+                <xsd:element name="Mdn" type="xsd:string"/>
                 <xsd:element name="BtsId" type="xsd:int"/>
+                <xsd:element name="CellId" type="xsd:int"/>
+                <xsd:element name="Status" type="xsd:string"/>
+                <xsd:element name="CustCode" type="xsd:string"/>
+                <xsd:element name="SupplierReferenceId" type="xsd:string"/>
             </xsd:sequence>
         </xsd:complexType>
     </xsd:element>

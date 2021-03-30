@@ -28,7 +28,7 @@ import io.cucumber.java.en.When;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SetSubscriptionInformationSteps extends AbstractSmartMeteringSteps {
-    
+
     @Autowired
     private SmartMeteringInstallationClient smartMeteringInstallationClient;
 

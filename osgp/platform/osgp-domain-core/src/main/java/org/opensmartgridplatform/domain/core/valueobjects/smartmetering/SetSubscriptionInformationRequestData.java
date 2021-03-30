@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 Smart Society Services B.V.
+ * Copyright 2021 Alliander N.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
@@ -18,14 +18,26 @@ public class SetSubscriptionInformationRequestData implements Serializable {
 
     private static final long serialVersionUID = 333099329546171974L;
 
-    final String ipAddress;
-    final int cellId;
-    final int btsId;
+    String meId;
 
-    public SetSubscriptionInformationRequestData(final String ipAddress, final int cellId, final int btsId) {
-        this.ipAddress = ipAddress;
-        this.cellId = cellId;
-        this.btsId = btsId;
-    }
+    String esn;
+
+    String uimId;
+
+    String eqId;
+
+    String ipAddress;
+
+    String mdn;
+
+    Integer btsId;
+
+    Integer cellId;
+
+    String status;
+
+    String custCode;
+
+    String supplierReferenceId;
 
 }

@@ -104,8 +104,8 @@ public class InstallationService {
         log.debug("updateSubscriptionInformation for organisationIdentification: {} for deviceIdentification: {}. "
                 + "New ipAdress = {} ", organisationId, deviceIdentification, updatedSmartMeter.getIpAddress());
 
-        SetSubscriptionInformationResponseData responseData = new SetSubscriptionInformationResponseData(
-                updatedSmartMeter.getIpAddress(), updatedSmartMeter.getCellId(), updatedSmartMeter.getBtsId());
+        final SetSubscriptionInformationResponseData responseData = this.getSetSubscriptionInformationResponseData(
+                requestData, updatedSmartMeter);
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
                 .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
@@ -117,6 +117,23 @@ public class InstallationService {
                 .build();
 
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
+    }
+
+    private SetSubscriptionInformationResponseData getSetSubscriptionInformationResponseData(
+            final SetSubscriptionInformationRequestData requestData, final SmartMeter updatedSmartMeter) {
+        final SetSubscriptionInformationResponseData responseData = new SetSubscriptionInformationResponseData();
+        responseData.setMeId(requestData.getMeId());
+        responseData.setEsn(requestData.getEsn());
+        responseData.setUimId(requestData.getUimId());
+        responseData.setEqId(requestData.getEqId());
+        responseData.setIpAddress(updatedSmartMeter.getIpAddress());
+        responseData.setMdn(requestData.getMdn());
+        responseData.setBtsId(updatedSmartMeter.getBtsId());
+        responseData.setCellId(updatedSmartMeter.getCellId());
+        responseData.setStatus(requestData.getStatus());
+        responseData.setCustCode(requestData.getCustCode());
+        responseData.setSupplierReferenceId(requestData.getSupplierReferenceId());
+        return responseData;
     }
 
     /**
