@@ -21,7 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ScanMbusChannelsRequestMessageProcessor extends DeviceRequestMessageProcessor<ScanMbusChannelsRequestDataDto> {
+public class ScanMbusChannelsRequestMessageProcessor
+        extends DeviceRequestMessageProcessor<ScanMbusChannelsRequestDataDto> {
 
     @Autowired
     private AdhocService adhocService;

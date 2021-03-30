@@ -59,8 +59,8 @@ public abstract class DlmsConnectionMessageProcessor {
 
         this.throttlingService.openConnection();
 
-        final DlmsMessageListener dlmsMessageListener = this
-                .createMessageListenerForDeviceConnection(device, messageMetadata);
+        final DlmsMessageListener dlmsMessageListener = this.createMessageListenerForDeviceConnection(device,
+                messageMetadata);
 
         try {
             return this.dlmsConnectionHelper.createConnectionForDevice(messageMetadata.getCorrelationUid(), device,
@@ -90,9 +90,9 @@ public abstract class DlmsConnectionMessageProcessor {
     protected void doConnectionPostProcessing(final DlmsDevice device, final DlmsConnectionManager conn) {
         if (conn == null) {
             /*
-             * No connection (possible and perfectly valid if an operation was handled that
-             * did not involve device communication), then no follow-up actions are
-             * required.
+             * No connection (possible and perfectly valid if an operation was
+             * handled that did not involve device communication), then no
+             * follow-up actions are required.
              */
             return;
         }
@@ -120,11 +120,13 @@ public abstract class DlmsConnectionMessageProcessor {
     /* package private */
     void updateInvocationCounterForDevice(final DlmsDevice device, final DlmsConnectionManager conn) {
         if (!(conn.getDlmsMessageListener() instanceof InvocationCountingDlmsMessageListener)) {
-            LOGGER.error("updateInvocationCounterForDevice should only be called for devices with HLS 5 "
+            LOGGER.error(
+                    "updateInvocationCounterForDevice should only be called for devices with HLS 5 "
                             + "communication with an InvocationCountingDlmsMessageListener - device: {}, hls5: {}, "
-                            + "listener: {}", device.getDeviceIdentification(), device.isHls5Active(),
-                    conn.getDlmsMessageListener() == null ? "null" : conn.getDlmsMessageListener().getClass()
-                                                                         .getName());
+                            + "listener: {}",
+                    device.getDeviceIdentification(), device.isHls5Active(),
+                    conn.getDlmsMessageListener() == null ? "null"
+                            : conn.getDlmsMessageListener().getClass().getName());
             return;
         }
 
@@ -137,11 +139,11 @@ public abstract class DlmsConnectionMessageProcessor {
 
     /**
      * @param logger
-     *         the logger from the calling subClass
+     *            the logger from the calling subClass
      * @param exception
-     *         the exception to be logged
+     *            the exception to be logged
      * @param messageMetadata
-     *         a DlmsDeviceMessageMetadata containing debug info to be logged
+     *            a DlmsDeviceMessageMetadata containing debug info to be logged
      */
     protected void logJmsException(final Logger logger, final JMSException exception,
             final MessageMetadata messageMetadata) {
@@ -171,10 +173,16 @@ public abstract class DlmsConnectionMessageProcessor {
         }
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
-                .deviceMessageMetadata(new DeviceMessageMetadata(messageMetadata)).domain(messageMetadata.getDomain())
-                .domainVersion(messageMetadata.getDomainVersion()).result(result).osgpException(osgpException)
-                .dataObject(responseObject).retryCount(messageMetadata.getRetryCount()).retryHeader(retryHeader)
-                .scheduled(messageMetadata.isScheduled()).build();
+                .deviceMessageMetadata(new DeviceMessageMetadata(messageMetadata))
+                .domain(messageMetadata.getDomain())
+                .domainVersion(messageMetadata.getDomainVersion())
+                .result(result)
+                .osgpException(osgpException)
+                .dataObject(responseObject)
+                .retryCount(messageMetadata.getRetryCount())
+                .retryHeader(retryHeader)
+                .scheduled(messageMetadata.isScheduled())
+                .build();
 
         responseMessageSender.send(responseMessage);
     }

@@ -59,9 +59,8 @@ class InvocationCounterManagerTest {
         when(this.connectionFactory.getPublicClientConnection("test", device, null)).thenReturn(connectionManager);
 
         final DataObject dataObject = DataObject.newInteger32Data(123);
-        when(this.dlmsHelper
-                .getAttributeValue(eq(connectionManager), refEq(ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE)))
-                .thenReturn(dataObject);
+        when(this.dlmsHelper.getAttributeValue(eq(connectionManager),
+                refEq(ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE))).thenReturn(dataObject);
 
         try {
             this.manager.initializeInvocationCounter("test", device);

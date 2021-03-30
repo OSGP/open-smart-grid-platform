@@ -50,14 +50,15 @@ import org.springframework.ws.test.server.ResponseMatchers;
 public class SoapServiceSecretManagementIT {
 
     /**
-     * The AES keys must be configured with the following values:
-     * db key: hex:1cb340f6edab9d9b3f2912877c9ed161
-     * soap key: hex:8ff36ab298aa8c240d1bb1185a138fe1
+     * The AES keys must be configured with the following values: db key:
+     * hex:1cb340f6edab9d9b3f2912877c9ed161 soap key:
+     * hex:8ff36ab298aa8c240d1bb1185a138fe1
      *
      * The plaintext secrets for meter 'E0000000000000000' are:
      *
-     * hex: 4b2a8fe42b9a211f557d4f1cc2f03f11 (E_METER_AUTHENTICATION, not a real key)
-     * hex: 7f3a2c8b9d65f32aaa74fbee752b8c5a (E_METER_ENCRYPTION_KEY_UNICAST, not a real key)
+     * hex: 4b2a8fe42b9a211f557d4f1cc2f03f11 (E_METER_AUTHENTICATION, not a real
+     * key) hex: 7f3a2c8b9d65f32aaa74fbee752b8c5a
+     * (E_METER_ENCRYPTION_KEY_UNICAST, not a real key)
      *
      * The db-encrypted secrets are:
      * hex:e4e6fe6af967f5ca2b523f5917425a802a488c9d73fa3ae0a8d3151e4a6a1a44
@@ -72,10 +73,8 @@ public class SoapServiceSecretManagementIT {
      * (E_METER_ENCRYPTION_KEY_UNICAST)
      */
 
-    private static final String E_METER_AUTHENTICATION_KEY_ENCRYPTED_FOR_DB =
-            "e4e6fe6af967f5ca2b523f5917425a802a488c9d73fa3ae0a8d3151e4a6a1a44";
-    private static final String E_METER_ENCRYPTION_KEY_UNICAST_ENCRYPTED_FOR_DB =
-            "f1f3113322acc27bc5454fcf7765a5996930fccef67d7d6fdf90f882c7b98a1d";
+    private static final String E_METER_AUTHENTICATION_KEY_ENCRYPTED_FOR_DB = "e4e6fe6af967f5ca2b523f5917425a802a488c9d73fa3ae0a8d3151e4a6a1a44";
+    private static final String E_METER_ENCRYPTION_KEY_UNICAST_ENCRYPTED_FOR_DB = "f1f3113322acc27bc5454fcf7765a5996930fccef67d7d6fdf90f882c7b98a1d";
 
     private static final String DEVICE_IDENTIFICATION = "E0000000000000000";
 
@@ -100,7 +99,8 @@ public class SoapServiceSecretManagementIT {
     public void getSecretsRequest() throws IOException {
 
         /**
-         * Note that the output depends, besides the value of the keys, also on both the db key and the soap key.
+         * Note that the output depends, besides the value of the keys, also on
+         * both the db key and the soap key.
          */
         assertThat(this.secretRepository.count()).isEqualTo(2);
         final Resource request = new ClassPathResource("test-requests/getSecrets.xml");
@@ -131,7 +131,8 @@ public class SoapServiceSecretManagementIT {
     public void getSecretsRequestNoStoredSecretType() {
 
         /**
-         * Note that the output depends, besides the value of the keys, also on both the db key and the soap key.
+         * Note that the output depends, besides the value of the keys, also on
+         * both the db key and the soap key.
          */
         assertThat(this.secretRepository.count()).isEqualTo(2);
         final Resource request = new ClassPathResource("test-requests/getSecrets_noStoredSecretType.xml");
@@ -154,15 +155,17 @@ public class SoapServiceSecretManagementIT {
     public void storeSecretsRequest() {
 
         /**
-         * Note that the output depends, besides the value of the keys, also on both the db key and the soap key.
+         * Note that the output depends, besides the value of the keys, also on
+         * both the db key and the soap key.
          */
         assertThat(this.secretRepository.count()).isEqualTo(2);
 
         final Resource request = new ClassPathResource("test-requests/storeSecrets.xml");
         final Resource expectedResponse = new ClassPathResource("test-responses/storeSecrets.xml");
         try {
-            this.mockWebServiceClient.sendRequest(withPayload(request)).andExpect(ResponseMatchers.noFault())
-                                     .andExpect(ResponseMatchers.payload(expectedResponse));
+            this.mockWebServiceClient.sendRequest(withPayload(request))
+                    .andExpect(ResponseMatchers.noFault())
+                    .andExpect(ResponseMatchers.payload(expectedResponse));
         } catch (final Exception exc) {
             Assertions.fail("Error", exc);
         }
@@ -175,27 +178,31 @@ public class SoapServiceSecretManagementIT {
     public void storeSecretsRequestAlreadyNewSecretPresent() throws IOException {
 
         /**
-         * Note that the output depends, besides the value of the keys, also on both the db key and the soap key.
+         * Note that the output depends, besides the value of the keys, also on
+         * both the db key and the soap key.
          */
         assertThat(this.secretRepository.count()).isEqualTo(2);
 
         final Resource storeRequest = new ClassPathResource("test-requests/storeSecrets.xml");
         final Resource expectedStoreResponse = new ClassPathResource("test-responses/storeSecrets.xml");
         // Store secrets
-        this.mockWebServiceClient.sendRequest(withPayload(storeRequest)).andExpect(ResponseMatchers.noFault())
-                                 .andExpect(ResponseMatchers.payload(expectedStoreResponse));
-        // Store secrets again, while previously stored secret still have status NEW
+        this.mockWebServiceClient.sendRequest(withPayload(storeRequest))
+                .andExpect(ResponseMatchers.noFault())
+                .andExpect(ResponseMatchers.payload(expectedStoreResponse));
+        // Store secrets again, while previously stored secret still have status
+        // NEW
         final String errorMessage = "Expected 0 new secrets of type E_METER_AUTHENTICATION_KEY for device "
                 + "E0000000000000000, but 1 new secret(s) present";
         this.mockWebServiceClient.sendRequest(withPayload(storeRequest))
-                                 .andExpect(ResponseMatchers.serverOrReceiverFault(errorMessage));
+                .andExpect(ResponseMatchers.serverOrReceiverFault(errorMessage));
     }
 
     @Test
     public void activateSecretsRequest() throws IOException {
 
         /**
-         * Note that the output depends, besides the value of the keys, also on both the db key and the soap key.
+         * Note that the output depends, besides the value of the keys, also on
+         * both the db key and the soap key.
          */
         assertThat(this.secretRepository.count()).isEqualTo(2);
 
@@ -204,31 +211,35 @@ public class SoapServiceSecretManagementIT {
         final Resource expectedStoreResponse = new ClassPathResource("test-responses/storeSecrets.xml");
         final Resource expectedActivateResponse = new ClassPathResource("test-responses/activateSecrets.xml");
         // Store secrets
-        this.mockWebServiceClient.sendRequest(withPayload(storeRequest)).andExpect(ResponseMatchers.noFault())
-                                 .andExpect(ResponseMatchers.payload(expectedStoreResponse));
-        this.mockWebServiceClient.sendRequest(withPayload(activateRequest)).andExpect(ResponseMatchers.noFault())
-                                 .andExpect(ResponseMatchers.payload(expectedActivateResponse));
+        this.mockWebServiceClient.sendRequest(withPayload(storeRequest))
+                .andExpect(ResponseMatchers.noFault())
+                .andExpect(ResponseMatchers.payload(expectedStoreResponse));
+        this.mockWebServiceClient.sendRequest(withPayload(activateRequest))
+                .andExpect(ResponseMatchers.noFault())
+                .andExpect(ResponseMatchers.payload(expectedActivateResponse));
     }
 
     @Test
     public void activateSecretsRequestNoNewSecret() throws IOException {
 
         /**
-         * Note that the output depends, besides the value of the keys, also on both the db key and the soap key.
+         * Note that the output depends, besides the value of the keys, also on
+         * both the db key and the soap key.
          */
         assertThat(this.secretRepository.count()).isEqualTo(2);
 
         final Resource activateRequest = new ClassPathResource("test-requests/activateSecrets.xml");
-        //Store secrets
+        // Store secrets
         this.mockWebServiceClient.sendRequest(withPayload(activateRequest))
-                                 .andExpect(ResponseMatchers.serverOrReceiverFault());
+                .andExpect(ResponseMatchers.serverOrReceiverFault());
     }
 
     @Test
     public void storeSecretsRequestNoSecrets() {
 
         /**
-         * Note that the output depends, besides the value of the keys, also on both the db key and the soap key.
+         * Note that the output depends, besides the value of the keys, also on
+         * both the db key and the soap key.
          */
         assertThat(this.secretRepository.count()).isEqualTo(2);
 
@@ -236,7 +247,7 @@ public class SoapServiceSecretManagementIT {
 
         try {
             this.mockWebServiceClient.sendRequest(withPayload(request))
-                                     .andExpect(ResponseMatchers.serverOrReceiverFault("Missing input: typed secrets"));
+                    .andExpect(ResponseMatchers.serverOrReceiverFault("Missing input: typed secrets"));
         } catch (final Exception exc) {
             Assertions.fail("Error", exc);
         }
@@ -246,13 +257,14 @@ public class SoapServiceSecretManagementIT {
     public void generateAndStoreSecrets() throws IOException {
         final Resource generateAndStoreRequest = new ClassPathResource("test-requests/generateAndStoreSecrets.xml");
         this.mockWebServiceClient.sendRequest(withPayload(generateAndStoreRequest))
-                                 .andExpect(ResponseMatchers.noFault()).andExpect((request, response) -> {
-            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            response.writeTo(outputStream);
-            assertThat(outputStream.toString()).contains("Result>OK");
-        });
-        final List<DbEncryptedSecret> authKeys = this.secretRepository
-                .findSecrets(DEVICE_IDENTIFICATION, SecretType.E_METER_AUTHENTICATION_KEY, SecretStatus.NEW);
+                .andExpect(ResponseMatchers.noFault())
+                .andExpect((request, response) -> {
+                    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    response.writeTo(outputStream);
+                    assertThat(outputStream.toString()).contains("Result>OK");
+                });
+        final List<DbEncryptedSecret> authKeys = this.secretRepository.findSecrets(DEVICE_IDENTIFICATION,
+                SecretType.E_METER_AUTHENTICATION_KEY, SecretStatus.NEW);
         assertThat(authKeys).hasSize(1);
         final DbEncryptedSecret authKey = authKeys.get(0);
         assertThat(authKey.getEncodedSecret()).hasSize(64);
@@ -266,14 +278,16 @@ public class SoapServiceSecretManagementIT {
         // Generate and store secret: this should result in a fault message
         final Resource generateAndStoreRequest = new ClassPathResource("test-requests/generateAndStoreSecrets.xml");
         this.mockWebServiceClient.sendRequest(withPayload(generateAndStoreRequest))
-                                 .andExpect(ResponseMatchers.serverOrReceiverFault());
+                .andExpect(ResponseMatchers.serverOrReceiverFault());
     }
 
     /**
-     * Create test data for encrypted secrets and related encryptionkey reference(s).
-     * So that the EncryptionService can encrypt and decrypt, using the JRE encryption provider.
+     * Create test data for encrypted secrets and related encryptionkey
+     * reference(s). So that the EncryptionService can encrypt and decrypt,
+     * using the JRE encryption provider.
      *
-     * Two secrets (for two types of meter key secrets) and one reference key (valid as of now-1minute) is created.
+     * Two secrets (for two types of meter key secrets) and one reference key
+     * (valid as of now-1minute) is created.
      */
     private void createTestData() {
         final DbEncryptionKeyReference encryptionKey = new DbEncryptionKeyReference();

@@ -20,7 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SetDeviceCommunicationSettingsRequestMessageProcessor extends DeviceRequestMessageProcessor<SetDeviceCommunicationSettingsRequestDto> {
+public class SetDeviceCommunicationSettingsRequestMessageProcessor
+        extends DeviceRequestMessageProcessor<SetDeviceCommunicationSettingsRequestDto> {
 
     @Autowired
     private ManagementService managementService;
@@ -35,8 +36,8 @@ public class SetDeviceCommunicationSettingsRequestMessageProcessor extends Devic
     }
 
     @Override
-    protected Serializable handleMessage(final DlmsDevice device, final RequestWithMetadata<SetDeviceCommunicationSettingsRequestDto> request)
-            throws OsgpException {
+    protected Serializable handleMessage(final DlmsDevice device,
+            final RequestWithMetadata<SetDeviceCommunicationSettingsRequestDto> request) throws OsgpException {
 
         this.managementService.setDeviceCommunicationSettings(device, request.getRequestObject());
 

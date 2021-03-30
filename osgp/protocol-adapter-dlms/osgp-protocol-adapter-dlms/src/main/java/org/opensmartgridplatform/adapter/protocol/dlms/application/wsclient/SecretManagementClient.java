@@ -54,8 +54,8 @@ public class SecretManagementClient {
             try {
                 final SoapMessage soapMessage = (SoapMessage) message;
                 final SoapHeader header = soapMessage.getSoapHeader();
-                final String headerXml = String
-                        .format("<%1$s xmlns=\"%2$s\">%3$s</%1$s>", CORRELATION_UID, NAMESPACE_URI, correlationUid);
+                final String headerXml = String.format("<%1$s xmlns=\"%2$s\">%3$s</%1$s>", CORRELATION_UID,
+                        NAMESPACE_URI, correlationUid);
                 final StringSource headerSource = new StringSource(headerXml);
                 final Transformer transformer = TransformerFactory.newInstance().newTransformer();
                 transformer.transform(headerSource, header.getResult());
@@ -68,38 +68,45 @@ public class SecretManagementClient {
     public GetSecretsResponse getSecretsRequest(final String correlationUid, final GetSecretsRequest request) {
 
         LOGGER.info("Calling SecretManagement.getSecretsRequest over SOAP for device {}", request.getDeviceId());
-        return (GetSecretsResponse) this.webServiceTemplate
-                .marshalSendAndReceive(request, this.createCorrelationHeaderCallback(correlationUid));
+        return (GetSecretsResponse) this.webServiceTemplate.marshalSendAndReceive(request,
+                this.createCorrelationHeaderCallback(correlationUid));
     }
 
     public GetNewSecretsResponse getNewSecretsRequest(final String correlationUid, final GetNewSecretsRequest request) {
 
         LOGGER.info("Calling SecretManagement.getNewSecretsRequest over SOAP for device {}", request.getDeviceId());
 
-        return (GetNewSecretsResponse) this.webServiceTemplate.marshalSendAndReceive(request, this.createCorrelationHeaderCallback(correlationUid));
+        return (GetNewSecretsResponse) this.webServiceTemplate.marshalSendAndReceive(request,
+                this.createCorrelationHeaderCallback(correlationUid));
     }
 
     public StoreSecretsResponse storeSecretsRequest(final String correlationUid, final StoreSecretsRequest request) {
         LOGGER.info("Calling SecretManagement.storeSecretsRequest over SOAP for device {}", request.getDeviceId());
 
-        return (StoreSecretsResponse) this.webServiceTemplate.marshalSendAndReceive(request, this.createCorrelationHeaderCallback(correlationUid));
+        return (StoreSecretsResponse) this.webServiceTemplate.marshalSendAndReceive(request,
+                this.createCorrelationHeaderCallback(correlationUid));
     }
 
-    public ActivateSecretsResponse activateSecretsRequest(final String correlationUid, final ActivateSecretsRequest request) {
+    public ActivateSecretsResponse activateSecretsRequest(final String correlationUid,
+            final ActivateSecretsRequest request) {
         LOGGER.info("Calling SecretManagement.activateSecretsRequest over SOAP for device {}", request.getDeviceId());
 
-        return (ActivateSecretsResponse) this.webServiceTemplate.marshalSendAndReceive(request, this.createCorrelationHeaderCallback(correlationUid));
+        return (ActivateSecretsResponse) this.webServiceTemplate.marshalSendAndReceive(request,
+                this.createCorrelationHeaderCallback(correlationUid));
     }
 
     public HasNewSecretResponse hasNewSecretRequest(final String correlationUid, final HasNewSecretRequest request) {
         LOGGER.info("Calling SecretManagement.hasNewSecretsRequest over SOAP for device {}", request.getDeviceId());
 
-        return (HasNewSecretResponse) this.webServiceTemplate.marshalSendAndReceive(request, this.createCorrelationHeaderCallback(correlationUid));
+        return (HasNewSecretResponse) this.webServiceTemplate.marshalSendAndReceive(request,
+                this.createCorrelationHeaderCallback(correlationUid));
     }
 
-    public GenerateAndStoreSecretsResponse generateAndStoreSecrets(final String correlationUid, final GenerateAndStoreSecretsRequest request) {
+    public GenerateAndStoreSecretsResponse generateAndStoreSecrets(final String correlationUid,
+            final GenerateAndStoreSecretsRequest request) {
         LOGGER.info("Calling SecretManagement.generateAndStoreSecrets over SOAP for device {}", request.getDeviceId());
 
-        return (GenerateAndStoreSecretsResponse) this.webServiceTemplate.marshalSendAndReceive(request, this.createCorrelationHeaderCallback(correlationUid));
+        return (GenerateAndStoreSecretsResponse) this.webServiceTemplate.marshalSendAndReceive(request,
+                this.createCorrelationHeaderCallback(correlationUid));
     }
 }

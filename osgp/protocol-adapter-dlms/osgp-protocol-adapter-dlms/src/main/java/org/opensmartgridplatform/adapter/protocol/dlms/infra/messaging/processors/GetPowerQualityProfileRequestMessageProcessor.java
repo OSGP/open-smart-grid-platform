@@ -25,7 +25,8 @@ import org.springframework.stereotype.Component;
  * Class for processing Power Quality Profile request messages.
  */
 @Component
-public class GetPowerQualityProfileRequestMessageProcessor extends DeviceRequestMessageProcessor<GetPowerQualityProfileRequestDataDto> {
+public class GetPowerQualityProfileRequestMessageProcessor
+        extends DeviceRequestMessageProcessor<GetPowerQualityProfileRequestDataDto> {
 
     @Autowired
     private MonitoringService monitoringService;

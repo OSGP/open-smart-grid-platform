@@ -25,7 +25,8 @@ import org.springframework.stereotype.Component;
  * Class for processing Periodic Meter Request messages
  */
 @Component
-public class PeriodicMeterReadsRequestMessageProcessor extends DeviceRequestMessageProcessor<PeriodicMeterReadsRequestDto> {
+public class PeriodicMeterReadsRequestMessageProcessor
+        extends DeviceRequestMessageProcessor<PeriodicMeterReadsRequestDto> {
 
     @Autowired
     private MonitoringService monitoringService;

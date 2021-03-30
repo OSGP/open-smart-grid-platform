@@ -23,7 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GetSpecificAttributeValueRequestMessageProcessor extends DeviceRequestMessageProcessor<SpecificAttributeValueRequestDto> {
+public class GetSpecificAttributeValueRequestMessageProcessor
+        extends DeviceRequestMessageProcessor<SpecificAttributeValueRequestDto> {
 
     @Autowired
     private AdhocService adhocService;
@@ -34,7 +35,8 @@ public class GetSpecificAttributeValueRequestMessageProcessor extends DeviceRequ
 
     @Override
     protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
-            final RequestWithMetadata<SpecificAttributeValueRequestDto> request) throws ProtocolAdapterException, FunctionalException {
+            final RequestWithMetadata<SpecificAttributeValueRequestDto> request)
+            throws ProtocolAdapterException, FunctionalException {
         return this.adhocService.getSpecificAttributeValue(conn, device, request.getRequestObject());
     }
 }

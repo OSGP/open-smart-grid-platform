@@ -30,41 +30,39 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
      * Set the correct security attributes on the tcpConnectionBuilder.
      *
      * @param device
-     *         The device to connect with.
+     *            The device to connect with.
      * @param tcpConnectionBuilder
-     *         The connection builder instance.
+     *            The connection builder instance.
      */
     protected abstract void setSecurity(final String correlationUid, final DlmsDevice device,
-            final TcpConnectionBuilder tcpConnectionBuilder)
-            throws OsgpException;
+            final TcpConnectionBuilder tcpConnectionBuilder) throws OsgpException;
 
     /**
      * Create a connection with the device.
      *
      * @param device
-     *         The device to connect with.
+     *            The device to connect with.
      * @param dlmsMessageListener
-     *         Listener to set on the connection.
+     *            Listener to set on the connection.
      *
      * @return The connection.
      *
      * @throws IOException
-     *         When there are problems in connecting to or communicating
-     *         with the device.
+     *             When there are problems in connecting to or communicating
+     *             with the device.
      * @throws OsgpException
-     *         When there are problems reading the security and
-     *         authorization keys.
+     *             When there are problems reading the security and
+     *             authorization keys.
      */
     DlmsConnection createConnection(final String correlationUid, final DlmsDevice device,
-            final DlmsMessageListener dlmsMessageListener)
-            throws IOException, OsgpException {
+            final DlmsMessageListener dlmsMessageListener) throws IOException, OsgpException {
 
         // Setup connection to device
         final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(
-                InetAddress.getByName(device.getIpAddress())).setResponseTimeout(
-                this.responseTimeout).setLogicalDeviceId(this.logicalDeviceAddress);
-        tcpConnectionBuilder.setClientId(this.clientId).setReferencingMethod(
-                device.isUseSn() ? ReferencingMethod.SHORT : ReferencingMethod.LOGICAL);
+                InetAddress.getByName(device.getIpAddress())).setResponseTimeout(this.responseTimeout)
+                        .setLogicalDeviceId(this.logicalDeviceAddress);
+        tcpConnectionBuilder.setClientId(this.clientId)
+                .setReferencingMethod(device.isUseSn() ? ReferencingMethod.SHORT : ReferencingMethod.LOGICAL);
 
         if (device.isUseHdlc()) {
             tcpConnectionBuilder.useHdlc();

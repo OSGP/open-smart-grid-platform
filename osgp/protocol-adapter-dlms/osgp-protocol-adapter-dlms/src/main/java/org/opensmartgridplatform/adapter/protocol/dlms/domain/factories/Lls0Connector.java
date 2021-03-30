@@ -42,8 +42,7 @@ public class Lls0Connector extends DlmsConnector {
 
     @Override
     public DlmsConnection connect(final String correlationUid, final DlmsDevice device,
-            final DlmsMessageListener dlmsMessageListener)
-            throws OsgpException {
+            final DlmsMessageListener dlmsMessageListener) throws OsgpException {
 
         // Make sure neither device or device.getIpAddress() is null.
         this.checkDevice(device);
@@ -54,7 +53,8 @@ public class Lls0Connector extends DlmsConnector {
         try {
 
             tcpConnectionBuilder = new TcpConnectionBuilder(InetAddress.getByName(device.getIpAddress()))
-                    .setResponseTimeout(this.responseTimeout).setLogicalDeviceId(this.logicalDeviceAddress)
+                    .setResponseTimeout(this.responseTimeout)
+                    .setLogicalDeviceId(this.logicalDeviceAddress)
                     .setClientId(this.clientId)
                     .setReferencingMethod(device.isUseSn() ? ReferencingMethod.SHORT : ReferencingMethod.LOGICAL);
 

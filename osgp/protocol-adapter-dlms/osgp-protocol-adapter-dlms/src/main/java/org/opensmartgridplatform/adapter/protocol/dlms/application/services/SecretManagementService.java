@@ -43,8 +43,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 /**
- * Service for storing, activating and retrieving device keys.
- * Also performs RSA encryption/decryption operations for SOAP messaging purposes.
+ * Service for storing, activating and retrieving device keys. Also performs RSA
+ * encryption/decryption operations for SOAP messaging purposes.
  */
 public class SecretManagementService {
 
@@ -61,11 +61,12 @@ public class SecretManagementService {
     /**
      * Retrieve an active key of a certain type for a specified device
      *
-     * @param correlationUid the correlation UID of the original request
+     * @param correlationUid
+     *            the correlation UID of the original request
      * @param deviceIdentification
-     *         the device identification string of the device
+     *            the device identification string of the device
      * @param keyType
-     *         the requested key type
+     *            the requested key type
      *
      * @return the key or NULL if not present
      */
@@ -80,13 +81,15 @@ public class SecretManagementService {
     /**
      * Retrieves the active keys of requested types for a specified device
      *
-     * @param correlationUid the correlation UID of the original request
+     * @param correlationUid
+     *            the correlation UID of the original request
      * @param deviceIdentification
-     *         the device identification string of the device
+     *            the device identification string of the device
      * @param keyTypes
-     *         the requested key types
+     *            the requested key types
      *
-     * @return the requested keys in a map by key type, with value NULL if not present
+     * @return the requested keys in a map by key type, with value NULL if not
+     *         present
      */
     public Map<SecurityKeyType, byte[]> getKeys(final String correlationUid, final String deviceIdentification,
             final List<SecurityKeyType> keyTypes) {
@@ -97,13 +100,15 @@ public class SecretManagementService {
     }
 
     /**
-     * Retrieve a new (not yet activated) key of a certain type for a specified device
+     * Retrieve a new (not yet activated) key of a certain type for a specified
+     * device
      *
-     * @param correlationUid the correlation UID of the original request
+     * @param correlationUid
+     *            the correlation UID of the original request
      * @param deviceIdentification
-     *         the device identification string of the device
+     *            the device identification string of the device
      * @param keyType
-     *         the requested key type
+     *            the requested key type
      *
      * @return the key or NULL if not present
      */
@@ -116,21 +121,24 @@ public class SecretManagementService {
     }
 
     /**
-     * Retrieves the new (not yet activated) keys of requested types for a specified device
+     * Retrieves the new (not yet activated) keys of requested types for a
+     * specified device
      *
-     * @param correlationUid the correlation UID of the original request
+     * @param correlationUid
+     *            the correlation UID of the original request
      * @param deviceIdentification
-     *         the device identification string of the device
+     *            the device identification string of the device
      * @param keyTypes
-     *         the requested key types
+     *            the requested key types
      *
-     * @return the requested keys in a map by key type, with value NULL if not present
+     * @return the requested keys in a map by key type, with value NULL if not
+     *         present
      */
     public Map<SecurityKeyType, byte[]> getNewKeys(final String correlationUid, final String deviceIdentification,
             final List<SecurityKeyType> keyTypes) {
         final GetNewSecretsRequest request = this.createGetNewSecretsRequest(deviceIdentification, keyTypes);
-        final GetNewSecretsResponse response = this.secretManagementClient
-                .getNewSecretsRequest(correlationUid, request);
+        final GetNewSecretsResponse response = this.secretManagementClient.getNewSecretsRequest(correlationUid,
+                request);
         this.validateGetNewResponse(keyTypes, response);
         return this.convertSoapSecretsToSecretMapByType(response.getTypedSecrets().getTypedSecret());
     }
@@ -176,26 +184,27 @@ public class SecretManagementService {
     /**
      * Store new key
      * <p>
-     * A new key is a security key with a device which status NEW.
-     * This status is used when the new key is known, but not yet set on the device.
+     * A new key is a security key with a device which status NEW. This status
+     * is used when the new key is known, but not yet set on the device.
      * <p>
      * <strong>CAUTION:</strong> Only call this method when a successful
      * connection with the device has been set up (that is: a valid
      * communication key that works is known), and you are sure any existing new
-     * key data that is not activated yet (for instance a new key stored earlier in an
-     * attempt to replace the communication key that got aborted).<br>
+     * key data that is not activated yet (for instance a new key stored earlier
+     * in an attempt to replace the communication key that got aborted).<br>
      * <p>
      * The moment the new key is known to be transferred to the device, make
      * sure to activate it by calling
      * {@link #activateNewKey(String, String, SecurityKeyType)}.
      *
-     * @param correlationUid the correlation UID of the original request
+     * @param correlationUid
+     *            the correlation UID of the original request
      * @param deviceIdentification
-     *         DLMS device id
+     *            DLMS device id
      * @param key
-     *         key to store, unencrypted
+     *            key to store, unencrypted
      * @param keyType
-     *         type of key
+     *            type of key
      *
      * @see #activateNewKey(String, String, SecurityKeyType)
      */
@@ -227,9 +236,8 @@ public class SecretManagementService {
         if (response == null) {
             throw new IllegalStateException("Could not store keys: NULL response");
         } else if (!OsgpResultType.OK.equals(response.getResult())) {
-            throw new IllegalStateException(
-                    String.format("Could not store keys: result=%s; fault=%s", response.getResult(),
-                            response.getTechnicalFault()));
+            throw new IllegalStateException(String.format("Could not store keys: result=%s; fault=%s",
+                    response.getResult(), response.getTechnicalFault()));
         }
     }
 
@@ -253,14 +261,15 @@ public class SecretManagementService {
      * Updates the state of a new key from 'new' to 'active'
      * <p>
      * This method should be called to activate a new key stored with
-     * {@link #storeNewKeys(String, String, Map)} after it has
-     * been confirmed to be set on the device.
+     * {@link #storeNewKeys(String, String, Map)} after it has been confirmed to
+     * be set on the device.
      *
-     * @param correlationUid the correlation UID of the original request
+     * @param correlationUid
+     *            the correlation UID of the original request
      * @param deviceIdentification
-     *         DLMS device id
+     *            DLMS device id
      * @param keyType
-     *         type of key
+     *            type of key
      *
      * @see #storeNewKeys(String, String, Map)
      */
@@ -291,7 +300,7 @@ public class SecretManagementService {
     public byte[] generate128BitsKeyAndStoreAsNewKey(final String correlationUid, final String deviceIdentification,
             final SecurityKeyType keyType) {
         return this.generate128BitsKeysAndStoreAsNewKeys(correlationUid, deviceIdentification, Arrays.asList(keyType))
-                   .get(keyType);
+                .get(keyType);
     }
 
     /**
@@ -301,16 +310,19 @@ public class SecretManagementService {
      * The master keys (DLMS master or M-Bus Default) cannot be changed on a
      * device, but can be generated for use in tests or with simulated devices.
      *
-     * @param correlationUid the correlation UID of the original request
-     * @param deviceIdentification the device identification for which to generate the keys
-     * @param keyTypes the requested key types
+     * @param correlationUid
+     *            the correlation UID of the original request
+     * @param deviceIdentification
+     *            the device identification for which to generate the keys
+     * @param keyTypes
+     *            the requested key types
      * @return a new 128bits key, unencrypted.
      */
     public Map<SecurityKeyType, byte[]> generate128BitsKeysAndStoreAsNewKeys(final String correlationUid,
             final String deviceIdentification, final List<SecurityKeyType> keyTypes) {
         final SecretTypes secretTypes = new SecretTypes();
-        final GenerateAndStoreSecretsRequest request = this
-                .createGenerateAndStoreSecretsRequest(deviceIdentification, secretTypes);
+        final GenerateAndStoreSecretsRequest request = this.createGenerateAndStoreSecretsRequest(deviceIdentification,
+                secretTypes);
         secretTypes.getSecretType().addAll(keyTypes.stream().map(SecurityKeyType::toSecretType).collect(toList()));
 
         final GenerateAndStoreSecretsResponse response = this.secretManagementClient

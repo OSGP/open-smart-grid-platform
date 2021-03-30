@@ -21,7 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SetClockConfigurationRequestMessageProcessor extends DeviceRequestMessageProcessor<SetClockConfigurationRequestDto> {
+public class SetClockConfigurationRequestMessageProcessor
+        extends DeviceRequestMessageProcessor<SetClockConfigurationRequestDto> {
 
     @Autowired
     private ConfigurationService configurationService;

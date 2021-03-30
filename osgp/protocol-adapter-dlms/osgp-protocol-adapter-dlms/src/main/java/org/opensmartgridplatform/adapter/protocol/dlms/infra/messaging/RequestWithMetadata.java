@@ -9,8 +9,9 @@ package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 
 import java.io.Serializable;
 
-import lombok.Getter;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+
+import lombok.Getter;
 
 @Getter
 public class RequestWithMetadata<S extends Serializable> {

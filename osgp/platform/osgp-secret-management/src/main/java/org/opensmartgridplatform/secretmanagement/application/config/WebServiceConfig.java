@@ -79,8 +79,7 @@ public class WebServiceConfig extends WsConfigurerAdapter {
 
         final Properties errorMappings = new Properties();
         errorMappings.setProperty(Exception.class.getName(), SoapFaultDefinition.SERVER.toString());
-        errorMappings.setProperty(TechnicalException.class.getName(),
-                SoapFaultDefinition.SERVER.toString());
+        errorMappings.setProperty(TechnicalException.class.getName(), SoapFaultDefinition.SERVER.toString());
         exceptionResolver.setExceptionMappings(errorMappings);
         exceptionResolver.setOrder(1);
 

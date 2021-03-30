@@ -66,7 +66,8 @@ public class InstallationService {
     @Autowired
     private CoupleMbusDeviceByChannelCommandExecutor coupleMbusDeviceByChannelCommandExecutor;
 
-    public void addMeter(final String correlationUid, final SmartMeteringDeviceDto smartMeteringDevice) throws FunctionalException {
+    public void addMeter(final String correlationUid, final SmartMeteringDeviceDto smartMeteringDevice)
+            throws FunctionalException {
         if (smartMeteringDevice.getDeviceIdentification() == null) {
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.PROTOCOL_DLMS,
                     new IllegalArgumentException("Provided device does not contain device identification"));
@@ -76,7 +77,8 @@ public class InstallationService {
         this.dlmsDeviceRepository.save(dlmsDevice);
     }
 
-    private void storeAndActivateKeys(final String correlationUid, final SmartMeteringDeviceDto deviceDto) throws FunctionalException {
+    private void storeAndActivateKeys(final String correlationUid, final SmartMeteringDeviceDto deviceDto)
+            throws FunctionalException {
         final Map<SecurityKeyType, byte[]> keysByType = new EnumMap<>(SecurityKeyType.class);
         final List<SecurityKeyType> keyTypesToStore = this.determineKeyTypesToStore(deviceDto);
         for (final SecurityKeyType keyType : keyTypesToStore) {
@@ -97,7 +99,7 @@ public class InstallationService {
     private List<SecurityKeyType> determineKeyTypesToStore(final SmartMeteringDeviceDto deviceDto)
             throws FunctionalException {
         if (this.getKeyFromDeviceDto(deviceDto, G_METER_MASTER) != null) {
-            //device is a G-Meter
+            // device is a G-Meter
             if (this.getKeyFromDeviceDto(deviceDto, E_METER_MASTER) != null
                     || this.getKeyFromDeviceDto(deviceDto, E_METER_AUTHENTICATION) != null
                     || this.getKeyFromDeviceDto(deviceDto, E_METER_ENCRYPTION) != null) {
@@ -108,7 +110,7 @@ public class InstallationService {
             }
             return Arrays.asList(G_METER_MASTER);
         } else {
-            //device is an E-meter
+            // device is an E-meter
             return Arrays.asList(E_METER_MASTER, E_METER_AUTHENTICATION, E_METER_ENCRYPTION);
         }
     }

@@ -59,8 +59,7 @@ public class Hls5Connector extends SecureDlmsConnector {
 
     @Override
     public DlmsConnection connect(final String correlationUid, final DlmsDevice device,
-            final DlmsMessageListener dlmsMessageListener)
-            throws OsgpException {
+            final DlmsMessageListener dlmsMessageListener) throws OsgpException {
 
         // Make sure neither device or device.getIpAddress() is null.
         this.checkDevice(device);
@@ -72,18 +71,18 @@ public class Hls5Connector extends SecureDlmsConnector {
             LOGGER.error("The IP address is not found: {}", device.getIpAddress(), e);
             throw new TechnicalException(ComponentType.PROTOCOL_DLMS,
                     "The IP address is not found: " + device.getIpAddress());
-        } catch (final IOException e) { //Queue key recovery process
+        } catch (final IOException e) { // Queue key recovery process
             if (this.secretManagementService.hasNewSecretOfType(correlationUid, device.getDeviceIdentification(),
                     E_METER_ENCRYPTION)) {
                 this.recoverKeyProcessInitiator.initiate(correlationUid, device.getDeviceIdentification(),
                         device.getIpAddress());
             }
 
-            final String msg = String
-                    .format("Error creating connection for device %s with Ip address:%s Port:%d UseHdlc:%b UseSn:%b "
-                                    + "Message:%s", device.getDeviceIdentification(), device.getIpAddress(),
-                            device.getPort(),
-                            device.isUseHdlc(), device.isUseSn(), e.getMessage());
+            final String msg = String.format(
+                    "Error creating connection for device %s with Ip address:%s Port:%d UseHdlc:%b UseSn:%b "
+                            + "Message:%s",
+                    device.getDeviceIdentification(), device.getIpAddress(), device.getPort(), device.isUseHdlc(),
+                    device.isUseSn(), e.getMessage());
             LOGGER.error(msg);
             throw new ConnectionException(msg, e);
         } catch (final EncrypterException e) {
@@ -94,16 +93,14 @@ public class Hls5Connector extends SecureDlmsConnector {
 
     @Override
     protected void setSecurity(final String correlationUid, final DlmsDevice device,
-            final TcpConnectionBuilder tcpConnectionBuilder)
-            throws OsgpException {
+            final TcpConnectionBuilder tcpConnectionBuilder) throws OsgpException {
 
         final String deviceIdentification = device.getDeviceIdentification();
         final byte[] dlmsAuthenticationKey;
         final byte[] dlmsEncryptionKey;
         try {
-            final Map<SecurityKeyType, byte[]> encryptedKeys = this.secretManagementService
-                    .getKeys(correlationUid, deviceIdentification, Arrays.asList(E_METER_AUTHENTICATION,
-                            E_METER_ENCRYPTION));
+            final Map<SecurityKeyType, byte[]> encryptedKeys = this.secretManagementService.getKeys(correlationUid,
+                    deviceIdentification, Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION));
             dlmsAuthenticationKey = encryptedKeys.get(E_METER_AUTHENTICATION);
             dlmsEncryptionKey = encryptedKeys.get(E_METER_ENCRYPTION);
         } catch (final EncrypterException e) {
@@ -117,11 +114,12 @@ public class Hls5Connector extends SecureDlmsConnector {
 
         this.configureIvData(tcpConnectionBuilder, device);
 
-        final SecuritySuite securitySuite = SecuritySuite.builder().setAuthenticationKey(dlmsAuthenticationKey)
-                                                         .setAuthenticationMechanism(AuthenticationMechanism.HLS5_GMAC)
-                                                         .setGlobalUnicastEncryptionKey(dlmsEncryptionKey)
-                                                         .setEncryptionMechanism(EncryptionMechanism.AES_GCM_128)
-                                                         .build();
+        final SecuritySuite securitySuite = SecuritySuite.builder()
+                .setAuthenticationKey(dlmsAuthenticationKey)
+                .setAuthenticationMechanism(AuthenticationMechanism.HLS5_GMAC)
+                .setGlobalUnicastEncryptionKey(dlmsEncryptionKey)
+                .setEncryptionMechanism(EncryptionMechanism.AES_GCM_128)
+                .build();
 
         tcpConnectionBuilder.setSecuritySuite(securitySuite).setClientId(this.clientId);
     }
@@ -143,8 +141,7 @@ public class Hls5Connector extends SecureDlmsConnector {
         final String manufacturerId;
         if (StringUtils.isEmpty(device.getManufacturerId())) {
             LOGGER.warn("Device {} does not have its manufacturer ID stored in the database. "
-                            + "Using a default value which makes the system title (part of the IV in HLS 5) less " +
-                            "unique.",
+                    + "Using a default value which makes the system title (part of the IV in HLS 5) less " + "unique.",
                     device.getDeviceIdentification());
             manufacturerId = "   ";
         } else {
@@ -161,13 +158,11 @@ public class Hls5Connector extends SecureDlmsConnector {
 
     private void validateKeys(final byte[] encryptionKey, final byte[] authenticationKey) throws FunctionalException {
         if (this.checkEmptyKey(encryptionKey)) {
-            this.throwFunctionalException("The encryption key is empty",
-                    FunctionalExceptionType.KEY_NOT_PRESENT);
+            this.throwFunctionalException("The encryption key is empty", FunctionalExceptionType.KEY_NOT_PRESENT);
         }
 
         if (this.checkEmptyKey(authenticationKey)) {
-            this.throwFunctionalException("The authentication key is empty",
-                    FunctionalExceptionType.KEY_NOT_PRESENT);
+            this.throwFunctionalException("The authentication key is empty", FunctionalExceptionType.KEY_NOT_PRESENT);
         }
 
         if (this.checkLenghtKey(encryptionKey)) {

@@ -38,8 +38,8 @@ public class AddMeterRequestMessageProcessor extends DeviceRequestMessageProcess
     }
 
     @Override
-    protected Serializable handleMessage(final DlmsDevice device, final RequestWithMetadata<SmartMeteringDeviceDto> request)
-            throws OsgpException {
+    protected Serializable handleMessage(final DlmsDevice device,
+            final RequestWithMetadata<SmartMeteringDeviceDto> request) throws OsgpException {
         final String correlationUid = request.getMetadata().getCorrelationUid();
         this.installationService.addMeter(correlationUid, request.getRequestObject());
 

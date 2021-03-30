@@ -44,8 +44,7 @@ public class Lls1Connector extends SecureDlmsConnector {
 
     @Override
     public DlmsConnection connect(final String correlationUid, final DlmsDevice device,
-            final DlmsMessageListener dlmsMessageListener)
-            throws OsgpException {
+            final DlmsMessageListener dlmsMessageListener) throws OsgpException {
 
         // Make sure neither device or device.getIpAddress() is null.
         this.checkDevice(device);
@@ -69,8 +68,7 @@ public class Lls1Connector extends SecureDlmsConnector {
 
     @Override
     protected void setSecurity(final String correlationUid, final DlmsDevice device,
-            final TcpConnectionBuilder tcpConnectionBuilder)
-            throws OsgpException {
+            final TcpConnectionBuilder tcpConnectionBuilder) throws OsgpException {
 
         final byte[] password;
         try {
@@ -88,8 +86,9 @@ public class Lls1Connector extends SecureDlmsConnector {
         }
 
         final SecuritySuite securitySuite = SecuritySuite.builder()
-                                                         .setAuthenticationMechanism(AuthenticationMechanism.LOW)
-                                                         .setPassword(password).build();
+                .setAuthenticationMechanism(AuthenticationMechanism.LOW)
+                .setPassword(password)
+                .build();
 
         tcpConnectionBuilder.setSecuritySuite(securitySuite).setClientId(this.clientId);
     }

@@ -24,7 +24,8 @@ import org.springframework.stereotype.Component;
  * Class for processing the Set Administrative Status request message
  */
 @Component
-public class SetAdministrativeStatusRequestMessageProcessor extends DeviceRequestMessageProcessor<AdministrativeStatusTypeDto> {
+public class SetAdministrativeStatusRequestMessageProcessor
+        extends DeviceRequestMessageProcessor<AdministrativeStatusTypeDto> {
 
     @Autowired
     private ConfigurationService configurationService;

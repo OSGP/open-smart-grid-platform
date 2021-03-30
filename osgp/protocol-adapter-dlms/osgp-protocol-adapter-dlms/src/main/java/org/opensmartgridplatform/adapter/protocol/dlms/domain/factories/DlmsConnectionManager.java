@@ -70,7 +70,7 @@ public class DlmsConnectionManager implements AutoCloseable {
      *         connect}.
      *
      * @throws IllegalStateException
-     *         when there is no connection available.
+     *             when there is no connection available.
      */
     public DlmsConnection getConnection() {
         if (!this.isConnected()) {
@@ -92,7 +92,7 @@ public class DlmsConnectionManager implements AutoCloseable {
      * reference.
      *
      * @throws IOException
-     *         When an exception occurs while disconnecting.
+     *             When an exception occurs while disconnecting.
      */
     public void disconnect() throws IOException {
         if (this.dlmsConnection != null) {
@@ -110,10 +110,10 @@ public class DlmsConnectionManager implements AutoCloseable {
      * before {@link #getConnection() getConnection} is called.
      *
      * @throws IllegalStateException
-     *         When there is already a connection set.
+     *             When there is already a connection set.
      * @throws OsgpException
-     *         in case of a TechnicalException (When an exceptions occurs
-     *         while creating the exception) or a FunctionalException
+     *             in case of a TechnicalException (When an exceptions occurs
+     *             while creating the exception) or a FunctionalException
      */
     public void connect() throws OsgpException {
         if (this.dlmsConnection != null) {
@@ -128,9 +128,9 @@ public class DlmsConnectionManager implements AutoCloseable {
      * before {@link #getConnection() getConnection} is called.
      *
      * @throws OsgpException
-     *         in case of a TechnicalException (When an exceptions
-     *         occurs while creating the exception), a FunctionalException or a
-     *         ProtocolAdapterException
+     *             in case of a TechnicalException (When an exceptions occurs
+     *             while creating the exception), a FunctionalException or a
+     *             ProtocolAdapterException
      */
     public void reconnect() throws OsgpException {
         if (this.dlmsConnection != null) {

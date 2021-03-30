@@ -96,7 +96,8 @@ public class GetFirmwareFileResponseMessageProcessorTest {
         final FirmwareFileDto firmwareFileDto = this.setupFirmwareFileDto();
         final ResponseMessage responseMessage = this.setupResponseMessage(firmwareFileDto);
         final ObjectMessage message = new ObjectMessageBuilder().withMessageType(MessageType.GET_FIRMWARE_FILE.name())
-                                                                .withObject(responseMessage).build();
+                .withObject(responseMessage)
+                .build();
         final UpdateFirmwareResponseDto updateFirmwareResponseDto = new UpdateFirmwareResponseDto(
                 firmwareFileDto.getFirmwareIdentification(), new LinkedList<>());
 
@@ -105,9 +106,8 @@ public class GetFirmwareFileResponseMessageProcessorTest {
 
         when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class))).thenReturn(this.dlmsDevice);
         when(this.dlmsConnectionManagerMock.getDlmsMessageListener()).thenReturn(this.dlmsMessageListenerMock);
-        when(this.connectionHelper
-                .createConnectionForDevice(any(), same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
-                .thenReturn(this.dlmsConnectionManagerMock);
+        when(this.connectionHelper.createConnectionForDevice(any(), same(this.dlmsDevice),
+                nullable(DlmsMessageListener.class))).thenReturn(this.dlmsConnectionManagerMock);
         when(this.firmwareService.updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDevice, firmwareFileDto))
                 .thenReturn(updateFirmwareResponseDto);
 
@@ -128,14 +128,13 @@ public class GetFirmwareFileResponseMessageProcessorTest {
         final ResponseMessage responseMessage = this.setupResponseMessage(firmwareFileDto);
 
         // act
-        this.getFirmwareFileResponseMessageProcessor
-                .handleMessage(this.dlmsConnectionManagerMock, this.dlmsDevice, responseMessage);
+        this.getFirmwareFileResponseMessageProcessor.handleMessage(this.dlmsConnectionManagerMock, this.dlmsDevice,
+                responseMessage);
 
         // assert
-        verify(this.firmwareService, times(1))
-                .updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDevice, firmwareFileDto);
+        verify(this.firmwareService, times(1)).updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDevice,
+                firmwareFileDto);
     }
-
 
     @Test
     public void processMessageShouldSendNotOkResponseMessageContainingOriginalFirmwareUpdateRequest()
@@ -144,16 +143,16 @@ public class GetFirmwareFileResponseMessageProcessorTest {
         final FirmwareFileDto firmwareFileDto = this.setupFirmwareFileDto();
         final ResponseMessage responseMessage = this.setupResponseMessage(firmwareFileDto);
         final ObjectMessage message = new ObjectMessageBuilder().withMessageType(MessageType.GET_FIRMWARE_FILE.name())
-                                                                .withObject(responseMessage).build();
+                .withObject(responseMessage)
+                .build();
 
         final ArgumentCaptor<ResponseMessage> responseMessageArgumentCaptor = ArgumentCaptor
                 .forClass(ResponseMessage.class);
 
         when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class))).thenReturn(this.dlmsDevice);
         when(this.dlmsConnectionManagerMock.getDlmsMessageListener()).thenReturn(this.dlmsMessageListenerMock);
-        when(this.connectionHelper
-                .createConnectionForDevice(any(), same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
-                .thenReturn(this.dlmsConnectionManagerMock);
+        when(this.connectionHelper.createConnectionForDevice(any(), same(this.dlmsDevice),
+                nullable(DlmsMessageListener.class))).thenReturn(this.dlmsConnectionManagerMock);
         when(this.firmwareService.updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDevice, firmwareFileDto))
                 .thenThrow(new ProtocolAdapterException("Firmware file fw is not available."));
 
@@ -173,7 +172,10 @@ public class GetFirmwareFileResponseMessageProcessorTest {
     }
 
     private ProtocolResponseMessage setupResponseMessage(final FirmwareFileDto firmwareFileDto) {
-        return ProtocolResponseMessage.newBuilder().correlationUid("corr-uid-1")
-                                      .result(ResponseMessageResultType.OK).dataObject(firmwareFileDto).build();
+        return ProtocolResponseMessage.newBuilder()
+                .correlationUid("corr-uid-1")
+                .result(ResponseMessageResultType.OK)
+                .dataObject(firmwareFileDto)
+                .build();
     }
 }

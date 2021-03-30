@@ -24,7 +24,8 @@ import org.springframework.stereotype.Component;
  * Class for processing the get M-Bus encryption keys status request message
  */
 @Component
-public class GetMbusEncryptionKeyStatusRequestMessageProcessor extends DeviceRequestMessageProcessor<GetMbusEncryptionKeyStatusRequestDto> {
+public class GetMbusEncryptionKeyStatusRequestMessageProcessor
+        extends DeviceRequestMessageProcessor<GetMbusEncryptionKeyStatusRequestDto> {
 
     @Autowired
     private ConfigurationService configurationService;

@@ -23,7 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DecoupleMbusDeviceByChannelRequestMessageProcessor extends DeviceRequestMessageProcessor<DecoupleMbusDeviceDto> {
+public class DecoupleMbusDeviceByChannelRequestMessageProcessor
+        extends DeviceRequestMessageProcessor<DecoupleMbusDeviceDto> {
 
     @Autowired
     private InstallationService installationService;

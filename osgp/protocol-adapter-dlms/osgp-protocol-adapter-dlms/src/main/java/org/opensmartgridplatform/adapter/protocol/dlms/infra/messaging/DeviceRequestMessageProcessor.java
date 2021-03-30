@@ -40,7 +40,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 public abstract class DeviceRequestMessageProcessor<S extends Serializable> extends DlmsConnectionMessageProcessor
         implements MessageProcessor {
     /**
-     * Constant to signal that message processor doesn't (have to) send a response.
+     * Constant to signal that message processor doesn't (have to) send a
+     * response.
      */
     protected static final String NO_RESPONSE = "NO-RESPONSE";
 
@@ -62,8 +63,8 @@ public abstract class DeviceRequestMessageProcessor<S extends Serializable> exte
      * Each MessageProcessor should register it's MessageType at construction.
      *
      * @param messageType
-     *         The MessageType the MessageProcessor implementation can
-     *         process.
+     *            The MessageType the MessageProcessor implementation can
+     *            process.
      */
     protected DeviceRequestMessageProcessor(final MessageType messageType) {
         this.messageType = messageType;
@@ -133,9 +134,8 @@ public abstract class DeviceRequestMessageProcessor<S extends Serializable> exte
             final Serializable requestObject) {
         // Return original request + exception
         if (!(exception instanceof SilentException)) {
-            final String errorMessage = String
-                    .format("Unexpected exception during %s, correlationUID=%s", this.messageType.name(),
-                            metadata.getCorrelationUid());
+            final String errorMessage = String.format("Unexpected exception during %s, correlationUID=%s",
+                    this.messageType.name(), metadata.getCorrelationUid());
             LOGGER.error(errorMessage, exception);
         }
         this.sendResponseMessage(metadata, ResponseMessageResultType.NOT_OK, exception, this.responseMessageSender,
@@ -158,11 +158,11 @@ public abstract class DeviceRequestMessageProcessor<S extends Serializable> exte
      * provide result data.
      *
      * @param conn
-     *         the connection to the device.
+     *            the connection to the device.
      * @param device
-     *         the device.
+     *            the device.
      * @param requestObject
-     *         Request data object.
+     *            Request data object.
      *
      * @return A serializable object to be put on the response queue.
      */

@@ -89,11 +89,11 @@ class BundleMessageProcessorTest {
 
     @Test
     public void shouldSetEmptyHeaderOnSuccessfulOperation() throws OsgpException, JMSException {
-        //when(this.dlmsConnectionManager.getDlmsMessageListener()).thenReturn(this.messageListener);
-        when(this.bundleService.callExecutors(this.dlmsConnectionManager, this.dlmsDevice, this.requestDto)).thenReturn(
-                this.requestDto);
-        when(this.dlmsConnectionHelper.createConnectionForDevice(null, this.dlmsDevice, null)).thenReturn(
-                this.dlmsConnectionManager);
+        // when(this.dlmsConnectionManager.getDlmsMessageListener()).thenReturn(this.messageListener);
+        when(this.bundleService.callExecutors(this.dlmsConnectionManager, this.dlmsDevice, this.requestDto))
+                .thenReturn(this.requestDto);
+        when(this.dlmsConnectionHelper.createConnectionForDevice(null, this.dlmsDevice, null))
+                .thenReturn(this.dlmsConnectionManager);
 
         this.messageProcessor.processMessage(this.message);
 
@@ -102,7 +102,8 @@ class BundleMessageProcessorTest {
 
     @Test
     public void shouldSetRetryHeaderOnRuntimeException() throws OsgpException, JMSException {
-        when(this.dlmsConnectionHelper.createConnectionForDevice(null, this.dlmsDevice, null)).thenThrow(new RuntimeException());
+        when(this.dlmsConnectionHelper.createConnectionForDevice(null, this.dlmsDevice, null))
+                .thenThrow(new RuntimeException());
 
         this.messageProcessor.processMessage(this.message);
 
@@ -111,8 +112,8 @@ class BundleMessageProcessorTest {
 
     @Test
     public void shouldSetRetryHeaderOnOsgpException() throws OsgpException, JMSException {
-        when(this.dlmsConnectionHelper.createConnectionForDevice(null, this.dlmsDevice, null)).thenThrow(
-                new OsgpException(ComponentType.PROTOCOL_DLMS, ""));
+        when(this.dlmsConnectionHelper.createConnectionForDevice(null, this.dlmsDevice, null))
+                .thenThrow(new OsgpException(ComponentType.PROTOCOL_DLMS, ""));
 
         this.messageProcessor.processMessage(this.message);
 

@@ -164,7 +164,8 @@ public class ConfigurationService {
 
         // Configuration Object towards the Smart Meter
         final ConfigurationObjectDto configurationObject = setConfigurationObjectRequest
-                .getSetConfigurationObjectRequestData().getConfigurationObject();
+                .getSetConfigurationObjectRequestData()
+                .getConfigurationObject();
 
         final GprsOperationModeTypeDto gprsOperationModeType = configurationObject.getGprsOperationMode();
         final ConfigurationFlagsDto configurationFlags = configurationObject.getConfigurationFlags();
@@ -181,8 +182,8 @@ public class ConfigurationService {
         }
         LOGGER.info(VISUAL_SEPARATOR);
 
-        final AccessResultCode accessResultCode = this.setConfigurationObjectCommandExecutor
-                .execute(conn, device, configurationObject);
+        final AccessResultCode accessResultCode = this.setConfigurationObjectCommandExecutor.execute(conn, device,
+                configurationObject);
         if (!AccessResultCode.SUCCESS.equals(accessResultCode)) {
             throw new ProtocolAdapterException("Set configuration object reported result is: " + accessResultCode);
         }
@@ -194,8 +195,8 @@ public class ConfigurationService {
 
         LOGGER.info("Device for Set Administrative Status is: {}", device);
 
-        final AccessResultCode accessResultCode = this.setAdministrativeStatusCommandExecutor
-                .execute(conn, device, administrativeStatusType);
+        final AccessResultCode accessResultCode = this.setAdministrativeStatusCommandExecutor.execute(conn, device,
+                administrativeStatusType);
         if (AccessResultCode.SUCCESS != accessResultCode) {
             throw new ProtocolAdapterException(
                     "AccessResultCode for set administrative status was not SUCCESS: " + accessResultCode);
@@ -207,8 +208,8 @@ public class ConfigurationService {
 
         LOGGER.info("Alarm Notifications to set on the device: {}", alarmNotifications);
 
-        final AccessResultCode accessResultCode = this.setAlarmNotificationsCommandExecutor
-                .execute(conn, device, alarmNotifications);
+        final AccessResultCode accessResultCode = this.setAlarmNotificationsCommandExecutor.execute(conn, device,
+                alarmNotifications);
         if (AccessResultCode.SUCCESS != accessResultCode) {
             throw new ProtocolAdapterException(
                     "AccessResultCode for set alarm notifications was not SUCCESS: " + accessResultCode);
@@ -235,8 +236,8 @@ public class ConfigurationService {
 
         LOGGER.info("Device for Set M-Bus User Key By Channel is: {}", device);
 
-        final GMeterInfoDto gMeterInfo = this
-                .getMbusKeyExchangeData(conn, device, setMbusUserKeyByChannelRequestData.getObject());
+        final GMeterInfoDto gMeterInfo = this.getMbusKeyExchangeData(conn, device,
+                setMbusUserKeyByChannelRequestData.getObject());
 
         this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device,
                 CorrelatedObject.from(setMbusUserKeyByChannelRequestData, gMeterInfo));
@@ -247,15 +248,14 @@ public class ConfigurationService {
     public GMeterInfoDto getMbusKeyExchangeData(final DlmsConnectionManager conn, final DlmsDevice device,
             final SetMbusUserKeyByChannelRequestDataDto setMbusUserKeyByChannelRequestData) throws OsgpException {
 
-        final GetMBusDeviceOnChannelRequestDataDto mbusDeviceOnChannelRequest =
-                new GetMBusDeviceOnChannelRequestDataDto(
+        final GetMBusDeviceOnChannelRequestDataDto mbusDeviceOnChannelRequest = new GetMBusDeviceOnChannelRequestDataDto(
                 device.getDeviceIdentification(), setMbusUserKeyByChannelRequestData.getChannel());
-        final ChannelElementValuesDto channelElementValues = this.getMBusDeviceOnChannelCommandExecutor
-                .execute(conn, device, mbusDeviceOnChannelRequest);
+        final ChannelElementValuesDto channelElementValues = this.getMBusDeviceOnChannelCommandExecutor.execute(conn,
+                device, mbusDeviceOnChannelRequest);
 
-        final DlmsDevice mbusDevice = this.domainHelperService
-                .findMbusDevice(Long.valueOf(channelElementValues.getIdentificationNumber()),
-                        channelElementValues.getManufacturerIdentification());
+        final DlmsDevice mbusDevice = this.domainHelperService.findMbusDevice(
+                Long.valueOf(channelElementValues.getIdentificationNumber()),
+                channelElementValues.getManufacturerIdentification());
 
         return new GMeterInfoDto(setMbusUserKeyByChannelRequestData.getChannel(), mbusDevice.getDeviceIdentification());
     }
@@ -277,8 +277,8 @@ public class ConfigurationService {
 
         LOGGER.info("Push Setup Alarm to set on the device: {}", pushSetupAlarm);
 
-        final AccessResultCode accessResultCode = this.setPushSetupAlarmCommandExecutor
-                .execute(conn, device, pushSetupAlarm);
+        final AccessResultCode accessResultCode = this.setPushSetupAlarmCommandExecutor.execute(conn, device,
+                pushSetupAlarm);
 
         if (AccessResultCode.SUCCESS != accessResultCode) {
             throw new ProtocolAdapterException(
@@ -291,8 +291,8 @@ public class ConfigurationService {
 
         LOGGER.info("Push Setup Sms to set on the device: {}", pushSetupSms);
 
-        final AccessResultCode accessResultCode = this.setPushSetupSmsCommandExecutor
-                .execute(conn, device, pushSetupSms);
+        final AccessResultCode accessResultCode = this.setPushSetupSmsCommandExecutor.execute(conn, device,
+                pushSetupSms);
 
         if (AccessResultCode.SUCCESS != accessResultCode) {
             throw new ProtocolAdapterException(
@@ -383,16 +383,16 @@ public class ConfigurationService {
             final GetMbusEncryptionKeyStatusByChannelRequestDataDto getMbusEncryptionKeyStatusByChannelRequest)
             throws OsgpException {
 
-        return this.getMbusEncryptionKeyStatusByChannelCommandExecutor
-                .execute(conn, device, getMbusEncryptionKeyStatusByChannelRequest);
+        return this.getMbusEncryptionKeyStatusByChannelCommandExecutor.execute(conn, device,
+                getMbusEncryptionKeyStatusByChannelRequest);
     }
 
     public void requestSetRandomizationSettings(final DlmsConnectionManager conn, final DlmsDevice device,
             final SetRandomisationSettingsRequestDataDto setRandomisationSettingsRequestDataDto)
             throws ProtocolAdapterException {
 
-        final AccessResultCode accessResultCode = this.setRandomisationSettingsCommandExecutor
-                .execute(conn, device, setRandomisationSettingsRequestDataDto);
+        final AccessResultCode accessResultCode = this.setRandomisationSettingsCommandExecutor.execute(conn, device,
+                setRandomisationSettingsRequestDataDto);
 
         if (AccessResultCode.SUCCESS != accessResultCode) {
             throw new ProtocolAdapterException(

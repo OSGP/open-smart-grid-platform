@@ -7,10 +7,11 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.security;
 
-import lombok.AccessLevel;
-import lombok.Getter;
 import org.openmuc.jdlms.SecurityUtils;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
+
+import lombok.AccessLevel;
+import lombok.Getter;
 
 @Getter
 class ReplaceKeyInput {
@@ -28,8 +29,8 @@ class ReplaceKeyInput {
         this.isGenerated = isGenerated;
     }
 
-    static ReplaceKeyInput from(final byte[] bytes, final SecurityUtils.KeyId keyId, final SecurityKeyType securityKeyType,
-            final boolean isGenerated) {
+    static ReplaceKeyInput from(final byte[] bytes, final SecurityUtils.KeyId keyId,
+            final SecurityKeyType securityKeyType, final boolean isGenerated) {
         return new ReplaceKeyInput(bytes, keyId, securityKeyType, isGenerated);
     }
 }

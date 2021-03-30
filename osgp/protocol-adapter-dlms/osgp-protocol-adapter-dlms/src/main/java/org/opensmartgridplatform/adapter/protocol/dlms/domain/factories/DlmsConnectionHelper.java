@@ -18,8 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Helper class for acquiring connections to DLMS devices, that takes care of details like initializing invocation
- * counters when required.
+ * Helper class for acquiring connections to DLMS devices, that takes care of
+ * details like initializing invocation counters when required.
  */
 @Component
 public class DlmsConnectionHelper {
@@ -37,8 +37,8 @@ public class DlmsConnectionHelper {
     }
 
     /**
-     * Returns an open connection to the device, taking care of details like initializing the invocation counter when
-     * required.
+     * Returns an open connection to the device, taking care of details like
+     * initializing the invocation counter when required.
      */
     public DlmsConnectionManager createConnectionForDevice(final String correlationUid, final DlmsDevice device,
             final DlmsMessageListener messageListener) throws OsgpException {
@@ -53,9 +53,11 @@ public class DlmsConnectionHelper {
                 this.resetInvocationCounter(device);
             }
             // Retrow exception, for two reasons:
-            // - The error should still be logged, since it can be caused by a problem other than the invocation
-            //   counter being out of sync.
-            // - This will cause a retry header to be set so the operation will be retried.
+            // - The error should still be logged, since it can be caused by a
+            // problem other than the invocation
+            // counter being out of sync.
+            // - This will cause a retry header to be set so the operation will
+            // be retried.
             throw e;
         }
     }
@@ -68,9 +70,10 @@ public class DlmsConnectionHelper {
     }
 
     private boolean indicatesInvocationCounterOutOfSync(final ConnectionException e) {
-        return e.getMessage().contains("Socket was closed by remote host.") || e.getMessage().contains(
-                "Received an association response (AARE) with an error message. Result name REJECTED_PERMANENT. "
-                        + "Assumed fault: user.");
+        return e.getMessage().contains("Socket was closed by remote host.") || e.getMessage()
+                .contains(
+                        "Received an association response (AARE) with an error message. Result name REJECTED_PERMANENT. "
+                                + "Assumed fault: user.");
     }
 
 }

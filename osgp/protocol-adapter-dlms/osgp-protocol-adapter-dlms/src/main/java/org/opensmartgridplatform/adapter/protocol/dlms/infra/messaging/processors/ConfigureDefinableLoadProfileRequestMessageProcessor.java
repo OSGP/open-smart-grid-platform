@@ -21,7 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ConfigureDefinableLoadProfileRequestMessageProcessor extends DeviceRequestMessageProcessor<DefinableLoadProfileConfigurationDto> {
+public class ConfigureDefinableLoadProfileRequestMessageProcessor
+        extends DeviceRequestMessageProcessor<DefinableLoadProfileConfigurationDto> {
 
     @Autowired
     private ConfigurationService configurationService;

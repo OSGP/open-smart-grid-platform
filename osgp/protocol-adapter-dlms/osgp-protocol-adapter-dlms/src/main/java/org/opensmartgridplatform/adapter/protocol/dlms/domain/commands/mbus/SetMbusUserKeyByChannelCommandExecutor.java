@@ -63,12 +63,11 @@ public class SetMbusUserKeyByChannelCommandExecutor
             final ActionRequestDto actionRequestDto) throws OsgpException {
 
         this.checkActionRequestType(actionRequestDto);
-        final CorrelatedObject<SetMbusUserKeyByChannelRequestDataDto> setMbusUserKeyByChannelRequestData =
-                (CorrelatedObject<SetMbusUserKeyByChannelRequestDataDto>) actionRequestDto;
-        final GMeterInfoDto gMeterInfo = this.configurationService
-                .getMbusKeyExchangeData(conn, device, setMbusUserKeyByChannelRequestData.getObject());
-        final MethodResultCode executionResult = this
-                .execute(conn, device, CorrelatedObject.from(setMbusUserKeyByChannelRequestData, gMeterInfo));
+        final CorrelatedObject<SetMbusUserKeyByChannelRequestDataDto> setMbusUserKeyByChannelRequestData = (CorrelatedObject<SetMbusUserKeyByChannelRequestDataDto>) actionRequestDto;
+        final GMeterInfoDto gMeterInfo = this.configurationService.getMbusKeyExchangeData(conn, device,
+                setMbusUserKeyByChannelRequestData.getObject());
+        final MethodResultCode executionResult = this.execute(conn, device,
+                CorrelatedObject.from(setMbusUserKeyByChannelRequestData, gMeterInfo));
         return this.asBundleResponse(executionResult);
     }
 

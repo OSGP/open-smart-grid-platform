@@ -18,7 +18,6 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 
-import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.secretmanagement.application.domain.SecretType;
 import org.opensmartgridplatform.secretmanagement.application.domain.TypedSecret;
 import org.opensmartgridplatform.secretmanagement.application.services.SecretManagementService;
@@ -50,6 +49,8 @@ import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.springframework.ws.soap.server.endpoint.annotation.SoapHeader;
 import org.springframework.xml.transform.StringSource;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Endpoint
 @Slf4j
 public class SecretManagementEndpoint {
@@ -58,10 +59,9 @@ public class SecretManagementEndpoint {
         S processRequest(R request) throws OsgpException;
     }
 
-    private static final String NAMESPACE_URI =
-            "http://www.opensmartgridplatform.org/schemas/security/secretmanagement";
+    private static final String NAMESPACE_URI = "http://www.opensmartgridplatform.org/schemas/security/secretmanagement";
     private static final String CORRELATION_UID = "correlationUid";
-    private static final String CORRELATION_HEADER = "{" + NAMESPACE_URI + "}"+CORRELATION_UID;
+    private static final String CORRELATION_HEADER = "{" + NAMESPACE_URI + "}" + CORRELATION_UID;
 
     private final SecretManagementService secretManagementService;
     private final SoapEndpointDataTypeConverter converter;
@@ -82,8 +82,8 @@ public class SecretManagementEndpoint {
             final SaajSoapMessage soapResponse = (SaajSoapMessage) messageContext.getResponse();
             final org.springframework.ws.soap.SoapHeader responseHeader = soapResponse.getSoapHeader();
             final TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            final String headerXml = String
-                    .format("<%1$s xmlns=\"%2$s\">%3$s</%1$s>", CORRELATION_UID, NAMESPACE_URI, header.getText());
+            final String headerXml = String.format("<%1$s xmlns=\"%2$s\">%3$s</%1$s>", CORRELATION_UID, NAMESPACE_URI,
+                    header.getText());
             final StringSource headerSource = new StringSource(headerXml);
             final Transformer transformer = transformerFactory.newTransformer();
             transformer.transform(headerSource, responseHeader.getResult());
@@ -109,8 +109,8 @@ public class SecretManagementEndpoint {
         final GetSecretsResponse response = new GetSecretsResponse();
         final SecretTypes soapSecretTypes = request.getSecretTypes();
         final List<SecretType> secretTypeList = this.converter.convertToSecretTypes(soapSecretTypes);
-        final List<TypedSecret> typedSecrets = this.secretManagementService
-                .retrieveSecrets(request.getDeviceId(), secretTypeList);
+        final List<TypedSecret> typedSecrets = this.secretManagementService.retrieveSecrets(request.getDeviceId(),
+                secretTypeList);
         final TypedSecrets soapTypedSecrets = this.converter.convertToSoapTypedSecrets(typedSecrets);
         response.setTypedSecrets(soapTypedSecrets);
         return response;
@@ -120,8 +120,8 @@ public class SecretManagementEndpoint {
         final GetNewSecretsResponse response = new GetNewSecretsResponse();
         final SecretTypes soapSecretTypes = request.getSecretTypes();
         final List<SecretType> secretTypeList = this.converter.convertToSecretTypes(soapSecretTypes);
-        final List<TypedSecret> typedSecrets = this.secretManagementService
-                .retrieveNewSecrets(request.getDeviceId(), secretTypeList);
+        final List<TypedSecret> typedSecrets = this.secretManagementService.retrieveNewSecrets(request.getDeviceId(),
+                secretTypeList);
         final TypedSecrets soapTypedSecrets = this.converter.convertToSoapTypedSecrets(typedSecrets);
         response.setTypedSecrets(soapTypedSecrets);
         return response;
@@ -146,8 +146,8 @@ public class SecretManagementEndpoint {
 
     public ActivateSecretsResponse activateSecrets(final ActivateSecretsRequest request) {
         final SecretTypes soapSecretTypes = request.getSecretTypes();
-        this.secretManagementService
-                .activateNewSecrets(request.getDeviceId(), this.converter.convertToSecretTypes(soapSecretTypes));
+        this.secretManagementService.activateNewSecrets(request.getDeviceId(),
+                this.converter.convertToSecretTypes(soapSecretTypes));
         return new ActivateSecretsResponse();
     }
 

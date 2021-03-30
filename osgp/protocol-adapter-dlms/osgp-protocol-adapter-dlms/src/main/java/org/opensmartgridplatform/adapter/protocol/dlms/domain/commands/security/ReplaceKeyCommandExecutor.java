@@ -43,9 +43,8 @@ import org.springframework.stereotype.Component;
  * device that received the status NOT_OK should be saved, so in case the
  * supposedly valid key (the key that was on the device before replace keys was
  * executed) does not work anymore the new (but supposedly NOT_OK) key can be
- * tried.
- * ! If that key works we know the device gave the wrong response and this key
- * should be made valid. See also DlmsDevice: discardInvalidKeys,
+ * tried. ! If that key works we know the device gave the wrong response and
+ * this key should be made valid. See also DlmsDevice: discardInvalidKeys,
  * promoteInvalidKeys, get/hasNewSecurityKey.
  */
 @Component
@@ -79,19 +78,19 @@ public class ReplaceKeyCommandExecutor extends AbstractCommandExecutor<Correlate
 
         LOGGER.info("Keys set on device :{}", device.getDeviceIdentification());
 
-        final CorrelatedObject<SetKeysRequestDto> correlatedObject =
-                (CorrelatedObject<SetKeysRequestDto>) actionRequest;
+        final CorrelatedObject<SetKeysRequestDto> correlatedObject = (CorrelatedObject<SetKeysRequestDto>) actionRequest;
         SetKeysRequestDto setKeysRequestDto = correlatedObject.getObject();
 
         if (!setKeysRequestDto.isGeneratedKeys()) {
             setKeysRequestDto = this.decryptRsaKeys((SetKeysRequestDto) actionRequest);
         }
-        //if keys are generated, then they are unencrypted by the GenerateAndReplaceKeyCommandExecutor
+        // if keys are generated, then they are unencrypted by the
+        // GenerateAndReplaceKeyCommandExecutor
 
         final ReplaceKeyInput replaceAuthKeyInput = wrap(setKeysRequestDto.getAuthenticationKey(),
                 KeyId.AUTHENTICATION_KEY, SecurityKeyType.E_METER_AUTHENTICATION, setKeysRequestDto.isGeneratedKeys());
-        final DlmsDevice devicePostSave = this
-                .execute(conn, device, CorrelatedObject.from(correlatedObject, replaceAuthKeyInput));
+        final DlmsDevice devicePostSave = this.execute(conn, device,
+                CorrelatedObject.from(correlatedObject, replaceAuthKeyInput));
 
         final ReplaceKeyInput replaceEncrKeyInput = wrap(setKeysRequestDto.getEncryptionKey(),
                 KeyId.GLOBAL_UNICAST_ENCRYPTION_KEY, SecurityKeyType.E_METER_ENCRYPTION,
@@ -127,27 +126,27 @@ public class ReplaceKeyCommandExecutor extends AbstractCommandExecutor<Correlate
      * Send the key to the device.
      *
      * @param conn
-     *         jDLMS connection.
+     *            jDLMS connection.
      * @param deviceIdentification
-     *         Device identification
+     *            Device identification
      * @param keyWrapper
-     *         Key data
+     *            Key data
      */
     private void sendToDevice(final DlmsConnectionManager conn, final String deviceIdentification,
             final CorrelatedObject<ReplaceKeyInput> keyWrapper) throws ProtocolAdapterException {
         final ReplaceKeyInput replaceKeyInput = keyWrapper.getObject();
         try {
             final byte[] decryptedKey = replaceKeyInput.getBytes();
-            final byte[] decryptedMasterKey = this.secretManagementService
-                    .getKey(keyWrapper.getCorrelationUid(), deviceIdentification, SecurityKeyType.E_METER_MASTER);
+            final byte[] decryptedMasterKey = this.secretManagementService.getKey(keyWrapper.getCorrelationUid(),
+                    deviceIdentification, SecurityKeyType.E_METER_MASTER);
 
-            final MethodParameter methodParameterAuth = SecurityUtils
-                    .keyChangeMethodParamFor(decryptedMasterKey, decryptedKey, replaceKeyInput.getKeyId());
+            final MethodParameter methodParameterAuth = SecurityUtils.keyChangeMethodParamFor(decryptedMasterKey,
+                    decryptedKey, replaceKeyInput.getKeyId());
 
             final String format = "ReplaceKey for %s %s , call method: %s";
-            conn.getDlmsMessageListener().setDescription(
-                    String.format(format, replaceKeyInput.getSecurityKeyType(), replaceKeyInput.getKeyId(),
-                            JdlmsObjectToStringUtil.describeMethod(methodParameterAuth)));
+            conn.getDlmsMessageListener()
+                    .setDescription(String.format(format, replaceKeyInput.getSecurityKeyType(),
+                            replaceKeyInput.getKeyId(), JdlmsObjectToStringUtil.describeMethod(methodParameterAuth)));
 
             final MethodResultCode methodResultCode = conn.getConnection().action(methodParameterAuth).getResultCode();
 

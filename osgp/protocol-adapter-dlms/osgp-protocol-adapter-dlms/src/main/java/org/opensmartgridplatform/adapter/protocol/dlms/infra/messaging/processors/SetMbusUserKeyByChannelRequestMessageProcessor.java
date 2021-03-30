@@ -39,7 +39,7 @@ public class SetMbusUserKeyByChannelRequestMessageProcessor
     @Override
     protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
             final RequestWithMetadata<SetMbusUserKeyByChannelRequestDataDto> request) throws OsgpException {
-        return this.configurationService
-                .setMbusUserKeyByChannel(conn, device, CorrelatedObject.from(request, request.getRequestObject()));
+        return this.configurationService.setMbusUserKeyByChannel(conn, device,
+                CorrelatedObject.from(request, request.getRequestObject()));
     }
 }

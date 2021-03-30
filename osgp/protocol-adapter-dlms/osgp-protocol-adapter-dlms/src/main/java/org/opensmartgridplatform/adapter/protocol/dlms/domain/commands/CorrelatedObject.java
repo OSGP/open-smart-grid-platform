@@ -9,9 +9,10 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands;
 
 import java.io.Serializable;
 
-import lombok.Getter;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RequestWithMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+
+import lombok.Getter;
 
 @Getter
 public class CorrelatedObject<T> {
@@ -24,8 +25,7 @@ public class CorrelatedObject<T> {
         this.object = object;
     }
 
-    public static <T> CorrelatedObject<T> from(final CorrelatedObject<?> correlationSource,
-            final T object) {
+    public static <T> CorrelatedObject<T> from(final CorrelatedObject<?> correlationSource, final T object) {
         return from(correlationSource.correlationUid, object);
     }
 

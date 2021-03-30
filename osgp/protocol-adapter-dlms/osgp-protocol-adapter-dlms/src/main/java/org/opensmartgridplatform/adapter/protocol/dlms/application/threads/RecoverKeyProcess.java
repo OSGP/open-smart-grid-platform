@@ -17,8 +17,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Hex;
 import org.openmuc.jdlms.AuthenticationMechanism;
 import org.openmuc.jdlms.DlmsConnection;
@@ -37,6 +35,9 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class RecoverKeyProcess implements Runnable {
@@ -79,8 +80,8 @@ public class RecoverKeyProcess implements Runnable {
             log.error("[{}] Could not find device", this.correlationUid, e);
         }
 
-        if (!this.secretManagementService
-                .hasNewSecretOfType(this.correlationUid, this.deviceIdentification, E_METER_AUTHENTICATION)) {
+        if (!this.secretManagementService.hasNewSecretOfType(this.correlationUid, this.deviceIdentification,
+                E_METER_AUTHENTICATION)) {
             log.warn(
                     "[{}] Could not recover keys: device has no new authorisation key registered in secret-mgmt module",
                     this.correlationUid);
@@ -90,8 +91,8 @@ public class RecoverKeyProcess implements Runnable {
         if (this.canConnectUsingNewKeys()) {
             final List<SecurityKeyType> keyTypesToActivate = Arrays.asList(E_METER_ENCRYPTION, E_METER_AUTHENTICATION);
             try {
-                this.secretManagementService
-                        .activateNewKeys(this.correlationUid, this.deviceIdentification, keyTypesToActivate);
+                this.secretManagementService.activateNewKeys(this.correlationUid, this.deviceIdentification,
+                        keyTypesToActivate);
             } catch (final Exception e) {
                 throw new RecoverKeyException(e);
             }
@@ -103,7 +104,8 @@ public class RecoverKeyProcess implements Runnable {
     private void findDevice() throws OsgpException {
         try {
             this.device = this.domainHelperService.findDlmsDevice(this.deviceIdentification, this.ipAddress);
-        } catch (final ProtocolAdapterException e) { // Thread can not recover from these exceptions.
+        } catch (final ProtocolAdapterException e) { // Thread can not recover
+                                                     // from these exceptions.
             throw new RecoverKeyException(e);
         }
     }
@@ -142,27 +144,27 @@ public class RecoverKeyProcess implements Runnable {
      * @return The connection.
      *
      * @throws IOException
-     *         When there are problems in connecting to or communicating
-     *         with the device.
+     *             When there are problems in connecting to or communicating
+     *             with the device.
      */
     private DlmsConnection createConnectionUsingNewKeys() throws IOException, FunctionalException {
-        final Map<SecurityKeyType, byte[]> keys = this.secretManagementService
-                .getNewKeys(this.correlationUid, this.deviceIdentification,
-                        Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION));
+        final Map<SecurityKeyType, byte[]> keys = this.secretManagementService.getNewKeys(this.correlationUid,
+                this.deviceIdentification, Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION));
         final byte[] authenticationKey = Hex.decode(keys.get(E_METER_AUTHENTICATION));
         final byte[] encryptionKey = Hex.decode(keys.get(E_METER_ENCRYPTION));
 
-        final SecuritySuite securitySuite = SecuritySuite.builder().setAuthenticationKey(authenticationKey)
-                                                         .setAuthenticationMechanism(AuthenticationMechanism.HLS5_GMAC)
-                                                         .setGlobalUnicastEncryptionKey(encryptionKey)
-                                                         .setEncryptionMechanism(EncryptionMechanism.AES_GCM_128)
-                                                         .build();
+        final SecuritySuite securitySuite = SecuritySuite.builder()
+                .setAuthenticationKey(authenticationKey)
+                .setAuthenticationMechanism(AuthenticationMechanism.HLS5_GMAC)
+                .setGlobalUnicastEncryptionKey(encryptionKey)
+                .setEncryptionMechanism(EncryptionMechanism.AES_GCM_128)
+                .build();
 
         final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(
                 InetAddress.getByName(this.device.getIpAddress())).setSecuritySuite(securitySuite)
-                                                                  .setResponseTimeout(this.responseTimeout)
-                                                                  .setLogicalDeviceId(this.logicalDeviceAddress)
-                                                                  .setClientId(this.clientId);
+                        .setResponseTimeout(this.responseTimeout)
+                        .setLogicalDeviceId(this.logicalDeviceAddress)
+                        .setClientId(this.clientId);
 
         final Integer challengeLength = this.device.getChallengeLength();
 

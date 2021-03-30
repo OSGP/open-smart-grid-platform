@@ -35,8 +35,8 @@ public class GetMbusEncryptionKeyStatusByChannelRequestMessageProcessor
     @Override
     protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
             final RequestWithMetadata<GetMbusEncryptionKeyStatusByChannelRequestDataDto> request) throws OsgpException {
-        return this.configurationService
-                .requestGetMbusEncryptionKeyStatusByChannel(conn, device, request.getRequestObject());
+        return this.configurationService.requestGetMbusEncryptionKeyStatusByChannel(conn, device,
+                request.getRequestObject());
     }
 
 }

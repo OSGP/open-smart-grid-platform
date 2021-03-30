@@ -12,7 +12,6 @@ import java.util.Iterator;
 
 import javax.xml.namespace.QName;
 
-import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.soap.SoapFault;
@@ -20,6 +19,8 @@ import org.springframework.ws.soap.SoapFaultDetail;
 import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.springframework.ws.soap.server.endpoint.SoapFaultMappingExceptionResolver;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class DetailSoapFaultMappingExceptionResolver extends SoapFaultMappingExceptionResolver {
@@ -54,8 +55,9 @@ public class DetailSoapFaultMappingExceptionResolver extends SoapFaultMappingExc
 
     private String getCorrelationUid(final MessageContext messageContext) {
         final SaajSoapMessage request = (SaajSoapMessage) messageContext.getRequest();
-        final Iterator<SoapHeaderElement> iter = request.getEnvelope().getHeader()
-                                                        .examineHeaderElements(new QName("correlationUid"));
+        final Iterator<SoapHeaderElement> iter = request.getEnvelope()
+                .getHeader()
+                .examineHeaderElements(new QName("correlationUid"));
         return iter.hasNext() ? iter.next().getText() : null;
 
     }

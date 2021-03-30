@@ -87,8 +87,7 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
     }
 
     @Override
-    public MethodResultCode execute(final DlmsConnectionManager conn,
-            final DlmsDevice device,
+    public MethodResultCode execute(final DlmsConnectionManager conn, final DlmsDevice device,
             final CorrelatedObject<GMeterInfoDto> gMeterInfo) throws ProtocolAdapterException {
         try {
             LOGGER.debug("SetEncryptionKeyExchangeOnGMeterCommandExecutor.execute called");
@@ -100,8 +99,8 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
             final byte[] gMeterEncryptionKey = this.secretManagementService
                     .generate128BitsKeyAndStoreAsNewKey(correlationUid, mbusDeviceIdentification, G_METER_ENCRYPTION);
 
-            MethodResult methodResultCode = this
-                    .transferKey(correlationUid, conn, mbusDeviceIdentification, channel, gMeterEncryptionKey);
+            MethodResult methodResultCode = this.transferKey(correlationUid, conn, mbusDeviceIdentification, channel,
+                    gMeterEncryptionKey);
             this.checkMethodResultCode(methodResultCode, "M-Bus Setup transfer_key", obisCode);
 
             methodResultCode = this.setEncryptionKey(conn, channel, gMeterEncryptionKey);
@@ -118,31 +117,32 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
     }
 
     private MethodResult setEncryptionKey(final DlmsConnectionManager conn, final int channel,
-            final byte[] encryptionKey)
-            throws IOException {
+            final byte[] encryptionKey) throws IOException {
         final MethodParameter methodSetEncryptionKey = this
                 .getSetEncryptionKeyMethodParameter(OBIS_HASHMAP.get(channel), encryptionKey);
-        conn.getDlmsMessageListener().setDescription("SetEncryptionKeyExchangeOnGMeter for channel " + channel
-                + ", call M-Bus Setup set_encryption_key method: " + JdlmsObjectToStringUtil
-                .describeMethod(methodSetEncryptionKey));
+        conn.getDlmsMessageListener()
+                .setDescription("SetEncryptionKeyExchangeOnGMeter for channel " + channel
+                        + ", call M-Bus Setup set_encryption_key method: "
+                        + JdlmsObjectToStringUtil.describeMethod(methodSetEncryptionKey));
         return conn.getConnection().action(methodSetEncryptionKey);
     }
 
     private MethodResult transferKey(final String correlationUid, final DlmsConnectionManager conn,
-            final String mbusDeviceIdentification, final int channel,
-            final byte[] encryptionKey) throws ProtocolAdapterException, IOException {
-        final MethodParameter methodTransferKey = this
-                .getTransferKeyMethodParameter(correlationUid, mbusDeviceIdentification, channel, encryptionKey);
-        conn.getDlmsMessageListener().setDescription(
-                "SetEncryptionKeyExchangeOnGMeter for channel " + channel + ", call M-Bus Setup transfer_key method: "
+            final String mbusDeviceIdentification, final int channel, final byte[] encryptionKey)
+            throws ProtocolAdapterException, IOException {
+        final MethodParameter methodTransferKey = this.getTransferKeyMethodParameter(correlationUid,
+                mbusDeviceIdentification, channel, encryptionKey);
+        conn.getDlmsMessageListener()
+                .setDescription("SetEncryptionKeyExchangeOnGMeter for channel " + channel
+                        + ", call M-Bus Setup transfer_key method: "
                         + JdlmsObjectToStringUtil.describeMethod(methodTransferKey));
 
         return conn.getConnection().action(methodTransferKey);
     }
 
     private MethodParameter getTransferKeyMethodParameter(final String correlationUid,
-            final String mbusDeviceIdentification, final int channel,
-            final byte[] gMeterUserKey) throws ProtocolAdapterException {
+            final String mbusDeviceIdentification, final int channel, final byte[] gMeterUserKey)
+            throws ProtocolAdapterException {
         final DlmsDevice mbusDevice = this.dlmsDeviceRepository.findByDeviceIdentification(mbusDeviceIdentification);
         if (mbusDevice == null) {
             throw new ProtocolAdapterException("Unknown M-Bus device: " + mbusDeviceIdentification);
@@ -201,7 +201,8 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor
             cipher.init(Cipher.ENCRYPT_MODE, secretkeySpec, params);
             return cipher.doFinal(mbusUserKey);
 
-        } catch (final NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
+        } catch (final NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
+                | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
             final String message = "Error encrypting M-Bus User key with M-Bus Default key for transfer.";
             LOGGER.error(message, e);
             throw new ProtocolAdapterException(message);

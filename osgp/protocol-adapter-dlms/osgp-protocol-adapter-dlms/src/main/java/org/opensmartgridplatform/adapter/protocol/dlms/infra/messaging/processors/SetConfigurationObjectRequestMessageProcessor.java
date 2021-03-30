@@ -25,7 +25,8 @@ import org.springframework.stereotype.Component;
  * Class for processing Set Configuration Request messages
  */
 @Component
-public class SetConfigurationObjectRequestMessageProcessor extends DeviceRequestMessageProcessor<SetConfigurationObjectRequestDto> {
+public class SetConfigurationObjectRequestMessageProcessor
+        extends DeviceRequestMessageProcessor<SetConfigurationObjectRequestDto> {
 
     @Autowired
     private ConfigurationService configurationService;

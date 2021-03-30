@@ -24,7 +24,8 @@ import org.springframework.stereotype.Component;
  * Class for processing the clear alarm register request message
  */
 @Component
-public class ClearAlarmRegisterRequestMessageProcessor extends DeviceRequestMessageProcessor<ClearAlarmRegisterRequestDto> {
+public class ClearAlarmRegisterRequestMessageProcessor
+        extends DeviceRequestMessageProcessor<ClearAlarmRegisterRequestDto> {
 
     @Autowired
     private MonitoringService monitoringService;

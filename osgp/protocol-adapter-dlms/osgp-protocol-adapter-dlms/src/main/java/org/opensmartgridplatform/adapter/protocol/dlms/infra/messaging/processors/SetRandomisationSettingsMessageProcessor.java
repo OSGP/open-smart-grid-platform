@@ -26,7 +26,8 @@ import org.springframework.stereotype.Component;
  * Class for processing Set Configuration Request messages
  */
 @Component
-public class SetRandomisationSettingsMessageProcessor extends DeviceRequestMessageProcessor<SetRandomisationSettingsRequestDataDto> {
+public class SetRandomisationSettingsMessageProcessor
+        extends DeviceRequestMessageProcessor<SetRandomisationSettingsRequestDataDto> {
 
     @Autowired
     private ConfigurationService configurationService;
