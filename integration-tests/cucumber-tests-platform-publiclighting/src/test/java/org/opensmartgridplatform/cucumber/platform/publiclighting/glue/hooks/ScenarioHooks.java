@@ -59,7 +59,8 @@ public class ScenarioHooks {
 
         this.oslpDatabase.prepareDatabaseForScenario();
         if (!this.oslpDatabase.isOslpDeviceTableEmpty() || !this.oslpDatabase.isPendingSetScheduleRequestEmpty()) {
-            LOGGER.warn("OSLP device table or the 'pending set schedule request' table is not empty after inital delete! Trying once more...");
+            LOGGER.warn(
+                    "OSLP device table or the 'pending set schedule request' table is not empty after inital delete! Trying once more...");
             this.oslpDatabase.prepareDatabaseForScenario();
         }
 

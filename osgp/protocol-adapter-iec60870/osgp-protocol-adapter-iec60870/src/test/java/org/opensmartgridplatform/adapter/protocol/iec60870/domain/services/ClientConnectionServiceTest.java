@@ -31,7 +31,7 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories.I
 import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories.RequestMetadataFactory;
 
 @ExtendWith(MockitoExtension.class)
-public class ClientConnectionServiceTest {
+class ClientConnectionServiceTest {
 
     @InjectMocks
     private ClientConnectionService clientConnectionService;

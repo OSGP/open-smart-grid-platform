@@ -12,7 +12,8 @@ import java.util.Arrays;
 public enum Iec60870InformationObjectType {
     SHORT_FLOAT("IeShortFloat"),
     SINGLE_POINT_INFORMATION_WITH_QUALITY("IeSinglePointWithQuality"),
-    QUALIFIER_OF_INTERROGATION("IeQualifierOfInterrogation");
+    QUALIFIER_OF_INTERROGATION("IeQualifierOfInterrogation"),
+    TIME56("IeTime56");
 
     private String description;
 

@@ -8,6 +8,7 @@
 package org.opensmartgridplatform.domain.core.entities;
 
 import java.net.InetAddress;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -22,7 +23,6 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -81,20 +81,20 @@ public class Device extends AbstractEntity {
      * Address of a device
      */
     @Embedded
-    @AttributeOverrides({ @AttributeOverride(name = "city", column = @Column(name = "container_city")),
-            @AttributeOverride(name = "street", column = @Column(name = "container_street")),
-            @AttributeOverride(name = "postalCode", column = @Column(name = "container_postal_code")),
-            @AttributeOverride(name = "number", column = @Column(name = "container_number")),
-            @AttributeOverride(name = "numberAddition", column = @Column(name = "container_number_addition")),
-            @AttributeOverride(name = "municipality", column = @Column(name = "container_municipality")) })
+    @AttributeOverride(name = "city", column = @Column(name = "container_city"))
+    @AttributeOverride(name = "street", column = @Column(name = "container_street"))
+    @AttributeOverride(name = "postalCode", column = @Column(name = "container_postal_code"))
+    @AttributeOverride(name = "number", column = @Column(name = "container_number"))
+    @AttributeOverride(name = "numberAddition", column = @Column(name = "container_number_addition"))
+    @AttributeOverride(name = "municipality", column = @Column(name = "container_municipality"))
     protected Address containerAddress;
 
     /**
      * Gps information of a device
      */
     @Embedded
-    @AttributeOverrides({ @AttributeOverride(name = "latitude", column = @Column(name = "gps_latitude")),
-            @AttributeOverride(name = "longitude", column = @Column(name = "gps_longitude")) })
+    @AttributeOverride(name = "latitude", column = @Column(name = "gps_latitude"))
+    @AttributeOverride(name = "longitude", column = @Column(name = "gps_longitude"))
     protected GpsCoordinates gpsCoordinates;
 
     /**
@@ -284,12 +284,20 @@ public class Device extends AbstractEntity {
         return this.deviceType;
     }
 
+    public void setDeviceType(final String deviceType) {
+        this.deviceType = deviceType;
+    }
+
     public String getIpAddress() {
         return this.networkAddress == null ? null : this.networkAddress.getHostAddress();
     }
 
     public InetAddress getNetworkAddress() {
         return this.networkAddress;
+    }
+
+    public void setNetworkAddress(final InetAddress networkAddress) {
+        this.networkAddress = networkAddress;
     }
 
     /**
@@ -478,6 +486,10 @@ public class Device extends AbstractEntity {
 
     public void setLastSuccessfulConnectionTimestamp(final Date lastSuccessfulConnectionTimestamp) {
         this.lastSuccessfulConnectionTimestamp = lastSuccessfulConnectionTimestamp;
+    }
+
+    public void setLastSuccessfulConnectionTimestamp(final Instant lastSuccessfulConnectionTimestamp) {
+        this.lastSuccessfulConnectionTimestamp = Date.from(lastSuccessfulConnectionTimestamp);
     }
 
     public Date getLastFailedConnectionTimestamp() {

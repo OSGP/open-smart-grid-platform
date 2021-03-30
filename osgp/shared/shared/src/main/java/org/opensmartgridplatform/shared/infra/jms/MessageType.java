@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.shared.infra.jms;
 
 public enum MessageType {
+    // keep MessageType in alphabetical order.
     ADD_DEVICE,
     ADD_METER,
     CLEAR_ALARM_REGISTER,
@@ -16,7 +17,8 @@ public enum MessageType {
     CONNECT,
     COUPLE_MBUS_DEVICE,
     COUPLE_MBUS_DEVICE_BY_CHANNEL,
-    DE_COUPLE_MBUS_DEVICE,
+    DECOUPLE_MBUS_DEVICE,
+    DECOUPLE_MBUS_DEVICE_BY_CHANNEL,
     DEVICE_REGISTRATION_COMPLETED,
     DISABLE_DEBUGGING,
     ENABLE_DEBUGGING,
@@ -100,5 +102,4 @@ public enum MessageType {
     UPDATE_DEVICE_SSL_CERTIFICATION,
     UPDATE_FIRMWARE,
     UPDATE_KEY
-    // keep MessageType in alphabetical order.
 }

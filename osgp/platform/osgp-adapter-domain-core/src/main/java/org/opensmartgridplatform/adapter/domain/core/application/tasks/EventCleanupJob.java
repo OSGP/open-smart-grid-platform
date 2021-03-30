@@ -37,6 +37,9 @@ public class EventCleanupJob implements Job {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventCleanupJob.class);
 
+    @Value("${osgp.scheduling.job.database.cleanup.event.enabled}")
+    private boolean eventCleanupEnabled;
+
     @Value("${osgp.scheduling.job.database.cleanup.event.retention}")
     private int eventRetentionPeriodInMonths;
 
@@ -57,6 +60,11 @@ public class EventCleanupJob implements Job {
 
     @Override
     public void execute(final JobExecutionContext context) {
+        if (!this.eventCleanupEnabled) {
+            LOGGER.debug("Event records cleanup disabled.");
+            return;
+        }
+
         LOGGER.info("Quartz triggered cleanup of database - event records.");
         final DateTime start = DateTime.now();
 

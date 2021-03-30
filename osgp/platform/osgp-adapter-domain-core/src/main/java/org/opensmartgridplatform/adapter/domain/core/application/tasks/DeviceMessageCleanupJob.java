@@ -37,6 +37,9 @@ public class DeviceMessageCleanupJob implements Job {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceMessageCleanupJob.class);
 
+    @Value("${osgp.scheduling.job.database.cleanup.device.message.enabled}")
+    private boolean deviceMessageCleanupEnabled;
+
     @Value("${osgp.scheduling.job.database.cleanup.device.message.retention}")
     private int deviceMessageRetentionPeriodInMonths;
 
@@ -57,6 +60,11 @@ public class DeviceMessageCleanupJob implements Job {
 
     @Override
     public void execute(final JobExecutionContext context) {
+        if (!this.deviceMessageCleanupEnabled) {
+            LOGGER.debug("Device message records cleanup disabled.");
+            return;
+        }
+
         LOGGER.info("Quartz triggered cleanup of database - device message records.");
         final DateTime start = DateTime.now();
 

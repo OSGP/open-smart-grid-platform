@@ -29,10 +29,10 @@ public class OslpDatabase {
     }
 
     public boolean isOslpDeviceTableEmpty() {
-        return this.oslpDeviceRepository.findAll().size() == 0;
+        return this.oslpDeviceRepository.count() == 0;
     }
 
     public boolean isPendingSetScheduleRequestEmpty() {
-        return this.pendingSetScheduleRequestRepository.findAll().size() == 0;
+        return this.pendingSetScheduleRequestRepository.count() == 0;
     }
 }

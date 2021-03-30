@@ -28,7 +28,7 @@ public abstract class AbstractDeviceResponseService implements DeviceResponseSer
 
     private final DeviceType deviceType;
 
-    public AbstractDeviceResponseService(final DeviceType deviceType) {
+    protected AbstractDeviceResponseService(final DeviceType deviceType) {
         this.deviceType = deviceType;
     }
 

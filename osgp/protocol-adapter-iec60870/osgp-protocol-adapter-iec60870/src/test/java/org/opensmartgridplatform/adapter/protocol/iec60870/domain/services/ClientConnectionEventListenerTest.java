@@ -29,7 +29,7 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.R
 import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories.AsduFactory;
 
 @ExtendWith(MockitoExtension.class)
-public class ClientConnectionEventListenerTest {
+class ClientConnectionEventListenerTest {
 
     private final static String DEVICE_IDENTIFICATION = "TEST-DEVICE-1";
 
@@ -57,7 +57,7 @@ public class ClientConnectionEventListenerTest {
     }
 
     @Test
-    public void shouldHandleAsduWhenNewAsduIsReceived() throws Exception {
+    void shouldHandleAsduWhenNewAsduIsReceived() throws Exception {
         // Arrange
         final ASdu asdu = AsduFactory.ofType(ASduType.C_IC_NA_1);
         when(this.asduHandlerRegistry.getHandler(asdu)).thenReturn(this.asduHandler);
@@ -70,7 +70,7 @@ public class ClientConnectionEventListenerTest {
     }
 
     @Test
-    public void shouldRemoveConnectionFromCacheWhenConnectionIsClosed() {
+    void shouldRemoveConnectionFromCacheWhenConnectionIsClosed() {
         // Arrange
         final IOException e = new IOException();
 

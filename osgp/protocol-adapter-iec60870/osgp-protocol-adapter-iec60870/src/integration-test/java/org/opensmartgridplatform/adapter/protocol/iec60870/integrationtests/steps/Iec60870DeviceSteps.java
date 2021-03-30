@@ -71,16 +71,16 @@ public class Iec60870DeviceSteps {
                 devicesTable.asMaps().stream().map(Iec60870DeviceFactory::fromSettings).collect(Collectors.toList()));
     }
 
-    @Given("a light measurement device")
+    @Given("a light sensor")
     public void aLightMeasurementDevice(final Map<String, String> deviceData) {
         final Iec60870Device device = Iec60870DeviceFactory
-                .fromSettings(this.settingsWithDeviceType(deviceData, DeviceType.LIGHT_MEASUREMENT_DEVICE));
+                .fromSettings(this.settingsWithDeviceType(deviceData, DeviceType.LIGHT_SENSOR));
         this.deviceIsKnownInTheRepository(device);
     }
 
     private Map<String, String> settingsWithDeviceType(final Map<String, String> settings,
             final DeviceType deviceType) {
-        final Map<String, String> settingsWithDeviceType = new LinkedHashMap<String, String>(settings);
+        final Map<String, String> settingsWithDeviceType = new LinkedHashMap<>(settings);
         settingsWithDeviceType.put(Iec60870DeviceFactory.KEY_DEVICE_TYPE, deviceType.name());
         return settingsWithDeviceType;
     }
