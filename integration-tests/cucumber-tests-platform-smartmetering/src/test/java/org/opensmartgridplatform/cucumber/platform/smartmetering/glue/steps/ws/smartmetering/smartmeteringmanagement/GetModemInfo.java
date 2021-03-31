@@ -25,6 +25,7 @@ import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.management.GetModemInfoRequestFactory;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.management.GetModemInfoResponseValidator;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.management.SmartMeteringManagementRequestClient;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.management.SmartMeteringManagementResponseClient;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
@@ -60,8 +61,8 @@ public class GetModemInfo {
         ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
     }
 
-    @Then("^the get modem info response is returned$")
-    public void theGetModemInfoResponseIsReturned(final Map<String, String> settings)
+    @Then("^the get modem info response is returned with values$")
+    public void theGetModemInfoResponseIsReturned(final Map<String, String> expectedValues)
             throws Throwable {
 
         final GetModemInfoAsyncRequest asyncRequest = GetModemInfoRequestFactory
@@ -72,6 +73,7 @@ public class GetModemInfo {
         assertThat(response.getResult()).as(OPERATION + ", Checking result:").isEqualTo(OsgpResultType.OK);
 
         // Add asserts on settings
+        GetModemInfoResponseValidator.validate(response.getGetModemInfoResponseData(), expectedValues);
     }
 
     @Then("^get modem info request should return an exception$")

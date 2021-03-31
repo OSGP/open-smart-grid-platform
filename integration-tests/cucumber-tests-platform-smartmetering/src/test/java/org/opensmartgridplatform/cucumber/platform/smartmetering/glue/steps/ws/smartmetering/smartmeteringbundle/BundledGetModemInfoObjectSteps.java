@@ -13,10 +13,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
 
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActionResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetModemInfoRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetModemInfoResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
-import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.management.GetModemInfoResponseValidator;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -31,22 +31,19 @@ public class BundledGetModemInfoObjectSteps extends BaseBundleSteps {
         this.addActionToBundleRequest(action);
     }
 
-    @Then("^the bundle response should contain a get modem info response$")
-    public void theBundleResponseShouldContainAGetModemInfoResponse() throws Throwable {
-        final Response response = this.getNextBundleResponse();
-
-        assertThat(response instanceof ActionResponse).as("Not a valid response").isTrue();
-    }
 
     @Then("^the bundle response should contain a get modem info response with values$")
-    public void theBundleResponseShouldContainAGetModemInfoResponse(final Map<String, String> values)
+    public void theBundleResponseShouldContainAGetModemInfoResponse(final Map<String, String> expectedValues)
             throws Throwable {
 
         final Response response = this.getNextBundleResponse();
 
-        assertThat(response instanceof ActionResponse).as("Not a valid response").isTrue();
-        assertThat(response.getResult().name()).as("Result is not as expected.")
-                .isEqualTo(values.get(PlatformSmartmeteringKeys.RESULT));
+        assertThat(response).as("Not a valid response, expected GetModemInfoResponse but is :"
+                + response.getClass().getSimpleName()).isInstanceOf(GetModemInfoResponse.class);
+
+        final GetModemInfoResponse getModemInfoResponse = (GetModemInfoResponse) response;
+
+        GetModemInfoResponseValidator.validate(getModemInfoResponse, expectedValues);
     }
 
 }

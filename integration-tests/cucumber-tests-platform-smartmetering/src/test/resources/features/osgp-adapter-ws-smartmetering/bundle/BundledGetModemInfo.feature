@@ -1,4 +1,4 @@
-@SmartMetering @Platform @GetModemInfo1
+@SmartMetering @Platform @GetModemInfo
 Feature: SmartMetering Bundle - Get Modem Info
   As a grid operator
   I want to be able to get the modem info of a smart meter
@@ -18,18 +18,18 @@ Feature: SmartMetering Bundle - Get Modem Info
       | 9 | unsigned             |        3 |
     When the bundle request is received
     Then the bundle response should contain a get modem info response with values
-      | Operator                  | 1 |
-      | ModemRegistrationStatus   | 1 |
-      | CircuitSwitchedStatus     | 1 |
-      | PacketSwitchedStatus      | 1 |
-      | CellId                    | 1 |
-      | LocationId                | 1 |
-      | SignalQuality             | 1 |
-      | BitErrorRate              | 1 |
-      | MobileCountryCode         | 1 |
-      | MobileNetworkCode         | 1 |
-      | ChannelNumber             | 1 |
-      | NumberOfAdjacentCells     | 1 |
-      | AdjacantCellId            | 1 |
-      | AdjacantCellSignalQuality | 1 |
-      | CaptureTime               | 1 |
+      | operator                  | operator                 |
+      | modemRegistrationStatus   | REGISTERED_ROAMING       |
+      | circuitSwitchedStatus     | ACTIVE                   |
+      | packetSwitchedStatus      | CDMA                     |
+      | cellId                    | cellId                   |
+      | locationId                | locationId               |
+      | signalQuality             | MINUS_61_DBM             |
+      | bitErrorRate              | RXQUAL_2                 |
+      | mobileCountryCode         |                       31 |
+      | mobileNetworkCode         |                        0 |
+      | channelNumber             |                        1 |
+      | numberOfAdjacentCells     |                        3 |
+      | adjacantCellId            | adjacantCellId           |
+      | adjacantCellSignalQuality | MINUS_83_DBM             |
+      | captureTime               | 2021-03-31T04:05:06.000Z |
