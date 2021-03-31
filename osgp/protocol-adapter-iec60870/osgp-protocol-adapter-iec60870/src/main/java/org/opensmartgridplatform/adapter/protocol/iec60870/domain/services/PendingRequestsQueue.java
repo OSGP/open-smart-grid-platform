@@ -5,14 +5,17 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.iec60870.infra;
+package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 
-public class CorrelationUidPerDevice {
+import org.springframework.stereotype.Component;
+
+@Component
+public class PendingRequestsQueue {
 
     private final Map<String, LinkedList<String>> correlationUidQueuePerDevice = new HashMap<>();
 
