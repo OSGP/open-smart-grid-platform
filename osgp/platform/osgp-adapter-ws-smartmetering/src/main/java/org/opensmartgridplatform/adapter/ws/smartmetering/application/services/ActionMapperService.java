@@ -319,9 +319,6 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetOutagesRequestData.class,
                 this.managementMapper);
-        CLASS_TO_MAPPER_MAP.put(
-                org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetOutagesRequestData.class,
-                this.managementMapper);
         CLASS_TO_MAPPER_MAP.put(GetOutagesRequest.class, this.managementMapper);
     }
 

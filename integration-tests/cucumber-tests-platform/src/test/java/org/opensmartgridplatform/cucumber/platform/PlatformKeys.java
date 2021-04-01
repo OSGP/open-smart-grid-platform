@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform;
 
@@ -354,4 +354,9 @@ public class PlatformKeys extends Keys {
     public static final String KEY_LMD_CODE = "LmdCode";
     public static final String KEY_LMD_COLOR = "LmdColor";
     public static final String KEY_LMD_DIGITAL_INPUT = "LmdDigitalInput";
+
+    public static final String KEY_DIRECT_ATTACH = "directAttach";
+    public static final String KEY_RANDOMISATION_START_WINDOW = "randomisationStartWindow";
+    public static final String KEY_MULTIPLICATION_FACTOR = "multiplicationFactor";
+    public static final String KEY_NO_OF_RETRIES = "numberOfRetries";
 }
