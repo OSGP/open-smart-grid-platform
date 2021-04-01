@@ -37,7 +37,6 @@ Feature: SmartMetering Bundle - SetRandomisationSettings
     When the bundle request is received
     Then the bundle response should be OK
 
-  @Jaco
   Scenario: Set direct attach on a DSMR4 device in a bundle request
     Given a bundle request
       | DeviceIdentification | TEST1024000000001 |
