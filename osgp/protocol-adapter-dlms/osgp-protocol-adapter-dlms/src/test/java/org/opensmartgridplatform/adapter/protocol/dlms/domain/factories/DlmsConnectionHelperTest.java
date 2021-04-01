@@ -13,6 +13,7 @@ import static org.assertj.core.api.Fail.fail;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -21,14 +22,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.config.DevicePingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.InvocationCountingDlmsMessageListener;
+import org.opensmartgridplatform.shared.infra.networking.ping.Pinger;
 
 @ExtendWith(MockitoExtension.class)
-public class DlmsConnectionHelperTest {
+class DlmsConnectionHelperTest {
     private DlmsConnectionHelper helper;
 
     @Mock
@@ -37,13 +40,62 @@ public class DlmsConnectionHelperTest {
     @Mock
     private DlmsConnectionFactory connectionFactory;
 
+    @Mock
+    private DevicePingConfig devicePingConfig;
+
+    @Mock
+    private Pinger pinger;
+
     @BeforeEach
-    public void setUp() {
-        this.helper = new DlmsConnectionHelper(this.invocationCounterManager, this.connectionFactory);
+    void setUp() {
+        this.helper = new DlmsConnectionHelper(this.invocationCounterManager, this.connectionFactory,
+                this.devicePingConfig);
     }
 
     @Test
-    public void createsConnectionForDeviceThatDoesNotNeedInvocationCounter() throws Exception {
+    void pingsDeviceWithIpAddressBeforeCreatingConnectionIfPingingIsEnabled() throws Exception {
+        final String deviceIpAddress = "192.168.92.56";
+        when(this.devicePingConfig.pingingEnabled()).thenReturn(true);
+        when(this.devicePingConfig.pinger()).thenReturn(this.pinger);
+        final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true).build();
+        device.setIpAddress(deviceIpAddress);
+        final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
+
+        this.helper.createConnectionForDevice(device, listener);
+
+        verify(this.pinger).ping(deviceIpAddress);
+    }
+
+    @Test
+    void doesNotPingDeviceWithoutIpAddressBeforeCreatingConnectionIfPingingIsEnabled() throws Exception {
+        final String noIpAddress = null;
+        when(this.devicePingConfig.pingingEnabled()).thenReturn(true);
+        final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true).build();
+        device.setIpAddress(noIpAddress);
+        final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
+
+        this.helper.createConnectionForDevice(device, listener);
+
+        verifyNoInteractions(this.pinger);
+        verifyNoMoreInteractions(this.devicePingConfig);
+    }
+
+    @Test
+    void doesNotPingDeviceBeforeCreatingConnectionIfPingingIsDisabled() throws Exception {
+        final String deviceIpAddress = "192.168.92.56";
+        when(this.devicePingConfig.pingingEnabled()).thenReturn(false);
+        final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true).build();
+        device.setIpAddress(deviceIpAddress);
+        final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
+
+        this.helper.createConnectionForDevice(device, listener);
+
+        verifyNoInteractions(this.pinger);
+        verifyNoMoreInteractions(this.devicePingConfig);
+    }
+
+    @Test
+    void createsConnectionForDeviceThatDoesNotNeedInvocationCounter() throws Exception {
         final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(false).build();
         final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
@@ -56,7 +108,7 @@ public class DlmsConnectionHelperTest {
     }
 
     @Test
-    public void initializesInvocationCounterForDeviceThatNeedsInvocationCounterWithInvocationCounterUninitialized()
+    void initializesInvocationCounterForDeviceThatNeedsInvocationCounterWithInvocationCounterUninitialized()
             throws Exception {
         final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true)
                 .withProtocol("SMR")
@@ -73,7 +125,7 @@ public class DlmsConnectionHelperTest {
     }
 
     @Test
-    public void createsConnectionForDeviceThatNeedsInvocationCounterWithInvocationCounterInitialized()
+    void createsConnectionForDeviceThatNeedsInvocationCounterWithInvocationCounterInitialized()
             throws Exception {
         final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true).withInvocationCounter(123L).build();
         final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
@@ -89,7 +141,7 @@ public class DlmsConnectionHelperTest {
     }
 
     @Test
-    public void resetsInvocationCounterWhenInvocationCounterIsOutOfSyncForIskraDevice() throws Exception {
+    void resetsInvocationCounterWhenInvocationCounterIsOutOfSyncForIskraDevice() throws Exception {
         final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true)
                 .withProtocol("SMR")
                 .withInvocationCounter(123L)
@@ -113,7 +165,7 @@ public class DlmsConnectionHelperTest {
     }
 
     @Test
-    public void resetsInvocationCounterWhenInvocationCounterIsOutOfSyncForLAndGDevice() throws Exception {
+    void resetsInvocationCounterWhenInvocationCounterIsOutOfSyncForLAndGDevice() throws Exception {
         final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true)
                 .withProtocol("SMR")
                 .withInvocationCounter(123L)
@@ -136,7 +188,7 @@ public class DlmsConnectionHelperTest {
     }
 
     @Test
-    public void doesNotResetInvocationCounterWhenInvocationCounterIsOutOfSyncForDeviceThatNeedsNoInvocationCounter()
+    void doesNotResetInvocationCounterWhenInvocationCounterIsOutOfSyncForDeviceThatNeedsNoInvocationCounter()
             throws Exception {
         final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true)
                 .withProtocol("DSMR")
