@@ -9,12 +9,12 @@ Feature: SmartMetering Installation - Set Subscription Information
       | DeviceType           | SMART_METER_E     |
     When receiving a smartmetering set subscription information request
       | DeviceIdentification | TEST1024000000001 |
-      | IpAddress            | 10.0.0.1          |
-      | BtsId                | 20                |
-      | CellId               | 1                 |
+      | IpAddress            |          10.0.0.1 |
+      | BtsId                |                20 |
+      | CellId               |                 1 |
     Then the set subscription information response should be returned
       | DeviceIdentification | TEST1024000000001 |
       | Result               | OK                |
-      | IpAddress            | 10.0.0.1          |
-      | BtsId                | 20                |
-      | CellId               | 1                 |
+      | IpAddress            |          10.0.0.1 |
+      | BtsId                |                20 |
+      | CellId               |                 1 |

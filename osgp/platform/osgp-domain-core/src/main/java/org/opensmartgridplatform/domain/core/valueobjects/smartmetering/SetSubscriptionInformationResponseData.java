@@ -18,26 +18,26 @@ public class SetSubscriptionInformationResponseData implements Serializable {
 
     private static final long serialVersionUID = 333099329546171974L;
 
-    String meId;
+    private String meId;
 
-    String esn;
+    private String esn;
 
-    String uimId;
+    private String uimId;
 
-    String eqId;
+    private String eqId;
 
-    String ipAddress;
+    private String ipAddress;
 
-    String mdn;
+    private String mdn;
 
-    Integer btsId;
+    private Integer btsId;
 
-    Integer cellId;
+    private Integer cellId;
 
-    String status;
+    private String status;
 
-    String custCode;
+    private String custCode;
 
-    String supplierReferenceId;
+    private String supplierReferenceId;
 
 }
