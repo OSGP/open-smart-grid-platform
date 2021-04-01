@@ -187,13 +187,13 @@ public class ConfigurationService {
         }
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                                                               .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                                                               .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                                                               .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                                                               .withResult(result)
-                                                               .withOsgpException(exception)
-                                                               .withMessagePriority(deviceMessageMetadata.getMessagePriority())
-                                                               .build();
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
+                .withOsgpException(exception)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -250,13 +250,13 @@ public class ConfigurationService {
         }
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                                                               .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                                                               .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                                                               .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                                                               .withResult(result)
-                                                               .withOsgpException(exception)
-                                                               .withMessagePriority(deviceMessageMetadata.getMessagePriority())
-                                                               .build();
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
+                .withOsgpException(exception)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -298,14 +298,14 @@ public class ConfigurationService {
                 .map(administrativeStatusTypeDto, AdministrativeStatusType.class);
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                                                               .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                                                               .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                                                               .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                                                               .withResult(result)
-                                                               .withOsgpException(osgpException)
-                                                               .withDataObject(administrativeStatusType)
-                                                               .withMessagePriority(deviceMessageMetadata.getMessagePriority())
-                                                               .build();
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
+                .withOsgpException(osgpException)
+                .withDataObject(administrativeStatusType)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -339,13 +339,13 @@ public class ConfigurationService {
         }
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                                                               .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                                                               .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                                                               .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                                                               .withResult(result)
-                                                               .withOsgpException(exception)
-                                                               .withMessagePriority(deviceMessageMetadata.getMessagePriority())
-                                                               .build();
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
+                .withOsgpException(exception)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -362,13 +362,13 @@ public class ConfigurationService {
         }
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                                                               .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                                                               .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                                                               .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                                                               .withResult(result)
-                                                               .withOsgpException(exception)
-                                                               .withMessagePriority(deviceMessageMetadata.getMessagePriority())
-                                                               .build();
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
+                .withOsgpException(exception)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -384,13 +384,13 @@ public class ConfigurationService {
         }
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                                                               .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                                                               .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                                                               .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                                                               .withResult(result)
-                                                               .withOsgpException(exception)
-                                                               .withMessagePriority(deviceMessageMetadata.getMessagePriority())
-                                                               .build();
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
+                .withOsgpException(exception)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -406,13 +406,13 @@ public class ConfigurationService {
         }
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                                                               .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                                                               .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                                                               .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                                                               .withResult(result)
-                                                               .withOsgpException(exception)
-                                                               .withMessagePriority(deviceMessageMetadata.getMessagePriority())
-                                                               .build();
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
+                .withOsgpException(exception)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -428,14 +428,14 @@ public class ConfigurationService {
         }
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                                                               .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                                                               .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                                                               .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                                                               .withResult(result)
-                                                               .withOsgpException(exception)
-                                                               .withDataObject(resultString)
-                                                               .withMessagePriority(deviceMessageMetadata.getMessagePriority())
-                                                               .build();
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
+                .withOsgpException(exception)
+                .withDataObject(resultString)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -483,13 +483,13 @@ public class ConfigurationService {
         }
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                                                               .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                                                               .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                                                               .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                                                               .withResult(result)
-                                                               .withOsgpException(exception)
-                                                               .withMessagePriority(deviceMessageMetadata.getMessagePriority())
-                                                               .build();
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
+                .withOsgpException(exception)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -523,13 +523,13 @@ public class ConfigurationService {
         }
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                                                               .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                                                               .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                                                               .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                                                               .withResult(result)
-                                                               .withOsgpException(exception)
-                                                               .withMessagePriority(deviceMessageMetadata.getMessagePriority())
-                                                               .build();
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
+                .withOsgpException(exception)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -564,13 +564,13 @@ public class ConfigurationService {
         }
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                                                               .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                                                               .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                                                               .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                                                               .withResult(result)
-                                                               .withOsgpException(exception)
-                                                               .withMessagePriority(deviceMessageMetadata.getMessagePriority())
-                                                               .build();
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
+                .withOsgpException(exception)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -602,13 +602,13 @@ public class ConfigurationService {
         }
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                                                               .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                                                               .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                                                               .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                                                               .withResult(result)
-                                                               .withOsgpException(exception)
-                                                               .withMessagePriority(deviceMessageMetadata.getMessagePriority())
-                                                               .build();
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
+                .withOsgpException(exception)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -617,12 +617,10 @@ public class ConfigurationService {
      * the protocol adapter layer to the core layer
      *
      * @param deviceMessageMetadata
-     *            contains the message meta data
-     * @param getFirmwareVersion
-     *            marker object to request the firmware version(s)
+     *         contains the message meta data
      *
      * @throws FunctionalException
-     *             is thrown when the device cannot be found in the database
+     *         is thrown when the device cannot be found in the database
      */
     public void requestFirmwareVersion(final DeviceMessageMetadata deviceMessageMetadata) throws FunctionalException {
 
@@ -644,13 +642,13 @@ public class ConfigurationService {
      * ws-adapter layer
      *
      * @param deviceMessageMetadata
-     *            contains the message meta data
-     * @param result
-     *            indicates whether the execution was successful
+     *         contains the message meta data
+     * @param deviceResult
+     *         indicates whether the execution was successful
      * @param exception
-     *            contains the exception if one was thrown
+     *         contains the exception if one was thrown
      * @param firmwareVersionList
-     *            contains the firmware result list
+     *         contains the firmware result list
      */
     public void handleGetFirmwareVersionResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType deviceResult, final OsgpException exception,
@@ -670,14 +668,14 @@ public class ConfigurationService {
         final FirmwareVersionResponse firmwareVersionResponse = new FirmwareVersionResponse(firmwareVersions);
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                                                               .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                                                               .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                                                               .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                                                               .withResult(result)
-                                                               .withOsgpException(exception)
-                                                               .withDataObject(firmwareVersionResponse)
-                                                               .withMessagePriority(deviceMessageMetadata.getMessagePriority())
-                                                               .build();
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
+                .withOsgpException(exception)
+                .withDataObject(firmwareVersionResponse)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
 
         this.firmwareService.saveFirmwareVersionsReturnedFromDevice(deviceMessageMetadata.getDeviceIdentification(),
@@ -725,14 +723,14 @@ public class ConfigurationService {
         final UpdateFirmwareResponse updateFirmwareResponse = new UpdateFirmwareResponse(firmwareVersions);
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                                                               .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                                                               .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                                                               .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                                                               .withResult(result)
-                                                               .withOsgpException(exception)
-                                                               .withDataObject(updateFirmwareResponse)
-                                                               .withMessagePriority(deviceMessageMetadata.getMessagePriority())
-                                                               .build();
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
+                .withOsgpException(exception)
+                .withDataObject(updateFirmwareResponse)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -767,13 +765,13 @@ public class ConfigurationService {
         }
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                                                               .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                                                               .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                                                               .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                                                               .withResult(result)
-                                                               .withOsgpException(exception)
-                                                               .withMessagePriority(deviceMessageMetadata.getMessagePriority())
-                                                               .build();
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
+                .withOsgpException(exception)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -813,14 +811,14 @@ public class ConfigurationService {
         }
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                                                               .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                                                               .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                                                               .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                                                               .withResult(result)
-                                                               .withOsgpException(exception)
-                                                               .withDataObject(response)
-                                                               .withMessagePriority(deviceMessageMetadata.getMessagePriority())
-                                                               .build();
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
+                .withOsgpException(exception)
+                .withDataObject(response)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -857,13 +855,13 @@ public class ConfigurationService {
         }
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                                                               .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                                                               .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                                                               .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                                                               .withResult(result)
-                                                               .withOsgpException(exception)
-                                                               .withMessagePriority(deviceMessageMetadata.getMessagePriority())
-                                                               .build();
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
+                .withOsgpException(exception)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -904,14 +902,14 @@ public class ConfigurationService {
                 .valueOf(getMbusEncryptionKeyStatusResponseDto.getEncryptionKeyStatus().name());
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                                                               .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                                                               .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                                                               .withDeviceIdentification(mbusDeviceIdentification)
-                                                               .withResult(resultType)
-                                                               .withOsgpException(exception)
-                                                               .withDataObject(encryptionKeyStatusType)
-                                                               .withMessagePriority(deviceMessageMetadata.getMessagePriority())
-                                                               .build();
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(mbusDeviceIdentification)
+                .withResult(resultType)
+                .withOsgpException(exception)
+                .withDataObject(encryptionKeyStatusType)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -947,14 +945,14 @@ public class ConfigurationService {
                 .valueOf(getMbusEncryptionKeyStatusByChannelResponseDto.getEncryptionKeyStatus().name());
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                                                               .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                                                               .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                                                               .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                                                               .withResult(resultType)
-                                                               .withOsgpException(exception)
-                                                               .withDataObject(encryptionKeyStatusType)
-                                                               .withMessagePriority(deviceMessageMetadata.getMessagePriority())
-                                                               .build();
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(resultType)
+                .withOsgpException(exception)
+                .withDataObject(encryptionKeyStatusType)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
@@ -992,13 +990,13 @@ public class ConfigurationService {
         }
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                                                               .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                                                               .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                                                               .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                                                               .withResult(result)
-                                                               .withOsgpException(exception)
-                                                               .withMessagePriority(deviceMessageMetadata.getMessagePriority())
-                                                               .build();
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
+                .withOsgpException(exception)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 }

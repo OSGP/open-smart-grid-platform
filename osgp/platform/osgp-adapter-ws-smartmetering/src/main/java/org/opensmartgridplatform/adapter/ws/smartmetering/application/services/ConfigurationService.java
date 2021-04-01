@@ -25,7 +25,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetClock
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequest;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
@@ -66,7 +66,7 @@ public class ConfigurationService {
             @Identification final AdministrativeStatusType requestData, final int messagePriority,
             final Long scheduleTime) throws FunctionalException {
 
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.SET_ADMINISTRATIVE_STATUS);
+        this.checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.SET_ADMINISTRATIVE_STATUS);
 
         LOGGER.info(
                 "enqueueSetAdministrativeStatus called with organisation {} and device {}, set administrative status "
@@ -114,7 +114,7 @@ public class ConfigurationService {
             throws FunctionalException {
         LOGGER.debug("Queue get firmware request");
 
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.GET_FIRMWARE_VERSION);
+        this.checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.GET_FIRMWARE_VERSION);
 
         LOGGER.debug("enqueueGetFirmwareRequest called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
@@ -139,7 +139,7 @@ public class ConfigurationService {
             final UpdateFirmwareRequestData updateFirmwareRequestData, final int messagePriority,
             final Long scheduleTime) throws FunctionalException {
 
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.UPDATE_FIRMWARE);
+        this.checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.UPDATE_FIRMWARE);
 
         LOGGER.debug("enqueueUpdateFirmwareRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -171,7 +171,7 @@ public class ConfigurationService {
             final String deviceIdentification, final int messagePriority, final Long scheduleTime)
             throws FunctionalException {
 
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.GET_ADMINISTRATIVE_STATUS);
+        this.checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.GET_ADMINISTRATIVE_STATUS);
 
         LOGGER.debug("enqueueGetAdministrativeStatus called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -195,7 +195,7 @@ public class ConfigurationService {
             @Identification final String deviceIdentification, final SpecialDaysRequest requestData,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.SET_SPECIAL_DAYS);
+        this.checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.SET_SPECIAL_DAYS);
 
         LOGGER.debug("enqueueSetSpecialDaysRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -219,7 +219,7 @@ public class ConfigurationService {
             @Identification final String deviceIdentification, final SetConfigurationObjectRequest requestData,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.SET_CONFIGURATION_OBJECT);
+        this.checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.SET_CONFIGURATION_OBJECT);
 
         LOGGER.debug("enqueueSetConfigurationObjectRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -243,7 +243,7 @@ public class ConfigurationService {
             @Identification final String deviceIdentification, final PushSetupAlarm pushSetupAlarm,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.SET_PUSH_SETUP_ALARM);
+        this.checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.SET_PUSH_SETUP_ALARM);
 
         LOGGER.debug("enqueueSetPushSetupAlarmRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -267,7 +267,7 @@ public class ConfigurationService {
             @Identification final String deviceIdentification, final PushSetupSms pushSetupSms,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.SET_PUSH_SETUP_SMS);
+        this.checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.SET_PUSH_SETUP_SMS);
 
         LOGGER.debug("enqueueSetPushSetupSmsRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -291,7 +291,7 @@ public class ConfigurationService {
             @Identification final String deviceIdentification, final AlarmNotifications alarmSwitches,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.SET_ALARM_NOTIFICATIONS);
+        this.checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.SET_ALARM_NOTIFICATIONS);
 
         LOGGER.debug("enqueueSetAlarmNotificationsRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -315,7 +315,7 @@ public class ConfigurationService {
             @Identification final String organisationIdentification, @Identification final String deviceIdentification,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
-        checkAllowed(organisationIdentification, deviceIdentification,
+        this.checkAllowed(organisationIdentification, deviceIdentification,
                 DeviceFunction.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER);
 
         LOGGER.debug("enqueueSetEncryptionKeyExchangeOnGMeterRequest called with organisation {} and device {}",
@@ -340,7 +340,7 @@ public class ConfigurationService {
             final String deviceIdentification, final int messagePriority, final Long scheduleTime)
             throws FunctionalException {
 
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.GET_MBUS_ENCRYPTION_KEY_STATUS);
+        this.checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.GET_MBUS_ENCRYPTION_KEY_STATUS);
 
         LOGGER.debug("enqueueGetMbusEncryptionKeyStatusRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -364,7 +364,7 @@ public class ConfigurationService {
             final String deviceIdentification, final int messagePriority, final Long scheduleTime, final short channel)
             throws FunctionalException {
 
-        checkAllowed(organisationIdentification, deviceIdentification,
+        this.checkAllowed(organisationIdentification, deviceIdentification,
                 DeviceFunction.GET_MBUS_ENCRYPTION_KEY_STATUS_BY_CHANNEL);
 
         LOGGER.debug("enqueueGetMbusEncryptionKeyStatusByChannelRequest called with organisation {} and device {}",
@@ -389,7 +389,7 @@ public class ConfigurationService {
             @Identification final String deviceIdentification, final ActivityCalendar activityCalendar,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.SET_ACTIVITY_CALENDAR);
+        this.checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.SET_ACTIVITY_CALENDAR);
 
         LOGGER.debug("enqueueSetActivityCalendarRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -413,7 +413,7 @@ public class ConfigurationService {
             @Identification final String deviceIdentification, final SetKeysRequestData keySet,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.REPLACE_KEYS);
+        this.checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.REPLACE_KEYS);
 
         LOGGER.debug("enqueueReplaceKeysRequest called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
@@ -438,7 +438,7 @@ public class ConfigurationService {
             final SetClockConfigurationRequestData clockConfigurationRequestData, final int messagePriority,
             final Long scheduleTime) throws FunctionalException {
 
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.SET_CLOCK_CONFIGURATION);
+        this.checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.SET_CLOCK_CONFIGURATION);
 
         LOGGER.debug("enqueueSetClockConfigurationRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -462,7 +462,7 @@ public class ConfigurationService {
             @Identification final String deviceIdentification, final GetConfigurationObjectRequest requestData,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.GET_CONFIGURATION_OBJECT);
+        this.checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.GET_CONFIGURATION_OBJECT);
 
         LOGGER.debug("enqueueGetConfigurationObjectRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -507,7 +507,7 @@ public class ConfigurationService {
     public String enqueueGenerateAndReplaceKeysRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final int messagePriority, final Long scheduleTime)
             throws FunctionalException {
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.GENERATE_AND_REPLACE_KEYS);
+        this.checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.GENERATE_AND_REPLACE_KEYS);
 
         LOGGER.debug("Enqueue generate and replace keys request called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -532,7 +532,7 @@ public class ConfigurationService {
             final DefinableLoadProfileConfigurationData definableLoadProfileConfigurationData,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.CONFIGURE_DEFINABLE_LOAD_PROFILE);
+        this.checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.CONFIGURE_DEFINABLE_LOAD_PROFILE);
 
         LOGGER.debug("enqueueConfigureDefinableLoadProfileRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -557,7 +557,7 @@ public class ConfigurationService {
             final SetMbusUserKeyByChannelRequestData setMbusUserKeyByChannelRequestData, final int messagePriority,
             final Long scheduleTime) throws FunctionalException {
 
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.SET_MBUS_USER_KEY_BY_CHANNEL);
+        this.checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.SET_MBUS_USER_KEY_BY_CHANNEL);
 
         LOGGER.debug("enqueueSetMbusUserKeyByChannelRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -578,10 +578,10 @@ public class ConfigurationService {
     }
 
     public String enqueueSetRandomisationSettingsRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final SetRandomisationSettingsRequest requestData,
+            @Identification final String deviceIdentification, final SetRandomisationSettingsRequestData requestData,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.SET_CONFIGURATION_OBJECT);
+        this.checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.SET_CONFIGURATION_OBJECT);
 
         LOGGER.debug("enqueueSetRandomisationSettingsRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -601,8 +601,8 @@ public class ConfigurationService {
         return correlationUid;
     }
 
-    private void checkAllowed(@Identification String organisationIdentification,
-            @Identification String deviceIdentification, DeviceFunction setConfigurationObject)
+    private void checkAllowed(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final DeviceFunction setConfigurationObject)
             throws FunctionalException {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
