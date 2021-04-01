@@ -17,7 +17,7 @@ BEGIN
         ALTER TABLE device ADD COLUMN cell_id INTEGER;
     END IF;
 
-    COMMENT ON COLUMN device.bts_id IS 'The ID of the Cell to which this device is linked.';
+    COMMENT ON COLUMN device.cell_id IS 'The ID of the Cell to which this device is linked.';
 
 END;
 $$
