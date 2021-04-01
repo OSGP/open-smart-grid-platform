@@ -204,11 +204,18 @@ public class DeviceResponseMessageService {
         return new ProtocolRequestMessage.Builder().deviceMessageMetadata(deviceMessageMetadata)
                 .domain(message.getDomain())
                 .domainVersion(message.getDomainVersion())
-                .ipAddress(device.getIpAddress())
+                .ipAddress(getIpAddress(device))
                 .request(messageData)
                 .scheduled(message.isScheduled())
                 .retryCount(message.getRetryCount() + 1)
                 .build();
+    }
+
+    private static String getIpAddress(final Device device) {
+        if (device.getIpAddress() == null && device.getGatewayDevice() != null) {
+            return device.getGatewayDevice().getIpAddress();
+        }
+        return device.getIpAddress();
     }
 
     private ScheduledTask createScheduledRetryTask(final ProtocolResponseMessage message) {

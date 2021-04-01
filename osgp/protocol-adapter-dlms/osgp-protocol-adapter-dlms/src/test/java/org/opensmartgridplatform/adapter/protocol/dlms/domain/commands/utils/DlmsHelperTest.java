@@ -91,9 +91,9 @@ public class DlmsHelperTest {
     }
 
     /*
-     * this test is here because the jDMLS code throws a NullPointerException instead of a
-     * ResponseTimeoutException (specific type of IOException
-     * via NonFatalJDlmsException and JDlmsException).
+     * this test is here because the jDMLS code throws a NullPointerException
+     * instead of a ResponseTimeoutException (specific type of IOException via
+     * NonFatalJDlmsException and JDlmsException).
      */
     @Test
     public void testGetWithListException() throws IOException {
@@ -246,6 +246,15 @@ public class DlmsHelperTest {
         final String logMessage = this.dlmsHelper.getDebugInfoBitStringBytes(new byte[] { -110, 64 });
 
         assertThat(logMessage).isEqualTo(expected);
+    }
+
+    @Test
+    public void testByteArrayToHexString() throws ProtocolAdapterException {
+        final byte[] bytes = new byte[] { 25, 24, 7, 118 };
+        final DataObject dataObject = DataObject.newOctetStringData(bytes);
+        final String hexString = this.dlmsHelper.readHexString(dataObject, "reading a Hexadecimal String");
+
+        assertThat(hexString).isEqualTo("19180776");
     }
 
     private void assertGetWithListException(final Class<? extends Exception> jdlmsExceptionClazz,

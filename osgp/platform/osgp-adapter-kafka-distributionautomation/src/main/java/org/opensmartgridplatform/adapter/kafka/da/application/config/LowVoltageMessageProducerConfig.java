@@ -27,6 +27,30 @@ import com.alliander.data.scadameasurementpublishedevent.Message;
 @Configuration
 public class LowVoltageMessageProducerConfig extends AbstractKafkaProducerConfig<String, Message> {
 
+    @Value("${distributionautomation.kafka.message.signing.enabled}")
+    private boolean signingEnabled;
+
+    @Value("${distributionautomation.kafka.message.signing.strip.headers}")
+    private boolean stripHeaders;
+
+    @Value("${distributionautomation.kafka.message.signature.algorithm:SHA256withRSA}")
+    private String signatureAlgorithm;
+
+    @Value("${distributionautomation.kafka.message.signature.provider:SunRsaSign}")
+    private String signatureProvider;
+
+    @Value("${distributionautomation.kafka.message.signature.key.algorithm:RSA}")
+    private String signatureKeyAlgorithm;
+
+    @Value("${distributionautomation.kafka.message.signature.key.size:2048}")
+    private int signatureKeySize;
+
+    @Value("${distributionautomation.kafka.message.signature.key.private:#{null}}")
+    private Resource signingKeyResource;
+
+    @Value("${distributionautomation.kafka.message.signature.key.public:#{null}}")
+    private Resource verificationKeyResource;
+
     @Autowired
     public LowVoltageMessageProducerConfig(final Environment environment,
             @Value("${distributionautomation.kafka.common.properties.prefix}") final String propertiesPrefix,
@@ -41,23 +65,16 @@ public class LowVoltageMessageProducerConfig extends AbstractKafkaProducerConfig
     }
 
     @Bean
-    public MessageSigner messageSigner(
-            @Value("${distributionautomation.kafka.message.signing.enabled}") final boolean signingEnabled,
-            @Value("${distributionautomation.kafka.message.signature.algorithm:SHA256withRSA}") final String signatureAlgorithm,
-            @Value("${distributionautomation.kafka.message.signature.provider:SunRsaSign}") final String signatureProvider,
-            @Value("${distributionautomation.kafka.message.signature.key.algorithm:RSA}") final String signatureKeyAlgorithm,
-            @Value("${distributionautomation.kafka.message.signature.key.size:2048}") final int signatureKeySize,
-            @Value("${distributionautomation.kafka.message.signature.key.private:#{null}}") final Resource signingKeyResource,
-            @Value("${distributionautomation.kafka.message.signature.key.public:#{null}}") final Resource verificationKeyResource) {
-
+    public MessageSigner messageSigner() {
         return MessageSigner.newBuilder()
-                .signingEnabled(signingEnabled)
-                .signatureAlgorithm(signatureAlgorithm)
-                .signatureProvider(signatureProvider)
-                .signatureKeyAlgorithm(signatureKeyAlgorithm)
-                .signatureKeySize(signatureKeySize)
-                .signingKey(this.readKeyFromPemResource(signingKeyResource, "private signing key"))
-                .verificationKey(this.readKeyFromPemResource(verificationKeyResource, "public verification key"))
+                .signingEnabled(this.signingEnabled)
+                .stripHeaders(this.stripHeaders)
+                .signatureAlgorithm(this.signatureAlgorithm)
+                .signatureProvider(this.signatureProvider)
+                .signatureKeyAlgorithm(this.signatureKeyAlgorithm)
+                .signatureKeySize(this.signatureKeySize)
+                .signingKey(this.readKeyFromPemResource(this.signingKeyResource, "private signing key"))
+                .verificationKey(this.readKeyFromPemResource(this.verificationKeyResource, "public verification key"))
                 .build();
     }
 

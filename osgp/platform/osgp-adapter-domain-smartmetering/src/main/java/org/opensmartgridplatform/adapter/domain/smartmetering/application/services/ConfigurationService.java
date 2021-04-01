@@ -9,6 +9,7 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
@@ -22,9 +23,11 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.Administ
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DefinableLoadProfileConfigurationData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EncryptionKeyStatusType;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersionGasResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfigurationObjectRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfigurationObjectResponse;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetFirmwareVersionQuery;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData;
@@ -34,14 +37,16 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFi
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
 import org.opensmartgridplatform.domain.smartmetering.exceptions.GatewayDeviceNotSetForMbusDeviceException;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
+import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionGasDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActivityCalendarDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmNotificationsDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DefinableLoadProfileConfigurationDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GMeterInfoDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfigurationObjectRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersionQueryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestDto;
@@ -113,8 +118,8 @@ public class ConfigurationService {
                 SpecialDaysRequestDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                        deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                        smartMeteringDevice.getIpAddress(), specialDaysRequestDto), deviceMessageMetadata.getMessageType(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                smartMeteringDevice.getIpAddress(), specialDaysRequestDto), deviceMessageMetadata.getMessageType(),
                 deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
@@ -132,8 +137,8 @@ public class ConfigurationService {
                 .map(setConfigurationObjectRequestValueObject, SetConfigurationObjectRequestDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                        deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                        smartMeteringDevice.getIpAddress(), setConfigurationObjectRequestDto),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                smartMeteringDevice.getIpAddress(), setConfigurationObjectRequestDto),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
                 deviceMessageMetadata.getScheduleTime());
     }
@@ -152,8 +157,8 @@ public class ConfigurationService {
                 PushSetupAlarmDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                        deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                        smartMeteringDevice.getIpAddress(), pushSetupAlarmDto), deviceMessageMetadata.getMessageType(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                smartMeteringDevice.getIpAddress(), pushSetupAlarmDto), deviceMessageMetadata.getMessageType(),
                 deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
@@ -170,8 +175,8 @@ public class ConfigurationService {
         final PushSetupSmsDto pushSetupSmsDto = this.configurationMapper.map(pushSetupSms, PushSetupSmsDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                        deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                        smartMeteringDevice.getIpAddress(), pushSetupSmsDto), deviceMessageMetadata.getMessageType(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                smartMeteringDevice.getIpAddress(), pushSetupSmsDto), deviceMessageMetadata.getMessageType(),
                 deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
@@ -210,8 +215,8 @@ public class ConfigurationService {
                 AlarmNotificationsDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                        deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                        smartMeteringDevice.getIpAddress(), alarmNotificationsDto), deviceMessageMetadata.getMessageType(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                smartMeteringDevice.getIpAddress(), alarmNotificationsDto), deviceMessageMetadata.getMessageType(),
                 deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
@@ -322,8 +327,8 @@ public class ConfigurationService {
                 ActivityCalendarDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                        deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                        smartMeteringDevice.getIpAddress(), activityCalendarDto), deviceMessageMetadata.getMessageType(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                smartMeteringDevice.getIpAddress(), activityCalendarDto), deviceMessageMetadata.getMessageType(),
                 deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
@@ -617,24 +622,67 @@ public class ConfigurationService {
      * the protocol adapter layer to the core layer
      *
      * @param deviceMessageMetadata
-     *         contains the message meta data
+     *            contains the message meta data
+     * @param getFirmwareVersionQuery
      *
      * @throws FunctionalException
-     *         is thrown when the device cannot be found in the database
+     *             is thrown when the device cannot be found in the database or
+     *             when the device is a G meter and the channel and/or gateway
+     *             is not configured
      */
-    public void requestFirmwareVersion(final DeviceMessageMetadata deviceMessageMetadata) throws FunctionalException {
+    public void requestFirmwareVersion(final DeviceMessageMetadata deviceMessageMetadata,
+            final GetFirmwareVersionQuery getFirmwareVersionQuery) throws FunctionalException {
 
         LOGGER.info("requestFirmwareVersion for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
+        final SmartMeter smartMeter = this.domainHelperService
                 .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                        deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                        smartMeteringDevice.getIpAddress(), new GetFirmwareVersionRequestDto()),
-                deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
-                deviceMessageMetadata.getScheduleTime());
+        if (getFirmwareVersionQuery.isMbusDevice()) {
+            if (smartMeter.getChannel() == null) {
+                /*
+                 * For now, throw a FunctionalException. As soon as we can
+                 * communicate with some types of gas meters directly, and not
+                 * through an M-Bus port of an energy meter, this will have to
+                 * be changed.
+                 */
+                throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                        ComponentType.DOMAIN_SMART_METERING,
+                        new AssertionError("Retrieving firmware version for gas meter. No channel configured."));
+            }
+
+            final Device gatewayDevice = smartMeter.getGatewayDevice();
+
+            if (gatewayDevice == null) {
+                /*
+                 * For now throw a FunctionalException, based on the same
+                 * reasoning as with the channel a couple of lines up. As soon
+                 * as we have scenario's with direct communication with gas
+                 * meters this will have to be changed.
+                 */
+                throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                        ComponentType.DOMAIN_SMART_METERING,
+                        new AssertionError("Retrieving firmware version for gas meter. No gateway device found."));
+            }
+
+            this.osgpCoreRequestMessageSender.send(
+                    new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+                            deviceMessageMetadata.getOrganisationIdentification(),
+                            gatewayDevice.getDeviceIdentification(), gatewayDevice.getIpAddress(),
+                            new GetFirmwareVersionQueryDto(ChannelDto.fromNumber(smartMeter.getChannel()),
+                                    deviceMessageMetadata.getDeviceIdentification())),
+                    deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
+                    deviceMessageMetadata.getScheduleTime());
+        } else {
+            this.osgpCoreRequestMessageSender.send(
+                    new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+                            deviceMessageMetadata.getOrganisationIdentification(),
+                            deviceMessageMetadata.getDeviceIdentification(), smartMeter.getIpAddress(),
+                            new GetFirmwareVersionQueryDto()),
+                    deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
+                    deviceMessageMetadata.getScheduleTime());
+        }
     }
 
     /**
@@ -642,13 +690,13 @@ public class ConfigurationService {
      * ws-adapter layer
      *
      * @param deviceMessageMetadata
-     *         contains the message meta data
+     *            contains the message meta data
      * @param deviceResult
-     *         indicates whether the execution was successful
+     *            indicates whether the execution was successful
      * @param exception
-     *         contains the exception if one was thrown
+     *            contains the exception if one was thrown
      * @param firmwareVersionList
-     *         contains the firmware result list
+     *            contains the firmware result list
      */
     public void handleGetFirmwareVersionResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType deviceResult, final OsgpException exception,
@@ -682,6 +730,36 @@ public class ConfigurationService {
                 firmwareVersions);
     }
 
+    public void handleGetFirmwareVersionGasResponse(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessageResultType deviceResult, final OsgpException exception,
+            final FirmwareVersionGasDto firmwareVersionGas) {
+        LOGGER.info("handleGetFirmwareVersionGasResponse for MessageType: {}", deviceMessageMetadata.getMessageType());
+
+        ResponseMessageResultType result = deviceResult;
+        if (exception != null) {
+            LOGGER.error("Get firmware version response not ok. Unexpected Exception", exception);
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
+        final FirmwareVersion firmwareVersion = this.configurationMapper.map(firmwareVersionGas, FirmwareVersion.class);
+
+        final FirmwareVersionGasResponse firmwareVersionGasResponse = new FirmwareVersionGasResponse(firmwareVersion);
+
+        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
+                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+                .withResult(result)
+                .withOsgpException(exception)
+                .withDataObject(firmwareVersionGasResponse)
+                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+                .build();
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
+
+        this.firmwareService.saveFirmwareVersionsReturnedFromDevice(firmwareVersionGas.getMbusDeviceIdentification(),
+                Arrays.asList(firmwareVersion));
+    }
+
     public void requestUpdateFirmware(final DeviceMessageMetadata deviceMessageMetadata,
             final UpdateFirmwareRequestData updateFirmwareRequestData) throws FunctionalException {
 
@@ -695,8 +773,8 @@ public class ConfigurationService {
                 updateFirmwareRequestData.getVersionByModuleType());
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                        deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                        smartMeter.getIpAddress(), firmwareFileIdentifier), deviceMessageMetadata.getMessageType(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                smartMeter.getIpAddress(), firmwareFileIdentifier), deviceMessageMetadata.getMessageType(),
                 deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
@@ -747,8 +825,8 @@ public class ConfigurationService {
                 .map(setClockConfigurationRequest, SetClockConfigurationRequestDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                        deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                        smartMeteringDevice.getIpAddress(), setClockConfigurationRequestDto),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                smartMeteringDevice.getIpAddress(), setClockConfigurationRequestDto),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
                 deviceMessageMetadata.getScheduleTime());
     }
@@ -788,8 +866,8 @@ public class ConfigurationService {
                 .map(getConfigurationObjectRequest, GetConfigurationObjectRequestDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                        deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                        smartMeteringDevice.getIpAddress(), getConfigurationObjectRequestDto),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                smartMeteringDevice.getIpAddress(), getConfigurationObjectRequestDto),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
                 deviceMessageMetadata.getScheduleTime());
     }
@@ -836,8 +914,8 @@ public class ConfigurationService {
                 .map(definableLoadProfileConfigurationData, DefinableLoadProfileConfigurationDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                        deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                        smartMeteringDevice.getIpAddress(), definableLoadProfileConfigurationDto),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                smartMeteringDevice.getIpAddress(), definableLoadProfileConfigurationDto),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
                 deviceMessageMetadata.getScheduleTime());
     }
@@ -970,8 +1048,8 @@ public class ConfigurationService {
                 data.getNumberOfRetries());
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                        deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                        smartMeteringDevice.getIpAddress(), setRandomisationSettingsRequestDataDto),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                smartMeteringDevice.getIpAddress(), setRandomisationSettingsRequestDataDto),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
                 deviceMessageMetadata.getScheduleTime());
 
@@ -999,4 +1077,5 @@ public class ConfigurationService {
                 .build();
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
+
 }

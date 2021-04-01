@@ -12,7 +12,7 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
-import org.opensmartgridplatform.adapter.protocol.iec60870.infra.CorrelationUidPerDevice;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.PendingRequestsQueue;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -44,7 +44,7 @@ public class DeviceRequestMessageListener implements MessageListener {
     private DeviceResponseMessageSender deviceResponseMessageSender;
 
     @Autowired
-    private CorrelationUidPerDevice correlationUidPerDevice;
+    private PendingRequestsQueue pendingRequestsQueue;
 
     @Override
     public void onMessage(final Message message) {
@@ -66,7 +66,7 @@ public class DeviceRequestMessageListener implements MessageListener {
                     correlationUid, messageMetadata.getMessageType(), messageMetadata.getMessagePriority(),
                     deviceIdentification);
 
-            this.correlationUidPerDevice.enqueue(deviceIdentification, correlationUid);
+            this.pendingRequestsQueue.enqueue(deviceIdentification, correlationUid);
 
             final MessageProcessor processor = this.messageProcessorMap.getMessageProcessor(objectMessage);
 
@@ -74,7 +74,7 @@ public class DeviceRequestMessageListener implements MessageListener {
 
         } catch (final IllegalArgumentException | JMSException e) {
 
-            this.correlationUidPerDevice.remove(deviceIdentification, correlationUid);
+            this.pendingRequestsQueue.remove(deviceIdentification, correlationUid);
             LOGGER.error("Unexpected exception for message [correlationUid={}]", correlationUid, e);
             this.sendNotSupportedException(objectMessage, messageMetadata);
         }

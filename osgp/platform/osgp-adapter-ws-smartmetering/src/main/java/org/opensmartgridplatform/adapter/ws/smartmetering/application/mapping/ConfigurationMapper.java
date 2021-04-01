@@ -64,6 +64,8 @@ public class ConfigurationMapper extends ConfigurableMapper {
         mapperFactory.getConverterFactory().registerConverter(new CosemTimeConverter());
         mapperFactory.getConverterFactory().registerConverter(new CosemDateConverter());
         mapperFactory.getConverterFactory().registerConverter(new XsdDateTimeToLongConverter());
+
         mapperFactory.getConverterFactory().registerConverter(new FirmwareVersionConverter());
+        mapperFactory.getConverterFactory().registerConverter(new FirmwareVersionGasConverter());
     }
 }

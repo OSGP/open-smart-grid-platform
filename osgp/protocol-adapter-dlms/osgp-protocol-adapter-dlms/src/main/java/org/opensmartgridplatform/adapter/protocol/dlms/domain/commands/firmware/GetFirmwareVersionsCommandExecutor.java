@@ -23,20 +23,24 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.DataAttribute;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareModuleType;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FirmwareVersionResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersionQueryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GetFirmwareVersionsCommandExecutor extends AbstractCommandExecutor<Void, List<FirmwareVersionDto>> {
+public class GetFirmwareVersionsCommandExecutor
+        extends AbstractCommandExecutor<GetFirmwareVersionQueryDto, List<FirmwareVersionDto>> {
 
-    private static final int CLASS_ID = 1;
-    private static final int ATTRIBUTE_ID = 2;
+    private static final int CLASS_ID = InterfaceClass.DATA.id();
+    private static final int ATTRIBUTE_ID = DataAttribute.VALUE.attributeId();
 
     private static final ObisCode OBIS_CODE_ACTIVE_FIRMWARE_VERSION = new ObisCode("1.0.0.2.0.255");
     private static final ObisCode OBIS_CODE_MODULE_ACTIVE_FIRMWARE_VERSION = new ObisCode("1.1.0.2.0.255");
@@ -53,10 +57,10 @@ public class GetFirmwareVersionsCommandExecutor extends AbstractCommandExecutor<
             new AttributeAddress(CLASS_ID, OBIS_CODE_COMMUNICATION_MODULE_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID),
             new AttributeAddress(CLASS_ID, OBIS_CODE_MBUS_DRIVER_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID));
 
-    private static final AttributeAddress[] FOR_DSMR_4_2_2 = ALL_ATTRIBUTE_ADDRESSES.subList(0, 3).toArray(
-            new AttributeAddress[3]);
-    private static final AttributeAddress[] FOR_SMR_5 = ALL_ATTRIBUTE_ADDRESSES.subList(0, 4).toArray(
-            new AttributeAddress[4]);
+    private static final AttributeAddress[] FOR_DSMR_4_2_2 = ALL_ATTRIBUTE_ADDRESSES.subList(0, 3)
+            .toArray(new AttributeAddress[3]);
+    private static final AttributeAddress[] FOR_SMR_5 = ALL_ATTRIBUTE_ADDRESSES.subList(0, 4)
+            .toArray(new AttributeAddress[4]);
 
     private final DlmsHelper dlmsHelper;
 
@@ -67,9 +71,10 @@ public class GetFirmwareVersionsCommandExecutor extends AbstractCommandExecutor<
     }
 
     @Override
-    public Void fromBundleRequestInput(final ActionRequestDto bundleInput) throws ProtocolAdapterException {
+    public GetFirmwareVersionQueryDto fromBundleRequestInput(final ActionRequestDto bundleInput)
+            throws ProtocolAdapterException {
         this.checkActionRequestType(bundleInput);
-        return null;
+        return new GetFirmwareVersionQueryDto();
     }
 
     @Override
@@ -80,7 +85,11 @@ public class GetFirmwareVersionsCommandExecutor extends AbstractCommandExecutor<
 
     @Override
     public List<FirmwareVersionDto> execute(final DlmsConnectionManager conn, final DlmsDevice device,
-            final Void useless) throws ProtocolAdapterException {
+            final GetFirmwareVersionQueryDto queryDto) throws ProtocolAdapterException {
+        if (queryDto != null && queryDto.isMbusQuery()) {
+            throw new IllegalArgumentException("GetFirmwareVersion called with query object for Gas meter.");
+        }
+
         if (Protocol.forDevice(device).isSmr5()) {
             return this.getFirmwareVersions(conn, device, FOR_SMR_5);
         }
@@ -89,8 +98,9 @@ public class GetFirmwareVersionsCommandExecutor extends AbstractCommandExecutor<
 
     private List<FirmwareVersionDto> getFirmwareVersions(final DlmsConnectionManager conn, final DlmsDevice device,
             final AttributeAddress[] attributes) throws ProtocolAdapterException {
-        conn.getDlmsMessageListener().setDescription(
-                "GetFirmwareVersions, retrieve attributes: " + JdlmsObjectToStringUtil.describeAttributes(attributes));
+        conn.getDlmsMessageListener()
+                .setDescription("GetFirmwareVersions, retrieve attributes: "
+                        + JdlmsObjectToStringUtil.describeAttributes(attributes));
 
         final List<GetResult> results = this.dlmsHelper.getAndCheck(conn, device, "retrieve firmware versions",
                 attributes);

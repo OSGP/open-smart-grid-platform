@@ -176,6 +176,7 @@ public class FirmwareManagementEndpoint {
         String moduleVersionMbus = null;
         String moduleVersionSec = null;
         String moduleVersionMBusDriverActive = null;
+        String moduleVersionSimple = null;
 
         for (final FirmwareModuleType firmwareModuleType : firmwareModuleTypes) {
             final String firmwareModuleTypeString = firmwareModuleType.toString();
@@ -191,11 +192,14 @@ public class FirmwareManagementEndpoint {
                 moduleVersionSec = firmwareModuleTypeString;
             } else if (FirmwareModuleType.M_BUS_DRIVER_ACTIVE.equals(firmwareModuleType)) {
                 moduleVersionMBusDriverActive = firmwareModuleTypeString;
+            } else if (FirmwareModuleType.SIMPLE_VERSION_INFO.equals(firmwareModuleType)) {
+                moduleVersionSimple = firmwareModuleTypeString;
             }
         }
 
         final FirmwareModuleData firmwareModuleData = new FirmwareModuleData(moduleVersionComm, moduleVersionFunc,
-                moduleVersionMa, moduleVersionMbus, moduleVersionSec, moduleVersionMBusDriverActive);
+                moduleVersionMa, moduleVersionMbus, moduleVersionSec, moduleVersionMBusDriverActive,
+                moduleVersionSimple);
 
         return new FirmwareUpdateMessageDataContainer(firmwareModuleData, firmwareIndentification);
     }

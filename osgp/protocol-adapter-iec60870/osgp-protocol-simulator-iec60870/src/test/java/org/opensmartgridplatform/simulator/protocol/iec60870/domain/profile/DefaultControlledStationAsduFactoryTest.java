@@ -18,6 +18,7 @@ import org.openmuc.j60870.ie.InformationObject;
 import org.opensmartgridplatform.iec60870.Iec60870InformationObjectType;
 import org.opensmartgridplatform.iec60870.factory.InformationElementFactory;
 import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870AsduFactory;
+import org.opensmartgridplatform.simulator.protocol.iec60870.domain.defaultcontrolledstation.DefaultControlledStationAsduFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;

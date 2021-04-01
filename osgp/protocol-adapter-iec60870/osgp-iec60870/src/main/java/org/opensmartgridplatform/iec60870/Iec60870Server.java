@@ -50,6 +50,7 @@ public class Iec60870Server {
 
     public void stop() {
         LOGGER.info("Stopping IEC60870 Server on port {}.", this.port);
+        this.iec60870ServerEventListener.stopListening();
         this.server.stop();
         this.listening = false;
         LOGGER.info("Stopped IEC60870 Server.");

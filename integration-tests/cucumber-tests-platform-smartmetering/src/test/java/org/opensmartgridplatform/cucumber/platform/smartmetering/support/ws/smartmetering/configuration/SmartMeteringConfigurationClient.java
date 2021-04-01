@@ -21,6 +21,10 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.G
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionGasAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionGasAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionGasRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionGasResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusAsyncRequest;
@@ -112,6 +116,11 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
         return (GetFirmwareVersionAsyncResponse) this.getTemplate().marshalSendAndReceive(getFirmwareVersionRequest);
     }
 
+    public GetFirmwareVersionGasAsyncResponse getFirmwareVersionGas(
+            final GetFirmwareVersionGasRequest getFirmwareVersionRequest) throws WebServiceSecurityException {
+        return (GetFirmwareVersionGasAsyncResponse) this.getTemplate().marshalSendAndReceive(getFirmwareVersionRequest);
+    }
+
     public GetFirmwareVersionResponse retrieveGetFirmwareVersionResponse(
             final GetFirmwareVersionAsyncRequest getFirmwareVersionAsyncRequest) throws WebServiceSecurityException {
 
@@ -119,6 +128,15 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
         this.waitForNotification(correlationUid);
 
         return (GetFirmwareVersionResponse) this.getTemplate().marshalSendAndReceive(getFirmwareVersionAsyncRequest);
+    }
+
+    public GetFirmwareVersionGasResponse retrieveGetFirmwareVersionGasResponse(
+            final GetFirmwareVersionGasAsyncRequest gasAsyncRequest) throws WebServiceSecurityException {
+
+        final String correlationUid = gasAsyncRequest.getCorrelationUid();
+        this.waitForNotification(correlationUid);
+
+        return (GetFirmwareVersionGasResponse) this.getTemplate().marshalSendAndReceive(gasAsyncRequest);
     }
 
     public SetActivityCalendarAsyncResponse setActivityCalendar(
