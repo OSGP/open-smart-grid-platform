@@ -48,7 +48,9 @@ public class ClientConnectionEventListener implements ConnectionEventListener {
             final ResponseMetadata newResponseMetadata = this.responseMetadataFactory
                     .createWithNewCorrelationUid(this.responseMetadata);
 
-            final LogItem logItem = this.logItemFactory.create(asdu, newResponseMetadata, true);
+            final LogItem logItem = this.logItemFactory.create(asdu, this.deviceIdentification,
+                    newResponseMetadata.getOrganisationIdentification(), true);
+
             this.loggingService.log(logItem);
 
             final ClientAsduHandler asduHandler = this.asduHandlerRegistry.getHandler(asdu);

@@ -34,11 +34,6 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories.A
 @ExtendWith(MockitoExtension.class)
 class ClientConnectionEventListenerTest {
 
-    private final static String DEVICE_IDENTIFICATION = "TEST-DEVICE-1";
-
-    private static final String GATEWAY_DEVICE_IDENTIFICATION = "TEST-GATEWAY-1";
-    private static final String ORGANISATION_IDENTIFICATION = "TEST-ORG-1";
-
     private ClientConnectionEventListener clientConnectionEventListener;
     private ResponseMetadata responseMetadata;
 
@@ -69,7 +64,7 @@ class ClientConnectionEventListenerTest {
                 .build();
 
         this.clientConnectionEventListener = new ClientConnectionEventListener.Builder()
-                .withDeviceIdentification(DEVICE_IDENTIFICATION)
+                .withDeviceIdentification(DEFAULT_DEVICE_IDENTIFICATION)
                 .withClientAsduHandlerRegistry(this.asduHandlerRegistry)
                 .withClientConnectionCache(this.connectionCache)
                 .withLoggingService(this.loggingService)
@@ -99,13 +94,14 @@ class ClientConnectionEventListenerTest {
     void shouldSendLogItemWhenNewAsduIsReceived() throws Exception {
         // Arrange
         final ASdu asdu = AsduFactory.ofType(ASduType.C_IC_NA_1);
-        final LogItem logItem = new LogItem(GATEWAY_DEVICE_IDENTIFICATION, ORGANISATION_IDENTIFICATION, true,
+        final LogItem logItem = new LogItem(DEFAULT_DEVICE_IDENTIFICATION, DEFAULT_ORGANISATION_IDENTIFICATION, true,
                 asdu.toString());
 
         when(this.asduHandlerRegistry.getHandler(asdu)).thenReturn(this.asduHandler);
         when(this.responseMetadataFactory.createWithNewCorrelationUid(this.responseMetadata))
                 .thenReturn(this.responseMetadata);
-        when(this.logItemFactory.create(asdu, this.responseMetadata, true)).thenReturn(logItem);
+        when(this.logItemFactory.create(asdu, DEFAULT_DEVICE_IDENTIFICATION, DEFAULT_ORGANISATION_IDENTIFICATION, true))
+                .thenReturn(logItem);
 
         // Act
         this.clientConnectionEventListener.newASdu(asdu);
@@ -123,7 +119,7 @@ class ClientConnectionEventListenerTest {
         this.clientConnectionEventListener.connectionClosed(e);
 
         // Assert
-        verify(this.connectionCache).removeConnection(DEVICE_IDENTIFICATION);
+        verify(this.connectionCache).removeConnection(DEFAULT_DEVICE_IDENTIFICATION);
     }
 
 }
