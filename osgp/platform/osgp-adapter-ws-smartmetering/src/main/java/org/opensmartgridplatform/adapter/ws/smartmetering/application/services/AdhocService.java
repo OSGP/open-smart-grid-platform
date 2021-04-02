@@ -44,7 +44,7 @@ public class AdhocService {
 
     public String enqueueSynchronizeTimeRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final SynchronizeTimeRequestData utcOffset,
-            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime, final boolean bypassRetry) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -59,7 +59,7 @@ public class AdhocService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.SYNCHRONIZE_TIME.name(), messagePriority,
-                scheduleTime);
+                scheduleTime, bypassRetry);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
                 deviceMessageMetadata).request(utcOffset).build();
@@ -71,7 +71,7 @@ public class AdhocService {
 
     public String enqueueGetAllAttributeValuesRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final GetAllAttributeValuesRequest request,
-            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime, final boolean bypassRetry) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -86,7 +86,7 @@ public class AdhocService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.GET_ALL_ATTRIBUTE_VALUES.name(),
-                messagePriority, scheduleTime);
+                messagePriority, scheduleTime, bypassRetry);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
                 deviceMessageMetadata).request(request).build();
@@ -98,7 +98,7 @@ public class AdhocService {
 
     public String enqueueGetAssociationLnObjectsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final GetAssociationLnObjectsRequest request,
-            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime, final boolean bypassRetry) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -113,7 +113,7 @@ public class AdhocService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.GET_ASSOCIATION_LN_OBJECTS.name(),
-                messagePriority, scheduleTime);
+                messagePriority, scheduleTime, bypassRetry);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
                 deviceMessageMetadata).request(request).build();
@@ -126,7 +126,7 @@ public class AdhocService {
     public String enqueueSpecificAttributeValueRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification,
             final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecificAttributeValueRequest request,
-            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime, final boolean bypassRetry) throws FunctionalException {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
@@ -140,7 +140,7 @@ public class AdhocService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.GET_SPECIFIC_ATTRIBUTE_VALUE.name(),
-                messagePriority, scheduleTime);
+                messagePriority, scheduleTime, bypassRetry);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
                 deviceMessageMetadata).request(request).build();
@@ -153,7 +153,8 @@ public class AdhocService {
     public String enqueueScanMbusChannelsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification,
             final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ScanMbusChannelsRequest request,
-            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime,
+            final boolean bypassRetry) throws FunctionalException {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
@@ -167,7 +168,7 @@ public class AdhocService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.SCAN_MBUS_CHANNELS.name(), messagePriority,
-                scheduleTime);
+                scheduleTime, bypassRetry);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
                 deviceMessageMetadata).request(request).build();

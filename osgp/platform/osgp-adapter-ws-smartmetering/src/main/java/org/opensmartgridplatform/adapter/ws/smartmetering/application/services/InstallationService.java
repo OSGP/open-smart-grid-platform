@@ -45,7 +45,7 @@ public class InstallationService {
 
     public String enqueueAddSmartMeterRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final AddSmartMeterRequest addSmartMeterRequest,
-            final int messagePriority, final Long scheduleTime) {
+            final int messagePriority, final Long scheduleTime, final boolean bypassRetry) {
 
         log.debug("enqueueAddSmartMeterRequest called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
@@ -55,7 +55,7 @@ public class InstallationService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.ADD_METER.name(), messagePriority,
-                scheduleTime);
+                scheduleTime, bypassRetry);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata)
@@ -82,7 +82,7 @@ public class InstallationService {
      */
     public String enqueueCoupleMbusDeviceRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Identification final String mbusDeviceIdentification,
-            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime, final boolean bypassRetry) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -97,7 +97,7 @@ public class InstallationService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.COUPLE_MBUS_DEVICE.name(), messagePriority,
-                scheduleTime);
+                scheduleTime, bypassRetry);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata)
@@ -128,7 +128,7 @@ public class InstallationService {
      */
     public String enqueueDecoupleMbusDeviceRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Identification final String mbusDeviceIdentification,
-            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime, final boolean bypassRetry) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -142,7 +142,7 @@ public class InstallationService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.DECOUPLE_MBUS_DEVICE.name(), messagePriority,
-                scheduleTime);
+                scheduleTime, bypassRetry);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata)
@@ -167,7 +167,7 @@ public class InstallationService {
      */
     public String enqueueCoupleMbusDeviceByChannelRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final int messagePriority, final Long scheduleTime,
-            final short channel) throws FunctionalException {
+            final short channel, final boolean bypassRetry) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -182,7 +182,7 @@ public class InstallationService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.COUPLE_MBUS_DEVICE_BY_CHANNEL.name(),
-                messagePriority, scheduleTime);
+                messagePriority, scheduleTime, bypassRetry);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata)
@@ -210,7 +210,7 @@ public class InstallationService {
      */
     public String enqueueDecoupleMbusDeviceByChannelRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final int messagePriority, final Long scheduleTime,
-            final short channel) throws FunctionalException {
+            final short channel, final boolean bypassRetry) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -225,7 +225,7 @@ public class InstallationService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.DECOUPLE_MBUS_DEVICE_BY_CHANNEL.name(),
-                messagePriority, scheduleTime);
+                messagePriority, scheduleTime, bypassRetry);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata)

@@ -97,7 +97,8 @@ public class MBusGatewayService {
                     deviceMessageMetadata.getDeviceIdentification(), gatewayDevice.getIpAddress(),
                     mbusChannelElementsDto);
             this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
-                    deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                    deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime(),
+                    deviceMessageMetadata.bypassRetry());
         } catch (final FunctionalException ex) {
             throw ex;
         }
@@ -129,7 +130,8 @@ public class MBusGatewayService {
                     deviceMessageMetadata.getDeviceIdentification(), gatewayDevice.getIpAddress(),
                     decoupleMbusDeviceDto);
             this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
-                    deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                    deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime(),
+                    deviceMessageMetadata.bypassRetry());
         }
     }
 
@@ -147,7 +149,8 @@ public class MBusGatewayService {
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 gatewayDevice.getIpAddress(), decoupleMbusDeviceDto);
         this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime(),
+                deviceMessageMetadata.bypassRetry());
     }
 
     private Optional<SmartMeter> findByMBusIdentificationNumber(final ChannelElementValuesDto channelElementValuesDto) {
@@ -194,7 +197,8 @@ public class MBusGatewayService {
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 gatewayDevice.getIpAddress(), requestDataDto);
         this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime(),
+                deviceMessageMetadata.bypassRetry());
 
     }
 

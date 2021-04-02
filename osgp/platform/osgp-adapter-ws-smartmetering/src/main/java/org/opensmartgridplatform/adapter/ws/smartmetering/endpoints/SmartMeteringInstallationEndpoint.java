@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.endpoints;
 import javax.validation.ConstraintViolationException;
 
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
+import org.opensmartgridplatform.adapter.ws.endpointinterceptors.BypassRetry;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.ResponseUrl;
@@ -74,7 +75,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public AddDeviceAsyncResponse addDevice(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final AddDeviceRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl,
+            @BypassRetry final String bypassRetry) throws OsgpException {
 
         log.info("Incoming AddDeviceRequest for meter: {}.", request.getDevice().getDeviceIdentification());
 
@@ -89,7 +91,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             final String correlationUid = this.installationService.enqueueAddSmartMeterRequest(
                     organisationIdentification, device.getDeviceIdentification(), addSmartMeterRequest,
                     MessagePriorityEnum.getMessagePriority(messagePriority),
-                    this.installationMapper.map(scheduleTime, Long.class));
+                    this.installationMapper.map(scheduleTime, Long.class), Boolean.parseBoolean(bypassRetry));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDevice().getDeviceIdentification());
@@ -155,7 +157,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
     public CoupleMbusDeviceAsyncResponse coupleMbusDevice(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final CoupleMbusDeviceRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl,
+            @BypassRetry final String bypassRetry) throws OsgpException {
 
         final String deviceIdentification = request.getDeviceIdentification();
         final String mbusDeviceIdentification = request.getMbusDeviceIdentification();
@@ -169,7 +172,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             final String correlationUid = this.installationService.enqueueCoupleMbusDeviceRequest(
                     organisationIdentification, deviceIdentification, mbusDeviceIdentification,
                     MessagePriorityEnum.getMessagePriority(messagePriority),
-                    this.installationMapper.map(scheduleTime, Long.class));
+                    this.installationMapper.map(scheduleTime, Long.class), Boolean.parseBoolean(bypassRetry));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(deviceIdentification);
@@ -232,7 +235,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
     public DecoupleMbusDeviceAsyncResponse decoupleMbusDevice(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final DecoupleMbusDeviceRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl,
+            @BypassRetry final String bypassRetry) throws OsgpException {
 
         final String deviceIdentification = request.getDeviceIdentification();
         final String mbusDeviceIdentification = request.getMbusDeviceIdentification();
@@ -246,7 +250,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             final String correlationUid = this.installationService.enqueueDecoupleMbusDeviceRequest(
                     organisationIdentification, deviceIdentification, mbusDeviceIdentification,
                     MessagePriorityEnum.getMessagePriority(messagePriority),
-                    this.installationMapper.map(scheduleTime, Long.class));
+                    this.installationMapper.map(scheduleTime, Long.class), Boolean.parseBoolean(bypassRetry));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(deviceIdentification);
@@ -312,7 +316,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final CoupleMbusDeviceByChannelRequest request,
             @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
-            @ResponseUrl final String responseUrl) throws OsgpException {
+            @ResponseUrl final String responseUrl, @BypassRetry final String bypassRetry) throws OsgpException {
 
         final String deviceIdentification = request.getDeviceIdentification();
         final short channel = request.getCoupleMbusDeviceByChannelRequestData().getChannel();
@@ -326,7 +330,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             final String correlationUid = this.installationService.enqueueCoupleMbusDeviceByChannelRequest(
                     organisationIdentification, deviceIdentification,
                     MessagePriorityEnum.getMessagePriority(messagePriority),
-                    this.installationMapper.map(scheduleTime, Long.class), channel);
+                    this.installationMapper.map(scheduleTime, Long.class), channel, Boolean.parseBoolean(bypassRetry));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(deviceIdentification);
@@ -393,7 +397,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final DecoupleMbusDeviceByChannelRequest request,
             @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
-            @ResponseUrl final String responseUrl) throws OsgpException {
+            @ResponseUrl final String responseUrl, @BypassRetry final String bypassRetry) throws OsgpException {
 
         final String deviceIdentification = request.getDeviceIdentification();
         final short channel = request.getDecoupleMbusDeviceByChannelRequestData().getChannel();
@@ -407,7 +411,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             final String correlationUid = this.installationService.enqueueDecoupleMbusDeviceByChannelRequest(
                     organisationIdentification, deviceIdentification,
                     MessagePriorityEnum.getMessagePriority(messagePriority),
-                    this.installationMapper.map(scheduleTime, Long.class), channel);
+                    this.installationMapper.map(scheduleTime, Long.class), channel, Boolean.parseBoolean(bypassRetry));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(deviceIdentification);

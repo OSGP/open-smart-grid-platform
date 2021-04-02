@@ -87,7 +87,8 @@ public class AdhocService {
                         deviceMessageMetadata.getDeviceIdentification(),
                         smartMeteringDevice.getIpAddress(), synchronizeTimeRequestDto),
                 deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime(),
+                deviceMessageMetadata.bypassRetry());
     }
 
     public void handleSynchronizeTimeResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -125,7 +126,8 @@ public class AdhocService {
                         deviceMessageMetadata.getOrganisationIdentification(),
                         deviceMessageMetadata.getDeviceIdentification(),
                         smartMeteringDevice.getIpAddress(), requestDto), deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime(),
+                deviceMessageMetadata.bypassRetry());
 
     }
 
@@ -162,7 +164,8 @@ public class AdhocService {
                         deviceMessageMetadata.getOrganisationIdentification(),
                         deviceMessageMetadata.getDeviceIdentification(),
                         smartMeteringDevice.getIpAddress(), requestDto), deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime(),
+                deviceMessageMetadata.bypassRetry());
     }
 
     public void handleGetAssocationLnObjectsResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -206,7 +209,8 @@ public class AdhocService {
                         deviceMessageMetadata.getOrganisationIdentification(),
                         deviceMessageMetadata.getDeviceIdentification(),
                         smartMeteringDevice.getIpAddress(), requestDto), deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime(),
+                deviceMessageMetadata.bypassRetry());
 
     }
 
@@ -244,8 +248,8 @@ public class AdhocService {
                         deviceMessageMetadata.getOrganisationIdentification(),
                         deviceMessageMetadata.getDeviceIdentification(),
                         smartMeteringDevice.getIpAddress(), requestDto), deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
-
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime(),
+                deviceMessageMetadata.bypassRetry());
     }
 
     public void handleScanMbusChannelsResponse(final DeviceMessageMetadata deviceMessageMetadata,

@@ -58,160 +58,171 @@ public class ConfigurationService {
 
     public String requestSetAdministrativeStatus(final String organisationIdentification,
             final String deviceIdentification, final AdministrativeStatusType requestData, final int messagePriority,
-            final Long scheduleTime) throws FunctionalException {
+            final Long scheduleTime, final boolean bypassRetry) throws FunctionalException {
         return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
                 scheduleTime, DeviceFunction.SET_ADMINISTRATIVE_STATUS, MessageType.SET_ADMINISTRATIVE_STATUS,
-                requestData);
+                requestData, bypassRetry);
     }
 
     public String enqueueGetFirmwareRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final GetFirmwareVersionQuery requestData,
-            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime, final boolean bypassRetry) throws FunctionalException {
         return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
-                scheduleTime, DeviceFunction.GET_FIRMWARE_VERSION, MessageType.GET_FIRMWARE_VERSION, requestData);
+                scheduleTime, DeviceFunction.GET_FIRMWARE_VERSION, MessageType.GET_FIRMWARE_VERSION, requestData,
+            bypassRetry);
     }
 
     public String enqueueUpdateFirmwareRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification,
             final UpdateFirmwareRequestData updateFirmwareRequestData, final int messagePriority,
-            final Long scheduleTime) throws FunctionalException {
+            final Long scheduleTime, final boolean bypassRetry) throws FunctionalException {
         return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
-                scheduleTime, DeviceFunction.UPDATE_FIRMWARE, MessageType.UPDATE_FIRMWARE, updateFirmwareRequestData);
+                scheduleTime, DeviceFunction.UPDATE_FIRMWARE, MessageType.UPDATE_FIRMWARE, updateFirmwareRequestData,
+            bypassRetry);
     }
 
     public String requestGetAdministrativeStatus(final String organisationIdentification,
-            final String deviceIdentification, final int messagePriority, final Long scheduleTime)
+            final String deviceIdentification, final int messagePriority, final Long scheduleTime,
+        final boolean bypassRetry)
             throws FunctionalException {
         return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
                 scheduleTime, DeviceFunction.GET_ADMINISTRATIVE_STATUS, MessageType.GET_ADMINISTRATIVE_STATUS,
-                AdministrativeStatusType.UNDEFINED);
+                AdministrativeStatusType.UNDEFINED, bypassRetry);
     }
 
     public String enqueueSetSpecialDaysRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final SpecialDaysRequest requestData,
-            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime, final boolean bypassRetry) throws FunctionalException {
         return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
-                scheduleTime, DeviceFunction.SET_SPECIAL_DAYS, MessageType.SET_SPECIAL_DAYS, requestData);
+                scheduleTime, DeviceFunction.SET_SPECIAL_DAYS, MessageType.SET_SPECIAL_DAYS, requestData,
+            bypassRetry);
     }
 
     public String enqueueSetConfigurationObjectRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final SetConfigurationObjectRequest requestData,
-            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime, final boolean bypassRetry) throws FunctionalException {
         return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
                 scheduleTime, DeviceFunction.SET_CONFIGURATION_OBJECT, MessageType.SET_CONFIGURATION_OBJECT,
-                requestData);
+                requestData, bypassRetry);
     }
 
     public String enqueueSetPushSetupAlarmRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final PushSetupAlarm pushSetupAlarm,
-            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime, final boolean bypassRetry) throws FunctionalException {
         return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
-                scheduleTime, DeviceFunction.SET_PUSH_SETUP_ALARM, MessageType.SET_PUSH_SETUP_ALARM, pushSetupAlarm);
+                scheduleTime, DeviceFunction.SET_PUSH_SETUP_ALARM, MessageType.SET_PUSH_SETUP_ALARM, pushSetupAlarm,
+            bypassRetry);
     }
 
     public String enqueueSetPushSetupSmsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final PushSetupSms pushSetupSms,
-            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime, final boolean bypassRetry) throws FunctionalException {
         return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
-                scheduleTime, DeviceFunction.SET_PUSH_SETUP_SMS, MessageType.SET_PUSH_SETUP_SMS, pushSetupSms);
+                scheduleTime, DeviceFunction.SET_PUSH_SETUP_SMS, MessageType.SET_PUSH_SETUP_SMS, pushSetupSms,
+            bypassRetry);
     }
 
     public String enqueueSetAlarmNotificationsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final AlarmNotifications alarmSwitches,
-            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime, final boolean bypassRetry) throws FunctionalException {
         return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
                 scheduleTime, DeviceFunction.SET_ALARM_NOTIFICATIONS, MessageType.SET_ALARM_NOTIFICATIONS,
-                alarmSwitches);
+                alarmSwitches, bypassRetry);
     }
 
     public String enqueueSetEncryptionKeyExchangeOnGMeterRequest(
             @Identification final String organisationIdentification, @Identification final String deviceIdentification,
-            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime, final boolean bypassRetry) throws FunctionalException {
         return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
                 scheduleTime, DeviceFunction.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER,
-                MessageType.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER, null);
+                MessageType.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER, null, bypassRetry);
     }
 
     public String enqueueGetMbusEncryptionKeyStatusRequest(final String organisationIdentification,
-            final String deviceIdentification, final int messagePriority, final Long scheduleTime)
+            final String deviceIdentification, final int messagePriority, final Long scheduleTime,
+        final boolean bypassRetry)
             throws FunctionalException {
         return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
                 scheduleTime, DeviceFunction.GET_MBUS_ENCRYPTION_KEY_STATUS, MessageType.GET_MBUS_ENCRYPTION_KEY_STATUS,
-                null);
+                null, bypassRetry);
     }
 
     public String enqueueGetMbusEncryptionKeyStatusByChannelRequest(final String organisationIdentification,
-            final String deviceIdentification, final int messagePriority, final Long scheduleTime, final short channel)
+            final String deviceIdentification, final int messagePriority, final Long scheduleTime, final short channel,
+        final boolean bypassRetry)
             throws FunctionalException {
         return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
                 scheduleTime, DeviceFunction.GET_MBUS_ENCRYPTION_KEY_STATUS_BY_CHANNEL,
                 MessageType.GET_MBUS_ENCRYPTION_KEY_STATUS_BY_CHANNEL,
-                new GetMbusEncryptionKeyStatusByChannelRequestData(channel));
+                new GetMbusEncryptionKeyStatusByChannelRequestData(channel), bypassRetry);
     }
 
     public String enqueueSetActivityCalendarRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final ActivityCalendar activityCalendar,
-            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime, final boolean bypassRetry) throws FunctionalException {
         return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
                 scheduleTime, DeviceFunction.SET_ACTIVITY_CALENDAR, MessageType.SET_ACTIVITY_CALENDAR,
-                activityCalendar);
+                activityCalendar, bypassRetry);
     }
 
     public String enqueueReplaceKeysRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final SetKeysRequestData keySet,
-            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime, final boolean bypassRetry) throws FunctionalException {
         return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
-                scheduleTime, DeviceFunction.REPLACE_KEYS, MessageType.REPLACE_KEYS, keySet);
+                scheduleTime, DeviceFunction.REPLACE_KEYS, MessageType.REPLACE_KEYS, keySet, bypassRetry);
     }
 
     public String enqueueSetClockConfigurationRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification,
             final SetClockConfigurationRequestData clockConfigurationRequestData, final int messagePriority,
-            final Long scheduleTime) throws FunctionalException {
+            final Long scheduleTime, final boolean bypassRetry) throws FunctionalException {
         return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
                 scheduleTime, DeviceFunction.SET_CLOCK_CONFIGURATION, MessageType.SET_CLOCK_CONFIGURATION,
-                clockConfigurationRequestData);
+                clockConfigurationRequestData, bypassRetry);
     }
 
     public String enqueueGetConfigurationObjectRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final GetConfigurationObjectRequest requestData,
-            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime, final boolean bypassRetry) throws FunctionalException {
         return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
                 scheduleTime, DeviceFunction.GET_CONFIGURATION_OBJECT, MessageType.GET_CONFIGURATION_OBJECT,
-                requestData);
+                requestData, bypassRetry);
     }
 
     public String enqueueGenerateAndReplaceKeysRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final int messagePriority, final Long scheduleTime)
+            @Identification final String deviceIdentification, final int messagePriority, final Long scheduleTime,
+        final boolean bypassRetry)
             throws FunctionalException {
         return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
-                scheduleTime, DeviceFunction.GENERATE_AND_REPLACE_KEYS, MessageType.GENERATE_AND_REPLACE_KEYS, null);
+                scheduleTime, DeviceFunction.GENERATE_AND_REPLACE_KEYS, MessageType.GENERATE_AND_REPLACE_KEYS
+            , null, bypassRetry);
     }
 
     public String enqueueConfigureDefinableLoadProfileRequest(final String organisationIdentification,
             final String deviceIdentification,
             final DefinableLoadProfileConfigurationData definableLoadProfileConfigurationData,
-            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime, final boolean bypassRetry) throws FunctionalException {
         return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
                 scheduleTime, DeviceFunction.CONFIGURE_DEFINABLE_LOAD_PROFILE,
-                MessageType.CONFIGURE_DEFINABLE_LOAD_PROFILE, definableLoadProfileConfigurationData);
+                MessageType.CONFIGURE_DEFINABLE_LOAD_PROFILE, definableLoadProfileConfigurationData,
+            bypassRetry);
     }
 
     public String enqueueSetMbusUserKeyByChannelRequest(final String organisationIdentification,
             final String deviceIdentification,
             final SetMbusUserKeyByChannelRequestData setMbusUserKeyByChannelRequestData, final int messagePriority,
-            final Long scheduleTime) throws FunctionalException {
+            final Long scheduleTime, final boolean bypassRetry) throws FunctionalException {
         return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
                 scheduleTime, DeviceFunction.SET_MBUS_USER_KEY_BY_CHANNEL, MessageType.SET_MBUS_USER_KEY_BY_CHANNEL,
-                setMbusUserKeyByChannelRequestData);
+                setMbusUserKeyByChannelRequestData, bypassRetry);
     }
 
     public String enqueueSetRandomisationSettingsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final SetRandomisationSettingsRequest requestData,
-            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime, final boolean bypassRetry) throws FunctionalException {
         return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
                 scheduleTime, DeviceFunction.SET_CONFIGURATION_OBJECT, MessageType.SET_RANDOMISATION_SETTINGS,
-                requestData);
+                requestData, bypassRetry);
     }
 
     /**
@@ -246,7 +257,7 @@ public class ConfigurationService {
      */
     private String enqueueAndSendRequest(final String organisationIdentification, final String deviceIdentification,
             final int messagePriority, final Long scheduleTime, final DeviceFunction deviceFunction,
-            final MessageType messageType, final Serializable requestObject) throws FunctionalException {
+            final MessageType messageType, final Serializable requestObject, final boolean bypassRetry) throws FunctionalException {
         log.debug("enqueueAndSendRequest called for messageType {} with organisation {} and device {}", messageType,
                 organisationIdentification, deviceIdentification);
 
@@ -256,7 +267,7 @@ public class ConfigurationService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, messageType.name(), messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, messageType.name(), messagePriority, scheduleTime, bypassRetry);
 
         final SmartMeteringRequestMessage message;
 

@@ -12,6 +12,7 @@ import java.util.List;
 import javax.validation.ConstraintViolationException;
 
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
+import org.opensmartgridplatform.adapter.ws.endpointinterceptors.BypassRetry;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.ResponseUrl;
@@ -92,7 +93,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
     public FindEventsAsyncResponse findEventsRequest(
             @OrganisationIdentification final String organisationIdentification,
             @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
-            @ResponseUrl final String responseUrl, @RequestPayload final FindEventsRequest request)
+            @ResponseUrl final String responseUrl, @RequestPayload final FindEventsRequest request,
+            @BypassRetry final String bypassRetry)
             throws OsgpException {
 
         LOGGER.info("Find events request for organisation: {} and device: {}.", organisationIdentification,
@@ -112,7 +114,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
                     this.managementMapper.mapAsList(findEventsQuery,
                             org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FindEventsRequestData.class),
                     MessagePriorityEnum.getMessagePriority(messagePriority),
-                    this.managementMapper.map(scheduleTime, Long.class));
+                    this.managementMapper.map(scheduleTime, Long.class), Boolean.parseBoolean(bypassRetry));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
@@ -192,7 +194,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
     public EnableDebuggingAsyncResponse enableDebuggingRequest(
             @OrganisationIdentification final String organisationIdentification,
             @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
-            @ResponseUrl final String responseUrl, @RequestPayload final EnableDebuggingRequest request)
+            @ResponseUrl final String responseUrl, @RequestPayload final EnableDebuggingRequest request,
+            @BypassRetry final String bypassRetry)
             throws OsgpException {
 
         LOGGER.info("Enable debugging request for organisation: {} and device: {}.", organisationIdentification,
@@ -208,7 +211,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             final String correlationUid = this.managementService.enqueueEnableDebuggingRequest(
                     organisationIdentification, deviceIdentification,
                     MessagePriorityEnum.getMessagePriority(messagePriority),
-                    this.managementMapper.map(scheduleTime, Long.class));
+                    this.managementMapper.map(scheduleTime, Long.class),
+                    Boolean.parseBoolean(bypassRetry));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
@@ -255,7 +259,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
     public DisableDebuggingAsyncResponse disableDebuggingRequest(
             @OrganisationIdentification final String organisationIdentification,
             @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
-            @ResponseUrl final String responseUrl, @RequestPayload final DisableDebuggingRequest request)
+            @ResponseUrl final String responseUrl, @RequestPayload final DisableDebuggingRequest request,
+            @BypassRetry final String bypassRetry)
             throws OsgpException {
 
         LOGGER.info("Disable debugging request for organisation: {} and device: {}.", organisationIdentification,
@@ -271,7 +276,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             final String correlationUid = this.managementService.enqueueDisableDebuggingRequest(
                     organisationIdentification, deviceIdentification,
                     MessagePriorityEnum.getMessagePriority(messagePriority),
-                    this.managementMapper.map(scheduleTime, Long.class));
+                    this.managementMapper.map(scheduleTime, Long.class), Boolean.parseBoolean(bypassRetry));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
@@ -333,7 +338,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
     public FindMessageLogsAsyncResponse findMessageLogsRequest(
             @OrganisationIdentification final String organisationIdentification,
             @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
-            @ResponseUrl final String responseUrl, @RequestPayload final FindMessageLogsRequest request)
+            @ResponseUrl final String responseUrl, @RequestPayload final FindMessageLogsRequest request,
+            @BypassRetry final String bypassRetry)
             throws OsgpException {
 
         LOGGER.info("Find message logs request for organisation: {} and device: {}.", organisationIdentification,
@@ -402,7 +408,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
     public SetDeviceCommunicationSettingsAsyncResponse setDeviceCommunicationSettingsRequest(
             @OrganisationIdentification final String organisationIdentification,
             @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
-            @ResponseUrl final String responseUrl, @RequestPayload final SetDeviceCommunicationSettingsRequest request)
+            @ResponseUrl final String responseUrl, @RequestPayload final SetDeviceCommunicationSettingsRequest request,
+            @BypassRetry final String bypassRetry)
             throws OsgpException {
 
         LOGGER.info("Set device communication settings request for organisation: {} and device: {}.",
@@ -420,7 +427,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             final String correlationUid = this.managementService.enqueueSetDeviceCommunicationSettingsRequest(
                     organisationIdentification, deviceIdentification, dataRequest,
                     MessagePriorityEnum.getMessagePriority(messagePriority),
-                    this.managementMapper.map(scheduleTime, Long.class));
+                    this.managementMapper.map(scheduleTime, Long.class), Boolean.parseBoolean(bypassRetry));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
@@ -468,7 +475,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetDeviceLifecycleStatusByChannelRequest request,
             @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
-            @ResponseUrl final String responseUrl) throws OsgpException {
+            @ResponseUrl final String responseUrl, @BypassRetry final String bypassRetry) throws OsgpException {
 
         LOGGER.info("Set device lifecycle status by channel request received from organisation {} for device {}",
                 organisationIdentification, request.getGatewayDeviceIdentification());
@@ -482,7 +489,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             final String correlationUid = this.managementService.enqueueSetDeviceLifecycleStatusByChannelRequest(
                     organisationIdentification, request.getGatewayDeviceIdentification(), requestData,
                     MessagePriorityEnum.getMessagePriority(messagePriority),
-                    (this.managementMapper.map(scheduleTime, Long.class)));
+                    (this.managementMapper.map(scheduleTime, Long.class)), Boolean.parseBoolean(bypassRetry));
 
             asyncResponse = new SetDeviceLifecycleStatusByChannelAsyncResponse();
 
@@ -526,5 +533,4 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
         }
         return response;
     }
-
 }

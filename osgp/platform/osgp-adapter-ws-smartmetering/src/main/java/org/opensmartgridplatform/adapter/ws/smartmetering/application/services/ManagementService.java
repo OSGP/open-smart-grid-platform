@@ -77,7 +77,8 @@ public class ManagementService {
     }
 
     public String enqueueFindEventsRequest(final String organisationIdentification, final String deviceIdentification,
-            final List<FindEventsRequestData> findEventsQueryList, final int messagePriority, final Long scheduleTime)
+            final List<FindEventsRequestData> findEventsQueryList, final int messagePriority, final Long scheduleTime,
+            final boolean bypassRetry)
             throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
@@ -98,7 +99,7 @@ public class ManagementService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.FIND_EVENTS.name(), messagePriority,
-                scheduleTime);
+                scheduleTime, bypassRetry);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
                 deviceMessageMetadata).request(new FindEventsRequestDataList(findEventsQueryList)).build();
@@ -162,7 +163,8 @@ public class ManagementService {
     }
 
     public String enqueueEnableDebuggingRequest(final String organisationIdentification,
-            final String deviceIdentification, final int messagePriority, final Long scheduleTime)
+            final String deviceIdentification, final int messagePriority, final Long scheduleTime,
+            final boolean bypassRetry)
             throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
@@ -177,7 +179,7 @@ public class ManagementService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.ENABLE_DEBUGGING.name(), messagePriority,
-                scheduleTime);
+                scheduleTime, bypassRetry);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
                 deviceMessageMetadata).build();
@@ -188,7 +190,8 @@ public class ManagementService {
     }
 
     public String enqueueDisableDebuggingRequest(final String organisationIdentification,
-            final String deviceIdentification, final int messagePriority, final Long scheduleTime)
+            final String deviceIdentification, final int messagePriority, final Long scheduleTime,
+            final boolean bypassRetry)
             throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
@@ -203,7 +206,7 @@ public class ManagementService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.DISABLE_DEBUGGING.name(), messagePriority,
-                scheduleTime);
+                scheduleTime, bypassRetry);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
                 deviceMessageMetadata).build();
@@ -236,7 +239,7 @@ public class ManagementService {
     public String enqueueSetDeviceCommunicationSettingsRequest(final String organisationIdentification,
             final String deviceIdentification,
             final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetDeviceCommunicationSettingsRequest dataRequest,
-            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime, final boolean bypassRetry) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -250,7 +253,7 @@ public class ManagementService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.SET_DEVICE_COMMUNICATION_SETTINGS.name(),
-                messagePriority, scheduleTime);
+                messagePriority, scheduleTime, bypassRetry);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
                 deviceMessageMetadata).request(dataRequest).build();
@@ -262,7 +265,7 @@ public class ManagementService {
 
     public String enqueueSetDeviceLifecycleStatusByChannelRequest(final String organisationIdentification,
             final String deviceIdentification, final SetDeviceLifecycleStatusByChannelRequestData requestData,
-            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime, final boolean bypassRetry) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findDevice(deviceIdentification);
@@ -277,7 +280,7 @@ public class ManagementService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.SET_DEVICE_LIFECYCLE_STATUS_BY_CHANNEL.name(),
-                messagePriority, scheduleTime);
+                messagePriority, scheduleTime, bypassRetry);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
                 deviceMessageMetadata).request(requestData).build();
@@ -288,3 +291,4 @@ public class ManagementService {
     }
 
 }
+

@@ -56,35 +56,35 @@ public class MonitoringService {
 
     public String enqueuePeriodicMeterReadsRequestData(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final PeriodicMeterReadsQuery requestData,
-            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime, final boolean bypassRetry) throws FunctionalException {
 
         return this.enqueueRequestData(organisationIdentification, deviceIdentification, requestData, messagePriority,
-                scheduleTime, DeviceFunction.REQUEST_PERIODIC_METER_DATA, MessageType.REQUEST_PERIODIC_METER_DATA);
+                scheduleTime, DeviceFunction.REQUEST_PERIODIC_METER_DATA, MessageType.REQUEST_PERIODIC_METER_DATA, bypassRetry);
 
     }
 
     public String enqueueActualMeterReadsRequestData(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final ActualMeterReadsQuery requestData,
-            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime, final boolean bypassRetry) throws FunctionalException {
 
         return this.enqueueRequestData(organisationIdentification, deviceIdentification, requestData, messagePriority,
-                scheduleTime, DeviceFunction.REQUEST_ACTUAL_METER_DATA, MessageType.REQUEST_ACTUAL_METER_DATA);
+                scheduleTime, DeviceFunction.REQUEST_ACTUAL_METER_DATA, MessageType.REQUEST_ACTUAL_METER_DATA, bypassRetry);
     }
 
     public String enqueueReadAlarmRegisterRequestData(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final ReadAlarmRegisterRequest requestData,
-            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime, final boolean bypassRetry) throws FunctionalException {
 
         return this.enqueueRequestData(organisationIdentification, deviceIdentification, requestData, messagePriority,
-                scheduleTime, DeviceFunction.READ_ALARM_REGISTER, MessageType.READ_ALARM_REGISTER);
+                scheduleTime, DeviceFunction.READ_ALARM_REGISTER, MessageType.READ_ALARM_REGISTER, bypassRetry);
     }
 
     public String enqueueGetPowerQualityProfileRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final GetPowerQualityProfileRequest requestData,
-            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime, final boolean bypassRetry) throws FunctionalException {
 
         return this.enqueueRequestData(organisationIdentification, deviceIdentification, requestData, messagePriority,
-                scheduleTime, DeviceFunction.GET_PROFILE_GENERIC_DATA, MessageType.GET_PROFILE_GENERIC_DATA);
+                scheduleTime, DeviceFunction.GET_PROFILE_GENERIC_DATA, MessageType.GET_PROFILE_GENERIC_DATA, bypassRetry);
 
     }
 
@@ -96,24 +96,24 @@ public class MonitoringService {
 
     public String enqueueClearAlarmRegisterRequestData(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final ClearAlarmRegisterRequest requestData,
-            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime, final boolean bypassRetry) throws FunctionalException {
 
         return this.enqueueRequestData(organisationIdentification, deviceIdentification, requestData, messagePriority,
-                scheduleTime, DeviceFunction.CLEAR_ALARM_REGISTER, MessageType.CLEAR_ALARM_REGISTER);
+                scheduleTime, DeviceFunction.CLEAR_ALARM_REGISTER, MessageType.CLEAR_ALARM_REGISTER, bypassRetry);
     }
 
     public String enqueueActualPowerQualityRequestData(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final ActualPowerQualityRequest requestData,
-            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime, final boolean bypassRetry) throws FunctionalException {
 
         return this.enqueueRequestData(organisationIdentification, deviceIdentification, requestData, messagePriority,
-                scheduleTime, DeviceFunction.GET_ACTUAL_POWER_QUALITY, MessageType.GET_ACTUAL_POWER_QUALITY);
+                scheduleTime, DeviceFunction.GET_ACTUAL_POWER_QUALITY, MessageType.GET_ACTUAL_POWER_QUALITY, bypassRetry);
     }
 
     private String enqueueRequestData(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final Serializable requestData,
             final int messagePriority, final Long scheduleTime, final DeviceFunction deviceFunction,
-            final MessageType messageType) throws FunctionalException {
+            final MessageType messageType, final boolean bypassRetry) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -130,7 +130,7 @@ public class MonitoringService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, messageType.name(), messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, messageType.name(), messagePriority, scheduleTime, bypassRetry);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata)

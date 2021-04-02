@@ -12,6 +12,7 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.endpoints;
 import java.util.List;
 
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
+import org.opensmartgridplatform.adapter.ws.endpointinterceptors.BypassRetry;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.ResponseUrl;
@@ -69,7 +70,8 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
     public SynchronizeTimeAsyncResponse synchronizeTime(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SynchronizeTimeRequest request, @MessagePriority final String messagePriority,
-            @ResponseUrl final String responseUrl, @ScheduleTime final String scheduleTime) throws OsgpException {
+            @ResponseUrl final String responseUrl, @ScheduleTime final String scheduleTime,
+            @BypassRetry final String bypassRetry) throws OsgpException {
 
         final SynchronizeTimeAsyncResponse response = new SynchronizeTimeAsyncResponse();
 
@@ -80,7 +82,8 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         final String correlationUid = this.adhocService.enqueueSynchronizeTimeRequest(organisationIdentification,
                 request.getDeviceIdentification(), synchronizeTimeRequestData,
                 MessagePriorityEnum.getMessagePriority(messagePriority),
-                this.adhocMapper.map(scheduleTime, Long.class));
+                this.adhocMapper.map(scheduleTime, Long.class),
+                Boolean.parseBoolean(bypassRetry));
 
         response.setCorrelationUid(correlationUid);
         response.setDeviceIdentification(request.getDeviceIdentification());
@@ -117,7 +120,8 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
     public GetAllAttributeValuesAsyncResponse getAllAttributeValues(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final GetAllAttributeValuesRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl,
+            @BypassRetry final String bypassRetry) throws OsgpException {
 
         final GetAllAttributeValuesAsyncResponse response = new GetAllAttributeValuesAsyncResponse();
 
@@ -127,7 +131,8 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         final String correlationUid = this.adhocService.enqueueGetAllAttributeValuesRequest(organisationIdentification,
                 getAllAttributeValuesRequest.getDeviceIdentification(), getAllAttributeValuesRequest,
                 MessagePriorityEnum.getMessagePriority(messagePriority),
-                this.adhocMapper.map(scheduleTime, Long.class));
+                this.adhocMapper.map(scheduleTime, Long.class),
+                Boolean.parseBoolean(bypassRetry));
 
         response.setCorrelationUid(correlationUid);
         response.setDeviceIdentification(request.getDeviceIdentification());
@@ -165,7 +170,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final GetSpecificAttributeValueRequest request,
             @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
-            @ResponseUrl final String responseUrl) throws OsgpException {
+            @ResponseUrl final String responseUrl, @BypassRetry final String bypassRetry) throws OsgpException {
 
         final GetSpecificAttributeValueAsyncResponse response = new GetSpecificAttributeValueAsyncResponse();
 
@@ -176,7 +181,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         final String correlationUid = this.adhocService.enqueueSpecificAttributeValueRequest(organisationIdentification,
                 request.getDeviceIdentification(), getSpecificAttributeValueRequest,
                 MessagePriorityEnum.getMessagePriority(messagePriority),
-                this.adhocMapper.map(scheduleTime, Long.class));
+                this.adhocMapper.map(scheduleTime, Long.class), Boolean.parseBoolean(bypassRetry));
 
         response.setCorrelationUid(correlationUid);
         response.setDeviceIdentification(request.getDeviceIdentification());
@@ -222,7 +227,8 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
     public GetAssociationLnObjectsAsyncResponse getAssociationLnObjects(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final GetAssociationLnObjectsRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl,
+            @BypassRetry final String bypassRetry) throws OsgpException {
 
         final GetAssociationLnObjectsAsyncResponse response = new GetAssociationLnObjectsAsyncResponse();
 
@@ -232,7 +238,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         final String correlationUid = this.adhocService.enqueueGetAssociationLnObjectsRequest(
                 organisationIdentification, getAssociationLnObjectsRequest.getDeviceIdentification(),
                 getAssociationLnObjectsRequest, MessagePriorityEnum.getMessagePriority(messagePriority),
-                this.adhocMapper.map(scheduleTime, Long.class));
+                this.adhocMapper.map(scheduleTime, Long.class), Boolean.parseBoolean(bypassRetry));
 
         response.setCorrelationUid(correlationUid);
         response.setDeviceIdentification(request.getDeviceIdentification());
@@ -270,7 +276,8 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
     public ScanMbusChannelsAsyncResponse scanMbusChannels(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final ScanMbusChannelsRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl,
+            @BypassRetry final String bypassRetry) throws OsgpException {
 
         final ScanMbusChannelsAsyncResponse response = new ScanMbusChannelsAsyncResponse();
 
@@ -281,7 +288,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         final String correlationUid = this.adhocService.enqueueScanMbusChannelsRequest(organisationIdentification,
                 request.getDeviceIdentification(), scanMbusChannelsRequest,
                 MessagePriorityEnum.getMessagePriority(messagePriority),
-                this.adhocMapper.map(scheduleTime, Long.class));
+                this.adhocMapper.map(scheduleTime, Long.class), Boolean.parseBoolean(bypassRetry));
 
         response.setCorrelationUid(correlationUid);
         response.setDeviceIdentification(request.getDeviceIdentification());
