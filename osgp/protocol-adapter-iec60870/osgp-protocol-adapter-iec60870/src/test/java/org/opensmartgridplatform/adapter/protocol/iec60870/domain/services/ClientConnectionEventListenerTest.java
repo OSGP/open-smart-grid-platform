@@ -24,7 +24,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.LogItemFactory;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.ResponseMetadataFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DomainInfo;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.LogItem;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
 import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories.AsduFactory;
 
@@ -32,6 +35,9 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories.A
 class ClientConnectionEventListenerTest {
 
     private final static String DEVICE_IDENTIFICATION = "TEST-DEVICE-1";
+
+    private static final String GATEWAY_DEVICE_IDENTIFICATION = "TEST-GATEWAY-1";
+    private static final String ORGANISATION_IDENTIFICATION = "TEST-ORG-1";
 
     private ClientConnectionEventListener clientConnectionEventListener;
     private ResponseMetadata responseMetadata;
@@ -45,6 +51,15 @@ class ClientConnectionEventListenerTest {
     @Mock
     private ClientAsduHandler asduHandler;
 
+    @Mock
+    private LoggingService loggingService;
+
+    @Mock
+    private LogItemFactory logItemFactory;
+
+    @Mock
+    private ResponseMetadataFactory responseMetadataFactory;
+
     @BeforeEach
     public void setup() {
         this.responseMetadata = new ResponseMetadata.Builder().withDeviceIdentification(DEFAULT_DEVICE_IDENTIFICATION)
@@ -52,8 +67,17 @@ class ClientConnectionEventListenerTest {
                 .withDomainInfo(new DomainInfo(DEFAULT_DOMAIN, DEFAULT_DOMAIN_VERSION))
                 .withMessageType(DEFAULT_MESSAGE_TYPE)
                 .build();
-        this.clientConnectionEventListener = new ClientConnectionEventListener(DEVICE_IDENTIFICATION,
-                this.connectionCache, this.asduHandlerRegistry, this.responseMetadata);
+
+        this.clientConnectionEventListener = new ClientConnectionEventListener.Builder()
+                .withDeviceIdentification(DEVICE_IDENTIFICATION)
+                .withClientAsduHandlerRegistry(this.asduHandlerRegistry)
+                .withClientConnectionCache(this.connectionCache)
+                .withLoggingService(this.loggingService)
+                .withLogItemFactory(this.logItemFactory)
+                .withResponseMetadata(this.responseMetadata)
+                .withResponseMetadataFactory(this.responseMetadataFactory)
+                .build();
+
     }
 
     @Test
@@ -61,12 +85,33 @@ class ClientConnectionEventListenerTest {
         // Arrange
         final ASdu asdu = AsduFactory.ofType(ASduType.C_IC_NA_1);
         when(this.asduHandlerRegistry.getHandler(asdu)).thenReturn(this.asduHandler);
+        when(this.responseMetadataFactory.createWithNewCorrelationUid(this.responseMetadata))
+                .thenReturn(this.responseMetadata);
 
         // Act
         this.clientConnectionEventListener.newASdu(asdu);
 
         // Assert
         verify(this.asduHandler).handleAsdu(asdu, this.responseMetadata);
+    }
+
+    @Test
+    void shouldSendLogItemWhenNewAsduIsReceived() throws Exception {
+        // Arrange
+        final ASdu asdu = AsduFactory.ofType(ASduType.C_IC_NA_1);
+        final LogItem logItem = new LogItem(GATEWAY_DEVICE_IDENTIFICATION, ORGANISATION_IDENTIFICATION, true,
+                asdu.toString());
+
+        when(this.asduHandlerRegistry.getHandler(asdu)).thenReturn(this.asduHandler);
+        when(this.responseMetadataFactory.createWithNewCorrelationUid(this.responseMetadata))
+                .thenReturn(this.responseMetadata);
+        when(this.logItemFactory.create(asdu, this.responseMetadata, true)).thenReturn(logItem);
+
+        // Act
+        this.clientConnectionEventListener.newASdu(asdu);
+
+        // Assert
+        verify(this.loggingService).log(logItem);
     }
 
     @Test

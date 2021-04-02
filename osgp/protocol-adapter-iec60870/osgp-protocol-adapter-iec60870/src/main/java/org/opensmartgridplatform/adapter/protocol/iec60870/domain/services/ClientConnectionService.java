@@ -14,6 +14,8 @@ import javax.annotation.PreDestroy;
 
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60870Device;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.exceptions.ClientConnectionAlreadyInCacheException;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.LogItemFactory;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.ResponseMetadataFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ConnectionParameters;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceConnection;
@@ -43,12 +45,21 @@ public class ClientConnectionService {
     @Autowired
     private ClientAsduHandlerRegistry clientAsduHandlerRegistry;
 
+    @Autowired
+    private LoggingService loggingService;
+
+    @Autowired
+    private LogItemFactory logItemFactory;
+
+    @Autowired
+    private ResponseMetadataFactory responseMetadataFactory;
+
     public ClientConnection getConnection(final RequestMetadata requestMetadata) throws ConnectionFailureException {
         final String deviceIdentification = requestMetadata.getDeviceIdentification();
         LOGGER.debug("Get connection called for device {}.", deviceIdentification);
 
         final Iec60870Device device = this.getIec60870Device(deviceIdentification);
-        final String connectionDeviceIdentification = this.getConnectionDeviceIdentification(device);
+        final String connectionDeviceIdentification = device.getConnectionDeviceIdentification();
 
         if (device.hasGatewayDevice()) {
             LOGGER.debug("Getting connection for device {} using gateway device {}.", deviceIdentification,
@@ -104,9 +115,15 @@ public class ClientConnectionService {
                 requestMetadata.getIpAddress());
         final ResponseMetadata responseMetadata = ResponseMetadata.from(requestMetadata, device.getDeviceType());
 
-        final ClientConnectionEventListener eventListener = new ClientConnectionEventListener(
-                connectionParameters.getDeviceIdentification(), this.connectionCache, this.clientAsduHandlerRegistry,
-                responseMetadata);
+        final ClientConnectionEventListener eventListener = new ClientConnectionEventListener.Builder()
+                .withDeviceIdentification(connectionDeviceIdentification)
+                .withClientAsduHandlerRegistry(this.clientAsduHandlerRegistry)
+                .withClientConnectionCache(this.connectionCache)
+                .withLoggingService(this.loggingService)
+                .withLogItemFactory(this.logItemFactory)
+                .withResponseMetadata(responseMetadata)
+                .withResponseMetadataFactory(this.responseMetadataFactory)
+                .build();
 
         final ClientConnection newDeviceConnection = this.iec60870Client.connect(connectionParameters, eventListener);
 
