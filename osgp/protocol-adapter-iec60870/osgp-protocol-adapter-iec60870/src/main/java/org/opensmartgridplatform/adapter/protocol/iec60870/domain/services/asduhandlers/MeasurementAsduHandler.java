@@ -45,7 +45,7 @@ public abstract class MeasurementAsduHandler extends AbstractClientAsduHandler {
     @Autowired
     private LogItemFactory logItemFactory;
 
-    public MeasurementAsduHandler(final ASduType asduType) {
+    protected MeasurementAsduHandler(final ASduType asduType) {
         super(asduType);
     }
 
