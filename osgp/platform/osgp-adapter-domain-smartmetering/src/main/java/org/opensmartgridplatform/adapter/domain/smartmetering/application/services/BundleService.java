@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
@@ -21,6 +22,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.BundleMessagesRe
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.FirmwareVersionGasResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FirmwareVersionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -150,6 +152,13 @@ public class BundleService {
                         .mapAsList(((FirmwareVersionResponseDto) action).getFirmwareVersions(), FirmwareVersion.class);
                 this.firmwareService.saveFirmwareVersionsReturnedFromDevice(
                         deviceMessageMetadata.getDeviceIdentification(), firmwareVersions);
+            } else if (action instanceof FirmwareVersionGasResponseDto) {
+                final FirmwareVersionGasResponseDto firmwareVersionGasResponseDto = (FirmwareVersionGasResponseDto) action;
+                final FirmwareVersion firmwareVersion = this.configurationMapper
+                        .map(firmwareVersionGasResponseDto.getFirmwareVersion(), FirmwareVersion.class);
+                this.firmwareService.saveFirmwareVersionsReturnedFromDevice(
+                        firmwareVersionGasResponseDto.getFirmwareVersion().getMbusDeviceIdentification(),
+                        Arrays.asList(firmwareVersion));
             }
         }
     }

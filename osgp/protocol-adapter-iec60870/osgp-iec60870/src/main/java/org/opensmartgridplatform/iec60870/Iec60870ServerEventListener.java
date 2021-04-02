@@ -103,6 +103,16 @@ public class Iec60870ServerEventListener implements ServerEventListener {
         }
     }
 
+    public void stopListening() {
+        LOGGER.info("Stop listening, closing connections.");
+        this.iec60870ConnectionRegistry.getAllConnections().forEach(this::closeConnection);
+    }
+
+    private void closeConnection(final Connection connection) {
+        LOGGER.info("Closing connection {}.", connection);
+        connection.close();
+    }
+
     @Override
     public void serverStoppedListeningIndication(final IOException e) {
         LOGGER.info("Server has stopped listening: {}.", e.getMessage());

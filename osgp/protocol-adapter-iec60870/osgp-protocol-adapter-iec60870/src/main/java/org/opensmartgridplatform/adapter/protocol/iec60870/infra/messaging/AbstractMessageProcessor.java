@@ -13,6 +13,7 @@ import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnection;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.PendingRequestsQueue;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LoggingService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.RequestMetadata;
 import org.opensmartgridplatform.shared.exceptionhandling.ProtocolAdapterException;
@@ -58,6 +59,9 @@ public abstract class AbstractMessageProcessor implements MessageProcessor {
 
     @Autowired
     private LoggingService iec60870LoggingService;
+
+    @Autowired
+    private PendingRequestsQueue pendingRequestsQueue;
 
     private final MessageType messageType;
 
@@ -121,6 +125,9 @@ public abstract class AbstractMessageProcessor implements MessageProcessor {
         LOGGER.warn("Error while processing message", e);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(messageMetadata);
+
+        this.pendingRequestsQueue.remove(deviceMessageMetadata.getDeviceIdentification(),
+                deviceMessageMetadata.getCorrelationUid());
 
         final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage.Builder()
                 .domain(messageMetadata.getDomain())

@@ -21,6 +21,7 @@ import org.opensmartgridplatform.adapter.domain.smartmetering.application.mappin
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.ActualMeterReadsRequestGasRequestDataConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.CustomValueToDtoConverter;
+import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.GetFirmwareVersionGasRequestDataConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.PeriodicReadsRequestGasDataConverter;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters.SetEncryptionKeyExchangeOnGMeterDataConverter;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
@@ -42,6 +43,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetAdmin
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetAllAttributeValuesRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetAssociationLnObjectsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfigurationObjectRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetFirmwareVersionGasRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetFirmwareVersionRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestData;
@@ -62,6 +64,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysR
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushSetupAlarmRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetPushSetupSmsRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecificAttributeValueRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SynchronizeTimeRequestData;
@@ -103,6 +106,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeysRequestDt
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupAlarmRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupSmsRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisationSettingsRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecificAttributeValueRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
@@ -120,31 +124,6 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 @Service(value = "domainSmartMeteringActionMapperService")
 @Validated
 public class ActionMapperService {
-
-    @Autowired
-    @Qualifier("configurationMapper")
-    private ConfigurationMapper configurationMapper;
-
-    @Autowired
-    private ManagementMapper managementMapper;
-
-    @Autowired
-    private MonitoringMapper monitoringMapper;
-
-    @Autowired
-    private CommonMapper commonMapper;
-
-    @Autowired
-    private PeriodicReadsRequestGasDataConverter periodicReadsRequestGasDataConverter;
-
-    @Autowired
-    private ActualMeterReadsRequestGasRequestDataConverter actualReadsRequestGasDataConverter;
-
-    @Autowired
-    private SetEncryptionKeyExchangeOnGMeterDataConverter setEncryptionKeyExchangeOnGMeterDataConverter;
-
-    @Autowired
-    private DomainHelperService domainHelperService;
 
     private static final Map<Class<? extends ActionRequest>, ConfigurableMapper> CLASS_TO_MAPPER_MAP = new HashMap<>();
     private static final Map<Class<? extends ActionRequest>, CustomValueToDtoConverter<? extends ActionRequest, ? extends ActionRequestDto>> CUSTOM_CONVERTER_FOR_CLASS = new HashMap<>();
@@ -191,8 +170,29 @@ public class ActionMapperService {
         CLASS_MAP.put(ScanMbusChannelsRequestData.class, ScanMbusChannelsRequestDataDto.class);
         CLASS_MAP.put(GetOutagesRequestData.class, GetOutagesRequestDto.class);
         CLASS_MAP.put(ActualPowerQualityRequest.class, ActualPowerQualityRequestDto.class);
+        CLASS_MAP.put(SetRandomisationSettingsRequestData.class, SetRandomisationSettingsRequestDataDto.class);
         CLASS_MAP.put(GetModemInfoRequestData.class, GetModemInfoRequestDto.class);
     }
+
+    @Autowired
+    @Qualifier("configurationMapper")
+    private ConfigurationMapper configurationMapper;
+    @Autowired
+    private ManagementMapper managementMapper;
+    @Autowired
+    private MonitoringMapper monitoringMapper;
+    @Autowired
+    private CommonMapper commonMapper;
+    @Autowired
+    private PeriodicReadsRequestGasDataConverter periodicReadsRequestGasDataConverter;
+    @Autowired
+    private ActualMeterReadsRequestGasRequestDataConverter actualReadsRequestGasDataConverter;
+    @Autowired
+    private SetEncryptionKeyExchangeOnGMeterDataConverter setEncryptionKeyExchangeOnGMeterDataConverter;
+    @Autowired
+    private GetFirmwareVersionGasRequestDataConverter getFirmwareVersionGasRequestDataConverter;
+    @Autowired
+    private DomainHelperService domainHelperService;
 
     /**
      * Specifies which mapper to use for the core class received.
@@ -205,6 +205,8 @@ public class ActionMapperService {
         CUSTOM_CONVERTER_FOR_CLASS.put(ActualMeterReadsGasRequestData.class, this.actualReadsRequestGasDataConverter);
         CUSTOM_CONVERTER_FOR_CLASS.put(SetEncryptionKeyExchangeOnGMeterRequestData.class,
                 this.setEncryptionKeyExchangeOnGMeterDataConverter);
+        CUSTOM_CONVERTER_FOR_CLASS.put(GetFirmwareVersionGasRequestData.class,
+                this.getFirmwareVersionGasRequestDataConverter);
 
         CLASS_TO_MAPPER_MAP.put(PeriodicMeterReadsRequestData.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(ActualMeterReadsRequestData.class, this.commonMapper);
@@ -240,6 +242,7 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(ScanMbusChannelsRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(GetOutagesRequestData.class, this.managementMapper);
         CLASS_TO_MAPPER_MAP.put(ActualPowerQualityRequest.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(SetRandomisationSettingsRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(GetModemInfoRequestData.class, this.managementMapper);
     }
 
