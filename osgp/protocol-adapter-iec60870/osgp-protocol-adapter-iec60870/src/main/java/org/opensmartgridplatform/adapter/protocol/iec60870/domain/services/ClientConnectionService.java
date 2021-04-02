@@ -98,7 +98,7 @@ public class ClientConnectionService {
         final String deviceIdentification = requestMetadata.getDeviceIdentification();
         final Iec60870Device device = this.getIec60870Device(deviceIdentification);
         final Iec60870Device connectionDevice = this.getConnectionDevice(device);
-        final String connectionDeviceIdentification = this.getConnectionDeviceIdentification(device);
+        final String connectionDeviceIdentification = device.getConnectionDeviceIdentification();
 
         final ConnectionParameters connectionParameters = this.createConnectionParameters(connectionDevice,
                 requestMetadata.getIpAddress());
@@ -115,7 +115,7 @@ public class ClientConnectionService {
         } catch (final ClientConnectionAlreadyInCacheException e) {
             LOGGER.warn(
                     "Client connection for device {} already exists. Closing new connection and returning existing connection",
-                    deviceIdentification);
+                    connectionDeviceIdentification);
             LOGGER.debug("Exception: ", e);
             newDeviceConnection.getConnection().close();
             return e.getClientConnection();
@@ -130,14 +130,6 @@ public class ClientConnectionService {
                 .commonAddress(device.getCommonAddress())
                 .port(device.getPort())
                 .build();
-    }
-
-    private String getConnectionDeviceIdentification(final Iec60870Device device) {
-        if (device.hasGatewayDevice()) {
-            return device.getGatewayDeviceIdentification();
-        } else {
-            return device.getDeviceIdentification();
-        }
     }
 
     private Iec60870Device getConnectionDevice(final Iec60870Device device) throws ConnectionFailureException {
