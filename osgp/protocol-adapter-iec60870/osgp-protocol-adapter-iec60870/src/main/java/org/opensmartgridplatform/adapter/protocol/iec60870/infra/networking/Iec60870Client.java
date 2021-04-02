@@ -55,12 +55,13 @@ public class Iec60870Client implements Client {
         final int port = connectionParameters.getPort() == null ? IEC60870_DEFAULT_PORT
                 : connectionParameters.getPort();
 
-        final ClientConnectionBuilder clientConnectionBuilder = new ClientConnectionBuilder(address).setPort(port);
+        final ClientConnectionBuilder clientConnectionBuilder = new ClientConnectionBuilder(address).setPort(port)
+                .setConnectionTimeout(this.connectionTimeout);
 
         try {
             LOGGER.info("Connecting to device: {}...", deviceIdentification);
             final Connection connection = clientConnectionBuilder.build();
-            connection.startDataTransfer(asduListener, this.connectionTimeout);
+            connection.startDataTransfer(asduListener);
             LOGGER.info("Connected to device: {}", deviceIdentification);
 
             return new DeviceConnection(connection, connectionParameters);
