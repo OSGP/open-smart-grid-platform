@@ -24,5 +24,5 @@ GXF wiki with detailed project information:
 GXF detailed documentation:
 * [documentation.gxf.lfenergy.org](https://documentation.gxf.lfenergy.org/)
 
-GXF issue tracker:
+GXF issue tracker (will be decommissioned):
 * [GXF Jira](https://smartsocietyservices.atlassian.net/projects/OC/issues/)
