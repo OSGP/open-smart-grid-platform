@@ -15,6 +15,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.CommonMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.InstallationMapper;
@@ -30,11 +31,13 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMb
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceByChannelResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventMessagesResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FaultResponse;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersionGasResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetAllAttributeValuesResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfigurationObjectResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetModemInfoResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetOutagesResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterReads;
@@ -54,11 +57,13 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDevice
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FaultResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.FirmwareVersionGasResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FirmwareVersionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetAllAttributeValuesResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetModemInfoResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetOutagesResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MeterReadsGasResponseDto;
@@ -74,8 +79,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionTyp
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-
-import ma.glasnost.orika.impl.ConfigurableMapper;
 
 @Service(value = "domainSmartMeteringActionMapperResponseService")
 @Validated
@@ -114,6 +117,7 @@ public class ActionMapperResponseService {
         classMap.put(PeriodicMeterReadGasResponseDto.class, PeriodicMeterReadsContainerGas.class);
         classMap.put(GetAllAttributeValuesResponseDto.class, GetAllAttributeValuesResponse.class);
         classMap.put(FirmwareVersionResponseDto.class, FirmwareVersionResponse.class);
+        classMap.put(FirmwareVersionGasResponseDto.class, FirmwareVersionGasResponse.class);
         classMap.put(UpdateFirmwareResponseDto.class, UpdateFirmwareResponse.class);
         classMap.put(AssociationLnObjectsResponseDto.class, AssociationLnObjectsResponseData.class);
         classMap.put(GetConfigurationObjectResponseDto.class, GetConfigurationObjectResponse.class);
@@ -128,6 +132,7 @@ public class ActionMapperResponseService {
                 SetDeviceLifecycleStatusByChannelResponseData.class);
         classMap.put(ScanMbusChannelsResponseDto.class, ScanMbusChannelsResponseData.class);
         classMap.put(GetOutagesResponseDto.class, GetOutagesResponseData.class);
+        classMap.put(GetModemInfoResponseDto.class, GetModemInfoResponseData.class);
     }
 
     /**
@@ -146,6 +151,7 @@ public class ActionMapperResponseService {
         classToMapperMap.put(PeriodicMeterReadGasResponseDto.class, this.monitoringMapper);
         classToMapperMap.put(GetAllAttributeValuesResponseDto.class, this.configurationMapper);
         classToMapperMap.put(FirmwareVersionResponseDto.class, this.configurationMapper);
+        classToMapperMap.put(FirmwareVersionGasResponseDto.class, this.configurationMapper);
         classToMapperMap.put(UpdateFirmwareResponseDto.class, this.configurationMapper);
         classToMapperMap.put(AssociationLnObjectsResponseDto.class, this.commonMapper);
         classToMapperMap.put(GetConfigurationObjectResponseDto.class, this.configurationMapper);
@@ -158,6 +164,7 @@ public class ActionMapperResponseService {
         classToMapperMap.put(SetDeviceLifecycleStatusByChannelResponseDto.class, this.managementMapper);
         classToMapperMap.put(ScanMbusChannelsResponseDto.class, this.configurationMapper);
         classToMapperMap.put(GetOutagesResponseDto.class, this.managementMapper);
+        classToMapperMap.put(GetModemInfoResponseDto.class, this.managementMapper);
     }
 
     public BundleMessagesResponse mapAllActions(final BundleMessagesRequestDto bundleMessageResponseDto)

@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.openmuc.jdlms.AccessResultCode;
@@ -19,6 +20,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.datetime.
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.datetime.SetClockConfigurationCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.datetime.SetSpecialDaysCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.GetFirmwareVersionsCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.GetFirmwareVersionsGasCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.GetMBusDeviceOnChannelCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.GetMbusEncryptionKeyStatusByChannelCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.GetMbusEncryptionKeyStatusCommandExecutor;
@@ -33,7 +35,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.security.
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActivityCalendarDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmNotificationsDto;
@@ -43,6 +44,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObj
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DefinableLoadProfileConfigurationDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GMeterInfoDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersionQueryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMBusDeviceOnChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelResponseDto;
@@ -60,6 +62,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDayDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,6 +113,9 @@ public class ConfigurationService {
 
     @Autowired
     private GetFirmwareVersionsCommandExecutor getFirmwareVersionCommandExecutor;
+
+    @Autowired
+    private GetFirmwareVersionsGasCommandExecutor getFirmwareVersionGasCommandExecutor;
 
     @Autowired
     private ReplaceKeyCommandExecutor replaceKeyCommandExecutor;
@@ -298,10 +304,14 @@ public class ConfigurationService {
 
     }
 
-    public List<FirmwareVersionDto> requestFirmwareVersion(final DlmsConnectionManager conn, final DlmsDevice device)
-            throws ProtocolAdapterException {
+    public Serializable requestFirmwareVersion(final DlmsConnectionManager conn, final DlmsDevice device,
+            final GetFirmwareVersionQueryDto queryDto) throws ProtocolAdapterException, FunctionalException {
 
-        return this.getFirmwareVersionCommandExecutor.execute(conn, device, null);
+        if (queryDto.isMbusQuery()) {
+            return this.getFirmwareVersionGasCommandExecutor.execute(conn, device, queryDto);
+        }
+
+        return (Serializable) this.getFirmwareVersionCommandExecutor.execute(conn, device, queryDto);
     }
 
     public void generateAndEncrypt(final DlmsConnectionManager conn, final DlmsDevice device) throws OsgpException {
@@ -384,11 +394,11 @@ public class ConfigurationService {
                 getMbusEncryptionKeyStatusByChannelRequest);
     }
 
-    public void requestSetRandomizationSettings(DlmsConnectionManager conn, DlmsDevice device,
-            SetRandomisationSettingsRequestDataDto setRandomisationSettingsRequestDataDto)
+    public void requestSetRandomizationSettings(final DlmsConnectionManager conn, final DlmsDevice device,
+            final SetRandomisationSettingsRequestDataDto setRandomisationSettingsRequestDataDto)
             throws ProtocolAdapterException {
 
-        AccessResultCode accessResultCode = this.setRandomisationSettingsCommandExecutor.execute(conn, device,
+        final AccessResultCode accessResultCode = this.setRandomisationSettingsCommandExecutor.execute(conn, device,
                 setRandomisationSettingsRequestDataDto);
 
         if (AccessResultCode.SUCCESS != accessResultCode) {

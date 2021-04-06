@@ -23,7 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.opensmartgridplatform.adapter.protocol.iec60870.infra.CorrelationUidPerDevice;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.PendingRequestsQueue;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.processors.GetHealthStatusRequestMessageProcessor;
 import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.matchers.ErrorResponseMessageMatcher;
 import org.opensmartgridplatform.dto.da.GetHealthStatusRequestDto;
@@ -44,7 +44,7 @@ class DeviceRequestMessageListenerTest {
     private DeviceResponseMessageSender deviceResponseMessageSender;
 
     @Mock
-    private CorrelationUidPerDevice correlationUidPerDevice;
+    private PendingRequestsQueue pendingRequestsQueue;
 
     @Test
     void shouldProcessMessageWhenMessageTypeIsSupported() throws JMSException {
@@ -64,7 +64,7 @@ class DeviceRequestMessageListenerTest {
         this.deviceRequestMessageListener.onMessage(message);
 
         // Assert
-        verify(this.correlationUidPerDevice).enqueue(DEFAULT_DEVICE_IDENTIFICATION, correlationUid);
+        verify(this.pendingRequestsQueue).enqueue(DEFAULT_DEVICE_IDENTIFICATION, correlationUid);
         verify(messageProcessor).processMessage(message);
     }
 
@@ -85,8 +85,8 @@ class DeviceRequestMessageListenerTest {
         this.deviceRequestMessageListener.onMessage(message);
 
         // Assert
-        verify(this.correlationUidPerDevice).enqueue(DEFAULT_DEVICE_IDENTIFICATION, correlationUid);
-        verify(this.correlationUidPerDevice).remove(DEFAULT_DEVICE_IDENTIFICATION,
+        verify(this.pendingRequestsQueue).enqueue(DEFAULT_DEVICE_IDENTIFICATION, correlationUid);
+        verify(this.pendingRequestsQueue).remove(DEFAULT_DEVICE_IDENTIFICATION,
                 correlationUid);
         verify(this.deviceResponseMessageSender).send(argThat(new ErrorResponseMessageMatcher()));
     }

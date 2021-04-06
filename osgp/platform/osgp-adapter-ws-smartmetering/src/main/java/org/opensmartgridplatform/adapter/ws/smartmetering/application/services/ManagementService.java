@@ -25,6 +25,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.Event;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventMessagesResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FindEventsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FindEventsRequestDataList;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetModemInfoRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelRequestData;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -277,6 +278,33 @@ public class ManagementService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, MessageType.SET_DEVICE_LIFECYCLE_STATUS_BY_CHANNEL.name(),
+                messagePriority, scheduleTime);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
+                deviceMessageMetadata).request(requestData).build();
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    public String enqueueGetModemInfoRequest(final String organisationIdentification,
+            final String deviceIdentification, final GetModemInfoRequestData requestData,
+            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findDevice(deviceIdentification);
+
+        this.domainHelperService.checkAllowed(organisation, device,
+                DeviceFunction.GET_MODEM_INFO);
+
+        LOGGER.info("GetModemInfo called with organisation {}", organisationIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, MessageType.GET_MODEM_INFO.name(),
                 messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(

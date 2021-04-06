@@ -1,8 +1,9 @@
-/**
- * Copyright 2020 Alliander N.V.
+/*
+ * Copyright 2021 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -17,9 +18,9 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dl
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsModemInfo.ATTRIBUTE_ID_PACKET_SWITCHED_STATUS;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -40,7 +41,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.CircuitSwitchedS
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetModemInfoRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetModemInfoResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ModemInfoDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ModemRegistrationStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PacketSwitchedStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SignalQualityDto;
@@ -48,6 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 
 @Component()
 public class GetModemInfoCommandExecutor
@@ -142,9 +143,9 @@ public class GetModemInfoCommandExecutor
         final PacketSwitchedStatusDto packetSwitchedStatusDto = this.getPacketSwitchedStatus(getResultList);
         final CellInfo cellInfo = this.getCellInfo(getResultList);
         final AdjacentCellsInfo adjacentCellsInfo = this.getAdjacentCellsInfo(getResultList);
-        final DateTime captureTimeDto = this.getCaptureTime(getResultList);
+        final Date captureTimeDto = this.getCaptureTime(getResultList);
 
-        final ModemInfoDto modemInfoDto = new ModemInfoDto(
+        return new GetModemInfoResponseDto(
                 operator,
                 registrationStatus,
                 circuitSwitchedStatus,
@@ -161,8 +162,6 @@ public class GetModemInfoCommandExecutor
                 adjacentCellsInfo.signalQualityDto,
                 captureTimeDto
         );
-
-        return new GetModemInfoResponseDto(modemInfoDto);
     }
 
     private String getOperator(final List<GetResult> getResultList) {
@@ -178,7 +177,7 @@ public class GetModemInfoCommandExecutor
     private ModemRegistrationStatusDto getRegistrationStatus(final List<GetResult> getResultList) {
         final GetResult registrationStatusResult = getResultList.get(RESULT_MODEM_REGISTRATION_STATUS_INDEX);
         if (registrationStatusResult.getResultCode() == AccessResultCode.SUCCESS) {
-            return ModemRegistrationStatusDto.fromValue(registrationStatusResult.getResultData().getValue());
+            return ModemRegistrationStatusDto.fromIndexValue(registrationStatusResult.getResultData().getValue());
         } else {
             return null;
         }
@@ -187,7 +186,7 @@ public class GetModemInfoCommandExecutor
     private CircuitSwitchedStatusDto getCircuitSwitchedStatus(final List<GetResult> getResultList) {
         final GetResult circuitSwitchedStatusResult = getResultList.get(RESULT_CIRCUIT_SWITCHED_STATUS_INDEX);
         if (circuitSwitchedStatusResult.getResultCode() == AccessResultCode.SUCCESS) {
-            return CircuitSwitchedStatusDto.fromValue(circuitSwitchedStatusResult.getResultData().getValue());
+            return CircuitSwitchedStatusDto.fromIndexValue(circuitSwitchedStatusResult.getResultData().getValue());
         } else {
             return null;
         }
@@ -196,7 +195,7 @@ public class GetModemInfoCommandExecutor
     private PacketSwitchedStatusDto getPacketSwitchedStatus(final List<GetResult> getResultList) {
         final GetResult packetSwitchedStatusResult = getResultList.get(RESULT_PACKET_SWITCHED_STATUS_INDEX);
         if (packetSwitchedStatusResult.getResultCode() == AccessResultCode.SUCCESS) {
-            return PacketSwitchedStatusDto.fromValue(packetSwitchedStatusResult.getResultData().getValue());
+            return PacketSwitchedStatusDto.fromIndexValue(packetSwitchedStatusResult.getResultData().getValue());
         } else {
             return null;
         }
@@ -216,9 +215,9 @@ public class GetModemInfoCommandExecutor
             cellInfo.cellId = this.longToByteArray(cellInfoDataObjects.get(CELL_INFO_CELL_ID_INDEX).getValue());
             cellInfo.locationId = this.intToByteArray(cellInfoDataObjects.get(CELL_INFO_LOCATION_ID_INDEX).getValue());
             cellInfo.signalQualityDto = SignalQualityDto
-                    .fromValue((short) cellInfoDataObjects.get(CELL_INFO_SIGNAL_QUALITY_INDEX).getValue());
+                    .fromIndex((short) cellInfoDataObjects.get(CELL_INFO_SIGNAL_QUALITY_INDEX).getValue());
             cellInfo.bitErrorRateDto = BitErrorRateDto
-                    .fromValue((short) cellInfoDataObjects.get(CELL_INFO_BIT_ERROR_RATE_INDEX).getValue());
+                    .fromIndexValue((short) cellInfoDataObjects.get(CELL_INFO_BIT_ERROR_RATE_INDEX).getValue());
             cellInfo.mobileCountryCode = cellInfoDataObjects.get(CELL_INFO_MOBILE_COUNTRY_CODE_INDEX).getValue();
             cellInfo.mobileNetworkCode = cellInfoDataObjects.get(CELL_INFO_MOBILE_NETWORK_CODE_INDEX).getValue();
             cellInfo.channelNumber = cellInfoDataObjects.get(CELL_INFO_CHANNEL_NUMBER_INDEX).getValue();
@@ -244,7 +243,7 @@ public class GetModemInfoCommandExecutor
                 adjacentCellsInfo.adjacentCellId = this
                         .longToByteArray(firstAdjacentCell.get(ADJACENT_CELLS_CELL_ID_INDEX).getValue());
                 adjacentCellsInfo.signalQualityDto = SignalQualityDto
-                        .fromValue((short) firstAdjacentCell.get(ADJACENT_CELLS_SIGNAL_QUALITY_INDEX).getValue());
+                        .fromIndex((short) firstAdjacentCell.get(ADJACENT_CELLS_SIGNAL_QUALITY_INDEX).getValue());
             }
         }
 
@@ -260,15 +259,15 @@ public class GetModemInfoCommandExecutor
         }
     }
 
-    private DateTime getCaptureTime(final List<GetResult> getResultList) throws ProtocolAdapterException {
+    private Date getCaptureTime(final List<GetResult> getResultList) throws ProtocolAdapterException {
         final GetResult captureTimeResult = getResultList.get(RESULT_CAPTURE_TIME_INDEX);
         if (captureTimeResult.getResultCode() == AccessResultCode.SUCCESS) {
             final CosemDateTimeDto cosemDateTime = this.dlmsHelper
                     .readDateTime(captureTimeResult.getResultData(), "Clock from modem info");
 
-            final DateTime captureTime;
+            final Date captureTime;
             if (cosemDateTime.isDateTimeSpecified()) {
-                captureTime = cosemDateTime.asDateTime();
+                captureTime = cosemDateTime.asDateTime().toDate();
             } else {
                 throw new ProtocolAdapterException("Unexpected values in modem info capture time");
             }

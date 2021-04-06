@@ -21,7 +21,7 @@ public class FirmwareManagementMapperTest {
             final org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FirmwareModuleData source) {
         return new FirmwareModuleData(source.getModuleVersionComm(), source.getModuleVersionFunc(),
                 source.getModuleVersionMa(), source.getModuleVersionMbus(), source.getModuleVersionSec(),
-                source.getModuleVersionMBusDriverActive());
+                source.getModuleVersionMBusDriverActive(), source.getModuleVersionSimple());
     }
 
     @Test

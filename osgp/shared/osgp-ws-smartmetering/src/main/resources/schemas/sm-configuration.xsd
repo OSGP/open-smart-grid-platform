@@ -158,11 +158,45 @@
     </xsd:restriction>
   </xsd:simpleType>
 
+  <xsd:complexType name="GetFirmwareVersionGasRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Query">
+        <xsd:sequence>
+          <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="GetFirmwareVersionGasResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
+        <xsd:sequence>
+          <xsd:element name="FirmwareVersion" type="tns:FirmwareVersionGas"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="FirmwareVersionGas">
+    <xsd:sequence>
+      <xsd:element name="Version" type="xsd:hexBinary"/>
+      <xsd:element name="FirmwareModuleType" type="tns:FirmwareModuleGasType"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- Firmware Module Types -->
+  <xsd:simpleType name="FirmwareModuleGasType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="SIMPLE_VERSION_INFO"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
   <!-- For the support of single GetFirmwareVersion support -->
   <xsd:element name="GetFirmwareVersionRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:Identification"/>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -173,7 +207,6 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-
   <xsd:element name="GetFirmwareVersionAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
@@ -187,6 +220,39 @@
         <xsd:element name="Result" type="common:OsgpResultType"/>
         <xsd:sequence>
           <xsd:element name="FirmwareVersion" type="tns:FirmwareVersion" maxOccurs="unbounded"/>
+        </xsd:sequence>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="GetFirmwareVersionGasRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetFirmwareVersionGasAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="GetFirmwareVersionGasAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetFirmwareVersionGasResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType"/>
+        <xsd:sequence>
+          <xsd:element name="FirmwareVersion" type="tns:FirmwareVersionGas" />
         </xsd:sequence>
       </xsd:sequence>
     </xsd:complexType>

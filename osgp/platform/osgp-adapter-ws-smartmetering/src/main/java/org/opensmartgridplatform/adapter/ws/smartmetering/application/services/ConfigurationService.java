@@ -8,6 +8,8 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.services;
 
+import java.io.Serializable;
+
 import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -18,6 +20,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.Administ
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DefinableLoadProfileConfigurationData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfigurationObjectRequest;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetFirmwareVersionQuery;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupAlarm;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupSms;
@@ -33,17 +36,16 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.validation.Identification;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service(value = "wsSmartMeteringConfigurationService")
 @Validated
 public class ConfigurationService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationService.class);
 
     @Autowired
     private DomainHelperService domainHelperService;
@@ -57,557 +59,227 @@ public class ConfigurationService {
     public String requestSetAdministrativeStatus(final String organisationIdentification,
             final String deviceIdentification, final AdministrativeStatusType requestData, final int messagePriority,
             final Long scheduleTime) throws FunctionalException {
-        return this.enqueueSetAdministrativeStatus(organisationIdentification, deviceIdentification, requestData,
-                messagePriority, scheduleTime);
+        return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
+                scheduleTime, DeviceFunction.SET_ADMINISTRATIVE_STATUS, MessageType.SET_ADMINISTRATIVE_STATUS,
+                requestData);
     }
 
-    private String enqueueSetAdministrativeStatus(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification,
-            @Identification final AdministrativeStatusType requestData, final int messagePriority,
-            final Long scheduleTime) throws FunctionalException {
-
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.SET_ADMINISTRATIVE_STATUS);
-
-        LOGGER.info(
-                "enqueueSetAdministrativeStatus called with organisation {} and device {}, set administrative status "
-                        + "to {}", organisationIdentification, deviceIdentification, requestData);
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
-
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, MessageType.SET_ADMINISTRATIVE_STATUS.name(),
-                messagePriority, scheduleTime);
-
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).request(requestData).build();
-
-        this.smartMeteringRequestMessageSender.send(message);
-
-        return correlationUid;
-    }
-
-    /**
-     * Checks if the organization (identified by the organisationIdentification)
-     * is allowed to execute this function. Creates a correlation id, sends the
-     * get firmware request from the ws-adapter to the domain-adapter and
-     * returns the correlation id.
-     *
-     * @param organisationIdentification
-     *         {@link String} containing the organization identification
-     * @param deviceIdentification
-     *         {@link String} containing the device identification
-     * @param messagePriority
-     *         contains the message priority
-     * @param scheduleTime
-     *         contains the time when the message is scheduled to be executed
-     *
-     * @return the correlation id belonging to the request
-     *
-     * @throws FunctionalException
-     *         is thrown when either the device or organization cannot be
-     *         found or the organization is not allowed to execute the
-     *         function
-     */
     public String enqueueGetFirmwareRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final int messagePriority, final Long scheduleTime)
-            throws FunctionalException {
-        LOGGER.debug("Queue get firmware request");
-
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.GET_FIRMWARE_VERSION);
-
-        LOGGER.debug("enqueueGetFirmwareRequest called with organisation {} and device {}", organisationIdentification,
-                deviceIdentification);
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
-
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, MessageType.GET_FIRMWARE_VERSION.name(), messagePriority,
-                scheduleTime);
-
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).build();
-
-        this.smartMeteringRequestMessageSender.send(message);
-
-        return correlationUid;
+            @Identification final String deviceIdentification, final GetFirmwareVersionQuery requestData,
+            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+        return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
+                scheduleTime, DeviceFunction.GET_FIRMWARE_VERSION, MessageType.GET_FIRMWARE_VERSION, requestData);
     }
 
     public String enqueueUpdateFirmwareRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification,
             final UpdateFirmwareRequestData updateFirmwareRequestData, final int messagePriority,
             final Long scheduleTime) throws FunctionalException {
-
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.UPDATE_FIRMWARE);
-
-        LOGGER.debug("enqueueUpdateFirmwareRequest called with organisation {} and device {}",
-                organisationIdentification, deviceIdentification);
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
-
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, MessageType.UPDATE_FIRMWARE.name(), messagePriority,
-                scheduleTime);
-
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).request(updateFirmwareRequestData).build();
-
-        this.smartMeteringRequestMessageSender.send(message);
-
-        return correlationUid;
-
+        return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
+                scheduleTime, DeviceFunction.UPDATE_FIRMWARE, MessageType.UPDATE_FIRMWARE, updateFirmwareRequestData);
     }
 
     public String requestGetAdministrativeStatus(final String organisationIdentification,
             final String deviceIdentification, final int messagePriority, final Long scheduleTime)
             throws FunctionalException {
-        return this.enqueueGetAdministrativeStatus(organisationIdentification, deviceIdentification, messagePriority,
-                scheduleTime);
-    }
-
-    private String enqueueGetAdministrativeStatus(final String organisationIdentification,
-            final String deviceIdentification, final int messagePriority, final Long scheduleTime)
-            throws FunctionalException {
-
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.GET_ADMINISTRATIVE_STATUS);
-
-        LOGGER.debug("enqueueGetAdministrativeStatus called with organisation {} and device {}",
-                organisationIdentification, deviceIdentification);
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
-
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, MessageType.GET_ADMINISTRATIVE_STATUS.name(),
-                messagePriority, scheduleTime);
-
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).request(AdministrativeStatusType.UNDEFINED).build();
-
-        this.smartMeteringRequestMessageSender.send(message);
-
-        return correlationUid;
+        return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
+                scheduleTime, DeviceFunction.GET_ADMINISTRATIVE_STATUS, MessageType.GET_ADMINISTRATIVE_STATUS,
+                AdministrativeStatusType.UNDEFINED);
     }
 
     public String enqueueSetSpecialDaysRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final SpecialDaysRequest requestData,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
-
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.SET_SPECIAL_DAYS);
-
-        LOGGER.debug("enqueueSetSpecialDaysRequest called with organisation {} and device {}",
-                organisationIdentification, deviceIdentification);
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
-
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, MessageType.SET_SPECIAL_DAYS.name(), messagePriority,
-                scheduleTime);
-
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).request(requestData).build();
-
-        this.smartMeteringRequestMessageSender.send(message);
-
-        return correlationUid;
+        return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
+                scheduleTime, DeviceFunction.SET_SPECIAL_DAYS, MessageType.SET_SPECIAL_DAYS, requestData);
     }
 
     public String enqueueSetConfigurationObjectRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final SetConfigurationObjectRequest requestData,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
-
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.SET_CONFIGURATION_OBJECT);
-
-        LOGGER.debug("enqueueSetConfigurationObjectRequest called with organisation {} and device {}",
-                organisationIdentification, deviceIdentification);
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
-
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, MessageType.SET_CONFIGURATION_OBJECT.name(),
-                messagePriority, scheduleTime);
-
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).request(requestData).build();
-
-        this.smartMeteringRequestMessageSender.send(message);
-
-        return correlationUid;
+        return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
+                scheduleTime, DeviceFunction.SET_CONFIGURATION_OBJECT, MessageType.SET_CONFIGURATION_OBJECT,
+                requestData);
     }
 
     public String enqueueSetPushSetupAlarmRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final PushSetupAlarm pushSetupAlarm,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
-
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.SET_PUSH_SETUP_ALARM);
-
-        LOGGER.debug("enqueueSetPushSetupAlarmRequest called with organisation {} and device {}",
-                organisationIdentification, deviceIdentification);
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
-
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, MessageType.SET_PUSH_SETUP_ALARM.name(), messagePriority,
-                scheduleTime);
-
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).request(pushSetupAlarm).build();
-
-        this.smartMeteringRequestMessageSender.send(message);
-
-        return correlationUid;
+        return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
+                scheduleTime, DeviceFunction.SET_PUSH_SETUP_ALARM, MessageType.SET_PUSH_SETUP_ALARM, pushSetupAlarm);
     }
 
     public String enqueueSetPushSetupSmsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final PushSetupSms pushSetupSms,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
-
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.SET_PUSH_SETUP_SMS);
-
-        LOGGER.debug("enqueueSetPushSetupSmsRequest called with organisation {} and device {}",
-                organisationIdentification, deviceIdentification);
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
-
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, MessageType.SET_PUSH_SETUP_SMS.name(), messagePriority,
-                scheduleTime);
-
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).request(pushSetupSms).build();
-
-        this.smartMeteringRequestMessageSender.send(message);
-
-        return correlationUid;
+        return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
+                scheduleTime, DeviceFunction.SET_PUSH_SETUP_SMS, MessageType.SET_PUSH_SETUP_SMS, pushSetupSms);
     }
 
     public String enqueueSetAlarmNotificationsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final AlarmNotifications alarmSwitches,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
-
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.SET_ALARM_NOTIFICATIONS);
-
-        LOGGER.debug("enqueueSetAlarmNotificationsRequest called with organisation {} and device {}",
-                organisationIdentification, deviceIdentification);
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
-
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, MessageType.SET_ALARM_NOTIFICATIONS.name(), messagePriority,
-                scheduleTime);
-
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).request(alarmSwitches).build();
-
-        this.smartMeteringRequestMessageSender.send(message);
-
-        return correlationUid;
+        return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
+                scheduleTime, DeviceFunction.SET_ALARM_NOTIFICATIONS, MessageType.SET_ALARM_NOTIFICATIONS,
+                alarmSwitches);
     }
 
     public String enqueueSetEncryptionKeyExchangeOnGMeterRequest(
             @Identification final String organisationIdentification, @Identification final String deviceIdentification,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
-
-        checkAllowed(organisationIdentification, deviceIdentification,
-                DeviceFunction.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER);
-
-        LOGGER.debug("enqueueSetEncryptionKeyExchangeOnGMeterRequest called with organisation {} and device {}",
-                organisationIdentification, deviceIdentification);
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
-
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, MessageType.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER.name(),
-                messagePriority, scheduleTime);
-
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).build();
-
-        this.smartMeteringRequestMessageSender.send(message);
-
-        return correlationUid;
+        return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
+                scheduleTime, DeviceFunction.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER,
+                MessageType.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER, null);
     }
 
     public String enqueueGetMbusEncryptionKeyStatusRequest(final String organisationIdentification,
             final String deviceIdentification, final int messagePriority, final Long scheduleTime)
             throws FunctionalException {
-
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.GET_MBUS_ENCRYPTION_KEY_STATUS);
-
-        LOGGER.debug("enqueueGetMbusEncryptionKeyStatusRequest called with organisation {} and device {}",
-                organisationIdentification, deviceIdentification);
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
-
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, MessageType.GET_MBUS_ENCRYPTION_KEY_STATUS.name(),
-                messagePriority, scheduleTime);
-
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).build();
-
-        this.smartMeteringRequestMessageSender.send(message);
-
-        return correlationUid;
+        return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
+                scheduleTime, DeviceFunction.GET_MBUS_ENCRYPTION_KEY_STATUS, MessageType.GET_MBUS_ENCRYPTION_KEY_STATUS,
+                null);
     }
 
     public String enqueueGetMbusEncryptionKeyStatusByChannelRequest(final String organisationIdentification,
             final String deviceIdentification, final int messagePriority, final Long scheduleTime, final short channel)
             throws FunctionalException {
-
-        checkAllowed(organisationIdentification, deviceIdentification,
-                DeviceFunction.GET_MBUS_ENCRYPTION_KEY_STATUS_BY_CHANNEL);
-
-        LOGGER.debug("enqueueGetMbusEncryptionKeyStatusByChannelRequest called with organisation {} and device {}",
-                organisationIdentification, deviceIdentification);
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
-
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                MessageType.GET_MBUS_ENCRYPTION_KEY_STATUS_BY_CHANNEL.name(), messagePriority, scheduleTime);
-
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).request(new GetMbusEncryptionKeyStatusByChannelRequestData(channel)).build();
-
-        this.smartMeteringRequestMessageSender.send(message);
-
-        return correlationUid;
+        return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
+                scheduleTime, DeviceFunction.GET_MBUS_ENCRYPTION_KEY_STATUS_BY_CHANNEL,
+                MessageType.GET_MBUS_ENCRYPTION_KEY_STATUS_BY_CHANNEL,
+                new GetMbusEncryptionKeyStatusByChannelRequestData(channel));
     }
 
     public String enqueueSetActivityCalendarRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final ActivityCalendar activityCalendar,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
-
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.SET_ACTIVITY_CALENDAR);
-
-        LOGGER.debug("enqueueSetActivityCalendarRequest called with organisation {} and device {}",
-                organisationIdentification, deviceIdentification);
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
-
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, MessageType.SET_ACTIVITY_CALENDAR.name(), messagePriority,
-                scheduleTime);
-
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).request(activityCalendar).build();
-
-        this.smartMeteringRequestMessageSender.send(message);
-
-        return correlationUid;
+        return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
+                scheduleTime, DeviceFunction.SET_ACTIVITY_CALENDAR, MessageType.SET_ACTIVITY_CALENDAR,
+                activityCalendar);
     }
 
     public String enqueueReplaceKeysRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final SetKeysRequestData keySet,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
-
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.REPLACE_KEYS);
-
-        LOGGER.debug("enqueueReplaceKeysRequest called with organisation {} and device {}", organisationIdentification,
-                deviceIdentification);
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
-
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, MessageType.REPLACE_KEYS.name(), messagePriority,
-                scheduleTime);
-
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).request(keySet).build();
-
-        this.smartMeteringRequestMessageSender.send(message);
-
-        return correlationUid;
+        return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
+                scheduleTime, DeviceFunction.REPLACE_KEYS, MessageType.REPLACE_KEYS, keySet);
     }
 
     public String enqueueSetClockConfigurationRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification,
             final SetClockConfigurationRequestData clockConfigurationRequestData, final int messagePriority,
             final Long scheduleTime) throws FunctionalException {
-
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.SET_CLOCK_CONFIGURATION);
-
-        LOGGER.debug("enqueueSetClockConfigurationRequest called with organisation {} and device {}",
-                organisationIdentification, deviceIdentification);
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
-
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, MessageType.SET_CLOCK_CONFIGURATION.name(), messagePriority,
-                scheduleTime);
-
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).request(clockConfigurationRequestData).build();
-
-        this.smartMeteringRequestMessageSender.send(message);
-
-        return correlationUid;
+        return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
+                scheduleTime, DeviceFunction.SET_CLOCK_CONFIGURATION, MessageType.SET_CLOCK_CONFIGURATION,
+                clockConfigurationRequestData);
     }
 
     public String enqueueGetConfigurationObjectRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final GetConfigurationObjectRequest requestData,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
-
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.GET_CONFIGURATION_OBJECT);
-
-        LOGGER.debug("enqueueGetConfigurationObjectRequest called with organisation {} and device {}",
-                organisationIdentification, deviceIdentification);
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
-
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, MessageType.GET_CONFIGURATION_OBJECT.name(),
-                messagePriority, scheduleTime);
-
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).request(requestData).build();
-
-        this.smartMeteringRequestMessageSender.send(message);
-
-        return correlationUid;
+        return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
+                scheduleTime, DeviceFunction.GET_CONFIGURATION_OBJECT, MessageType.GET_CONFIGURATION_OBJECT,
+                requestData);
     }
 
-    /**
-     * Checks if the organization (identified by the organisationIdentification)
-     * is allowed to execute this function. Creates a correlation id, sends the
-     * generate and replace request from the ws-adapter to the domain-adapter
-     * and returns the correlation id.
-     *
-     * @param organisationIdentification
-     *         {@link String} containing the organization identification
-     * @param deviceIdentification
-     *         {@link String} containing the device identification
-     * @param messagePriority
-     *         contains the message priority
-     * @param scheduleTime
-     *         contains the time when the message is scheduled to be executed
-     *
-     * @return the correlation id belonging to the request
-     *
-     * @throws FunctionalException
-     *         is thrown when either the device or organization cannot be
-     *         found or the organization is not allowed to execute the
-     *         function
-     */
     public String enqueueGenerateAndReplaceKeysRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final int messagePriority, final Long scheduleTime)
             throws FunctionalException {
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.GENERATE_AND_REPLACE_KEYS);
-
-        LOGGER.debug("Enqueue generate and replace keys request called with organisation {} and device {}",
-                organisationIdentification, deviceIdentification);
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
-
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, MessageType.GENERATE_AND_REPLACE_KEYS.name(),
-                messagePriority, scheduleTime);
-
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).build();
-
-        this.smartMeteringRequestMessageSender.send(message);
-
-        return correlationUid;
+        return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
+                scheduleTime, DeviceFunction.GENERATE_AND_REPLACE_KEYS, MessageType.GENERATE_AND_REPLACE_KEYS, null);
     }
 
     public String enqueueConfigureDefinableLoadProfileRequest(final String organisationIdentification,
             final String deviceIdentification,
             final DefinableLoadProfileConfigurationData definableLoadProfileConfigurationData,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
-
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.CONFIGURE_DEFINABLE_LOAD_PROFILE);
-
-        LOGGER.debug("enqueueConfigureDefinableLoadProfileRequest called with organisation {} and device {}",
-                organisationIdentification, deviceIdentification);
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
-
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, MessageType.CONFIGURE_DEFINABLE_LOAD_PROFILE.name(),
-                messagePriority, scheduleTime);
-
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).request(definableLoadProfileConfigurationData).build();
-
-        this.smartMeteringRequestMessageSender.send(message);
-
-        return correlationUid;
+        return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
+                scheduleTime, DeviceFunction.CONFIGURE_DEFINABLE_LOAD_PROFILE,
+                MessageType.CONFIGURE_DEFINABLE_LOAD_PROFILE, definableLoadProfileConfigurationData);
     }
 
     public String enqueueSetMbusUserKeyByChannelRequest(final String organisationIdentification,
             final String deviceIdentification,
             final SetMbusUserKeyByChannelRequestData setMbusUserKeyByChannelRequestData, final int messagePriority,
             final Long scheduleTime) throws FunctionalException {
-
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.SET_MBUS_USER_KEY_BY_CHANNEL);
-
-        LOGGER.debug("enqueueSetMbusUserKeyByChannelRequest called with organisation {} and device {}",
-                organisationIdentification, deviceIdentification);
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
-
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, MessageType.SET_MBUS_USER_KEY_BY_CHANNEL.name(),
-                messagePriority, scheduleTime);
-
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).request(setMbusUserKeyByChannelRequestData).build();
-
-        this.smartMeteringRequestMessageSender.send(message);
-
-        return correlationUid;
+        return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
+                scheduleTime, DeviceFunction.SET_MBUS_USER_KEY_BY_CHANNEL, MessageType.SET_MBUS_USER_KEY_BY_CHANNEL,
+                setMbusUserKeyByChannelRequestData);
     }
 
     public String enqueueSetRandomisationSettingsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final SetRandomisationSettingsRequest requestData,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
+        return this.enqueueAndSendRequest(organisationIdentification, deviceIdentification, messagePriority,
+                scheduleTime, DeviceFunction.SET_CONFIGURATION_OBJECT, MessageType.SET_RANDOMISATION_SETTINGS,
+                requestData);
+    }
 
-        checkAllowed(organisationIdentification, deviceIdentification, DeviceFunction.SET_CONFIGURATION_OBJECT);
-
-        LOGGER.debug("enqueueSetRandomisationSettingsRequest called with organisation {} and device {}",
+    /**
+     * Checks if the organization (identified by the organisationIdentification)
+     * is allowed to execute this function. Creates a correlation id, sends the
+     * request from the ws-adapter to the domain-adapter and returns the
+     * correlation id.
+     *
+     * @param organisationIdentification
+     *            {@link String} containing the organization identification
+     * @param deviceIdentification
+     *            {@link String} containing the device identification for the
+     *            given device
+     * @param messagePriority
+     *            contains the message priority
+     * @param scheduleTime
+     *            contains the time when the message is scheduled to be executed
+     * @param deviceFunction
+     *            used to check if the organisation is allowed to execute this
+     *            request on the given device
+     * @param messageType
+     *            messageType is added to the message metadata
+     * @param requestObject
+     *            contains request data if applicable
+     *
+     * @return the correlation id belonging to the request
+     *
+     * @throws FunctionalException
+     *             is thrown when either the device or organization cannot be
+     *             found or the organization is not allowed to execute the
+     *             function
+     */
+    private String enqueueAndSendRequest(final String organisationIdentification, final String deviceIdentification,
+            final int messagePriority, final Long scheduleTime, final DeviceFunction deviceFunction,
+            final MessageType messageType, final Serializable requestObject) throws FunctionalException {
+        log.debug("enqueueAndSendRequest called for messageType {} with organisation {} and device {}", messageType,
                 organisationIdentification, deviceIdentification);
+
+        this.checkAllowed(organisationIdentification, deviceIdentification, deviceFunction);
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, MessageType.SET_RANDOMISATION_SETTINGS.name(),
-                messagePriority, scheduleTime);
+                organisationIdentification, correlationUid, messageType.name(), messagePriority, scheduleTime);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).request(requestData).build();
+        final SmartMeteringRequestMessage message;
+
+        if (requestObject == null) {
+            message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(deviceMessageMetadata).build();
+        } else {
+            message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(deviceMessageMetadata)
+                    .request(requestObject)
+                    .build();
+        }
 
         this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
     }
 
-    private void checkAllowed(@Identification String organisationIdentification,
-            @Identification String deviceIdentification, DeviceFunction setConfigurationObject)
+    private void checkAllowed(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final DeviceFunction deviceFunction)
             throws FunctionalException {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
-        this.domainHelperService.checkAllowed(organisation, device, setConfigurationObject);
+        this.domainHelperService.checkAllowed(organisation, device, deviceFunction);
     }
 
 }

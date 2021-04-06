@@ -1,8 +1,9 @@
-/**
- * Copyright 2020 Alliander N.V.
+/*
+ * Copyright 2021 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -24,12 +25,21 @@ public enum CircuitSwitchedStatusDto {
         return this.index;
     }
 
-    public static CircuitSwitchedStatusDto fromValue(final int value) {
+    public static CircuitSwitchedStatusDto fromIndexValue(final int index) {
         for (final CircuitSwitchedStatusDto status : CircuitSwitchedStatusDto.values()) {
-            if (status.index == value) {
+            if (status.index == index) {
                 return status;
             }
         }
         return null;
     }
+
+    public String value() {
+        return this.name();
+    }
+
+    public static CircuitSwitchedStatusDto fromValue(final String v) {
+        return valueOf(v);
+    }
+
 }

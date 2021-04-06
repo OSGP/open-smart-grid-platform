@@ -1,11 +1,13 @@
-/**
- * Copyright 2020 Alliander N.V.
+/*
+ * Copyright 2021 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
 public enum ModemRegistrationStatusDto {
@@ -27,12 +29,20 @@ public enum ModemRegistrationStatusDto {
         return this.index;
     }
 
-    public static ModemRegistrationStatusDto fromValue(final int value) {
+    public static ModemRegistrationStatusDto fromIndexValue(final int index) {
         for (final ModemRegistrationStatusDto status : ModemRegistrationStatusDto.values()) {
-            if (status.index == value) {
+            if (status.index == index) {
                 return status;
             }
         }
         return null;
+    }
+
+    public String value() {
+        return this.name();
+    }
+
+    public static ModemRegistrationStatusDto fromValue(final String v) {
+        return valueOf(v);
     }
 }
