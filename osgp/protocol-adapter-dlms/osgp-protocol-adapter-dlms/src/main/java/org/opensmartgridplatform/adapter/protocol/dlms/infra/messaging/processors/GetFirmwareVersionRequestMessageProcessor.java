@@ -13,6 +13,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Conf
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersionQueryDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,7 @@ public class GetFirmwareVersionRequestMessageProcessor extends DeviceRequestMess
     protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException {
 
-        return (Serializable) this.configurationService.requestFirmwareVersion(conn, device);
+        final GetFirmwareVersionQueryDto queryDto = (GetFirmwareVersionQueryDto) requestObject;
+        return this.configurationService.requestFirmwareVersion(conn, device, queryDto);
     }
 }

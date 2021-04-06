@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -336,6 +337,11 @@ public class DlmsHelper {
     public String readString(final DataObject resultData, final String description) throws ProtocolAdapterException {
         final byte[] bytes = this.readByteArray(resultData, description, "String");
         return new String(bytes, StandardCharsets.UTF_8);
+    }
+
+    public String readHexString(final DataObject resultData, final String description) throws ProtocolAdapterException {
+        final byte[] bytes = this.readByteArray(resultData, description, "Hexadecimal String");
+        return Hex.encodeHexString(bytes);
     }
 
     public CosemDateTimeDto readDateTime(final GetResult getResult, final String description)

@@ -15,10 +15,10 @@ import java.util.function.Predicate;
 import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60870Device;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.PendingRequestsQueue;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LightMeasurementService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceType;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
-import org.opensmartgridplatform.adapter.protocol.iec60870.infra.CorrelationUidPerDevice;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementGroupDto;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementReportDto;
 import org.opensmartgridplatform.dto.da.measurements.elements.BitmaskMeasurementElementDto;
@@ -49,7 +49,7 @@ public class LightSensorDeviceResponseService extends AbstractDeviceResponseServ
     private LightMeasurementService lightMeasurementService;
 
     @Autowired
-    private CorrelationUidPerDevice correlationUidPerDevice;
+    private PendingRequestsQueue pendingRequestsQueue;
 
     public LightSensorDeviceResponseService() {
         super(DEVICE_TYPE);
@@ -182,7 +182,7 @@ public class LightSensorDeviceResponseService extends AbstractDeviceResponseServ
 
         final String deviceIdentification = device.getDeviceIdentification();
 
-        Optionals.ifPresentOrElse(this.correlationUidPerDevice.dequeue(deviceIdentification),
+        Optionals.ifPresentOrElse(this.pendingRequestsQueue.dequeue(deviceIdentification),
                 uid -> this.sendLightSensorStatus(uid, lightSensorStatus, deviceIdentification, responseMetadata),
                 () -> LOGGER.info("No correlation UID found for device identification {}", deviceIdentification));
 
