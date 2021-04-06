@@ -36,19 +36,20 @@ public enum DlmsObjectType {
     INTERVAL_VALUES (PeriodTypeDto.INTERVAL),
     MONTHLY_BILLING_VALUES (PeriodTypeDto.MONTHLY),
     DAILY_LOAD_PROFILE (PeriodTypeDto.DAILY),
-    DIRECT_ATTACH(null),
-    RANDOMISATION_SETTINGS(null);
+    DIRECT_ATTACH (null),
+    RANDOMISATION_SETTINGS (null),
+    MODEM_INFO (null);
 
-    private PeriodTypeDto relatedPeriodType;
+    private final PeriodTypeDto relatedPeriodType;
 
-    DlmsObjectType(PeriodTypeDto relatedPeriodType) {
+    DlmsObjectType(final PeriodTypeDto relatedPeriodType) {
         this.relatedPeriodType = relatedPeriodType;
     }
 
-    public static DlmsObjectType getTypeForPeriodType(PeriodTypeDto periodType) throws ProtocolAdapterException {
+    public static DlmsObjectType getTypeForPeriodType(final PeriodTypeDto periodType) throws ProtocolAdapterException {
         return Arrays.stream(values())
                 .filter(t -> t.relatedPeriodType == periodType)
                 .findFirst()
-                .orElseThrow(() -> new ProtocolAdapterException(String.format("periodtype %s not supported", periodType)));
+                .orElseThrow(() -> new ProtocolAdapterException(String.format("periodType %s not supported", periodType)));
     }
 }

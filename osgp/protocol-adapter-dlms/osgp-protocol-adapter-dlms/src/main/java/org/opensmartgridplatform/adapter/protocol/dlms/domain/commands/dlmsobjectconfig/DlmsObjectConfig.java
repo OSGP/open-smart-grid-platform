@@ -13,6 +13,8 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.openmuc.jdlms.ObisCode;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.CommunicationMethod;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsModemInfo;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsProfile;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.Medium;
@@ -49,14 +51,31 @@ public abstract class DlmsObjectConfig {
      * @return the requested object or an empty Optional if it was not found.
      */
     public Optional<DlmsObject> findObject(final DlmsObjectType type, final Medium filterMedium) {
-        // @formatter:off
-        return objects.stream()
+        return this.objects.stream()
                 .filter(o1 -> o1.getType().equals(type))
                 .filter(o2 -> !(o2 instanceof DlmsProfile)
                         || ((DlmsProfile) o2).getMedium() == Medium.COMBINED
                         || ((DlmsProfile) o2).getMedium() == filterMedium)
                 .findAny();
-        // @formatter:on
+    }
+
+    /**
+     * Searches in the object config for the requested object type matching the specified communication method
+     * and returns it.
+     *
+     * @param type                  the object type to search for
+     * @param communicationMethod   an object only matches if it has the correct method
+     * @return the requested object or an empty Optional if it was not found.
+     */
+    public Optional<DlmsObject> findObjectForCommunicationMethod(
+            final DlmsObjectType type,
+            final CommunicationMethod communicationMethod
+    ) {
+        return this.objects.stream()
+                .filter(o1 -> o1.getType().equals(type))
+                .filter(o2 -> (o2 instanceof DlmsModemInfo)
+                        && ((DlmsModemInfo) o2).getCommunicationMethod() == communicationMethod)
+                .findAny();
     }
 
     /**
