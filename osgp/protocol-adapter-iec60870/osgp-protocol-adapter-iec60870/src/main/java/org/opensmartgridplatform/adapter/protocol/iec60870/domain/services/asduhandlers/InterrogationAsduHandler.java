@@ -9,10 +9,13 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asdu
 
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
+import org.openmuc.j60870.CauseOfTransmission;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.AbstractClientAsduHandler;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ConnectResponseService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -26,13 +29,19 @@ public class InterrogationAsduHandler extends AbstractClientAsduHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InterrogationAsduHandler.class);
 
+    @Autowired
+    private ConnectResponseService connectResponseService;
+
     public InterrogationAsduHandler() {
         super(ASduType.C_IC_NA_1);
     }
 
     @Override
     public void handleAsdu(final ASdu asdu, final ResponseMetadata responseMetadata) {
-        // Only log for now
         LOGGER.info("Received interrogation command {}.", asdu);
+
+        if (asdu.getCauseOfTransmission() == CauseOfTransmission.ACTIVATION_TERMINATION) {
+            this.connectResponseService.handleConnectResponse(responseMetadata);
+        }
     }
 }
