@@ -221,28 +221,28 @@ public class ConfigurationService {
      * correlation id.
      *
      * @param organisationIdentification
-     *         {@link String} containing the organization identification
+     *            {@link String} containing the organization identification
      * @param deviceIdentification
-     *         {@link String} containing the device identification for the
-     *         given device
+     *            {@link String} containing the device identification for the
+     *            given device
      * @param messagePriority
-     *         contains the message priority
+     *            contains the message priority
      * @param scheduleTime
-     *         contains the time when the message is scheduled to be executed
+     *            contains the time when the message is scheduled to be executed
      * @param deviceFunction
-     *         used to check if the organisation is allowed to execute this
-     *         request on the given device
+     *            used to check if the organisation is allowed to execute this
+     *            request on the given device
      * @param messageType
-     *         messageType is added to the message metadata
+     *            messageType is added to the message metadata
      * @param requestObject
-     *         contains request data if applicable
+     *            contains request data if applicable
      *
      * @return the correlation id belonging to the request
      *
      * @throws FunctionalException
-     *         is thrown when either the device or organization cannot be
-     *         found or the organization is not allowed to execute the
-     *         function
+     *             is thrown when either the device or organization cannot be
+     *             found or the organization is not allowed to execute the
+     *             function
      */
     private String enqueueAndSendRequest(final String organisationIdentification, final String deviceIdentification,
             final int messagePriority, final Long scheduleTime, final DeviceFunction deviceFunction,

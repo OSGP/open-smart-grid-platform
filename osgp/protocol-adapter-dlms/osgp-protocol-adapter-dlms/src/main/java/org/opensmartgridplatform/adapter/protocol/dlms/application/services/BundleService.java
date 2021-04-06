@@ -73,8 +73,8 @@ public class BundleService {
         return bundleMessagesRequest;
     }
 
-    private void handleMissingExecutor(final Class<? extends ActionRequestDto> actionRequestClass, final ActionDto actionDto,
-            final DlmsDevice device) {
+    private void handleMissingExecutor(final Class<? extends ActionRequestDto> actionRequestClass,
+            final ActionDto actionDto, final DlmsDevice device) {
         log.error("bundleCommandExecutorMap in {} does not have a CommandExecutor registered for action: {}",
                 this.getClass().getName(), actionRequestClass.getName());
 
@@ -85,17 +85,15 @@ public class BundleService {
     }
 
     private void callExecutor(final CommandExecutor<?, ?> executor,
-            final Class<? extends ActionRequestDto> actionRequestClass,
-            final ActionDto action,
-            final List<ActionDto> actionList,
-            final DlmsConnectionManager conn, final DlmsDevice device) throws ConnectionException {
+            final Class<? extends ActionRequestDto> actionRequestClass, final ActionDto action,
+            final List<ActionDto> actionList, final DlmsConnectionManager conn, final DlmsDevice device)
+            throws ConnectionException {
 
         final String executorName = executor.getClass().getSimpleName();
 
         try {
             log.debug("**************************************************");
-            log.info("Calling executor in bundle {} [deviceId={}]", executorName,
-                    device.getDeviceIdentification());
+            log.info("Calling executor in bundle {} [deviceId={}]", executorName, device.getDeviceIdentification());
             log.debug("**************************************************");
 
             action.setResponse(executor.executeBundleAction(conn, device, action.getRequest()));
@@ -105,22 +103,21 @@ public class BundleService {
             throw ce;
 
         } catch (final Exception e) {
-            log.error("Error while executing bundle action for {} with {} [deviceId={}]",
-                    actionRequestClass.getName(), executorName, device.getDeviceIdentification(), e);
+            log.error("Error while executing bundle action for {} with {} [deviceId={}]", actionRequestClass.getName(),
+                    executorName, device.getDeviceIdentification(), e);
             final String message = String.format("Error handling request with %s: %s", executorName, e.getMessage());
             this.addFaultResponse(action, e, message, device);
         }
     }
 
-    private void logConnectionException(final ActionDto action, final List<ActionDto> actionList, final DlmsDevice device,
-            final String executorName,
-            final ConnectionException ce) {
+    private void logConnectionException(final ActionDto action, final List<ActionDto> actionList,
+            final DlmsDevice device, final String executorName, final ConnectionException ce) {
         log.warn("A connection exception occurred while executing {} [deviceId={}]", executorName,
                 device.getDeviceIdentification(), ce);
 
         if (log.isDebugEnabled()) {
-            final List<ActionDto> remainingActionDtoList = actionList
-                    .subList(actionList.indexOf(action), actionList.size());
+            final List<ActionDto> remainingActionDtoList = actionList.subList(actionList.indexOf(action),
+                    actionList.size());
             for (final ActionDto remainingActionDto : remainingActionDtoList) {
                 log.debug("Skipping: {}", remainingActionDto.getRequest().getClass().getSimpleName());
             }
@@ -144,16 +141,16 @@ public class BundleService {
         final FaultResponseParametersDto faultResponseParameters = this.faultResponseParametersForList(parameters);
 
         if (exception instanceof FunctionalException || exception instanceof TechnicalException) {
-            return this
-                    .faultResponseForFunctionalOrTechnicalException((OsgpException) exception, faultResponseParameters,
-                            defaultMessage);
+            return this.faultResponseForFunctionalOrTechnicalException((OsgpException) exception,
+                    faultResponseParameters, defaultMessage);
         }
 
         return new FaultResponseDto.Builder().withMessage(defaultMessage)
                 .withComponent(ComponentType.PROTOCOL_DLMS.name())
                 .withInnerException(exception.getClass().getName())
                 .withInnerMessage(exception.getMessage())
-                .withFaultResponseParameters(faultResponseParameters).build();
+                .withFaultResponseParameters(faultResponseParameters)
+                .build();
     }
 
     private FaultResponseParametersDto faultResponseParametersForList(
@@ -199,8 +196,12 @@ public class BundleService {
             message = exception.getMessage();
         }
 
-        return new FaultResponseDto.Builder().withCode(code).withMessage(message).withComponent(component)
-                .withInnerException(innerException).withInnerMessage(innerMessage)
-                .withFaultResponseParameters(faultResponseParameters).build();
+        return new FaultResponseDto.Builder().withCode(code)
+                .withMessage(message)
+                .withComponent(component)
+                .withInnerException(innerException)
+                .withInnerMessage(innerMessage)
+                .withFaultResponseParameters(faultResponseParameters)
+                .build();
     }
 }

@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2021 Alliander N.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
@@ -6,7 +6,6 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-
 package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration;
 
 import java.util.Map;
@@ -40,9 +39,8 @@ public class SetRandomisationSettingsFactory {
     private static SetRandomisationSettingsRequestData createRequestData(final Map<String, String> parameters) {
         final SetRandomisationSettingsRequestData requestData = new SetRandomisationSettingsRequestData();
         requestData.setDirectAttach(Integer.parseInt(parameters.get(PlatformKeys.KEY_DIRECT_ATTACH)));
-        requestData
-                .setRandomisationStartWindow(
-                        Integer.parseInt(parameters.get(PlatformKeys.KEY_RANDOMISATION_START_WINDOW)));
+        requestData.setRandomisationStartWindow(
+                Integer.parseInt(parameters.get(PlatformKeys.KEY_RANDOMISATION_START_WINDOW)));
         requestData.setMultiplicationFactor(Integer.parseInt(parameters.get(PlatformKeys.KEY_MULTIPLICATION_FACTOR)));
         requestData.setNumberOfRetries(Integer.parseInt(parameters.get(PlatformKeys.KEY_NO_OF_RETRIES)));
         return requestData;

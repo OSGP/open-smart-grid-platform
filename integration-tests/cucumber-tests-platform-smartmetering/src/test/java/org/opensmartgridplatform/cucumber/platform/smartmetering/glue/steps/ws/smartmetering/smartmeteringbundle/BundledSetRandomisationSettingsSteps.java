@@ -20,7 +20,8 @@ public class BundledSetRandomisationSettingsSteps extends BaseBundleSteps {
     public void theBundleRequestContainsASetRandomisationSettingsActionWithParameters(
             final Map<String, String> parameters) {
         final SetRandomisationSettingsRequest action = new SetRandomisationSettingsRequestBuilder()
-                .fromParameterMap(parameters).build();
+                .fromParameterMap(parameters)
+                .build();
 
         this.addActionToBundleRequest(action);
     }

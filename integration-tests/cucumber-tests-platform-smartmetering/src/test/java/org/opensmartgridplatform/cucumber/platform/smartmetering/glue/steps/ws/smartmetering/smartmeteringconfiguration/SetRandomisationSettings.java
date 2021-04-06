@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2021 Alliander N.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
@@ -6,7 +6,6 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
