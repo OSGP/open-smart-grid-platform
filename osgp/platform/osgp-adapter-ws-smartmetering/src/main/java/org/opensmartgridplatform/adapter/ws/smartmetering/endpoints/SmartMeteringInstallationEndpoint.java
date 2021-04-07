@@ -36,16 +36,16 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.De
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceByChannelResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.SetSubscriptionInformationAsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.SetSubscriptionInformationAsyncResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.SetSubscriptionInformationRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.SetSubscriptionInformationResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.SetCommunicationNetworkInformationAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.SetCommunicationNetworkInformationAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.SetCommunicationNetworkInformationRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.SetCommunicationNetworkInformationResponse;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.InstallationMapper;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.services.InstallationService;
 import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceModel;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AddSmartMeterRequest;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetSubscriptionInformationRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetCommunicationNetworkInformationRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -471,24 +471,24 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
         return response;
     }
 
-    @PayloadRoot(localPart = "SetSubscriptionInformationRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
+    @PayloadRoot(localPart = "SetCommunicationNetworkInformationRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
     @ResponsePayload
-    public SetSubscriptionInformationAsyncResponse setSubscriptionInformation(
+    public SetCommunicationNetworkInformationAsyncResponse setCommunicationNetworkInformation(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetSubscriptionInformationRequest request,
+            @RequestPayload final SetCommunicationNetworkInformationRequest request,
             @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
             @ResponseUrl final String responseUrl) throws OsgpException {
 
-        log.info("Incoming SetSubscriptionInformation for meter: {}.", request.getDeviceIdentification());
+        log.info("Incoming SetCommunicationNetworkInformation for meter: {}.", request.getDeviceIdentification());
 
-        SetSubscriptionInformationAsyncResponse response = null;
+        SetCommunicationNetworkInformationAsyncResponse response = null;
         try {
-            response = new SetSubscriptionInformationAsyncResponse();
+            response = new SetCommunicationNetworkInformationAsyncResponse();
 
-            final SetSubscriptionInformationRequestData requestData = this.installationMapper.map(request,
-                    SetSubscriptionInformationRequestData.class);
+            final SetCommunicationNetworkInformationRequestData requestData = this.installationMapper.map(request,
+                    SetCommunicationNetworkInformationRequestData.class);
 
-            final String correlationUid = this.installationService.enqueueSetSubscriptionInformationRequest(
+            final String correlationUid = this.installationService.enqueueSetCommunicationNetworkInformationRequest(
                     organisationIdentification, request.getDeviceIdentification(), requestData,
                     MessagePriorityEnum.getMessagePriority(messagePriority),
                     this.installationMapper.map(scheduleTime, Long.class));
@@ -515,12 +515,13 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
         return response;
     }
 
-    @PayloadRoot(localPart = "SetSubscriptionInformationAsyncRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
+    @PayloadRoot(localPart = "SetCommunicationNetworkInformationAsyncRequest", namespace =
+            SMARTMETER_INSTALLATION_NAMESPACE)
     @ResponsePayload
-    public SetSubscriptionInformationResponse getSetSubscriptionInformationResponse(
-            @RequestPayload final SetSubscriptionInformationAsyncRequest request) throws OsgpException {
+    public SetCommunicationNetworkInformationResponse getSetCommunicationNetworkInformationResponse(
+            @RequestPayload final SetCommunicationNetworkInformationAsyncRequest request) throws OsgpException {
 
-        SetSubscriptionInformationResponse response = null;
+        SetCommunicationNetworkInformationResponse response = null;
         try {
 
             final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
@@ -529,7 +530,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             this.throwExceptionIfResultNotOk(responseData, "Set Subscription Information");
 
             response = this.installationMapper.map(responseData.getMessageData(),
-                    SetSubscriptionInformationResponse.class);
+                    SetCommunicationNetworkInformationResponse.class);
 
             response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
 

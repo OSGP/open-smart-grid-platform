@@ -1,9 +1,10 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform;
 
@@ -149,6 +150,9 @@ public class PlatformKeys extends Keys {
     public static final String KEY_INTERNALID = "InternalId";
     public static final String KEY_INTEGRATION_TYPE = "IntegrationType";
     public static final String KEY_IP_ADDR_IS_STATIC = "IpAddressIsStatic";
+    public static final String KEY_IP_ADDRESS = "IpAddress";
+    public static final String KEY_BTS_ID = "BtsId";
+    public static final String KEY_CELL_ID = "CellId";
     public static final String KEY_ISIMMEDIATE = "IsImmediate";
     public static final String KEY_LATITUDE = "gpsLatitude";
     public static final String KEY_LIGHTTYPE = "LightType";

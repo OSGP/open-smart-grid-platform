@@ -128,7 +128,7 @@ class SmartMeterServiceTest {
     }
 
     @Test
-    void testUpdateSubscriptionInformationUnknownDevice() {
+    void testUpdatCommunicationNetworkInformationUnknownDevice() {
 
         final String deviceIdentification = "device-1";
         final String ipAddress = "127.0.0.1";
@@ -138,15 +138,16 @@ class SmartMeterServiceTest {
         when(this.smartMeterRepository.findByDeviceIdentification(deviceIdentification)).thenReturn(null);
 
         try {
-            this.smartMeterService.updateSubscriptionInformation(deviceIdentification, ipAddress, btsId, cellId);
+            this.smartMeterService.updateCommunicationNetworkInformation(deviceIdentification, ipAddress, btsId,
+                    cellId);
             fail("Should throw FunctionalException");
         } catch (final FunctionalException e) {
-            assertThat(e.getExceptionType()).isEqualTo(FunctionalExceptionType.EXISTING_DEVICE);
+            assertThat(e.getExceptionType()).isEqualTo(FunctionalExceptionType.UNKNOWN_DEVICE);
         }
     }
 
     @Test
-    void testUpdateSubscriptionInformationInvalidIpAddress() {
+    void testUpdateCommunicationNetworkInformationInvalidIpAddress() {
 
         final String deviceIdentification = "device-1";
         final String ipAddress = "addressUnknown";
@@ -156,7 +157,8 @@ class SmartMeterServiceTest {
         when(this.smartMeterRepository.findByDeviceIdentification(deviceIdentification)).thenReturn(new SmartMeter());
 
         try {
-            this.smartMeterService.updateSubscriptionInformation(deviceIdentification, ipAddress, btsId, cellId);
+            this.smartMeterService.updateCommunicationNetworkInformation(deviceIdentification, ipAddress, btsId,
+                    cellId);
             fail("Should throw FunctionalException");
         } catch (final FunctionalException e) {
             assertThat(e.getExceptionType()).isEqualTo(FunctionalExceptionType.INVALID_IP_ADDRESS);
@@ -164,7 +166,7 @@ class SmartMeterServiceTest {
     }
 
     @Test
-    void testUpdateSubscriptionInformation() throws FunctionalException {
+    void testUpdateCommunicationNetworkInformation() throws FunctionalException {
 
         final String deviceIdentification = "device-1";
         final String ipAddress = "127.0.0.1";
@@ -177,7 +179,7 @@ class SmartMeterServiceTest {
         when(this.smartMeterRepository.findByDeviceIdentification(deviceIdentification)).thenReturn(smartMeter);
         when(this.smartMeterRepository.save(any())).thenReturn(smartMeter);
 
-        this.smartMeterService.updateSubscriptionInformation(deviceIdentification, ipAddress, btsId, cellId);
+        this.smartMeterService.updateCommunicationNetworkInformation(deviceIdentification, ipAddress, btsId, cellId);
 
         verify(this.smartMeterRepository).save(this.saveCaptor.capture());
 

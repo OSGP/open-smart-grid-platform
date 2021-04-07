@@ -205,17 +205,17 @@
       </wsdl:output>
     </wsdl:operation>
 
-    <wsdl:operation name="SetSubscriptionInformation">
-      <wsdl:input message="tns:SetSubscriptionInformationRequest" name="SetSubscriptionInformationRequest">
+    <wsdl:operation name="SetCommunicationNetworkInformation">
+      <wsdl:input message="tns:SetCommunicationNetworkInformationRequest" name="SetCommunicationNetworkInformationRequest">
       </wsdl:input>
-      <wsdl:output message="tns:SetSubscriptionInformationAsyncResponse"
-                   name="SetSubscriptionInformationAsyncResponse">
+      <wsdl:output message="tns:SetCommunicationNetworkInformationAsyncResponse"
+                   name="SetCommunicationNetworkInformationAsyncResponse">
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="SetSetSubscriptionInformationResponse">
-      <wsdl:input message="tns:SetSubscriptionInformationAsyncRequest" name="SetSubscriptionInformationAsyncRequest">
+    <wsdl:operation name="SetSetCommunicationNetworkInformationResponse">
+      <wsdl:input message="tns:SetCommunicationNetworkInformationAsyncRequest" name="SetCommunicationNetworkInformationAsyncRequest">
       </wsdl:input>
-      <wsdl:output message="tns:SetSubscriptionInformationResponse" name="SetSubscriptionInformationResponse">
+      <wsdl:output message="tns:SetCommunicationNetworkInformationResponse" name="SetCommunicationNetworkInformationResponse">
       </wsdl:output>
     </wsdl:operation>
 

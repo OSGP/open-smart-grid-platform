@@ -568,7 +568,7 @@
       <xsd:enumeration value="SET_MAINTENANCE_STATE_G_SUCCESS"/>
       <xsd:enumeration value="SET_MAINTENANCE_STATE_E_FAILED"/>
       <xsd:enumeration value="SET_MAINTENANCE_STATE_G_FAILED"/>
-      <xsd:enumeration value="SUBSCRIPTION_INFORMATION_UPDATED"/>
+      <xsd:enumeration value="COMMUNICATION_NETWORK_INFORMATION_UPDATED"/>
       <xsd:enumeration value="CLEAN_UP_M_BUS_CHANNEL"/>
 
     </xsd:restriction>

@@ -12,9 +12,9 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SetSubscriptionInformationResponseMessageProcessor extends DomainResponseMessageProcessor {
+public class SetCommunicationNetworkInformationResponseMessageProcessor extends DomainResponseMessageProcessor {
 
-    protected SetSubscriptionInformationResponseMessageProcessor() {
-        super(MessageType.SET_SUBSCRIPTION_INFORMATION);
+    protected SetCommunicationNetworkInformationResponseMessageProcessor() {
+        super(MessageType.SET_COMMUNICATION_NETWORK_INFORMATION);
     }
 }

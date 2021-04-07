@@ -10,7 +10,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.mess
 
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.InstallationService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.BaseRequestMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetSubscriptionInformationRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetCommunicationNetworkInformationRequestData;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
@@ -20,24 +20,25 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SetSubscriptionInformationRequestMessageProcessor extends BaseRequestMessageProcessor {
+public class SetCommunicationNetworkInformationRequestMessageProcessor extends BaseRequestMessageProcessor {
 
     @Autowired
     @Qualifier("domainSmartMeteringInstallationService")
     private InstallationService installationService;
 
     @Autowired
-    protected SetSubscriptionInformationRequestMessageProcessor(
-            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
-        super(messageProcessorMap, MessageType.SET_SUBSCRIPTION_INFORMATION);
+    protected SetCommunicationNetworkInformationRequestMessageProcessor(
+            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
+            final MessageProcessorMap messageProcessorMap) {
+        super(messageProcessorMap, MessageType.SET_COMMUNICATION_NETWORK_INFORMATION);
     }
 
     @Override
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
             throws FunctionalException {
 
-        final SetSubscriptionInformationRequestData requestData = (SetSubscriptionInformationRequestData) dataObject;
+        final SetCommunicationNetworkInformationRequestData requestData = (SetCommunicationNetworkInformationRequestData) dataObject;
 
-        this.installationService.updateSubscriptionInformation(deviceMessageMetadata, requestData);
+        this.installationService.updateCommunicationNetworkInformation(deviceMessageMetadata, requestData);
     }
 }

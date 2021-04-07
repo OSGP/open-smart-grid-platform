@@ -28,10 +28,10 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.De
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceByChannelResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.SetSubscriptionInformationAsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.SetSubscriptionInformationAsyncResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.SetSubscriptionInformationRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.SetSubscriptionInformationResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.SetCommunicationNetworkInformationAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.SetCommunicationNetworkInformationAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.SetCommunicationNetworkInformationRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.SetCommunicationNetworkInformationResponse;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.SmartMeteringBaseClient;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.opensmartgridplatform.shared.infra.ws.DefaultWebServiceTemplateFactory;
@@ -144,16 +144,16 @@ public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
         return (DecoupleMbusDeviceByChannelResponse) webServiceTemplate.marshalSendAndReceive(asyncRequest);
     }
 
-    public SetSubscriptionInformationAsyncResponse setSubscriptionInformation(
-            final SetSubscriptionInformationRequest request) throws WebServiceSecurityException {
+    public SetCommunicationNetworkInformationAsyncResponse setCommunicationNetworkInformation(
+            final SetCommunicationNetworkInformationRequest request) throws WebServiceSecurityException {
         final WebServiceTemplate webServiceTemplate =
                 this.smartMeteringInstallationWebServiceTemplateFactory.getTemplate(
                         this.getOrganizationIdentification(), this.getUserName());
-        return (SetSubscriptionInformationAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
+        return (SetCommunicationNetworkInformationAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
 
-    public SetSubscriptionInformationResponse getSetSubscriptionInformationResponse(
-            final SetSubscriptionInformationAsyncRequest asyncRequest) throws WebServiceSecurityException {
+    public SetCommunicationNetworkInformationResponse getSetCommunicationNetworkInformationResponse(
+            final SetCommunicationNetworkInformationAsyncRequest asyncRequest) throws WebServiceSecurityException {
 
         final String correlationUid = asyncRequest.getCorrelationUid();
         this.waitForNotification(correlationUid);
@@ -161,7 +161,7 @@ public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
         final WebServiceTemplate webServiceTemplate =
                 this.smartMeteringInstallationWebServiceTemplateFactory.getTemplate(
                         this.getOrganizationIdentification(), this.getUserName());
-        return (SetSubscriptionInformationResponse) webServiceTemplate.marshalSendAndReceive(asyncRequest);
+        return (SetCommunicationNetworkInformationResponse) webServiceTemplate.marshalSendAndReceive(asyncRequest);
     }
 
 }

@@ -19,8 +19,8 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMb
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceByChannelResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceRequestData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetSubscriptionInformationRequestData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetSubscriptionInformationResponseData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetCommunicationNetworkInformationRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetCommunicationNetworkInformationResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceResponseDto;
@@ -91,20 +91,22 @@ public class InstallationService {
                 deviceMessageMetadata.getScheduleTime());
     }
 
-    public void updateSubscriptionInformation(final DeviceMessageMetadata deviceMessageMetadata,
-            final SetSubscriptionInformationRequestData requestData) throws FunctionalException {
+    public void updateCommunicationNetworkInformation(final DeviceMessageMetadata deviceMessageMetadata,
+            final SetCommunicationNetworkInformationRequestData requestData) throws FunctionalException {
 
         final String organisationId = deviceMessageMetadata.getOrganisationIdentification();
         final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
 
-        final SmartMeter updatedSmartMeter = this.smartMeterService.updateSubscriptionInformation(
+        final SmartMeter updatedSmartMeter = this.smartMeterService.updateCommunicationNetworkInformation(
                 deviceMessageMetadata.getDeviceIdentification(), requestData.getIpAddress(), requestData.getBtsId(),
                 requestData.getCellId());
 
-        log.debug("updateSubscriptionInformation for organisationIdentification: {} for deviceIdentification: {}. "
-                + "New ipAdress = {} ", organisationId, deviceIdentification, updatedSmartMeter.getIpAddress());
+        log.debug("updateCommunicationNetworkInformation for organisationIdentification: {} for deviceIdentification: "
+                        + "{}. " + "New ipAdress = {} ", organisationId, deviceIdentification,
+                updatedSmartMeter.getIpAddress());
 
-        final SetSubscriptionInformationResponseData responseData = this.getSetSubscriptionInformationResponseData(
+        final SetCommunicationNetworkInformationResponseData responseData =
+                this.getSetCommunicationNetworkInformationResponseData(
                 requestData, updatedSmartMeter);
 
         final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
@@ -119,9 +121,10 @@ public class InstallationService {
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 
-    private SetSubscriptionInformationResponseData getSetSubscriptionInformationResponseData(
-            final SetSubscriptionInformationRequestData requestData, final SmartMeter updatedSmartMeter) {
-        final SetSubscriptionInformationResponseData responseData = new SetSubscriptionInformationResponseData();
+    private SetCommunicationNetworkInformationResponseData getSetCommunicationNetworkInformationResponseData(
+            final SetCommunicationNetworkInformationRequestData requestData, final SmartMeter updatedSmartMeter) {
+        final SetCommunicationNetworkInformationResponseData responseData =
+                new SetCommunicationNetworkInformationResponseData();
         responseData.setMeId(requestData.getMeId());
         responseData.setEsn(requestData.getEsn());
         responseData.setUimId(requestData.getUimId());

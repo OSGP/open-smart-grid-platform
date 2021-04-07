@@ -14,7 +14,7 @@ import java.io.Serializable;
 import lombok.Data;
 
 @Data
-public class SetSubscriptionInformationRequestData implements Serializable {
+public class SetCommunicationNetworkInformationRequestData implements Serializable {
 
     private static final long serialVersionUID = 333099329546171974L;
 

@@ -116,6 +116,18 @@ public class Device extends AbstractEntity {
     protected InetAddress networkAddress;
 
     /**
+     * Cell ID on a Base Transceiver Station.
+     */
+    @Column
+    private Integer cellId;
+
+    /**
+     * Base Transceiver Station ID.
+     */
+    @Column
+    private Integer btsId;
+
+    /**
      * Indicates if a device has been activated for the first time. This value
      * is never updated after the first time a device becomes active.
      */
@@ -192,12 +204,6 @@ public class Device extends AbstractEntity {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private IntegrationType integrationType = IntegrationType.WEB_SERVICE;
-
-    @Column
-    private Integer cellId;
-
-    @Column
-    private Integer btsId;
 
     public Device() {
         // Default constructor
