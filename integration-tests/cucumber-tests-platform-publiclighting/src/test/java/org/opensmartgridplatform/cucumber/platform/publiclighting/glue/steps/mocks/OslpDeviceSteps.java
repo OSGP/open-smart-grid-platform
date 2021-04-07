@@ -752,8 +752,13 @@ public class OslpDeviceSteps {
                         PlatformPubliclightingDefaults.DEFAULT_RELAY_CONFIGURATION),
                 getEnum(requestParameters, PlatformPubliclightingKeys.KEY_PREFERRED_LINKTYPE, LinkType.class,
                         PlatformPubliclightingDefaults.DEFAULT_PREFERRED_LINKTYPE),
-                osgpIpAddressMock, getInteger(requestParameters, PlatformPubliclightingKeys.OSGP_PORT,
-                        PlatformPubliclightingDefaults.DEFAULT_OSLP_PORT));
+                osgpIpAddressMock,
+                getInteger(requestParameters, PlatformPubliclightingKeys.OSGP_PORT,
+                        PlatformPubliclightingDefaults.DEFAULT_OSLP_PORT),
+                getBoolean(requestParameters, PlatformPubliclightingKeys.KEY_DHCP_ENABLED,
+                        PlatformPubliclightingDefaults.DEFAULT_DHCP_ENABLED),
+                getBoolean(requestParameters, PlatformPubliclightingKeys.KEY_TEST_BUTTON_ENABLED,
+                        PlatformPubliclightingDefaults.DEFAULT_TEST_BUTTON_ENABLED));
     }
 
     /**

@@ -8,6 +8,7 @@
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.configurationmanagement;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getInteger;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
@@ -216,6 +217,18 @@ public class GetConfigurationSteps {
                 && StringUtils.isNotBlank(expectedResponseData.get(PlatformKeys.OSGP_PORT))) {
             assertThat(configuration.getOsgpPortNumber())
                     .isEqualTo(getInteger(expectedResponseData, PlatformKeys.OSGP_PORT));
+        }
+
+        if (expectedResponseData.containsKey(PlatformKeys.KEY_DHCP_ENABLED)
+                && StringUtils.isNotBlank(expectedResponseData.get(PlatformKeys.KEY_DHCP_ENABLED))) {
+            assertThat(configuration.isDhcpEnabled())
+                    .isEqualTo(getBoolean(expectedResponseData, PlatformKeys.KEY_DHCP_ENABLED));
+        }
+
+        if (expectedResponseData.containsKey(PlatformKeys.KEY_TEST_BUTTON_ENABLED)
+                && StringUtils.isNotBlank(expectedResponseData.get(PlatformKeys.KEY_TEST_BUTTON_ENABLED))) {
+            assertThat(configuration.isTestButtonEnabled())
+                    .isEqualTo(getBoolean(expectedResponseData, PlatformKeys.KEY_TEST_BUTTON_ENABLED));
         }
     }
 

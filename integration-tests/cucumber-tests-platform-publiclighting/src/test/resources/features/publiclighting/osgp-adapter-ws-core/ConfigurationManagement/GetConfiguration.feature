@@ -18,6 +18,8 @@ Feature: CoreConfigurationManagement GetConfiguration
       | PreferredLinkType | <PreferredLinkType> |
       | OsgpIpAddress     | <OsgpIpAddress>     |
       | OsgpPort          | <OsgpPort>          |
+      | DhcpEnabled       | <DhcpEnabled>       |
+      | TestButtonEnabled | <TestButtonEnabled> |
     When receiving a get configuration request
       | DeviceIdentification | TEST1024000000001 |
     Then the get configuration async response contains
@@ -33,21 +35,23 @@ Feature: CoreConfigurationManagement GetConfiguration
       | PreferredLinkType | <PreferredLinkType> |
       | OsgpIpAddress     | <OsgpIpAddress>     |
       | OsgpPort          | <OsgpPort>          |
+      | DhcpEnabled       | <DhcpEnabled>       |
+      | TestButtonEnabled | <TestButtonEnabled> |
 
     Examples:
-      | Protocol    | LightType               | DcLights | DcMap   | RelayConf  | PreferredLinkType | OsgpIpAddress | OsgpPort |
-      | OSLP ELSTER | RELAY                   |          |         |            |                   | 10.20.30.40   |    12122 |
-      | OSLP ELSTER | RELAY                   |          |         | 1,1,LIGHT  |                   | 10.20.30.40   |    12122 |
-      | OSLP ELSTER | ONE_TO_TEN_VOLT         |          |         |            |                   | 10.20.30.40   |    12122 |
-      | OSLP ELSTER | ONE_TO_TEN_VOLT_REVERSE |          |         |            |                   | 10.20.30.40   |    12123 |
-      | OSLP ELSTER | DALI                    |        2 | 1,2;2,1 |            |                   | 10.20.30.40   |    12123 |
-      | OSLP ELSTER |                         |          |         |            |                   | 10.20.30.40   |    12123 |
-      | OSLP ELSTER |                         |          |         |            | GPRS              | 10.20.30.50   |    12122 |
-      | OSLP ELSTER | DALI                    |          |         |            |                   | 10.20.30.50   |    12122 |
-      | OSLP ELSTER |                         |          |         |            |                   | 10.20.30.50   |    12122 |
-      | OSLP ELSTER |                         |          |         |            |                   | 10.20.30.50   |    12123 |
-      | OSLP ELSTER | RELAY                   |          |         | 1,1,LIGHT  | CDMA              | 10.20.30.50   |    12123 |
-      | OSLP ELSTER | RELAY                   |          |         | 1,1,LIGHT  | ETHERNET          | 10.20.30.50   |    12123 |
+      | Protocol    | LightType               | DcLights | DcMap   | RelayConf  | PreferredLinkType | OsgpIpAddress | OsgpPort | DhcpEnabled | TestButtonEnabled |
+      | OSLP ELSTER | RELAY                   |          |         |            |                   | 10.20.30.40   |    12122 |    false    |       false       |
+      | OSLP ELSTER | RELAY                   |          |         | 1,1,LIGHT  |                   | 10.20.30.40   |    12122 |    false    |       true        |
+      | OSLP ELSTER | ONE_TO_TEN_VOLT         |          |         |            |                   | 10.20.30.40   |    12122 |    true     |       false       |
+      | OSLP ELSTER | ONE_TO_TEN_VOLT_REVERSE |          |         |            |                   | 10.20.30.40   |    12123 |    true     |       true        |
+      | OSLP ELSTER | DALI                    |        2 | 1,2;2,1 |            |                   | 10.20.30.40   |    12123 |    false    |       false       |
+      | OSLP ELSTER |                         |          |         |            |                   | 10.20.30.40   |    12123 |    false    |       true        |
+      | OSLP ELSTER |                         |          |         |            | GPRS              | 10.20.30.50   |    12122 |    true     |       false       |
+      | OSLP ELSTER | DALI                    |          |         |            |                   | 10.20.30.50   |    12122 |    true     |       true        |
+      | OSLP ELSTER |                         |          |         |            |                   | 10.20.30.50   |    12122 |    false    |       false       |
+      | OSLP ELSTER |                         |          |         |            |                   | 10.20.30.50   |    12123 |    false    |       true        |
+      | OSLP ELSTER | RELAY                   |          |         | 1,1,LIGHT  | CDMA              | 10.20.30.50   |    12123 |    true     |       false       |
+      | OSLP ELSTER | RELAY                   |          |         | 1,1,LIGHT  | ETHERNET          | 10.20.30.50   |    12123 |    true     |       true        |
 
   Scenario: Get configuration data with unknown device
     When receiving a get configuration request
