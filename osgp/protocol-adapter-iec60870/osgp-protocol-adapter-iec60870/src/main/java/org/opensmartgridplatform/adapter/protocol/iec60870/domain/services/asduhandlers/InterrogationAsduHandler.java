@@ -38,7 +38,7 @@ public class InterrogationAsduHandler extends AbstractClientAsduHandler {
 
     @Override
     public void handleAsdu(final ASdu asdu, final ResponseMetadata responseMetadata) {
-        LOGGER.info("Received interrogation command {}.", asdu);
+        LOGGER.debug("Received interrogation command with cause of transmission {}.", asdu.getCauseOfTransmission());
 
         if (asdu.getCauseOfTransmission() == CauseOfTransmission.ACTIVATION_TERMINATION) {
             this.connectResponseService.handleConnectResponse(responseMetadata);

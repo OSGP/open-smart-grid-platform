@@ -38,7 +38,7 @@ public abstract class MeasurementAsduHandler extends AbstractClientAsduHandler {
 
     @Override
     public void handleAsdu(final ASdu asdu, final ResponseMetadata responseMetadata) {
-        LOGGER.info("Received measurement of type {}.", asdu.getTypeIdentification());
+        LOGGER.debug("Received measurement of type {}.", asdu.getTypeIdentification());
 
         final MeasurementReportDto measurementReportDto = this.converter.convert(asdu);
         this.deviceResponseServiceRegistry.forDeviceType(responseMetadata.getDeviceType())

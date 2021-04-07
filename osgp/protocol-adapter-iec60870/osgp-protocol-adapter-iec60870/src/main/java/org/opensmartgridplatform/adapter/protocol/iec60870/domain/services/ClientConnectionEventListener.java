@@ -43,7 +43,7 @@ public class ClientConnectionEventListener implements ConnectionEventListener {
 
     @Override
     public void newASdu(final ASdu asdu) {
-        LOGGER.info("Received incoming ASDU {} from device {}", asdu, this.deviceIdentification);
+        LOGGER.info("Received incoming ASDU from device {}:\n{}", this.deviceIdentification, asdu);
         try {
             final ResponseMetadata newResponseMetadata = this.responseMetadataFactory
                     .createWithNewCorrelationUid(this.responseMetadata);

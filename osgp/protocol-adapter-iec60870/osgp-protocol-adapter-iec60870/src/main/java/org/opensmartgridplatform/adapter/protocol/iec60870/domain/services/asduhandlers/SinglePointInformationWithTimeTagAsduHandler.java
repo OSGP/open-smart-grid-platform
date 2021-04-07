@@ -42,7 +42,7 @@ public class SinglePointInformationWithTimeTagAsduHandler extends AbstractClient
 
     @Override
     public void handleAsdu(final ASdu asdu, final ResponseMetadata responseMetadata) {
-        LOGGER.info("Received asdu {} for device {}.", asdu, responseMetadata.getDeviceIdentification());
+        LOGGER.debug("Received asdu {} for device {}.", asdu, responseMetadata.getDeviceIdentification());
 
         final MeasurementReportDto measurementReportDto = this.converter.convert(asdu);
 
