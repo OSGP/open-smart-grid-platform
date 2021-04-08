@@ -15,9 +15,6 @@ import javax.persistence.PrimaryKeyJoinColumn;
 import org.opensmartgridplatform.domain.core.valueobjects.Address;
 import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 
-import lombok.EqualsAndHashCode;
-
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @PrimaryKeyJoinColumn(name = "id")
 public class SmartMeter extends Device {
