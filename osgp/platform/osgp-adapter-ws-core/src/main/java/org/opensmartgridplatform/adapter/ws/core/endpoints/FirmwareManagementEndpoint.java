@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.ConstraintViolationException;
-import javax.ws.rs.container.AsyncResponse;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -20,6 +19,8 @@ import org.opensmartgridplatform.adapter.ws.core.application.services.FirmwareFi
 import org.opensmartgridplatform.adapter.ws.core.application.services.FirmwareManagementService;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
+import org.opensmartgridplatform.adapter.ws.schema.core.common.AsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.core.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddDeviceModelRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddDeviceModelResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddFirmwareRequest;
@@ -44,6 +45,8 @@ import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindD
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindFirmwareRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindFirmwareResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Firmware;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FirmwareModuleType;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FirmwareVersion;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.GetDeviceFirmwareHistoryRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.GetDeviceFirmwareHistoryResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncRequest;
@@ -65,6 +68,7 @@ import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Switc
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareResponse;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceFirmwareFile;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
@@ -73,11 +77,7 @@ import org.opensmartgridplatform.domain.core.entities.Manufacturer;
 import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData;
-import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleType;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareUpdateMessageDataContainer;
-import org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.OsgpResultType;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
