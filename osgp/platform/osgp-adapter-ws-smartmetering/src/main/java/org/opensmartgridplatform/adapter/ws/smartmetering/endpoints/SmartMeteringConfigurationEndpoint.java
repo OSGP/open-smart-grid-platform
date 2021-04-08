@@ -186,9 +186,19 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         final GetFirmwareVersionAsyncResponse response = new GetFirmwareVersionAsyncResponse();
 
-        return (GetFirmwareVersionAsyncResponse) this.handleGetFirmwareVersion(organisationIdentification,
-                deviceIdentification, new GetFirmwareVersionQuery(), messagePriority, scheduleTime, responseUrl,
-                response, Boolean.parseBoolean(bypassRetry));
+        try {
+            final String correlationUid = this.enqueueGetFirmwareRequest(organisationIdentification,
+                    deviceIdentification, new GetFirmwareVersionQuery(), messagePriority, scheduleTime,
+                    Boolean.parseBoolean(bypassRetry));
+
+            response.setCorrelationUid(correlationUid);
+            response.setDeviceIdentification(deviceIdentification);
+            this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return response;
     }
 
     @PayloadRoot(localPart = "GetFirmwareVersionGasRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
@@ -206,20 +216,11 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         final GetFirmwareVersionGasAsyncResponse response = new GetFirmwareVersionGasAsyncResponse();
 
-        return (GetFirmwareVersionGasAsyncResponse) this.handleGetFirmwareVersion(organisationIdentification,
-                deviceIdentification, new GetFirmwareVersionQuery(true), messagePriority, scheduleTime, responseUrl,
-                response, Boolean.parseBoolean(bypassRetry));
-    }
-
-    private AsyncResponse handleGetFirmwareVersion(final String organisationIdentification,
-            final String deviceIdentification, final GetFirmwareVersionQuery firmwareVersionQuery,
-            final String messagePriority, final String scheduleTime, final String responseUrl,
-            final AsyncResponse response, final boolean bypassRetry) throws OsgpException {
         try {
-            final String correlationUid = this.configurationService.enqueueGetFirmwareRequest(
-                    organisationIdentification, deviceIdentification, firmwareVersionQuery,
-                    MessagePriorityEnum.getMessagePriority(messagePriority),
-                    this.configurationMapper.map(scheduleTime, Long.class), bypassRetry);
+            final String correlationUid = this.enqueueGetFirmwareRequest(organisationIdentification,
+                    deviceIdentification, new GetFirmwareVersionQuery(true), messagePriority,
+                    scheduleTime, Boolean.parseBoolean(bypassRetry));
+
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(deviceIdentification);
             this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
@@ -228,6 +229,16 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         }
 
         return response;
+    }
+
+    private String enqueueGetFirmwareRequest(final String organisationIdentification,
+            final String deviceIdentification, final GetFirmwareVersionQuery firmwareVersionQuery,
+            final String messagePriority, final String scheduleTime, final boolean bypassRetry) throws OsgpException {
+
+        return this.configurationService.enqueueGetFirmwareRequest(
+                organisationIdentification, deviceIdentification, firmwareVersionQuery,
+                MessagePriorityEnum.getMessagePriority(messagePriority),
+                this.configurationMapper.map(scheduleTime, Long.class), bypassRetry);
     }
 
     /**
