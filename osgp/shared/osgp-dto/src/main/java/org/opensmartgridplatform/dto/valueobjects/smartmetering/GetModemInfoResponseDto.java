@@ -13,33 +13,47 @@ import java.util.Date;
 
 public class GetModemInfoResponseDto extends ActionResponseDto {
 
-    private final String operator;
-    private final ModemRegistrationStatusDto modemRegistrationStatus;
-    private final CircuitSwitchedStatusDto circuitSwitchedStatus;
-    private final PacketSwitchedStatusDto packetSwitchedStatus;
-    private final byte[] cellId;
-    private final byte[] locationId;
-    private final SignalQualityDto signalQuality;
-    private final BitErrorRateDto bitErrorRate;
-    private final long mobileCountryCode;
-    private final long mobileNetworkCode;
-    private final long channelNumber;
-    private final long numberOfAdjacentCells;
-    private final byte[] adjacentCellId;
-    private final SignalQualityDto adjacentCellSignalQuality;
-    private final Date captureTime;
-    
+    private String operator;
+
+    private ModemRegistrationStatusDto modemRegistrationStatus;
+
+    private CircuitSwitchedStatusDto circuitSwitchedStatus;
+
+    private PacketSwitchedStatusDto packetSwitchedStatus;
+
+    private byte[] cellId;
+
+    private byte[] locationId;
+
+    private SignalQualityDto signalQuality;
+
+    private BitErrorRateDto bitErrorRate;
+
+    private long mobileCountryCode;
+
+    private long mobileNetworkCode;
+
+    private long channelNumber;
+
+    private long numberOfAdjacentCells;
+
+    private byte[] adjacentCellId;
+
+    private SignalQualityDto adjacentCellSignalQuality;
+
+    private Date captureTime;
+
     private static final long serialVersionUID = 3953818299926960294L;
 
     public GetModemInfoResponseDto(final String operator,
-            final ModemRegistrationStatusDto modemRegistrationStatus,
-            final CircuitSwitchedStatusDto circuitSwitchedStatus,
-            final PacketSwitchedStatusDto packetSwitchedStatus, final byte[] cellId, final byte[] locationId,
-            final SignalQualityDto signalQuality,
-            final BitErrorRateDto bitErrorRate, final long mobileCountryCode, final long mobileNetworkCode,
-            final long channelNumber,
-            final long numberOfAdjacentCells, final byte[] adjacentCellId,
-            final SignalQualityDto adjacentCellSignalQuality, final Date captureTime) {
+        final ModemRegistrationStatusDto modemRegistrationStatus,
+        final CircuitSwitchedStatusDto circuitSwitchedStatus,
+        final PacketSwitchedStatusDto packetSwitchedStatus, final byte[] cellId, final byte[] locationId,
+        final SignalQualityDto signalQuality,
+        final BitErrorRateDto bitErrorRate, final long mobileCountryCode, final long mobileNetworkCode,
+        final long channelNumber,
+        final long numberOfAdjacentCells, final byte[] adjacentCellId,
+        final SignalQualityDto adjacentCellSignalQuality, final Date captureTime) {
         super();
         this.operator = operator;
         this.modemRegistrationStatus = modemRegistrationStatus;

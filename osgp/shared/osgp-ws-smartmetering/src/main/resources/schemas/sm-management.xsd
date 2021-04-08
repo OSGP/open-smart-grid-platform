@@ -713,8 +713,8 @@
           <xsd:element name="MobileNetworkCode" type="xsd:unsignedInt"/>
           <xsd:element name="ChannelNumber" type="xsd:unsignedInt"/>
           <xsd:element name="NumberOfAdjacentCells" type="xsd:unsignedInt"/>
-          <xsd:element name="AdjacantCellId" type="xsd:hexBinary"/>
-          <xsd:element name="AdjacantCellSignalQuality" type="tns:SignalQuality"/>
+          <xsd:element name="AdjacentCellId" type="xsd:hexBinary"/>
+          <xsd:element name="AdjacentCellSignalQuality" type="tns:SignalQuality"/>
           <xsd:element name="CaptureTime" type="xsd:dateTime"/>
         </xsd:sequence>
       </xsd:extension>

@@ -41,9 +41,9 @@ public class GetModemInfoResponseData extends ActionResponse implements Serializ
 
     private long numberOfAdjacentCells;
 
-    private byte[] adjacantCellId;
+    private byte[] adjacentCellId;
 
-    private SignalQualityType adjacantCellSignalQuality;
+    private SignalQualityType adjacentCellSignalQuality;
 
     private Date captureTime;
 
@@ -54,8 +54,8 @@ public class GetModemInfoResponseData extends ActionResponse implements Serializ
             final SignalQualityType signalQuality,
             final BitErrorRateType bitErrorRate, final long mobileCountryCode, final long mobileNetworkCode,
             final long channelNumber,
-            final long numberOfAdjacentCells, final byte[] adjacantCellId,
-            final SignalQualityType adjacantCellSignalQuality, final Date captureTime) {
+            final long numberOfAdjacentCells, final byte[] adjacentCellId,
+            final SignalQualityType adjacentCellSignalQuality, final Date captureTime) {
         super();
         this.operator = operator;
         this.modemRegistrationStatus = modemRegistrationStatus;
@@ -69,8 +69,8 @@ public class GetModemInfoResponseData extends ActionResponse implements Serializ
         this.mobileNetworkCode = mobileNetworkCode;
         this.channelNumber = channelNumber;
         this.numberOfAdjacentCells = numberOfAdjacentCells;
-        this.adjacantCellId = adjacantCellId;
-        this.adjacantCellSignalQuality = adjacantCellSignalQuality;
+        this.adjacentCellId = adjacentCellId;
+        this.adjacentCellSignalQuality = adjacentCellSignalQuality;
         this.captureTime = captureTime;
     }
 
@@ -122,12 +122,12 @@ public class GetModemInfoResponseData extends ActionResponse implements Serializ
         return this.numberOfAdjacentCells;
     }
 
-    public byte[] getAdjacantCellId() {
-        return this.adjacantCellId;
+    public byte[] getAdjacentCellId() {
+        return this.adjacentCellId;
     }
 
-    public SignalQualityType getAdjacantCellSignalQuality() {
-        return this.adjacantCellSignalQuality;
+    public SignalQualityType getAdjacentCellSignalQuality() {
+        return this.adjacentCellSignalQuality;
     }
 
     public Date getCaptureTime() {

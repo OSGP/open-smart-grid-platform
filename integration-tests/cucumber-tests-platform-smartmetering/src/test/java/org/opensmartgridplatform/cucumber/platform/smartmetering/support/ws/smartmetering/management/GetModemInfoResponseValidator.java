@@ -71,11 +71,11 @@ public class GetModemInfoResponseValidator {
             case "numberOfAdjacentCells":
                 assertThat(response.getNumberOfAdjacentCells()).isEqualTo(Long.parseLong(expectedValue));
                 break;
-            case "adjacantCellId":
-                assertThat(response.getAdjacantCellId()).isEqualTo(expectedValue.getBytes());
+            case "adjacentCellId":
+                assertThat(response.getAdjacentCellId()).isEqualTo(expectedValue.getBytes());
                 break;
-            case "adjacantCellSignalQuality":
-                assertThat(response.getAdjacantCellSignalQuality()).isEqualTo(SignalQuality.fromValue(expectedValue));
+            case "adjacentCellSignalQuality":
+                assertThat(response.getAdjacentCellSignalQuality()).isEqualTo(SignalQuality.fromValue(expectedValue));
                 break;
             case "captureTime":
                 try {

@@ -31,6 +31,6 @@ Feature: SmartMetering Bundle - Get Modem Info
       | mobileNetworkCode         |                        0 |
       | channelNumber             |                        1 |
       | numberOfAdjacentCells     |                        3 |
-      | adjacantCellId            | adjacantCellId           |
-      | adjacantCellSignalQuality | MINUS_83_DBM             |
+      | adjacentCellId            | adjacentCellId           |
+      | adjacentCellSignalQuality | MINUS_83_DBM             |
       | captureTime               | 2021-03-31T04:05:06.000Z |

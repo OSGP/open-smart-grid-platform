@@ -51,9 +51,9 @@ class GetModeminfoResponseMappingTest {
     assertThat(target.getMobileNetworkCode()).isEqualTo(source.getMobileNetworkCode());
     assertThat(target.getChannelNumber()).isEqualTo(source.getChannelNumber());
     assertThat(target.getNumberOfAdjacentCells()).isEqualTo(source.getNumberOfAdjacentCells());
-    assertThat(target.getAdjacantCellId()).isEqualTo(source.getAdjacantCellId());
-    assertThat(target.getAdjacantCellSignalQuality().name())
-        .isEqualTo(source.getAdjacantCellSignalQuality().name());
+    assertThat(target.getAdjacentCellId()).isEqualTo(source.getAdjacentCellId());
+    assertThat(target.getAdjacentCellSignalQuality().name())
+        .isEqualTo(source.getAdjacentCellSignalQuality().name());
     assertThat(target.getCaptureTime().toGregorianCalendar().getTime().getTime())
         .isEqualTo(source.getCaptureTime().getTime());
   }
@@ -72,7 +72,7 @@ class GetModeminfoResponseMappingTest {
         42L,
         1L,
         2L,
-        "adjacantCellId".getBytes(),
+        "adjacentCellId".getBytes(),
         SignalQualityType.MINUS_61_DBM,
         new Date());
   }
