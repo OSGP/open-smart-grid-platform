@@ -184,21 +184,11 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         LOGGER.info("GetFirmwareVersion Request received from organisation {} for device {}.",
                 organisationIdentification, deviceIdentification);
 
-        final GetFirmwareVersionAsyncResponse response = new GetFirmwareVersionAsyncResponse();
+        AsyncResponse asyncResponse = this.handleGetFirmwareVersion(organisationIdentification,
+                deviceIdentification, new GetFirmwareVersionQuery(), messagePriority, scheduleTime, responseUrl,
+                Boolean.parseBoolean(bypassRetry));
 
-        try {
-            final String correlationUid = this.enqueueGetFirmwareRequest(organisationIdentification,
-                    deviceIdentification, new GetFirmwareVersionQuery(), messagePriority, scheduleTime,
-                    Boolean.parseBoolean(bypassRetry));
-
-            response.setCorrelationUid(correlationUid);
-            response.setDeviceIdentification(deviceIdentification);
-            this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-
-        return response;
+        return this.configurationMapper.map(asyncResponse, GetFirmwareVersionAsyncResponse.class);
     }
 
     @PayloadRoot(localPart = "GetFirmwareVersionGasRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
@@ -214,31 +204,32 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         LOGGER.info("GetFirmwareVersionGasRequest received from organisation {} for device {}.",
                 organisationIdentification, deviceIdentification);
 
-        final GetFirmwareVersionGasAsyncResponse response = new GetFirmwareVersionGasAsyncResponse();
+        AsyncResponse asyncResponse = this.handleGetFirmwareVersion(organisationIdentification,
+                deviceIdentification, new GetFirmwareVersionQuery(true), messagePriority,
+                scheduleTime, responseUrl, Boolean.parseBoolean(bypassRetry));
 
+        return this.configurationMapper.map(asyncResponse, GetFirmwareVersionGasAsyncResponse.class);
+    }
+
+    private AsyncResponse handleGetFirmwareVersion(final String organisationIdentification,
+            final String deviceIdentification, final GetFirmwareVersionQuery firmwareVersionQuery,
+            final String messagePriority, final String scheduleTime, final String responseUrl,
+            final boolean bypassRetry) throws OsgpException {
+
+        AsyncResponse asyncResponse = new AsyncResponse();
         try {
-            final String correlationUid = this.enqueueGetFirmwareRequest(organisationIdentification,
-                    deviceIdentification, new GetFirmwareVersionQuery(true), messagePriority,
-                    scheduleTime, Boolean.parseBoolean(bypassRetry));
-
-            response.setCorrelationUid(correlationUid);
-            response.setDeviceIdentification(deviceIdentification);
+            final String correlationUid = this.configurationService.enqueueGetFirmwareRequest(
+                    organisationIdentification, deviceIdentification, firmwareVersionQuery,
+                    MessagePriorityEnum.getMessagePriority(messagePriority),
+                    this.configurationMapper.map(scheduleTime, Long.class), bypassRetry);
+            asyncResponse.setCorrelationUid(correlationUid);
+            asyncResponse.setDeviceIdentification(deviceIdentification);
             this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
         } catch (final Exception e) {
             this.handleException(e);
         }
 
-        return response;
-    }
-
-    private String enqueueGetFirmwareRequest(final String organisationIdentification,
-            final String deviceIdentification, final GetFirmwareVersionQuery firmwareVersionQuery,
-            final String messagePriority, final String scheduleTime, final boolean bypassRetry) throws OsgpException {
-
-        return this.configurationService.enqueueGetFirmwareRequest(
-                organisationIdentification, deviceIdentification, firmwareVersionQuery,
-                MessagePriorityEnum.getMessagePriority(messagePriority),
-                this.configurationMapper.map(scheduleTime, Long.class), bypassRetry);
+        return asyncResponse;
     }
 
     /**

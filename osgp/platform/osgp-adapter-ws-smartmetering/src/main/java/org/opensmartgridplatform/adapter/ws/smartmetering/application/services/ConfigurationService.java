@@ -293,16 +293,12 @@ public class ConfigurationService {
      *            contains the bypass retry option
      *
      * @return the correlation id belonging to the request
-     *
-     * @throws FunctionalException
-     *             is thrown when either the device or organization cannot be
      *             found or the organization is not allowed to execute the
      *             function
      */
     private String enqueueAndSendRequest(final String organisationIdentification,
             final String deviceIdentification, final int messagePriority, final Long scheduleTime,
-            final MessageType messageType, final Serializable requestObject, final boolean bypassRetry)
-        throws FunctionalException {
+            final MessageType messageType, final Serializable requestObject, final boolean bypassRetry) {
 
         if (log.isDebugEnabled()) {
             log.debug("Enqueue called for messageType {} with organisation {} and device {}", messageType,
@@ -325,13 +321,9 @@ public class ConfigurationService {
      * @param deviceMessageMetadata
      *            contains meta data of the message
      *
-     * @throws FunctionalException
-     *             is thrown when either the device or organization cannot be
-     *             found or the organization is not allowed to execute the
-     *             function
      */
     private void sendMessage(final Serializable requestObject,
-            final DeviceMessageMetadata deviceMessageMetadata) throws FunctionalException {
+            final DeviceMessageMetadata deviceMessageMetadata) {
         final SmartMeteringRequestMessage message;
 
         if (requestObject == null) {
@@ -362,12 +354,8 @@ public class ConfigurationService {
      * @param bypassRetry
      *            contains the bypass retry option
      *
-     * @return the correlation id belonging to the request
+     * @return the device message data
      *
-     * @throws FunctionalException
-     *             is thrown when either the device or organization cannot be
-     *             found or the organization is not allowed to execute the
-     *             function
      */
     private DeviceMessageMetadata createMetadata(final String organisationIdentification,
             final String deviceIdentification, final int messagePriority, final Long scheduleTime,
