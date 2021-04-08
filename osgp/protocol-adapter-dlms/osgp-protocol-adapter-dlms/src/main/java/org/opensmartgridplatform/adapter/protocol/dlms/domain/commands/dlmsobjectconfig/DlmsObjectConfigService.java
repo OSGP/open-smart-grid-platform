@@ -71,19 +71,14 @@ public class DlmsObjectConfigService {
         final Protocol protocol = Protocol.forDevice(device);
         final CommunicationMethod method = CommunicationMethod.getCommunicationMethod(device.getCommunicationMethod());
 
-        final Optional<DlmsObject> dlmsObject = this.dlmsObjectConfigs.stream()
+        return this.dlmsObjectConfigs.stream()
                 .filter(config -> config.contains(protocol))
                 .findAny()
                 .flatMap(dlmsObjectConfig ->
                         dlmsObjectConfig.findObjectForCommunicationMethod(type, method)
-                );
-
-        if (!dlmsObject.isPresent()) {
-            throw new ProtocolAdapterException(
-                    "Did not find " + type.name() + " object for device " + device.getDeviceId());
-        } else {
-            return dlmsObject.get();
-        }
+                )
+                .orElseThrow(() -> new ProtocolAdapterException(
+                        "Did not find " + type.name() + " object for device " + device.getDeviceId()));
     }
 
     public List<AttributeAddress> getAttributeAddressesForScalerUnit(final AttributeAddressForProfile attributeAddressForProfile,
