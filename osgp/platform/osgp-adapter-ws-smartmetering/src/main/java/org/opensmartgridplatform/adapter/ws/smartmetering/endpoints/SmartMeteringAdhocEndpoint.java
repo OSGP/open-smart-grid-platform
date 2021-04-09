@@ -10,7 +10,6 @@
 package org.opensmartgridplatform.adapter.ws.smartmetering.endpoints;
 
 import java.util.List;
-
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.BypassRetry;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
@@ -82,7 +81,6 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(request.getDeviceIdentification())
-            .withRequestData(synchronizeTimeRequestData)
             .withDeviceFunction(DeviceFunction.SYNCHRONIZE_TIME)
             .withMessageType(MessageType.SYNCHRONIZE_TIME)
             .withMessagePriority(messagePriority)
@@ -90,7 +88,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata);
+        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, synchronizeTimeRequestData);
 
         this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
@@ -133,7 +131,6 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(request.getDeviceIdentification())
-            .withRequestData(getAllAttributeValuesRequest)
             .withDeviceFunction(DeviceFunction.GET_ALL_ATTRIBUTE_VALUES)
             .withMessageType(MessageType.GET_ALL_ATTRIBUTE_VALUES)
             .withMessagePriority(messagePriority)
@@ -141,7 +138,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata);
+        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, getAllAttributeValuesRequest);
 
         this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
@@ -185,7 +182,6 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(request.getDeviceIdentification())
-            .withRequestData(getSpecificAttributeValueRequest)
             .withDeviceFunction(DeviceFunction.GET_SPECIFIC_ATTRIBUTE_VALUE)
             .withMessageType(MessageType.GET_SPECIFIC_ATTRIBUTE_VALUE)
             .withMessagePriority(messagePriority)
@@ -193,7 +189,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata);
+        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, getSpecificAttributeValueRequest);
 
         this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
@@ -245,7 +241,6 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(request.getDeviceIdentification())
-            .withRequestData(getAssociationLnObjectsRequest)
             .withDeviceFunction(DeviceFunction.GET_ASSOCIATION_LN_OBJECTS)
             .withMessageType(MessageType.GET_ASSOCIATION_LN_OBJECTS)
             .withMessagePriority(messagePriority)
@@ -253,7 +248,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata);
+        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, getAssociationLnObjectsRequest);
 
         this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
@@ -298,7 +293,6 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(request.getDeviceIdentification())
-            .withRequestData(scanMbusChannelsRequest)
             .withDeviceFunction(DeviceFunction.SCAN_MBUS_CHANNELS)
             .withMessageType(MessageType.SCAN_MBUS_CHANNELS)
             .withMessagePriority(messagePriority)
@@ -306,7 +300,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata);
+        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, scanMbusChannelsRequest);
 
         this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 

@@ -9,13 +9,13 @@
 package org.opensmartgridplatform.adapter.ws.smartmetering.endpoints;
 
 import java.util.List;
-
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.BypassRetry;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.ResponseUrl;
+import org.opensmartgridplatform.adapter.ws.endpointinterceptors.ScheduleTime;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.Actions;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.BundleAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.BundleAsyncResponse;
@@ -25,11 +25,12 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Action;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.services.ActionMapperResponseService;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.services.ActionMapperService;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.services.BundleService;
+import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActionRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.BundleMessagesResponse;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -62,11 +63,22 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public BundleAsyncResponse bundleRequest(@OrganisationIdentification final String organisationIdentification,
             @MessagePriority final String messagePriority, @ResponseUrl final String responseUrl,
-            @BypassRetry final String bypassRetry, @RequestPayload final BundleRequest request) throws OsgpException {
+            @ScheduleTime final String scheduleTime, @BypassRetry final String bypassRetry,
+            @RequestPayload final BundleRequest request) throws OsgpException {
 
         log.info("Incoming BundleRequest with responseUrl {} and actions {}. [deviceId={} | organisationId={}]",
                 responseUrl, request.getActions().getActionList(), request.getDeviceIdentification(),
                 organisationIdentification);
+
+        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+            .withOrganisationIdentification(organisationIdentification)
+            .withDeviceIdentification(request.getDeviceIdentification())
+            .withDeviceFunction(DeviceFunction.HANDLE_BUNDLED_ACTIONS)
+            .withMessageType(MessageType.HANDLE_BUNDLED_ACTIONS)
+            .withMessagePriority(messagePriority)
+            .withScheduleTime(scheduleTime)
+            .withBypassRetry(bypassRetry)
+            .build();
 
         BundleAsyncResponse response = null;
         try {
@@ -81,9 +93,8 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
 
             final List<ActionRequest> actionRequestList = this.actionMapperService.mapAllActions(actionList);
 
-            final String correlationUid = this.bundleService.enqueueBundleRequest(organisationIdentification,
-                    deviceIdentification, actionRequestList, MessagePriorityEnum.getMessagePriority(messagePriority),
-                    Boolean.parseBoolean(bypassRetry));
+            final String correlationUid = this.bundleService.enqueueBundleRequest(requestMessageMetadata,
+                actionRequestList);
 
             log.info("BundleRequest placed on queue [correlationId={} | deviceId={} | organisationId={}]",
                     correlationUid, deviceIdentification, organisationIdentification);

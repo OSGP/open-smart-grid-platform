@@ -11,7 +11,6 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.application.services;
 
 import java.io.Serializable;
 import lombok.extern.slf4j.Slf4j;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import org.opensmartgridplatform.adapter.ws.smartmetering.endpoints.RequestMessageMetadata;
 import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
@@ -19,11 +18,9 @@ import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeterin
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetAllAttributeValuesRequest;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -47,7 +44,7 @@ public class RequestService {
         this.correlationIdProviderService = correlationIdProviderService;
     }
 
-    public AsyncResponse enqueueAndSendRequest(final RequestMessageMetadata requestMessageMetadata) throws FunctionalException {
+    public AsyncResponse enqueueAndSendRequest(final RequestMessageMetadata requestMessageMetadata, final Serializable requestData) throws FunctionalException {
 
         log.debug("{} called with organisation {} and device {}", requestMessageMetadata.getMessageType(),
             requestMessageMetadata.getOrganisationIdentification(), requestMessageMetadata.getDeviceIdentification());
@@ -58,22 +55,25 @@ public class RequestService {
             requestMessageMetadata.getOrganisationIdentification(),
             requestMessageMetadata.getDeviceIdentification());
 
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(requestMessageMetadata.getDeviceIdentification(),
-            requestMessageMetadata.getOrganisationIdentification(), correlationUid, requestMessageMetadata.getMessageType().name(),
-            requestMessageMetadata.getMessagePriority(), requestMessageMetadata.getScheduleTime(), requestMessageMetadata.isBypassRetry());
+        final DeviceMessageMetadata deviceMessageMetadata = requestMessageMetadata.newDeviceMessageMetadata(correlationUid);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-            deviceMessageMetadata).request(requestMessageMetadata.getRequestData()).build();
+            deviceMessageMetadata).request(requestData).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
+        return this.createAsyncResponse(correlationUid, deviceMessageMetadata.getDeviceIdentification());
+    }
+
+    AsyncResponse createAsyncResponse(final String correlationUid, final String deviceIdentification) {
         final AsyncResponse asyncResponse = new AsyncResponse();
         asyncResponse.setCorrelationUid(correlationUid);
-        asyncResponse.setDeviceIdentification(deviceMessageMetadata.getDeviceIdentification());
+        asyncResponse.setDeviceIdentification(deviceIdentification);
         return asyncResponse;
     }
 
-    private void checkAllowed(final String organisationIdentification, final String deviceIdentification, final DeviceFunction deviceFunction)
+    void checkAllowed(final String organisationIdentification, final String deviceIdentification,
+        final DeviceFunction deviceFunction)
         throws FunctionalException {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);

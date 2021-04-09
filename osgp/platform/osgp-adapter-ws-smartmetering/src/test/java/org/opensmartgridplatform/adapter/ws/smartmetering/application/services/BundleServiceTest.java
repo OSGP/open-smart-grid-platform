@@ -27,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.opensmartgridplatform.adapter.ws.smartmetering.endpoints.RequestMessageMetadata;
 import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -39,6 +40,7 @@ import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderSer
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -49,8 +51,8 @@ public class BundleServiceTest {
     private static final String DEVICE_IDENTIFICATION = "deviceIdentification";
     private static final String ORGANISATION_IDENTIFICATION = "organisationIdentification";
     private static final PlatformFunctionGroup FUNCTION_GROEP = PlatformFunctionGroup.USER;
-    private static final boolean BYPASS_RETRY = false;
-    private static final int MESSAGE_PRIORITY = 1;
+    private static final String BYPASS_RETRY = "false";
+    private static final String MESSAGE_PRIORITY = "1";
 
     @InjectMocks
     private BundleService bundleService;
@@ -106,8 +108,16 @@ public class BundleServiceTest {
     @Test
     public void testAllOperationsAreAllowed() throws FunctionalException {
         // Run the test
-        this.bundleService.enqueueBundleRequest(ORGANISATION_IDENTIFICATION, DEVICE_IDENTIFICATION,
-                this.actionRequestMockList, MESSAGE_PRIORITY, BYPASS_RETRY);
+        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+            .withOrganisationIdentification(ORGANISATION_IDENTIFICATION)
+            .withDeviceIdentification(DEVICE_IDENTIFICATION)
+            .withDeviceFunction(DeviceFunction.HANDLE_BUNDLED_ACTIONS)
+            .withMessageType(MessageType.HANDLE_BUNDLED_ACTIONS)
+            .withMessagePriority(MESSAGE_PRIORITY)
+            .withBypassRetry(BYPASS_RETRY)
+            .build();
+
+        this.bundleService.enqueueBundleRequest(requestMessageMetadata, this.actionRequestMockList);
 
         // Verify the test
         final ArgumentCaptor<SmartMeteringRequestMessage> message = ArgumentCaptor
@@ -143,10 +153,18 @@ public class BundleServiceTest {
         doThrow(fe).when(this.domainHelperService).checkAllowed(this.organisation, this.device,
                 DeviceFunction.HANDLE_BUNDLED_ACTIONS);
 
+        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+            .withOrganisationIdentification(ORGANISATION_IDENTIFICATION)
+            .withDeviceIdentification(DEVICE_IDENTIFICATION)
+            .withDeviceFunction(DeviceFunction.HANDLE_BUNDLED_ACTIONS)
+            .withMessageType(MessageType.HANDLE_BUNDLED_ACTIONS)
+            .withMessagePriority(MESSAGE_PRIORITY)
+            .withBypassRetry(BYPASS_RETRY)
+            .build();
+
         // Run the test
         try {
-            this.bundleService.enqueueBundleRequest(ORGANISATION_IDENTIFICATION, DEVICE_IDENTIFICATION,
-                    this.actionRequestMockList, MESSAGE_PRIORITY, BYPASS_RETRY);
+            this.bundleService.enqueueBundleRequest(requestMessageMetadata, this.actionRequestMockList);
         } catch (final FunctionalException e) {
             // Verify the test
             assertThat(e).isEqualTo(fe);
@@ -170,10 +188,18 @@ public class BundleServiceTest {
         doThrow(fe).when(this.domainHelperService).checkAllowed(this.organisation, this.device,
                 DeviceFunction.REQUEST_PERIODIC_METER_DATA);
 
+        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+            .withOrganisationIdentification(ORGANISATION_IDENTIFICATION)
+            .withDeviceIdentification(DEVICE_IDENTIFICATION)
+            .withDeviceFunction(DeviceFunction.HANDLE_BUNDLED_ACTIONS)
+            .withMessageType(MessageType.HANDLE_BUNDLED_ACTIONS)
+            .withMessagePriority(MESSAGE_PRIORITY)
+            .withBypassRetry(BYPASS_RETRY)
+            .build();
+
         // Run the test
         try {
-            this.bundleService.enqueueBundleRequest(ORGANISATION_IDENTIFICATION, DEVICE_IDENTIFICATION,
-                    this.actionRequestMockList, MESSAGE_PRIORITY, BYPASS_RETRY);
+            this.bundleService.enqueueBundleRequest(requestMessageMetadata, this.actionRequestMockList);
             fail();
         } catch (final FunctionalException e) {
             // Verify the test

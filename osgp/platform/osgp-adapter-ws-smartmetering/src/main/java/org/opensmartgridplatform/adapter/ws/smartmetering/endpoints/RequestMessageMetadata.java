@@ -1,18 +1,18 @@
-/**
- * Copyright 2016 Smart Society Services B.V.
+/*
+ * Copyright 2021 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.endpoints;
 
-import java.io.Serializable;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
+import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.validation.Identification;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
@@ -24,7 +24,6 @@ public class RequestMessageMetadata {
     private final String deviceIdentification;
     @Identification
     private final String organisationIdentification;
-    private final Serializable requestData;
     private final MessageType messageType;
     private final DeviceFunction deviceFunction;
     private final int messagePriority;
@@ -34,12 +33,17 @@ public class RequestMessageMetadata {
     private RequestMessageMetadata(final Builder builder) {
         this.deviceIdentification = builder.deviceIdentification;
         this.organisationIdentification = builder.organisationIdentification;
-        this.requestData = builder.requestData;
         this.messageType = builder.messageType;
         this.deviceFunction = builder.deviceFunction;
         this.messagePriority = builder.messagePriority;
         this.scheduleTime = builder.scheduleTime;
         this.bypassRetry = builder.bypassRetry;
+    }
+
+    public DeviceMessageMetadata newDeviceMessageMetadata(final String correlationUid) {
+        return new DeviceMessageMetadata(this.getDeviceIdentification(),
+            this.getOrganisationIdentification(), correlationUid, this.getMessageType().name(),
+            this.getMessagePriority(), this.getScheduleTime(), this.isBypassRetry());
     }
 
     public static Builder newBuilder() {
@@ -50,7 +54,6 @@ public class RequestMessageMetadata {
 
         private String deviceIdentification = null;
         private String organisationIdentification = null;
-        private Serializable requestData = null;
         private MessageType messageType = null;
         private DeviceFunction deviceFunction = null;
         private int messagePriority = 0;
@@ -68,11 +71,6 @@ public class RequestMessageMetadata {
 
         public Builder withOrganisationIdentification(final String organisationIdentification) {
             this.organisationIdentification = organisationIdentification;
-            return this;
-        }
-
-        public Builder withRequestData(final Serializable requestData) {
-            this.requestData = requestData;
             return this;
         }
 
