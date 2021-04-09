@@ -9,10 +9,6 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.endpoints;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.endpoint.WebserviceEndpoint;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
@@ -22,6 +18,9 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.exceptionhandling.UnknownCorrelationUidException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 abstract class SmartMeteringEndpoint implements WebserviceEndpoint {
 

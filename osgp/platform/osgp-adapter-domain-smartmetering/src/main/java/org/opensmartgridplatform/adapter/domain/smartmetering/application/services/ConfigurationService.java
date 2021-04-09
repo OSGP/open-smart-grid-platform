@@ -120,7 +120,8 @@ public class ConfigurationService {
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeteringDevice.getIpAddress(), specialDaysRequestDto), deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime(),
+                deviceMessageMetadata.bypassRetry());
     }
 
     public void setConfigurationObject(final DeviceMessageMetadata deviceMessageMetadata,
@@ -140,7 +141,7 @@ public class ConfigurationService {
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeteringDevice.getIpAddress(), setConfigurationObjectRequestDto),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
-                deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getScheduleTime(), deviceMessageMetadata.bypassRetry());
     }
 
     public void setPushSetupAlarm(final DeviceMessageMetadata deviceMessageMetadata,
@@ -159,7 +160,8 @@ public class ConfigurationService {
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeteringDevice.getIpAddress(), pushSetupAlarmDto), deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime(),
+                deviceMessageMetadata.bypassRetry());
     }
 
     public void setPushSetupSms(final DeviceMessageMetadata deviceMessageMetadata,
@@ -177,7 +179,8 @@ public class ConfigurationService {
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeteringDevice.getIpAddress(), pushSetupSmsDto), deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime(),
+                deviceMessageMetadata.bypassRetry());
     }
 
     public void handleSpecialDaysResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -217,7 +220,8 @@ public class ConfigurationService {
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeteringDevice.getIpAddress(), alarmNotificationsDto), deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime(),
+                deviceMessageMetadata.bypassRetry());
     }
 
     public void setAdministrativeStatus(final DeviceMessageMetadata deviceMessageMetadata,
@@ -239,7 +243,8 @@ public class ConfigurationService {
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeteringDevice.getIpAddress(), administrativeStatusTypeDto);
         this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime(),
+                deviceMessageMetadata.bypassRetry());
     }
 
     public void handleSetAdministrativeStatusResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -282,7 +287,8 @@ public class ConfigurationService {
                 smartMeteringDevice.getIpAddress(),
                 this.configurationMapper.map(administrativeStatusType, AdministrativeStatusTypeDto.class));
         this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime(),
+                deviceMessageMetadata.bypassRetry());
 
     }
 
@@ -329,7 +335,8 @@ public class ConfigurationService {
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeteringDevice.getIpAddress(), activityCalendarDto), deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime(),
+                deviceMessageMetadata.bypassRetry());
     }
 
     public void handleSetAlarmNotificationsResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -473,7 +480,7 @@ public class ConfigurationService {
                         gatewayDevice.getIpAddress(),
                         new GMeterInfoDto(gasDevice.getChannel(), gasDevice.getDeviceIdentification())),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
-                deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getScheduleTime(), deviceMessageMetadata.bypassRetry());
     }
 
     public void handleSetEncryptionKeyExchangeOnGMeterResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -513,7 +520,7 @@ public class ConfigurationService {
                         deviceMessageMetadata.getDeviceIdentification(), gatewayDevice.getIpAddress(),
                         new SetMbusUserKeyByChannelRequestDataDto(setMbusUserKeyByChannelRequestData.getChannel())),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
-                deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getScheduleTime(), deviceMessageMetadata.bypassRetry());
     }
 
     public void handleSetMbusUserKeyByChannelResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -554,7 +561,7 @@ public class ConfigurationService {
                         deviceMessageMetadata.getOrganisationIdentification(),
                         deviceMessageMetadata.getDeviceIdentification(), smartMeteringDevice.getIpAddress(), keySetDto),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
-                deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getScheduleTime(), deviceMessageMetadata.bypassRetry());
     }
 
     public void handleReplaceKeysResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -591,7 +598,7 @@ public class ConfigurationService {
                         deviceMessageMetadata.getOrganisationIdentification(),
                         deviceMessageMetadata.getDeviceIdentification(), smartMeteringDevice.getIpAddress(), null),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
-                deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getScheduleTime(), deviceMessageMetadata.bypassRetry());
     }
 
     public void handleGenerateAndReplaceKeysResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -673,7 +680,7 @@ public class ConfigurationService {
                             new GetFirmwareVersionQueryDto(ChannelDto.fromNumber(smartMeter.getChannel()),
                                     deviceMessageMetadata.getDeviceIdentification())),
                     deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
-                    deviceMessageMetadata.getScheduleTime());
+                    deviceMessageMetadata.getScheduleTime(), deviceMessageMetadata.bypassRetry());
         } else {
             this.osgpCoreRequestMessageSender.send(
                     new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
@@ -681,7 +688,7 @@ public class ConfigurationService {
                             deviceMessageMetadata.getDeviceIdentification(), smartMeter.getIpAddress(),
                             new GetFirmwareVersionQueryDto()),
                     deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
-                    deviceMessageMetadata.getScheduleTime());
+                    deviceMessageMetadata.getScheduleTime(), deviceMessageMetadata.bypassRetry());
         }
     }
 
@@ -775,7 +782,8 @@ public class ConfigurationService {
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeter.getIpAddress(), firmwareFileIdentifier), deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime(),
+                deviceMessageMetadata.bypassRetry());
     }
 
     public void handleUpdateFirmwareResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -828,7 +836,7 @@ public class ConfigurationService {
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeteringDevice.getIpAddress(), setClockConfigurationRequestDto),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
-                deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getScheduleTime(), deviceMessageMetadata.bypassRetry());
     }
 
     public void handleSetClockConfigurationResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -869,7 +877,7 @@ public class ConfigurationService {
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeteringDevice.getIpAddress(), getConfigurationObjectRequestDto),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
-                deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getScheduleTime(), deviceMessageMetadata.bypassRetry());
     }
 
     public void handleGetConfigurationObjectResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -917,7 +925,7 @@ public class ConfigurationService {
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeteringDevice.getIpAddress(), definableLoadProfileConfigurationDto),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
-                deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getScheduleTime(), deviceMessageMetadata.bypassRetry());
     }
 
     public void handleConfigureDefinableLoadProfileResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -965,7 +973,7 @@ public class ConfigurationService {
                         new GetMbusEncryptionKeyStatusRequestDto(mbusDevice.getDeviceIdentification(),
                                 mbusDevice.getChannel())),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
-                deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getScheduleTime(), deviceMessageMetadata.bypassRetry());
     }
 
     public void handleGetMbusEncryptionKeyStatusResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -1009,7 +1017,7 @@ public class ConfigurationService {
                         new GetMbusEncryptionKeyStatusByChannelRequestDataDto(
                                 getMbusEncryptionKeyStatusByChannelRequestData.getChannel())),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
-                deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getScheduleTime(), deviceMessageMetadata.bypassRetry());
     }
 
     public void handleGetMbusEncryptionKeyStatusByChannelResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -1051,7 +1059,7 @@ public class ConfigurationService {
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeteringDevice.getIpAddress(), setRandomisationSettingsRequestDataDto),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
-                deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getScheduleTime(), deviceMessageMetadata.bypassRetry());
 
     }
 

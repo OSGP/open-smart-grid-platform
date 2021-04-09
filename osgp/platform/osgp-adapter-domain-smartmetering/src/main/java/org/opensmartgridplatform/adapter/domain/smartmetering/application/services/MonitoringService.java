@@ -122,7 +122,8 @@ public class MonitoringService {
             this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                     deviceMessageMetadata.getOrganisationIdentification(), gatewayDevice.getDeviceIdentification(),
                     gatewayDevice.getIpAddress(), periodicMeterReadsQuery), deviceMessageMetadata.getMessageType(),
-                    deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                    deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime(),
+                    deviceMessageMetadata.bypassRetry());
         } else {
 
             this.osgpCoreRequestMessageSender.send(
@@ -132,7 +133,7 @@ public class MonitoringService {
                             this.monitoringMapper.map(periodicMeterReadsValueQuery,
                                     PeriodicMeterReadsRequestDto.class)),
                     deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
-                    deviceMessageMetadata.getScheduleTime());
+                    deviceMessageMetadata.getScheduleTime(), deviceMessageMetadata.bypassRetry());
         }
     }
 
@@ -226,7 +227,7 @@ public class MonitoringService {
                             gatewayDevice.getDeviceIdentification(), gatewayDevice.getIpAddress(),
                             new ActualMeterReadsQueryDto(ChannelDto.fromNumber(smartMeter.getChannel()))),
                     deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
-                    deviceMessageMetadata.getScheduleTime());
+                    deviceMessageMetadata.getScheduleTime(), deviceMessageMetadata.bypassRetry());
         } else {
             this.osgpCoreRequestMessageSender.send(
                     new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
@@ -234,7 +235,7 @@ public class MonitoringService {
                             deviceMessageMetadata.getDeviceIdentification(), smartMeter.getIpAddress(),
                             new ActualMeterReadsQueryDto()),
                     deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
-                    deviceMessageMetadata.getScheduleTime());
+                    deviceMessageMetadata.getScheduleTime(), deviceMessageMetadata.bypassRetry());
         }
     }
 
@@ -303,7 +304,8 @@ public class MonitoringService {
                 smartMeter.getIpAddress(), requestDto);
 
         this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime(),
+                deviceMessageMetadata.bypassRetry());
     }
 
     public void handleActualPowerQualityResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -349,7 +351,7 @@ public class MonitoringService {
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeteringDevice.getIpAddress(), readAlarmRegisterRequestDto),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
-                deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getScheduleTime(), deviceMessageMetadata.bypassRetry());
     }
 
     public void handleReadAlarmRegisterResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -395,7 +397,8 @@ public class MonitoringService {
                 smartMeter.getIpAddress(), requestDto);
 
         this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime(),
+                deviceMessageMetadata.bypassRetry());
     }
 
     public void handleGetPowerQualityProfileResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -441,7 +444,7 @@ public class MonitoringService {
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeteringDevice.getIpAddress(), clearAlarmRegisterRequestDto),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
-                deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getScheduleTime(), deviceMessageMetadata.bypassRetry());
     }
 
     public void handleClearAlarmRegisterResponse(final DeviceMessageMetadata deviceMessageMetadata,

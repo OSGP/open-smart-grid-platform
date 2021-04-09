@@ -7,7 +7,9 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.endpoints;
 
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
+import org.opensmartgridplatform.adapter.ws.endpointinterceptors.BypassRetry;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.ResponseUrl;
@@ -41,7 +43,6 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.Peri
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterRequest;
@@ -49,7 +50,8 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.Read
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.RetrievePushNotificationAlarmRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.RetrievePushNotificationAlarmResponse;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
-import org.opensmartgridplatform.adapter.ws.smartmetering.application.services.MonitoringService;
+import org.opensmartgridplatform.adapter.ws.smartmetering.application.services.RequestService;
+import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmRegister;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileRequest;
@@ -61,14 +63,12 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushNoti
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
+import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Endpoint
@@ -77,7 +77,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
     private static final String SMARTMETER_MONITORING_NAMESPACE = "http://www.opensmartgridplatform.org/schemas/smartmetering/sm-monitoring/2014/10";
 
     @Autowired
-    private MonitoringService monitoringService;
+    private RequestService requestService;
 
     @Autowired
     private MonitoringMapper monitoringMapper;
@@ -91,12 +91,28 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
     public PeriodicMeterReadsAsyncResponse getPeriodicMeterReads(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final PeriodicMeterReadsRequest request, @MessagePriority final String messagePriority,
-            @ResponseUrl final String responseUrl, @ScheduleTime final String scheduleTime) throws OsgpException {
+            @ResponseUrl final String responseUrl, @ScheduleTime final String scheduleTime,
+            @BypassRetry final String bypassRetry) throws OsgpException {
 
-        log.debug("Incoming PeriodicMeterReadsRequest for meter: {}.", request.getDeviceIdentification());
+        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery requestData = this.monitoringMapper
+            .map(request,
+                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery.class);
 
-        return (PeriodicMeterReadsAsyncResponse) this.getPeriodicAsyncResponseForEandG(organisationIdentification,
-                request, MessagePriorityEnum.getMessagePriority(messagePriority), scheduleTime, responseUrl);
+        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+            .withOrganisationIdentification(organisationIdentification)
+            .withDeviceIdentification(request.getDeviceIdentification())
+            .withDeviceFunction(DeviceFunction.REQUEST_PERIODIC_METER_DATA)
+            .withMessageType(MessageType.REQUEST_PERIODIC_METER_DATA)
+            .withMessagePriority(messagePriority)
+            .withScheduleTime(scheduleTime)
+            .withBypassRetry(bypassRetry)
+            .build();
+
+        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, requestData);
+
+        this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+
+        return this.monitoringMapper.map(asyncResponse, PeriodicMeterReadsAsyncResponse.class);
     }
 
     @PayloadRoot(localPart = "PeriodicMeterReadsGasRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
@@ -104,40 +120,28 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
     public PeriodicMeterReadsGasAsyncResponse getPeriodicMeterReadsGas(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final PeriodicMeterReadsGasRequest request, @MessagePriority final String messagePriority,
-            @ResponseUrl final String responseUrl, @ScheduleTime final String scheduleTime) throws OsgpException {
+            @ResponseUrl final String responseUrl, @ScheduleTime final String scheduleTime,
+            @BypassRetry final String bypassRetry) throws OsgpException {
 
-        log.debug("Incoming PeriodicMeterReadsGasRequest for meter: {}.", request.getDeviceIdentification());
+        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery requestData = this.monitoringMapper
+            .map(request,
+                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery.class);
 
-        return (PeriodicMeterReadsGasAsyncResponse) this.getPeriodicAsyncResponseForEandG(organisationIdentification,
-                request, MessagePriorityEnum.getMessagePriority(messagePriority), scheduleTime, responseUrl);
-    }
+        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+            .withOrganisationIdentification(organisationIdentification)
+            .withDeviceIdentification(request.getDeviceIdentification())
+            .withDeviceFunction(DeviceFunction.REQUEST_PERIODIC_METER_DATA)
+            .withMessageType(MessageType.REQUEST_PERIODIC_METER_DATA)
+            .withMessagePriority(messagePriority)
+            .withScheduleTime(scheduleTime)
+            .withBypassRetry(bypassRetry)
+            .build();
 
-    private AsyncResponse getPeriodicAsyncResponseForEandG(final String organisationIdentification,
-            final PeriodicReadsRequest request, final int messagePriority, final String scheduleTime,
-            final String responseUrl) throws OsgpException {
-        AsyncResponse response = null;
+        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, requestData);
 
-        try {
-            final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery dataRequest = this.monitoringMapper
-                    .map(request,
-                            org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery.class);
+        this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
-            final String correlationUid = this.monitoringService.enqueuePeriodicMeterReadsRequestData(
-                    organisationIdentification, request.getDeviceIdentification(), dataRequest, messagePriority,
-                    this.monitoringMapper.map(scheduleTime, Long.class));
-
-            response = request instanceof PeriodicMeterReadsRequest ? new PeriodicMeterReadsAsyncResponse()
-                    : new PeriodicMeterReadsGasAsyncResponse();
-            response.setCorrelationUid(correlationUid);
-            response.setDeviceIdentification(request.getDeviceIdentification());
-            this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
-        } catch (final Exception e) {
-            log.error("Exception: {} while requesting meter reads for device: {} for organisation {}.", e.getMessage(),
-                    request.getDeviceIdentification(), organisationIdentification, e);
-
-            this.handleException(e);
-        }
-        return response;
+        return this.monitoringMapper.map(asyncResponse, PeriodicMeterReadsGasAsyncResponse.class);
     }
 
     @PayloadRoot(localPart = "PeriodicMeterReadsAsyncRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
@@ -201,15 +205,27 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
     public ActualMeterReadsAsyncResponse getActualMeterReads(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final ActualMeterReadsRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl,
+            @BypassRetry final String bypassRetry) throws OsgpException {
 
-        final String deviceIdentification = request.getDeviceIdentification();
+        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery requestData = new org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery(
+            false);
 
-        log.debug("Incoming ActualMeterReadsRequest for meter: {}", deviceIdentification);
+        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+            .withOrganisationIdentification(organisationIdentification)
+            .withDeviceIdentification(request.getDeviceIdentification())
+            .withDeviceFunction(DeviceFunction.REQUEST_ACTUAL_METER_DATA)
+            .withMessageType(MessageType.REQUEST_ACTUAL_METER_DATA)
+            .withMessagePriority(messagePriority)
+            .withScheduleTime(scheduleTime)
+            .withBypassRetry(bypassRetry)
+            .build();
 
-        return (ActualMeterReadsAsyncResponse) this.getActualAsyncResponseForEandG(organisationIdentification,
-                deviceIdentification, false, MessagePriorityEnum.getMessagePriority(messagePriority), scheduleTime,
-                responseUrl);
+        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, requestData);
+
+        this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+
+        return this.monitoringMapper.map(asyncResponse, ActualMeterReadsAsyncResponse.class);
     }
 
     @PayloadRoot(localPart = "ActualMeterReadsGasRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
@@ -217,45 +233,27 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
     public ActualMeterReadsGasAsyncResponse getActualMeterReadsGas(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final ActualMeterReadsGasRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl,
+            @BypassRetry final String bypassRetry) throws OsgpException {
 
-        final String deviceIdentification = request.getDeviceIdentification();
+        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery requestData = new org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery(
+            true);
 
-        log.debug("Incoming ActualMeterReadsGasRequest for meter: {}", deviceIdentification);
+        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+            .withOrganisationIdentification(organisationIdentification)
+            .withDeviceIdentification(request.getDeviceIdentification())
+            .withDeviceFunction(DeviceFunction.REQUEST_ACTUAL_METER_DATA)
+            .withMessageType(MessageType.REQUEST_ACTUAL_METER_DATA)
+            .withMessagePriority(messagePriority)
+            .withScheduleTime(scheduleTime)
+            .withBypassRetry(bypassRetry)
+            .build();
 
-        return (ActualMeterReadsGasAsyncResponse) this.getActualAsyncResponseForEandG(organisationIdentification,
-                deviceIdentification, true, MessagePriorityEnum.getMessagePriority(messagePriority), scheduleTime,
-                responseUrl);
-    }
+        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, requestData);
 
-    private AsyncResponse getActualAsyncResponseForEandG(final String organisationIdentification,
-            final String deviceIdentification, final boolean gas, final int messagePriority, final String scheduleTime,
-            final String responseUrl) throws OsgpException {
-        AsyncResponse asyncResponse = null;
+        this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
-        try {
-            final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery requestValueObject = new org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery(
-                    gas);
-
-            final String correlationUid = this.monitoringService.enqueueActualMeterReadsRequestData(
-                    organisationIdentification, deviceIdentification, requestValueObject, messagePriority,
-                    this.monitoringMapper.map(scheduleTime, Long.class));
-
-            asyncResponse = gas
-                    ? new org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ObjectFactory()
-                            .createActualMeterReadsGasAsyncResponse()
-                    : new org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ObjectFactory()
-                            .createActualMeterReadsAsyncResponse();
-            asyncResponse.setCorrelationUid(correlationUid);
-            asyncResponse.setDeviceIdentification(deviceIdentification);
-            this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
-        } catch (final Exception e) {
-            log.error("Exception: {} while requesting actual meter reads for device: {} for organisation {}.",
-                    e.getMessage(), deviceIdentification, organisationIdentification, e);
-
-            this.handleException(e);
-        }
-        return asyncResponse;
+        return this.monitoringMapper.map(asyncResponse, ActualMeterReadsGasAsyncResponse.class);
     }
 
     @PayloadRoot(localPart = "ActualMeterReadsAsyncRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
@@ -307,33 +305,28 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
     public ReadAlarmRegisterAsyncResponse readAlarmRegister(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final ReadAlarmRegisterRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl,
+            @BypassRetry final String bypassRetry) throws OsgpException {
 
-        log.info("Incoming ReadAlarmRegisterRequest for meter: {}", request.getDeviceIdentification());
+        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest requestData = this.monitoringMapper
+            .map(request,
+                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest.class);
 
-        ReadAlarmRegisterAsyncResponse response = null;
-        try {
+        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+            .withOrganisationIdentification(organisationIdentification)
+            .withDeviceIdentification(request.getDeviceIdentification())
+            .withDeviceFunction(DeviceFunction.READ_ALARM_REGISTER)
+            .withMessageType(MessageType.READ_ALARM_REGISTER)
+            .withMessagePriority(messagePriority)
+            .withScheduleTime(scheduleTime)
+            .withBypassRetry(bypassRetry)
+            .build();
 
-            final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest requestValueObject = this.monitoringMapper
-                    .map(request,
-                            org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest.class);
+        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, requestData);
 
-            final String correlationUid = this.monitoringService.enqueueReadAlarmRegisterRequestData(
-                    organisationIdentification, request.getDeviceIdentification(), requestValueObject,
-                    MessagePriorityEnum.getMessagePriority(messagePriority),
-                    this.monitoringMapper.map(scheduleTime, Long.class));
+        this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
-            response = new ReadAlarmRegisterAsyncResponse();
-            response.setCorrelationUid(correlationUid);
-            response.setDeviceIdentification(request.getDeviceIdentification());
-            this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
-        } catch (final Exception e) {
-            log.error("Exception: {} while requesting read alarm register for device: {} for organisation {}.",
-                    e.getMessage(), request.getDeviceIdentification(), organisationIdentification, e);
-
-            this.handleException(e);
-        }
-        return response;
+        return this.monitoringMapper.map(asyncResponse, ReadAlarmRegisterAsyncResponse.class);
     }
 
     @PayloadRoot(localPart = "ReadAlarmRegisterAsyncRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
@@ -399,33 +392,27 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
     public GetPowerQualityProfileAsyncResponse getGetPowerQualityProfile(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final GetPowerQualityProfileRequest request, @MessagePriority final String messagePriority,
-            @ResponseUrl final String responseUrl, @ScheduleTime final String scheduleTime) throws OsgpException {
+            @ResponseUrl final String responseUrl, @ScheduleTime final String scheduleTime,
+            @BypassRetry final String bypassRetry) throws OsgpException {
 
-        log.debug("Incoming GetPowerQualityProfileRequest for meter: {}.", request.getDeviceIdentification());
+        final GetPowerQualityProfileRequest requestData = this.monitoringMapper.map(request,
+            GetPowerQualityProfileRequest.class);
 
-        GetPowerQualityProfileAsyncResponse response = null;
+        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+            .withOrganisationIdentification(organisationIdentification)
+            .withDeviceIdentification(request.getDeviceIdentification())
+            .withDeviceFunction(DeviceFunction.GET_PROFILE_GENERIC_DATA)
+            .withMessageType(MessageType.GET_PROFILE_GENERIC_DATA)
+            .withMessagePriority(messagePriority)
+            .withScheduleTime(scheduleTime)
+            .withBypassRetry(bypassRetry)
+            .build();
 
-        try {
-            final GetPowerQualityProfileRequest dataRequest = this.monitoringMapper.map(request,
-                    GetPowerQualityProfileRequest.class);
+        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, requestData);
 
-            final int msgPrio = MessagePriorityEnum.getMessagePriority(messagePriority);
-            final String correlationUid = this.monitoringService.enqueueGetPowerQualityProfileRequest(
-                    organisationIdentification, request.getDeviceIdentification(), dataRequest, msgPrio,
-                    this.monitoringMapper.map(scheduleTime, Long.class));
+        this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
-            response = new GetPowerQualityProfileAsyncResponse();
-            response.setCorrelationUid(correlationUid);
-            response.setDeviceIdentification(request.getDeviceIdentification());
-            this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
-        } catch (final Exception e) {
-            log.error("Exception: {} while requesting profile generic data for device: {} for organisation {}.",
-                    e.getMessage(), request.getDeviceIdentification(), organisationIdentification, e);
-
-            this.handleException(e);
-        }
-        return response;
-
+        return this.monitoringMapper.map(asyncResponse, GetPowerQualityProfileAsyncResponse.class);
     }
 
     @PayloadRoot(localPart = "GetPowerQualityProfileAsyncRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
@@ -438,8 +425,8 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
         GetPowerQualityProfileResponse response = null;
         try {
-            final ResponseData responseData = this.monitoringService
-                    .dequeueGetPowerQualityProfileDataResponseData(request.getCorrelationUid());
+            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(), org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileResponse.class,
+                ComponentType.WS_SMART_METERING);
 
             this.throwExceptionIfResultNotOk(responseData, "retrieving power quality profile");
 
@@ -460,33 +447,28 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
     public ClearAlarmRegisterAsyncResponse clearAlarmRegister(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final ClearAlarmRegisterRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl) throws OsgpException {
+            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl,
+            @BypassRetry final String bypassRetry) throws OsgpException {
 
-        log.info("Incoming ClearAlarmRegisterRequest for meter: {}", request.getDeviceIdentification());
+        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ClearAlarmRegisterRequest requestData = this.monitoringMapper
+            .map(request,
+                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ClearAlarmRegisterRequest.class);
 
-        ClearAlarmRegisterAsyncResponse response = null;
-        try {
+        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+            .withOrganisationIdentification(organisationIdentification)
+            .withDeviceIdentification(request.getDeviceIdentification())
+            .withDeviceFunction(DeviceFunction.CLEAR_ALARM_REGISTER)
+            .withMessageType(MessageType.CLEAR_ALARM_REGISTER)
+            .withMessagePriority(messagePriority)
+            .withScheduleTime(scheduleTime)
+            .withBypassRetry(bypassRetry)
+            .build();
 
-            final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ClearAlarmRegisterRequest requestValueObject = this.monitoringMapper
-                    .map(request,
-                            org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ClearAlarmRegisterRequest.class);
+        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, requestData);
 
-            final String correlationUid = this.monitoringService.enqueueClearAlarmRegisterRequestData(
-                    organisationIdentification, request.getDeviceIdentification(), requestValueObject,
-                    MessagePriorityEnum.getMessagePriority(messagePriority),
-                    this.monitoringMapper.map(scheduleTime, Long.class));
+        this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
-            response = new ClearAlarmRegisterAsyncResponse();
-            response.setCorrelationUid(correlationUid);
-            response.setDeviceIdentification(request.getDeviceIdentification());
-            this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
-        } catch (final Exception e) {
-            log.error("Exception: {} while requesting clear alarm register for device: {} for organisation {}.",
-                    e.getMessage(), request.getDeviceIdentification(), organisationIdentification, e);
-
-            this.handleException(e);
-        }
-        return response;
+        return this.monitoringMapper.map(asyncResponse, ClearAlarmRegisterAsyncResponse.class);
     }
 
     @PayloadRoot(localPart = "ClearAlarmRegisterAsyncRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
@@ -527,31 +509,26 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualPowerQualityRequest request,
             @MessagePriority final String messagePriority, @ResponseUrl final String responseUrl,
-            @ScheduleTime final String scheduleTime) throws OsgpException {
+            @ScheduleTime final String scheduleTime, @BypassRetry final String bypassRetry) throws OsgpException {
 
-        log.debug("Incoming ActualPowerQualityRequest for meter: {}.", request.getDeviceIdentification());
+        final ActualPowerQualityRequest requestData = this.monitoringMapper.map(request,
+            ActualPowerQualityRequest.class);
 
-        ActualPowerQualityAsyncResponse response = null;
-        try {
-            final ActualPowerQualityRequest dataRequest = this.monitoringMapper.map(request,
-                    ActualPowerQualityRequest.class);
+        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+            .withOrganisationIdentification(organisationIdentification)
+            .withDeviceIdentification(request.getDeviceIdentification())
+            .withDeviceFunction(DeviceFunction.GET_ACTUAL_POWER_QUALITY)
+            .withMessageType(MessageType.GET_ACTUAL_POWER_QUALITY)
+            .withMessagePriority(messagePriority)
+            .withScheduleTime(scheduleTime)
+            .withBypassRetry(bypassRetry)
+            .build();
 
-            final String correlationUid = this.monitoringService.enqueueActualPowerQualityRequestData(
-                    organisationIdentification, request.getDeviceIdentification(), dataRequest,
-                    MessagePriorityEnum.getMessagePriority(messagePriority),
-                    this.monitoringMapper.map(scheduleTime, Long.class));
+        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, requestData);
 
-            response = new ActualPowerQualityAsyncResponse();
-            response.setCorrelationUid(correlationUid);
-            response.setDeviceIdentification(request.getDeviceIdentification());
-            this.responseUrlService.saveResponseUrlIfNeeded(correlationUid, responseUrl);
-        } catch (final Exception e) {
-            log.error("Exception: {} while requesting the actual power quality for device: {} for organisation {}.",
-                    e.getMessage(), request.getDeviceIdentification(), organisationIdentification, e);
+        this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
-            this.handleException(e);
-        }
-        return response;
+        return this.monitoringMapper.map(asyncResponse, ActualPowerQualityAsyncResponse.class);
     }
 
     @PayloadRoot(localPart = "ActualPowerQualityAsyncRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
