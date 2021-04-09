@@ -49,7 +49,9 @@ public class RequestService {
         log.debug("{} called with organisation {} and device {}", requestMessageMetadata.getMessageType(),
             requestMessageMetadata.getOrganisationIdentification(), requestMessageMetadata.getDeviceIdentification());
 
-        this.checkAllowed(requestMessageMetadata.getOrganisationIdentification(), requestMessageMetadata.getDeviceIdentification(), requestMessageMetadata.getDeviceFunction());
+        if (requestMessageMetadata.getDeviceFunction() != null) {
+            this.checkAllowed(requestMessageMetadata.getOrganisationIdentification(), requestMessageMetadata.getDeviceIdentification(), requestMessageMetadata.getDeviceFunction());
+        }
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(
             requestMessageMetadata.getOrganisationIdentification(),

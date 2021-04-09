@@ -46,7 +46,7 @@ public class SetAlarmNotifications {
         assertThat(setAlarmNotificationsAsyncResponse).as("Set alarm notifications response should not be null")
                 .isNotNull();
         ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
-                setAlarmNotificationsAsyncResponse.getAsyncResponse().getCorrelationUid());
+                setAlarmNotificationsAsyncResponse.getCorrelationUid());
     }
 
     @Then("^the specified alarm notifications should be set on the device$")

@@ -95,7 +95,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
                 .withOrganisationIdentification(organisationIdentification)
                 .withDeviceIdentification(device.getDeviceIdentification())
-                .withDeviceFunction(DeviceFunction.ADD_METER)
+                .withDeviceFunction(null)
                 .withMessageType(MessageType.ADD_METER)
                 .withMessagePriority(messagePriority)
                 .withScheduleTime(scheduleTime)

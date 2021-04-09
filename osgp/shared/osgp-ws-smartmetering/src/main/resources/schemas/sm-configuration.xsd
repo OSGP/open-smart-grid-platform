@@ -398,9 +398,9 @@
   </xsd:element>
   <xsd:element name="SetAlarmNotificationsAsyncResponse">
     <xsd:complexType>
-      <xsd:sequence>
-        <xsd:element name="AsyncResponse" type="common:AsyncResponse"/>
-      </xsd:sequence>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"/>
+      </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
   <xsd:element name="SetAlarmNotificationsAsyncRequest">
