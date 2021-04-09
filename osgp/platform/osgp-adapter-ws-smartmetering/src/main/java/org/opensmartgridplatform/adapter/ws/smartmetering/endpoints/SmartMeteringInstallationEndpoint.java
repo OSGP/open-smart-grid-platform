@@ -65,7 +65,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
     private static final String SMARTMETER_INSTALLATION_NAMESPACE =
-            "http://www.opensmartgridplatform" + ".org/schemas/smartmetering/sm-installation/2014/10";
+            "http://www.opensmartgridplatform.org/schemas/smartmetering/sm-installation/2014/10";
 
     @Autowired
     private InstallationService installationService;
@@ -527,7 +527,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
                     ComponentType.WS_SMART_METERING);
 
-            this.throwExceptionIfResultNotOk(responseData, "Set Subscription Information");
+            this.throwExceptionIfResultNotOk(responseData, "Set Communication Network Information");
 
             response = this.installationMapper.map(responseData.getMessageData(),
                     SetCommunicationNetworkInformationResponse.class);

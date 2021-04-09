@@ -237,7 +237,7 @@ public class InstallationService {
             final SetCommunicationNetworkInformationRequestData setCommunicationNetworkInformationRequestData,
             final int messagePriority, final Long scheduleTime) {
 
-        log.debug("enqueueSetSCommunicationNetworkRequest called with organisation {} and device {}",
+        log.debug("enqueueSetCommunicationNetworkRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
