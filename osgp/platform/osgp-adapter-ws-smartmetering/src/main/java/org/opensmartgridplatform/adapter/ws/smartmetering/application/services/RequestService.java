@@ -30,7 +30,7 @@ import org.springframework.validation.annotation.Validated;
 @Service
 @Slf4j
 @Validated
-public class AsyncRequestService {
+public class RequestService {
 
     private final DomainHelperService domainHelperService;
 
@@ -38,7 +38,7 @@ public class AsyncRequestService {
 
     private final CorrelationIdProviderService correlationIdProviderService;
 
-    public AsyncRequestService(
+    public RequestService(
         final DomainHelperService domainHelperService,
         final SmartMeteringRequestMessageSender smartMeteringRequestMessageSender,
         final CorrelationIdProviderService correlationIdProviderService) {
@@ -47,7 +47,7 @@ public class AsyncRequestService {
         this.correlationIdProviderService = correlationIdProviderService;
     }
 
-    public AsyncResponse enqueueAsyncRequest(final RequestMessageMetadata requestMessageMetadata) throws FunctionalException {
+    public AsyncResponse enqueueAndSendRequest(final RequestMessageMetadata requestMessageMetadata) throws FunctionalException {
 
         log.debug("{} called with organisation {} and device {}", requestMessageMetadata.getMessageType(),
             requestMessageMetadata.getOrganisationIdentification(), requestMessageMetadata.getDeviceIdentification());

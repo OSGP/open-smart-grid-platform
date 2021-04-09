@@ -41,7 +41,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.Synchroni
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.AdhocMapper;
-import org.opensmartgridplatform.adapter.ws.smartmetering.application.services.AsyncRequestService;
+import org.opensmartgridplatform.adapter.ws.smartmetering.application.services.RequestService;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AssociationLnListType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ScanMbusChannelsResponseData;
@@ -62,7 +62,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
     private static final String SMARTMETER_ADHOC_NAMESPACE = "http://www.opensmartgridplatform.org/schemas/smartmetering/sm-adhoc/2014/10";
 
     @Autowired
-    private AsyncRequestService asyncRequestService;
+    private RequestService requestService;
 
     @Autowired
     private AdhocMapper adhocMapper;
@@ -90,7 +90,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.asyncRequestService.enqueueAsyncRequest(requestMessageMetadata);
+        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata);
 
         this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
@@ -141,7 +141,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.asyncRequestService.enqueueAsyncRequest(requestMessageMetadata);
+        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata);
 
         this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
@@ -193,7 +193,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.asyncRequestService.enqueueAsyncRequest(requestMessageMetadata);
+        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata);
 
         this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
@@ -253,7 +253,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.asyncRequestService.enqueueAsyncRequest(requestMessageMetadata);
+        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata);
 
         this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
@@ -306,7 +306,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.asyncRequestService.enqueueAsyncRequest(requestMessageMetadata);
+        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata);
 
         this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
