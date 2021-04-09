@@ -125,17 +125,11 @@ public class InstallationService {
             final SetCommunicationNetworkInformationRequestData requestData, final SmartMeter updatedSmartMeter) {
         final SetCommunicationNetworkInformationResponseData responseData =
                 new SetCommunicationNetworkInformationResponseData();
-        responseData.setMeId(requestData.getMeId());
-        responseData.setEsn(requestData.getEsn());
-        responseData.setUimId(requestData.getUimId());
-        responseData.setEqId(requestData.getEqId());
+
         responseData.setIpAddress(updatedSmartMeter.getIpAddress());
-        responseData.setMdn(requestData.getMdn());
         responseData.setBtsId(updatedSmartMeter.getBtsId());
         responseData.setCellId(updatedSmartMeter.getCellId());
-        responseData.setStatus(requestData.getStatus());
-        responseData.setCustCode(requestData.getCustCode());
-        responseData.setSupplierReferenceId(requestData.getSupplierReferenceId());
+
         return responseData;
     }
 

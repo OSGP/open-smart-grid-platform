@@ -1,13 +1,14 @@
 /**
  * Copyright 2021 Alliander N.V.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -18,12 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.domain.core.entities.Manufacturer;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
-import org.opensmartgridplatform.domain.core.repositories.DeviceAuthorizationRepository;
-import org.opensmartgridplatform.domain.core.repositories.DeviceModelRepository;
-import org.opensmartgridplatform.domain.core.repositories.ManufacturerRepository;
-import org.opensmartgridplatform.domain.core.repositories.OrganisationRepository;
-import org.opensmartgridplatform.domain.core.repositories.ProtocolInfoRepository;
-import org.opensmartgridplatform.domain.core.repositories.SmartMeterRepository;
+import org.opensmartgridplatform.domain.core.repositories.*;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceModel;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AddSmartMeterRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
@@ -31,11 +27,8 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class SmartMeterServiceTest {
@@ -71,12 +64,10 @@ class SmartMeterServiceTest {
 
         when(this.smartMeterRepository.findByDeviceIdentification(deviceIdentification)).thenReturn(new SmartMeter());
 
-        try {
+        FunctionalException exception = Assertions.assertThrows(FunctionalException.class, () -> {
             this.smartMeterService.validateSmartMeterDoesNotExist(deviceIdentification);
-            fail("Should throw FunctionalException");
-        } catch (final FunctionalException e) {
-            assertThat(e.getExceptionType()).isEqualTo(FunctionalExceptionType.EXISTING_DEVICE);
-        }
+        });
+        assertThat(exception.getExceptionType()).isEqualTo(FunctionalExceptionType.EXISTING_DEVICE);
     }
 
     @Test
@@ -90,12 +81,11 @@ class SmartMeterServiceTest {
 
         when(this.protocolInfoRepository.findByProtocolAndProtocolVersion(any(), any())).thenReturn(null);
 
-        try {
+        FunctionalException exception = Assertions.assertThrows(FunctionalException.class, () -> {
             this.smartMeterService.storeMeter(organisationIdentification, addSmartMeterRequest, smartMeter);
-            fail("Should throw FunctionalException");
-        } catch (final FunctionalException e) {
-            assertThat(e.getExceptionType()).isEqualTo(FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION);
-        }
+        });
+        assertThat(exception.getExceptionType()).isEqualTo(FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION);
+
     }
 
     @Test
@@ -128,7 +118,7 @@ class SmartMeterServiceTest {
     }
 
     @Test
-    void testUpdatCommunicationNetworkInformationUnknownDevice() {
+    void testUpdateCommunicationNetworkInformationUnknownDevice() {
 
         final String deviceIdentification = "device-1";
         final String ipAddress = "127.0.0.1";
@@ -137,13 +127,11 @@ class SmartMeterServiceTest {
 
         when(this.smartMeterRepository.findByDeviceIdentification(deviceIdentification)).thenReturn(null);
 
-        try {
+        FunctionalException exception = Assertions.assertThrows(FunctionalException.class, () -> {
             this.smartMeterService.updateCommunicationNetworkInformation(deviceIdentification, ipAddress, btsId,
                     cellId);
-            fail("Should throw FunctionalException");
-        } catch (final FunctionalException e) {
-            assertThat(e.getExceptionType()).isEqualTo(FunctionalExceptionType.UNKNOWN_DEVICE);
-        }
+        });
+        assertThat(exception.getExceptionType()).isEqualTo(FunctionalExceptionType.UNKNOWN_DEVICE);
     }
 
     @Test
@@ -156,13 +144,11 @@ class SmartMeterServiceTest {
 
         when(this.smartMeterRepository.findByDeviceIdentification(deviceIdentification)).thenReturn(new SmartMeter());
 
-        try {
+        FunctionalException exception = Assertions.assertThrows(FunctionalException.class, () -> {
             this.smartMeterService.updateCommunicationNetworkInformation(deviceIdentification, ipAddress, btsId,
                     cellId);
-            fail("Should throw FunctionalException");
-        } catch (final FunctionalException e) {
-            assertThat(e.getExceptionType()).isEqualTo(FunctionalExceptionType.INVALID_IP_ADDRESS);
-        }
+        });
+        assertThat(exception.getExceptionType()).isEqualTo(FunctionalExceptionType.INVALID_IP_ADDRESS);
     }
 
     @Test
