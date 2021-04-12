@@ -117,6 +117,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.Encrypti
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersionGasResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetFirmwareVersionQuery;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
@@ -670,9 +671,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
             @ResponseUrl final String responseUrl, @BypassRetry final String bypassRetry) throws OsgpException {
 
-        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestData requestData = this.configurationMapper
-            .map(request,
-                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestData.class);
+        final GetMbusEncryptionKeyStatusByChannelRequestData requestData = this.configurationMapper
+            .map(request.getGetMbusEncryptionKeyStatusByChannelRequestData(), GetMbusEncryptionKeyStatusByChannelRequestData.class);
 
         final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
