@@ -45,14 +45,21 @@ INSERT INTO light_measurement_device
 INSERT INTO device_authorization
     (creation_time, modification_time, version, function_group, device, organisation)
   VALUES
-    (current_timestamp, current_timestamp, 0, 0, (SELECT id FROM device WHERE device_identification = 'LM_RTU_1'), (SELECT id FROM organisation WHERE organisation_identification = 'test-org')),
-    (current_timestamp, current_timestamp, 0, 0, (SELECT id FROM device WHERE device_identification = 'LMD_1'), (SELECT id FROM organisation WHERE organisation_identification = 'test-org')),
-    (current_timestamp, current_timestamp, 0, 0, (SELECT id FROM device WHERE device_identification = 'LMD_2'), (SELECT id FROM organisation WHERE organisation_identification = 'test-org'));
+    (current_timestamp, current_timestamp, 0, 0,
+      (SELECT id FROM device WHERE device_identification = 'LM_RTU_1'),
+      (SELECT id FROM organisation WHERE organisation_identification = 'test-org')),
+    (current_timestamp, current_timestamp, 0, 0,
+      (SELECT id FROM device WHERE device_identification = 'LMD_1'),
+      (SELECT id FROM organisation WHERE organisation_identification = 'test-org')),
+    (current_timestamp, current_timestamp, 0, 0,
+      (SELECT id FROM device WHERE device_identification = 'LMD_2'),
+      (SELECT id FROM organisation WHERE organisation_identification = 'test-org'));
 
 -- osgp_adapter_protocol_iec60870
 
 INSERT INTO iec60870_device
-    (creation_time, modification_time, version, device_identification, common_address, port, device_type, gateway_device_identification, information_object_address)
+    (creation_time, modification_time, version, device_identification, common_address, port, 
+     device_type, gateway_device_identification, information_object_address)
   VALUES
     (current_timestamp, current_timestamp, 0, 'LM_RTU_1', 1, 2404, 'LIGHT_MEASUREMENT_RTU', null, null),
     (current_timestamp, current_timestamp, 0, 'LMD_1', -1, null, 'LIGHT_SENSOR', 'LM_RTU_1', 1),
