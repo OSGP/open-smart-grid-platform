@@ -46,9 +46,7 @@ import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.LightSensorStatus;
-import org.opensmartgridplatform.domain.core.valueobjects.LightType;
 import org.opensmartgridplatform.domain.core.valueobjects.LightValue;
-import org.opensmartgridplatform.domain.core.valueobjects.LinkType;
 import org.opensmartgridplatform.domain.core.valueobjects.ResumeScheduleData;
 import org.opensmartgridplatform.domain.core.valueobjects.TransitionMessageDataContainer;
 import org.opensmartgridplatform.shared.application.config.PageSpecifier;
@@ -154,9 +152,8 @@ public class PublicLightingAdHocManagementEndpoint {
         final SetLightAsyncResponse response = new SetLightAsyncResponse();
 
         try {
-            final List<LightValue> lightValues = new ArrayList<>();
-            lightValues.addAll(this.adHocManagementMapper.mapAsList(request.getLightValue(), LightValue.class));
-
+            final List<LightValue> lightValues = new ArrayList<>(
+                    this.adHocManagementMapper.mapAsList(request.getLightValue(), LightValue.class));
             final String correlationUid = this.adHocManagementService.enqueueSetLightRequest(organisationIdentification,
                     request.getDeviceIdentification(), lightValues,
                     MessagePriorityEnum.getMessagePriority(messagePriority));
@@ -246,7 +243,11 @@ public class PublicLightingAdHocManagementEndpoint {
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
                 if (message.getDataObject() != null) {
-                    response.setDeviceStatus(this.getDeviceStatus(message));
+                    if (message.getDataObject() instanceof LightSensorStatus) {
+                        response.setLightSensorStatus(this.getLightSensorStatus(message));
+                    } else {
+                        response.setDeviceStatus(this.getDeviceStatus(message));
+                    }
                 }
             }
         } catch (final Exception e) {
@@ -258,22 +259,16 @@ public class PublicLightingAdHocManagementEndpoint {
 
     private org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.DeviceStatus getDeviceStatus(
             final ResponseMessage message) {
-        DeviceStatus deviceStatus;
-        if (message.getDataObject() instanceof LightSensorStatus) {
-            deviceStatus = this.createDeviceStatusFromLightSensorStatus((LightSensorStatus) message.getDataObject());
-        } else {
-            deviceStatus = (DeviceStatus) message.getDataObject();
-        }
+        final DeviceStatus deviceStatus = (DeviceStatus) message.getDataObject();
         return this.adHocManagementMapper.map(deviceStatus,
                 org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.DeviceStatus.class);
     }
 
-    private DeviceStatus createDeviceStatusFromLightSensorStatus(final LightSensorStatus lightSensorStatus) {
-        final List<LightValue> sensorValues = new ArrayList<>();
-        sensorValues.add(new LightValue(1, lightSensorStatus.isOn(), 100));
-
-        return new DeviceStatus(sensorValues, LinkType.ETHERNET, LinkType.ETHERNET, LightType.ONE_TO_TWENTY_FOUR_VOLT,
-                -1);
+    private org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.LightSensorStatus getLightSensorStatus(
+            final ResponseMessage message) {
+        final LightSensorStatus lightSensorStatus = (LightSensorStatus) message.getDataObject();
+        return this.adHocManagementMapper.map(lightSensorStatus,
+                org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.LightSensorStatus.class);
     }
 
     // === RESUME SCHEDULE ===

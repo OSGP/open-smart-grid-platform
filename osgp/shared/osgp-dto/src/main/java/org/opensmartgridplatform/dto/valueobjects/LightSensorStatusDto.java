@@ -14,14 +14,14 @@ public class LightSensorStatusDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private final boolean on;
+    private final boolean dark;
 
     public LightSensorStatusDto(final boolean on) {
-        this.on = on;
+        this.dark = on;
     }
 
-    public boolean isOn() {
-        return this.on;
+    public boolean isDark() {
+        return this.dark;
     }
 
     @Override
@@ -33,16 +33,16 @@ public class LightSensorStatusDto implements Serializable {
             return false;
         }
         final LightSensorStatusDto other = (LightSensorStatusDto) obj;
-        return this.on == other.on;
+        return this.dark == other.dark;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.on);
+        return Objects.hash(this.dark);
     }
 
     @Override
     public String toString() {
-        return "LightSensorStatusDto [on=" + this.on + "]";
+        return "LightSensorStatusDto [dark=" + this.dark + "]";
     }
 }

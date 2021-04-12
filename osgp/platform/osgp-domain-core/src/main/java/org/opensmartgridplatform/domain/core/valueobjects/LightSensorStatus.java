@@ -13,13 +13,13 @@ public class LightSensorStatus implements Serializable {
 
     private static final long serialVersionUID = -6385082207732463078L;
 
-    private final boolean on;
+    private final boolean dark;
 
-    public LightSensorStatus(final boolean on) {
-        this.on = on;
+    public LightSensorStatus(final boolean dark) {
+        this.dark = dark;
     }
 
-    public boolean isOn() {
-        return this.on;
+    public boolean isDark() {
+        return this.dark;
     }
 }
