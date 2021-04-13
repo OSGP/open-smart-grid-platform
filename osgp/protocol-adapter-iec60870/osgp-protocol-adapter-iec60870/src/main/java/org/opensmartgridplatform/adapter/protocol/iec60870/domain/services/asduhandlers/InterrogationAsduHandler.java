@@ -41,6 +41,8 @@ public class InterrogationAsduHandler extends AbstractClientAsduHandler {
         LOGGER.debug("Received interrogation command with cause of transmission {}.", asdu.getCauseOfTransmission());
 
         if (asdu.getCauseOfTransmission() == CauseOfTransmission.ACTIVATION_TERMINATION) {
+            LOGGER.info("Received activation termination, call handle connect response for device {}.",
+                    responseMetadata.getDeviceIdentification());
             this.connectResponseService.handleConnectResponse(responseMetadata);
         }
     }
