@@ -1267,9 +1267,9 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
             @ResponseUrl final String responseUrl, @BypassRetry final String bypassRetry) throws OsgpException {
 
-        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequestData dataRequest = this.configurationMapper
+        final SetRandomisationSettingsRequestData dataRequest = this.configurationMapper
             .map(request.getSetRandomisationSettingsData(),
-                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequestData.class);
+                SetRandomisationSettingsRequestData.class);
 
         final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
