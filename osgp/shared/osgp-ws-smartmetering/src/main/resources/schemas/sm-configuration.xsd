@@ -263,7 +263,7 @@
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
         <xsd:element name="SetConfigurationObjectRequestData"
-          type="tns:SetConfigurationObjectRequestData"/>
+                     type="tns:SetConfigurationObjectRequestData"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
