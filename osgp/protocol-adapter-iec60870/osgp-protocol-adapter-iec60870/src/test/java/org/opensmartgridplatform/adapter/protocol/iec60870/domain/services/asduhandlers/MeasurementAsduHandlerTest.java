@@ -25,7 +25,6 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.AsduC
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.DeviceResponseServiceRegistry;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LoggingService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceType;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.LogItem;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
 import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories.AsduFactory;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementReportDto;
@@ -64,7 +63,7 @@ public class MeasurementAsduHandlerTest {
     private final MapperFacade mapper = new Iec60870Mapper();
 
     @Test
-    public void shouldSendMeasurementReportAndLogItemWhenHandlingAsdu() throws Exception {
+    void shouldSendMeasurementReportWhenHandlingAsdu() throws Exception {
         // Arrange
         final ASdu asdu = AsduFactory.ofType(ASduType.M_ME_TF_1);
         final MeasurementReportDto measurementReportDto = this.mapper.map(asdu, MeasurementReportDto.class);
@@ -73,17 +72,13 @@ public class MeasurementAsduHandlerTest {
                 .withDeviceType(DEVICE_TYPE)
                 .withOrganisationIdentification(ORGANISATION_IDENTIFICATION)
                 .build();
-        final LogItem logItem = new LogItem(DEVICE_IDENTIFICATION, ORGANISATION_IDENTIFICATION, true, asdu.toString());
 
-        when(this.responseMetadataFactory.createWithNewCorrelationUid(responseMetadata)).thenReturn(responseMetadata);
         when(this.converter.convert(asdu)).thenReturn(measurementReportDto);
         when(this.deviceResponseServiceRegistry.forDeviceType(DEVICE_TYPE)).thenReturn(this.deviceResponseService);
-        when(this.logItemFactory.create(asdu, responseMetadata, true)).thenReturn(logItem);
         // Act
         this.asduHandler.handleAsdu(asdu, responseMetadata);
 
         // Assert
         verify(this.deviceResponseService).process(measurementReportDto, responseMetadata);
-        verify(this.loggingService).log(logItem);
     }
 }

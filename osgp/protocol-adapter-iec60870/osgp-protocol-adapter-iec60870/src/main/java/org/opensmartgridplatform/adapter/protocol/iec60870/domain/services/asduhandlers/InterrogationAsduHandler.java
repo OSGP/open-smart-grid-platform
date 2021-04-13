@@ -9,11 +9,9 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asdu
 
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.LogItemFactory;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.ResponseMetadataFactory;
+import org.openmuc.j60870.CauseOfTransmission;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.AbstractClientAsduHandler;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LoggingService;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.LogItem;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ConnectResponseService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,13 +30,7 @@ public class InterrogationAsduHandler extends AbstractClientAsduHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(InterrogationAsduHandler.class);
 
     @Autowired
-    private LoggingService loggingService;
-
-    @Autowired
-    private ResponseMetadataFactory responseMetadataFactory;
-
-    @Autowired
-    private LogItemFactory logItemFactory;
+    private ConnectResponseService connectResponseService;
 
     public InterrogationAsduHandler() {
         super(ASduType.C_IC_NA_1);
@@ -46,12 +38,10 @@ public class InterrogationAsduHandler extends AbstractClientAsduHandler {
 
     @Override
     public void handleAsdu(final ASdu asdu, final ResponseMetadata responseMetadata) {
-        LOGGER.info("Received interrogation command {}.", asdu);
-        final ResponseMetadata newResponseMetadata = this.responseMetadataFactory
-                .createWithNewCorrelationUid(responseMetadata);
+        LOGGER.debug("Received interrogation command with cause of transmission {}.", asdu.getCauseOfTransmission());
 
-        // Only log item for now
-        final LogItem logItem = this.logItemFactory.create(asdu, newResponseMetadata, true);
-        this.loggingService.log(logItem);
+        if (asdu.getCauseOfTransmission() == CauseOfTransmission.ACTIVATION_TERMINATION) {
+            this.connectResponseService.handleConnectResponse(responseMetadata);
+        }
     }
 }
