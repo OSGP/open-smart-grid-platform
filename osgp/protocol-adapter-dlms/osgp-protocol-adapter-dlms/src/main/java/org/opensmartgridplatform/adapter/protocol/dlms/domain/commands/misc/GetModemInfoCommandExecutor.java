@@ -20,6 +20,7 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dl
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
@@ -81,6 +82,8 @@ public class GetModemInfoCommandExecutor
     @Autowired
     public GetModemInfoCommandExecutor(final DlmsHelper dlmsHelper,
             final DlmsObjectConfigService dlmsObjectConfigService) {
+        super(GetModemInfoRequestDto.class);
+
         this.dlmsHelper = dlmsHelper;
         this.dlmsObjectConfigService = dlmsObjectConfigService;
     }
@@ -109,13 +112,40 @@ public class GetModemInfoCommandExecutor
         conn.getDlmsMessageListener().setDescription(
                 "Get ModemInfo, retrieve attributes: " + JdlmsObjectToStringUtil.describeAttributes(addresses));
 
+        LOGGER.info( "Get ModemInfo, retrieve attributes: " + JdlmsObjectToStringUtil.describeAttributes(addresses));
+
         final List<GetResult> getResultList = this.dlmsHelper.getAndCheck(conn, device, "Get ModemInfo", addresses);
+
+        final String resultString = getResultList.stream()
+                .map(this::resultToString)
+                .collect(Collectors.joining("-", "{", "}"));
+        LOGGER.info("GetResultList: {}", resultString);
 
         if (getResultList.stream().noneMatch(result -> result.getResultCode() == AccessResultCode.SUCCESS )) {
             throw new ProtocolAdapterException("Get modem info failed for " + device.getDeviceId());
         }
 
         return this.createGetModemInfoResponse(getResultList);
+    }
+
+    private String resultToString (GetResult result) {
+        if (result != null) {
+            String code = "";
+            String data = "";
+            if (result.getResultCode() != null) {
+                code = result.getResultCode().toString();
+            } else {
+                code = " Result code is null ";
+            }
+            if (result.getResultData() != null) {
+                data = result.getResultData().toString();
+            } else {
+                data = " Result data is null ";
+            }
+            return code + ", " + data;
+        } else {
+            return "Result is null ";
+        }
     }
 
     private AttributeAddress[] createAttributeAddresses(final DlmsObject dlmsObject) {
@@ -165,9 +195,9 @@ public class GetModemInfoCommandExecutor
     }
 
     private String getOperator(final List<GetResult> getResultList) {
-        final GetResult operatorResult = getResultList.get(RESULT_OPERATOR_INDEX);
-        if (operatorResult.getResultCode() == AccessResultCode.SUCCESS) {
-            final byte[] bytes = operatorResult.getResultData().getValue();
+        final GetResult result = getResultList.get(RESULT_OPERATOR_INDEX);
+        if (this.isResultSuccess(result)) {
+            final byte[] bytes = result.getResultData().getValue();
             return new String(bytes, StandardCharsets.UTF_8);
         } else {
             return null;
@@ -175,39 +205,39 @@ public class GetModemInfoCommandExecutor
     }
 
     private ModemRegistrationStatusDto getRegistrationStatus(final List<GetResult> getResultList) {
-        final GetResult registrationStatusResult = getResultList.get(RESULT_MODEM_REGISTRATION_STATUS_INDEX);
-        if (registrationStatusResult.getResultCode() == AccessResultCode.SUCCESS) {
-            return ModemRegistrationStatusDto.fromIndexValue(registrationStatusResult.getResultData().getValue());
+        final GetResult result = getResultList.get(RESULT_MODEM_REGISTRATION_STATUS_INDEX);
+        if (this.isResultSuccess(result)) {
+            return ModemRegistrationStatusDto.fromIndexValue(result.getResultData().getValue());
         } else {
             return null;
         }
     }
 
     private CircuitSwitchedStatusDto getCircuitSwitchedStatus(final List<GetResult> getResultList) {
-        final GetResult circuitSwitchedStatusResult = getResultList.get(RESULT_CIRCUIT_SWITCHED_STATUS_INDEX);
-        if (circuitSwitchedStatusResult.getResultCode() == AccessResultCode.SUCCESS) {
-            return CircuitSwitchedStatusDto.fromIndexValue(circuitSwitchedStatusResult.getResultData().getValue());
+        final GetResult result = getResultList.get(RESULT_CIRCUIT_SWITCHED_STATUS_INDEX);
+        if (this.isResultSuccess(result)) {
+            return CircuitSwitchedStatusDto.fromIndexValue(result.getResultData().getValue());
         } else {
             return null;
         }
     }
 
     private PacketSwitchedStatusDto getPacketSwitchedStatus(final List<GetResult> getResultList) {
-        final GetResult packetSwitchedStatusResult = getResultList.get(RESULT_PACKET_SWITCHED_STATUS_INDEX);
-        if (packetSwitchedStatusResult.getResultCode() == AccessResultCode.SUCCESS) {
-            return PacketSwitchedStatusDto.fromIndexValue(packetSwitchedStatusResult.getResultData().getValue());
+        final GetResult result = getResultList.get(RESULT_PACKET_SWITCHED_STATUS_INDEX);
+        if (this.isResultSuccess(result)) {
+            return PacketSwitchedStatusDto.fromIndexValue(result.getResultData().getValue());
         } else {
             return null;
         }
     }
 
     private CellInfo getCellInfo(final List<GetResult> getResultList) {
-        final GetResult cellInfoResult = getResultList.get(RESULT_CELL_INFO_INDEX);
-        if (cellInfoResult.getResultCode() != AccessResultCode.SUCCESS) {
+        final GetResult result = getResultList.get(RESULT_CELL_INFO_INDEX);
+        if (result.getResultCode() != AccessResultCode.SUCCESS) {
             return null;
         }
 
-        final List<DataObject> cellInfoDataObjects = cellInfoResult.getResultData().getValue();
+        final List<DataObject> cellInfoDataObjects = result.getResultData().getValue();
 
         final CellInfo cellInfo = new CellInfo();
 
@@ -227,12 +257,12 @@ public class GetModemInfoCommandExecutor
     }
 
     private AdjacentCellsInfo getAdjacentCellsInfo(final List<GetResult> getResultList) {
-        final GetResult adjacentCellsResult = getResultList.get(RESULT_ADJACENT_CELLS_INDEX);
-        if (adjacentCellsResult.getResultCode() != AccessResultCode.SUCCESS) {
+        final GetResult result = getResultList.get(RESULT_ADJACENT_CELLS_INDEX);
+        if (result.getResultCode() != AccessResultCode.SUCCESS) {
             return null;
         }
 
-        final List<DataObject> adjacentCellsDataObjects = adjacentCellsResult.getResultData().getValue();
+        final List<DataObject> adjacentCellsDataObjects = result.getResultData().getValue();
 
         final AdjacentCellsInfo adjacentCellsInfo = new AdjacentCellsInfo();
 
@@ -250,20 +280,11 @@ public class GetModemInfoCommandExecutor
         return adjacentCellsInfo;
     }
 
-    private List<DataObject> getAdjacentCells(final List<GetResult> getResultList) {
-        final GetResult adjacentCellsResult = getResultList.get(RESULT_ADJACENT_CELLS_INDEX);
-        if (adjacentCellsResult.getResultCode() == AccessResultCode.SUCCESS) {
-            return adjacentCellsResult.getResultData().getValue();
-        } else {
-            return null;
-        }
-    }
-
     private Date getCaptureTime(final List<GetResult> getResultList) throws ProtocolAdapterException {
-        final GetResult captureTimeResult = getResultList.get(RESULT_CAPTURE_TIME_INDEX);
-        if (captureTimeResult.getResultCode() == AccessResultCode.SUCCESS) {
+        final GetResult result = getResultList.get(RESULT_CAPTURE_TIME_INDEX);
+        if (this.isResultSuccess(result)) {
             final CosemDateTimeDto cosemDateTime = this.dlmsHelper
-                    .readDateTime(captureTimeResult.getResultData(), "Clock from modem info");
+                    .readDateTime(result.getResultData(), "Clock from modem info");
 
             final Date captureTime;
             if (cosemDateTime.isDateTimeSpecified()) {
@@ -276,6 +297,12 @@ public class GetModemInfoCommandExecutor
         } else {
             return null;
         }
+    }
+
+    private boolean isResultSuccess(final GetResult result) {
+        return result.getResultCode() == AccessResultCode.SUCCESS &&
+                result.getResultData() != null &&
+                result.getResultData().getValue() != null;
     }
 
     private byte[] longToByteArray(final long value) {
