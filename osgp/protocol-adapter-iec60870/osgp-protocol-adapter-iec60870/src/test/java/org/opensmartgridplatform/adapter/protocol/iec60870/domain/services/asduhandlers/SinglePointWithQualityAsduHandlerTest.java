@@ -32,7 +32,6 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.Resp
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.DeviceResponseServiceRegistry;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LoggingService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceType;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.LogItem;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
 import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.builders.AsduBuilder;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementDto;
@@ -43,7 +42,7 @@ import org.opensmartgridplatform.dto.da.measurements.MeasurementReportHeaderDto;
 import org.opensmartgridplatform.dto.da.measurements.elements.BitmaskMeasurementElementDto;
 
 @ExtendWith(MockitoExtension.class)
-public class SinglePointWithQualityAsduHandlerTest {
+class SinglePointWithQualityAsduHandlerTest {
 
     private static final String GATEWAY_DEVICE_IDENTIFICATION = "TEST-GATEWAY-1";
     private static final DeviceType GATEWAY_DEVICE_TYPE = DeviceType.LIGHT_MEASUREMENT_RTU;
@@ -86,29 +85,22 @@ public class SinglePointWithQualityAsduHandlerTest {
      * @throws Exception
      */
     @Test
-    public void testHandleAsduShouldSendMeasurementReportAndLogItem() throws Exception {
+    void testHandleAsduShouldSendMeasurementReport() throws Exception {
         // Arrange
         when(this.deviceResponseServiceMap.forDeviceType(DeviceType.LIGHT_MEASUREMENT_RTU))
                 .thenReturn(this.deviceResponseService);
 
         final ASdu asdu = this.createAsdu();
+        final ResponseMetadata responseMetadata = this.createResponseMetadata();
         final MeasurementReportDto measurementReport = this.createMeasurementReportDto();
         when(this.converterService.convert(asdu)).thenReturn(measurementReport);
-
-        final ResponseMetadata responseMetadata = this.createResponseMetadata();
-        when(this.responseMetadataFactory.createWithNewCorrelationUid(responseMetadata)).thenReturn(responseMetadata);
-
         when(this.deviceResponseServiceMap.forDeviceType(GATEWAY_DEVICE_TYPE)).thenReturn(this.deviceResponseService);
-        final LogItem logItem = new LogItem(GATEWAY_DEVICE_IDENTIFICATION, ORGANISATION_IDENTIFICATION, true,
-                asdu.toString());
-        when(this.logItemFactory.create(asdu, responseMetadata, true)).thenReturn(logItem);
 
         // Act
         this.asduHandler.handleAsdu(asdu, responseMetadata);
 
         // Assert
         verify(this.deviceResponseService).process(any(MeasurementReportDto.class), eq(responseMetadata));
-        verify(this.loggingService).log(logItem);
     }
 
     private ASdu createAsdu() {

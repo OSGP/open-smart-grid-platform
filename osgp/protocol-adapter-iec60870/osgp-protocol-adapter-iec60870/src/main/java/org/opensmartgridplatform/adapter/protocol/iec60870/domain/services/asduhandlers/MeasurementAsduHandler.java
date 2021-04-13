@@ -9,13 +9,9 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asdu
 
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.LogItemFactory;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.ResponseMetadataFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.AbstractClientAsduHandler;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.AsduConverterService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.DeviceResponseServiceRegistry;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LoggingService;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.LogItem;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementReportDto;
 import org.slf4j.Logger;
@@ -36,30 +32,16 @@ public abstract class MeasurementAsduHandler extends AbstractClientAsduHandler {
     @Autowired
     private DeviceResponseServiceRegistry deviceResponseServiceRegistry;
 
-    @Autowired
-    private LoggingService loggingService;
-
-    @Autowired
-    protected ResponseMetadataFactory responseMetadataFactory;
-
-    @Autowired
-    private LogItemFactory logItemFactory;
-
-    public MeasurementAsduHandler(final ASduType asduType) {
+    protected MeasurementAsduHandler(final ASduType asduType) {
         super(asduType);
     }
 
     @Override
     public void handleAsdu(final ASdu asdu, final ResponseMetadata responseMetadata) {
-        LOGGER.info("Received measurement of type {}.", asdu.getTypeIdentification());
-        final ResponseMetadata newResponseMetadata = this.responseMetadataFactory
-                .createWithNewCorrelationUid(responseMetadata);
+        LOGGER.debug("Received measurement of type {}.", asdu.getTypeIdentification());
 
         final MeasurementReportDto measurementReportDto = this.converter.convert(asdu);
         this.deviceResponseServiceRegistry.forDeviceType(responseMetadata.getDeviceType())
-                .process(measurementReportDto, newResponseMetadata);
-
-        final LogItem logItem = this.logItemFactory.create(asdu, newResponseMetadata, true);
-        this.loggingService.log(logItem);
+                .process(measurementReportDto, responseMetadata);
     }
 }

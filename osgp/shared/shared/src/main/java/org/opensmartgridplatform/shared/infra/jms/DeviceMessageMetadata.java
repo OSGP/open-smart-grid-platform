@@ -51,6 +51,20 @@ public class DeviceMessageMetadata {
     }
 
     public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
+        final String correlationUid, final String messageType, final int messagePriority, final Long scheduleTime,
+        final boolean bypassRetry) {
+
+        this(DeviceMessageMetadata.newBuilder()
+            .withDeviceIdentification(deviceIdentification)
+            .withOrganisationIdentification(organisationIdentification)
+            .withCorrelationUid(correlationUid)
+            .withMessageType(messageType)
+            .withMessagePriority(messagePriority)
+            .withScheduleTime(scheduleTime)
+            .withBypassRetry(bypassRetry));
+    }
+
+    public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final int messagePriority, final Long scheduleTime) {
 
         this(DeviceMessageMetadata.newBuilder()

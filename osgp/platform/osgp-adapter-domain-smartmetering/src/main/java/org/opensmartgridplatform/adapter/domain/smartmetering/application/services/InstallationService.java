@@ -81,7 +81,7 @@ public class InstallationService {
         this.smartMeterService.storeMeter(organisationId, addSmartMeterRequest, smartMeter);
         this.osgpCoreRequestMessageSender.send(this.getRequestMessage(deviceMessageMetadata, smartMeteringDevice),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
-                deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getScheduleTime(), deviceMessageMetadata.bypassRetry());
     }
 
     /**
