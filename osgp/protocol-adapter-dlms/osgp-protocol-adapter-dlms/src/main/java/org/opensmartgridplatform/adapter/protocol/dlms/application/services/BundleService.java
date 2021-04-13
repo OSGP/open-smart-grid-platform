@@ -60,12 +60,7 @@ public class BundleService {
                     this.handleMissingExecutor(actionRequestClass, action, device);
 
                 } else {
-                    try {
-                        this.callExecutor(executor, actionRequestClass, action, actionList, conn, device);
-                    } catch (final ConnectionException ce) {
-                        action.setResponse(null);
-                        throw ce;
-                    }
+                    this.callExecutor(executor, actionRequestClass, action, actionList, conn, device);
                 }
             }
         }
@@ -86,8 +81,7 @@ public class BundleService {
 
     private void callExecutor(final CommandExecutor<?, ?> executor,
             final Class<? extends ActionRequestDto> actionRequestClass, final ActionDto action,
-            final List<ActionDto> actionList, final DlmsConnectionManager conn, final DlmsDevice device)
-            throws ConnectionException {
+            final List<ActionDto> actionList, final DlmsConnectionManager conn, final DlmsDevice device) {
 
         final String executorName = executor.getClass().getSimpleName();
 
@@ -100,6 +94,7 @@ public class BundleService {
 
         } catch (final ConnectionException ce) {
             this.logConnectionException(action, actionList, device, executorName, ce);
+            action.setResponse(null);
             throw ce;
 
         } catch (final Exception e) {
