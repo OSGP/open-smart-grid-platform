@@ -38,6 +38,17 @@ public class ResponseMetadata {
         this.deviceType = builder.deviceType;
     }
 
+    public static ResponseMetadata from(final RequestMetadata requestMetadata, final String deviceIdentification,
+            final DeviceType deviceType) {
+        return new Builder().withCorrelationUid(requestMetadata.correlationUid)
+                .withDeviceIdentification(deviceIdentification)
+                .withOrganisationIdentification(requestMetadata.getOrganisationIdentification())
+                .withMessageType(requestMetadata.getMessageType())
+                .withDomainInfo(requestMetadata.getDomainInfo())
+                .withDeviceType(deviceType)
+                .build();
+    }
+
     public static ResponseMetadata from(final RequestMetadata requestMetadata, final DeviceType deviceType) {
         return new Builder().withCorrelationUid(requestMetadata.correlationUid)
                 .withDeviceIdentification(requestMetadata.getDeviceIdentification())

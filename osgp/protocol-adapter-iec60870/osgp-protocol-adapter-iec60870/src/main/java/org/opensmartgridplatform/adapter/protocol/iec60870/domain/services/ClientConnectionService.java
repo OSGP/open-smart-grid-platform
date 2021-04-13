@@ -113,7 +113,9 @@ public class ClientConnectionService {
 
         final ConnectionParameters connectionParameters = this.createConnectionParameters(connectionDevice,
                 requestMetadata.getIpAddress());
-        final ResponseMetadata responseMetadata = ResponseMetadata.from(requestMetadata, device.getDeviceType());
+
+        final ResponseMetadata responseMetadata = ResponseMetadata.from(requestMetadata, connectionDeviceIdentification,
+                connectionDevice.getDeviceType());
 
         final ClientConnectionEventListener eventListener = new ClientConnectionEventListener.Builder()
                 .withDeviceIdentification(connectionDeviceIdentification)
