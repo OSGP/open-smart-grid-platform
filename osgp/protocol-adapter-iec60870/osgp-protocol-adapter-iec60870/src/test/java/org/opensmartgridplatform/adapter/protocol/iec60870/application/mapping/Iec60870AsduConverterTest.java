@@ -36,7 +36,6 @@ public class Iec60870AsduConverterTest {
   private static final long TIMESTAMP_NOW =
       ZonedDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli();
 
-  // @formatter:off
   private static final MeasurementReportDto MEASUREMENT_REPORT_DTO =
       new MeasurementReportDto(
           new MeasurementReportHeaderDto("M_ME_TF_1", "SPONTANEOUS", 1, 2),
@@ -70,7 +69,6 @@ public class Iec60870AsduConverterTest {
                   }
                 })
           });
-  // @formatter:on
 
   @Test
   public void shouldConvertAsduToMeasurementReportDto() {

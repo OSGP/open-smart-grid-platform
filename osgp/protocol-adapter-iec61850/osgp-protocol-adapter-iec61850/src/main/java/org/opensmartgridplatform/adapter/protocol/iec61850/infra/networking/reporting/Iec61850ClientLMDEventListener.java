@@ -135,12 +135,10 @@ public class Iec61850ClientLMDEventListener extends Iec61850ClientBaseEventListe
       final Integer index) {
     EventTypeDto eventType;
     final boolean lightSensorValue = this.determineLightSensorValue(evnRpn, reportDescription);
-    // @formatter:off
     /*
      * 0 -> false -> NIGHT_DAY --> LIGHT_SENSOR_REPORTS_LIGHT
      * 1 -> true -> DAY_NIGHT --> LIGHT_SENSOR_REPORTS_DARK
      */
-    // @formatter:on
     if (lightSensorValue) {
       eventType = EventTypeDto.LIGHT_SENSOR_REPORTS_DARK;
     } else {

@@ -175,7 +175,6 @@ public final class OslpUtils {
 
     final Message message = envelope.getPayloadMessage();
 
-    // @formatter:off
     final boolean[] hasResponse = {
       message.hasRegisterDeviceResponse(),
       message.hasConfirmRegisterDeviceResponse(),
@@ -200,7 +199,6 @@ public final class OslpUtils {
       message.hasUpdateDeviceSslCertificationResponse(),
       message.hasSetDeviceVerificationKeyResponse()
     };
-    // @formatter:on
 
     return BooleanUtils.or(hasResponse);
   }

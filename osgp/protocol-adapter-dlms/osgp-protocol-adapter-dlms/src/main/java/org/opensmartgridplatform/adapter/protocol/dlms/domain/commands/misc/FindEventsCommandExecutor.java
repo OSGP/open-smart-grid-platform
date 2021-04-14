@@ -56,7 +56,6 @@ public class FindEventsCommandExecutor
   private final DataObjectToEventListConverter dataObjectToEventListConverter;
   private final DlmsHelper dlmsHelper;
 
-  // @formatter:off
   private static final EnumMap<EventLogCategoryDto, ObisCode> EVENT_LOG_CATEGORY_OBISCODE_MAP =
       new EnumMap<>(EventLogCategoryDto.class);
 

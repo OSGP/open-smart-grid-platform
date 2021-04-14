@@ -206,7 +206,6 @@ public class ApplicationContext {
 
   @Bean(initMethod = "migrate")
   public Flyway flyway() {
-    // @formatter:off
     return Flyway.configure()
         .baselineVersion(MigrationVersion.fromVersion(this.flywayInitialVersion))
         .baselineDescription(this.flywayInitialDescription)
@@ -215,7 +214,6 @@ public class ApplicationContext {
         .table("schema_version")
         .dataSource(this.getDataSource())
         .load();
-    // @formatter:on
   }
 
   /**

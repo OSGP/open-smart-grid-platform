@@ -50,7 +50,6 @@ public interface DeviceRepository
 
   List<Device> findByNetworkAddress(InetAddress address);
 
-  // @formatter:off
   @Query(
       "SELECT d "
           + "FROM Device d "
@@ -60,10 +59,8 @@ public interface DeviceRepository
           + "    FROM d.authorizations auth "
           + "    WHERE auth.organisation = ?1"
           + ")")
-  // @formatter:on
   Page<Device> findAllAuthorized(Organisation organisation, Pageable request);
 
-  // @formatter:off
   @Query(
       "SELECT d "
           + "FROM Device d "
@@ -73,10 +70,8 @@ public interface DeviceRepository
           + "    FROM d.authorizations auth "
           + "    WHERE auth.functionGroup = org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup.OWNER"
           + ")")
-  // @formatter:on
   List<Device> findDevicesWithNoOwner();
 
-  // @formatter:off
   @Query(
       "SELECT d "
           + "FROM Device d "
@@ -89,7 +84,6 @@ public interface DeviceRepository
           + "         auth.functionGroup = org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup.INSTALLATION)"
           + ") AND "
           + "d.modificationTime >= ?2")
-  // @formatter:on
   List<Device> findRecentDevices(Organisation organisation, Date fromDate);
 
   /*

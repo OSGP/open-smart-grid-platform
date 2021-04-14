@@ -136,7 +136,6 @@ public class PersistenceConfig extends AbstractConfig {
 
   @Bean(initMethod = "migrate")
   public Flyway loggingFlyway() {
-    // @formatter:off
     return Flyway.configure()
         .baselineVersion(
             MigrationVersion.fromVersion(
@@ -150,7 +149,6 @@ public class PersistenceConfig extends AbstractConfig {
         .table("schema_version")
         .dataSource(this.getDataSource())
         .load();
-    // @formatter:on
   }
 
   /** Method for creating the Entity Manager Factory Bean. */

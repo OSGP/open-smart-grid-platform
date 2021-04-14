@@ -64,8 +64,6 @@ public class DlmsObjectConfigDsmr422 extends DlmsObjectConfig {
   List<DlmsObject> initObjects() {
     final List<DlmsObject> objectList = new ArrayList<>();
 
-    // @formatter:off
-
     // Abstract objects
     final DlmsObject clock = new DlmsClock("0.0.1.0.0.255");
     final DlmsObject amrStatus = new DlmsData(AMR_STATUS, "0.0.96.10.2.255");

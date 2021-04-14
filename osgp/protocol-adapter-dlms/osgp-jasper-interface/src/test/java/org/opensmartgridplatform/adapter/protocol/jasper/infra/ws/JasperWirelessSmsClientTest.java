@@ -87,7 +87,6 @@ public class JasperWirelessSmsClientTest {
     // given
     final Source requestPayload =
         new StringSource(
-            // @formatter:off
             "<ns2:SendSMSRequest "
                 + "xmlns:ns2=\"http://api.jasperwireless.com/ws/schema\" messageTextEncoding=\"\">"
                 + "<ns2:messageId>"
@@ -104,11 +103,9 @@ public class JasperWirelessSmsClientTest {
                 + "</ns2:sentToIccid>"
                 + "<ns2:messageText/>"
                 + "</ns2:SendSMSRequest>");
-    // @formatter:on
 
     final Source responsePayload =
         new StringSource(
-            // @formatter:off
             "<ns2:SendSMSResponse "
                 + "ns2:requestId=\"IfBlIDGkzgTkWqa3\" xmlns:ns2=\"http://api.jasperwireless.com/ws/schema\">"
                 + "<ns2:correlationId>"
@@ -123,7 +120,6 @@ public class JasperWirelessSmsClientTest {
                 + SMS_MSG_ID
                 + "</ns2:smsMsgId>"
                 + "</ns2:SendSMSResponse>");
-    // @formatter:on
 
     // when
     when(this.correlationIdProviderService.getCorrelationId("wakeupsms", ICC_ID))
@@ -143,7 +139,6 @@ public class JasperWirelessSmsClientTest {
     // given
     final Source requestPayload =
         new StringSource(
-            // @formatter:off
             "<ns2:GetSMSDetailsRequest "
                 + "xmlns:ns2=\"http://api.jasperwireless.com/ws/schema\" messageTextEncoding=\"\">"
                 + "<ns2:messageId>"
@@ -161,11 +156,9 @@ public class JasperWirelessSmsClientTest {
                 + "</ns2:smsMsgId>"
                 + "</ns2:smsMsgIds>"
                 + "</ns2:GetSMSDetailsRequest>");
-    // @formatter:on
 
     final Source responsePayload =
         new StringSource(
-            // @formatter:off
             "<ns2:GetSMSDetailsResponse "
                 + "ns2:requestId=\"c16KNt8BksvZDLex\" xmlns:ns2=\"http://api.jasperwireless.com/ws/schema\">"
                 + "<ns2:correlationId>"
@@ -198,7 +191,6 @@ public class JasperWirelessSmsClientTest {
                 + "</ns2:smsMessage>"
                 + "</ns2:smsMessages>"
                 + "</ns2:GetSMSDetailsResponse>");
-    // @formatter:on
 
     // when
     when(this.correlationIdProviderService.getCorrelationId("wakeupsms", ICC_ID))

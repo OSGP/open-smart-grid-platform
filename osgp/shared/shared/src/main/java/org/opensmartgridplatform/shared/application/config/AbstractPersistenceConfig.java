@@ -141,7 +141,6 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
   }
 
   protected Flyway createFlyway(final DataSource dataSource) {
-    // @formatter:off
     return Flyway.configure()
         .baselineVersion(MigrationVersion.fromVersion(this.flywayInitialVersion))
         .baselineDescription(this.flywayInitialDescription)
@@ -150,7 +149,6 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
         .table("schema_version")
         .dataSource(dataSource)
         .load();
-    // @formatter:on
   }
 
   protected LocalContainerEntityManagerFactoryBean entityManagerFactory(

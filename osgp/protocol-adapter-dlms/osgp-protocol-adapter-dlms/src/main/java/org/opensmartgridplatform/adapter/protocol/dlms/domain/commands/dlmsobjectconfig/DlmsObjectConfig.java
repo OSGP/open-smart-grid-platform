@@ -49,7 +49,6 @@ public abstract class DlmsObjectConfig {
    * @return the requested object or an empty Optional if it was not found.
    */
   public Optional<DlmsObject> findObject(final DlmsObjectType type, final Medium filterMedium) {
-    // @formatter:off
     return this.objects.stream()
         .filter(o1 -> o1.getType().equals(type))
         .filter(
@@ -58,7 +57,6 @@ public abstract class DlmsObjectConfig {
                     || ((DlmsProfile) o2).getMedium() == Medium.COMBINED
                     || ((DlmsProfile) o2).getMedium() == filterMedium)
         .findAny();
-    // @formatter:on
   }
 
   /**

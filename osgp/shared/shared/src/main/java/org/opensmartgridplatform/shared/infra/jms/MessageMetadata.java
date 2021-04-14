@@ -161,8 +161,6 @@ public class MessageMetadata implements Serializable {
     return message.propertyExists(name) ? message.getBooleanProperty(name) : defaultValue;
   }
 
-  // @formatter:off
-
   @Override
   public String toString() {
     return "MessageMetadata [correlationUid="
@@ -193,8 +191,6 @@ public class MessageMetadata implements Serializable {
         + this.jmsxDeliveryCount
         + "]";
   }
-
-  // @formatter:on
 
   public static class Builder {
     private String correlationUid;
