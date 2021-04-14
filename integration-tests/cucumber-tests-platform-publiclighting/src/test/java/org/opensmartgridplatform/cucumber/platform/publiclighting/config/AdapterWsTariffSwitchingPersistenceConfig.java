@@ -17,7 +17,8 @@
 // import
 /// org.opensmartgridplatform.cucumber.platform.config.ApplicationPersistenceConfiguration;
 // import
-/// org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.database.ws.TariffSwitchingResponseDataRepository;
+///
+// org.opensmartgridplatform.cucumber.platform.publiclighting.glue.steps.database.ws.TariffSwitchingResponseDataRepository;
 // import org.springframework.beans.factory.annotation.Qualifier;
 // import org.springframework.beans.factory.annotation.Value;
 // import org.springframework.context.annotation.Bean;

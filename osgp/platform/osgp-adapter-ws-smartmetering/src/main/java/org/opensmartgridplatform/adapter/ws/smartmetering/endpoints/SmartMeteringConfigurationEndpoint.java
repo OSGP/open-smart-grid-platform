@@ -1,11 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.endpoints;
 
@@ -136,47 +135,44 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 @Endpoint
 public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
-    private static final String SMARTMETER_CONFIGURATION_NAMESPACE = "http://www.opensmartgridplatform"
-            + ".org/schemas/smartmetering/sm-configuration/2014/10";
+  private static final String SMARTMETER_CONFIGURATION_NAMESPACE =
+      "http://www.opensmartgridplatform" + ".org/schemas/smartmetering/sm-configuration/2014/10";
 
-    @Autowired
-    private RequestService requestService;
+  @Autowired private RequestService requestService;
 
-    @Autowired
-    private ConfigurationMapper configurationMapper;
+  @Autowired private ConfigurationMapper configurationMapper;
 
-    public SmartMeteringConfigurationEndpoint() {
-        // Default constructor
-    }
+  public SmartMeteringConfigurationEndpoint() {
+    // Default constructor
+  }
 
-    /**
-     * Starts the proces of retrieving the firmware version(s) of the device
-     * specified in the {@link GetFirmwareVersionRequest}
-     *
-     * @param organisationIdentification
-     *            {@link String} containing the identification of the
-     *            organization
-     * @param request
-     *            the {@link GetFirmwareVersionRequest}
-     * @param messagePriority
-     *            the message priority
-     * @param scheduleTime
-     *            the time the message is scheduled
-     *
-     * @return the {@link GetFirmwareVersionAsyncResponse} containing the
-     *         correlation id
-     *
-     * @throws OsgpException
-     */
-    @PayloadRoot(localPart = "GetFirmwareVersionRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public GetFirmwareVersionAsyncResponse getFirmwareVersion(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetFirmwareVersionRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl,
-            @BypassRetry final String bypassRetry) throws OsgpException {
+  /**
+   * Starts the proces of retrieving the firmware version(s) of the device specified in the {@link
+   * GetFirmwareVersionRequest}
+   *
+   * @param organisationIdentification {@link String} containing the identification of the
+   *     organization
+   * @param request the {@link GetFirmwareVersionRequest}
+   * @param messagePriority the message priority
+   * @param scheduleTime the time the message is scheduled
+   * @return the {@link GetFirmwareVersionAsyncResponse} containing the correlation id
+   * @throws OsgpException
+   */
+  @PayloadRoot(
+      localPart = "GetFirmwareVersionRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public GetFirmwareVersionAsyncResponse getFirmwareVersion(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final GetFirmwareVersionRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
 
-        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(request.getDeviceIdentification())
             .withDeviceFunction(DeviceFunction.GET_FIRMWARE_VERSION)
@@ -186,22 +182,30 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, new GetFirmwareVersionQuery());
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(
+            requestMessageMetadata, new GetFirmwareVersionQuery());
 
-        this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
-        return this.configurationMapper.map(asyncResponse, GetFirmwareVersionAsyncResponse.class);
-    }
+    return this.configurationMapper.map(asyncResponse, GetFirmwareVersionAsyncResponse.class);
+  }
 
-    @PayloadRoot(localPart = "GetFirmwareVersionGasRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public GetFirmwareVersionGasAsyncResponse getFirmwareVersionGas(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetFirmwareVersionGasRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl,
-            @BypassRetry final String bypassRetry) throws OsgpException {
+  @PayloadRoot(
+      localPart = "GetFirmwareVersionGasRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public GetFirmwareVersionGasAsyncResponse getFirmwareVersionGas(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final GetFirmwareVersionGasRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
 
-        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(request.getDeviceIdentification())
             .withDeviceFunction(DeviceFunction.GET_FIRMWARE_VERSION)
@@ -211,112 +215,124 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, new GetFirmwareVersionQuery(true));
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(
+            requestMessageMetadata, new GetFirmwareVersionQuery(true));
 
-        this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
-        return this.configurationMapper.map(asyncResponse, GetFirmwareVersionGasAsyncResponse.class);
-    }
+    return this.configurationMapper.map(asyncResponse, GetFirmwareVersionGasAsyncResponse.class);
+  }
 
-    /**
-     * Gets the Firmware version response from the database (if it is there) and
-     * returns {@link GetFirmwareVersionResponse} containing those firmware
-     * versions.
-     *
-     * @param organisationIdentification
-     *            {@link String} containing the identification of the
-     *            organization
-     * @param request
-     *            {@link GetFirmwareVersionAsyncRequest} containing the
-     *            correlation id as the response identifier
-     *
-     * @return {@link GetFirmwareVersionResponse} containing the firmware
-     *         version(s) for the device.
-     *
-     * @throws OsgpException
-     *             is thrown when the correlationId cannot be found in the
-     *             database
-     */
-    @PayloadRoot(localPart = "GetFirmwareVersionAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public GetFirmwareVersionResponse getGetFirmwareVersionResponse(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetFirmwareVersionAsyncRequest request) throws OsgpException {
+  /**
+   * Gets the Firmware version response from the database (if it is there) and returns {@link
+   * GetFirmwareVersionResponse} containing those firmware versions.
+   *
+   * @param organisationIdentification {@link String} containing the identification of the
+   *     organization
+   * @param request {@link GetFirmwareVersionAsyncRequest} containing the correlation id as the
+   *     response identifier
+   * @return {@link GetFirmwareVersionResponse} containing the firmware version(s) for the device.
+   * @throws OsgpException is thrown when the correlationId cannot be found in the database
+   */
+  @PayloadRoot(
+      localPart = "GetFirmwareVersionAsyncRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public GetFirmwareVersionResponse getGetFirmwareVersionResponse(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final GetFirmwareVersionAsyncRequest request)
+      throws OsgpException {
 
-        log.info("GetFirmwareVersionResponse Request received from organisation {} for device: {}.",
-                organisationIdentification, request.getDeviceIdentification());
+    log.info(
+        "GetFirmwareVersionResponse Request received from organisation {} for device: {}.",
+        organisationIdentification,
+        request.getDeviceIdentification());
 
-        final GetFirmwareVersionResponse response = new GetFirmwareVersionResponse();
+    final GetFirmwareVersionResponse response = new GetFirmwareVersionResponse();
 
-        try {
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
-            if (responseData != null) {
-                response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+    try {
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+      if (responseData != null) {
+        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
 
-                if (responseData.getMessageData() != null) {
-                    final List<FirmwareVersion> target = response.getFirmwareVersion();
-                    final FirmwareVersionResponse firmwareVersionResponse = (FirmwareVersionResponse) responseData
-                            .getMessageData();
-                    target.addAll(this.configurationMapper.mapAsList(firmwareVersionResponse.getFirmwareVersions(),
-                            FirmwareVersion.class));
-                } else {
-                    log.info("Get Firmware Version firmware is null");
-                }
-            }
-        } catch (final Exception e) {
-            this.handleException(e);
+        if (responseData.getMessageData() != null) {
+          final List<FirmwareVersion> target = response.getFirmwareVersion();
+          final FirmwareVersionResponse firmwareVersionResponse =
+              (FirmwareVersionResponse) responseData.getMessageData();
+          target.addAll(
+              this.configurationMapper.mapAsList(
+                  firmwareVersionResponse.getFirmwareVersions(), FirmwareVersion.class));
+        } else {
+          log.info("Get Firmware Version firmware is null");
         }
-
-        return response;
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    @PayloadRoot(localPart = "GetFirmwareVersionGasAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public GetFirmwareVersionGasResponse getGetFirmwareVersionGasResponse(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetFirmwareVersionGasAsyncRequest request) throws OsgpException {
+    return response;
+  }
 
-        log.info("GetFirmwareVersionGasResponse request received from organisation {} for device: {}.",
-                organisationIdentification, request.getDeviceIdentification());
+  @PayloadRoot(
+      localPart = "GetFirmwareVersionGasAsyncRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public GetFirmwareVersionGasResponse getGetFirmwareVersionGasResponse(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final GetFirmwareVersionGasAsyncRequest request)
+      throws OsgpException {
 
-        final GetFirmwareVersionGasResponse response = new GetFirmwareVersionGasResponse();
+    log.info(
+        "GetFirmwareVersionGasResponse request received from organisation {} for device: {}.",
+        organisationIdentification,
+        request.getDeviceIdentification());
 
-        try {
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
-            if (responseData != null) {
-                response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+    final GetFirmwareVersionGasResponse response = new GetFirmwareVersionGasResponse();
 
-                if (responseData.getMessageData() != null) {
-                    final FirmwareVersionGasResponse firmwareVersionGasResponse = (FirmwareVersionGasResponse) responseData
-                            .getMessageData();
-                    final FirmwareVersionGas firmwareVersionGas = this.configurationMapper
-                            .map(firmwareVersionGasResponse.getFirmwareVersion(), FirmwareVersionGas.class);
-                    response.setFirmwareVersion(firmwareVersionGas);
-                } else {
-                    log.info("GetFirmwareVersionGas: firmware is null");
-                }
-            }
-        } catch (final Exception e) {
-            this.handleException(e);
+    try {
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+      if (responseData != null) {
+        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+
+        if (responseData.getMessageData() != null) {
+          final FirmwareVersionGasResponse firmwareVersionGasResponse =
+              (FirmwareVersionGasResponse) responseData.getMessageData();
+          final FirmwareVersionGas firmwareVersionGas =
+              this.configurationMapper.map(
+                  firmwareVersionGasResponse.getFirmwareVersion(), FirmwareVersionGas.class);
+          response.setFirmwareVersion(firmwareVersionGas);
+        } else {
+          log.info("GetFirmwareVersionGas: firmware is null");
         }
-
-        return response;
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    @PayloadRoot(localPart = "UpdateFirmwareRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public UpdateFirmwareAsyncResponse updateFirmware(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final UpdateFirmwareRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl,
-            @BypassRetry final String bypassRetry) throws OsgpException {
+    return response;
+  }
 
-        final UpdateFirmwareRequestData updateFirmwareRequestData = this.configurationMapper.map(request,
-            UpdateFirmwareRequestData.class);
+  @PayloadRoot(localPart = "UpdateFirmwareRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public UpdateFirmwareAsyncResponse updateFirmware(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final UpdateFirmwareRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
 
-        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+    final UpdateFirmwareRequestData updateFirmwareRequestData =
+        this.configurationMapper.map(request, UpdateFirmwareRequestData.class);
+
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(request.getDeviceIdentification())
             .withDeviceFunction(DeviceFunction.UPDATE_FIRMWARE)
@@ -326,63 +342,87 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, updateFirmwareRequestData);
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(
+            requestMessageMetadata, updateFirmwareRequestData);
 
-        this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
-        return this.configurationMapper.map(asyncResponse, UpdateFirmwareAsyncResponse.class);
-    }
+    return this.configurationMapper.map(asyncResponse, UpdateFirmwareAsyncResponse.class);
+  }
 
-    @PayloadRoot(localPart = "UpdateFirmwareAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareResponse getUpdateFirmwareResponse(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final UpdateFirmwareAsyncRequest request) throws OsgpException {
+  @PayloadRoot(
+      localPart = "UpdateFirmwareAsyncRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration
+          .UpdateFirmwareResponse
+      getUpdateFirmwareResponse(
+          @OrganisationIdentification final String organisationIdentification,
+          @RequestPayload final UpdateFirmwareAsyncRequest request)
+          throws OsgpException {
 
-        log.info("GetUpdateFirmwareResponse Request received from organisation {} for device: {}.",
-                organisationIdentification, request.getDeviceIdentification());
+    log.info(
+        "GetUpdateFirmwareResponse Request received from organisation {} for device: {}.",
+        organisationIdentification,
+        request.getDeviceIdentification());
 
-        final org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareResponse response = new org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareResponse();
+    final org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration
+            .UpdateFirmwareResponse
+        response =
+            new org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration
+                .UpdateFirmwareResponse();
 
-        try {
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
+    try {
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
-            this.throwExceptionIfResultNotOk(responseData, "updating firmware");
+      this.throwExceptionIfResultNotOk(responseData, "updating firmware");
 
-            if (responseData != null) {
-                response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      if (responseData != null) {
+        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
 
-                if (responseData.getMessageData() != null) {
-                    final List<FirmwareVersion> target = response.getFirmwareVersion();
-                    final UpdateFirmwareResponse updateFirmwareResponse = (UpdateFirmwareResponse) responseData
-                            .getMessageData();
-                    target.addAll(this.configurationMapper.mapAsList(updateFirmwareResponse.getFirmwareVersions(),
-                            FirmwareVersion.class));
-                } else {
-                    log.info("Update Firmware response is null");
-                }
-            }
-        } catch (final Exception e) {
-            this.handleException(e);
+        if (responseData.getMessageData() != null) {
+          final List<FirmwareVersion> target = response.getFirmwareVersion();
+          final UpdateFirmwareResponse updateFirmwareResponse =
+              (UpdateFirmwareResponse) responseData.getMessageData();
+          target.addAll(
+              this.configurationMapper.mapAsList(
+                  updateFirmwareResponse.getFirmwareVersions(), FirmwareVersion.class));
+        } else {
+          log.info("Update Firmware response is null");
         }
-
-        return response;
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    @PayloadRoot(localPart = "SetAdministrativeStatusRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public SetAdministrativeStatusAsyncResponse setAdministrativeStatus(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetAdministrativeStatusRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl,
-            @BypassRetry final String bypassRetry) throws OsgpException {
+    return response;
+  }
 
-        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AdministrativeStatusType dataRequest = this.configurationMapper
-                .map(request.getEnabled(),
-                        org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AdministrativeStatusType.class);
+  @PayloadRoot(
+      localPart = "SetAdministrativeStatusRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public SetAdministrativeStatusAsyncResponse setAdministrativeStatus(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetAdministrativeStatusRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
 
-        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+    final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AdministrativeStatusType
+        dataRequest =
+            this.configurationMapper.map(
+                request.getEnabled(),
+                org.opensmartgridplatform.domain.core.valueobjects.smartmetering
+                    .AdministrativeStatusType.class);
+
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(request.getDeviceIdentification())
             .withDeviceFunction(DeviceFunction.SET_ADMINISTRATIVE_STATUS)
@@ -392,43 +432,53 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, dataRequest);
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, dataRequest);
 
-        this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
-        return this.configurationMapper.map(asyncResponse, SetAdministrativeStatusAsyncResponse.class);
+    return this.configurationMapper.map(asyncResponse, SetAdministrativeStatusAsyncResponse.class);
+  }
+
+  @PayloadRoot(
+      localPart = "SetAdministrativeStatusAsyncRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public SetAdministrativeStatusResponse retrieveSetAdministrativeStatusResponse(
+      @RequestPayload final SetAdministrativeStatusAsyncRequest request) throws OsgpException {
+
+    SetAdministrativeStatusResponse response = null;
+    try {
+      response = new SetAdministrativeStatusResponse();
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+
+      response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      if (responseData.getMessageData() instanceof String) {
+        response.setDescription((String) responseData.getMessageData());
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
     }
+    return response;
+  }
 
-    @PayloadRoot(localPart = "SetAdministrativeStatusAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public SetAdministrativeStatusResponse retrieveSetAdministrativeStatusResponse(
-            @RequestPayload final SetAdministrativeStatusAsyncRequest request) throws OsgpException {
+  @PayloadRoot(
+      localPart = "GetAdministrativeStatusRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public GetAdministrativeStatusAsyncResponse getAdministrativeStatus(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final GetAdministrativeStatusRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
 
-        SetAdministrativeStatusResponse response = null;
-        try {
-            response = new SetAdministrativeStatusResponse();
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
-
-            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
-            if (responseData.getMessageData() instanceof String) {
-                response.setDescription((String) responseData.getMessageData());
-            }
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-        return response;
-    }
-
-    @PayloadRoot(localPart = "GetAdministrativeStatusRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public GetAdministrativeStatusAsyncResponse getAdministrativeStatus(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetAdministrativeStatusRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl,
-            @BypassRetry final String bypassRetry) throws OsgpException {
-
-        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(request.getDeviceIdentification())
             .withDeviceFunction(DeviceFunction.GET_ADMINISTRATIVE_STATUS)
@@ -438,49 +488,64 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AdministrativeStatusType.UNDEFINED);
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(
+            requestMessageMetadata,
+            org.opensmartgridplatform.domain.core.valueobjects.smartmetering
+                .AdministrativeStatusType.UNDEFINED);
 
-        this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
-        return this.configurationMapper.map(asyncResponse, GetAdministrativeStatusAsyncResponse.class);
+    return this.configurationMapper.map(asyncResponse, GetAdministrativeStatusAsyncResponse.class);
+  }
+
+  @PayloadRoot(
+      localPart = "GetAdministrativeStatusAsyncRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public GetAdministrativeStatusResponse retrieveGetAdministrativeStatusResponse(
+      @RequestPayload final GetAdministrativeStatusAsyncRequest request) throws OsgpException {
+
+    GetAdministrativeStatusResponse response = null;
+    try {
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+
+      this.throwExceptionIfResultNotOk(responseData, "retrieving the administrative status");
+
+      response = new GetAdministrativeStatusResponse();
+      final AdministrativeStatusType dataRequest =
+          this.configurationMapper.map(
+              responseData.getMessageData(), AdministrativeStatusType.class);
+      response.setEnabled(dataRequest);
+
+    } catch (final Exception e) {
+      this.handleException(e);
     }
+    return response;
+  }
 
-    @PayloadRoot(localPart = "GetAdministrativeStatusAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public GetAdministrativeStatusResponse retrieveGetAdministrativeStatusResponse(
-            @RequestPayload final GetAdministrativeStatusAsyncRequest request) throws OsgpException {
+  @PayloadRoot(localPart = "SetSpecialDaysRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public SetSpecialDaysAsyncResponse setSpecialDaysData(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetSpecialDaysRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
 
-        GetAdministrativeStatusResponse response = null;
-        try {
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
+    final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequest
+        dataRequest =
+            this.configurationMapper.map(
+                request,
+                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequest
+                    .class);
 
-            this.throwExceptionIfResultNotOk(responseData, "retrieving the administrative status");
-
-            response = new GetAdministrativeStatusResponse();
-            final AdministrativeStatusType dataRequest = this.configurationMapper.map(responseData.getMessageData(),
-                    AdministrativeStatusType.class);
-            response.setEnabled(dataRequest);
-
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-        return response;
-    }
-
-    @PayloadRoot(localPart = "SetSpecialDaysRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public SetSpecialDaysAsyncResponse setSpecialDaysData(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetSpecialDaysRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl,
-            @BypassRetry final String bypassRetry) throws OsgpException {
-
-        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequest dataRequest = this.configurationMapper
-            .map(request,
-                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecialDaysRequest.class);
-
-        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(request.getDeviceIdentification())
             .withDeviceFunction(DeviceFunction.SET_SPECIAL_DAYS)
@@ -490,47 +555,61 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, dataRequest);
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, dataRequest);
 
-        this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
-        return this.configurationMapper.map(asyncResponse, SetSpecialDaysAsyncResponse.class);
+    return this.configurationMapper.map(asyncResponse, SetSpecialDaysAsyncResponse.class);
+  }
+
+  @PayloadRoot(
+      localPart = "SetSpecialDaysAsyncRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public SetSpecialDaysResponse getSetSpecialDaysResponse(
+      @RequestPayload final SetSpecialDaysAsyncRequest request) throws OsgpException {
+
+    SetSpecialDaysResponse response = null;
+    try {
+      response = new SetSpecialDaysResponse();
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+
+      response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      if (responseData.getMessageData() instanceof String) {
+        response.setDescription((String) responseData.getMessageData());
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
     }
+    return response;
+  }
 
-    @PayloadRoot(localPart = "SetSpecialDaysAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public SetSpecialDaysResponse getSetSpecialDaysResponse(@RequestPayload final SetSpecialDaysAsyncRequest request)
-            throws OsgpException {
+  @PayloadRoot(
+      localPart = "SetConfigurationObjectRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public SetConfigurationObjectAsyncResponse setConfigurationObject(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetConfigurationObjectRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
 
-        SetSpecialDaysResponse response = null;
-        try {
-            response = new SetSpecialDaysResponse();
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
+    final org.opensmartgridplatform.domain.core.valueobjects.smartmetering
+            .SetConfigurationObjectRequest
+        dataRequest =
+            this.configurationMapper.map(
+                request,
+                org.opensmartgridplatform.domain.core.valueobjects.smartmetering
+                    .SetConfigurationObjectRequest.class);
 
-            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
-            if (responseData.getMessageData() instanceof String) {
-                response.setDescription((String) responseData.getMessageData());
-            }
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-        return response;
-    }
-
-    @PayloadRoot(localPart = "SetConfigurationObjectRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public SetConfigurationObjectAsyncResponse setConfigurationObject(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetConfigurationObjectRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl,
-             @BypassRetry final String bypassRetry) throws OsgpException {
-
-        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest dataRequest = this.configurationMapper
-                .map(request,
-                        org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest.class);
-
-        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(request.getDeviceIdentification())
             .withDeviceFunction(DeviceFunction.SET_CONFIGURATION_OBJECT)
@@ -540,43 +619,53 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, dataRequest);
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, dataRequest);
 
-        this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
-        return this.configurationMapper.map(asyncResponse, SetConfigurationObjectAsyncResponse.class);
+    return this.configurationMapper.map(asyncResponse, SetConfigurationObjectAsyncResponse.class);
+  }
+
+  @PayloadRoot(
+      localPart = "SetConfigurationObjectAsyncRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public SetConfigurationObjectResponse getSetConfigurationObjectResponse(
+      @RequestPayload final SetConfigurationObjectAsyncRequest request) throws OsgpException {
+
+    SetConfigurationObjectResponse response = null;
+    try {
+      response = new SetConfigurationObjectResponse();
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+
+      response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      if (responseData.getMessageData() instanceof String) {
+        response.setDescription((String) responseData.getMessageData());
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
     }
+    return response;
+  }
 
-    @PayloadRoot(localPart = "SetConfigurationObjectAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public SetConfigurationObjectResponse getSetConfigurationObjectResponse(
-            @RequestPayload final SetConfigurationObjectAsyncRequest request) throws OsgpException {
+  @PayloadRoot(
+      localPart = "SetEncryptionKeyExchangeOnGMeterRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public SetEncryptionKeyExchangeOnGMeterAsyncResponse setEncryptionKeyExchangeOnGMeter(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetEncryptionKeyExchangeOnGMeterRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
 
-        SetConfigurationObjectResponse response = null;
-        try {
-            response = new SetConfigurationObjectResponse();
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
-
-            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
-            if (responseData.getMessageData() instanceof String) {
-                response.setDescription((String) responseData.getMessageData());
-            }
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-        return response;
-    }
-
-    @PayloadRoot(localPart = "SetEncryptionKeyExchangeOnGMeterRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public SetEncryptionKeyExchangeOnGMeterAsyncResponse setEncryptionKeyExchangeOnGMeter(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetEncryptionKeyExchangeOnGMeterRequest request,
-            @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
-            @ResponseUrl final String responseUrl, @BypassRetry final String bypassRetry) throws OsgpException {
-
-        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(request.getDeviceIdentification())
             .withDeviceFunction(DeviceFunction.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER)
@@ -586,44 +675,55 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, null);
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, null);
 
-        this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
-        return this.configurationMapper.map(asyncResponse, SetEncryptionKeyExchangeOnGMeterAsyncResponse.class);
+    return this.configurationMapper.map(
+        asyncResponse, SetEncryptionKeyExchangeOnGMeterAsyncResponse.class);
+  }
+
+  @PayloadRoot(
+      localPart = "SetEncryptionKeyExchangeOnGMeterAsyncRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public SetEncryptionKeyExchangeOnGMeterResponse retrieveSetEncryptionKeyExchangeOnGMeterResponse(
+      @RequestPayload final SetEncryptionKeyExchangeOnGMeterAsyncRequest request)
+      throws OsgpException {
+
+    SetEncryptionKeyExchangeOnGMeterResponse response = null;
+    try {
+      response = new SetEncryptionKeyExchangeOnGMeterResponse();
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+
+      response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      if (responseData.getMessageData() instanceof String) {
+        response.setDescription((String) responseData.getMessageData());
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
     }
+    return response;
+  }
 
-    @PayloadRoot(localPart = "SetEncryptionKeyExchangeOnGMeterAsyncRequest",
-            namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public SetEncryptionKeyExchangeOnGMeterResponse retrieveSetEncryptionKeyExchangeOnGMeterResponse(
-            @RequestPayload final SetEncryptionKeyExchangeOnGMeterAsyncRequest request) throws OsgpException {
+  @PayloadRoot(
+      localPart = "GetMbusEncryptionKeyStatusRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public GetMbusEncryptionKeyStatusAsyncResponse getMbusEncryptionKeyStatus(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final GetMbusEncryptionKeyStatusRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
 
-        SetEncryptionKeyExchangeOnGMeterResponse response = null;
-        try {
-            response = new SetEncryptionKeyExchangeOnGMeterResponse();
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
-
-            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
-            if (responseData.getMessageData() instanceof String) {
-                response.setDescription((String) responseData.getMessageData());
-            }
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-        return response;
-    }
-
-    @PayloadRoot(localPart = "GetMbusEncryptionKeyStatusRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public GetMbusEncryptionKeyStatusAsyncResponse getMbusEncryptionKeyStatus(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetMbusEncryptionKeyStatusRequest request,
-            @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
-            @ResponseUrl final String responseUrl, @BypassRetry final String bypassRetry) throws OsgpException {
-
-        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(request.getDeviceIdentification())
             .withDeviceFunction(DeviceFunction.GET_MBUS_ENCRYPTION_KEY_STATUS)
@@ -633,49 +733,62 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, null);
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, null);
 
-        this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
-        return this.configurationMapper.map(asyncResponse, GetMbusEncryptionKeyStatusAsyncResponse.class);
+    return this.configurationMapper.map(
+        asyncResponse, GetMbusEncryptionKeyStatusAsyncResponse.class);
+  }
+
+  @PayloadRoot(
+      localPart = "GetMbusEncryptionKeyStatusAsyncRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public GetMbusEncryptionKeyStatusResponse getGetMBusEncryptionKeyStatusResponse(
+      @RequestPayload final GetMbusEncryptionKeyStatusAsyncRequest request) throws OsgpException {
+
+    GetMbusEncryptionKeyStatusResponse response = null;
+    try {
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+
+      this.throwExceptionIfResultNotOk(responseData, "retrieving the M-Bus encryption key status.");
+
+      response = new GetMbusEncryptionKeyStatusResponse();
+      response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      response.setEncryptionKeyStatus(
+          EncryptionKeyStatus.fromValue(
+              ((EncryptionKeyStatusType) responseData.getMessageData()).name()));
+
+    } catch (final Exception e) {
+      this.handleException(e);
     }
+    return response;
+  }
 
-    @PayloadRoot(localPart = "GetMbusEncryptionKeyStatusAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public GetMbusEncryptionKeyStatusResponse getGetMBusEncryptionKeyStatusResponse(
-            @RequestPayload final GetMbusEncryptionKeyStatusAsyncRequest request) throws OsgpException {
+  @PayloadRoot(
+      localPart = "GetMbusEncryptionKeyStatusByChannelRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public GetMbusEncryptionKeyStatusByChannelAsyncResponse getMbusEncryptionKeyStatusByChannel(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final GetMbusEncryptionKeyStatusByChannelRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
 
-        GetMbusEncryptionKeyStatusResponse response = null;
-        try {
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
+    final GetMbusEncryptionKeyStatusByChannelRequestData requestData =
+        this.configurationMapper.map(
+            request.getGetMbusEncryptionKeyStatusByChannelRequestData(),
+            GetMbusEncryptionKeyStatusByChannelRequestData.class);
 
-            this.throwExceptionIfResultNotOk(responseData, "retrieving the M-Bus encryption key status.");
-
-            response = new GetMbusEncryptionKeyStatusResponse();
-            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
-            response.setEncryptionKeyStatus(
-                    EncryptionKeyStatus.fromValue(((EncryptionKeyStatusType) responseData.getMessageData()).name()));
-
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-        return response;
-    }
-
-    @PayloadRoot(localPart = "GetMbusEncryptionKeyStatusByChannelRequest",
-            namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public GetMbusEncryptionKeyStatusByChannelAsyncResponse getMbusEncryptionKeyStatusByChannel(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetMbusEncryptionKeyStatusByChannelRequest request,
-            @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
-            @ResponseUrl final String responseUrl, @BypassRetry final String bypassRetry) throws OsgpException {
-
-        final GetMbusEncryptionKeyStatusByChannelRequestData requestData = this.configurationMapper
-            .map(request.getGetMbusEncryptionKeyStatusByChannelRequestData(), GetMbusEncryptionKeyStatusByChannelRequestData.class);
-
-        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(request.getGatewayDeviceIdentification())
             .withDeviceFunction(DeviceFunction.GET_MBUS_ENCRYPTION_KEY_STATUS_BY_CHANNEL)
@@ -685,50 +798,66 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, requestData);
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, requestData);
 
-        this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
-        return this.configurationMapper.map(asyncResponse, GetMbusEncryptionKeyStatusByChannelAsyncResponse.class);
+    return this.configurationMapper.map(
+        asyncResponse, GetMbusEncryptionKeyStatusByChannelAsyncResponse.class);
+  }
+
+  @PayloadRoot(
+      localPart = "GetMbusEncryptionKeyStatusByChannelAsyncRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public GetMbusEncryptionKeyStatusByChannelResponse getGetMBusEncryptionKeyStatusByChannelResponse(
+      @RequestPayload final GetMbusEncryptionKeyStatusByChannelAsyncRequest request)
+      throws OsgpException {
+
+    GetMbusEncryptionKeyStatusByChannelResponse response = null;
+    try {
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+
+      this.throwExceptionIfResultNotOk(
+          responseData, "retrieving the M-Bus encryption key status by channel.");
+
+      response = new GetMbusEncryptionKeyStatusByChannelResponse();
+      response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      response.setEncryptionKeyStatus(
+          EncryptionKeyStatus.fromValue(
+              ((EncryptionKeyStatusType) responseData.getMessageData()).name()));
+
+    } catch (final Exception e) {
+      this.handleException(e);
     }
+    return response;
+  }
 
-    @PayloadRoot(localPart = "GetMbusEncryptionKeyStatusByChannelAsyncRequest",
-            namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public GetMbusEncryptionKeyStatusByChannelResponse getGetMBusEncryptionKeyStatusByChannelResponse(
-            @RequestPayload final GetMbusEncryptionKeyStatusByChannelAsyncRequest request) throws OsgpException {
+  @PayloadRoot(
+      localPart = "SetPushSetupAlarmRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public SetPushSetupAlarmAsyncResponse setPushSetupAlarm(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetPushSetupAlarmRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
 
-        GetMbusEncryptionKeyStatusByChannelResponse response = null;
-        try {
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
+    final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupAlarm
+        pushSetupAlarm =
+            this.configurationMapper.map(
+                request.getSetPushSetupAlarmRequestData().getPushSetupAlarm(),
+                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupAlarm
+                    .class);
 
-            this.throwExceptionIfResultNotOk(responseData, "retrieving the M-Bus encryption key status by channel.");
-
-            response = new GetMbusEncryptionKeyStatusByChannelResponse();
-            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
-            response.setEncryptionKeyStatus(
-                    EncryptionKeyStatus.fromValue(((EncryptionKeyStatusType) responseData.getMessageData()).name()));
-
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-        return response;
-    }
-
-    @PayloadRoot(localPart = "SetPushSetupAlarmRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public SetPushSetupAlarmAsyncResponse setPushSetupAlarm(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetPushSetupAlarmRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl,
-            @BypassRetry final String bypassRetry) throws OsgpException {
-
-        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupAlarm pushSetupAlarm = this.configurationMapper
-            .map(request.getSetPushSetupAlarmRequestData().getPushSetupAlarm(),
-                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupAlarm.class);
-
-        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(request.getDeviceIdentification())
             .withDeviceFunction(DeviceFunction.SET_PUSH_SETUP_ALARM)
@@ -738,51 +867,65 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, pushSetupAlarm);
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, pushSetupAlarm);
 
-        this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
-        return this.configurationMapper.map(asyncResponse, SetPushSetupAlarmAsyncResponse.class);
+    return this.configurationMapper.map(asyncResponse, SetPushSetupAlarmAsyncResponse.class);
+  }
+
+  @PayloadRoot(
+      localPart = "SetPushSetupAlarmAsyncRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public SetPushSetupAlarmResponse getSetPushSetupAlarmResponse(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetPushSetupAlarmAsyncRequest request)
+      throws OsgpException {
+
+    log.info(
+        "Incoming SetPushSetupAlarmAsyncRequest for organisation {} for meter: {}.",
+        organisationIdentification,
+        request.getDeviceIdentification());
+
+    SetPushSetupAlarmResponse response = null;
+    try {
+      response = new SetPushSetupAlarmResponse();
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+
+      response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      if (responseData.getMessageData() instanceof String) {
+        response.setDescription((String) responseData.getMessageData());
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
     }
+    return response;
+  }
 
-    @PayloadRoot(localPart = "SetPushSetupAlarmAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public SetPushSetupAlarmResponse getSetPushSetupAlarmResponse(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetPushSetupAlarmAsyncRequest request) throws OsgpException {
+  @PayloadRoot(localPart = "SetPushSetupSmsRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public SetPushSetupSmsAsyncResponse setPushSetupSms(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetPushSetupSmsRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
 
-        log.info("Incoming SetPushSetupAlarmAsyncRequest for organisation {} for meter: {}.",
-                organisationIdentification, request.getDeviceIdentification());
+    final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupSms
+        pushSetupSms =
+            this.configurationMapper.map(
+                request.getSetPushSetupSmsRequestData().getPushSetupSms(),
+                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupSms
+                    .class);
 
-        SetPushSetupAlarmResponse response = null;
-        try {
-            response = new SetPushSetupAlarmResponse();
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
-
-            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
-            if (responseData.getMessageData() instanceof String) {
-                response.setDescription((String) responseData.getMessageData());
-            }
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-        return response;
-    }
-
-    @PayloadRoot(localPart = "SetPushSetupSmsRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public SetPushSetupSmsAsyncResponse setPushSetupSms(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetPushSetupSmsRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl,
-            @BypassRetry final String bypassRetry) throws OsgpException {
-
-        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupSms pushSetupSms = this.configurationMapper
-            .map(request.getSetPushSetupSmsRequestData().getPushSetupSms(),
-                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushSetupSms.class);
-
-        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(request.getDeviceIdentification())
             .withDeviceFunction(DeviceFunction.SET_PUSH_SETUP_SMS)
@@ -792,50 +935,64 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, pushSetupSms);
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, pushSetupSms);
 
-        this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
-        return this.configurationMapper.map(asyncResponse, SetPushSetupSmsAsyncResponse.class);
+    return this.configurationMapper.map(asyncResponse, SetPushSetupSmsAsyncResponse.class);
+  }
+
+  @PayloadRoot(
+      localPart = "SetPushSetupSmsAsyncRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public SetPushSetupSmsResponse getSetPushSetupSmsResponse(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetPushSetupSmsAsyncRequest request)
+      throws OsgpException {
+
+    log.info(
+        "Incoming SetPushSetupAlarmAsyncRequest for organisation {} for meter: {}.",
+        organisationIdentification,
+        request.getDeviceIdentification());
+
+    SetPushSetupSmsResponse response = null;
+    try {
+      response = new SetPushSetupSmsResponse();
+      final ResponseData meterResponseData =
+          this.responseDataService.dequeue(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+
+      response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+      if (meterResponseData.getMessageData() instanceof String) {
+        response.setDescription((String) meterResponseData.getMessageData());
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
     }
+    return response;
+  }
 
-    @PayloadRoot(localPart = "SetPushSetupSmsAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public SetPushSetupSmsResponse getSetPushSetupSmsResponse(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetPushSetupSmsAsyncRequest request) throws OsgpException {
+  @PayloadRoot(
+      localPart = "SetActivityCalendarRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public SetActivityCalendarAsyncResponse setActivityCalendar(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetActivityCalendarRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
 
-        log.info("Incoming SetPushSetupAlarmAsyncRequest for organisation {} for meter: {}.",
-                organisationIdentification, request.getDeviceIdentification());
+    final ActivityCalendar activityCalendar =
+        this.configurationMapper.map(
+            request.getActivityCalendarData().getActivityCalendar(), ActivityCalendar.class);
 
-        SetPushSetupSmsResponse response = null;
-        try {
-            response = new SetPushSetupSmsResponse();
-            final ResponseData meterResponseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
-
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof String) {
-                response.setDescription((String) meterResponseData.getMessageData());
-            }
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-        return response;
-    }
-
-    @PayloadRoot(localPart = "SetActivityCalendarRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public SetActivityCalendarAsyncResponse setActivityCalendar(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetActivityCalendarRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl,
-            @BypassRetry final String bypassRetry) throws OsgpException {
-
-        final ActivityCalendar activityCalendar = this.configurationMapper.map(request.getActivityCalendarData().getActivityCalendar(),
-            ActivityCalendar.class);
-
-        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(request.getDeviceIdentification())
             .withDeviceFunction(DeviceFunction.SET_ACTIVITY_CALENDAR)
@@ -845,48 +1002,62 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, activityCalendar);
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, activityCalendar);
 
-        this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
-        return this.configurationMapper.map(asyncResponse, SetActivityCalendarAsyncResponse.class);
+    return this.configurationMapper.map(asyncResponse, SetActivityCalendarAsyncResponse.class);
+  }
+
+  @PayloadRoot(
+      localPart = "SetActivityCalendarAsyncRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public SetActivityCalendarResponse getSetActivityCalendarResponse(
+      @RequestPayload final SetActivityCalendarAsyncRequest request) throws OsgpException {
+
+    log.info(
+        "Incoming retrieveSetActivityCalendarResponse for meter: {}",
+        request.getDeviceIdentification());
+
+    SetActivityCalendarResponse response = null;
+    try {
+      response = new SetActivityCalendarResponse();
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+
+      response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      if (responseData.getMessageData() instanceof String) {
+        response.setDescription((String) responseData.getMessageData());
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
     }
+    return response;
+  }
 
-    @PayloadRoot(localPart = "SetActivityCalendarAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public SetActivityCalendarResponse getSetActivityCalendarResponse(
-            @RequestPayload final SetActivityCalendarAsyncRequest request) throws OsgpException {
+  @PayloadRoot(
+      localPart = "SetAlarmNotificationsRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public SetAlarmNotificationsAsyncResponse setAlarmNotifications(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetAlarmNotificationsRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
 
-        log.info("Incoming retrieveSetActivityCalendarResponse for meter: {}", request.getDeviceIdentification());
+    final AlarmNotifications alarmNotifications =
+        this.configurationMapper.map(
+            request.getSetAlarmNotificationsRequestData().getAlarmNotifications(),
+            AlarmNotifications.class);
 
-        SetActivityCalendarResponse response = null;
-        try {
-            response = new SetActivityCalendarResponse();
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
-
-            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
-            if (responseData.getMessageData() instanceof String) {
-                response.setDescription((String) responseData.getMessageData());
-            }
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-        return response;
-    }
-
-    @PayloadRoot(localPart = "SetAlarmNotificationsRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public SetAlarmNotificationsAsyncResponse setAlarmNotifications(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetAlarmNotificationsRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl,
-            @BypassRetry final String bypassRetry) throws OsgpException {
-
-        final AlarmNotifications alarmNotifications = this.configurationMapper
-            .map(request.getSetAlarmNotificationsRequestData().getAlarmNotifications(), AlarmNotifications.class);
-
-        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(request.getDeviceIdentification())
             .withDeviceFunction(DeviceFunction.SET_ALARM_NOTIFICATIONS)
@@ -896,46 +1067,58 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, alarmNotifications);
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, alarmNotifications);
 
-        this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
-        return this.configurationMapper.map(asyncResponse, SetAlarmNotificationsAsyncResponse.class);
+    return this.configurationMapper.map(asyncResponse, SetAlarmNotificationsAsyncResponse.class);
+  }
+
+  @PayloadRoot(
+      localPart = "SetAlarmNotificationsAsyncRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public SetAlarmNotificationsResponse getSetAlarmNotificationsResponse(
+      @RequestPayload final SetAlarmNotificationsAsyncRequest request) throws OsgpException {
+
+    SetAlarmNotificationsResponse response = null;
+    try {
+      response = new SetAlarmNotificationsResponse();
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+
+      response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      if (responseData.getMessageData() instanceof String) {
+        response.setDescription((String) responseData.getMessageData());
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
     }
+    return response;
+  }
 
-    @PayloadRoot(localPart = "SetAlarmNotificationsAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public SetAlarmNotificationsResponse getSetAlarmNotificationsResponse(
-            @RequestPayload final SetAlarmNotificationsAsyncRequest request) throws OsgpException {
+  @PayloadRoot(localPart = "ReplaceKeysRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public ReplaceKeysAsyncResponse replaceKeys(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final ReplaceKeysRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
 
-        SetAlarmNotificationsResponse response = null;
-        try {
-            response = new SetAlarmNotificationsResponse();
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
+    final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData
+        keySet =
+            this.configurationMapper.map(
+                request.getSetKeysRequestData(),
+                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData
+                    .class);
 
-            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
-            if (responseData.getMessageData() instanceof String) {
-                response.setDescription((String) responseData.getMessageData());
-            }
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-        return response;
-    }
-
-    @PayloadRoot(localPart = "ReplaceKeysRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public ReplaceKeysAsyncResponse replaceKeys(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final ReplaceKeysRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl,
-            @BypassRetry final String bypassRetry) throws OsgpException {
-
-        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData keySet = this.configurationMapper
-            .map(request.getSetKeysRequestData(),
-                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData.class);
-
-        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(request.getDeviceIdentification())
             .withDeviceFunction(DeviceFunction.REPLACE_KEYS)
@@ -945,46 +1128,56 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, keySet);
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, keySet);
 
-        this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
-        return this.configurationMapper.map(asyncResponse, ReplaceKeysAsyncResponse.class);
+    return this.configurationMapper.map(asyncResponse, ReplaceKeysAsyncResponse.class);
+  }
+
+  @PayloadRoot(
+      localPart = "ReplaceKeysAsyncRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public ReplaceKeysResponse getReplaceKeysResponse(
+      @RequestPayload final ReplaceKeysAsyncRequest request) throws OsgpException {
+
+    ReplaceKeysResponse response = null;
+    try {
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+
+      this.throwExceptionIfResultNotOk(responseData, "replacing keys on the device");
+
+      response = new ReplaceKeysResponse();
+      response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      if (responseData.getMessageData() instanceof String) {
+        response.setDescription((String) responseData.getMessageData());
+      }
+
+    } catch (final Exception e) {
+      this.handleException(e);
     }
+    return response;
+  }
 
-    @PayloadRoot(localPart = "ReplaceKeysAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public ReplaceKeysResponse getReplaceKeysResponse(@RequestPayload final ReplaceKeysAsyncRequest request)
-            throws OsgpException {
+  @PayloadRoot(
+      localPart = "GenerateAndReplaceKeysRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public GenerateAndReplaceKeysAsyncResponse generateAndReplaceKeys(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final GenerateAndReplaceKeysRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
 
-        ReplaceKeysResponse response = null;
-        try {
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
-
-            this.throwExceptionIfResultNotOk(responseData, "replacing keys on the device");
-
-            response = new ReplaceKeysResponse();
-            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
-            if (responseData.getMessageData() instanceof String) {
-                response.setDescription((String) responseData.getMessageData());
-            }
-
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-        return response;
-    }
-
-    @PayloadRoot(localPart = "GenerateAndReplaceKeysRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public GenerateAndReplaceKeysAsyncResponse generateAndReplaceKeys(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GenerateAndReplaceKeysRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl,
-            @BypassRetry final String bypassRetry) throws OsgpException {
-
-        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(request.getDeviceIdentification())
             .withDeviceFunction(DeviceFunction.GENERATE_AND_REPLACE_KEYS)
@@ -994,82 +1187,105 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, null);
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, null);
 
-        this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
-        return this.configurationMapper.map(asyncResponse, GenerateAndReplaceKeysAsyncResponse.class);
+    return this.configurationMapper.map(asyncResponse, GenerateAndReplaceKeysAsyncResponse.class);
+  }
+
+  @PayloadRoot(
+      localPart = "GenerateAndReplaceKeysAsyncRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public GenerateAndReplaceKeysResponse getGenerateAndReplaceKeysResponse(
+      @RequestPayload final GenerateAndReplaceKeysAsyncRequest request) throws OsgpException {
+
+    GenerateAndReplaceKeysResponse response = null;
+    try {
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+
+      response = new GenerateAndReplaceKeysResponse();
+      response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      if (responseData.getMessageData() instanceof String) {
+        response.setDescription((String) responseData.getMessageData());
+      }
+
+    } catch (final Exception e) {
+      this.handleException(e);
+    }
+    return response;
+  }
+
+  @PayloadRoot(
+      localPart = "GetPushNotificationAlarmAsyncRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public GetPushNotificationAlarmResponse getPushNotificationAlarm(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final GetPushNotificationAlarmAsyncRequest request)
+      throws OsgpException {
+
+    log.info(
+        "GetPushNotificationAlarmRequest Request received from organisation {} for device: {}.",
+        organisationIdentification,
+        request.getDeviceIdentification());
+
+    final GetPushNotificationAlarmResponse response = new GetPushNotificationAlarmResponse();
+
+    try {
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+      response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      if (responseData != null) {
+
+        final PushNotificationAlarm p = (PushNotificationAlarm) responseData.getMessageData();
+
+        response.setDecodedMessage(p.toString());
+        response.setEncodedMessage(p.getAlarmBytes());
+
+        response
+            .getAlarm()
+            .addAll(
+                this.configurationMapper.mapAsList(
+                    p.getAlarms(),
+                    org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.AlarmType
+                        .class));
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    @PayloadRoot(localPart = "GenerateAndReplaceKeysAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public GenerateAndReplaceKeysResponse getGenerateAndReplaceKeysResponse(
-            @RequestPayload final GenerateAndReplaceKeysAsyncRequest request) throws OsgpException {
+    return response;
+  }
 
-        GenerateAndReplaceKeysResponse response = null;
-        try {
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
+  @PayloadRoot(
+      localPart = "SetClockConfigurationRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public SetClockConfigurationAsyncResponse setClockConfiguration(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetClockConfigurationRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
 
-            response = new GenerateAndReplaceKeysResponse();
-            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
-            if (responseData.getMessageData() instanceof String) {
-                response.setDescription((String) responseData.getMessageData());
-            }
+    final org.opensmartgridplatform.domain.core.valueobjects.smartmetering
+            .SetClockConfigurationRequestData
+        clockConfiguration =
+            this.configurationMapper.map(
+                request.getSetClockConfigurationData(),
+                org.opensmartgridplatform.domain.core.valueobjects.smartmetering
+                    .SetClockConfigurationRequestData.class);
 
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-        return response;
-    }
-
-    @PayloadRoot(localPart = "GetPushNotificationAlarmAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public GetPushNotificationAlarmResponse getPushNotificationAlarm(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetPushNotificationAlarmAsyncRequest request) throws OsgpException {
-
-        log.info("GetPushNotificationAlarmRequest Request received from organisation {} for device: {}.",
-                organisationIdentification, request.getDeviceIdentification());
-
-        final GetPushNotificationAlarmResponse response = new GetPushNotificationAlarmResponse();
-
-        try {
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
-            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
-            if (responseData != null) {
-
-                final PushNotificationAlarm p = (PushNotificationAlarm) responseData.getMessageData();
-
-                response.setDecodedMessage(p.toString());
-                response.setEncodedMessage(p.getAlarmBytes());
-
-                response.getAlarm()
-                        .addAll(this.configurationMapper.mapAsList(p.getAlarms(),
-                                org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.AlarmType.class));
-
-            }
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-
-        return response;
-    }
-
-    @PayloadRoot(localPart = "SetClockConfigurationRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public SetClockConfigurationAsyncResponse setClockConfiguration(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetClockConfigurationRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl,
-            @BypassRetry final String bypassRetry) throws OsgpException {
-
-        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData clockConfiguration = this.configurationMapper
-            .map(request.getSetClockConfigurationData(),
-                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData.class);
-
-        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(request.getDeviceIdentification())
             .withDeviceFunction(DeviceFunction.SET_CLOCK_CONFIGURATION)
@@ -1079,48 +1295,62 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, clockConfiguration);
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, clockConfiguration);
 
-        this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
-        return this.configurationMapper.map(asyncResponse, SetClockConfigurationAsyncResponse.class);
+    return this.configurationMapper.map(asyncResponse, SetClockConfigurationAsyncResponse.class);
+  }
+
+  @PayloadRoot(
+      localPart = "SetClockConfigurationAsyncRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public SetClockConfigurationResponse getSetClockConfigurationResponse(
+      @RequestPayload final SetClockConfigurationAsyncRequest request) throws OsgpException {
+
+    SetClockConfigurationResponse response = null;
+    try {
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+
+      response = new SetClockConfigurationResponse();
+      response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      if (responseData.getMessageData() instanceof String) {
+        response.setDescription((String) responseData.getMessageData());
+      }
+
+    } catch (final Exception e) {
+      this.handleException(e);
     }
+    return response;
+  }
 
-    @PayloadRoot(localPart = "SetClockConfigurationAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public SetClockConfigurationResponse getSetClockConfigurationResponse(
-            @RequestPayload final SetClockConfigurationAsyncRequest request) throws OsgpException {
+  @PayloadRoot(
+      localPart = "GetConfigurationObjectRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public GetConfigurationObjectAsyncResponse getConfigurationObject(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final GetConfigurationObjectRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
 
-        SetClockConfigurationResponse response = null;
-        try {
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
+    final org.opensmartgridplatform.domain.core.valueobjects.smartmetering
+            .GetConfigurationObjectRequest
+        dataRequest =
+            this.configurationMapper.map(
+                request,
+                org.opensmartgridplatform.domain.core.valueobjects.smartmetering
+                    .GetConfigurationObjectRequest.class);
 
-            response = new SetClockConfigurationResponse();
-            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
-            if (responseData.getMessageData() instanceof String) {
-                response.setDescription((String) responseData.getMessageData());
-            }
-
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-        return response;
-    }
-
-    @PayloadRoot(localPart = "GetConfigurationObjectRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public GetConfigurationObjectAsyncResponse getConfigurationObject(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetConfigurationObjectRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl,
-            @BypassRetry final String bypassRetry) throws OsgpException {
-
-        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfigurationObjectRequest dataRequest = this.configurationMapper
-                .map(request,
-                        org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfigurationObjectRequest.class);
-
-        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(request.getDeviceIdentification())
             .withDeviceFunction(DeviceFunction.GET_CONFIGURATION_OBJECT)
@@ -1130,47 +1360,64 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, dataRequest);
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, dataRequest);
 
-        this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
-        return this.configurationMapper.map(asyncResponse, GetConfigurationObjectAsyncResponse.class);
+    return this.configurationMapper.map(asyncResponse, GetConfigurationObjectAsyncResponse.class);
+  }
+
+  @PayloadRoot(
+      localPart = "GetConfigurationObjectAsyncRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public GetConfigurationObjectResponse getGetConfigurationObjectResponse(
+      @RequestPayload final GetConfigurationObjectAsyncRequest request) throws OsgpException {
+
+    GetConfigurationObjectResponse response = null;
+    try {
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getCorrelationUid(),
+              org.opensmartgridplatform.domain.core.valueobjects.smartmetering
+                  .GetConfigurationObjectResponse.class,
+              ComponentType.WS_SMART_METERING);
+
+      this.throwExceptionIfResultNotOk(responseData, "retrieving the configuration object");
+
+      response =
+          this.configurationMapper.map(
+              responseData.getMessageData(), GetConfigurationObjectResponse.class);
+    } catch (final Exception e) {
+      this.handleException(e);
     }
+    return response;
+  }
 
-    @PayloadRoot(localPart = "GetConfigurationObjectAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public GetConfigurationObjectResponse getGetConfigurationObjectResponse(
-            @RequestPayload final GetConfigurationObjectAsyncRequest request) throws OsgpException {
+  @PayloadRoot(
+      localPart = "ConfigureDefinableLoadProfileRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public ConfigureDefinableLoadProfileAsyncResponse configureDefinableLoadProfile(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final ConfigureDefinableLoadProfileRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
 
-        GetConfigurationObjectResponse response = null;
-        try {
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfigurationObjectResponse.class,
-                    ComponentType.WS_SMART_METERING);
+    final org.opensmartgridplatform.domain.core.valueobjects.smartmetering
+            .DefinableLoadProfileConfigurationData
+        definableLoadProfileConfiguration =
+            this.configurationMapper.map(
+                request.getDefinableLoadProfileConfigurationData(),
+                org.opensmartgridplatform.domain.core.valueobjects.smartmetering
+                    .DefinableLoadProfileConfigurationData.class);
 
-            this.throwExceptionIfResultNotOk(responseData, "retrieving the configuration object");
-
-            response = this.configurationMapper.map(responseData.getMessageData(),
-                    GetConfigurationObjectResponse.class);
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-        return response;
-    }
-
-    @PayloadRoot(localPart = "ConfigureDefinableLoadProfileRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public ConfigureDefinableLoadProfileAsyncResponse configureDefinableLoadProfile(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final ConfigureDefinableLoadProfileRequest request,
-            @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
-            @ResponseUrl final String responseUrl, @BypassRetry final String bypassRetry) throws OsgpException {
-
-        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DefinableLoadProfileConfigurationData definableLoadProfileConfiguration = this.configurationMapper
-            .map(request.getDefinableLoadProfileConfigurationData(),
-                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DefinableLoadProfileConfigurationData.class);
-
-        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(request.getDeviceIdentification())
             .withDeviceFunction(DeviceFunction.CONFIGURE_DEFINABLE_LOAD_PROFILE)
@@ -1180,48 +1427,62 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, definableLoadProfileConfiguration);
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(
+            requestMessageMetadata, definableLoadProfileConfiguration);
 
-        this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
-        return this.configurationMapper.map(asyncResponse, ConfigureDefinableLoadProfileAsyncResponse.class);
+    return this.configurationMapper.map(
+        asyncResponse, ConfigureDefinableLoadProfileAsyncResponse.class);
+  }
+
+  @PayloadRoot(
+      localPart = "ConfigureDefinableLoadProfileAsyncRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public ConfigureDefinableLoadProfileResponse getConfigureDefinableLoadProfileResponse(
+      @RequestPayload final ConfigureDefinableLoadProfileAsyncRequest request)
+      throws OsgpException {
+
+    ConfigureDefinableLoadProfileResponse response = null;
+    try {
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+
+      response = new ConfigureDefinableLoadProfileResponse();
+      response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      if (responseData.getMessageData() instanceof String) {
+        response.setDescription((String) responseData.getMessageData());
+      }
+
+    } catch (final Exception e) {
+      this.handleException(e);
     }
+    return response;
+  }
 
-    @PayloadRoot(localPart = "ConfigureDefinableLoadProfileAsyncRequest",
-            namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public ConfigureDefinableLoadProfileResponse getConfigureDefinableLoadProfileResponse(
-            @RequestPayload final ConfigureDefinableLoadProfileAsyncRequest request) throws OsgpException {
+  @PayloadRoot(
+      localPart = "SetMbusUserKeyByChannelRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public SetMbusUserKeyByChannelAsyncResponse setMbusUserKeyByChannel(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetMbusUserKeyByChannelRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
 
-        ConfigureDefinableLoadProfileResponse response = null;
-        try {
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
+    final SetMbusUserKeyByChannelRequestData setMbusUserKeyByChannelRequestData =
+        this.configurationMapper.map(
+            request.getSetMbusUserKeyByChannelRequestData(),
+            SetMbusUserKeyByChannelRequestData.class);
 
-            response = new ConfigureDefinableLoadProfileResponse();
-            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
-            if (responseData.getMessageData() instanceof String) {
-                response.setDescription((String) responseData.getMessageData());
-            }
-
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-        return response;
-    }
-
-    @PayloadRoot(localPart = "SetMbusUserKeyByChannelRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public SetMbusUserKeyByChannelAsyncResponse setMbusUserKeyByChannel(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetMbusUserKeyByChannelRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final String scheduleTime, @ResponseUrl final String responseUrl,
-            @BypassRetry final String bypassRetry) throws OsgpException {
-
-        final SetMbusUserKeyByChannelRequestData setMbusUserKeyByChannelRequestData = this.configurationMapper
-            .map(request.getSetMbusUserKeyByChannelRequestData(), SetMbusUserKeyByChannelRequestData.class);
-
-        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(request.getDeviceIdentification())
             .withDeviceFunction(DeviceFunction.SET_MBUS_USER_KEY_BY_CHANNEL)
@@ -1231,47 +1492,58 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, setMbusUserKeyByChannelRequestData);
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(
+            requestMessageMetadata, setMbusUserKeyByChannelRequestData);
 
-        this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
-        return this.configurationMapper.map(asyncResponse, SetMbusUserKeyByChannelAsyncResponse.class);
+    return this.configurationMapper.map(asyncResponse, SetMbusUserKeyByChannelAsyncResponse.class);
+  }
+
+  @PayloadRoot(
+      localPart = "SetMbusUserKeyByChannelAsyncRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public SetMbusUserKeyByChannelResponse getSetMbusUserKeyByChannelResponse(
+      @RequestPayload final SetMbusUserKeyByChannelAsyncRequest request) throws OsgpException {
+
+    SetMbusUserKeyByChannelResponse response = null;
+    try {
+      response = new SetMbusUserKeyByChannelResponse();
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+
+      response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      if (responseData.getMessageData() instanceof String) {
+        response.setDescription((String) responseData.getMessageData());
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
     }
+    return response;
+  }
 
-    @PayloadRoot(localPart = "SetMbusUserKeyByChannelAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public SetMbusUserKeyByChannelResponse getSetMbusUserKeyByChannelResponse(
-            @RequestPayload final SetMbusUserKeyByChannelAsyncRequest request) throws OsgpException {
+  @PayloadRoot(
+      localPart = "SetRandomisationSettingsRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public SetRandomisationSettingsAsyncResponse setRandomisationSettings(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetRandomisationSettingsRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
 
-        SetMbusUserKeyByChannelResponse response = null;
-        try {
-            response = new SetMbusUserKeyByChannelResponse();
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
+    final SetRandomisationSettingsRequestData dataRequest =
+        this.configurationMapper.map(
+            request.getSetRandomisationSettingsData(), SetRandomisationSettingsRequestData.class);
 
-            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
-            if (responseData.getMessageData() instanceof String) {
-                response.setDescription((String) responseData.getMessageData());
-            }
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-        return response;
-    }
-
-    @PayloadRoot(localPart = "SetRandomisationSettingsRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public SetRandomisationSettingsAsyncResponse setRandomisationSettings(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetRandomisationSettingsRequest request,
-            @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
-            @ResponseUrl final String responseUrl, @BypassRetry final String bypassRetry) throws OsgpException {
-
-        final SetRandomisationSettingsRequestData dataRequest = this.configurationMapper
-            .map(request.getSetRandomisationSettingsData(),
-                SetRandomisationSettingsRequestData.class);
-
-        final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(request.getDeviceIdentification())
             .withDeviceFunction(DeviceFunction.SET_RANDOMISATION_SETTINGS)
@@ -1281,33 +1553,37 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             .withBypassRetry(bypassRetry)
             .build();
 
-        final AsyncResponse asyncResponse = this.requestService.enqueueAndSendRequest(requestMessageMetadata, dataRequest);
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, dataRequest);
 
-        this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
-        return this.configurationMapper.map(asyncResponse, SetRandomisationSettingsAsyncResponse.class);
+    return this.configurationMapper.map(asyncResponse, SetRandomisationSettingsAsyncResponse.class);
+  }
+
+  @PayloadRoot(
+      localPart = "SetRandomisationSettingsAsyncRequest",
+      namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public SetRandomisationSettingsResponse getSetRandomisationSettingsResponse(
+      @RequestPayload final SetRandomisationSettingsAsyncRequest request) throws OsgpException {
+
+    log.info("-- calling getSetRandomisationSettingsResponse ");
+
+    SetRandomisationSettingsResponse response = null;
+    try {
+      response = new SetRandomisationSettingsResponse();
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+
+      response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      if (responseData.getMessageData() instanceof String) {
+        response.setDescription((String) responseData.getMessageData());
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
     }
-
-    @PayloadRoot(localPart = "SetRandomisationSettingsAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public SetRandomisationSettingsResponse getSetRandomisationSettingsResponse(
-            @RequestPayload final SetRandomisationSettingsAsyncRequest request) throws OsgpException {
-
-        log.info("-- calling getSetRandomisationSettingsResponse ");
-
-        SetRandomisationSettingsResponse response = null;
-        try {
-            response = new SetRandomisationSettingsResponse();
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
-
-            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
-            if (responseData.getMessageData() instanceof String) {
-                response.setDescription((String) responseData.getMessageData());
-            }
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-        return response;
-    }
+    return response;
+  }
 }

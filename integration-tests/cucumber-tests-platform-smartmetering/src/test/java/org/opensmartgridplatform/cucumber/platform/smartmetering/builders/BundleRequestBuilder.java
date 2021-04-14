@@ -5,24 +5,23 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.BundleRe
 
 public class BundleRequestBuilder {
 
-    private String deviceIdentification;
-    private Actions actions;
+  private String deviceIdentification;
+  private Actions actions;
 
-    public BundleRequestBuilder withDeviceIdentification(final String deviceIdentification) {
-        this.deviceIdentification = deviceIdentification;
-        return this;
-    }
+  public BundleRequestBuilder withDeviceIdentification(final String deviceIdentification) {
+    this.deviceIdentification = deviceIdentification;
+    return this;
+  }
 
-    public BundleRequestBuilder withActions(final Actions actions) {
-        this.actions = actions;
-        return this;
-    }
+  public BundleRequestBuilder withActions(final Actions actions) {
+    this.actions = actions;
+    return this;
+  }
 
-    public BundleRequest build() {
-        final BundleRequest request = new BundleRequest();
-        request.setDeviceIdentification(this.deviceIdentification);
-        request.setActions(this.actions);
-        return request;
-    }
-
+  public BundleRequest build() {
+    final BundleRequest request = new BundleRequest();
+    request.setDeviceIdentification(this.deviceIdentification);
+    request.setActions(this.actions);
+    return request;
+  }
 }

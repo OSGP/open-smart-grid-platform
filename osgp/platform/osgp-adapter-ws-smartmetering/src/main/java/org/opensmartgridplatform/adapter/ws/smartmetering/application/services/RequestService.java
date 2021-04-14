@@ -29,58 +29,75 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class RequestService {
 
-    private final DomainHelperService domainHelperService;
+  private final DomainHelperService domainHelperService;
 
-    private final SmartMeteringRequestMessageSender smartMeteringRequestMessageSender;
+  private final SmartMeteringRequestMessageSender smartMeteringRequestMessageSender;
 
-    private final CorrelationIdProviderService correlationIdProviderService;
+  private final CorrelationIdProviderService correlationIdProviderService;
 
-    public RequestService(
-        final DomainHelperService domainHelperService,
-        final SmartMeteringRequestMessageSender smartMeteringRequestMessageSender,
-        final CorrelationIdProviderService correlationIdProviderService) {
-        this.domainHelperService = domainHelperService;
-        this.smartMeteringRequestMessageSender = smartMeteringRequestMessageSender;
-        this.correlationIdProviderService = correlationIdProviderService;
+  public RequestService(
+      final DomainHelperService domainHelperService,
+      final SmartMeteringRequestMessageSender smartMeteringRequestMessageSender,
+      final CorrelationIdProviderService correlationIdProviderService) {
+    this.domainHelperService = domainHelperService;
+    this.smartMeteringRequestMessageSender = smartMeteringRequestMessageSender;
+    this.correlationIdProviderService = correlationIdProviderService;
+  }
+
+  public AsyncResponse enqueueAndSendRequest(
+      final RequestMessageMetadata requestMessageMetadata, final Serializable requestData)
+      throws FunctionalException {
+
+    log.debug(
+        "{} called with organisation {} and device {}",
+        requestMessageMetadata.getMessageType(),
+        requestMessageMetadata.getOrganisationIdentification(),
+        requestMessageMetadata.getDeviceIdentification());
+
+    if (requestMessageMetadata.getDeviceFunction() != null) {
+      this.checkAllowed(
+          requestMessageMetadata.getOrganisationIdentification(),
+          requestMessageMetadata.getDeviceIdentification(),
+          requestMessageMetadata.getDeviceFunction());
     }
 
-    public AsyncResponse enqueueAndSendRequest(final RequestMessageMetadata requestMessageMetadata, final Serializable requestData) throws FunctionalException {
-
-        log.debug("{} called with organisation {} and device {}", requestMessageMetadata.getMessageType(),
-            requestMessageMetadata.getOrganisationIdentification(), requestMessageMetadata.getDeviceIdentification());
-
-        if (requestMessageMetadata.getDeviceFunction() != null) {
-            this.checkAllowed(requestMessageMetadata.getOrganisationIdentification(), requestMessageMetadata.getDeviceIdentification(), requestMessageMetadata.getDeviceFunction());
-        }
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(
+    final String correlationUid =
+        this.correlationIdProviderService.getCorrelationId(
             requestMessageMetadata.getOrganisationIdentification(),
             requestMessageMetadata.getDeviceIdentification());
 
-        final DeviceMessageMetadata deviceMessageMetadata = requestMessageMetadata.newDeviceMessageMetadata(correlationUid);
+    final DeviceMessageMetadata deviceMessageMetadata =
+        requestMessageMetadata.newDeviceMessageMetadata(correlationUid);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-            deviceMessageMetadata).request(requestData).build();
+    final SmartMeteringRequestMessage message =
+        new SmartMeteringRequestMessage.Builder()
+            .deviceMessageMetadata(deviceMessageMetadata)
+            .request(requestData)
+            .build();
 
-        this.smartMeteringRequestMessageSender.send(message);
+    this.smartMeteringRequestMessageSender.send(message);
 
-        return this.createAsyncResponse(correlationUid, deviceMessageMetadata.getDeviceIdentification());
-    }
+    return this.createAsyncResponse(
+        correlationUid, deviceMessageMetadata.getDeviceIdentification());
+  }
 
-    AsyncResponse createAsyncResponse(final String correlationUid, final String deviceIdentification) {
-        final AsyncResponse asyncResponse = new AsyncResponse();
-        asyncResponse.setCorrelationUid(correlationUid);
-        asyncResponse.setDeviceIdentification(deviceIdentification);
-        return asyncResponse;
-    }
+  AsyncResponse createAsyncResponse(
+      final String correlationUid, final String deviceIdentification) {
+    final AsyncResponse asyncResponse = new AsyncResponse();
+    asyncResponse.setCorrelationUid(correlationUid);
+    asyncResponse.setDeviceIdentification(deviceIdentification);
+    return asyncResponse;
+  }
 
-    void checkAllowed(final String organisationIdentification, final String deviceIdentification,
-        final DeviceFunction deviceFunction)
-        throws FunctionalException {
-        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
-        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+  void checkAllowed(
+      final String organisationIdentification,
+      final String deviceIdentification,
+      final DeviceFunction deviceFunction)
+      throws FunctionalException {
+    final Organisation organisation =
+        this.domainHelperService.findOrganisation(organisationIdentification);
+    final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
-        this.domainHelperService.checkAllowed(organisation, device, deviceFunction);
-    }
-
+    this.domainHelperService.checkAllowed(organisation, device, deviceFunction);
+  }
 }

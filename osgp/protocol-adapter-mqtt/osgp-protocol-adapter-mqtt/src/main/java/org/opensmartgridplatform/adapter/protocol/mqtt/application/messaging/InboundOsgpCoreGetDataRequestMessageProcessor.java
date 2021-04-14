@@ -10,7 +10,6 @@ package org.opensmartgridplatform.adapter.protocol.mqtt.application.messaging;
 
 import javax.annotation.PostConstruct;
 import javax.jms.ObjectMessage;
-
 import org.opensmartgridplatform.adapter.protocol.mqtt.application.services.SubscriptionService;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
@@ -23,36 +22,43 @@ import org.springframework.stereotype.Component;
 @Component
 public class InboundOsgpCoreGetDataRequestMessageProcessor implements MessageProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(InboundOsgpCoreGetDataRequestMessageProcessor.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(InboundOsgpCoreGetDataRequestMessageProcessor.class);
 
-    private final SubscriptionService subscriptionService;
-    private final MessageProcessorMap protocolMqttInboundOsgpCoreRequestsMessageProcessorMap;
+  private final SubscriptionService subscriptionService;
+  private final MessageProcessorMap protocolMqttInboundOsgpCoreRequestsMessageProcessorMap;
 
-    public InboundOsgpCoreGetDataRequestMessageProcessor(final SubscriptionService subscriptionService,
-            final MessageProcessorMap protocolMqttInboundOsgpCoreRequestsMessageProcessorMap) {
-        this.subscriptionService = subscriptionService;
-        this.protocolMqttInboundOsgpCoreRequestsMessageProcessorMap =
-                protocolMqttInboundOsgpCoreRequestsMessageProcessorMap;
+  public InboundOsgpCoreGetDataRequestMessageProcessor(
+      final SubscriptionService subscriptionService,
+      final MessageProcessorMap protocolMqttInboundOsgpCoreRequestsMessageProcessorMap) {
+    this.subscriptionService = subscriptionService;
+    this.protocolMqttInboundOsgpCoreRequestsMessageProcessorMap =
+        protocolMqttInboundOsgpCoreRequestsMessageProcessorMap;
+  }
+
+  @PostConstruct
+  public void init() {
+    this.protocolMqttInboundOsgpCoreRequestsMessageProcessorMap.addMessageProcessor(
+        MessageType.GET_DATA, this);
+  }
+
+  @Override
+  public void processMessage(final ObjectMessage message) {
+    try {
+      final MessageMetadata messageMetadata = MessageMetadata.fromMessage(message);
+      LOGGER.info(
+          "Calling DeviceService function: {} correlationUid: {} organisationIdentification: {} domain:"
+              + " {} {} Device: {} IP: {}",
+          messageMetadata.getMessageType(),
+          messageMetadata.getCorrelationUid(),
+          messageMetadata.getOrganisationIdentification(),
+          messageMetadata.getDomain(),
+          messageMetadata.getDomainVersion(),
+          messageMetadata.getDeviceIdentification(),
+          messageMetadata.getIpAddress());
+      this.subscriptionService.subscribe(messageMetadata);
+    } catch (final Exception e) {
+      LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
     }
-
-    @PostConstruct
-    public void init() {
-        this.protocolMqttInboundOsgpCoreRequestsMessageProcessorMap.addMessageProcessor(MessageType.GET_DATA, this);
-    }
-
-    @Override
-    public void processMessage(final ObjectMessage message) {
-        try {
-            final MessageMetadata messageMetadata = MessageMetadata.fromMessage(message);
-            LOGGER.info("Calling DeviceService function: {} correlationUid: {} organisationIdentification: {} domain:"
-                            + " {} {} Device: {} IP: {}", messageMetadata.getMessageType(),
-                    messageMetadata.getCorrelationUid(),
-                    messageMetadata.getOrganisationIdentification(), messageMetadata.getDomain(),
-                    messageMetadata.getDomainVersion(), messageMetadata.getDeviceIdentification(),
-                    messageMetadata.getIpAddress());
-            this.subscriptionService.subscribe(messageMetadata);
-        } catch (final Exception e) {
-            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-        }
-    }
+  }
 }

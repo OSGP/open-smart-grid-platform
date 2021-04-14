@@ -1,9 +1,10 @@
 /**
  * Copyright 2019 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asduhandlers;
 
@@ -20,30 +21,33 @@ import org.springframework.stereotype.Component;
 
 /**
  * ASDU Handler for ASDUs with type identification C_IC_NA_1:.
+ *
  * <ul>
- * <li>Interrogation Command</li>
+ *   <li>Interrogation Command
  * </ul>
  */
 @Component
 public class InterrogationAsduHandler extends AbstractClientAsduHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(InterrogationAsduHandler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(InterrogationAsduHandler.class);
 
-    @Autowired
-    private ConnectResponseService connectResponseService;
+  @Autowired private ConnectResponseService connectResponseService;
 
-    public InterrogationAsduHandler() {
-        super(ASduType.C_IC_NA_1);
+  public InterrogationAsduHandler() {
+    super(ASduType.C_IC_NA_1);
+  }
+
+  @Override
+  public void handleAsdu(final ASdu asdu, final ResponseMetadata responseMetadata) {
+    LOGGER.debug(
+        "Received interrogation command with cause of transmission {}.",
+        asdu.getCauseOfTransmission());
+
+    if (asdu.getCauseOfTransmission() == CauseOfTransmission.ACTIVATION_TERMINATION) {
+      LOGGER.info(
+          "Received activation termination, call handle connect response for device {}.",
+          responseMetadata.getDeviceIdentification());
+      this.connectResponseService.handleConnectResponse(responseMetadata);
     }
-
-    @Override
-    public void handleAsdu(final ASdu asdu, final ResponseMetadata responseMetadata) {
-        LOGGER.debug("Received interrogation command with cause of transmission {}.", asdu.getCauseOfTransmission());
-
-        if (asdu.getCauseOfTransmission() == CauseOfTransmission.ACTIVATION_TERMINATION) {
-            LOGGER.info("Received activation termination, call handle connect response for device {}.",
-                    responseMetadata.getDeviceIdentification());
-            this.connectResponseService.handleConnectResponse(responseMetadata);
-        }
-    }
+  }
 }

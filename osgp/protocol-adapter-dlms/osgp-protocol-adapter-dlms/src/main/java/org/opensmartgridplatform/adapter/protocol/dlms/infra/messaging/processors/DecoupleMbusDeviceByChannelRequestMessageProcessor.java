@@ -1,16 +1,14 @@
 /**
  * Copyright 2021 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors;
 
 import java.io.Serializable;
-
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.InstallationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -22,22 +20,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DecoupleMbusDeviceByChannelRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class DecoupleMbusDeviceByChannelRequestMessageProcessor
+    extends DeviceRequestMessageProcessor {
 
-    @Autowired
-    private InstallationService installationService;
+  @Autowired private InstallationService installationService;
 
-    protected DecoupleMbusDeviceByChannelRequestMessageProcessor() {
-        super(MessageType.DECOUPLE_MBUS_DEVICE_BY_CHANNEL);
-    }
+  protected DecoupleMbusDeviceByChannelRequestMessageProcessor() {
+    super(MessageType.DECOUPLE_MBUS_DEVICE_BY_CHANNEL);
+  }
 
-    @Override
-    protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException {
+  @Override
+  protected Serializable handleMessage(
+      final DlmsConnectionManager conn, final DlmsDevice device, final Serializable requestObject)
+      throws OsgpException {
 
-        this.assertRequestObjectType(DecoupleMbusDeviceDto.class, requestObject);
+    this.assertRequestObjectType(DecoupleMbusDeviceDto.class, requestObject);
 
-        final DecoupleMbusDeviceDto requestDto = (DecoupleMbusDeviceDto) requestObject;
-        return this.installationService.decoupleMbusDevice(conn, device, requestDto);
-    }
+    final DecoupleMbusDeviceDto requestDto = (DecoupleMbusDeviceDto) requestObject;
+    return this.installationService.decoupleMbusDevice(conn, device, requestDto);
+  }
 }

@@ -6,18 +6,18 @@ import org.junit.jupiter.api.Test;
 
 public class QualityConverterTest {
 
-    @Test
-    public void testToShort() throws Exception {
+  @Test
+  public void testToShort() throws Exception {
 
-        // arrange
-        final byte[] ba = new byte[2];
-        ba[0] = (byte) 193;
-        ba[1] = (byte) 0;
+    // arrange
+    final byte[] ba = new byte[2];
+    ba[0] = (byte) 193;
+    ba[1] = (byte) 0;
 
-        // act
-        final short s = QualityConverter.toShort(ba);
+    // act
+    final short s = QualityConverter.toShort(ba);
 
-        // assert
-        assertThat(s).isEqualTo((short) 131);
-    }
+    // assert
+    assertThat(s).isEqualTo((short) 131);
+  }
 }

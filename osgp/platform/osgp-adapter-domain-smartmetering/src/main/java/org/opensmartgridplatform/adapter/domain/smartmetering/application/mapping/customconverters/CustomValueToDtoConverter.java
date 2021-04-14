@@ -5,5 +5,5 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 
 @FunctionalInterface
 public interface CustomValueToDtoConverter<T, R> {
-    R convert(T type, SmartMeter smartmeter) throws FunctionalException;
+  R convert(T type, SmartMeter smartmeter) throws FunctionalException;
 }

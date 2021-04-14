@@ -5,15 +5,15 @@ import org.openmuc.jdlms.ObisCode;
 
 public class AttributeAddressFactory {
 
-    private static final int CLASS_ID = 1;
-    private static final ObisCode OBIS_CODE = new ObisCode("0.1.94.31.3.255");
-    private static final int ATTRIBUTE_ID = 2;
+  private static final int CLASS_ID = 1;
+  private static final ObisCode OBIS_CODE = new ObisCode("0.1.94.31.3.255");
+  private static final int ATTRIBUTE_ID = 2;
 
-    private AttributeAddressFactory() {
-        // do not instantiate utility class
-    }
+  private AttributeAddressFactory() {
+    // do not instantiate utility class
+  }
 
-    public static AttributeAddress getConfigurationObjectAddress() {
-        return new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
-    }
+  public static AttributeAddress getConfigurationObjectAddress() {
+    return new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
+  }
 }

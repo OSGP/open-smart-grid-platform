@@ -1,9 +1,10 @@
 /**
  * Copyright 2019 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging;
 
@@ -17,7 +18,6 @@ import static org.opensmartgridplatform.adapter.protocol.iec60870.testutils.Test
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,60 +34,61 @@ import org.opensmartgridplatform.shared.infra.jms.ObjectMessageBuilder;
 @ExtendWith(MockitoExtension.class)
 class DeviceRequestMessageListenerTest {
 
-    @InjectMocks
-    private DeviceRequestMessageListener deviceRequestMessageListener;
+  @InjectMocks private DeviceRequestMessageListener deviceRequestMessageListener;
 
-    @Mock
-    private MessageProcessorMap iec60870RequestMessageProcessorMap;
+  @Mock private MessageProcessorMap iec60870RequestMessageProcessorMap;
 
-    @Mock
-    private DeviceResponseMessageSender deviceResponseMessageSender;
+  @Mock private DeviceResponseMessageSender deviceResponseMessageSender;
 
-    @Mock
-    private PendingRequestsQueue pendingRequestsQueue;
+  @Mock private PendingRequestsQueue pendingRequestsQueue;
 
-    @Test
-    void shouldProcessMessageWhenMessageTypeIsSupported() throws JMSException {
+  @Test
+  void shouldProcessMessageWhenMessageTypeIsSupported() throws JMSException {
 
-        // Arrange
-        final String correlationUid = DEFAULT_CORRELATION_UID;
-        final ObjectMessage message = new ObjectMessageBuilder().withCorrelationUid(correlationUid)
-                .withDeviceIdentification(DEFAULT_DEVICE_IDENTIFICATION)
-                .withMessageType(DEFAULT_MESSAGE_TYPE)
-                .withObject(new GetHealthStatusRequestDto())
-                .build();
+    // Arrange
+    final String correlationUid = DEFAULT_CORRELATION_UID;
+    final ObjectMessage message =
+        new ObjectMessageBuilder()
+            .withCorrelationUid(correlationUid)
+            .withDeviceIdentification(DEFAULT_DEVICE_IDENTIFICATION)
+            .withMessageType(DEFAULT_MESSAGE_TYPE)
+            .withObject(new GetHealthStatusRequestDto())
+            .build();
 
-        final MessageProcessor messageProcessor = mock(GetHealthStatusRequestMessageProcessor.class);
-        when(this.iec60870RequestMessageProcessorMap.getMessageProcessor(message)).thenReturn(messageProcessor);
+    final MessageProcessor messageProcessor = mock(GetHealthStatusRequestMessageProcessor.class);
+    when(this.iec60870RequestMessageProcessorMap.getMessageProcessor(message))
+        .thenReturn(messageProcessor);
 
-        // Act
-        this.deviceRequestMessageListener.onMessage(message);
+    // Act
+    this.deviceRequestMessageListener.onMessage(message);
 
-        // Assert
-        verify(this.pendingRequestsQueue).enqueue(DEFAULT_DEVICE_IDENTIFICATION, correlationUid);
-        verify(messageProcessor).processMessage(message);
-    }
+    // Assert
+    verify(this.pendingRequestsQueue).enqueue(DEFAULT_DEVICE_IDENTIFICATION, correlationUid);
+    verify(messageProcessor).processMessage(message);
+  }
 
-    @Test
-    void shouldSendErrorMessageWhenMessageTypeIsNotSupported() throws JMSException {
+  @Test
+  void shouldSendErrorMessageWhenMessageTypeIsNotSupported() throws JMSException {
 
-        // Arrange
-        final String correlationUid = DEFAULT_CORRELATION_UID;
-        final ObjectMessage message = new ObjectMessageBuilder().withCorrelationUid(correlationUid)
-                .withDeviceIdentification(DEFAULT_DEVICE_IDENTIFICATION)
-                .withMessageType(DEFAULT_MESSAGE_TYPE)
-                .withObject(new GetHealthStatusRequestDto())
-                .build();
+    // Arrange
+    final String correlationUid = DEFAULT_CORRELATION_UID;
+    final ObjectMessage message =
+        new ObjectMessageBuilder()
+            .withCorrelationUid(correlationUid)
+            .withDeviceIdentification(DEFAULT_DEVICE_IDENTIFICATION)
+            .withMessageType(DEFAULT_MESSAGE_TYPE)
+            .withObject(new GetHealthStatusRequestDto())
+            .build();
 
-        when(this.iec60870RequestMessageProcessorMap.getMessageProcessor(message)).thenThrow(JMSException.class);
+    when(this.iec60870RequestMessageProcessorMap.getMessageProcessor(message))
+        .thenThrow(JMSException.class);
 
-        // Act
-        this.deviceRequestMessageListener.onMessage(message);
+    // Act
+    this.deviceRequestMessageListener.onMessage(message);
 
-        // Assert
-        verify(this.pendingRequestsQueue).enqueue(DEFAULT_DEVICE_IDENTIFICATION, correlationUid);
-        verify(this.pendingRequestsQueue).remove(DEFAULT_DEVICE_IDENTIFICATION,
-                correlationUid);
-        verify(this.deviceResponseMessageSender).send(argThat(new ErrorResponseMessageMatcher()));
-    }
+    // Assert
+    verify(this.pendingRequestsQueue).enqueue(DEFAULT_DEVICE_IDENTIFICATION, correlationUid);
+    verify(this.pendingRequestsQueue).remove(DEFAULT_DEVICE_IDENTIFICATION, correlationUid);
+    verify(this.deviceResponseMessageSender).send(argThat(new ErrorResponseMessageMatcher()));
+  }
 }

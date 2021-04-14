@@ -11,78 +11,73 @@ package org.opensmartgridplatform.adapter.protocol.mqtt.domain.entities;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 
 @Entity
 @Table(name = "mqtt_device")
 public class MqttDevice extends AbstractEntity {
 
-    private static final long serialVersionUID = 182081847594067712L;
+  private static final long serialVersionUID = 182081847594067712L;
 
-    @Column(unique = true, nullable = false, length = 40)
-    private String deviceIdentification;
+  @Column(unique = true, nullable = false, length = 40)
+  private String deviceIdentification;
 
-    @Column
-    private String host;
+  @Column private String host;
 
-    @Column
-    private Integer port;
+  @Column private Integer port;
 
-    @Column
-    private String topics;
+  @Column private String topics;
 
-    @Column
-    private String qos;
+  @Column private String qos;
 
-    public MqttDevice() {
-        // Default constructor
-    }
+  public MqttDevice() {
+    // Default constructor
+  }
 
-    public MqttDevice(final String deviceIdentification) {
-        this.deviceIdentification = deviceIdentification;
-    }
+  public MqttDevice(final String deviceIdentification) {
+    this.deviceIdentification = deviceIdentification;
+  }
 
-    public String getDeviceIdentification() {
-        return this.deviceIdentification;
-    }
+  public String getDeviceIdentification() {
+    return this.deviceIdentification;
+  }
 
-    public String getHost() {
-        return this.host;
-    }
+  public String getHost() {
+    return this.host;
+  }
 
-    public void setHost(final String host) {
-        this.host = host;
-    }
+  public void setHost(final String host) {
+    this.host = host;
+  }
 
-    public Integer getPort() {
-        return this.port;
-    }
+  public Integer getPort() {
+    return this.port;
+  }
 
-    public void setPort(final Integer port) {
-        this.port = port;
-    }
+  public void setPort(final Integer port) {
+    this.port = port;
+  }
 
-    public String getTopics() {
-        return this.topics;
-    }
+  public String getTopics() {
+    return this.topics;
+  }
 
-    public void setTopics(final String topic) {
-        this.topics = topic;
-    }
+  public void setTopics(final String topic) {
+    this.topics = topic;
+  }
 
-    public String getQos() {
-        return this.qos;
-    }
+  public String getQos() {
+    return this.qos;
+  }
 
-    public void setQos(final String qos) {
-        this.qos = qos;
-    }
+  public void setQos(final String qos) {
+    this.qos = qos;
+  }
 
-    @Override
-    public String toString() {
-        return String.format("MqttDevice[deviceId=%s, host=%s, port=%s, , topic=%s]", this.deviceIdentification,
-                this.host, this.port, this.topics);
-    }
-
+  @Override
+  public String toString() {
+    return String.format(
+        "MqttDevice[deviceId=%s, host=%s, port=%s, , topic=%s]",
+        this.deviceIdentification, this.host, this.port, this.topics);
+  }
 }
