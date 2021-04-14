@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms;
 
@@ -13,10 +13,8 @@ import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.NotificationType;
-import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
-import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
+import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.messageprocessor.DomainResponseMessageProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
@@ -26,8 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SmartMeteringResponseMessageListener implements MessageListener {
 
     @Autowired
-    @Qualifier(value = "wsSmartMeteringInboundDomainResponsesMessageProcessorMap")
-    private MessageProcessorMap domainResponseMessageProcessorMap;
+    private DomainResponseMessageProcessor processor;
 
     public SmartMeteringResponseMessageListener() {
         // empty constructor
@@ -50,10 +47,7 @@ public class SmartMeteringResponseMessageListener implements MessageListener {
 
             }
 
-            final MessageProcessor processor = this.domainResponseMessageProcessorMap
-                    .getMessageProcessor(objectMessage);
-
-            processor.processMessage(objectMessage);
+            this.processor.processMessage(objectMessage);
 
         } catch (final JMSException ex) {
             log.error("Exception: {} ", ex.getMessage(), ex);

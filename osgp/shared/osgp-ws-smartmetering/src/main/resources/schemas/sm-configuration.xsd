@@ -1238,34 +1238,10 @@
     <xsd:complexContent>
       <xsd:extension base="common:Command">
         <xsd:sequence>
-          <xsd:element name="DirectAttach" type="xsd:integer">
-            <xsd:annotation>
-              <xsd:documentation>IP address or DNS name of the service
-                listening for alarm notifications over TCP.
-              </xsd:documentation>
-            </xsd:annotation>
-          </xsd:element>
-          <xsd:element name="randomisationStartWindow" type="xsd:integer">
-            <xsd:annotation>
-              <xsd:documentation>Port number of the service listening
-                for alarm notifications over TCP.
-              </xsd:documentation>
-            </xsd:annotation>
-          </xsd:element>
-          <xsd:element name="multiplicationFactor" type="xsd:integer">
-            <xsd:annotation>
-              <xsd:documentation>Port number of the service listening
-                for alarm notifications over TCP.
-              </xsd:documentation>
-            </xsd:annotation>
-          </xsd:element>
-          <xsd:element name="numberOfRetries" type="xsd:integer">
-            <xsd:annotation>
-              <xsd:documentation>Port number of the service listening
-                for alarm notifications over TCP.
-              </xsd:documentation>
-            </xsd:annotation>
-          </xsd:element>
+          <xsd:element name="directAttach" type="xsd:int"/>
+          <xsd:element name="randomisationStartWindow" type="xsd:int"/>
+          <xsd:element name="multiplicationFactor" type="xsd:int"/>
+          <xsd:element name="numberOfRetries" type="xsd:int"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>

@@ -14,9 +14,6 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 import java.util.HashMap;
 import java.util.Map;
 
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActionResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.Actions;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActualMeterReadsResponse;
@@ -25,6 +22,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.Associat
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.BundleAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.BundleRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.BundleResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.FaultResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.FindEventsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.FindEventsResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetActualMeterReadsRequest;
@@ -50,6 +48,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetPushS
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetSpecialDaysRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SynchronizeTimeRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Action;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
@@ -57,6 +56,10 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartme
 import org.opensmartgridplatform.cucumber.platform.smartmetering.ScenarioContextHelper;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.SmartMeteringBundleClient;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 public class BundleSteps extends BaseBundleSteps {
 
@@ -160,5 +163,26 @@ public class BundleSteps extends BaseBundleSteps {
 
             assertThat(response.getClass()).isEqualTo(REQUEST_RESPONSE_MAP.get(action.getClass()));
         }
+    }
+
+    @Then("the bundle response should be OK")
+    public void theBundleResponseShouldBeOK() throws Throwable {
+        final Response response = this.getNextBundleResponse();
+
+        assertThat(response).isInstanceOf(ActionResponse.class);
+        assertThat(response.getResult()).isEqualTo(OsgpResultType.OK);
+    }
+
+    @Then("the bundle response should be a FaultResponse with message containing")
+    public void theBundleResponseShouldBeAFaultResponseWithMessageContaining(final Map<String, String> values)
+            throws Throwable {
+        final Response response = this.getNextBundleResponse();
+
+        assertThat(response).isInstanceOf(FaultResponse.class);
+        assertThat(response.getResult()).isEqualTo(OsgpResultType.NOT_OK);
+
+        final FaultResponse faultResponse = (FaultResponse) response;
+
+        assertThat(faultResponse.getMessage()).containsSubsequence(values.get(PlatformSmartmeteringKeys.MESSAGE));
     }
 }
