@@ -120,6 +120,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetFirmw
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -1266,9 +1267,9 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
             @ResponseUrl final String responseUrl, @BypassRetry final String bypassRetry) throws OsgpException {
 
-        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequest dataRequest = this.configurationMapper
-            .map(request,
-                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequest.class);
+        final SetRandomisationSettingsRequestData dataRequest = this.configurationMapper
+            .map(request.getSetRandomisationSettingsData(),
+                SetRandomisationSettingsRequestData.class);
 
         final RequestMessageMetadata requestMessageMetadata = RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)

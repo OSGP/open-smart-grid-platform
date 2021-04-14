@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration;
 
@@ -71,6 +71,10 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.S
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetRandomisationSettingsAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetRandomisationSettingsAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetRandomisationSettingsRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetRandomisationSettingsResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysRequest;
@@ -387,5 +391,19 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
 
         return (GetMbusEncryptionKeyStatusByChannelResponse) this.getTemplate()
                 .marshalSendAndReceive(getMbusEncryptionKeyStatusByChannelAsyncRequest);
+    }
+
+    public SetRandomisationSettingsAsyncResponse setRandomisationSettings(final SetRandomisationSettingsRequest request)
+            throws WebServiceSecurityException {
+        return (SetRandomisationSettingsAsyncResponse) this.getTemplate().marshalSendAndReceive(request);
+    }
+
+    public SetRandomisationSettingsResponse retrieveSetRandomisationSettingsResponse(
+            final SetRandomisationSettingsAsyncRequest asyncRequest) throws WebServiceSecurityException {
+
+        final String correlationUid = asyncRequest.getCorrelationUid();
+        this.waitForNotification(correlationUid);
+
+        return (SetRandomisationSettingsResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
     }
 }
