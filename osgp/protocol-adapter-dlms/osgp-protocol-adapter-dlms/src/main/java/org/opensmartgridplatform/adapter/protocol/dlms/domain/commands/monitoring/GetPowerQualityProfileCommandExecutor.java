@@ -35,9 +35,9 @@ public class GetPowerQualityProfileCommandExecutor
 
   @Override
   public GetPowerQualityProfileResponseDto execute(
-      DlmsConnectionManager conn,
-      DlmsDevice device,
-      GetPowerQualityProfileRequestDataDto getPowerQualityProfileRequestDataDto)
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final GetPowerQualityProfileRequestDataDto getPowerQualityProfileRequestDataDto)
       throws ProtocolAdapterException {
 
     if (device.isSelectiveAccessSupported()) {

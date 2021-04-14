@@ -204,7 +204,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         e);
 
     final ProtocolResponseMessage protocolResponseMessage =
-        createProtocolResponseMessage(messageMetadata, e);
+        this.createProtocolResponseMessage(messageMetadata, e);
     this.responseMessageSender.send(protocolResponseMessage);
   }
 
@@ -216,7 +216,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
     final TechnicalException ex =
         new TechnicalException(ComponentType.PROTOCOL_OSLP, UNEXPECTED_EXCEPTION);
     final ProtocolResponseMessage protocolResponseMessage =
-        createProtocolResponseMessage(messageMetadata, ex);
+        this.createProtocolResponseMessage(messageMetadata, ex);
     this.responseMessageSender.send(protocolResponseMessage);
   }
 

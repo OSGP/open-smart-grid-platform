@@ -61,7 +61,7 @@ public class DlmsRegister extends DlmsObject {
   }
 
   @Override
-  public boolean mediumMatches(Medium medium) {
+  public boolean mediumMatches(final Medium medium) {
     return medium == null || this.medium == medium;
   }
 }

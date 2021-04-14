@@ -30,9 +30,9 @@ public class ActualMeterReadsResponseMessageProcessor extends OsgpCoreResponseMe
 
   @Autowired
   protected ActualMeterReadsResponseMessageProcessor(
-      WebServiceResponseMessageSender responseMessageSender,
+      final WebServiceResponseMessageSender responseMessageSender,
       @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
-          MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap) {
     super(
         responseMessageSender,
         messageProcessorMap,

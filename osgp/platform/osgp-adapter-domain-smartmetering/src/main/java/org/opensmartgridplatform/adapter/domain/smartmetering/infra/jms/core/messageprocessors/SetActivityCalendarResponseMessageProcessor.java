@@ -29,9 +29,9 @@ public class SetActivityCalendarResponseMessageProcessor extends OsgpCoreRespons
 
   @Autowired
   protected SetActivityCalendarResponseMessageProcessor(
-      WebServiceResponseMessageSender responseMessageSender,
+      final WebServiceResponseMessageSender responseMessageSender,
       @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
-          MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap) {
     super(
         responseMessageSender,
         messageProcessorMap,

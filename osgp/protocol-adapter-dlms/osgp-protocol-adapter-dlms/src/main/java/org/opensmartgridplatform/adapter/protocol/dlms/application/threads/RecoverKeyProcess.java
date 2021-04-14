@@ -98,11 +98,11 @@ public class RecoverKeyProcess implements Runnable {
     }
 
     if (this.canConnectUsingNewKeys()) {
-      List<SecurityKeyType> keyTypesToActivate =
+      final List<SecurityKeyType> keyTypesToActivate =
           Arrays.asList(E_METER_ENCRYPTION, E_METER_AUTHENTICATION);
       try {
         this.secretManagementService.activateNewKeys(this.deviceIdentification, keyTypesToActivate);
-      } catch (Exception e) {
+      } catch (final Exception e) {
         throw new RecoverKeyException(e);
       }
     } else {
@@ -155,7 +155,7 @@ public class RecoverKeyProcess implements Runnable {
    * @throws IOException When there are problems in connecting to or communicating with the device.
    */
   private DlmsConnection createConnectionUsingNewKeys() throws IOException, FunctionalException {
-    Map<SecurityKeyType, byte[]> keys =
+    final Map<SecurityKeyType, byte[]> keys =
         this.secretManagementService.getNewKeys(
             this.deviceIdentification, Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION));
     final byte[] authenticationKey = Hex.decode(keys.get(E_METER_AUTHENTICATION));

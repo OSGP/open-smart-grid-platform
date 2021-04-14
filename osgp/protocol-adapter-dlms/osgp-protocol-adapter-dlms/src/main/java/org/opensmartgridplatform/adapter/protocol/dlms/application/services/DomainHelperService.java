@@ -42,11 +42,11 @@ public class DomainHelperService {
   private final int jasperGetSessionSleepBetweenRetries;
 
   public DomainHelperService(
-      DlmsDeviceRepository dlmsDeviceRepository,
-      SessionProviderService sessionProviderService,
-      JasperWirelessSmsClient jasperWirelessSmsClient,
-      int jasperGetSessionRetries,
-      int jasperGetSessionSleepBetweenRetries) {
+      final DlmsDeviceRepository dlmsDeviceRepository,
+      final SessionProviderService sessionProviderService,
+      final JasperWirelessSmsClient jasperWirelessSmsClient,
+      final int jasperGetSessionRetries,
+      final int jasperGetSessionSleepBetweenRetries) {
     this.dlmsDeviceRepository = dlmsDeviceRepository;
     this.sessionProviderService = sessionProviderService;
     this.jasperWirelessSmsClient = jasperWirelessSmsClient;

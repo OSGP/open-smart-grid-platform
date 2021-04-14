@@ -31,9 +31,9 @@ public class CoupleMbusDeviceByChannelResponseMessageProcessor
 
   @Autowired
   protected CoupleMbusDeviceByChannelResponseMessageProcessor(
-      WebServiceResponseMessageSender responseMessageSender,
+      final WebServiceResponseMessageSender responseMessageSender,
       @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
-          MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap) {
     super(
         responseMessageSender,
         messageProcessorMap,

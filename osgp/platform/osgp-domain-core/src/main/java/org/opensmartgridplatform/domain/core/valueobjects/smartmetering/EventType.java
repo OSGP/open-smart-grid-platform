@@ -141,6 +141,6 @@ public enum EventType {
   }
 
   public int getEventCode() {
-    return eventCode;
+    return this.eventCode;
   }
 }

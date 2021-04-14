@@ -44,7 +44,7 @@ public class DeviceFilter {
     return this.organisationIdentification;
   }
 
-  public void setOrganisationIdentification(String organisationIdentification) {
+  public void setOrganisationIdentification(final String organisationIdentification) {
     this.organisationIdentification = organisationIdentification;
   }
 
@@ -52,7 +52,7 @@ public class DeviceFilter {
     return this.deviceIdentification;
   }
 
-  public void setDeviceIdentification(String deviceIdentification) {
+  public void setDeviceIdentification(final String deviceIdentification) {
     this.deviceIdentification = deviceIdentification;
   }
 
@@ -60,7 +60,7 @@ public class DeviceFilter {
     return this.alias;
   }
 
-  public void setAlias(String alias) {
+  public void setAlias(final String alias) {
     this.alias = alias;
   }
 
@@ -68,7 +68,7 @@ public class DeviceFilter {
     return this.city;
   }
 
-  public void setCity(String city) {
+  public void setCity(final String city) {
     this.city = city;
   }
 
@@ -76,7 +76,7 @@ public class DeviceFilter {
     return this.postalCode;
   }
 
-  public void setPostalCode(String postalCode) {
+  public void setPostalCode(final String postalCode) {
     this.postalCode = postalCode;
   }
 
@@ -84,7 +84,7 @@ public class DeviceFilter {
     return this.street;
   }
 
-  public void setStreet(String street) {
+  public void setStreet(final String street) {
     this.street = street;
   }
 
@@ -92,7 +92,7 @@ public class DeviceFilter {
     return this.number;
   }
 
-  public void setNumber(String number) {
+  public void setNumber(final String number) {
     this.number = number;
   }
 
@@ -100,7 +100,7 @@ public class DeviceFilter {
     return this.municipality;
   }
 
-  public void setMunicipality(String municipality) {
+  public void setMunicipality(final String municipality) {
     this.municipality = municipality;
   }
 
@@ -108,7 +108,8 @@ public class DeviceFilter {
     return this.deviceExternalManaged;
   }
 
-  public void setDeviceExternalManaged(DeviceExternalManagedFilterType deviceExternalManaged) {
+  public void setDeviceExternalManaged(
+      final DeviceExternalManagedFilterType deviceExternalManaged) {
     this.deviceExternalManaged = deviceExternalManaged;
   }
 
@@ -116,7 +117,7 @@ public class DeviceFilter {
     return this.deviceActivated;
   }
 
-  public void setDeviceActivated(DeviceActivatedFilterType deviceActivated) {
+  public void setDeviceActivated(final DeviceActivatedFilterType deviceActivated) {
     this.deviceActivated = deviceActivated;
   }
 
@@ -124,7 +125,7 @@ public class DeviceFilter {
     return this.sortDir;
   }
 
-  public void setSortDir(String sortDir) {
+  public void setSortDir(final String sortDir) {
     this.sortDir = sortDir;
   }
 
@@ -132,7 +133,7 @@ public class DeviceFilter {
     return this.sortedBy;
   }
 
-  public void setSortedBy(String sortedBy) {
+  public void setSortedBy(final String sortedBy) {
     this.sortedBy = sortedBy;
   }
 
@@ -204,7 +205,7 @@ public class DeviceFilter {
     return this.exactMatch;
   }
 
-  public void setExactMatch(boolean exactMatch) {
+  public void setExactMatch(final boolean exactMatch) {
     this.exactMatch = exactMatch;
   }
 

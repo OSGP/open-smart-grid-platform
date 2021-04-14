@@ -78,7 +78,7 @@ public class DbEncryptedSecretRepositoryIT extends AbstractRepositoryIT {
 
   @Test
   public void findSecretsOutdatedKeyRef() {
-    Date now = new Date();
+    final Date now = new Date();
     this.dbEncryptionKeyReference.setValidTo(now);
     this.dbEncryptionKeyReference = this.entityManager.persist(this.dbEncryptionKeyReference);
 
@@ -96,7 +96,7 @@ public class DbEncryptedSecretRepositoryIT extends AbstractRepositoryIT {
             this.dbEncryptedSecret.getSecretType(),
             SecretStatus.ACTIVE);
     assertThat(secretsList).hasSize(1);
-    DbEncryptedSecret secret = secretsList.get(0);
+    final DbEncryptedSecret secret = secretsList.get(0);
     assertThat(secret.getId()).isEqualTo(this.dbEncryptedSecret.getId());
     assertThat(secret.getEncryptionKeyReference().getId())
         .isEqualTo(this.dbEncryptionKeyReference.getId());

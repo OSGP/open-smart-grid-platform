@@ -186,7 +186,7 @@ public class SecretManagementService {
    * @see #activateNewKey(String, SecurityKeyType)
    */
   public void storeNewKey(
-      final String deviceIdentification, final SecurityKeyType keyType, byte[] key) {
+      final String deviceIdentification, final SecurityKeyType keyType, final byte[] key) {
     final Map<SecurityKeyType, byte[]> keysByType = new EnumMap<>(SecurityKeyType.class);
     keysByType.put(keyType, key);
     this.storeNewKeys(deviceIdentification, keysByType);
@@ -197,8 +197,8 @@ public class SecretManagementService {
     this.validateKeys(keysByType);
     final TypedSecrets typedSecrets = new TypedSecrets();
     final List<TypedSecret> typedSecretList = typedSecrets.getTypedSecret();
-    for (Map.Entry<SecurityKeyType, byte[]> entry : keysByType.entrySet()) {
-      TypedSecret ts = new TypedSecret();
+    for (final Map.Entry<SecurityKeyType, byte[]> entry : keysByType.entrySet()) {
+      final TypedSecret ts = new TypedSecret();
       ts.setType(entry.getKey().toSecretType());
       ts.setSecret(this.encryptSoapSecret(entry.getValue(), true));
       typedSecretList.add(ts);
@@ -208,7 +208,7 @@ public class SecretManagementService {
     StoreSecretsResponse response = null;
     try {
       response = this.secretManagementClient.storeSecretsRequest(request);
-    } catch (RuntimeException exc) {
+    } catch (final RuntimeException exc) {
       throw new IllegalStateException("Could not store keys: unexpected exception occured", exc);
     }
     if (response == null) {
@@ -346,31 +346,31 @@ public class SecretManagementService {
   }
 
   private byte[] decryptSoapSecret(final TypedSecret typedSecret, final boolean exceptionOnNull) {
-    boolean nullValue = typedSecret.getSecret() == null || typedSecret.getSecret().isEmpty();
+    final boolean nullValue = typedSecret.getSecret() == null || typedSecret.getSecret().isEmpty();
     if (exceptionOnNull && nullValue) {
       throw new IllegalArgumentException("Cannot decrypt NULL value");
     } else if (!exceptionOnNull && nullValue) {
       return null;
     }
     try {
-      byte[] encryptedDecodedSoapSecret = Hex.decodeHex(typedSecret.getSecret());
+      final byte[] encryptedDecodedSoapSecret = Hex.decodeHex(typedSecret.getSecret());
       return this.soapRsaEncrypter.decrypt(encryptedDecodedSoapSecret);
-    } catch (Exception e) {
+    } catch (final Exception e) {
       throw new IllegalStateException("Error decoding/decrypting SOAP key", e);
     }
   }
 
   private String encryptSoapSecret(final byte[] secret, final boolean exceptionOnNull) {
-    boolean nullValue = secret == null || secret.length == 0;
+    final boolean nullValue = secret == null || secret.length == 0;
     if (exceptionOnNull && nullValue) {
       throw new IllegalArgumentException("Cannot encrypt NULL value");
     } else if (!exceptionOnNull && nullValue) {
       return null;
     }
     try {
-      byte[] encrypted = this.soapRsaEncrypter.encrypt(secret);
+      final byte[] encrypted = this.soapRsaEncrypter.encrypt(secret);
       return Hex.encodeHexString(encrypted);
-    } catch (Exception e) {
+    } catch (final Exception e) {
       throw new IllegalStateException("Error encoding/encrypting SOAP key", e);
     }
   }

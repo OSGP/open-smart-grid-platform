@@ -94,7 +94,7 @@ public abstract class BaseNotificationMessageProcessor implements MessageProcess
       final String deviceIdentification,
       final String messageType) {
     LOGGER.info("handeling error: {} for message type: {}", e.getMessage(), messageType);
-    final OsgpException osgpException = osgpExceptionOf(e);
+    final OsgpException osgpException = this.osgpExceptionOf(e);
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
@@ -108,10 +108,10 @@ public abstract class BaseNotificationMessageProcessor implements MessageProcess
     this.responseMessageSender.send(responseMessage, messageType);
   }
 
-  private OsgpException osgpExceptionOf(Exception e) {
+  private OsgpException osgpExceptionOf(final Exception e) {
     if (e instanceof OsgpException) {
       return (OsgpException) e;
     }
-    return new TechnicalException(componentType, "An unknown error occurred", e);
+    return new TechnicalException(this.componentType, "An unknown error occurred", e);
   }
 }

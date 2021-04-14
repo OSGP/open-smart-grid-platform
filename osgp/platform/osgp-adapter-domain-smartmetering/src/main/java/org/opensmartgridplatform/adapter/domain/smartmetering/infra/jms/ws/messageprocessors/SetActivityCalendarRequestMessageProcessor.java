@@ -29,7 +29,7 @@ public class SetActivityCalendarRequestMessageProcessor extends BaseRequestMessa
   @Autowired
   protected SetActivityCalendarRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
-          MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap) {
     super(messageProcessorMap, MessageType.SET_ACTIVITY_CALENDAR);
   }
 

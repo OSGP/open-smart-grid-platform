@@ -40,7 +40,7 @@ public class AdHocManagementEndpoint extends GenericDistributionAutomationEndPoi
         "Get Device Model Request received from organisation: {} for device: {}.",
         organisationIdentification,
         request.getDeviceIdentification());
-    GetDeviceModelAsyncResponse response = new GetDeviceModelAsyncResponse();
+    final GetDeviceModelAsyncResponse response = new GetDeviceModelAsyncResponse();
     try {
       final org.opensmartgridplatform.domain.da.valueobjects.GetDeviceModelRequest
           getDeviceModelRequest =

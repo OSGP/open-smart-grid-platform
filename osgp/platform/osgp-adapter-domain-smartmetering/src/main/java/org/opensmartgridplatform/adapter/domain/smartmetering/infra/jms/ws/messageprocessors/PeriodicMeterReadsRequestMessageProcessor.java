@@ -29,7 +29,7 @@ public class PeriodicMeterReadsRequestMessageProcessor extends BaseRequestMessag
   @Autowired
   protected PeriodicMeterReadsRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
-          MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap) {
     super(messageProcessorMap, MessageType.REQUEST_PERIODIC_METER_DATA);
   }
 

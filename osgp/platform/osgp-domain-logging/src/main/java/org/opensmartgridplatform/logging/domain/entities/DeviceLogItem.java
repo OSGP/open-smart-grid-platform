@@ -43,7 +43,7 @@ public class DeviceLogItem extends AbstractEntity {
     // Empty constructor for Hibernate.
   }
 
-  public DeviceLogItem(Builder builder) {
+  public DeviceLogItem(final Builder builder) {
     this.incoming = builder.incoming;
     this.deviceUid = builder.deviceUid;
     this.encodedMessage = builder.encodedMessage;
@@ -96,42 +96,42 @@ public class DeviceLogItem extends AbstractEntity {
     private boolean valid;
     private int payloadMessageSerializedSize;
 
-    public Builder withIncoming(boolean incoming) {
+    public Builder withIncoming(final boolean incoming) {
       this.incoming = incoming;
       return this;
     }
 
-    public Builder withDeviceUid(String deviceUid) {
+    public Builder withDeviceUid(final String deviceUid) {
       this.deviceUid = deviceUid;
       return this;
     }
 
-    public Builder withEncodedMessage(String encodedMessage) {
+    public Builder withEncodedMessage(final String encodedMessage) {
       this.encodedMessage = encodedMessage;
       return this;
     }
 
-    public Builder withDecodedMessage(String decodedMessage) {
+    public Builder withDecodedMessage(final String decodedMessage) {
       this.decodedMessage = decodedMessage;
       return this;
     }
 
-    public Builder withDeviceIdentification(String deviceIdentification) {
+    public Builder withDeviceIdentification(final String deviceIdentification) {
       this.deviceIdentification = deviceIdentification;
       return this;
     }
 
-    public Builder withOrganisationIdentification(String organisationIdentification) {
+    public Builder withOrganisationIdentification(final String organisationIdentification) {
       this.organisationIdentification = organisationIdentification;
       return this;
     }
 
-    public Builder withValid(boolean valid) {
+    public Builder withValid(final boolean valid) {
       this.valid = valid;
       return this;
     }
 
-    public Builder withPayloadMessageSerializedSize(int payloadMessageSerializedSize) {
+    public Builder withPayloadMessageSerializedSize(final int payloadMessageSerializedSize) {
       this.payloadMessageSerializedSize = payloadMessageSerializedSize;
       return this;
     }

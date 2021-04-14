@@ -67,44 +67,46 @@ class BundleMessageProcessorTest {
 
   @BeforeEach
   public void setUp() throws JMSException, OsgpException {
-    dlmsDevice = new DlmsDeviceBuilder().withHls5Active(true).build();
-    requestDto = new BundleMessagesRequestDto(null);
+    this.dlmsDevice = new DlmsDeviceBuilder().withHls5Active(true).build();
+    this.requestDto = new BundleMessagesRequestDto(null);
 
-    when(message.getJMSType()).thenReturn(MessageType.FIND_EVENTS.name());
-    when(message.getObject()).thenReturn(requestDto);
-    when(domainHelperService.findDlmsDevice(any(MessageMetadata.class))).thenReturn(dlmsDevice);
+    when(this.message.getJMSType()).thenReturn(MessageType.FIND_EVENTS.name());
+    when(this.message.getObject()).thenReturn(this.requestDto);
+    when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class)))
+        .thenReturn(this.dlmsDevice);
   }
 
   @Test
   public void shouldSetEmptyHeaderOnSuccessfulOperation() throws OsgpException, JMSException {
-    when(dlmsConnectionManager.getDlmsMessageListener()).thenReturn(messageListener);
-    when(bundleService.callExecutors(dlmsConnectionManager, dlmsDevice, requestDto))
-        .thenReturn(requestDto);
-    when(dlmsConnectionHelper.createConnectionForDevice(dlmsDevice, null))
-        .thenReturn(dlmsConnectionManager);
+    when(this.dlmsConnectionManager.getDlmsMessageListener()).thenReturn(this.messageListener);
+    when(this.bundleService.callExecutors(
+            this.dlmsConnectionManager, this.dlmsDevice, this.requestDto))
+        .thenReturn(this.requestDto);
+    when(this.dlmsConnectionHelper.createConnectionForDevice(this.dlmsDevice, null))
+        .thenReturn(this.dlmsConnectionManager);
 
-    messageProcessor.processMessage(message);
+    this.messageProcessor.processMessage(this.message);
 
-    verify(retryHeaderFactory).createEmtpyRetryHeader();
+    verify(this.retryHeaderFactory).createEmtpyRetryHeader();
   }
 
   @Test
   public void shouldSetRetryHeaderOnRuntimeException() throws OsgpException, JMSException {
-    when(dlmsConnectionHelper.createConnectionForDevice(dlmsDevice, null))
+    when(this.dlmsConnectionHelper.createConnectionForDevice(this.dlmsDevice, null))
         .thenThrow(new RuntimeException());
 
-    messageProcessor.processMessage(message);
+    this.messageProcessor.processMessage(this.message);
 
-    verify(retryHeaderFactory).createRetryHeader(0);
+    verify(this.retryHeaderFactory).createRetryHeader(0);
   }
 
   @Test
   public void shouldSetRetryHeaderOnOsgpException() throws OsgpException, JMSException {
-    when(dlmsConnectionHelper.createConnectionForDevice(dlmsDevice, null))
+    when(this.dlmsConnectionHelper.createConnectionForDevice(this.dlmsDevice, null))
         .thenThrow(new OsgpException(ComponentType.PROTOCOL_DLMS, ""));
 
-    messageProcessor.processMessage(message);
+    this.messageProcessor.processMessage(this.message);
 
-    verify(retryHeaderFactory).createRetryHeader(0);
+    verify(this.retryHeaderFactory).createRetryHeader(0);
   }
 }

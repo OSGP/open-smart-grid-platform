@@ -29,7 +29,7 @@ public class ActualPowerQualityRequestMessageProcessor extends BaseRequestMessag
   @Autowired
   public ActualPowerQualityRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
-          MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap) {
     super(messageProcessorMap, MessageType.GET_ACTUAL_POWER_QUALITY);
   }
 

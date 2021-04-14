@@ -55,9 +55,9 @@ public class Application extends SpringBootServletInitializer {
 
   private Optional<String> getLogbackConfigurationLocation() {
     try {
-      Context initialContext = new InitialContext();
-      String location = (String) initialContext.lookup(LOG_CONFIG);
-      File logConfig = new File(location);
+      final Context initialContext = new InitialContext();
+      final String location = (String) initialContext.lookup(LOG_CONFIG);
+      final File logConfig = new File(location);
 
       if (logConfig.exists()) {
         return Optional.of(location);

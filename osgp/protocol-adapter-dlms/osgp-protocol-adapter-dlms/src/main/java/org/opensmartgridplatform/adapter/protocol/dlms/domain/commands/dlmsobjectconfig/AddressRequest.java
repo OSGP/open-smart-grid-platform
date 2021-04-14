@@ -22,12 +22,12 @@ public class AddressRequest {
   private final Medium filterMedium;
 
   public AddressRequest(
-      DlmsDevice device,
-      DlmsObject dlmsObject,
-      Integer channel,
-      DateTime from,
-      DateTime to,
-      Medium filterMedium) {
+      final DlmsDevice device,
+      final DlmsObject dlmsObject,
+      final Integer channel,
+      final DateTime from,
+      final DateTime to,
+      final Medium filterMedium) {
     this.device = device;
     this.dlmsObject = dlmsObject;
     this.channel = channel;
@@ -37,26 +37,26 @@ public class AddressRequest {
   }
 
   public DlmsDevice getDevice() {
-    return device;
+    return this.device;
   }
 
   public DlmsObject getDlmsObject() {
-    return dlmsObject;
+    return this.dlmsObject;
   }
 
   public Integer getChannel() {
-    return channel;
+    return this.channel;
   }
 
   public DateTime getFrom() {
-    return from;
+    return this.from;
   }
 
   public DateTime getTo() {
-    return to;
+    return this.to;
   }
 
   public Medium getFilterMedium() {
-    return filterMedium;
+    return this.filterMedium;
   }
 }

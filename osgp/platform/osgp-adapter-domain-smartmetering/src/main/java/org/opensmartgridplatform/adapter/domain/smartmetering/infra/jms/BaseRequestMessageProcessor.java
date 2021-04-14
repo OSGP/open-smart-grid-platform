@@ -43,7 +43,7 @@ public abstract class BaseRequestMessageProcessor extends AbstractRequestMessage
    * @param messageType The message type a message processor can handle.
    */
   protected BaseRequestMessageProcessor(
-      MessageProcessorMap messageProcessorMap, final MessageType messageType) {
+      final MessageProcessorMap messageProcessorMap, final MessageType messageType) {
     this.messageProcessorMap = messageProcessorMap;
     this.messageType = messageType;
   }

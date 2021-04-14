@@ -29,7 +29,7 @@ public class ActualMeterReadsRequestMessageProcessor extends BaseRequestMessageP
   @Autowired
   public ActualMeterReadsRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
-          MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap) {
     super(messageProcessorMap, MessageType.REQUEST_ACTUAL_METER_DATA);
   }
 

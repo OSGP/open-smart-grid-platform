@@ -34,12 +34,12 @@ public class BundledGetOutagesSteps extends BaseBundleSteps {
 
     assertThat(response instanceof GetOutagesResponse).isTrue();
 
-    GetOutagesResponse outagesResponse = (GetOutagesResponse) response;
-    List<Outage> outages = outagesResponse.getOutages();
+    final GetOutagesResponse outagesResponse = (GetOutagesResponse) response;
+    final List<Outage> outages = outagesResponse.getOutages();
 
     assertThat(outages.size()).isEqualTo(numberOfEvents);
 
-    Map<String, String> values =
+    final Map<String, String> values =
         outages.stream()
             .collect(
                 Collectors.toMap(o -> o.getEndTime().toString(), o -> o.getDuration().toString()));

@@ -38,8 +38,8 @@ public class WebServiceConfig extends WsConfigurerAdapter {
 
   @Bean
   public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(
-      ApplicationContext applicationContext) {
-    MessageDispatcherServlet servlet = new MessageDispatcherServlet();
+      final ApplicationContext applicationContext) {
+    final MessageDispatcherServlet servlet = new MessageDispatcherServlet();
     servlet.setApplicationContext(applicationContext);
     servlet.setTransformWsdlLocations(true);
     return new ServletRegistrationBean<>(servlet, SECRET_MANAGEMENT_WS_BASE_PATH);
@@ -52,8 +52,8 @@ public class WebServiceConfig extends WsConfigurerAdapter {
    */
   @Bean(name = "secretManagement")
   public DefaultWsdl11Definition defaultWsdl11Definition(
-      XsdSchemaCollection secretManagementSchemas) {
-    DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
+      final XsdSchemaCollection secretManagementSchemas) {
+    final DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
     wsdl11Definition.setPortTypeName(SECRET_MANAGEMENT_PORT);
     wsdl11Definition.setLocationUri(SECRET_MANAGEMENT_URI);
     wsdl11Definition.setTargetNamespace(SECRET_MANAGEMENT_NS);
@@ -63,21 +63,21 @@ public class WebServiceConfig extends WsConfigurerAdapter {
 
   @Bean
   public XsdSchemaCollection secretManagementSchemas() {
-    CommonsXsdSchemaCollection sc = new CommonsXsdSchemaCollection();
+    final CommonsXsdSchemaCollection sc = new CommonsXsdSchemaCollection();
     sc.setXsds(new ClassPathResource(SECRET_MANAGEMENT_SCHEMA_LOC));
     return sc;
   }
 
   @Bean
   public SoapFaultMappingExceptionResolver exceptionResolver() {
-    SoapFaultMappingExceptionResolver exceptionResolver =
+    final SoapFaultMappingExceptionResolver exceptionResolver =
         new DetailSoapFaultMappingExceptionResolver();
 
-    SoapFaultDefinition faultDefinition = new SoapFaultDefinition();
+    final SoapFaultDefinition faultDefinition = new SoapFaultDefinition();
     faultDefinition.setFaultCode(SoapFaultDefinition.SERVER);
     exceptionResolver.setDefaultFault(faultDefinition);
 
-    Properties errorMappings = new Properties();
+    final Properties errorMappings = new Properties();
     errorMappings.setProperty(Exception.class.getName(), SoapFaultDefinition.SERVER.toString());
     errorMappings.setProperty(
         TechnicalException.class.getName(), SoapFaultDefinition.SERVER.toString());

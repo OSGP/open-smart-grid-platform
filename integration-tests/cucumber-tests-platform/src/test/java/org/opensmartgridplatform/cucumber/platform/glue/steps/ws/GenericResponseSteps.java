@@ -112,7 +112,7 @@ public abstract class GenericResponseSteps {
           "Not all expected fields are present; expectedFaults=%s, actualFaultDetailElements=%s",
           expectedFaults, actual);
     }
-    for (Map.Entry<String, String> expectedEntry : expectedFaults.entrySet()) {
+    for (final Map.Entry<String, String> expectedEntry : expectedFaults.entrySet()) {
       final String expectedValue = expectedEntry.getValue();
       final String actualValue = actualByName.get(expectedEntry.getKey());
       soft.assertThat(actualValue).as(expectedEntry.getKey()).isEqualTo(expectedValue);

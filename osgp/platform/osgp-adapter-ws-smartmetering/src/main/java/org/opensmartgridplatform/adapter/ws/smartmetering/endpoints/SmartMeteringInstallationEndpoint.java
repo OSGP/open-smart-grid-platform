@@ -189,7 +189,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
       @BypassRetry final String bypassRetry)
       throws OsgpException {
 
-    CoupleMbusDeviceRequestData requestData =
+    final CoupleMbusDeviceRequestData requestData =
         new CoupleMbusDeviceRequestData(request.getMbusDeviceIdentification());
 
     final RequestMessageMetadata requestMessageMetadata =
@@ -265,7 +265,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
       @BypassRetry final String bypassRetry)
       throws OsgpException {
 
-    DecoupleMbusDeviceRequestData requestData =
+    final DecoupleMbusDeviceRequestData requestData =
         new DecoupleMbusDeviceRequestData(request.getMbusDeviceIdentification());
 
     final RequestMessageMetadata requestMessageMetadata =
@@ -341,7 +341,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
       @BypassRetry final String bypassRetry)
       throws OsgpException {
 
-    CoupleMbusDeviceByChannelRequestData requestData =
+    final CoupleMbusDeviceByChannelRequestData requestData =
         new CoupleMbusDeviceByChannelRequestData(
             request.getCoupleMbusDeviceByChannelRequestData().getChannel());
 
@@ -422,7 +422,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
       @BypassRetry final String bypassRetry)
       throws OsgpException {
 
-    DecoupleMbusDeviceByChannelRequestData requestData =
+    final DecoupleMbusDeviceByChannelRequestData requestData =
         new DecoupleMbusDeviceByChannelRequestData(
             request.getDecoupleMbusDeviceByChannelRequestData().getChannel());
 

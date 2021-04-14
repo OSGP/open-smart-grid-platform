@@ -29,7 +29,7 @@ public class SetRandomisationSettingsRequestMessageProcessor extends BaseRequest
   @Autowired
   protected SetRandomisationSettingsRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
-          MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap) {
     super(messageProcessorMap, MessageType.SET_RANDOMISATION_SETTINGS);
   }
 

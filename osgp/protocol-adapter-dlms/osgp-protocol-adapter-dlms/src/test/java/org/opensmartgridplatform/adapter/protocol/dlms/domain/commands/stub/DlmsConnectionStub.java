@@ -43,8 +43,8 @@ public class DlmsConnectionStub implements DlmsConnection {
 
     this.requestedAttributeAddresses.addAll(Collections.singletonList(var1));
 
-    if (this.returnValues.containsKey(getKey(var1))) {
-      return new GetResultImpl(this.returnValues.get(getKey(var1)), AccessResultCode.SUCCESS);
+    if (this.returnValues.containsKey(this.getKey(var1))) {
+      return new GetResultImpl(this.returnValues.get(this.getKey(var1)), AccessResultCode.SUCCESS);
     } else {
       return new GetResultImpl(this.defaultReturnValue, AccessResultCode.SUCCESS);
     }
@@ -123,7 +123,7 @@ public class DlmsConnectionStub implements DlmsConnection {
   }
 
   public void addReturnValue(final AttributeAddress attributeAddress, final DataObject dataObject) {
-    this.returnValues.put(getKey(attributeAddress), dataObject);
+    this.returnValues.put(this.getKey(attributeAddress), dataObject);
   }
 
   public void setDefaultReturnValue(final DataObject dataObject) {
@@ -134,7 +134,7 @@ public class DlmsConnectionStub implements DlmsConnection {
     return this.closeCalled;
   }
 
-  private String getKey(AttributeAddress attributeAddress) {
+  private String getKey(final AttributeAddress attributeAddress) {
     return attributeAddress.getInstanceId() + "-" + attributeAddress.getId();
   }
 }

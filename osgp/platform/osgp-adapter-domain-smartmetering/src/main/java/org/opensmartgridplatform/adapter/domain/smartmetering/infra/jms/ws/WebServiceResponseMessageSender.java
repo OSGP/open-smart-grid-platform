@@ -44,7 +44,7 @@ public class WebServiceResponseMessageSender implements NotificationResponseMess
       this.jmsTemplate.setTimeToLive(timeToLive);
     }
 
-    this.jmsTemplate.send(session -> makeObjectMessage(session, responseMessage, messageType));
+    this.jmsTemplate.send(session -> this.makeObjectMessage(session, responseMessage, messageType));
 
     if (timeToLive != null) {
       // Restore the time to live from the configuration.
@@ -53,7 +53,8 @@ public class WebServiceResponseMessageSender implements NotificationResponseMess
   }
 
   private ObjectMessage makeObjectMessage(
-      Session session, ResponseMessage responseMessage, String messageType) throws JMSException {
+      final Session session, final ResponseMessage responseMessage, final String messageType)
+      throws JMSException {
     final ObjectMessage objectMessage = session.createObjectMessage(responseMessage);
 
     objectMessage.setJMSPriority(responseMessage.getMessagePriority());

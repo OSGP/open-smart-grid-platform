@@ -99,10 +99,10 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
   }
 
   private String getFirmwareIdentification(final ObjectMessage objectMessage) throws JMSException {
-    Serializable object = objectMessage.getObject();
+    final Serializable object = objectMessage.getObject();
 
     if (object instanceof ProtocolResponseMessage) {
-      Serializable dataObject = ((ProtocolResponseMessage) object).getDataObject();
+      final Serializable dataObject = ((ProtocolResponseMessage) object).getDataObject();
       if (dataObject instanceof FirmwareFileDto) {
         return ((FirmwareFileDto) dataObject).getFirmwareIdentification();
       }

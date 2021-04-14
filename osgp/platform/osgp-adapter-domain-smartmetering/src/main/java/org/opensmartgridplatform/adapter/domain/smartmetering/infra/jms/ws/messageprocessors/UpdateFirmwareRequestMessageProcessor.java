@@ -30,7 +30,7 @@ public class UpdateFirmwareRequestMessageProcessor extends BaseRequestMessagePro
   @Autowired
   public UpdateFirmwareRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
-          MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap) {
     super(messageProcessorMap, MessageType.UPDATE_FIRMWARE);
   }
 

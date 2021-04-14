@@ -29,7 +29,7 @@ public class BundleMessageProcessor extends BaseRequestMessageProcessor {
   @Autowired
   protected BundleMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
-          MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap) {
     super(messageProcessorMap, MessageType.HANDLE_BUNDLED_ACTIONS);
   }
 

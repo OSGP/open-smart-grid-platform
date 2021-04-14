@@ -31,9 +31,9 @@ public class UpdateFirmwareResponseMessageProcessor extends OsgpCoreResponseMess
 
   @Autowired
   protected UpdateFirmwareResponseMessageProcessor(
-      WebServiceResponseMessageSender responseMessageSender,
+      final WebServiceResponseMessageSender responseMessageSender,
       @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
-          MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap) {
     super(
         responseMessageSender,
         messageProcessorMap,

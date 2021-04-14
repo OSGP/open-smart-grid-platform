@@ -37,28 +37,28 @@ public class GetPowerQualityProfileDtoConverter
 
   @Override
   public GetPowerQualityProfileResponse convert(
-      GetPowerQualityProfileResponseDto source,
-      Type<? extends GetPowerQualityProfileResponse> destinationType,
-      MappingContext mappingContext) {
+      final GetPowerQualityProfileResponseDto source,
+      final Type<? extends GetPowerQualityProfileResponse> destinationType,
+      final MappingContext mappingContext) {
 
-    GetPowerQualityProfileResponse response = new GetPowerQualityProfileResponse();
+    final GetPowerQualityProfileResponse response = new GetPowerQualityProfileResponse();
 
-    List<PowerQualityProfileData> powerQualityProfileDatas = new ArrayList<>();
+    final List<PowerQualityProfileData> powerQualityProfileDatas = new ArrayList<>();
 
-    for (PowerQualityProfileDataDto responseDataDto :
+    for (final PowerQualityProfileDataDto responseDataDto :
         source.getPowerQualityProfileResponseDatas()) {
 
-      ObisCodeValues obisCodeValues =
+      final ObisCodeValues obisCodeValues =
           this.mapperFactory
               .getMapperFacade()
               .map(responseDataDto.getLogicalName(), ObisCodeValues.class);
 
-      List<CaptureObject> captureObjects =
+      final List<CaptureObject> captureObjects =
           new ArrayList<>(
               this.mapperFacade.mapAsList(
                   responseDataDto.getCaptureObjects(), CaptureObject.class));
 
-      List<ProfileEntry> profileEntries = makeProfileEntries(responseDataDto);
+      final List<ProfileEntry> profileEntries = this.makeProfileEntries(responseDataDto);
 
       powerQualityProfileDatas.add(
           new PowerQualityProfileData(obisCodeValues, captureObjects, profileEntries));
@@ -92,17 +92,18 @@ public class GetPowerQualityProfileDtoConverter
     return super.hashCode() + Objects.hashCode(this.mapperFactory.getMapperFacade());
   }
 
-  private List<ProfileEntry> makeProfileEntries(PowerQualityProfileDataDto responseDataDto) {
+  private List<ProfileEntry> makeProfileEntries(final PowerQualityProfileDataDto responseDataDto) {
 
-    List<ProfileEntry> profileEntries = new ArrayList<>();
+    final List<ProfileEntry> profileEntries = new ArrayList<>();
 
-    for (ProfileEntryDto profileEntryDto : responseDataDto.getProfileEntries()) {
+    for (final ProfileEntryDto profileEntryDto : responseDataDto.getProfileEntries()) {
 
-      List<ProfileEntryValue> profileEntryValues = new ArrayList<>();
+      final List<ProfileEntryValue> profileEntryValues = new ArrayList<>();
 
-      for (ProfileEntryValueDto profileEntryValueDto : profileEntryDto.getProfileEntryValues()) {
+      for (final ProfileEntryValueDto profileEntryValueDto :
+          profileEntryDto.getProfileEntryValues()) {
 
-        ProfileEntryValue profileEntryValue =
+        final ProfileEntryValue profileEntryValue =
             this.mapperFactory.getMapperFacade().map(profileEntryValueDto, ProfileEntryValue.class);
         profileEntryValues.add(profileEntryValue);
       }

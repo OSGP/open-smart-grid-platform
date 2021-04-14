@@ -25,7 +25,7 @@ public abstract class AbstractRequestMessageProcessor {
   @Autowired protected NotificationResponseMessageSender responseMessageSender;
 
   protected AbstractRequestMessageProcessor() {
-    componentType = ComponentType.DOMAIN_SMART_METERING;
+    this.componentType = ComponentType.DOMAIN_SMART_METERING;
   }
 
   protected void handleMessage(
@@ -67,7 +67,7 @@ public abstract class AbstractRequestMessageProcessor {
     } else {
       osgpException =
           new TechnicalException(
-              componentType,
+              this.componentType,
               String.format("An unknown error of type %s occurred.", e.getClass().getName()),
               e);
     }

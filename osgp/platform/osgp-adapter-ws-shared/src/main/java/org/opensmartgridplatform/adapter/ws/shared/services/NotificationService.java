@@ -41,7 +41,7 @@ public interface NotificationService {
      * to accept the application name as input, stick with the earlier
      * notification behavior that is application agnostic.
      */
-    sendNotification(
+    this.sendNotification(
         endpointLookupKey.getOrganisationIdentification(),
         notification.getDeviceIdentification(),
         notification.getResult(),

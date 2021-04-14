@@ -41,13 +41,13 @@ public class ThrottlingService {
   @PostConstruct
   public void postConstruct() {
 
-    openConnectionsSemaphore = new Semaphore(maxOpenConnections);
-    newConnectionRequestsSemaphore = new Semaphore(maxNewConnectionRequests);
+    this.openConnectionsSemaphore = new Semaphore(this.maxOpenConnections);
+    this.newConnectionRequestsSemaphore = new Semaphore(this.maxNewConnectionRequests);
 
-    resetTimerLock = new ReentrantLock();
+    this.resetTimerLock = new ReentrantLock();
 
-    resetTimer = new Timer();
-    resetTimer.scheduleAtFixedRate(new ResetTask(), resetTime, resetTime);
+    this.resetTimer = new Timer();
+    this.resetTimer.scheduleAtFixedRate(new ResetTask(), this.resetTime, this.resetTime);
 
     LOGGER.info("Initialized ThrottlingService. {}", this);
   }
@@ -72,7 +72,7 @@ public class ThrottlingService {
       LOGGER.debug(
           "openConnection granted. available = {} ",
           this.openConnectionsSemaphore.availablePermits());
-    } catch (InterruptedException e) {
+    } catch (final InterruptedException e) {
       LOGGER.warn("Unable to acquire Open Connection", e);
       Thread.currentThread().interrupt();
     }
@@ -87,7 +87,7 @@ public class ThrottlingService {
 
   private void newConnectionRequest() {
 
-    awaitReset();
+    this.awaitReset();
 
     LOGGER.debug(
         "newConnectionRequest(). available = {} ",
@@ -98,17 +98,17 @@ public class ThrottlingService {
       LOGGER.debug(
           "Request newConnection granted. available = {} ",
           this.newConnectionRequestsSemaphore.availablePermits());
-    } catch (InterruptedException e) {
+    } catch (final InterruptedException e) {
       LOGGER.warn("Unable to acquire New Connection Request", e);
       Thread.currentThread().interrupt();
     }
   }
 
   private synchronized void awaitReset() {
-    while (resetTimerLock.isLocked()) {
+    while (this.resetTimerLock.isLocked()) {
       try {
-        resetTimerLock.wait(this.resetTime);
-      } catch (InterruptedException e) {
+        this.resetTimerLock.wait(this.resetTime);
+      } catch (final InterruptedException e) {
         LOGGER.warn("Unable to acquire New Connection Request Lock", e);
         Thread.currentThread().interrupt();
       }
@@ -121,21 +121,22 @@ public class ThrottlingService {
     public void run() {
 
       try {
-        resetTimerLock.lock();
+        ThrottlingService.this.resetTimerLock.lock();
 
-        int nrOfPermitsToBeReleased =
-            maxNewConnectionRequests - newConnectionRequestsSemaphore.availablePermits();
+        final int nrOfPermitsToBeReleased =
+            ThrottlingService.this.maxNewConnectionRequests
+                - ThrottlingService.this.newConnectionRequestsSemaphore.availablePermits();
 
         LOGGER.debug(
             "releasing {} permits on newConnectionRequestsSemaphore", nrOfPermitsToBeReleased);
 
-        newConnectionRequestsSemaphore.release(nrOfPermitsToBeReleased);
+        ThrottlingService.this.newConnectionRequestsSemaphore.release(nrOfPermitsToBeReleased);
 
         LOGGER.debug(
             "ThrottlingService - Timer Reset and Unlocking, newConnectionRequests available = {}  ",
-            newConnectionRequestsSemaphore.availablePermits());
+            ThrottlingService.this.newConnectionRequestsSemaphore.availablePermits());
       } finally {
-        resetTimerLock.unlock();
+        ThrottlingService.this.resetTimerLock.unlock();
       }
     }
   }
@@ -144,6 +145,6 @@ public class ThrottlingService {
   public String toString() {
     return String.format(
         "ThrottlingService. maxOpenConnections = %d, maxNewConnectionRequests=%d, resetTime=%d",
-        maxOpenConnections, maxNewConnectionRequests, resetTime);
+        this.maxOpenConnections, this.maxNewConnectionRequests, this.resetTime);
   }
 }

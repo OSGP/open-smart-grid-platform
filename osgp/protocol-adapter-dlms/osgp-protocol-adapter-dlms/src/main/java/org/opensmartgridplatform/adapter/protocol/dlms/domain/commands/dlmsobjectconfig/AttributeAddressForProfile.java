@@ -18,23 +18,23 @@ public class AttributeAddressForProfile {
   private final List<DlmsCaptureObject> selectedObjects;
 
   public AttributeAddressForProfile(
-      AttributeAddress attributeAddress, List<DlmsCaptureObject> selectedObjects) {
+      final AttributeAddress attributeAddress, final List<DlmsCaptureObject> selectedObjects) {
     this.attributeAddress = attributeAddress;
     this.selectedObjects = selectedObjects;
   }
 
   public AttributeAddress getAttributeAddress() {
-    return attributeAddress;
+    return this.attributeAddress;
   }
 
   List<DlmsCaptureObject> getSelectedObjects() {
-    return selectedObjects;
+    return this.selectedObjects;
   }
 
   public Integer getIndex(final DlmsObjectType type, final Integer attributeId) {
     int index = 0;
 
-    for (final DlmsCaptureObject object : selectedObjects) {
+    for (final DlmsCaptureObject object : this.selectedObjects) {
       if (object.getRelatedObject().getType().equals(type)
           && (attributeId == null || object.getAttributeId() == attributeId)) {
         return index;
@@ -45,15 +45,16 @@ public class AttributeAddressForProfile {
     return null;
   }
 
-  public DlmsCaptureObject getCaptureObject(DlmsObjectType dlmsObjectType) {
-    return selectedObjects.stream()
+  public DlmsCaptureObject getCaptureObject(final DlmsObjectType dlmsObjectType) {
+    return this.selectedObjects.stream()
         .filter(c -> c.getRelatedObject().getType() == dlmsObjectType)
         .collect(Collectors.toList())
         .get(0);
   }
 
-  public List<DlmsRegister> getCaptureObjects(Class dlmsObjectClass, boolean defaultAttributeId) {
-    return selectedObjects.stream()
+  public List<DlmsRegister> getCaptureObjects(
+      final Class dlmsObjectClass, final boolean defaultAttributeId) {
+    return this.selectedObjects.stream()
         .filter(
             c ->
                 !defaultAttributeId

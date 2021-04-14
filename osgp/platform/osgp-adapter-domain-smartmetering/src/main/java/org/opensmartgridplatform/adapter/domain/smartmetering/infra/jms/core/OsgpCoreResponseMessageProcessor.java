@@ -60,10 +60,10 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
    * @param componentType the OSGP component handling the message
    */
   protected OsgpCoreResponseMessageProcessor(
-      WebServiceResponseMessageSender webServiceResponseMessageSender,
-      MessageProcessorMap osgpCoreResponseMessageProcessorMap,
+      final WebServiceResponseMessageSender webServiceResponseMessageSender,
+      final MessageProcessorMap osgpCoreResponseMessageProcessorMap,
       final MessageType messageType,
-      ComponentType componentType) {
+      final ComponentType componentType) {
     this.webServiceResponseMessageSender = webServiceResponseMessageSender;
     this.osgpCoreResponseMessageProcessorMap = osgpCoreResponseMessageProcessorMap;
     this.componentType = componentType;

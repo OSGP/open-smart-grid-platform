@@ -43,9 +43,9 @@ public class EventServiceTest {
 
   @BeforeEach
   void setUp() throws FunctionalException {
-    eventService = new EventService(domainHelperService);
+    this.eventService = new EventService(this.domainHelperService);
 
-    deviceMessageMetadata =
+    this.deviceMessageMetadata =
         DeviceMessageMetadata.newBuilder()
             .withCorrelationUid(RandomStringUtils.randomAlphabetic(10))
             .withDeviceIdentification(RandomStringUtils.randomAlphabetic(10))
@@ -53,13 +53,14 @@ public class EventServiceTest {
             .withMessageType(RandomStringUtils.randomAlphabetic(10))
             .build();
 
-    when(domainHelperService.findSmartMeter(deviceMessageMetadata.getDeviceIdentification()))
-        .thenReturn(smartMeter);
+    when(this.domainHelperService.findSmartMeter(
+            this.deviceMessageMetadata.getDeviceIdentification()))
+        .thenReturn(this.smartMeter);
   }
 
   @Test
   public void testWrongEventCode() {
-    FunctionalException functionalException =
+    final FunctionalException functionalException =
         Assertions.assertThrows(
             FunctionalException.class,
             () -> {
@@ -230,27 +231,27 @@ public class EventServiceTest {
   }
 
   private void assertEventType(
-      int eventCode,
-      String deviceType,
-      String protocol,
-      String manufacturerCode,
-      EventTypeDto expectedEventTypeDto)
+      final int eventCode,
+      final String deviceType,
+      final String protocol,
+      final String manufacturerCode,
+      final EventTypeDto expectedEventTypeDto)
       throws FunctionalException {
-    when(smartMeter.getDeviceType()).thenReturn(deviceType);
-    ProtocolInfo protocolInfo = mock(ProtocolInfo.class);
+    when(this.smartMeter.getDeviceType()).thenReturn(deviceType);
+    final ProtocolInfo protocolInfo = mock(ProtocolInfo.class);
     when(protocolInfo.getProtocol()).thenReturn(protocol);
-    when(smartMeter.getProtocolInfo()).thenReturn(protocolInfo);
-    DeviceModel deviceModel = mock(DeviceModel.class);
-    Manufacturer manufacturer = mock(Manufacturer.class);
+    when(this.smartMeter.getProtocolInfo()).thenReturn(protocolInfo);
+    final DeviceModel deviceModel = mock(DeviceModel.class);
+    final Manufacturer manufacturer = mock(Manufacturer.class);
     when(manufacturer.getCode()).thenReturn(manufacturerCode);
     when(deviceModel.getManufacturer()).thenReturn(manufacturer);
-    when(smartMeter.getDeviceModel()).thenReturn(deviceModel);
+    when(this.smartMeter.getDeviceModel()).thenReturn(deviceModel);
     final EventDto event = new EventDto(new DateTime(), eventCode, 2, "STANDARD_EVENT_LOG");
     final ArrayList<EventDto> events = new ArrayList<>();
     events.add(event);
     final EventMessageDataResponseDto responseDto = new EventMessageDataResponseDto(events);
 
-    eventService.addEventTypeToEvents(deviceMessageMetadata, responseDto);
+    this.eventService.addEventTypeToEvents(this.deviceMessageMetadata, responseDto);
 
     assertThat(responseDto.getEvents().get(0).getEventTypeDto()).isEqualTo(expectedEventTypeDto);
     assertThat(responseDto.getEvents().get(0).getEventCode()).isEqualTo(eventCode);

@@ -33,20 +33,20 @@ public class RsaEncrypter {
   private Key publicKey;
   private Key privateKey;
 
-  public void setPrivateKeyStore(File privateKeyStoreFile) {
+  public void setPrivateKeyStore(final File privateKeyStoreFile) {
     try {
-      byte[] keyData = Files.readAllBytes(privateKeyStoreFile.toPath());
-      PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(keyData);
+      final byte[] keyData = Files.readAllBytes(privateKeyStoreFile.toPath());
+      final PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(keyData);
       this.privateKey = KeyFactory.getInstance(ALG).generatePrivate(privateKeySpec);
     } catch (NoSuchAlgorithmException | IOException | InvalidKeySpecException e) {
       throw new EncrypterException("Could not get cipher", e);
     }
   }
 
-  public void setPublicKeyStore(File publicKeyStoreFile) {
+  public void setPublicKeyStore(final File publicKeyStoreFile) {
     try {
-      byte[] keyData = Files.readAllBytes(publicKeyStoreFile.toPath());
-      X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(keyData);
+      final byte[] keyData = Files.readAllBytes(publicKeyStoreFile.toPath());
+      final X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(keyData);
       this.publicKey = KeyFactory.getInstance(ALG).generatePublic(publicKeySpec);
     } catch (NoSuchAlgorithmException | IOException | InvalidKeySpecException e) {
       throw new EncrypterException("Could not set public keystore", e);
@@ -64,7 +64,7 @@ public class RsaEncrypter {
     }
   }
 
-  protected Key getSecretEncryptionKey(int cipherMode) {
+  protected Key getSecretEncryptionKey(final int cipherMode) {
     return cipherMode == Cipher.ENCRYPT_MODE ? this.publicKey : this.privateKey;
   }
 

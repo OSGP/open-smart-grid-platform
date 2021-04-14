@@ -21,7 +21,7 @@ public class GetPowerQualityProfileResponseDto extends ActionResponseDto {
   }
 
   public void setPowerQualityProfileDatas(
-      List<PowerQualityProfileDataDto> powerQualityProfileDatas) {
+      final List<PowerQualityProfileDataDto> powerQualityProfileDatas) {
     this.powerQualityProfileDatas = powerQualityProfileDatas;
   }
 }

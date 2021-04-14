@@ -18,10 +18,10 @@ public class SetRandomisationSettingsRequestDataDto implements ActionRequestDto 
   private final int numberOfRetries;
 
   public SetRandomisationSettingsRequestDataDto(
-      int directAttach,
-      int randomisationStartWindow,
-      int multiplicationFactor,
-      int numberOfRetries) {
+      final int directAttach,
+      final int randomisationStartWindow,
+      final int multiplicationFactor,
+      final int numberOfRetries) {
 
     this.directAttach = directAttach;
     this.randomisationStartWindow = randomisationStartWindow;

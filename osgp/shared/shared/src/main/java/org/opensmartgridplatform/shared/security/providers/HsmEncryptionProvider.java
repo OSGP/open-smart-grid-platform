@@ -60,7 +60,7 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider {
 
   @Override
   public byte[] decrypt(final EncryptedSecret secret, final String keyReference) {
-    byte[] decryptedSecret = super.decrypt(secret, keyReference);
+    final byte[] decryptedSecret = super.decrypt(secret, keyReference);
     if (decryptedSecret.length > KEY_LENGTH) {
       // This provider uses NoPadding, but since decrypted byte size is bigger than key byte size,
       // the secrets were apparently encrypted using padding of some kind; truncate the padded
@@ -78,11 +78,11 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider {
   }
 
   @Override
-  public byte[] generateAes128BitsSecret(String keyReference) {
+  public byte[] generateAes128BitsSecret(final String keyReference) {
     try {
       return this.encrypt(KeyGenerator.getInstance("AES").generateKey().getEncoded(), keyReference)
           .getSecret();
-    } catch (NoSuchAlgorithmException exc) {
+    } catch (final NoSuchAlgorithmException exc) {
       throw new EncrypterException("Could not generate secret", exc);
     }
   }

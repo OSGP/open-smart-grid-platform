@@ -54,6 +54,7 @@ public class SmartMeter extends Device {
     this.channel = channel;
   }
 
+  @Override
   public void setDeviceType(final String deviceType) {
     this.deviceType = deviceType;
   }

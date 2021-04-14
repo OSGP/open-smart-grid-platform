@@ -33,33 +33,38 @@ public class HibernateNamingStrategyTest {
 
   @Test
   void testToPhysicalTableName() {
-    assertTableName(Identifier.toIdentifier("user", false), Identifier.toIdentifier("user", false));
-    assertTableName(
+    this.assertTableName(
+        Identifier.toIdentifier("user", false), Identifier.toIdentifier("user", false));
+    this.assertTableName(
         Identifier.toIdentifier("userId", false), Identifier.toIdentifier("user_id", false));
-    assertTableName(Identifier.toIdentifier("user", true), Identifier.toIdentifier("user", true));
-    assertTableName(
+    this.assertTableName(
+        Identifier.toIdentifier("user", true), Identifier.toIdentifier("user", true));
+    this.assertTableName(
         Identifier.toIdentifier("userId", true), Identifier.toIdentifier("user_id", true));
   }
 
   @Test
   void testToPhysicalColumnName() {
-    assertColumnName(
+    this.assertColumnName(
         Identifier.toIdentifier("user", false), Identifier.toIdentifier("user", false));
-    assertColumnName(
+    this.assertColumnName(
         Identifier.toIdentifier("userId", false), Identifier.toIdentifier("user_id", false));
-    assertColumnName(Identifier.toIdentifier("user", true), Identifier.toIdentifier("user", true));
-    assertColumnName(
+    this.assertColumnName(
+        Identifier.toIdentifier("user", true), Identifier.toIdentifier("user", true));
+    this.assertColumnName(
         Identifier.toIdentifier("userId", true), Identifier.toIdentifier("user_id", true));
   }
 
-  private void assertTableName(Identifier source, Identifier expectedIdentifier) {
-    Identifier result = hibernateNamingStrategy.toPhysicalTableName(source, context);
+  private void assertTableName(final Identifier source, final Identifier expectedIdentifier) {
+    final Identifier result =
+        this.hibernateNamingStrategy.toPhysicalTableName(source, this.context);
     assertThat(result.getText()).isEqualTo(expectedIdentifier.getText());
     assertThat(result.isQuoted()).isEqualTo(expectedIdentifier.isQuoted());
   }
 
-  private void assertColumnName(Identifier source, Identifier expectedIdentifier) {
-    Identifier result = hibernateNamingStrategy.toPhysicalColumnName(source, context);
+  private void assertColumnName(final Identifier source, final Identifier expectedIdentifier) {
+    final Identifier result =
+        this.hibernateNamingStrategy.toPhysicalColumnName(source, this.context);
     assertThat(result.getText()).isEqualTo(expectedIdentifier.getText());
     assertThat(result.isQuoted()).isEqualTo(expectedIdentifier.isQuoted());
   }

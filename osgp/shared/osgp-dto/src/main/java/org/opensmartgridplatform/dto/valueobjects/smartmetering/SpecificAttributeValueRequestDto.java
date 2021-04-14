@@ -16,7 +16,8 @@ public class SpecificAttributeValueRequestDto implements ActionRequestDto {
   private int attribute;
   private ObisCodeValuesDto obisCode;
 
-  public SpecificAttributeValueRequestDto(int classId, int attribute, ObisCodeValuesDto obisCode) {
+  public SpecificAttributeValueRequestDto(
+      final int classId, final int attribute, final ObisCodeValuesDto obisCode) {
     super();
     this.classId = classId;
     this.attribute = attribute;

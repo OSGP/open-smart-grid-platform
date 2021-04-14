@@ -29,7 +29,7 @@ public class SetConfigurationObjectRequestMessageProcessor extends BaseRequestMe
   @Autowired
   protected SetConfigurationObjectRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
-          MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap) {
     super(messageProcessorMap, MessageType.SET_CONFIGURATION_OBJECT);
   }
 

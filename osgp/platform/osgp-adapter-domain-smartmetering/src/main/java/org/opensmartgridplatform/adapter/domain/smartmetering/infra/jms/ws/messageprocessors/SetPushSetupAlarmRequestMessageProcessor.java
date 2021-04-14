@@ -29,7 +29,7 @@ public class SetPushSetupAlarmRequestMessageProcessor extends BaseRequestMessage
   @Autowired
   protected SetPushSetupAlarmRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
-          MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap) {
     super(messageProcessorMap, MessageType.SET_PUSH_SETUP_ALARM);
   }
 

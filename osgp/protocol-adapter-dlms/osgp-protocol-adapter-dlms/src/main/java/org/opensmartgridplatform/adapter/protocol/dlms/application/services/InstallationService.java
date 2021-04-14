@@ -77,12 +77,12 @@ public class InstallationService {
       throws FunctionalException {
     final Map<SecurityKeyType, byte[]> keysByType = new EnumMap<>(SecurityKeyType.class);
     final List<SecurityKeyType> keyTypesToStore = this.determineKeyTypesToStore(deviceDto);
-    for (SecurityKeyType keyType : keyTypesToStore) {
+    for (final SecurityKeyType keyType : keyTypesToStore) {
       final byte[] key = this.getKeyFromDeviceDto(deviceDto, keyType);
       if (ArrayUtils.isNotEmpty(key)) {
         keysByType.put(keyType, this.encryptionService.rsaDecrypt(key));
       } else {
-        Exception rootCause = new NoSuchElementException(keyType.name());
+        final Exception rootCause = new NoSuchElementException(keyType.name());
         throw new FunctionalException(
             FunctionalExceptionType.KEY_NOT_PRESENT, ComponentType.PROTOCOL_DLMS, rootCause);
       }

@@ -29,7 +29,7 @@ public class GetPowerQualityProfileRequestMessageProcessor extends BaseRequestMe
   @Autowired
   protected GetPowerQualityProfileRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
-          MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap) {
     super(messageProcessorMap, MessageType.GET_PROFILE_GENERIC_DATA);
   }
 

@@ -40,12 +40,12 @@ public class GetPowerQualityProfileCommandExecutorTest {
   @Test
   public void executeWithSelectiveAccess() throws ProtocolAdapterException {
 
-    DlmsDevice dlmsDevice = new DlmsDevice();
+    final DlmsDevice dlmsDevice = new DlmsDevice();
     dlmsDevice.setSelectiveAccessSupported(true);
 
-    executor.execute(conn, dlmsDevice, getPowerQualityProfileRequestDataDto);
+    this.executor.execute(this.conn, dlmsDevice, this.getPowerQualityProfileRequestDataDto);
 
-    verify(getPowerQualityProfileSelectiveAccessHandler)
+    verify(this.getPowerQualityProfileSelectiveAccessHandler)
         .handle(
             any(DlmsConnectionManager.class),
             any(DlmsDevice.class),
@@ -55,12 +55,12 @@ public class GetPowerQualityProfileCommandExecutorTest {
   @Test
   public void executeWithoutSelectiveAccess() throws ProtocolAdapterException {
 
-    DlmsDevice dlmsDevice = new DlmsDevice();
+    final DlmsDevice dlmsDevice = new DlmsDevice();
     dlmsDevice.setSelectiveAccessSupported(false);
 
-    executor.execute(conn, dlmsDevice, getPowerQualityProfileRequestDataDto);
+    this.executor.execute(this.conn, dlmsDevice, this.getPowerQualityProfileRequestDataDto);
 
-    verify(getPowerQualityProfileNoSelectiveAccessHandler)
+    verify(this.getPowerQualityProfileNoSelectiveAccessHandler)
         .handle(
             any(DlmsConnectionManager.class),
             any(DlmsDevice.class),

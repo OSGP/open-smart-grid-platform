@@ -38,7 +38,9 @@ public class UpdateHealthStatusEventListener {
 
   @EventListener
   public void handle(final ServerSapEvent serverSapEvent) {
-    if (this.enabled) updateServerValue(serverSapEvent.getServerSap());
+    if (this.enabled) {
+      this.updateServerValue(serverSapEvent.getServerSap());
+    }
   }
 
   private void updateServerValue(final ServerSap serverSap) {

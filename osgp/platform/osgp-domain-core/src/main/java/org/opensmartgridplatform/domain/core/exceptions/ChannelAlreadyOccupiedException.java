@@ -27,7 +27,7 @@ public class ChannelAlreadyOccupiedException extends PlatformException {
    * @param identification the device identification
    * @param throwable
    */
-  public ChannelAlreadyOccupiedException(Short channel, final Throwable throwable) {
+  public ChannelAlreadyOccupiedException(final Short channel, final Throwable throwable) {
     super(String.format(MESSAGE, channel), throwable);
   }
 
@@ -37,7 +37,7 @@ public class ChannelAlreadyOccupiedException extends PlatformException {
    * @param channel the {@link Short} channel number
    * @param identification the device identification
    */
-  public ChannelAlreadyOccupiedException(short channel) {
+  public ChannelAlreadyOccupiedException(final short channel) {
     super(String.format(MESSAGE, channel));
   }
 }

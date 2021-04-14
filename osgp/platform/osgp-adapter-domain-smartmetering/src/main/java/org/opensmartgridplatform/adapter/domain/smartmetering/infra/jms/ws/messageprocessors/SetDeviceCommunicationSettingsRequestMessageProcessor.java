@@ -30,7 +30,7 @@ public class SetDeviceCommunicationSettingsRequestMessageProcessor
   @Autowired
   protected SetDeviceCommunicationSettingsRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
-          MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap) {
     super(messageProcessorMap, MessageType.SET_DEVICE_COMMUNICATION_SETTINGS);
   }
 

@@ -45,7 +45,7 @@ public class DlmsObject {
   }
 
   /** @param medium Specifies the medium to match on in overriding classes */
-  public boolean mediumMatches(Medium medium) {
+  public boolean mediumMatches(final Medium medium) {
     return true;
   }
 }

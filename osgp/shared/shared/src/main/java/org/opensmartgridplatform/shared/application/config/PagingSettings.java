@@ -38,7 +38,7 @@ public class PagingSettings {
   }
 
   public void updatePagingSettings(final PageSpecifier pageSpecifier) {
-    updatePagingSettings(pageSpecifier.getPageSize(), pageSpecifier.getPageNumber());
+    this.updatePagingSettings(pageSpecifier.getPageSize(), pageSpecifier.getPageNumber());
   }
 
   private void updatePagingSettings(final Integer pageSize, final Integer pageNumber) {

@@ -30,9 +30,9 @@ public class CoupleMbusDeviceResponseMessageProcessor extends OsgpCoreResponseMe
 
   @Autowired
   protected CoupleMbusDeviceResponseMessageProcessor(
-      WebServiceResponseMessageSender responseMessageSender,
+      final WebServiceResponseMessageSender responseMessageSender,
       @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
-          MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap) {
     super(
         responseMessageSender,
         messageProcessorMap,

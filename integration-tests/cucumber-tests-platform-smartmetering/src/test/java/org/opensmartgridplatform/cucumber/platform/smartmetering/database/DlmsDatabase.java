@@ -85,7 +85,7 @@ public class DlmsDatabase {
     this.insertDefaultData();
   }
 
-  private DbEncryptionKeyReference getJreEncryptionKey(Date now) {
+  private DbEncryptionKeyReference getJreEncryptionKey(final Date now) {
     final DbEncryptionKeyReference jreEncryptionKey = new DbEncryptionKeyReference();
     jreEncryptionKey.setEncryptionProviderType(EncryptionProviderType.JRE);
     jreEncryptionKey.setReference("1");

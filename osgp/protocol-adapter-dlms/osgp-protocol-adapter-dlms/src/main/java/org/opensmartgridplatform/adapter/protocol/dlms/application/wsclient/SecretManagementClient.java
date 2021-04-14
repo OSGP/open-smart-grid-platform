@@ -32,11 +32,11 @@ public class SecretManagementClient {
 
   private final WebServiceTemplate webServiceTemplate;
 
-  SecretManagementClient(WebServiceTemplate webServiceTemplate) {
+  SecretManagementClient(final WebServiceTemplate webServiceTemplate) {
     this.webServiceTemplate = webServiceTemplate;
   }
 
-  public GetSecretsResponse getSecretsRequest(GetSecretsRequest request) {
+  public GetSecretsResponse getSecretsRequest(final GetSecretsRequest request) {
 
     LOGGER.info(
         "Calling SecretManagement.getSecretsRequest over SOAP for device {}",
@@ -45,7 +45,7 @@ public class SecretManagementClient {
     return (GetSecretsResponse) this.webServiceTemplate.marshalSendAndReceive(request);
   }
 
-  public GetNewSecretsResponse getNewSecretsRequest(GetNewSecretsRequest request) {
+  public GetNewSecretsResponse getNewSecretsRequest(final GetNewSecretsRequest request) {
 
     LOGGER.info(
         "Calling SecretManagement.getNewSecretsRequest over SOAP for device {}",
@@ -54,7 +54,7 @@ public class SecretManagementClient {
     return (GetNewSecretsResponse) this.webServiceTemplate.marshalSendAndReceive(request);
   }
 
-  public StoreSecretsResponse storeSecretsRequest(StoreSecretsRequest request) {
+  public StoreSecretsResponse storeSecretsRequest(final StoreSecretsRequest request) {
     LOGGER.info(
         "Calling SecretManagement.storeSecretsRequest over SOAP for device {}",
         request.getDeviceId());
@@ -62,7 +62,7 @@ public class SecretManagementClient {
     return (StoreSecretsResponse) this.webServiceTemplate.marshalSendAndReceive(request);
   }
 
-  public ActivateSecretsResponse activateSecretsRequest(ActivateSecretsRequest request) {
+  public ActivateSecretsResponse activateSecretsRequest(final ActivateSecretsRequest request) {
     LOGGER.info(
         "Calling SecretManagement.activateSecretsRequest over SOAP for device {}",
         request.getDeviceId());
@@ -70,7 +70,7 @@ public class SecretManagementClient {
     return (ActivateSecretsResponse) this.webServiceTemplate.marshalSendAndReceive(request);
   }
 
-  public HasNewSecretResponse hasNewSecretRequest(HasNewSecretRequest request) {
+  public HasNewSecretResponse hasNewSecretRequest(final HasNewSecretRequest request) {
     LOGGER.info(
         "Calling SecretManagement.hasNewSecretsRequest over SOAP for device {}",
         request.getDeviceId());
@@ -79,7 +79,7 @@ public class SecretManagementClient {
   }
 
   public GenerateAndStoreSecretsResponse generateAndStoreSecrets(
-      GenerateAndStoreSecretsRequest request) {
+      final GenerateAndStoreSecretsRequest request) {
     LOGGER.info(
         "Calling SecretManagement.generateAndStoreSecrets over SOAP for device {}",
         request.getDeviceId());

@@ -25,26 +25,28 @@ public class DlmsCaptureObject {
     this.attributeId = attributeId;
   }
 
-  public DlmsCaptureObject(final DlmsObject relatedObject, final int attributeId, int channel) {
+  public DlmsCaptureObject(
+      final DlmsObject relatedObject, final int attributeId, final int channel) {
     this.relatedObject = relatedObject;
     this.attributeId = attributeId;
     this.channel = channel;
   }
 
-  public static DlmsCaptureObject create(DlmsObject relatedObject) {
+  public static DlmsCaptureObject create(final DlmsObject relatedObject) {
     return new DlmsCaptureObject(relatedObject);
   }
 
-  public static DlmsCaptureObject create(DlmsObject relatedObject, int attributeId) {
+  public static DlmsCaptureObject create(final DlmsObject relatedObject, final int attributeId) {
     return new DlmsCaptureObject(relatedObject, attributeId);
   }
 
-  public static DlmsCaptureObject createWithChannel(DlmsObject relatedObject, int channel) {
+  public static DlmsCaptureObject createWithChannel(
+      final DlmsObject relatedObject, final int channel) {
     return new DlmsCaptureObject(relatedObject, relatedObject.getDefaultAttributeId(), channel);
   }
 
   public static DlmsCaptureObject createWithChannel(
-      DlmsObject relatedObject, int channel, int attributeId) {
+      final DlmsObject relatedObject, final int channel, final int attributeId) {
     return new DlmsCaptureObject(relatedObject, attributeId, channel);
   }
 
@@ -56,7 +58,7 @@ public class DlmsCaptureObject {
     return this.attributeId;
   }
 
-  public boolean channelMatches(Integer channel) {
+  public boolean channelMatches(final Integer channel) {
     return this.channel == null || this.channel.equals(channel);
   }
 }

@@ -20,7 +20,8 @@ public class SpecificAttributeValueRequestData implements Serializable, ActionRe
   private final int attribute;
   private final ObisCodeValues obisCode;
 
-  public SpecificAttributeValueRequestData(int classId, int attribute, ObisCodeValues obisCode) {
+  public SpecificAttributeValueRequestData(
+      final int classId, final int attribute, final ObisCodeValues obisCode) {
     super();
     this.classId = classId;
     this.attribute = attribute;
@@ -55,7 +56,7 @@ public class SpecificAttributeValueRequestData implements Serializable, ActionRe
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(final Object obj) {
     if (this == obj) {
       return true;
     }

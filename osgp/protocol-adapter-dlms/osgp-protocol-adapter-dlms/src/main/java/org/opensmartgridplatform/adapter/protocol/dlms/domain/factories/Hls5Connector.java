@@ -106,7 +106,7 @@ public class Hls5Connector extends SecureDlmsConnector {
     final byte[] dlmsAuthenticationKey;
     final byte[] dlmsEncryptionKey;
     try {
-      Map<SecurityKeyType, byte[]> encryptedKeys =
+      final Map<SecurityKeyType, byte[]> encryptedKeys =
           this.secretManagementService.getKeys(
               deviceIdentification, Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION));
       dlmsAuthenticationKey = encryptedKeys.get(E_METER_AUTHENTICATION);
@@ -161,7 +161,7 @@ public class Hls5Connector extends SecureDlmsConnector {
     }
     tcpConnectionBuilder.setSystemTitle(manufacturerId, device.getDeviceId());
 
-    long frameCounter = device.getInvocationCounter();
+    final long frameCounter = device.getInvocationCounter();
 
     tcpConnectionBuilder.setFrameCounter(frameCounter);
     LOGGER.debug(

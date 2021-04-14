@@ -32,13 +32,13 @@ public class ObisCodeValuesDto implements Serializable {
     this.f = f;
   }
 
-  public ObisCodeValuesDto(String obisCode) {
+  public ObisCodeValuesDto(final String obisCode) {
 
     try {
-      int[] values = new int[6];
+      final int[] values = new int[6];
 
       int i = 0;
-      for (String s : obisCode.split("\\.")) {
+      for (final String s : obisCode.split("\\.")) {
         values[i++] = Integer.parseInt(s);
       }
 
@@ -49,7 +49,7 @@ public class ObisCodeValuesDto implements Serializable {
       this.e = (byte) values[4];
       this.f = (byte) values[5];
 
-    } catch (Exception ex) {
+    } catch (final Exception ex) {
       throw new IllegalArgumentException("Unable to parse String to ObisCode", ex);
     }
   }

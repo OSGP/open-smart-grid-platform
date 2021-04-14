@@ -24,16 +24,16 @@ public abstract class DlmsObjectConfig {
   private final List<DlmsObject> objects;
 
   DlmsObjectConfig() {
-    this.protocols = initProtocols();
-    this.objects = initObjects();
+    this.protocols = this.initProtocols();
+    this.objects = this.initObjects();
   }
 
   public Stream<DlmsObject> getObjects() {
     return this.objects.stream();
   }
 
-  boolean contains(Protocol protocol) {
-    return protocols.contains(protocol);
+  boolean contains(final Protocol protocol) {
+    return this.protocols.contains(protocol);
   }
 
   abstract List<Protocol> initProtocols();
@@ -50,7 +50,7 @@ public abstract class DlmsObjectConfig {
    */
   public Optional<DlmsObject> findObject(final DlmsObjectType type, final Medium filterMedium) {
     // @formatter:off
-    return objects.stream()
+    return this.objects.stream()
         .filter(o1 -> o1.getType().equals(type))
         .filter(
             o2 ->
@@ -69,7 +69,7 @@ public abstract class DlmsObjectConfig {
    * @throws ProtocolAdapterException when no matching object is found
    */
   public ObisCode getObisForObject(final DlmsObjectType type) throws ProtocolAdapterException {
-    return getObisForObject(type, null);
+    return this.getObisForObject(type, null);
   }
 
   /**
@@ -83,7 +83,7 @@ public abstract class DlmsObjectConfig {
    */
   public ObisCode getObisForObject(final DlmsObjectType type, final Medium filterMedium)
       throws ProtocolAdapterException {
-    Optional<DlmsObject> dlmsObject = this.findObject(type, filterMedium);
+    final Optional<DlmsObject> dlmsObject = this.findObject(type, filterMedium);
 
     if (dlmsObject.isPresent()) {
       return dlmsObject.get().getObisCode();

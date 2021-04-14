@@ -66,7 +66,7 @@ public class ReplaceKeyCommandExecutor
         final byte[] bytes,
         final KeyId keyId,
         final SecurityKeyType securityKeyType,
-        boolean isGenerated) {
+        final boolean isGenerated) {
       this.bytes = bytes;
       this.keyId = keyId;
       this.securityKeyType = securityKeyType;
@@ -98,7 +98,7 @@ public class ReplaceKeyCommandExecutor
       final byte[] bytes,
       final KeyId keyId,
       final SecurityKeyType securityKeyType,
-      boolean isGenerated) {
+      final boolean isGenerated) {
     return new ReplaceKeyInput(bytes, keyId, securityKeyType, isGenerated);
   }
 
@@ -179,7 +179,7 @@ public class ReplaceKeyCommandExecutor
    */
   private void sendToDevice(
       final DlmsConnectionManager conn,
-      String deviceIdentification,
+      final String deviceIdentification,
       final ReplaceKeyCommandExecutor.ReplaceKeyInput keyWrapper)
       throws ProtocolAdapterException {
 

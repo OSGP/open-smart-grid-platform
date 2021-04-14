@@ -30,7 +30,7 @@ public class GetMbusEncryptionKeyStatusByChannelRequestMessageProcessor
   @Autowired
   protected GetMbusEncryptionKeyStatusByChannelRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
-          MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap) {
     super(messageProcessorMap, MessageType.GET_MBUS_ENCRYPTION_KEY_STATUS_BY_CHANNEL);
   }
 

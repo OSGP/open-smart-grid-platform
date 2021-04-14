@@ -84,11 +84,11 @@ public class PrometheusMetricsServer {
     requireNonNull(this.path, "Path not set");
     requireNonNull(this.componentName, "Component name not set");
 
-    prometheusMeterRegistry.config().commonTags("component", componentName);
-    createHttpServer();
+    this.prometheusMeterRegistry.config().commonTags("component", this.componentName);
+    this.createHttpServer();
     LOGGER.debug("Prometheus metrics server created.");
 
-    newDaemonThread(this.server::start).start();
+    this.newDaemonThread(this.server::start).start();
     LOGGER.info("Prometheus metrics server started on port {} and path {}.", this.port, this.path);
   }
 

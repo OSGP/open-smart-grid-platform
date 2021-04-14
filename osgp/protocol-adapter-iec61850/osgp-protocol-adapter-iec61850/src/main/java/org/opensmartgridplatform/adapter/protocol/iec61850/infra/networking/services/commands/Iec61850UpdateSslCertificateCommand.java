@@ -109,7 +109,7 @@ public class Iec61850UpdateSslCertificateCommand {
                 SubDataAttribute.START_TIME,
                 Iec61850UpdateSslCertificateCommand.this.simpleDateFormat.format(oneMinuteFromNow));
 
-            loggingService.logMessage(
+            Iec61850UpdateSslCertificateCommand.this.loggingService.logMessage(
                 deviceMessageLog,
                 deviceConnection.getDeviceIdentification(),
                 deviceConnection.getOrganisationIdentification(),

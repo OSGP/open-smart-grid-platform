@@ -104,7 +104,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
       @BypassRetry final String bypassRetry)
       throws OsgpException {
 
-    List<org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FindEventsRequestData>
+    final List<
+            org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FindEventsRequestData>
         findEventsQueryList =
             this.managementMapper.mapAsList(
                 request.getFindEventsRequestData(),
@@ -136,7 +137,9 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
   }
 
   private void validateFindEventsQueries(
-      List<org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FindEventsRequestData>
+      final List<
+              org.opensmartgridplatform.domain.core.valueobjects.smartmetering
+                  .FindEventsRequestData>
           findEventsQueryList)
       throws FunctionalException {
     for (final org.opensmartgridplatform.domain.core.valueobjects.smartmetering

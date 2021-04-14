@@ -83,21 +83,22 @@ public class SetRandomisationSettingsCommandExecutor
         "Executing SetRandomisationSettingsCommandExecutor. Data = {}",
         setRandomisationSettingsRequestDataDto);
 
-    boolean directAttach = setRandomisationSettingsRequestDataDto.getDirectAttach() == 1;
-    int randomisationStartWindow =
+    final boolean directAttach = setRandomisationSettingsRequestDataDto.getDirectAttach() == 1;
+    final int randomisationStartWindow =
         setRandomisationSettingsRequestDataDto.getRandomisationStartWindow();
-    int multiplicationFactor = setRandomisationSettingsRequestDataDto.getMultiplicationFactor();
-    int numberOfRetries = setRandomisationSettingsRequestDataDto.getNumberOfRetries();
+    final int multiplicationFactor =
+        setRandomisationSettingsRequestDataDto.getMultiplicationFactor();
+    final int numberOfRetries = setRandomisationSettingsRequestDataDto.getNumberOfRetries();
 
     if (directAttach) {
       LOGGER.info("Enabling directAttach on device {}.", device.getDeviceIdentification());
-      writeDirectAttach(conn, device, true);
+      this.writeDirectAttach(conn, device, true);
     } else {
       LOGGER.info(
           "Disabling directAttach and setting Randomisation Settings for device {}.",
           device.getDeviceIdentification());
-      writeDirectAttach(conn, device, false);
-      writeRandomisationSettings(
+      this.writeDirectAttach(conn, device, false);
+      this.writeRandomisationSettings(
           conn, device, randomisationStartWindow, multiplicationFactor, numberOfRetries);
     }
 
@@ -111,56 +112,57 @@ public class SetRandomisationSettingsCommandExecutor
       final int multiplicationFactor,
       final int numberOfRetries)
       throws ProtocolAdapterException {
-    AttributeAddress randomisationSettingsAddress = getAttributeAddress(device);
+    final AttributeAddress randomisationSettingsAddress = this.getAttributeAddress(device);
 
-    DataObject randomisationStartWindowObject =
+    final DataObject randomisationStartWindowObject =
         DataObject.newUInteger32Data(randomisationStartWindow);
-    DataObject multiplicationFactorObject = DataObject.newUInteger16Data(multiplicationFactor);
-    DataObject numberOfRetriesObject = DataObject.newUInteger16Data(numberOfRetries);
+    final DataObject multiplicationFactorObject =
+        DataObject.newUInteger16Data(multiplicationFactor);
+    final DataObject numberOfRetriesObject = DataObject.newUInteger16Data(numberOfRetries);
 
-    DataObject randomisationSettingsObject =
+    final DataObject randomisationSettingsObject =
         DataObject.newStructureData(
             randomisationStartWindowObject, multiplicationFactorObject, numberOfRetriesObject);
 
     final SetParameter setRandomisationSettings =
         new SetParameter(randomisationSettingsAddress, randomisationSettingsObject);
-    writeAttribute(conn, setRandomisationSettings);
+    this.writeAttribute(conn, setRandomisationSettings);
   }
 
   private void writeDirectAttach(
       final DlmsConnectionManager conn, final DlmsDevice device, final boolean directAttach)
       throws ProtocolAdapterException {
 
-    Protocol protocol = Protocol.forDevice(device);
-    GetConfigurationObjectService getConfigurationObjectService =
+    final Protocol protocol = Protocol.forDevice(device);
+    final GetConfigurationObjectService getConfigurationObjectService =
         this.protocolServiceLookup.lookupGetService(protocol);
-    ConfigurationObjectDto configurationOnDevice =
+    final ConfigurationObjectDto configurationOnDevice =
         getConfigurationObjectService.getConfigurationObject(conn);
-    SetConfigurationObjectService setService =
+    final SetConfigurationObjectService setService =
         this.protocolServiceLookup.lookupSetService(protocol);
 
-    ConfigurationObjectDto configurationToSet =
-        createNewConfiguration(directAttach, configurationOnDevice);
+    final ConfigurationObjectDto configurationToSet =
+        this.createNewConfiguration(directAttach, configurationOnDevice);
 
     final AccessResultCode result =
         setService.setConfigurationObject(conn, configurationToSet, configurationOnDevice);
 
-    checkResult(result, "directAttach");
+    this.checkResult(result, "directAttach");
   }
 
   private ConfigurationObjectDto createNewConfiguration(
-      boolean directAttach, ConfigurationObjectDto configurationOnDevice) {
-    List<ConfigurationFlagDto> newConfiguration =
+      final boolean directAttach, final ConfigurationObjectDto configurationOnDevice) {
+    final List<ConfigurationFlagDto> newConfiguration =
         new ArrayList<>(configurationOnDevice.getConfigurationFlags().getFlags());
 
     newConfiguration.removeIf(
         e -> e.getConfigurationFlagType() == ConfigurationFlagTypeDto.DIRECT_ATTACH_AT_POWER_ON);
 
-    ConfigurationFlagDto directAttachAtPowerOn =
+    final ConfigurationFlagDto directAttachAtPowerOn =
         new ConfigurationFlagDto(ConfigurationFlagTypeDto.DIRECT_ATTACH_AT_POWER_ON, directAttach);
 
     newConfiguration.add(directAttachAtPowerOn);
-    ConfigurationFlagsDto configurationFlagsDto = new ConfigurationFlagsDto(newConfiguration);
+    final ConfigurationFlagsDto configurationFlagsDto = new ConfigurationFlagsDto(newConfiguration);
     return new ConfigurationObjectDto(configurationFlagsDto);
   }
 
@@ -168,7 +170,7 @@ public class SetRandomisationSettingsCommandExecutor
       throws ProtocolAdapterException {
     try {
       final AccessResultCode result = conn.getConnection().set(parameter);
-      checkResult(result, "setRandomisationSettings");
+      this.checkResult(result, "setRandomisationSettings");
     } catch (final IOException e) {
       throw new ConnectionException(e);
     }

@@ -30,7 +30,7 @@ public class MonitoringMapper extends ConfigurableMapper {
     // This converter must be used: a multiplier might be needed when
     // mapping between DlmsMeterValue and OsgpMeterValue. Thus mapping must
     // never be attempted without using this converter!
-    ConverterFactory converterFactory = mapperFactory.getConverterFactory();
+    final ConverterFactory converterFactory = mapperFactory.getConverterFactory();
     converterFactory.registerConverter(new DlmsMeterValueConverter());
     converterFactory.registerConverter(new ReadAlarmRegisterDataConverter());
     converterFactory.registerConverter(new ProfileEntryValueConverter());

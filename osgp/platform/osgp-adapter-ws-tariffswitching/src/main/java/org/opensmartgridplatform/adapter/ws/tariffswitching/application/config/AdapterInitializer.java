@@ -24,6 +24,6 @@ public class AdapterInitializer extends AbstractWsAdapterInitializer
   /** Handles startup of Spring context. */
   @Override
   public void onStartup(final ServletContext servletContext) throws ServletException {
-    startUp(servletContext);
+    this.startUp(servletContext);
   }
 }

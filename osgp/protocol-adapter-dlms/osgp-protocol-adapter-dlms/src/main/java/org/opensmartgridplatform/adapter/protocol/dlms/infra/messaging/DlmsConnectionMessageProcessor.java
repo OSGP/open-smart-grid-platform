@@ -51,15 +51,15 @@ public abstract class DlmsConnectionMessageProcessor {
   public DlmsConnectionManager createConnectionForDevice(
       final DlmsDevice device, final MessageMetadata messageMetadata) throws OsgpException {
 
-    throttlingService.openConnection();
+    this.throttlingService.openConnection();
 
     final DlmsMessageListener dlmsMessageListener =
         this.createMessageListenerForDeviceConnection(device, messageMetadata);
 
     try {
       return this.dlmsConnectionHelper.createConnectionForDevice(device, dlmsMessageListener);
-    } catch (Exception e) {
-      throttlingService.closeConnection();
+    } catch (final Exception e) {
+      this.throttlingService.closeConnection();
       throw e;
     }
   }

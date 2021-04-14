@@ -46,32 +46,32 @@ public class JreEncryptionProviderTest {
 
   @BeforeEach
   public void setUp() {
-    String path = "src/test/resources/osgp-secret-management-db.key";
-    File keyFile = new File(path);
+    final String path = "src/test/resources/osgp-secret-management-db.key";
+    final File keyFile = new File(path);
     this.jreEncryptionProvider = new JreEncryptionProvider(keyFile);
   }
 
   @Test
   public void identityTest() throws EncrypterException {
     final byte[] secret = HexUtils.fromHexString(this.secretString);
-    EncryptedSecret encryptedSecret = this.jreEncryptionProvider.encrypt(secret, JRE_KEY_REF);
-    String encryptedSecretAsString = HexUtils.toHexString(encryptedSecret.getSecret());
+    final EncryptedSecret encryptedSecret = this.jreEncryptionProvider.encrypt(secret, JRE_KEY_REF);
+    final String encryptedSecretAsString = HexUtils.toHexString(encryptedSecret.getSecret());
 
     assertEquals(
         "f2edbdc2ad1dab1458f1b866c5a5e6a68873d5738b3742bf3fa5d673133313b6",
         encryptedSecretAsString);
 
-    byte[] decryptedSecret = this.jreEncryptionProvider.decrypt(encryptedSecret, JRE_KEY_REF);
-    String decryptedSecretAsString = HexUtils.toHexString(decryptedSecret);
+    final byte[] decryptedSecret = this.jreEncryptionProvider.decrypt(encryptedSecret, JRE_KEY_REF);
+    final String decryptedSecretAsString = HexUtils.toHexString(decryptedSecret);
 
     assertEquals(this.secretString, decryptedSecretAsString);
   }
 
   @Test
   public void doErrorTest() throws EncrypterException {
-    byte[] secret = HexUtils.fromHexString("00000000000000000000000000000000");
+    final byte[] secret = HexUtils.fromHexString("00000000000000000000000000000000");
 
-    EncryptedSecret encryptedSecret =
+    final EncryptedSecret encryptedSecret =
         new EncryptedSecret(this.jreEncryptionProvider.getType(), secret);
 
     assertThrows(
@@ -82,12 +82,13 @@ public class JreEncryptionProviderTest {
 
   @Test
   public void generateKeyAndCheckLengths() {
-    byte[] encryptedSecretBytes = this.jreEncryptionProvider.generateAes128BitsSecret(JRE_KEY_REF);
-    EncryptedSecret encryptedSecret =
+    final byte[] encryptedSecretBytes =
+        this.jreEncryptionProvider.generateAes128BitsSecret(JRE_KEY_REF);
+    final EncryptedSecret encryptedSecret =
         new EncryptedSecret(this.jreEncryptionProvider.getType(), encryptedSecretBytes);
-    byte[] unencryptedSecretBytes =
+    final byte[] unencryptedSecretBytes =
         this.jreEncryptionProvider.decrypt(encryptedSecret, JRE_KEY_REF);
-    String encryptedSecretAsString = HexUtils.toHexString(encryptedSecretBytes);
+    final String encryptedSecretAsString = HexUtils.toHexString(encryptedSecretBytes);
     assertEquals(16, unencryptedSecretBytes.length);
     assertEquals(32, encryptedSecretBytes.length);
     assertEquals(64, encryptedSecretAsString.length());
@@ -116,28 +117,28 @@ public class JreEncryptionProviderTest {
     final int blockSize = 128;
     final int blockByteSize = 128 / 8;
     // Create secret
-    byte[] secret = {0, 1, 2, 4, 8, 16, 32, 64, 127, 63, 31, 15, 7, 3, 0, 0};
+    final byte[] secret = {0, 1, 2, 4, 8, 16, 32, 64, 127, 63, 31, 15, 7, 3, 0, 0};
     assertEquals(16, secret.length);
     // Create AES key
-    KeyGenerator kgen = KeyGenerator.getInstance("AES");
-    SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+    final KeyGenerator kgen = KeyGenerator.getInstance("AES");
+    final SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
     sr.setSeed(System.currentTimeMillis());
     kgen.init(blockSize, sr);
-    SecretKey key = kgen.generateKey();
-    SecretKeySpec keySpec = new SecretKeySpec(key.getEncoded(), "AES");
-    String[] algorithms = {
+    final SecretKey key = kgen.generateKey();
+    final SecretKeySpec keySpec = new SecretKeySpec(key.getEncoded(), "AES");
+    final String[] algorithms = {
       "AES/CBC/NoPadding" /*HSM uses this*/, "AES/CBC/PKCS5PADDING" /*JRE uses this*/
     };
-    int[][] runs = {{0, 0}, {1, 1}, {1, 0}, {0, 1}}; // Used as index of algorithms array
-    int[] expectedErrorRun = runs[3];
-    for (int[] run : runs) {
-      String encAlg = algorithms[run[0]];
-      String decAlg = algorithms[run[1]];
+    final int[][] runs = {{0, 0}, {1, 1}, {1, 0}, {0, 1}}; // Used as index of algorithms array
+    final int[] expectedErrorRun = runs[3];
+    for (final int[] run : runs) {
+      final String encAlg = algorithms[run[0]];
+      final String decAlg = algorithms[run[1]];
       // Encrypt secret
       Cipher cipher = Cipher.getInstance(encAlg);
-      AlgorithmParameterSpec spec = new IvParameterSpec(new byte[blockByteSize]);
+      final AlgorithmParameterSpec spec = new IvParameterSpec(new byte[blockByteSize]);
       cipher.init(Cipher.ENCRYPT_MODE, keySpec, spec);
-      byte[] encrypted = cipher.doFinal(secret);
+      final byte[] encrypted = cipher.doFinal(secret);
       assertEquals(
           encAlg.equals(algorithms[0]) ? secret.length : secret.length + blockByteSize,
           encrypted.length);
@@ -150,12 +151,12 @@ public class JreEncryptionProviderTest {
         assertEquals(
             encAlg.equals(decAlg) ? secret.length : secret.length + blockByteSize,
             decrypted.length);
-        boolean truncateNeeded = decrypted.length > secret.length;
+        final boolean truncateNeeded = decrypted.length > secret.length;
         if (truncateNeeded) {
           decrypted = Arrays.copyOfRange(decrypted, 0, secret.length);
         }
         assertArrayEquals(secret, decrypted);
-      } catch (BadPaddingException bpe) {
+      } catch (final BadPaddingException bpe) {
         assertArrayEquals(expectedErrorRun, run);
       }
     }

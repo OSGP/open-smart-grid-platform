@@ -101,7 +101,7 @@ public class SecretManagementService {
       byte[] aesEncrypted;
       try {
         aesEncrypted = HexUtils.fromHexString(dbEncryptedSecret.getEncodedSecret());
-      } catch (IllegalArgumentException iae) {
+      } catch (final IllegalArgumentException iae) {
         throw new FunctionalException(
             FunctionalExceptionType.INVALID_KEY_FORMAT, ComponentType.SECRET_MANAGEMENT, iae);
       }
@@ -137,11 +137,11 @@ public class SecretManagementService {
     final List<DbEncryptionKeyReference> keyRefs =
         this.keyRepository.findByTypeAndValid(this.encryptionProviderType, now);
     if (keyRefs.size() > 1) {
-      String messageFormat = "Multiple encryption keys found of type %s that are valid at %s";
+      final String messageFormat = "Multiple encryption keys found of type %s that are valid at %s";
       throw new IllegalStateException(
           String.format(messageFormat, this.encryptionProviderType, now));
     } else if (keyRefs.isEmpty()) {
-      String messageFormat = "No encryption key of type %s found that is valid at %s";
+      final String messageFormat = "No encryption key of type %s found that is valid at %s";
       throw new NoSuchElementException(
           String.format(messageFormat, this.encryptionProviderType, now));
     }
@@ -186,7 +186,9 @@ public class SecretManagementService {
   }
 
   private List<TypedSecret> doRetrieveSecrets(
-      final String deviceIdentification, final List<SecretType> secretTypes, SecretStatus status) {
+      final String deviceIdentification,
+      final List<SecretType> secretTypes,
+      final SecretStatus status) {
     return this.retrieveAesSecrets(deviceIdentification, secretTypes, status).stream()
         .map(this::reencryptAes2Rsa)
         .map(EncryptedTypedSecret::toTypedSecret)
@@ -217,7 +219,7 @@ public class SecretManagementService {
     if (optional.isPresent()) {
       try {
         return EncryptedTypedSecret.fromDbEncryptedSecret(optional.get());
-      } catch (FunctionalException e) {
+      } catch (final FunctionalException e) {
         throw new ExceptionWrapper(e);
       }
     } else {
@@ -236,7 +238,7 @@ public class SecretManagementService {
     if (secretsList.isEmpty()) {
       return Optional.empty();
     } else if (secretsList.size() > 1 && onlySingleSecretAllowed) {
-      String msgFormat =
+      final String msgFormat =
           "Only 1 instance allowed with status %s, but found %s for device %s, secret type %s";
       throw new IllegalStateException(
           String.format(
@@ -338,13 +340,13 @@ public class SecretManagementService {
           secretType,
           currentKey.getReference(),
           currentKey.getEncryptionProviderType());
-    } catch (EncrypterException ee) {
+    } catch (final EncrypterException ee) {
       throw new IllegalStateException("Eror generating secret", ee);
     }
   }
 
   private EncryptedTypedSecret reencryptRsa2Aes(final EncryptedTypedSecret secret) {
-    byte[] aesEncrypted = this.reencryptRsa2Aes(secret.encryptedSecret);
+    final byte[] aesEncrypted = this.reencryptRsa2Aes(secret.encryptedSecret);
     final DbEncryptionKeyReference currentKey = this.getCurrentKey();
     return new EncryptedTypedSecret(
         aesEncrypted,
@@ -357,7 +359,7 @@ public class SecretManagementService {
     if (secret.hasNullSecret()) {
       return secret; // No need to encrypt NULL value
     } else {
-      byte[] rsaEncrypted =
+      final byte[] rsaEncrypted =
           this.reencryptAes2Rsa(
               secret.encryptedSecret, secret.encryptionKeyReference, secret.encryptionProviderType);
       return new EncryptedTypedSecret(rsaEncrypted, secret.type);

@@ -59,7 +59,7 @@ public class FirmwareModuleData implements Serializable {
   }
 
   public String getModuleVersionMBusDriverActive() {
-    return moduleVersionMBusDriverActive;
+    return this.moduleVersionMBusDriverActive;
   }
 
   public int countNumberOfModules() {

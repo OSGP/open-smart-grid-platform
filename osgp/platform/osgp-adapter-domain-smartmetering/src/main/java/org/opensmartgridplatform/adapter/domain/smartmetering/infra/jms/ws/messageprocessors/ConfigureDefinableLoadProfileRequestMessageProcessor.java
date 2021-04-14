@@ -30,7 +30,7 @@ public class ConfigureDefinableLoadProfileRequestMessageProcessor
   @Autowired
   protected ConfigureDefinableLoadProfileRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
-          MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap) {
     super(messageProcessorMap, MessageType.CONFIGURE_DEFINABLE_LOAD_PROFILE);
   }
 

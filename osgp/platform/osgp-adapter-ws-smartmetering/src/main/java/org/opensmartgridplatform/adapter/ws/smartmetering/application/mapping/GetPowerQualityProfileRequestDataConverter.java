@@ -30,13 +30,13 @@ public class GetPowerQualityProfileRequestDataConverter
       final GetPowerQualityProfileRequest source,
       final Type<? extends GetPowerQualityProfileRequestData> destinationType,
       final MappingContext context) {
-    GetPowerQualityProfileRequestData data =
+    final GetPowerQualityProfileRequestData data =
         new GetPowerQualityProfileRequestData(
             source.getProfileType(),
             source.getBeginDate().toGregorianCalendar().getTime(),
             source.getEndDate().toGregorianCalendar().getTime());
     if (source.getSelectedValues() != null) {
-      List<CaptureObjectDefinition> captureObjectDefinitions =
+      final List<CaptureObjectDefinition> captureObjectDefinitions =
           source.getSelectedValues().getCaptureObject();
       captureObjectDefinitions.forEach(cod -> data.getSelectedValues().add(this.convert(cod)));
     }
@@ -44,13 +44,14 @@ public class GetPowerQualityProfileRequestDataConverter
   }
 
   private org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CaptureObjectDefinition
-      convert(CaptureObjectDefinition cod) {
-    org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ObisCodeValues obisCodeValues =
-        new org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ObisCodeValues(
-            (byte) cod.getLogicalName().getA(), (byte) cod.getLogicalName().getB(),
-            (byte) cod.getLogicalName().getC(), (byte) cod.getLogicalName().getD(),
-            (byte) cod.getLogicalName().getE(), (byte) cod.getLogicalName().getF());
-    org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CaptureObjectDefinition
+      convert(final CaptureObjectDefinition cod) {
+    final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ObisCodeValues
+        obisCodeValues =
+            new org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ObisCodeValues(
+                (byte) cod.getLogicalName().getA(), (byte) cod.getLogicalName().getB(),
+                (byte) cod.getLogicalName().getC(), (byte) cod.getLogicalName().getD(),
+                (byte) cod.getLogicalName().getE(), (byte) cod.getLogicalName().getF());
+    final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CaptureObjectDefinition
         captureObjectDefinition =
             new org.opensmartgridplatform.domain.core.valueobjects.smartmetering
                 .CaptureObjectDefinition(

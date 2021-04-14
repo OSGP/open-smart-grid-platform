@@ -29,7 +29,7 @@ public class SetClockConfigurationRequestMessageProcessor extends BaseRequestMes
   @Autowired
   protected SetClockConfigurationRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
-          MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap) {
     super(messageProcessorMap, MessageType.SET_CLOCK_CONFIGURATION);
   }
 

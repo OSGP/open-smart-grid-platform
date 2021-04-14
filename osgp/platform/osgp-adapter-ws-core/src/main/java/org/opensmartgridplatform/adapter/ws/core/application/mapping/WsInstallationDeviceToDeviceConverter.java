@@ -99,7 +99,9 @@ public class WsInstallationDeviceToDeviceConverter
                 + "\" and Manufacturer \""
                 + source.getDeviceModel().getManufacturer()
                 + "\" do not identify an existing device model.");
-      } else destination.setDeviceModel(deviceModel);
+      } else {
+        destination.setDeviceModel(deviceModel);
+      }
 
       return destination;
     }

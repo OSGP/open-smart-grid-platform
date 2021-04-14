@@ -82,7 +82,7 @@ public class EncryptionService {
 
   @PostConstruct
   private void initEncryption() throws FunctionalException {
-    if (key == null) {
+    if (this.key == null) {
       LOGGER.info("This EncryptionService not initialized since secret is not specified.");
       return;
     }

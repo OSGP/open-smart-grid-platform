@@ -15,7 +15,7 @@ public class UpdateFirmwareResponse extends FirmwareVersionResponse {
 
   private static final long serialVersionUID = 7383932230545675913L;
 
-  public UpdateFirmwareResponse(List<FirmwareVersion> firmwareVersions) {
+  public UpdateFirmwareResponse(final List<FirmwareVersion> firmwareVersions) {
     super(firmwareVersions);
   }
 }

@@ -17,7 +17,8 @@ public class GetPowerQualityProfileResponse extends ActionResponse implements Se
 
   private List<PowerQualityProfileData> powerQualityProfileDatas;
 
-  public void setPowerQualityProfileDatas(List<PowerQualityProfileData> powerQualityProfileDatas) {
+  public void setPowerQualityProfileDatas(
+      final List<PowerQualityProfileData> powerQualityProfileDatas) {
     this.powerQualityProfileDatas = powerQualityProfileDatas;
   }
 

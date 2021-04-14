@@ -29,7 +29,7 @@ public class GetSpecificAttributeValueRequestMessageProcessor extends BaseReques
   @Autowired
   protected GetSpecificAttributeValueRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
-          MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap) {
     super(messageProcessorMap, MessageType.GET_SPECIFIC_ATTRIBUTE_VALUE);
   }
 

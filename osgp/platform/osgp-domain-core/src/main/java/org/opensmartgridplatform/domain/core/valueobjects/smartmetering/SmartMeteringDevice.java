@@ -218,8 +218,8 @@ public class SmartMeteringDevice implements Serializable {
 
   public String getProtocolInfoLookupName() {
     if (CDMA.equals(this.communicationMethod)) {
-      return String.format("%s_%s", protocolName, CDMA);
+      return String.format("%s_%s", this.protocolName, CDMA);
     }
-    return protocolName;
+    return this.protocolName;
   }
 }

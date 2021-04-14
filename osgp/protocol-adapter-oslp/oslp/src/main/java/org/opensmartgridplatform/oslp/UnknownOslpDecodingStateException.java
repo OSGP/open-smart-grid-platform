@@ -13,7 +13,7 @@ public class UnknownOslpDecodingStateException extends Exception {
 
   private static final String MESSAGE = "Unknown OSLP decoding state: %1$s";
 
-  public UnknownOslpDecodingStateException(String unknownState) {
+  public UnknownOslpDecodingStateException(final String unknownState) {
     super(String.format(MESSAGE, unknownState));
   }
 }

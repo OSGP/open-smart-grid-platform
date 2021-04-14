@@ -31,7 +31,7 @@ public interface DeviceFirmwareModuleRepository
   List<DeviceFirmwareModule> findByDevice(@Param("device") Device device);
 
   default Map<FirmwareModule, String> findVersionPerFirmwareModule(final Device device) {
-    return findByDevice(device).stream()
+    return this.findByDevice(device).stream()
         .collect(
             Collectors.toMap(
                 DeviceFirmwareModule::getFirmwareModule, DeviceFirmwareModule::getModuleVersion));

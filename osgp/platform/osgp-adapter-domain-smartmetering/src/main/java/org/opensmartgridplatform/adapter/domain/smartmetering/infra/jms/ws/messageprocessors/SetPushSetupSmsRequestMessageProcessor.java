@@ -29,7 +29,7 @@ public class SetPushSetupSmsRequestMessageProcessor extends BaseRequestMessagePr
   @Autowired
   protected SetPushSetupSmsRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
-          MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap) {
     super(messageProcessorMap, MessageType.SET_PUSH_SETUP_SMS);
   }
 

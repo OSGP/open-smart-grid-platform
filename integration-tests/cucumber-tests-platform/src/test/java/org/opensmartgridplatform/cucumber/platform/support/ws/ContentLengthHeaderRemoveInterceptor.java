@@ -18,7 +18,8 @@ import org.apache.http.protocol.HttpContext;
 public class ContentLengthHeaderRemoveInterceptor implements HttpRequestInterceptor {
 
   @Override
-  public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
+  public void process(final HttpRequest request, final HttpContext context)
+      throws HttpException, IOException {
     // Remove Content Length Header from request
     request.removeHeaders(HTTP.CONTENT_LEN);
   }

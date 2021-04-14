@@ -139,8 +139,8 @@ public class SecretManagementServiceTest {
 
   @Test
   public void retrieveSecretsNoSecrets() {
-    List<SecretType> secretTypes = Arrays.asList(SecretType.E_METER_MASTER_KEY);
-    List<TypedSecret> result = this.service.retrieveSecrets("SOME_DEVICE", secretTypes);
+    final List<SecretType> secretTypes = Arrays.asList(SecretType.E_METER_MASTER_KEY);
+    final List<TypedSecret> result = this.service.retrieveSecrets("SOME_DEVICE", secretTypes);
     assertThat(result).isNotNull();
     assertThat(result.size()).isEqualTo(secretTypes.size());
     assertThat(result.get(0)).isNotNull();
@@ -176,7 +176,7 @@ public class SecretManagementServiceTest {
     final List<DbEncryptedSecret> savedSecrets = secretListArgumentCaptor.getValue();
     assertThat(savedSecrets).isNotNull();
     assertThat(savedSecrets.size()).isEqualTo(1);
-    DbEncryptedSecret savedSecret = savedSecrets.get(0);
+    final DbEncryptedSecret savedSecret = savedSecrets.get(0);
     assertThat(savedSecret.getDeviceIdentification()).isEqualTo("SOME_DEVICE");
     assertThat(savedSecret.getSecretType()).isEqualTo(typedSecret.getSecretType());
     assertThat(savedSecret.getEncodedSecret())
@@ -280,7 +280,7 @@ public class SecretManagementServiceTest {
     final List<DbEncryptedSecret> savedSecrets = secretListArgumentCaptor.getValue();
     assertThat(savedSecrets).isNotNull();
     assertThat(savedSecrets.size()).isEqualTo(1);
-    DbEncryptedSecret savedSecret = savedSecrets.get(0);
+    final DbEncryptedSecret savedSecret = savedSecrets.get(0);
     assertThat(savedSecret).isNotNull();
     assertThat(savedSecret.getDeviceIdentification()).isEqualTo("SOME_DEVICE");
     assertThat(savedSecret.getSecretType()).isEqualTo(typedSecret.getSecretType());
@@ -374,10 +374,10 @@ public class SecretManagementServiceTest {
   public void generateAndStoreSecrets() throws EncrypterException {
     final Date now = new Date();
     final String reference = "1";
-    byte[] aesSecret = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
-    byte[] secret = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-    byte[] rsaSecret = {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
-    DbEncryptionKeyReference keyReference = new DbEncryptionKeyReference();
+    final byte[] aesSecret = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+    final byte[] secret = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+    final byte[] rsaSecret = {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
+    final DbEncryptionKeyReference keyReference = new DbEncryptionKeyReference();
     keyReference.setReference(reference);
     keyReference.setEncryptionProviderType(ENCRYPTION_PROVIDER_TYPE);
     keyReference.setValidFrom(now);
@@ -387,11 +387,11 @@ public class SecretManagementServiceTest {
         .thenReturn(aesSecret);
     when(this.encryptionDelegate.decrypt(any(), any())).thenReturn(secret);
     when(this.rsaEncrypter.encrypt(any())).thenReturn(rsaSecret);
-    List<TypedSecret> secrets =
+    final List<TypedSecret> secrets =
         this.service.generateAndStoreSecrets(
             SOME_DEVICE, Arrays.asList(SecretType.E_METER_AUTHENTICATION_KEY));
     assertThat(secrets.size()).isEqualTo(1);
-    TypedSecret typedSecret = secrets.get(0);
+    final TypedSecret typedSecret = secrets.get(0);
     assertThat(typedSecret.getSecretType()).isEqualTo(SecretType.E_METER_AUTHENTICATION_KEY);
     assertThat(typedSecret.getSecret()).isEqualTo(rsaSecret);
   }

@@ -34,11 +34,11 @@ public class Node {
 
   public List<BasicDataAttribute> getChangedAttributes() {
     final List<BasicDataAttribute> changedAttributes = new ArrayList<>();
-    final BasicDataAttribute changedMagnitudeAttribute = getChangedMagnitudeAttribute();
+    final BasicDataAttribute changedMagnitudeAttribute = this.getChangedMagnitudeAttribute();
     if (changedMagnitudeAttribute != null) {
       changedAttributes.add(changedMagnitudeAttribute);
     }
-    final BasicDataAttribute changedTimestampAttribute = getChangedTimestampAttribute();
+    final BasicDataAttribute changedTimestampAttribute = this.getChangedTimestampAttribute();
     if (changedTimestampAttribute != null) {
       changedAttributes.add(changedTimestampAttribute);
     }
@@ -75,16 +75,16 @@ public class Node {
   }
 
   private BasicDataAttribute getChangedMagnitudeAttribute() {
-    final ModelNode node = getMagnitudeNode();
+    final ModelNode node = this.getMagnitudeNode();
     if (node != null) {
-      return getChangedMagnitudeAttributeForNode(node);
+      return this.getChangedMagnitudeAttributeForNode(node);
     }
     return null;
   }
 
   private ModelNode getMagnitudeNode() {
     final ModelNode modelNode =
-        this.getServerModel().findModelNode(getMagnitudeNodeName(), FC_MEASURANDS_VALUES);
+        this.getServerModel().findModelNode(this.getMagnitudeNodeName(), FC_MEASURANDS_VALUES);
     if (modelNode != null && !(modelNode instanceof BdaFloat32)) {
       return null;
     }
@@ -98,16 +98,16 @@ public class Node {
   }
 
   private BasicDataAttribute getChangedTimestampAttribute() {
-    final ModelNode node = getTimestampNode();
+    final ModelNode node = this.getTimestampNode();
     if (node != null) {
-      return getChangedTimestampAttributeForNode(node);
+      return this.getChangedTimestampAttributeForNode(node);
     }
     return null;
   }
 
   private ModelNode getTimestampNode() {
     final ModelNode modelNode =
-        this.getServerModel().findModelNode(getTimestampNodeName(), FC_MEASURANDS_VALUES);
+        this.getServerModel().findModelNode(this.getTimestampNodeName(), FC_MEASURANDS_VALUES);
     if (modelNode != null && !(modelNode instanceof BdaTimestamp)) {
       return null;
     }

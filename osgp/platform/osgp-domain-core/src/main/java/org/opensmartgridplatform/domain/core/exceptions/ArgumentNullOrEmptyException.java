@@ -26,6 +26,6 @@ public class ArgumentNullOrEmptyException extends PlatformException {
   }
 
   public String getArgument() {
-    return argument;
+    return this.argument;
   }
 }

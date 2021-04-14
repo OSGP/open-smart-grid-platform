@@ -24,6 +24,6 @@ public class SigningServerInitializer extends AbstractApplicationInitializer
   /** */
   @Override
   public void onStartup(final ServletContext servletContext) throws ServletException {
-    startUp(servletContext);
+    this.startUp(servletContext);
   }
 }

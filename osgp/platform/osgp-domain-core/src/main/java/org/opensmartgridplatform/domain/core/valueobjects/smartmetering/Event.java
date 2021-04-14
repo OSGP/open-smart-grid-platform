@@ -35,6 +35,6 @@ public class Event implements Serializable {
   }
 
   public Integer getEventCode() {
-    return eventType.getEventCode();
+    return this.eventType.getEventCode();
   }
 }

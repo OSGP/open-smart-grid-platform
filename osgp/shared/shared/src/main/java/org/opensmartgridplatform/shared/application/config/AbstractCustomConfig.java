@@ -28,7 +28,7 @@ public abstract class AbstractCustomConfig {
    */
   @Bean
   public static PropertySourcesPlaceholderConfigurer propertyConfigurer() {
-    PropertySourcesPlaceholderConfigurer ppc = new PropertySourcesPlaceholderConfigurer();
+    final PropertySourcesPlaceholderConfigurer ppc = new PropertySourcesPlaceholderConfigurer();
     ppc.setEnvironment(ENVIRONMENT);
     ppc.setIgnoreResourceNotFound(true);
     ppc.setIgnoreUnresolvablePlaceholders(true);
@@ -43,14 +43,14 @@ public abstract class AbstractCustomConfig {
    * @param ignoreResourceNotFound indicates whether the source is required
    * @throws IOException when property source is required and not found
    */
-  protected void addPropertySource(String location, boolean ignoreResourceNotFound)
+  protected void addPropertySource(final String location, final boolean ignoreResourceNotFound)
       throws IOException {
-    MutablePropertySources propertySources = ENVIRONMENT.getPropertySources();
-    String locationNoPlaceholders = ENVIRONMENT.resolvePlaceholders(location);
+    final MutablePropertySources propertySources = ENVIRONMENT.getPropertySources();
+    final String locationNoPlaceholders = ENVIRONMENT.resolvePlaceholders(location);
 
     try {
       propertySources.addLast(new ResourcePropertySource(locationNoPlaceholders));
-    } catch (IOException e) {
+    } catch (final IOException e) {
       if (!ignoreResourceNotFound) {
         throw e;
       }

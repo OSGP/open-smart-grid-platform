@@ -56,7 +56,7 @@ public class InboundOsgpCoreRequestsMessagingConfig {
       @Qualifier("protocolDlmsInboundOsgpCoreRequestsMessageListener")
           final MessageListener messageListener) {
 
-    DefaultMessageListenerContainer container =
+    final DefaultMessageListenerContainer container =
         this.jmsConfigurationFactory.initMessageListenerContainer(messageListener);
 
     LOGGER.info(

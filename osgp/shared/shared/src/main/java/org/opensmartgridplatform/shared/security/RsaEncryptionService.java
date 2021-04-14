@@ -276,7 +276,8 @@ public class RsaEncryptionService {
     }
   }
 
-  private static PublicKey generatePublicKey(byte[] publicKeyBytes) throws InvalidKeySpecException {
+  private static PublicKey generatePublicKey(final byte[] publicKeyBytes)
+      throws InvalidKeySpecException {
     final X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
     return getKeyFactory().generatePublic(publicKeySpec);
   }
@@ -321,7 +322,7 @@ public class RsaEncryptionService {
     }
   }
 
-  private static PrivateKey generatePrivateKey(byte[] privateKeyBytes)
+  private static PrivateKey generatePrivateKey(final byte[] privateKeyBytes)
       throws InvalidKeySpecException {
     final PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
     return getKeyFactory().generatePrivate(privateKeySpec);

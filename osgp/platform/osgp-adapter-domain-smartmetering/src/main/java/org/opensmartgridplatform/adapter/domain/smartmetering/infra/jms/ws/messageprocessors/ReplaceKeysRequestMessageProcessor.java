@@ -29,7 +29,7 @@ public class ReplaceKeysRequestMessageProcessor extends BaseRequestMessageProces
   @Autowired
   protected ReplaceKeysRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
-          MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap) {
     super(messageProcessorMap, MessageType.REPLACE_KEYS);
   }
 

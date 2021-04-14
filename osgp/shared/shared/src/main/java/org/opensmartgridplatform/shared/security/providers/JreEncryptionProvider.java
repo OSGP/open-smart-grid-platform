@@ -40,7 +40,7 @@ public class JreEncryptionProvider extends AbstractEncryptionProvider {
     try {
       super.setKeyFile(keyStoreFile);
       this.key = Files.readAllBytes(Paths.get(keyStoreFile.getAbsolutePath()));
-    } catch (IOException e) {
+    } catch (final IOException e) {
       throw new EncrypterException("Could not read keystore", e);
     }
   }

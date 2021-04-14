@@ -49,7 +49,7 @@ public class EventService {
     final SmartMeter smartMeter =
         this.domainHelperService.findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
 
-    for (EventDto eventDto : responseDto.getEvents()) {
+    for (final EventDto eventDto : responseDto.getEvents()) {
       final EventTypeDto eventTypeDto = this.determineEventType(eventDto, smartMeter);
       eventDto.setEventTypeDto(eventTypeDto);
     }
@@ -70,7 +70,7 @@ public class EventService {
 
     final Integer eventCode = eventDto.getEventCode();
 
-    final List<EventTypeDtoLookup> possibleEventTypes = eventTypsByCode.get(eventCode);
+    final List<EventTypeDtoLookup> possibleEventTypes = this.eventTypsByCode.get(eventCode);
     if (possibleEventTypes == null) {
       throw new FunctionalException(
           FunctionalExceptionType.VALIDATION_ERROR,
@@ -281,8 +281,8 @@ public class EventService {
         final EventTypeDto eventTypeDto,
         final int eventCode,
         final String protocol,
-        String manufacturerCode,
-        String deviceType) {
+        final String manufacturerCode,
+        final String deviceType) {
       this.eventTypeDto = eventTypeDto;
       this.eventCode = eventCode;
       this.protocol = protocol;
@@ -291,27 +291,29 @@ public class EventService {
     }
 
     public EventTypeDto getEventTypeDto() {
-      return eventTypeDto;
+      return this.eventTypeDto;
     }
 
     public int getEventCode() {
-      return eventCode;
+      return this.eventCode;
     }
 
     public String getProtocol() {
-      return protocol;
+      return this.protocol;
     }
 
     public String getManufacturerCode() {
-      return manufacturerCode;
+      return this.manufacturerCode;
     }
 
     public String getDeviceType() {
-      return deviceType;
+      return this.deviceType;
     }
 
     public boolean isGeneric() {
-      return getProtocol() == null && getManufacturerCode() == null && getDeviceType() == null;
+      return this.getProtocol() == null
+          && this.getManufacturerCode() == null
+          && this.getDeviceType() == null;
     }
   }
 }

@@ -29,7 +29,7 @@ public class SetAlarmNotificationsRequestMessageProcessor extends BaseRequestMes
   @Autowired
   protected SetAlarmNotificationsRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
-          MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap) {
     super(messageProcessorMap, MessageType.SET_ALARM_NOTIFICATIONS);
   }
 

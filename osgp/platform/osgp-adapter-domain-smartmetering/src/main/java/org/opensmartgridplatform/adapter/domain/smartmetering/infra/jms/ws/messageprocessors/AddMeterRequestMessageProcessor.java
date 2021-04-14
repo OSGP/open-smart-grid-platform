@@ -29,7 +29,7 @@ public class AddMeterRequestMessageProcessor extends BaseRequestMessageProcessor
   @Autowired
   protected AddMeterRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
-          MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap) {
     super(messageProcessorMap, MessageType.ADD_METER);
   }
 

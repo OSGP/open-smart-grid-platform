@@ -44,7 +44,7 @@ public class SetActivityCalendarRequestFactory {
     setActivityCalendarRequest.setDeviceIdentification(
         requestParameters.get(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION));
 
-    ActivityCalendarType activityCalendarType = fetchActivityCalendar();
+    final ActivityCalendarType activityCalendarType = fetchActivityCalendar();
 
     final SetActivityCalendarRequestData setActivityCalendarRequestData =
         new SetActivityCalendarRequestData();

@@ -22,6 +22,7 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.requests.
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.responses.GetConfigurationDeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.responses.GetFirmwareVersionDeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.responses.GetStatusDeviceResponse;
+import org.opensmartgridplatform.dto.valueobjects.ConfigurationDto;
 import org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.EventNotificationTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.ScheduleDto;
@@ -46,7 +47,8 @@ public interface SsldDeviceService {
       throws JMSException;
 
   /**
-   * Writes all the given {@link Configuration} data to the device. Ignores all null values.
+   * Writes all the given {@link ConfigurationDto Configuration} data to the device. Ignores all
+   * null values.
    *
    * <p>Returns a {@link DeviceMessageStatus} via the deviceResponseHandler's callback.
    */
@@ -55,7 +57,7 @@ public interface SsldDeviceService {
       throws JMSException;
 
   /**
-   * Reads {@link Configuration} data from the device.
+   * Reads {@link ConfigurationDto Configuration} data from the device.
    *
    * <p>Returns a {@link GetConfigurationDeviceResponse} via the deviceResponseHandler's callback.
    */

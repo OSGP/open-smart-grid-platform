@@ -29,7 +29,7 @@ public class SetMbusUserKeyByChannelRequestMessageProcessor extends BaseRequestM
   @Autowired
   protected SetMbusUserKeyByChannelRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
-          MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap) {
     super(messageProcessorMap, MessageType.SET_MBUS_USER_KEY_BY_CHANNEL);
   }
 

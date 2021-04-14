@@ -38,14 +38,14 @@ public class IdentificationNumber {
     if (StringUtils.isBlank(this.last8Digits)) {
       return DataObject.newNullData();
     }
-    return DataObject.newUInteger32Data(getIdentificationNumber());
+    return DataObject.newUInteger32Data(this.getIdentificationNumber());
   }
 
   Long getIdentificationNumber() {
-    if (StringUtils.isBlank(last8Digits)) {
+    if (StringUtils.isBlank(this.last8Digits)) {
       return null;
     }
-    return Long.parseLong(last8Digits, HEX_RADIX);
+    return Long.parseLong(this.last8Digits, HEX_RADIX);
   }
 
   String getLast8Digits() {
@@ -55,6 +55,6 @@ public class IdentificationNumber {
   @Override
   public String toString() {
     return String.format(
-        "IdentificationNumber[%s(%d)]", this.last8Digits, getIdentificationNumber());
+        "IdentificationNumber[%s(%d)]", this.last8Digits, this.getIdentificationNumber());
   }
 }

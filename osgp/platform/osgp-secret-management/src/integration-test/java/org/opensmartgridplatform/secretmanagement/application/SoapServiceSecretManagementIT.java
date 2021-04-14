@@ -280,11 +280,11 @@ public class SoapServiceSecretManagementIT {
               response.writeTo(outputStream);
               assertThat(outputStream.toString()).contains("Result>OK");
             });
-    List<DbEncryptedSecret> authKeys =
+    final List<DbEncryptedSecret> authKeys =
         this.secretRepository.findSecrets(
             DEVICE_IDENTIFICATION, SecretType.E_METER_AUTHENTICATION_KEY, SecretStatus.NEW);
     assertThat(authKeys).hasSize(1);
-    DbEncryptedSecret authKey = authKeys.get(0);
+    final DbEncryptedSecret authKey = authKeys.get(0);
     assertThat(authKey.getEncodedSecret()).hasSize(64);
   }
 

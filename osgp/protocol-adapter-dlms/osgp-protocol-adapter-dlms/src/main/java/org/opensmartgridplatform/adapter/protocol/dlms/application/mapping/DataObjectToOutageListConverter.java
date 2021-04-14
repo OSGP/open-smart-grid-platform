@@ -62,7 +62,7 @@ public class DataObjectToOutageListConverter {
     final DateTime endTime = this.extractDateTime(outageData);
     final Long duration = this.extractEventDuration(outageData);
 
-    OutageDto outage = new OutageDto(endTime, duration);
+    final OutageDto outage = new OutageDto(endTime, duration);
 
     log.info("Converted dataObject to outage: {}", outage);
     return outage;

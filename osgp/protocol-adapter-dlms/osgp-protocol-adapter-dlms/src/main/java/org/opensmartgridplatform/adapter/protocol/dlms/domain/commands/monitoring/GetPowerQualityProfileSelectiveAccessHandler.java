@@ -32,16 +32,16 @@ public class GetPowerQualityProfileSelectiveAccessHandler
   protected List<ProfileEntryValueDto> createProfileEntryValueDto(
       final DataObject profileEntryDataObject,
       final List<ScalerUnitInfo> scalerUnitInfos,
-      ProfileEntryDto previousProfileEntryDto,
+      final ProfileEntryDto previousProfileEntryDto,
       final Map<Integer, CaptureObjectDefinitionDto> selectableCaptureObjects,
-      int timeInterval) {
+      final int timeInterval) {
 
     final List<ProfileEntryValueDto> result = new ArrayList<>();
     final List<DataObject> dataObjects = profileEntryDataObject.getValue();
 
     for (int i = 0; i < dataObjects.size(); i++) {
 
-      ProfileEntryValueDto currentProfileEntryValueDto =
+      final ProfileEntryValueDto currentProfileEntryValueDto =
           super.makeProfileEntryValueDto(
               dataObjects.get(i), scalerUnitInfos.get(i), previousProfileEntryDto, timeInterval);
       result.add(currentProfileEntryValueDto);
@@ -52,13 +52,13 @@ public class GetPowerQualityProfileSelectiveAccessHandler
 
   @Override
   protected DataObject convertSelectableCaptureObjects(
-      List<CaptureObjectDefinitionDto> selectableCaptureObjects) {
+      final List<CaptureObjectDefinitionDto> selectableCaptureObjects) {
 
     final List<DataObject> objectDefinitions = new ArrayList<>();
 
     if (!selectableCaptureObjects.isEmpty()) {
       // The captured clock is always included.
-      objectDefinitions.add(dlmsHelper.getClockDefinition());
+      objectDefinitions.add(this.dlmsHelper.getClockDefinition());
       for (final CaptureObjectDefinitionDto captureObjectDefinition : selectableCaptureObjects) {
         final int classId = captureObjectDefinition.getClassId();
         final byte[] obisBytes = captureObjectDefinition.getLogicalName().toByteArray();

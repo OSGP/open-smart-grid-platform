@@ -40,15 +40,15 @@ public class ThrottlingServiceTest {
   @Test
   public void testThrottling() throws InterruptedException {
 
-    openingThreadDone = new AtomicBoolean(false);
-    closingThreadDone = new AtomicBoolean(false);
+    this.openingThreadDone = new AtomicBoolean(false);
+    this.closingThreadDone = new AtomicBoolean(false);
 
-    openingThread().start();
-    closingThread().start();
+    this.openingThread().start();
+    this.closingThread().start();
 
     assertThat(true).isEqualTo(true);
 
-    while (!openingThreadDone.get() && !closingThreadDone.get()) {
+    while (!this.openingThreadDone.get() && !this.closingThreadDone.get()) {
       Thread.sleep(1000);
     }
   }
@@ -59,11 +59,11 @@ public class ThrottlingServiceTest {
           for (int i = 0; i < 100; i++) {
 
             LOGGER.info("Incoming request {}", i);
-            throttlingService.openConnection();
+            this.throttlingService.openConnection();
           }
 
           LOGGER.info("Opening Connection Thread done");
-          openingThreadDone.set(true);
+          this.openingThreadDone.set(true);
         });
   }
 
@@ -72,16 +72,16 @@ public class ThrottlingServiceTest {
         () -> {
           for (int i = 0; i < 100; i++) {
             LOGGER.info("Closing Connection {}", i);
-            throttlingService.closeConnection();
+            this.throttlingService.closeConnection();
             try {
               Thread.sleep(200);
-            } catch (InterruptedException e) {
-              closingThreadDone.set(true);
+            } catch (final InterruptedException e) {
+              this.closingThreadDone.set(true);
             }
           }
 
           LOGGER.info("CLosing Connection Thread done");
-          closingThreadDone.set(true);
+          this.closingThreadDone.set(true);
         });
   }
 }

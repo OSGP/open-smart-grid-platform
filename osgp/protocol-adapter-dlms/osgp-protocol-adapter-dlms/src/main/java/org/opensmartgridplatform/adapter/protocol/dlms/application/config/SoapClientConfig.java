@@ -61,7 +61,7 @@ public class SoapClientConfig {
 
   @Bean
   Jaxb2Marshaller soapClientJaxb2Marshaller() {
-    Jaxb2Marshaller jaxb2Marshaller = new Jaxb2Marshaller();
+    final Jaxb2Marshaller jaxb2Marshaller = new Jaxb2Marshaller();
     jaxb2Marshaller.setContextPath(XSD_SCHEMA_PACKAGE);
     return jaxb2Marshaller;
   }
@@ -69,7 +69,7 @@ public class SoapClientConfig {
   @Bean
   public WebServiceTemplate webServiceTemplate() throws Exception {
 
-    WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
+    final WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
     webServiceTemplate.setMarshaller(this.soapClientJaxb2Marshaller());
     webServiceTemplate.setUnmarshaller(this.soapClientJaxb2Marshaller());
     webServiceTemplate.setDefaultUri(this.defaultUri);
@@ -83,7 +83,7 @@ public class SoapClientConfig {
 
   @Bean
   public HttpsUrlConnectionMessageSender httpsUrlConnectionMessageSender() throws Exception {
-    HttpsUrlConnectionMessageSender httpsUrlConnectionMessageSender =
+    final HttpsUrlConnectionMessageSender httpsUrlConnectionMessageSender =
         new HttpsUrlConnectionMessageSender();
     // set the trust store(s)
     httpsUrlConnectionMessageSender.setTrustManagers(this.trustManagersFactoryBean().getObject());
@@ -99,7 +99,7 @@ public class SoapClientConfig {
 
   @Bean
   public KeyStoreFactoryBean trustStore() {
-    KeyStoreFactoryBean keyStoreFactoryBean = new KeyStoreFactoryBean();
+    final KeyStoreFactoryBean keyStoreFactoryBean = new KeyStoreFactoryBean();
     keyStoreFactoryBean.setLocation(this.trustStore);
     keyStoreFactoryBean.setPassword(this.trustStorePassword);
 
@@ -108,7 +108,7 @@ public class SoapClientConfig {
 
   @Bean
   public TrustManagersFactoryBean trustManagersFactoryBean() {
-    TrustManagersFactoryBean trustManagersFactoryBean = new TrustManagersFactoryBean();
+    final TrustManagersFactoryBean trustManagersFactoryBean = new TrustManagersFactoryBean();
     trustManagersFactoryBean.setKeyStore(this.trustStore().getObject());
 
     return trustManagersFactoryBean;
@@ -116,7 +116,7 @@ public class SoapClientConfig {
 
   @Bean
   public KeyStoreFactoryBean keyStore() {
-    KeyStoreFactoryBean keyStoreFactoryBean = new KeyStoreFactoryBean();
+    final KeyStoreFactoryBean keyStoreFactoryBean = new KeyStoreFactoryBean();
     keyStoreFactoryBean.setLocation(this.keyStore);
     keyStoreFactoryBean.setPassword(this.keyStorePassword);
 
@@ -125,7 +125,7 @@ public class SoapClientConfig {
 
   @Bean
   public KeyManagersFactoryBean keyManagersFactoryBean() {
-    KeyManagersFactoryBean keyManagersFactoryBean = new KeyManagersFactoryBean();
+    final KeyManagersFactoryBean keyManagersFactoryBean = new KeyManagersFactoryBean();
     keyManagersFactoryBean.setKeyStore(this.keyStore().getObject());
     keyManagersFactoryBean.setPassword(this.keyPassword);
     return keyManagersFactoryBean;
@@ -134,13 +134,13 @@ public class SoapClientConfig {
   @Bean
   public RsaEncrypter rsaEncrypter() {
     try {
-      File privateRsaKeyFile = this.soapRsaPrivateKeyResource.getFile();
-      File publicRsaKeyFile = this.soapRsaPublicKeyResource.getFile();
-      RsaEncrypter rsaEncrypter = new RsaEncrypter();
+      final File privateRsaKeyFile = this.soapRsaPrivateKeyResource.getFile();
+      final File publicRsaKeyFile = this.soapRsaPublicKeyResource.getFile();
+      final RsaEncrypter rsaEncrypter = new RsaEncrypter();
       rsaEncrypter.setPrivateKeyStore(privateRsaKeyFile);
       rsaEncrypter.setPublicKeyStore(publicRsaKeyFile);
       return rsaEncrypter;
-    } catch (IOException e) {
+    } catch (final IOException e) {
       throw new IllegalStateException("Could not initialize RsaEncrypter", e);
     }
   }

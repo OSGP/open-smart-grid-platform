@@ -31,9 +31,9 @@ public class GetPowerQualityProfileNoSelectiveAccessHandler
   protected List<ProfileEntryValueDto> createProfileEntryValueDto(
       final DataObject profileEntryDataObject,
       final List<ScalerUnitInfo> scalerUnitInfos,
-      ProfileEntryDto previousProfileEntryDto,
+      final ProfileEntryDto previousProfileEntryDto,
       final Map<Integer, CaptureObjectDefinitionDto> selectableCaptureObjects,
-      int timeInterval) {
+      final int timeInterval) {
 
     final List<ProfileEntryValueDto> result = new ArrayList<>();
     final List<DataObject> dataObjects = profileEntryDataObject.getValue();
@@ -41,7 +41,7 @@ public class GetPowerQualityProfileNoSelectiveAccessHandler
     for (int i = 0; i < dataObjects.size(); i++) {
 
       if (selectableCaptureObjects.containsKey(i)) {
-        ProfileEntryValueDto currentProfileEntryValueDto =
+        final ProfileEntryValueDto currentProfileEntryValueDto =
             this.makeProfileEntryValueDto(
                 dataObjects.get(i),
                 scalerUnitInfos.get(result.size()),
@@ -56,7 +56,7 @@ public class GetPowerQualityProfileNoSelectiveAccessHandler
 
   @Override
   protected DataObject convertSelectableCaptureObjects(
-      List<CaptureObjectDefinitionDto> selectableCaptureObjects) {
+      final List<CaptureObjectDefinitionDto> selectableCaptureObjects) {
     return DataObject.newArrayData(new ArrayList<>());
   }
 }

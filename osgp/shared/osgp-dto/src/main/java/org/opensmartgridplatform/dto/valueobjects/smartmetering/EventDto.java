@@ -35,7 +35,7 @@ public class EventDto implements Serializable {
     this.eventLogCategoryName = eventLogCategoryName;
   }
 
-  public void setEventTypeDto(EventTypeDto eventTypeDto) {
+  public void setEventTypeDto(final EventTypeDto eventTypeDto) {
     this.eventTypeDto = eventTypeDto;
   }
 }

@@ -18,7 +18,7 @@ public class DlmsObjectConfigConfiguration {
 
   @Bean
   public List<DlmsObjectConfig> getDlmsObjectConfigs() {
-    List<DlmsObjectConfig> configs = new ArrayList<>();
+    final List<DlmsObjectConfig> configs = new ArrayList<>();
     configs.add(new DlmsObjectConfigDsmr422());
     configs.add(new DlmsObjectConfigSmr50());
     return configs;

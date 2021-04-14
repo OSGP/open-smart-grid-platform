@@ -28,7 +28,7 @@ public class LoggingRequestMessage {
       final CorrelationIds ids,
       final String userName,
       final String applicationName,
-      EndpointClassAndMethod classAndMethod,
+      final EndpointClassAndMethod classAndMethod,
       final ResponseResultAndDataSize responseResultAndDataSize) {
     this.ids = ids;
     this.timeStamp = (Date) timeStamp.clone();

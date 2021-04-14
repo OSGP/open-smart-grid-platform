@@ -42,14 +42,14 @@ public class MonitoringService {
   private final ClearAlarmRegisterCommandExecutor clearAlarmRegisterCommandExecutor;
 
   public MonitoringService(
-      GetPeriodicMeterReadsCommandExecutor getPeriodicMeterReadsCommandExecutor,
-      GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor,
-      GetActualMeterReadsCommandExecutor actualMeterReadsCommandExecutor,
-      GetActualMeterReadsGasCommandExecutor actualMeterReadsGasCommandExecutor,
-      GetActualPowerQualityCommandExecutor getActualPowerQualityCommandExecutor,
-      ReadAlarmRegisterCommandExecutor readAlarmRegisterCommandExecutor,
-      GetPowerQualityProfileCommandExecutor getPowerQualityProfileCommandExecutor,
-      ClearAlarmRegisterCommandExecutor clearAlarmRegisterCommandExecutor) {
+      final GetPeriodicMeterReadsCommandExecutor getPeriodicMeterReadsCommandExecutor,
+      final GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor,
+      final GetActualMeterReadsCommandExecutor actualMeterReadsCommandExecutor,
+      final GetActualMeterReadsGasCommandExecutor actualMeterReadsGasCommandExecutor,
+      final GetActualPowerQualityCommandExecutor getActualPowerQualityCommandExecutor,
+      final ReadAlarmRegisterCommandExecutor readAlarmRegisterCommandExecutor,
+      final GetPowerQualityProfileCommandExecutor getPowerQualityProfileCommandExecutor,
+      final ClearAlarmRegisterCommandExecutor clearAlarmRegisterCommandExecutor) {
 
     this.getPeriodicMeterReadsCommandExecutor = getPeriodicMeterReadsCommandExecutor;
     this.getPeriodicMeterReadsGasCommandExecutor = getPeriodicMeterReadsGasCommandExecutor;

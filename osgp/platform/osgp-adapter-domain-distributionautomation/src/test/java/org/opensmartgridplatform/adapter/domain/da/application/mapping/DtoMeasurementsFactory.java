@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.domain.da.application.mapping;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.opensmartgridplatform.domain.da.measurements.Measurement;
 import org.opensmartgridplatform.domain.da.measurements.MeasurementElement;
 import org.opensmartgridplatform.domain.da.measurements.MeasurementGroup;
 import org.opensmartgridplatform.domain.da.measurements.MeasurementReportHeader;
@@ -34,8 +35,8 @@ public class DtoMeasurementsFactory {
 
   public static MeasurementDto gasFlowMeasurement(final float gasFlow) {
     final BitmaskMeasurementElementDto flags = new BitmaskMeasurementElementDto((byte) 96);
-    final TimestampMeasurementElementDto from = new TimestampMeasurementElementDto(1546800000501l);
-    final TimestampMeasurementElementDto until = new TimestampMeasurementElementDto(1546700000444l);
+    final TimestampMeasurementElementDto from = new TimestampMeasurementElementDto(1546800000501L);
+    final TimestampMeasurementElementDto until = new TimestampMeasurementElementDto(1546700000444L);
     final FloatMeasurementElementDto cubicMeters = new FloatMeasurementElementDto(gasFlow);
 
     final List<MeasurementElementDto> measurementElements = new ArrayList<>();

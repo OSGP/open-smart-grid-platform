@@ -29,7 +29,7 @@ public class SetEncryptionKeyExchangeOnGMeterRequestMessageProcessor
   @Autowired
   protected SetEncryptionKeyExchangeOnGMeterRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
-          MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap) {
     super(messageProcessorMap, MessageType.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER);
   }
 

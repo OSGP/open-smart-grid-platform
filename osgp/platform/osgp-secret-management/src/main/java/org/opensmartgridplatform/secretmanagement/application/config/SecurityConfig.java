@@ -56,7 +56,7 @@ public class SecurityConfig {
       encryptionProviderList.add(jreEncryptionProvider);
 
       if (this.hsmKeystoreResource.isPresent()) {
-        HsmEncryptionProvider hsmEncryptionProvider =
+        final HsmEncryptionProvider hsmEncryptionProvider =
             new HsmEncryptionProvider(this.hsmKeystoreResource.get().getFile());
         encryptionProviderList.add(hsmEncryptionProvider);
       }

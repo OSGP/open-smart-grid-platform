@@ -28,7 +28,7 @@ public class GetAssociationLnObjectsRequestMessageProcessor extends BaseRequestM
   @Autowired
   protected GetAssociationLnObjectsRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
-          MessageProcessorMap messageProcessorMap) {
+          final MessageProcessorMap messageProcessorMap) {
     super(messageProcessorMap, MessageType.GET_ASSOCIATION_LN_OBJECTS);
   }
 

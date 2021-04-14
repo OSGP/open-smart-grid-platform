@@ -67,7 +67,7 @@ public class PushNotificationAlarmMessageProcessor extends AbstractProtocolReque
 
     LOGGER.info(
         "Received message of messageType: {} organisationIdentification: {} deviceIdentification: {}",
-        messageType,
+        this.messageType,
         metadata.getOrganisationIdentification(),
         metadata.getDeviceIdentification());
 
@@ -76,7 +76,7 @@ public class PushNotificationAlarmMessageProcessor extends AbstractProtocolReque
 
     try {
 
-      final Device device = getDevice(metadata.getDeviceIdentification());
+      final Device device = this.getDevice(metadata.getDeviceIdentification());
 
       final PushNotificationAlarmDto pushNotificationAlarm = (PushNotificationAlarmDto) dataObject;
 
@@ -88,7 +88,7 @@ public class PushNotificationAlarmMessageProcessor extends AbstractProtocolReque
           "Matching owner {} with device {} handling {} from {}",
           ownerIdentification,
           metadata.getDeviceIdentification(),
-          messageType,
+          this.messageType,
           requestMessage.getIpAddress());
       final RequestMessage requestWithUpdatedOrganization =
           new RequestMessage(
@@ -98,7 +98,7 @@ public class PushNotificationAlarmMessageProcessor extends AbstractProtocolReque
               requestMessage.getIpAddress(),
               pushNotificationAlarm);
 
-      Optional<DomainInfo> smartMeteringDomain = getDomainInfo();
+      final Optional<DomainInfo> smartMeteringDomain = this.getDomainInfo();
 
       if (smartMeteringDomain.isPresent()) {
         this.domainRequestService.send(
@@ -107,17 +107,17 @@ public class PushNotificationAlarmMessageProcessor extends AbstractProtocolReque
             smartMeteringDomain.get());
 
         device.updateConnectionDetailsToSuccess();
-        deviceRepository.save(device);
+        this.deviceRepository.save(device);
       } else {
         LOGGER.error(
             "No DomainInfo found for SMART_METERING 1.0, unable to send message of message type: {} to "
                 + "domain adapter. RequestMessage for {} dropped.",
-            messageType,
+            this.messageType,
             pushNotificationAlarm);
       }
 
-    } catch (OsgpException e) {
-      String errorMessage =
+    } catch (final OsgpException e) {
+      final String errorMessage =
           String.format("%s occurred, reason: %s", e.getClass().getName(), e.getMessage());
       LOGGER.error(errorMessage, e);
 
@@ -125,7 +125,7 @@ public class PushNotificationAlarmMessageProcessor extends AbstractProtocolReque
     }
   }
 
-  private Device getDevice(String deviceIdentification) throws FunctionalException {
+  private Device getDevice(final String deviceIdentification) throws FunctionalException {
     final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
 
     if (device == null) {

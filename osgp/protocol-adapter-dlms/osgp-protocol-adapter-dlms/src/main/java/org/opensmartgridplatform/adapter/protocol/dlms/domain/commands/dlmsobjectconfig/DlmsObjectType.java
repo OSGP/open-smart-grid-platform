@@ -40,11 +40,11 @@ public enum DlmsObjectType {
 
   private PeriodTypeDto relatedPeriodType;
 
-  DlmsObjectType(PeriodTypeDto relatedPeriodType) {
+  DlmsObjectType(final PeriodTypeDto relatedPeriodType) {
     this.relatedPeriodType = relatedPeriodType;
   }
 
-  public static DlmsObjectType getTypeForPeriodType(PeriodTypeDto periodType)
+  public static DlmsObjectType getTypeForPeriodType(final PeriodTypeDto periodType)
       throws ProtocolAdapterException {
     return Arrays.stream(values())
         .filter(t -> t.relatedPeriodType == periodType)

@@ -53,7 +53,7 @@ public class PushNotificationSmsMessageProcessor extends AbstractProtocolRequest
 
     LOGGER.info(
         "Received message of messageType: {} organisationIdentification: {} deviceIdentification: {}",
-        messageType,
+        this.messageType,
         metadata.getOrganisationIdentification(),
         metadata.getDeviceIdentification());
 
@@ -62,7 +62,7 @@ public class PushNotificationSmsMessageProcessor extends AbstractProtocolRequest
 
     try {
 
-      final Device device = getDevice(metadata.getDeviceIdentification());
+      final Device device = this.getDevice(metadata.getDeviceIdentification());
 
       final PushNotificationSmsDto pushNotificationSms = (PushNotificationSmsDto) dataObject;
 
@@ -91,7 +91,7 @@ public class PushNotificationSmsMessageProcessor extends AbstractProtocolRequest
       }
 
     } catch (final UnknownHostException | FunctionalException e) {
-      String errorMessage =
+      final String errorMessage =
           String.format("%s occurred, reason: %s", e.getClass().getName(), e.getMessage());
       LOGGER.error(errorMessage, e);
 
@@ -99,7 +99,7 @@ public class PushNotificationSmsMessageProcessor extends AbstractProtocolRequest
     }
   }
 
-  private Device getDevice(String deviceIdentification) throws FunctionalException {
+  private Device getDevice(final String deviceIdentification) throws FunctionalException {
     final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
 
     if (device == null) {
