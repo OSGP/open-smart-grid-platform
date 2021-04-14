@@ -14,11 +14,12 @@ import org.openmuc.j60870.Connection;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.mapping.Iec60870Mapper;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.DistributionAutomationDeviceResponseService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.Iec60870AsduConverterService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.Iec60870ConnectResponseService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.Iec60870LightMeasurementService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.Iec60870LoggingService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.Iec60870MeasurementReportingService;
-import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.LightSensorDeviceResponseService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.LightMeasurementRtuDeviceResponseService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.application.services.LightSensorDeviceResponseService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.ResponseMetadataFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.AsduConverterService;
@@ -27,13 +28,14 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.Clien
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientAsduHandlerRegistry;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCache;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionService;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.PendingRequestsQueue;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ConnectResponseService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.DeviceResponseService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.DeviceResponseServiceRegistry;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.GeneralInterrogationService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LightMeasurementService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LoggingService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.MeasurementReportingService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.PendingRequestsQueue;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asduhandlers.InterrogationAsduHandler;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asduhandlers.ShortFloatWithTime56MeasurementAsduHandler;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asduhandlers.SinglePointInformationWithTimeTagAsduHandler;
@@ -92,6 +94,11 @@ public class TestConfiguration {
     @Bean
     public ClientConnectionService iec60870ClientConnectionService() {
         return new ClientConnectionService();
+    }
+
+    @Bean
+    public ConnectResponseService connectResponseService() {
+        return new Iec60870ConnectResponseService();
     }
 
     @Bean

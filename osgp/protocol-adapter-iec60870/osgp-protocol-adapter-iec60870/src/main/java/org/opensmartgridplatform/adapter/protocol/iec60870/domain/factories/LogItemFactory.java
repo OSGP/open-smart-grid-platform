@@ -18,4 +18,10 @@ public class LogItemFactory {
         return new LogItem(responseMetadata.getDeviceIdentification(), responseMetadata.getOrganisationIdentification(),
                 incoming, asdu.toString());
     }
+
+    public LogItem create(final ASdu asdu, final String deviceIdentification, final String organisationIdentification,
+            final boolean incoming) {
+        return new LogItem(deviceIdentification, organisationIdentification, incoming, asdu.toString());
+    }
+
 }
