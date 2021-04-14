@@ -128,4 +128,11 @@ public class Iec60870Device extends AbstractEntity {
     public boolean hasGatewayDevice() {
         return StringUtils.isNotBlank(this.gatewayDeviceIdentification);
     }
+
+    public String getConnectionDeviceIdentification() {
+        if (this.hasGatewayDevice()) {
+            return this.gatewayDeviceIdentification;
+        }
+        return this.deviceIdentification;
+    }
 }

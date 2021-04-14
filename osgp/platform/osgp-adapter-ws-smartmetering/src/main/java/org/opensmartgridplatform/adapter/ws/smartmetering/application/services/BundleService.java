@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.application.services;
 
 import java.util.List;
 
+import org.opensmartgridplatform.adapter.ws.smartmetering.endpoints.RequestMessageMetadata;
 import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -20,7 +21,6 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.BundleMe
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
-import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,9 +44,11 @@ public class BundleService {
         // Parameterless constructor required for transactions
     }
 
-    public String enqueueBundleRequest(final String organisationIdentification, final String deviceIdentification,
-            final List<ActionRequest> actionList, final int messagePriority, final boolean bypassRetry)
+    public String enqueueBundleRequest(final RequestMessageMetadata requestMessageMetadata,
+        final List<ActionRequest> actionList)
             throws FunctionalException {
+        final String organisationIdentification = requestMessageMetadata.getOrganisationIdentification();
+        final String deviceIdentification = requestMessageMetadata.getDeviceIdentification();
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -56,9 +58,7 @@ public class BundleService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, MessageType.HANDLE_BUNDLED_ACTIONS.name(), messagePriority);
-        deviceMessageMetadata.setBypassRetry(bypassRetry);
+        final DeviceMessageMetadata deviceMessageMetadata = requestMessageMetadata.newDeviceMessageMetadata(correlationUid);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
                 deviceMessageMetadata).request(new BundleMessageRequest(actionList)).build();

@@ -30,7 +30,7 @@ public abstract class AbstractClientAsduHandler implements ClientAsduHandler {
 
     private final ASduType asduType;
 
-    public AbstractClientAsduHandler(final ASduType asduType) {
+    protected AbstractClientAsduHandler(final ASduType asduType) {
         this.asduType = asduType;
     }
 

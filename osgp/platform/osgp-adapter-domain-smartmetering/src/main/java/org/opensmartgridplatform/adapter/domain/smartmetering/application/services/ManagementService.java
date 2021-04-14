@@ -86,7 +86,8 @@ public class ManagementService {
                 smartMeter.getIpAddress(),
                 this.managementMapper.map(findEventsQueryMessageDataContainer, FindEventsRequestList.class));
         this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime(),
+                deviceMessageMetadata.bypassRetry());
     }
 
     public void handleFindEventsResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -159,7 +160,7 @@ public class ManagementService {
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeteringDevice.getIpAddress(), setDeviceCommunicationSettingsRequestDto),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
-                deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getScheduleTime(), deviceMessageMetadata.bypassRetry());
     }
 
     public void handleSetDeviceCommunicationSettingsResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -184,7 +185,8 @@ public class ManagementService {
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeteringDevice.getIpAddress(), requestDto), deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime(),
+                deviceMessageMetadata.bypassRetry());
     }
 
     public void handleSetDeviceLifecycleStatusByChannelResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -273,7 +275,8 @@ public class ManagementService {
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeteringDevice.getIpAddress());
         this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime(),
+                deviceMessageMetadata.bypassRetry());
     }
 
     private void handleMetadataOnlyResponseMessage(final DeviceMessageMetadata deviceMessageMetadata,

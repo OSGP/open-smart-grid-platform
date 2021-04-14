@@ -26,11 +26,6 @@ public class OsgpCoreRequestMessageSender {
     private JmsTemplate jmsTemplate;
 
     public void send(final RequestMessage requestMessage, final String messageType, final int messagePriority,
-            final Long scheduleTime) {
-        this.send(requestMessage, messageType, messagePriority, scheduleTime, false);
-    }
-
-    public void send(final RequestMessage requestMessage, final String messageType, final int messagePriority,
             final Long scheduleTime, final boolean bypassRetry) {
 
         this.jmsTemplate.send(session -> {

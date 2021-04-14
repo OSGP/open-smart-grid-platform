@@ -407,7 +407,7 @@ public class BaseTask {
         // Creating message with OSGP System CorrelationUID. This way the
         // responses for scheduled tasks can be filtered out.
         final String correlationUid = OsgpSystemCorrelationUid.CORRELATION_UID;
-        final String messageType = DeviceFunction.GET_LIGHT_SENSOR_STATUS.name();
+        final String messageType = DeviceFunction.CONNECT.name();
         final DomainTypeDto domain = DomainTypeDto.PUBLIC_LIGHTING;
 
         final String ipAddress = getIpAddress(lightMeasurementDevice);

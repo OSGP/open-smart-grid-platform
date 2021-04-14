@@ -20,11 +20,14 @@ import org.openmuc.j60870.Connection;
 import org.openmuc.j60870.ConnectionEventListener;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60870Device;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.exceptions.ClientConnectionAlreadyInCacheException;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.LogItemFactory;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.ResponseMetadataFactory;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.Client;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientAsduHandlerRegistry;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionCache;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionEventListener;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LoggingService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ConnectionParameters;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceConnection;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceType;
@@ -63,6 +66,15 @@ public class ConnectionSteps {
     @Autowired
     private Connection connection;
 
+    @Autowired
+    private LoggingService loggingService;
+
+    @Autowired
+    private LogItemFactory logItemFactory;
+
+    @Autowired
+    private ResponseMetadataFactory responseMetadataFactory;
+
     private ConnectionEventListener connectionEventListener;
 
     private ConnectionParameters connectionParameters;
@@ -93,9 +105,16 @@ public class ConnectionSteps {
         // Make sure the connection event listener works as expected
         this.connectionParameters = this.initConnectionParameters(deviceIdentification);
         final ResponseMetadata responseMetadata = this.initResponseMetadata(deviceIdentification, deviceType);
-        this.connectionEventListener = new ClientConnectionEventListener(
-                this.connectionParameters.getDeviceIdentification(), this.connectionCacheSpy,
-                this.clientAsduHandlerRegistry, responseMetadata);
+
+        this.connectionEventListener = new ClientConnectionEventListener.Builder()
+                .withDeviceIdentification(deviceIdentification)
+                .withClientAsduHandlerRegistry(this.clientAsduHandlerRegistry)
+                .withClientConnectionCache(this.connectionCacheSpy)
+                .withLoggingService(this.loggingService)
+                .withLogItemFactory(this.logItemFactory)
+                .withResponseMetadata(responseMetadata)
+                .withResponseMetadataFactory(this.responseMetadataFactory)
+                .build();
 
         // Make sure a connection could be retrieved from the cache
         // Only needed for scenarios sending requests to a device
@@ -115,14 +134,19 @@ public class ConnectionSteps {
         final Iec60870Device device = this.iec60870DeviceSteps.getDevice(deviceIdentification)
                 .orElseThrow(() -> new Exception("Device not found"));
         final DeviceType deviceType = device.getDeviceType();
-        String connectionDeviceIdentification = deviceIdentification;
-        if (device.hasGatewayDevice()) {
-            connectionDeviceIdentification = device.getGatewayDeviceIdentification();
-        }
+        final String connectionDeviceIdentification = device.getConnectionDeviceIdentification();
+
         this.connectionParameters = this.initConnectionParameters(connectionDeviceIdentification);
-        this.connectionEventListener = new ClientConnectionEventListener(
-                this.connectionParameters.getDeviceIdentification(), this.connectionCacheSpy,
-                this.clientAsduHandlerRegistry, this.initResponseMetadata(deviceIdentification, deviceType));
+
+        this.connectionEventListener = new ClientConnectionEventListener.Builder()
+                .withDeviceIdentification(connectionDeviceIdentification)
+                .withClientAsduHandlerRegistry(this.clientAsduHandlerRegistry)
+                .withClientConnectionCache(this.connectionCacheSpy)
+                .withLoggingService(this.loggingService)
+                .withLogItemFactory(this.logItemFactory)
+                .withResponseMetadata(this.initResponseMetadata(deviceIdentification, deviceType))
+                .withResponseMetadataFactory(this.responseMetadataFactory)
+                .build();
 
         when(this.clientMock.connect(any(ConnectionParameters.class), any(ConnectionEventListener.class)))
                 .thenReturn(new DeviceConnection(this.connection, this.connectionParameters));

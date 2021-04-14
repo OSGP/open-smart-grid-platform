@@ -15,8 +15,8 @@ import java.util.function.Predicate;
 import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.entities.Iec60870Device;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.PendingRequestsQueue;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LightMeasurementService;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.PendingRequestsQueue;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.DeviceType;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementGroupDto;
@@ -75,12 +75,11 @@ public class LightSensorDeviceResponseService extends AbstractDeviceResponseServ
 
     private void logReceivedMeasurementReport(final MeasurementReportDto measurementReport, final String description,
             final String deviceIdentification) {
-        LOGGER.info("Received {} {} for light measurement device {}.", description, measurementReport,
-                deviceIdentification);
+        LOGGER.info("Received {} {} for light sensor {}.", description, measurementReport, deviceIdentification);
     }
 
     private void logDeviceNotFound(final String deviceIdentification, final String errorPrefix) {
-        LOGGER.error("{} Device {} not found.", errorPrefix, deviceIdentification);
+        LOGGER.error("{} Light sensor {} not found.", errorPrefix, deviceIdentification);
     }
 
     private void findDeviceAndThen(final String deviceIdentification,
