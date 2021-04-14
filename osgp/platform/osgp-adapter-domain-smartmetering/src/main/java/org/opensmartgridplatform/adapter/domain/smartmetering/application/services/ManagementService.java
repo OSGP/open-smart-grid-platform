@@ -238,7 +238,7 @@ public class ManagementService {
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                         deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                         smartMeteringDevice.getIpAddress(), requestDto), deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime(), deviceMessageMetadata.bypassRetry());
     }
 
     public void handleGetModemInfoResponse(final DeviceMessageMetadata deviceMessageMetadata,
