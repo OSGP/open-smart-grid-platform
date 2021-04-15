@@ -1,9 +1,9 @@
 /**
  * Copyright 2014-2016 Smart Society Services B.V.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.domain.core.valueobjects;
 
@@ -30,6 +30,7 @@ public enum PlatformFunction {
     REMOVE_MANUFACTURER,
     REMOVE_ORGANISATION,
     REVOKE_KEY,
+    SET_COMMUNICATION_NETWORK_INFORMATION,
     SET_OWNER,
     SET_RANDOMISATION_SETTINGS,
     UPDATE_DEVICE_PROTOCOL,

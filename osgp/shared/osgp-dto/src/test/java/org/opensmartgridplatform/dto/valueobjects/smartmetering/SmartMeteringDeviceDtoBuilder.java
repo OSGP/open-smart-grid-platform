@@ -40,7 +40,7 @@ public class SmartMeteringDeviceDtoBuilder {
         dto.setMbusDefaultKey(("defaultKey" + counter).getBytes());
         dto.setSupplier("supplier" + counter);
         dto.setIpAddress("127.0.0.1");
-        
+
         return dto;
     }
 }

@@ -100,36 +100,6 @@ public class SmartMeterService {
         return this.mapperFactory.getMapperFacade().map(smartMeteringDevice, SmartMeter.class);
     }
 
-    public SmartMeter updateCommunicationNetworkInformation(final String deviceIdentification, final String ipAddress,
-            final Integer btsId, final Integer cellId) throws FunctionalException {
-
-        SmartMeter smartMeter = this.validateSmartMeterExists(deviceIdentification);
-
-        if (ipAddress != null) {
-            try {
-                smartMeter.setNetworkAddress(InetAddress.getByName(ipAddress));
-            } catch (final UnknownHostException e) {
-                log.error("Invalid ip address found {} for device {}", ipAddress, deviceIdentification);
-                throw new FunctionalException(FunctionalExceptionType.INVALID_IP_ADDRESS,
-                        ComponentType.DOMAIN_SMART_METERING);
-            }
-        }
-
-        if (btsId != null) {
-            smartMeter.setBtsId(btsId);
-        }
-
-        if (cellId != null) {
-            smartMeter.setCellId(cellId);
-        }
-
-        smartMeter = this.smartMeterRepository.save(smartMeter);
-        log.info("CommunicationNetworkInformation for SmartMeter {} updated to : ipAddress={}, btsId={}, cellId={} ",
-                deviceIdentification, smartMeter.getIpAddress(), smartMeter.getBtsId(), smartMeter.getCellId());
-
-        return smartMeter;
-    }
-
     private ProtocolInfo getProtocolInfo(final SmartMeteringDevice smartMeteringDevice) throws FunctionalException {
 
         final ProtocolInfo protocolInfo = this.protocolInfoRepository.findByProtocolAndProtocolVersion(

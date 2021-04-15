@@ -18,7 +18,6 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMb
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceRequestData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetCommunicationNetworkInformationRequestData;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
@@ -226,29 +225,6 @@ public class InstallationService {
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
                 deviceMessageMetadata).request(new DecoupleMbusDeviceByChannelRequestData(channel)).build();
-
-        this.smartMeteringRequestMessageSender.send(message);
-
-        return correlationUid;
-    }
-
-    public String enqueueSetCommunicationNetworkInformationRequest(
-            @Identification final String organisationIdentification, @Identification final String deviceIdentification,
-            final SetCommunicationNetworkInformationRequestData setCommunicationNetworkInformationRequestData,
-            final int messagePriority, final Long scheduleTime) {
-
-        log.debug("enqueueSetCommunicationNetworkRequest called with organisation {} and device {}",
-                organisationIdentification, deviceIdentification);
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
-
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, MessageType.SET_COMMUNICATION_NETWORK_INFORMATION.name(),
-                messagePriority, scheduleTime);
-
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).request(setCommunicationNetworkInformationRequestData).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 

@@ -1,47 +1,16 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform.common.support.ws.admin;
 
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.ActivateOrganisationRequest;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.ActivateOrganisationResponse;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.ChangeOrganisationRequest;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.ChangeOrganisationResponse;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.CreateOrganisationRequest;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.CreateOrganisationResponse;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.FindDeviceAuthorisationsRequest;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.FindDeviceAuthorisationsResponse;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.FindDevicesWhichHaveNoOwnerRequest;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.FindDevicesWhichHaveNoOwnerResponse;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.FindMessageLogsRequest;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.FindMessageLogsResponse;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.GetProtocolInfosRequest;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.GetProtocolInfosResponse;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.RemoveDeviceRequest;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.RemoveDeviceResponse;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.RemoveOrganisationRequest;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.RemoveOrganisationResponse;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.RevokeKeyRequest;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.RevokeKeyResponse;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.SetOwnerRequest;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.SetOwnerResponse;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.UpdateDeviceAuthorisationsRequest;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.UpdateDeviceAuthorisationsResponse;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.UpdateDeviceProtocolRequest;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.UpdateDeviceProtocolResponse;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.UpdateKeyRequest;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.UpdateKeyResponse;
+import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.*;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindAllOrganisationsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindAllOrganisationsResponse;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddManufacturerRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeManufacturerRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindAllManufacturersRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindAllManufacturersResponse;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.RemoveManufacturerRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.*;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.support.ws.BaseClient;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
@@ -188,5 +157,11 @@ public class AdminDeviceManagementClient extends BaseClient {
         final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
                 this.getUserName());
         return (ChangeManufacturerRequest) wst.marshalSendAndReceive(request);
+    }
+
+    public SetCommunicationNetworkInformationResponse setCommunicationNetworkInformation(SetCommunicationNetworkInformationRequest request) throws WebServiceSecurityException {
+        final WebServiceTemplate wst = this.adminDeviceManagementWstf.getTemplate(this.getOrganizationIdentification(),
+                this.getUserName());
+        return (SetCommunicationNetworkInformationResponse) wst.marshalSendAndReceive(request);
     }
 }

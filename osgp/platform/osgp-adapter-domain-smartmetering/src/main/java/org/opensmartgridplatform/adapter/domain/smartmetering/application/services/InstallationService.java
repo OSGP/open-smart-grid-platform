@@ -19,8 +19,6 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMb
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceByChannelResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceRequestData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetCommunicationNetworkInformationRequestData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetCommunicationNetworkInformationResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceResponseDto;
@@ -89,48 +87,6 @@ public class InstallationService {
         this.osgpCoreRequestMessageSender.send(this.getRequestMessage(deviceMessageMetadata, smartMeteringDevice),
                 deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority(),
                 deviceMessageMetadata.getScheduleTime());
-    }
-
-    public void updateCommunicationNetworkInformation(final DeviceMessageMetadata deviceMessageMetadata,
-            final SetCommunicationNetworkInformationRequestData requestData) throws FunctionalException {
-
-        final String organisationId = deviceMessageMetadata.getOrganisationIdentification();
-        final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
-
-        final SmartMeter updatedSmartMeter = this.smartMeterService.updateCommunicationNetworkInformation(
-                deviceMessageMetadata.getDeviceIdentification(), requestData.getIpAddress(), requestData.getBtsId(),
-                requestData.getCellId());
-
-        log.debug("updateCommunicationNetworkInformation for organisationIdentification: {} for deviceIdentification: "
-                        + "{}. " + "New ipAdress = {} ", organisationId, deviceIdentification,
-                updatedSmartMeter.getIpAddress());
-
-        final SetCommunicationNetworkInformationResponseData responseData =
-                this.getSetCommunicationNetworkInformationResponseData(
-                requestData, updatedSmartMeter);
-
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-                .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-                .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
-                .withResult(ResponseMessageResultType.OK)
-                .withDataObject(responseData)
-                .withMessagePriority(deviceMessageMetadata.getMessagePriority())
-                .build();
-
-        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
-    }
-
-    private SetCommunicationNetworkInformationResponseData getSetCommunicationNetworkInformationResponseData(
-            final SetCommunicationNetworkInformationRequestData requestData, final SmartMeter updatedSmartMeter) {
-        final SetCommunicationNetworkInformationResponseData responseData =
-                new SetCommunicationNetworkInformationResponseData();
-
-        responseData.setIpAddress(updatedSmartMeter.getIpAddress());
-        responseData.setBtsId(updatedSmartMeter.getBtsId());
-        responseData.setCellId(updatedSmartMeter.getCellId());
-
-        return responseData;
     }
 
     /**

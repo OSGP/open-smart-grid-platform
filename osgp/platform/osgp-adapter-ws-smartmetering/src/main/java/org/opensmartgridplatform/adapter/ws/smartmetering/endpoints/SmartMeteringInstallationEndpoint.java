@@ -36,16 +36,11 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.De
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceByChannelResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.SetCommunicationNetworkInformationAsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.SetCommunicationNetworkInformationAsyncResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.SetCommunicationNetworkInformationRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.SetCommunicationNetworkInformationResponse;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.InstallationMapper;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.services.InstallationService;
 import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceModel;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AddSmartMeterRequest;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetCommunicationNetworkInformationRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -464,75 +459,6 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
             response = this.installationMapper.map(responseData.getMessageData(),
                     DecoupleMbusDeviceByChannelResponse.class);
-
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-        return response;
-    }
-
-    @PayloadRoot(localPart = "SetCommunicationNetworkInformationRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
-    @ResponsePayload
-    public SetCommunicationNetworkInformationAsyncResponse setCommunicationNetworkInformation(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetCommunicationNetworkInformationRequest request,
-            @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
-            @ResponseUrl final String responseUrl) throws OsgpException {
-
-        log.info("Incoming SetCommunicationNetworkInformation for meter: {}.", request.getDeviceIdentification());
-
-        SetCommunicationNetworkInformationAsyncResponse response = null;
-        try {
-            response = new SetCommunicationNetworkInformationAsyncResponse();
-
-            final SetCommunicationNetworkInformationRequestData requestData = this.installationMapper.map(request,
-                    SetCommunicationNetworkInformationRequestData.class);
-
-            final String correlationUid = this.installationService.enqueueSetCommunicationNetworkInformationRequest(
-                    organisationIdentification, request.getDeviceIdentification(), requestData,
-                    MessagePriorityEnum.getMessagePriority(messagePriority),
-                    this.installationMapper.map(scheduleTime, Long.class));
-
-            response.setCorrelationUid(correlationUid);
-            response.setDeviceIdentification(request.getDeviceIdentification());
-            this.saveResponseUrlIfNeeded(correlationUid, responseUrl);
-
-        } catch (final ConstraintViolationException e) {
-
-            log.error("Exception: {} while setting subcription information for device: {} for organisation {}.",
-                    e.getMessage(), request.getDeviceIdentification(), organisationIdentification, e);
-
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations()));
-
-        } catch (final Exception e) {
-
-            log.error("Exception: {} while updating device: {} for organisation {}.", e.getMessage(),
-                    request.getDeviceIdentification(), organisationIdentification, e);
-
-            this.handleException(e);
-        }
-        return response;
-    }
-
-    @PayloadRoot(localPart = "SetCommunicationNetworkInformationAsyncRequest", namespace =
-            SMARTMETER_INSTALLATION_NAMESPACE)
-    @ResponsePayload
-    public SetCommunicationNetworkInformationResponse getSetCommunicationNetworkInformationResponse(
-            @RequestPayload final SetCommunicationNetworkInformationAsyncRequest request) throws OsgpException {
-
-        SetCommunicationNetworkInformationResponse response = null;
-        try {
-
-            final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
-                    ComponentType.WS_SMART_METERING);
-
-            this.throwExceptionIfResultNotOk(responseData, "Set Communication Network Information");
-
-            response = this.installationMapper.map(responseData.getMessageData(),
-                    SetCommunicationNetworkInformationResponse.class);
-
-            response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
 
         } catch (final Exception e) {
             this.handleException(e);

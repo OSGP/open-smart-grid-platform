@@ -1,54 +1,19 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.basicosgpfunctions;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
-
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.Map;
-
-import javax.naming.OperationNotSupportedException;
-
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.ChangeOrganisationRequest;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.CreateOrganisationRequest;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.FindDevicesWhichHaveNoOwnerRequest;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.FindMessageLogsRequest;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.GetProtocolInfosRequest;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.MessageLogFilter;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.Organisation;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.ProtocolInfo;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.RemoveOrganisationRequest;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.RevokeKeyRequest;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.SetOwnerRequest;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.UpdateDeviceProtocolRequest;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.UpdateKeyRequest;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.*;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindAllOrganisationsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindDevicesRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.FindScheduledTasksRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddDeviceModelRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddFirmwareRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddManufacturerRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeDeviceModelRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeFirmwareRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeManufacturerRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.DeviceModel;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindAllDeviceModelsRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindAllManufacturersRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FindFirmwareRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Firmware;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Manufacturer;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.RemoveDeviceModelRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.RemoveFirmwareRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.RemoveManufacturerRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.*;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonDefaults;
@@ -63,8 +28,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
+import javax.naming.OperationNotSupportedException;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 /**
  * Class with all the AuthorizeDeviceFunctions steps
@@ -94,84 +65,86 @@ public class AuthorizePlatformFunctionsSteps {
 
         try {
             switch (this.platformFunction) {
-            case CREATE_ORGANISATION:
-                this.createOrganisation(requestParameters);
-                break;
-            case REMOVE_ORGANISATION:
-                this.removeOrganisation(requestParameters);
-                break;
-            case CHANGE_ORGANISATION:
-                this.changeOrganisation(requestParameters);
-                break;
-            case GET_ORGANISATIONS:
-                this.getOrganisations(requestParameters);
-                break;
-            case GET_MESSAGES:
-                this.getMessages(requestParameters);
-                break;
-            case GET_DEVICE_NO_OWNER:
-                this.getDevicesWithoutOwner(requestParameters);
-                break;
-            case FIND_DEVICES:
-                this.findDevices(requestParameters);
-                break;
-            case SET_OWNER:
-                this.setOwner(requestParameters);
-                break;
-            case UPDATE_KEY:
-                this.updateKey(requestParameters);
-                break;
-            case REVOKE_KEY:
-                this.revokeKey(requestParameters);
-                break;
-            case FIND_SCHEDULED_TASKS:
-                this.findScheduledTasks(requestParameters);
-                break;
-            case CREATE_MANUFACTURER:
-                this.createManufacturer(requestParameters);
-                break;
-            case REMOVE_MANUFACTURER:
-                this.removeManufacturer(requestParameters);
-                break;
-            case CHANGE_MANUFACTURER:
-                this.changeManufacturer(requestParameters);
-                break;
-            case GET_MANUFACTURERS:
-                this.getManufacturers(requestParameters);
-                break;
-            case GET_PROTOCOL_INFOS:
-                this.getProtocolInfos(requestParameters);
-                break;
-            case UPDATE_DEVICE_PROTOCOL:
-                this.updateDeviceProtocol(requestParameters);
-                break;
-            case GET_DEVICE_MODELS:
-                this.getDeviceModels(requestParameters);
-                break;
-            case CREATE_DEVICE_MODEL:
-                this.createDeviceModel(requestParameters);
-                break;
-            case REMOVE_DEVICE_MODEL:
-                this.removeDeviceModel(requestParameters);
-                break;
-            case CHANGE_DEVICE_MODEL:
-                this.changeDeviceModel(requestParameters);
-                break;
-            case GET_FIRMWARE:
-                this.getFirmware(requestParameters);
-                break;
-            case CREATE_FIRMWARE:
-                this.createFirmware(requestParameters);
-                break;
-            case CHANGE_FIRMWARE:
-                this.changeFirmware(requestParameters);
-                break;
-            case REMOVE_FIRMWARE:
-                this.removeFirmware(requestParameters);
-                break;
-            default:
-                throw new OperationNotSupportedException(
-                        "PlatformFunction " + this.platformFunction + " does not exist.");
+                case CREATE_ORGANISATION:
+                    this.createOrganisation(requestParameters);
+                    break;
+                case REMOVE_ORGANISATION:
+                    this.removeOrganisation(requestParameters);
+                    break;
+                case CHANGE_ORGANISATION:
+                    this.changeOrganisation(requestParameters);
+                    break;
+                case GET_ORGANISATIONS:
+                    this.getOrganisations(requestParameters);
+                    break;
+                case GET_MESSAGES:
+                    this.getMessages(requestParameters);
+                    break;
+                case GET_DEVICE_NO_OWNER:
+                    this.getDevicesWithoutOwner(requestParameters);
+                    break;
+                case FIND_DEVICES:
+                    this.findDevices(requestParameters);
+                    break;
+                case SET_OWNER:
+                    this.setOwner(requestParameters);
+                    break;
+                case UPDATE_KEY:
+                    this.updateKey(requestParameters);
+                    break;
+                case REVOKE_KEY:
+                    this.revokeKey(requestParameters);
+                    break;
+                case FIND_SCHEDULED_TASKS:
+                    this.findScheduledTasks(requestParameters);
+                    break;
+                case CREATE_MANUFACTURER:
+                    this.createManufacturer(requestParameters);
+                    break;
+                case REMOVE_MANUFACTURER:
+                    this.removeManufacturer(requestParameters);
+                    break;
+                case CHANGE_MANUFACTURER:
+                    this.changeManufacturer(requestParameters);
+                    break;
+                case GET_MANUFACTURERS:
+                    this.getManufacturers(requestParameters);
+                    break;
+                case GET_PROTOCOL_INFOS:
+                    this.getProtocolInfos(requestParameters);
+                    break;
+                case UPDATE_DEVICE_PROTOCOL:
+                    this.updateDeviceProtocol(requestParameters);
+                    break;
+                case GET_DEVICE_MODELS:
+                    this.getDeviceModels(requestParameters);
+                    break;
+                case CREATE_DEVICE_MODEL:
+                    this.createDeviceModel(requestParameters);
+                    break;
+                case REMOVE_DEVICE_MODEL:
+                    this.removeDeviceModel(requestParameters);
+                    break;
+                case CHANGE_DEVICE_MODEL:
+                    this.changeDeviceModel(requestParameters);
+                    break;
+                case GET_FIRMWARE:
+                    this.getFirmware(requestParameters);
+                    break;
+                case CREATE_FIRMWARE:
+                    this.createFirmware(requestParameters);
+                    break;
+                case CHANGE_FIRMWARE:
+                    this.changeFirmware(requestParameters);
+                    break;
+                case REMOVE_FIRMWARE:
+                    this.removeFirmware(requestParameters);
+                    break;
+                case SET_COMMUNICATION_NETWORK_INFORMATION:
+                    this.setCommunicationNetworkInformation(requestParameters);
+                default:
+                    throw new OperationNotSupportedException(
+                            "PlatformFunction " + this.platformFunction + " does not exist.");
             }
         } catch (final Throwable t) {
             LOGGER.info("Exception: {}", t.getClass().getSimpleName());
@@ -425,6 +398,15 @@ public class AuthorizePlatformFunctionsSteps {
         request.setDeviceIdentification(PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION);
         ScenarioContext.current()
                 .put(PlatformCommonKeys.RESPONSE, this.coreDeviceManagementClient.findScheduledTasks(request));
+    }
+
+    private void setCommunicationNetworkInformation(final Map<String, String> requestParameters) throws WebServiceSecurityException {
+        final SetCommunicationNetworkInformationRequest request = new SetCommunicationNetworkInformationRequest();
+        request.setDeviceIdentification(PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION);
+        request.setBtsId(10);
+        request.setCellId(1);
+        ScenarioContext.current()
+                .put(PlatformCommonKeys.RESPONSE, this.adminDeviceManagementClient.setCommunicationNetworkInformation(request));
     }
 
 }

@@ -1,37 +1,14 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.installation;
 
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.AddDeviceAsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.AddDeviceAsyncResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.AddDeviceRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.AddDeviceResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceAsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceAsyncResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelAsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelAsyncResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceByChannelResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.CoupleMbusDeviceResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceAsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceAsyncResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceByChannelAsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceByChannelAsyncResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceByChannelRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceByChannelResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.DecoupleMbusDeviceResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.SetCommunicationNetworkInformationAsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.SetCommunicationNetworkInformationAsyncResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.SetCommunicationNetworkInformationRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.SetCommunicationNetworkInformationResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.*;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.SmartMeteringBaseClient;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.opensmartgridplatform.shared.infra.ws.DefaultWebServiceTemplateFactory;
@@ -143,25 +120,4 @@ public class SmartMeteringInstallationClient extends SmartMeteringBaseClient {
                         this.getOrganizationIdentification(), this.getUserName());
         return (DecoupleMbusDeviceByChannelResponse) webServiceTemplate.marshalSendAndReceive(asyncRequest);
     }
-
-    public SetCommunicationNetworkInformationAsyncResponse setCommunicationNetworkInformation(
-            final SetCommunicationNetworkInformationRequest request) throws WebServiceSecurityException {
-        final WebServiceTemplate webServiceTemplate =
-                this.smartMeteringInstallationWebServiceTemplateFactory.getTemplate(
-                        this.getOrganizationIdentification(), this.getUserName());
-        return (SetCommunicationNetworkInformationAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
-    }
-
-    public SetCommunicationNetworkInformationResponse getSetCommunicationNetworkInformationResponse(
-            final SetCommunicationNetworkInformationAsyncRequest asyncRequest) throws WebServiceSecurityException {
-
-        final String correlationUid = asyncRequest.getCorrelationUid();
-        this.waitForNotification(correlationUid);
-
-        final WebServiceTemplate webServiceTemplate =
-                this.smartMeteringInstallationWebServiceTemplateFactory.getTemplate(
-                        this.getOrganizationIdentification(), this.getUserName());
-        return (SetCommunicationNetworkInformationResponse) webServiceTemplate.marshalSendAndReceive(asyncRequest);
-    }
-
 }
