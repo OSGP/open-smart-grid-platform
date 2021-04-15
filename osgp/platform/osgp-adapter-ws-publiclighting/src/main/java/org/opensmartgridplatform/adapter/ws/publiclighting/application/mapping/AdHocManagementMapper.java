@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.adapter.ws.publiclighting.application.mapping;
 
+import org.opensmartgridplatform.adapter.ws.publiclighting.application.mapping.converters.LightValueConverter;
 import org.opensmartgridplatform.adapter.ws.publiclighting.application.mapping.converters.LmdConverter;
 import org.opensmartgridplatform.adapter.ws.publiclighting.application.mapping.converters.SsldConverter;
 import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
@@ -23,5 +24,6 @@ public class AdHocManagementMapper extends ConfigurableMapper {
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
         mapperFactory.getConverterFactory().registerConverter(new SsldConverter());
         mapperFactory.getConverterFactory().registerConverter(new LmdConverter());
+        mapperFactory.getConverterFactory().registerConverter(new LightValueConverter());
     }
 }
