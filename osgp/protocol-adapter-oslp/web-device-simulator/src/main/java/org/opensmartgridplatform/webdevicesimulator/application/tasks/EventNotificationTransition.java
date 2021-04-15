@@ -1,3 +1,12 @@
+/*
+ * Copyright 2021 Alliander N.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.webdevicesimulator.application.tasks;
 
 import java.util.ArrayList;
@@ -24,7 +33,7 @@ public class EventNotificationTransition implements Runnable {
   @Override
   public void run() {
 
-    if (this.deviceManagementService.getEventNotification()) {
+    if (Boolean.TRUE.equals(this.deviceManagementService.getEventNotification())) {
       // The original list with listofeventtobesent
       final List<EventNotificationToBeSent> listeventNotificationToBeSent =
           this.deviceManagementService.getEventNotificationToBeSent();
@@ -40,7 +49,7 @@ public class EventNotificationTransition implements Runnable {
 
         DeviceMessageStatus status;
 
-        if (event.getLightOn()) {
+        if (Boolean.TRUE.equals(event.getLightOn())) {
           // Send EventNotifications for Light Transition ON
           LOGGER.info(
               "Sending LIGHT_EVENTS_LIGHT_ON_VALUE event for device: {}", event.getdeviceId());

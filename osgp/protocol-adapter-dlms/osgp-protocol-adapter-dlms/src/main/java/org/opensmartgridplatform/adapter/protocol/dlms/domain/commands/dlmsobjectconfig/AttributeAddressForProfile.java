@@ -53,15 +53,15 @@ public class AttributeAddressForProfile {
   }
 
   public List<DlmsRegister> getCaptureObjects(
-      final Class dlmsObjectClass, final boolean defaultAttributeId) {
+      final Class<? extends DlmsRegister> dlmsObjectClass, final boolean defaultAttributeId) {
     return this.selectedObjects.stream()
         .filter(
             c ->
                 !defaultAttributeId
                     || c.getAttributeId() == c.getRelatedObject().getDefaultAttributeId())
         .map(DlmsCaptureObject::getRelatedObject)
-        .filter(r -> dlmsObjectClass.isInstance(r))
-        .map(r -> (DlmsRegister) r)
+        .filter(dlmsObjectClass::isInstance)
+        .map(DlmsRegister.class::cast)
         .collect(Collectors.toList());
   }
 }

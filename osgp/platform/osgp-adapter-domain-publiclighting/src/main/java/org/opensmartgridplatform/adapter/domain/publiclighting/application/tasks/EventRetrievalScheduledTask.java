@@ -104,7 +104,7 @@ public class EventRetrievalScheduledTask extends BaseTask implements Runnable {
     final Predicate<Device> hasNoConnectionFailure = d -> !d.hasConnectionFailures();
 
     final Predicate<Device> hasLastConnectionFailureBeforeThreshold =
-        d -> this.calculateThresholdForDevice(d);
+        this::calculateThresholdForDevice;
 
     return devicesToFilter.stream()
         .filter(hasNoConnectionFailure.or(hasLastConnectionFailureBeforeThreshold))

@@ -1,4 +1,12 @@
-/** Copyright 2014-2016 Smart Society Services B.V. */
+/*
+ * Copyright 2014 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.shared.application.config;
 
 import java.util.Arrays;
@@ -157,13 +165,13 @@ public abstract class AbstractSchedulingConfig extends AbstractConfig {
     final Properties properties = new Properties();
 
     // Default Properties
-    if (StringUtils.isEmpty(schedulingConfigProperties.getSchedulerName())) {
+    if (StringUtils.hasText(schedulingConfigProperties.getSchedulerName())) {
+      properties.put(
+          "org.quartz.scheduler.instanceName", schedulingConfigProperties.getSchedulerName());
+    } else {
       properties.put(
           "org.quartz.scheduler.instanceName",
           schedulingConfigProperties.getJobClass().getSimpleName());
-    } else {
-      properties.put(
-          "org.quartz.scheduler.instanceName", schedulingConfigProperties.getSchedulerName());
     }
     properties.put("org.quartz.scheduler.instanceId", "AUTO");
     properties.put("org.quartz.scheduler.rmi.export", Boolean.FALSE.toString());

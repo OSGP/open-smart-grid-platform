@@ -170,7 +170,7 @@ public class DeviceRegistrationService {
 
   protected void enableReporting(final DeviceConnection deviceConnection) throws NodeException {
     try {
-      if (this.isBufferedReportingEnabled) {
+      if (Boolean.TRUE.equals(this.isBufferedReportingEnabled)) {
         new Iec61850EnableReportingCommand()
             .enableBufferedReportingOnDeviceWithoutUsingSequenceNumber(deviceConnection);
       } else {
@@ -182,7 +182,8 @@ public class DeviceRegistrationService {
       this.waitClearReportAndDisconnect(deviceConnection);
     } catch (final NodeWriteException e) {
       LOGGER.error(
-          "Unable to enabele reporting for device: " + deviceConnection.getDeviceIdentification(),
+          "Unable to enabele reporting for device: {}",
+          deviceConnection.getDeviceIdentification(),
           e);
       DeviceRegistrationService.this.iec61850DeviceConnectionService.disconnect(
           deviceConnection, null);
@@ -196,7 +197,8 @@ public class DeviceRegistrationService {
               @Override
               public void run() {
                 try {
-                  if (DeviceRegistrationService.this.isBufferedReportingEnabled) {
+                  if (Boolean.TRUE.equals(
+                      DeviceRegistrationService.this.isBufferedReportingEnabled)) {
                     new Iec61850ClearReportCommand().clearBufferedReportOnDevice(deviceConnection);
                   } else {
                     new Iec61850ClearReportCommand()
@@ -204,13 +206,13 @@ public class DeviceRegistrationService {
                   }
                 } catch (final NodeNotFoundException e) {
                   LOGGER.error(
-                      "Unable to get fcModelnode for device: "
-                          + deviceConnection.getDeviceIdentification(),
+                      "Unable to get fcModelnode for device: {}",
+                      deviceConnection.getDeviceIdentification(),
                       e);
                 } catch (final NodeException e) {
                   LOGGER.error(
-                      "Unable to clear report for device: "
-                          + deviceConnection.getDeviceIdentification(),
+                      "Unable to clear report for device: {}",
+                      deviceConnection.getDeviceIdentification(),
                       e);
                 }
                 DeviceRegistrationService.this.iec61850DeviceConnectionService.disconnect(

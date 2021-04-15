@@ -176,6 +176,11 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
    * @param deviceMessageMetadata the device message metadata.
    * @param responseMessage the response message.
    */
+  /*
+   * Suppressing S1130: Remove the declaration of thrown exception "FunctionalException"
+   * FunctionalException is thrown from the implementation in subclass BundleResponseMessageProcessor.
+   */
+  @SuppressWarnings("squid:S1130")
   protected void handleError(
       final Exception e,
       final DeviceMessageMetadata deviceMessageMetadata,

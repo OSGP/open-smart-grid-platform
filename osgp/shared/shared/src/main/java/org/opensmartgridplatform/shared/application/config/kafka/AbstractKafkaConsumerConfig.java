@@ -1,4 +1,12 @@
-/** Copyright 2020 Smart Society Services B.V. */
+/*
+ * Copyright 2020 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.shared.application.config.kafka;
 
 import java.util.Map;
@@ -16,7 +24,7 @@ public abstract class AbstractKafkaConsumerConfig<K, V> extends KafkaConfig {
   private ConsumerFactory<K, V> consumerFactory;
   private ConcurrentKafkaListenerContainerFactory<K, V> kafkaListenerContainerFactory;
 
-  public AbstractKafkaConsumerConfig(
+  protected AbstractKafkaConsumerConfig(
       final Environment environment,
       final String propertiesPrefix,
       final String topic,

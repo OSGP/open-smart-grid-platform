@@ -48,8 +48,7 @@ public class Iec60870ConnectionEventListener implements ConnectionEventListener 
       asduHandler.handleAsdu(this.connection, asdu);
 
     } catch (final Iec60870AsduHandlerNotFoundException e) {
-      LOGGER.error(
-          "Unknown request received, no handler available for ASDU: {}", asdu.toString(), e);
+      LOGGER.error("Unknown request received, no handler available for ASDU: {}", asdu, e);
     } catch (final EOFException e) {
       LOGGER.error("Connection closed on connection ({}).", this.connection, e);
     } catch (final Exception e) {

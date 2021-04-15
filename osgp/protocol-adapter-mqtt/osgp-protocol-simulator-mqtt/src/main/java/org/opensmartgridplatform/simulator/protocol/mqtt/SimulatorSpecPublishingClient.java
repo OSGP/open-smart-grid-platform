@@ -55,6 +55,7 @@ public class SimulatorSpecPublishingClient extends Client {
       Thread.sleep(millis);
     } catch (final InterruptedException e) {
       LOG.warn("Interrupted sleep", e);
+      Thread.currentThread().interrupt();
     }
   }
 

@@ -6,9 +6,7 @@
  * the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
- *
  */
-
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
 import java.util.Date;

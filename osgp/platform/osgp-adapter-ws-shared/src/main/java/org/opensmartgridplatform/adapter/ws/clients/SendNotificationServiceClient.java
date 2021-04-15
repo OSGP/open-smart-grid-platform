@@ -1,4 +1,12 @@
-/** Copyright 2018 Smart Society Services B.V. */
+/*
+ * Copyright 2018 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.adapter.ws.clients;
 
 import java.net.MalformedURLException;
@@ -47,10 +55,10 @@ public class SendNotificationServiceClient {
     sendNotificationRequest.setNotification(notification);
 
     String organisation;
-    if (StringUtils.isEmpty(organisationIdentification)) {
-      organisation = this.organisationIdentification;
-    } else {
+    if (StringUtils.hasText(organisationIdentification)) {
       organisation = organisationIdentification;
+    } else {
+      organisation = this.organisationIdentification;
     }
 
     final WebServiceTemplate template =

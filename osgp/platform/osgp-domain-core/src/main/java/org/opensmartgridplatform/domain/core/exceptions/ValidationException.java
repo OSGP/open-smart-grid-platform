@@ -9,7 +9,6 @@
 package org.opensmartgridplatform.domain.core.exceptions;
 
 import java.util.Set;
-import javax.persistence.Transient;
 import javax.validation.ConstraintViolation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.ws.soap.server.endpoint.annotation.FaultCode;
@@ -23,7 +22,7 @@ public class ValidationException extends PlatformException {
 
   private static final String DEFAULT_MESSAGE = "Validation Exception";
 
-  @Transient private final Set<? extends ConstraintViolation<?>> constraintViolations;
+  private final transient Set<? extends ConstraintViolation<?>> constraintViolations;
 
   public ValidationException() {
     super(DEFAULT_MESSAGE);

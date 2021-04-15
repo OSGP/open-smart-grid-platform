@@ -1,3 +1,12 @@
+/*
+ * Copyright 2021 Alliander N.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.webdevicesimulator.application.tasks;
 
 import java.util.List;
@@ -28,7 +37,7 @@ public class TariffSwitchingLow implements Runnable {
   @Override
   public void run() {
 
-    if (this.deviceManagementService.getTariffSwitching()) {
+    if (Boolean.TRUE.equals(this.deviceManagementService.getTariffSwitching())) {
       LOGGER.info("traiff Switching off for devices");
 
       final List<Device> devices = this.deviceRepository.findAll();

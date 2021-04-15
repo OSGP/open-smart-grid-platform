@@ -19,8 +19,7 @@ public class AmrProfileStatusCode implements Serializable {
   private final Set<AmrProfileStatusCodeFlag> amrProfileStatusCodeFlags;
 
   public AmrProfileStatusCode(final Set<AmrProfileStatusCodeFlag> amrProfileStatusCodeFlags) {
-    this.amrProfileStatusCodeFlags =
-        new TreeSet<AmrProfileStatusCodeFlag>(amrProfileStatusCodeFlags);
+    this.amrProfileStatusCodeFlags = new TreeSet<>(amrProfileStatusCodeFlags);
   }
 
   @Override

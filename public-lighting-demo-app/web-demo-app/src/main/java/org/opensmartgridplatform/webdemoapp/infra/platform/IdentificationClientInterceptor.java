@@ -48,17 +48,20 @@ public class IdentificationClientInterceptor implements ClientInterceptor {
   }
 
   @Override
-  public void afterCompletion(final MessageContext arg0, final Exception arg1)
-      throws WebServiceClientException {}
+  public void afterCompletion(final MessageContext messageContext, final Exception ex)
+      throws WebServiceClientException {
+    // No resource clean up necessary
+  }
 
   @Override
-  public boolean handleFault(final MessageContext arg0) throws WebServiceClientException {
+  public boolean handleFault(final MessageContext messageContext) throws WebServiceClientException {
     return true;
   }
 
   @Override
-  public boolean handleRequest(final MessageContext msgContext) throws WebServiceClientException {
-    final SoapMessage message = (SoapMessage) msgContext.getRequest();
+  public boolean handleRequest(final MessageContext messageContext)
+      throws WebServiceClientException {
+    final SoapMessage message = (SoapMessage) messageContext.getRequest();
     final SoapHeader header = message.getSoapHeader();
 
     final QName orgIdHeaderHeaderQName = new QName(this.namespace, this.orgIdHeaderName);
@@ -77,7 +80,8 @@ public class IdentificationClientInterceptor implements ClientInterceptor {
   }
 
   @Override
-  public boolean handleResponse(final MessageContext arg0) throws WebServiceClientException {
+  public boolean handleResponse(final MessageContext messageContext)
+      throws WebServiceClientException {
     return true;
   }
 }

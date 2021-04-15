@@ -9,7 +9,6 @@
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.exceptions;
 
 import java.util.Set;
-import javax.persistence.Transient;
 import javax.validation.ConstraintViolation;
 import org.apache.commons.lang3.StringUtils;
 
@@ -20,7 +19,7 @@ public class ValidationException extends ProtocolAdapterException {
 
   private static final String DEFAULT_MESSAGE = "Validation Exception";
 
-  @Transient private final Set<? extends ConstraintViolation<?>> constraintViolations;
+  private final transient Set<? extends ConstraintViolation<?>> constraintViolations;
 
   public ValidationException() {
     super(DEFAULT_MESSAGE);

@@ -18,7 +18,6 @@ import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.FirmwareLoc
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.requests.UpdateFirmwareDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageProcessor;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.OslpEnvelopeProcessor;
-import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking.DeviceService;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareUpdateMessageDataContainer;
 import org.opensmartgridplatform.oslp.OslpEnvelope;
 import org.opensmartgridplatform.oslp.SignedOslpEnvelopeDto;
@@ -37,8 +36,6 @@ public class CommonUpdateFirmwareRequestMessageProcessor extends DeviceRequestMe
   /** Logger for this class */
   private static final Logger LOGGER =
       LoggerFactory.getLogger(CommonUpdateFirmwareRequestMessageProcessor.class);
-
-  @Autowired private DeviceService deviceService;
 
   @Autowired private FirmwareLocation firmwareLocation;
 

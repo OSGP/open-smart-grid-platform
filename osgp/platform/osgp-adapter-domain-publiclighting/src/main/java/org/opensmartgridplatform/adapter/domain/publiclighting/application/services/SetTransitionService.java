@@ -69,8 +69,7 @@ public class SetTransitionService extends AbstractService {
       final MessageMetadata metadata,
       final String ipAddress,
       @NotNull final TransitionType transitionType,
-      final DateTime transitionTime)
-      throws FunctionalException {
+      final DateTime transitionTime) {
 
     final String organisationIdentification = metadata.getOrganisationIdentification();
     final String deviceIdentification = metadata.getDeviceIdentification();

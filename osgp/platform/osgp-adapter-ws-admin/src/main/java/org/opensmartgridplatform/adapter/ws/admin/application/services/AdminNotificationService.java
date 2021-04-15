@@ -1,3 +1,12 @@
+/*
+ * Copyright 2021 Alliander N.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.adapter.ws.admin.application.services;
 
 import org.opensmartgridplatform.adapter.ws.admin.application.config.AdminNotificationClientConfig;
@@ -110,13 +119,13 @@ public class AdminNotificationService implements NotificationService {
     notification.setDeviceIdentification(deviceIdentification);
 
     // Optional fields.
-    if (!StringUtils.isEmpty(correlationUid)) {
+    if (StringUtils.hasText(correlationUid)) {
       notification.setCorrelationUid(correlationUid);
     }
-    if (!StringUtils.isEmpty(result)) {
+    if (StringUtils.hasText(result)) {
       notification.setResult(OsgpResultType.valueOf(result));
     }
-    if (!StringUtils.isEmpty(message)) {
+    if (StringUtils.hasText(message)) {
       notification.setMessage(message);
     }
 

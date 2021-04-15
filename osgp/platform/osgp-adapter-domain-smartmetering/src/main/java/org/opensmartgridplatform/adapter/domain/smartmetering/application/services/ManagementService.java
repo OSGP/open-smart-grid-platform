@@ -141,7 +141,7 @@ public class ManagementService {
     LOGGER.info(
         "handleEnableDebuggingResponse for MessageType: {}, with result: {}",
         deviceMessageMetadata.getMessageType(),
-        deviceResult.toString());
+        deviceResult);
 
     this.handleMetadataOnlyResponseMessage(deviceMessageMetadata, deviceResult, exception);
   }
@@ -164,7 +164,7 @@ public class ManagementService {
     LOGGER.info(
         "handleDisableDebuggingResponse for MessageType: {}, with result: {}",
         deviceMessageMetadata.getMessageType(),
-        deviceResult.toString());
+        deviceResult);
 
     this.handleMetadataOnlyResponseMessage(deviceMessageMetadata, deviceResult, exception);
   }
@@ -207,7 +207,7 @@ public class ManagementService {
     LOGGER.info(
         "Set device communication settings for messageType: {}, with result: {}",
         deviceMessageMetadata.getMessageType(),
-        deviceResult.toString());
+        deviceResult);
 
     this.handleMetadataOnlyResponseMessage(deviceMessageMetadata, deviceResult, exception);
   }
