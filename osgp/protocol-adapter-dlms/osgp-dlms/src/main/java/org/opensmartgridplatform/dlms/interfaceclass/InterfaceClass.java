@@ -57,6 +57,7 @@ public enum InterfaceClass {
   GPRS_MODEM_SETUP(45, 0),
   SMTP_SETUP(46, 0),
   SECURITY_SETUP(64, 0),
+  MODEM_INFO(47, 0),
 
   UNKNOWN(-1, -1);
 

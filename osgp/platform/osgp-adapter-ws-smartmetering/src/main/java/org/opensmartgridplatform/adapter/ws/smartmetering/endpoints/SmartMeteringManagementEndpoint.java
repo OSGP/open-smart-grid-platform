@@ -38,6 +38,11 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Find
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.FindMessageLogsResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetDevicesRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetDevicesResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetModemInfoAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetModemInfoAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetModemInfoRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetModemInfoResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetModemInfoResponseData;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.MessageLog;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.MessageLogPage;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.SetDeviceCommunicationSettingsAsyncRequest;
@@ -609,6 +614,81 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
       response.setSetDeviceLifecycleStatusByChannelResponseData(
           this.managementMapper.map(
               responseData.getMessageData(), SetDeviceLifecycleStatusByChannelResponseData.class));
+      response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+
+    } catch (final ConstraintViolationException e) {
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          ComponentType.WS_SMART_METERING,
+          new ValidationException(e.getConstraintViolations()));
+    } catch (final Exception e) {
+      this.handleException(e);
+    }
+    return response;
+  }
+
+  @PayloadRoot(localPart = "GetModemInfoRequest", namespace = NAMESPACE)
+  @ResponsePayload
+  public GetModemInfoAsyncResponse getModemInfo(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final GetModemInfoRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
+
+    final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetModemInfoRequestData
+        requestData =
+            this.managementMapper.map(
+                request.getGetModemInfoRequestData(),
+                org.opensmartgridplatform.domain.core.valueobjects.smartmetering
+                    .GetModemInfoRequestData.class);
+
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
+            .withOrganisationIdentification(organisationIdentification)
+            .withDeviceIdentification(request.getDeviceIdentification())
+            .withDeviceFunction(DeviceFunction.GET_MODEM_INFO)
+            .withMessageType(MessageType.GET_MODEM_INFO)
+            .withMessagePriority(messagePriority)
+            .withScheduleTime(scheduleTime)
+            .withBypassRetry(bypassRetry)
+            .build();
+
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, requestData);
+
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+
+    return this.managementMapper.map(asyncResponse, GetModemInfoAsyncResponse.class);
+  }
+
+  @PayloadRoot(localPart = "GetModemInfoAsyncRequest", namespace = NAMESPACE)
+  @ResponsePayload
+  public GetModemInfoResponse getModemInfoResponse(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final GetModemInfoAsyncRequest request)
+      throws OsgpException {
+
+    log.info(
+        "Get modem info response for organisation: {} and device: {}.",
+        organisationIdentification,
+        request.getDeviceIdentification());
+
+    GetModemInfoResponse response = null;
+    try {
+
+      response = new GetModemInfoResponse();
+
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+
+      this.throwExceptionIfResultNotOk(responseData, "Get modem info");
+
+      response.setGetModemInfoResponseData(
+          this.managementMapper.map(responseData.getMessageData(), GetModemInfoResponseData.class));
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
 
     } catch (final ConstraintViolationException e) {

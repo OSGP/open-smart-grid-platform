@@ -31,6 +31,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetFirmw
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetFirmwareVersionRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetMbusEncryptionKeyStatusByChannelRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetMbusEncryptionKeyStatusRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetModemInfoRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetOutagesRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPeriodicMeterReadsGasRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetPeriodicMeterReadsRequest;
@@ -78,6 +79,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetFirmw
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetFirmwareVersionRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetModemInfoRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetOutagesRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGasRequestData;
@@ -296,6 +298,7 @@ public class ActionMapperService {
     CLASS_MAP.put(SetRandomisationSettingsRequest.class, SetRandomisationSettingsRequestData.class);
     CLASS_MAP.put(GetOutagesRequest.class, GetOutagesRequestData.class);
     CLASS_MAP.put(GetActualPowerQualityRequest.class, ActualPowerQualityRequest.class);
+    CLASS_MAP.put(GetModemInfoRequest.class, GetModemInfoRequestData.class);
   }
 
   @Autowired private ManagementMapper managementMapper;
@@ -366,6 +369,11 @@ public class ActionMapperService {
             .class,
         this.managementMapper);
     CLASS_TO_MAPPER_MAP.put(GetOutagesRequest.class, this.managementMapper);
+    CLASS_TO_MAPPER_MAP.put(
+        org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetModemInfoRequestData
+            .class,
+        this.managementMapper);
+    CLASS_TO_MAPPER_MAP.put(GetModemInfoRequest.class, this.managementMapper);
   }
 
   private void mapMonitoringRequestData() {

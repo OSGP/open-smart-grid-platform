@@ -21,6 +21,7 @@ public class DlmsObjectConfigConfiguration {
     final List<DlmsObjectConfig> configs = new ArrayList<>();
     configs.add(new DlmsObjectConfigDsmr422());
     configs.add(new DlmsObjectConfigSmr50());
+    configs.add(new DlmsObjectConfigSmr51());
     return configs;
   }
 }
