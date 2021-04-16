@@ -11,10 +11,10 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponse;
+import org.opensmartgridplatform.adapter.protocol.iec61850.device.lmd.GetLightSensorStatusResponse;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.lmd.LmdDeviceService;
-import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.responses.GetStatusDeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DomainInformation;
-import org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto;
+import org.opensmartgridplatform.dto.valueobjects.LightSensorStatusDto;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
@@ -60,23 +60,26 @@ public abstract class LmdDeviceRequestMessageProcessor extends BaseMessageProces
         this.iec61850RequestMessageProcessorMap.addMessageProcessor(this.messageType, this);
     }
 
-    protected void handleGetStatusDeviceResponse(final DeviceResponse deviceResponse,
+    protected void handleGetLightSensorStatusResponse(final DeviceResponse lightSensorStatusResponse,
             final ResponseMessageSender responseMessageSender, final DomainInformation domainInformation,
             final String messageType, final int retryCount, final boolean isScheduled) {
-        LOGGER.info("Handling getStatusDeviceResponse for device: {}", deviceResponse.getDeviceIdentification());
-        if (StringUtils.isEmpty(deviceResponse.getCorrelationUid())) {
+        LOGGER.info("Handling getStatusDeviceResponse for device: {}",
+                lightSensorStatusResponse.getDeviceIdentification());
+        if (StringUtils.isEmpty(lightSensorStatusResponse.getCorrelationUid())) {
             LOGGER.warn(
                     "CorrelationUID is null or empty, not sending GetStatusResponse message for GetStatusRequest message for device: {}",
-                    deviceResponse.getDeviceIdentification());
+                    lightSensorStatusResponse.getDeviceIdentification());
             return;
         }
 
-        final GetStatusDeviceResponse response = (GetStatusDeviceResponse) deviceResponse;
-        final DeviceStatusDto status = response.getDeviceStatus();
+        final GetLightSensorStatusResponse response = (GetLightSensorStatusResponse) lightSensorStatusResponse;
+        final LightSensorStatusDto status = response.getLightSensorStatus();
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
-                deviceResponse.getDeviceIdentification(), deviceResponse.getOrganisationIdentification(),
-                deviceResponse.getCorrelationUid(), messageType, deviceResponse.getMessagePriority());
+                lightSensorStatusResponse.getDeviceIdentification(),
+                lightSensorStatusResponse.getOrganisationIdentification(),
+                lightSensorStatusResponse.getCorrelationUid(), messageType,
+                lightSensorStatusResponse.getMessagePriority());
         final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage.Builder()
                 .domain(domainInformation.getDomain())
                 .domainVersion(domainInformation.getDomainVersion())

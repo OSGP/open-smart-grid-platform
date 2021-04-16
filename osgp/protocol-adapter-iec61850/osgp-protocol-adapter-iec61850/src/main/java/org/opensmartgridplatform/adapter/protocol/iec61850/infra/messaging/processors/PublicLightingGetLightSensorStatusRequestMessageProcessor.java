@@ -17,7 +17,6 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.D
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.LmdDeviceRequestMessageProcessor;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceResponseHandler;
-import org.opensmartgridplatform.dto.valueobjects.DomainTypeDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.slf4j.Logger;
@@ -57,19 +56,7 @@ public class PublicLightingGetLightSensorStatusRequestMessageProcessor extends L
             return;
         }
 
-        // To ensure the response is sent to the public lighting or common
-        // domain and can be parsed using the existing GetStatus functions, the
-        // message type is changed from GET_LIGHT_SENSOR_STATUS to
-        // GET_LIGHT_STATUS or to GET_STATUS, depending on domain.
-        String messageType = messageMetadata.getMessageType();
-        if (DomainTypeDto.PUBLIC_LIGHTING.name().equals(messageMetadata.getDomain())) {
-            messageType = MessageType.GET_LIGHT_STATUS.name();
-        } else if (DomainTypeDto.TARIFF_SWITCHING.name().equals(messageMetadata.getDomain())) {
-            LOGGER.warn("Unexpected domain request received: {} for messageType: {}", messageMetadata.getDomain(),
-                    messageType);
-        } else {
-            messageType = MessageType.GET_STATUS.name();
-        }
+        final String messageType = messageMetadata.getMessageType();
 
         final RequestMessageData requestMessageData = RequestMessageData.newBuilder()
                 .messageMetadata(messageMetadata)
@@ -86,7 +73,7 @@ public class PublicLightingGetLightSensorStatusRequestMessageProcessor extends L
                 .messageType(messageType)
                 .build();
 
-        this.deviceService.getStatus(deviceRequest, iec61850DeviceResponseHandler);
+        this.deviceService.getLightSensorStatus(deviceRequest, iec61850DeviceResponseHandler);
     }
 
     @Override
@@ -95,7 +82,7 @@ public class PublicLightingGetLightSensorStatusRequestMessageProcessor extends L
             final DomainInformation domainInformation, final String messageType, final int retryCount,
             final boolean isScheduled) {
         LOGGER.info("Override for handleDeviceResponse() by PublicLightingGetLightSensorStatusRequestMessageProcessor");
-        this.handleGetStatusDeviceResponse(deviceResponse, responseMessageSender, domainInformation, messageType,
+        this.handleGetLightSensorStatusResponse(deviceResponse, responseMessageSender, domainInformation, messageType,
                 retryCount, isScheduled);
     }
 }

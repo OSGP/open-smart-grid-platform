@@ -52,8 +52,6 @@ public class Iec61850DeviceConnectionService {
 
     private static ConcurrentHashMap<String, Iec61850Connection> cache = new ConcurrentHashMap<>();
 
-    private static final int IEC61850_DEFAULT_PORT = 102;
-
     @Autowired
     private Iec61850DeviceRepository iec61850DeviceRepository;
 
@@ -65,6 +63,9 @@ public class Iec61850DeviceConnectionService {
 
     @Autowired
     private Iec61850Client iec61850Client;
+
+    @Autowired
+    private int iec61850DefaultPort;
 
     @Autowired
     private int iec61850SsldPortServer;
@@ -195,7 +196,7 @@ public class Iec61850DeviceConnectionService {
         } else if (IED.ZOWN_RTU.equals(ied) || IED.DA_RTU.equals(ied)) {
             port = this.iec61850RtuPortServer;
         } else {
-            port = IEC61850_DEFAULT_PORT;
+            port = this.iec61850DefaultPort;
         }
         return port;
     }

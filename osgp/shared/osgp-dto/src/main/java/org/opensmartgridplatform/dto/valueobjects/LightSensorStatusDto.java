@@ -16,8 +16,8 @@ public class LightSensorStatusDto implements Serializable {
 
     private final boolean dark;
 
-    public LightSensorStatusDto(final boolean on) {
-        this.dark = on;
+    public LightSensorStatusDto(final boolean dark) {
+        this.dark = dark;
     }
 
     public boolean isDark() {

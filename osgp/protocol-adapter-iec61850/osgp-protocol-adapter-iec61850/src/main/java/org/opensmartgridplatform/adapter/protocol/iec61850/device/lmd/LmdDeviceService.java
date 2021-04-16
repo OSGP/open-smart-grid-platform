@@ -21,5 +21,5 @@ public interface LmdDeviceService {
      * Returns a {@link GetStatusDeviceResponse} via the deviceResponseHandler's
      * callback.
      */
-    void getStatus(DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler) throws JMSException;
+    void getLightSensorStatus(DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler) throws JMSException;
 }
