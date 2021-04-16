@@ -1,3 +1,11 @@
+/*
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -7,14 +15,6 @@ import ma.glasnost.orika.impl.DefaultMapperFactory;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CosemDate;
 
-/*
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
 public class CosemDateConverterTest {
 
   private static final byte FIRST_BYTE_FOR_YEAR = (byte) 0x07;
@@ -24,11 +24,11 @@ public class CosemDateConverterTest {
   private static final byte BYTE_FOR_DAY_OF_MONTH = 7;
   private static final byte BYTE_FOR_DAY_OF_WEEK = (byte) 0xFF;
   private static final byte[] COSEMDATE_BYTE_ARRAY = {
-    FIRST_BYTE_FOR_YEAR,
-    SECOND_BYTE_FOR_YEAR,
-    BYTE_FOR_MONTH,
-    BYTE_FOR_DAY_OF_MONTH,
-    BYTE_FOR_DAY_OF_WEEK
+      FIRST_BYTE_FOR_YEAR,
+      SECOND_BYTE_FOR_YEAR,
+      BYTE_FOR_MONTH,
+      BYTE_FOR_DAY_OF_MONTH,
+      BYTE_FOR_DAY_OF_WEEK
   };
   private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
 

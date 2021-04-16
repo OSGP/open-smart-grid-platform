@@ -1,3 +1,12 @@
+/*
+ * Copyright 2021 Alliander N.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.adapter.ws.core.application.mapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -170,7 +179,7 @@ public class DeviceConverterTest {
     assertThat(jaxbDevice.getOutputSettings().size()).isEqualTo(3);
     for (int i = 0; i < 3; i++) {
       assertThat(device.getOutputSettings().get(i).getAlias())
-          .isEqualTo(jaxbDevice.getOutputSettings().get(i).getAlias());
+      .isEqualTo(jaxbDevice.getOutputSettings().get(i).getAlias());
     }
     assertThat(jaxbDevice.getTechnicalInstallationDate()).isEqualTo(xmlGregorianCalendar);
 
@@ -193,7 +202,7 @@ public class DeviceConverterTest {
     assertThat(mappedBack.getOutputSettings().size()).isEqualTo(3);
     for (int i = 0; i < 3; i++) {
       assertThat(device.getOutputSettings().get(i).getAlias())
-          .isEqualTo(mappedBack.getOutputSettings().get(i).getAlias());
+      .isEqualTo(mappedBack.getOutputSettings().get(i).getAlias());
     }
     assertThat(mappedBack.getTechnicalInstallationDate()).isEqualTo(date);
   }

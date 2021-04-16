@@ -1,3 +1,12 @@
+/*
+ * Copyright 2021 Alliander N.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service;
 
 import java.io.IOException;
@@ -26,16 +35,16 @@ public abstract class GetConfigurationObjectService implements ProtocolService {
     final AttributeAddress attributeAddress =
         AttributeAddressFactory.getConfigurationObjectAddress();
     conn.getDlmsMessageListener()
-        .setDescription(
-            String.format(
-                "Retrieve current ConfigurationObject, attribute: %s",
-                JdlmsObjectToStringUtil.describeAttributes(attributeAddress)));
+    .setDescription(
+        String.format(
+            "Retrieve current ConfigurationObject, attribute: %s",
+            JdlmsObjectToStringUtil.describeAttributes(attributeAddress)));
     return this.getConfigurationObject(this.getGetResult(conn, attributeAddress));
   }
 
   private GetResult getGetResult(
       final DlmsConnectionManager conn, final AttributeAddress attributeAddress)
-      throws ProtocolAdapterException {
+          throws ProtocolAdapterException {
     LOGGER.info("Get current ConfigurationObject using AttributeAddress {}", attributeAddress);
     try {
       return this.handleBadResults(conn.getConnection().get(attributeAddress));
@@ -67,9 +76,9 @@ public abstract class GetConfigurationObjectService implements ProtocolService {
     for (int index = 0; index < word.length(); index++) {
       if (word.charAt(index) == '1') {
         this.getFlagType(index)
-            .ifPresent(
-                configurationFlagType ->
-                    flags.add(new ConfigurationFlagDto(configurationFlagType, true)));
+        .ifPresent(
+            configurationFlagType ->
+            flags.add(new ConfigurationFlagDto(configurationFlagType, true)));
       }
     }
     return flags;
