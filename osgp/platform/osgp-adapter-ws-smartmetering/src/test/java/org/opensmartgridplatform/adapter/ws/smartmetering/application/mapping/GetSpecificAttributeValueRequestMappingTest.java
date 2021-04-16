@@ -1,11 +1,11 @@
-/**
+/*
  * Copyright 2014-2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
-
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,32 +16,38 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.ObisCode
 
 public class GetSpecificAttributeValueRequestMappingTest {
 
-    private final AdhocMapper mapper = new AdhocMapper();
+  private final AdhocMapper mapper = new AdhocMapper();
 
-    private GetSpecificAttributeValueRequest makeRequest() {
-        final GetSpecificAttributeValueRequest result = new GetSpecificAttributeValueRequest();
-        final ObisCodeValues obiscode = new ObisCodeValues();
-        obiscode.setA((short) 1);
-        result.setObisCode(obiscode);
-        result.setDeviceIdentification("12345");
-        return result;
-    }
+  private GetSpecificAttributeValueRequest makeRequest() {
+    final GetSpecificAttributeValueRequest result = new GetSpecificAttributeValueRequest();
+    final ObisCodeValues obiscode = new ObisCodeValues();
+    obiscode.setA((short) 1);
+    result.setObisCode(obiscode);
+    result.setDeviceIdentification("12345");
+    return result;
+  }
 
-    @Test
-    public void test() {
-        final GetSpecificAttributeValueRequest req1 = this.makeRequest();
-        final Object obj1 = this.mapper.map(req1,
-                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecificAttributeValueRequest.class);
+  @Test
+  public void test() {
+    final GetSpecificAttributeValueRequest req1 = this.makeRequest();
+    final Object obj1 =
+        this.mapper.map(
+            req1,
+            org.opensmartgridplatform.domain.core.valueobjects.smartmetering
+                .SpecificAttributeValueRequest.class);
 
-        assertThat((obj1 != null)
-                && (obj1 instanceof org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecificAttributeValueRequest))
-                        .isTrue();
+    assertThat(
+            (obj1 != null)
+                && (obj1
+                    instanceof
+                    org.opensmartgridplatform.domain.core.valueobjects.smartmetering
+                        .SpecificAttributeValueRequest))
+        .isTrue();
 
-        final Object obj2 = this.mapper.map(obj1, GetSpecificAttributeValueRequest.class);
-        assertThat((obj2 != null) && (obj2 instanceof GetSpecificAttributeValueRequest)).isTrue();
+    final Object obj2 = this.mapper.map(obj1, GetSpecificAttributeValueRequest.class);
+    assertThat((obj2 != null) && (obj2 instanceof GetSpecificAttributeValueRequest)).isTrue();
 
-        final GetSpecificAttributeValueRequest req2 = (GetSpecificAttributeValueRequest) obj2;
-        assertThat(req1.getDeviceIdentification().equals(req2.getDeviceIdentification())).isTrue();
-    }
-
+    final GetSpecificAttributeValueRequest req2 = (GetSpecificAttributeValueRequest) obj2;
+    assertThat(req1.getDeviceIdentification().equals(req2.getDeviceIdentification())).isTrue();
+  }
 }

@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.messageprocessors;
 
@@ -21,21 +22,23 @@ import org.springframework.stereotype.Component;
 @Component
 public class FindEventsRequestMessageProcessor extends BaseRequestMessageProcessor {
 
-    @Autowired
-    @Qualifier("domainSmartMeteringManagementService")
-    private ManagementService managementService;
+  @Autowired
+  @Qualifier("domainSmartMeteringManagementService")
+  private ManagementService managementService;
 
-    @Autowired
-    protected FindEventsRequestMessageProcessor(
-            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
-        super(messageProcessorMap, MessageType.FIND_EVENTS);
-    }
+  @Autowired
+  protected FindEventsRequestMessageProcessor(
+      @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
+          final MessageProcessorMap messageProcessorMap) {
+    super(messageProcessorMap, MessageType.FIND_EVENTS);
+  }
 
-    @Override
-    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
-            throws FunctionalException {
+  @Override
+  protected void handleMessage(
+      final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
+      throws FunctionalException {
 
-        final FindEventsRequestDataList data = (FindEventsRequestDataList) dataObject;
-        this.managementService.findEvents(deviceMessageMetadata, data);
-    }
+    final FindEventsRequestDataList data = (FindEventsRequestDataList) dataObject;
+    this.managementService.findEvents(deviceMessageMetadata, data);
+  }
 }

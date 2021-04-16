@@ -10,7 +10,6 @@ package org.opensmartgridplatform.adapter.protocol.mqtt.application.config.messa
 
 import javax.jms.ConnectionFactory;
 import javax.net.ssl.SSLException;
-
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
 import org.slf4j.Logger;
@@ -20,31 +19,31 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.jms.core.JmsTemplate;
 
-/**
- * Configuration class for outbound responses to OSGP Core.
- */
+/** Configuration class for outbound responses to OSGP Core. */
 @Configuration
 public class OutboundOsgpCoreResponsesMessagingConfig {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OutboundOsgpCoreResponsesMessagingConfig.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(OutboundOsgpCoreResponsesMessagingConfig.class);
 
-    private JmsConfigurationFactory jmsConfigurationFactory;
+  private JmsConfigurationFactory jmsConfigurationFactory;
 
-    public OutboundOsgpCoreResponsesMessagingConfig(final Environment environment,
-            final DefaultJmsConfiguration defaultJmsConfiguration) throws SSLException {
-        this.jmsConfigurationFactory = new JmsConfigurationFactory(environment, defaultJmsConfiguration,
-                "jms.mqtt.responses");
-    }
+  public OutboundOsgpCoreResponsesMessagingConfig(
+      final Environment environment, final DefaultJmsConfiguration defaultJmsConfiguration)
+      throws SSLException {
+    this.jmsConfigurationFactory =
+        new JmsConfigurationFactory(environment, defaultJmsConfiguration, "jms.mqtt.responses");
+  }
 
-    @Bean(destroyMethod = "stop", name = "protocolMqttOutboundOsgpCoreResponsesConnectionFactory")
-    public ConnectionFactory connectionFactory() {
-        LOGGER.info("Initializing protocolMqttOutboundOsgpCoreResponsesConnectionFactory bean.");
-        return this.jmsConfigurationFactory.getPooledConnectionFactory();
-    }
+  @Bean(destroyMethod = "stop", name = "protocolMqttOutboundOsgpCoreResponsesConnectionFactory")
+  public ConnectionFactory connectionFactory() {
+    LOGGER.info("Initializing protocolMqttOutboundOsgpCoreResponsesConnectionFactory bean.");
+    return this.jmsConfigurationFactory.getPooledConnectionFactory();
+  }
 
-    @Bean(name = "protocolMqttOutboundOsgpCoreResponsesJmsTemplate")
-    public JmsTemplate jmsTemplate() {
-        LOGGER.info("Initializing protocolMqttOutboundOsgpCoreResponsesJmsTemplate bean.");
-        return this.jmsConfigurationFactory.initJmsTemplate();
-    }
+  @Bean(name = "protocolMqttOutboundOsgpCoreResponsesJmsTemplate")
+  public JmsTemplate jmsTemplate() {
+    LOGGER.info("Initializing protocolMqttOutboundOsgpCoreResponsesJmsTemplate bean.");
+    return this.jmsConfigurationFactory.initJmsTemplate();
+  }
 }

@@ -1,16 +1,18 @@
-/**
+/*
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringinstallation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import java.util.Map;
-
 import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
@@ -37,149 +39,167 @@ import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityExce
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
-
 public class AddDeviceSteps extends AbstractSmartMeteringSteps {
 
-    @Autowired
-    private DeviceRepository deviceRepository;
+  @Autowired private DeviceRepository deviceRepository;
 
-    @Autowired
-    private DlmsDeviceRepository dlmsDeviceRepository;
+  @Autowired private DlmsDeviceRepository dlmsDeviceRepository;
 
-    @Autowired
-    private SmartMeteringConfigurationClient smartMeteringConfigurationClient;
+  @Autowired private SmartMeteringConfigurationClient smartMeteringConfigurationClient;
 
-    @Autowired
-    private SmartMeteringInstallationClient smartMeteringInstallationClient;
+  @Autowired private SmartMeteringInstallationClient smartMeteringInstallationClient;
 
-    @When("^receiving a smartmetering add device request$")
-    public void receivingASmartmeteringAddDeviceRequest(final Map<String, String> settings) throws Throwable {
-        final String deviceIdentification = settings.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION);
-        ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, deviceIdentification);
-        ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_MASTERKEY,
-                settings.get(PlatformKeys.KEY_DEVICE_MASTERKEY));
-        ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY,
-                settings.get(PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY));
-        ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY,
-                settings.get(PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY));
-        ScenarioContext.current().put(PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY,
-                settings.get(PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY));
+  @When("^receiving a smartmetering add device request$")
+  public void receivingASmartmeteringAddDeviceRequest(final Map<String, String> settings)
+      throws Throwable {
+    final String deviceIdentification = settings.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION);
+    ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, deviceIdentification);
+    ScenarioContext.current()
+        .put(PlatformKeys.KEY_DEVICE_MASTERKEY, settings.get(PlatformKeys.KEY_DEVICE_MASTERKEY));
+    ScenarioContext.current()
+        .put(
+            PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY,
+            settings.get(PlatformKeys.KEY_DEVICE_AUTHENTICATIONKEY));
+    ScenarioContext.current()
+        .put(
+            PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY,
+            settings.get(PlatformKeys.KEY_DEVICE_ENCRYPTIONKEY));
+    ScenarioContext.current()
+        .put(
+            PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY,
+            settings.get(PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY));
 
-        final AddDeviceRequest request = AddDeviceRequestFactory.fromParameterMap(settings);
-        final AddDeviceAsyncResponse asyncResponse = this.smartMeteringInstallationClient.addDevice(request);
+    final AddDeviceRequest request = AddDeviceRequestFactory.fromParameterMap(settings);
+    final AddDeviceAsyncResponse asyncResponse =
+        this.smartMeteringInstallationClient.addDevice(request);
 
-        this.checkAndSaveCorrelationId(asyncResponse.getCorrelationUid());
+    this.checkAndSaveCorrelationId(asyncResponse.getCorrelationUid());
 
-        assertThat(asyncResponse.getDeviceIdentification()).as("Device identification in response")
-                .isEqualTo(deviceIdentification);
+    assertThat(asyncResponse.getDeviceIdentification())
+        .as("Device identification in response")
+        .isEqualTo(deviceIdentification);
+  }
+
+  @Then("^the add device response should be returned$")
+  public void theAddDeviceResponseShouldBeReturned(final Map<String, String> responseParameters)
+      throws Throwable {
+
+    final String correlationUid =
+        (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
+    final Map<String, String> extendedParameters =
+        SettingsHelper.addDefault(
+            responseParameters, PlatformKeys.KEY_CORRELATION_UID, correlationUid);
+
+    final AddDeviceAsyncRequest addDeviceAsyncRequest =
+        AddDeviceRequestFactory.fromParameterMapAsync(extendedParameters);
+
+    final AddDeviceResponse response =
+        this.smartMeteringInstallationClient.getAddDeviceResponse(addDeviceAsyncRequest);
+
+    final String expectedResult = responseParameters.get(PlatformKeys.KEY_RESULT);
+    assertThat(response.getResult()).as("Result").isNotNull();
+    assertThat(response.getResult().name()).as("Result").isEqualTo(expectedResult);
+  }
+
+  @Then("^retrieving the AddDevice response results in an exception$")
+  public void retrievingTheAddDeviceResponseResultsInAnException()
+      throws WebServiceSecurityException {
+
+    final AddDeviceAsyncRequest addDeviceAsyncRequest =
+        AddDeviceRequestFactory.fromScenarioContext();
+
+    try {
+      this.smartMeteringInstallationClient.getAddDeviceResponse(addDeviceAsyncRequest);
+      Assertions.fail("A SoapFaultClientException should be thrown");
+    } catch (final SoapFaultClientException e) {
+      ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
     }
+  }
 
-    @Then("^the add device response should be returned$")
-    public void theAddDeviceResponseShouldBeReturned(final Map<String, String> responseParameters) throws Throwable {
+  @Then("^a request to the device can be performed after activation$")
+  public void aRequestToTheDeviceCanBePerformedAfterActivation() throws Throwable {
 
-        final String correlationUid = (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
-        final Map<String, String> extendedParameters = SettingsHelper.addDefault(responseParameters,
-                PlatformKeys.KEY_CORRELATION_UID, correlationUid);
+    final Device device = this.activateDevice();
 
-        final AddDeviceAsyncRequest addDeviceAsyncRequest = AddDeviceRequestFactory
-                .fromParameterMapAsync(extendedParameters);
+    /*
+     * Fire any request that causes communication to the device, and check
+     * that the actual response is not an error.
+     */
 
-        final AddDeviceResponse response = this.smartMeteringInstallationClient
-                .getAddDeviceResponse(addDeviceAsyncRequest);
+    final GetAdministrativeStatusRequest request = new GetAdministrativeStatusRequest();
+    request.setDeviceIdentification(device.getDeviceIdentification());
+    final GetAdministrativeStatusAsyncResponse getAdministrativeStatusAsyncResponse =
+        this.smartMeteringConfigurationClient.getAdministrativeStatus(request);
 
-        final String expectedResult = responseParameters.get(PlatformKeys.KEY_RESULT);
-        assertThat(response.getResult()).as("Result").isNotNull();
-        assertThat(response.getResult().name()).as("Result").isEqualTo(expectedResult);
-    }
+    final GetAdministrativeStatusAsyncRequest asyncRequest =
+        new GetAdministrativeStatusAsyncRequest();
+    asyncRequest.setCorrelationUid(getAdministrativeStatusAsyncResponse.getCorrelationUid());
+    asyncRequest.setDeviceIdentification(device.getDeviceIdentification());
+    final GetAdministrativeStatusResponse getAdministrativeStatusResponse =
+        this.smartMeteringConfigurationClient.retrieveGetAdministrativeStatusResponse(asyncRequest);
 
-    @Then("^retrieving the AddDevice response results in an exception$")
-    public void retrievingTheAddDeviceResponseResultsInAnException() throws WebServiceSecurityException {
+    assertThat(getAdministrativeStatusResponse.getEnabled())
+        .as("Administrative status should contain information if it is enabled")
+        .isNotNull();
+  }
 
-        final AddDeviceAsyncRequest addDeviceAsyncRequest = AddDeviceRequestFactory.fromScenarioContext();
+  private Device activateDevice() {
+    final String deviceIdentification = this.getDeviceIdentificationFromContext();
+    final Device device = this.findDeviceByDeviceIdentification(deviceIdentification);
 
-        try {
-            this.smartMeteringInstallationClient.getAddDeviceResponse(addDeviceAsyncRequest);
-            Assertions.fail("A SoapFaultClientException should be thrown");
-        } catch (final SoapFaultClientException e) {
-            ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
-        }
-    }
+    assertThat(device)
+        .as("Device should be in the core database for identification " + deviceIdentification)
+        .isNotNull();
 
-    @Then("^a request to the device can be performed after activation$")
-    public void aRequestToTheDeviceCanBePerformedAfterActivation() throws Throwable {
+    /*
+     * The default result of adding a device through a service call is that
+     * the device is configured to have a dynamic IP address to be obtained
+     * from Jasper Wireless.
+     */
+    this.configureForCommunicationWithDeviceSimulator(device);
 
-        final Device device = this.activateDevice();
+    return this.deviceRepository.save(device);
+  }
 
-        /*
-         * Fire any request that causes communication to the device, and check
-         * that the actual response is not an error.
-         */
+  private void configureForCommunicationWithDeviceSimulator(final Device device) {
+    /*
+     * This call also sets the device to be IN_USE and activated.
+     */
+    device.updateRegistrationData(
+        PlatformSmartmeteringDefaults.NETWORK_ADDRESS, device.getDeviceType());
 
-        final GetAdministrativeStatusRequest request = new GetAdministrativeStatusRequest();
-        request.setDeviceIdentification(device.getDeviceIdentification());
-        final GetAdministrativeStatusAsyncResponse getAdministrativeStatusAsyncResponse = this.smartMeteringConfigurationClient
-                .getAdministrativeStatus(request);
+    final DlmsDevice dlmsDevice =
+        this.dlmsDeviceRepository.findByDeviceIdentification(device.getDeviceIdentification());
 
-        final GetAdministrativeStatusAsyncRequest asyncRequest = new GetAdministrativeStatusAsyncRequest();
-        asyncRequest.setCorrelationUid(getAdministrativeStatusAsyncResponse.getCorrelationUid());
-        asyncRequest.setDeviceIdentification(device.getDeviceIdentification());
-        final GetAdministrativeStatusResponse getAdministrativeStatusResponse = this.smartMeteringConfigurationClient
-                .retrieveGetAdministrativeStatusResponse(asyncRequest);
+    assertThat(dlmsDevice)
+        .as(
+            "Device should be in the DLMS protocol database for identification "
+                + device.getDeviceIdentification())
+        .isNotNull();
 
-        assertThat(getAdministrativeStatusResponse.getEnabled())
-                .as("Administrative status should contain information if it is enabled").isNotNull();
-    }
+    dlmsDevice.setIpAddressIsStatic(true);
+    dlmsDevice.setPort(PlatformSmartmeteringDefaults.PORT);
+    this.dlmsDeviceRepository.save(dlmsDevice);
+  }
 
-    private Device activateDevice() {
-        final String deviceIdentification = this.getDeviceIdentificationFromContext();
-        final Device device = this.findDeviceByDeviceIdentification(deviceIdentification);
+  private String getDeviceIdentificationFromContext() {
+    final String keyDeviceIdentification = PlatformKeys.KEY_DEVICE_IDENTIFICATION;
+    final String deviceIdentification =
+        (String) ScenarioContext.current().get(keyDeviceIdentification);
 
-        assertThat(device).as("Device should be in the core database for identification " + deviceIdentification)
-                .isNotNull();
+    assertThat(deviceIdentification)
+        .as(
+            "Device identification must be in the scenario context for key "
+                + keyDeviceIdentification)
+        .isNotNull();
+    return deviceIdentification;
+  }
 
-        /*
-         * The default result of adding a device through a service call is that
-         * the device is configured to have a dynamic IP address to be obtained
-         * from Jasper Wireless.
-         */
-        this.configureForCommunicationWithDeviceSimulator(device);
-
-        return this.deviceRepository.save(device);
-    }
-
-    private void configureForCommunicationWithDeviceSimulator(final Device device) {
-        /*
-         * This call also sets the device to be IN_USE and activated.
-         */
-        device.updateRegistrationData(PlatformSmartmeteringDefaults.NETWORK_ADDRESS, device.getDeviceType());
-
-        final DlmsDevice dlmsDevice = this.dlmsDeviceRepository
-                .findByDeviceIdentification(device.getDeviceIdentification());
-
-        assertThat(dlmsDevice).as(
-                "Device should be in the DLMS protocol database for identification " + device.getDeviceIdentification())
-                .isNotNull();
-
-        dlmsDevice.setIpAddressIsStatic(true);
-        dlmsDevice.setPort(PlatformSmartmeteringDefaults.PORT);
-        this.dlmsDeviceRepository.save(dlmsDevice);
-    }
-
-    private String getDeviceIdentificationFromContext() {
-        final String keyDeviceIdentification = PlatformKeys.KEY_DEVICE_IDENTIFICATION;
-        final String deviceIdentification = (String) ScenarioContext.current().get(keyDeviceIdentification);
-
-        assertThat(deviceIdentification)
-                .as("Device identification must be in the scenario context for key " + keyDeviceIdentification)
-                .isNotNull();
-        return deviceIdentification;
-    }
-
-    private Device findDeviceByDeviceIdentification(final String deviceIdentification) {
-        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-        assertThat(device).as("Device must exist for identification " + deviceIdentification).isNotNull();
-        return device;
-    }
+  private Device findDeviceByDeviceIdentification(final String deviceIdentification) {
+    final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+    assertThat(device)
+        .as("Device must exist for identification " + deviceIdentification)
+        .isNotNull();
+    return device;
+  }
 }

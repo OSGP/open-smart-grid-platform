@@ -1,16 +1,16 @@
-/**
+/*
  * Copyright 2019 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.config.messaging;
 
 import javax.jms.ConnectionFactory;
 import javax.jms.MessageListener;
 import javax.net.ssl.SSLException;
-
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessorMap;
@@ -23,38 +23,38 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
-/**
- * Configuration class for inbound responses from OSGP Core.
- */
+/** Configuration class for inbound responses from OSGP Core. */
 @Configuration
 public class InboundOsgpCoreResponsesMessagingConfig {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(InboundOsgpCoreResponsesMessagingConfig.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(InboundOsgpCoreResponsesMessagingConfig.class);
 
-    private final JmsConfigurationFactory jmsConfigurationFactory;
+  private final JmsConfigurationFactory jmsConfigurationFactory;
 
-    public InboundOsgpCoreResponsesMessagingConfig(final Environment environment,
-            final DefaultJmsConfiguration defaultJmsConfiguration) throws SSLException {
-        this.jmsConfigurationFactory = new JmsConfigurationFactory(environment, defaultJmsConfiguration,
-                "jms.osgp.responses");
-    }
+  public InboundOsgpCoreResponsesMessagingConfig(
+      final Environment environment, final DefaultJmsConfiguration defaultJmsConfiguration)
+      throws SSLException {
+    this.jmsConfigurationFactory =
+        new JmsConfigurationFactory(environment, defaultJmsConfiguration, "jms.osgp.responses");
+  }
 
-    @Bean(destroyMethod = "stop", name = "protocolDlmsInboundOsgpCoreResponsesConnectonFactory")
-    public ConnectionFactory connectionFactory() {
-        LOGGER.info("Initializing protocolDlmsInboundOsgpCoreResponsesConnectionFactory bean.");
-        return this.jmsConfigurationFactory.getPooledConnectionFactory();
-    }
+  @Bean(destroyMethod = "stop", name = "protocolDlmsInboundOsgpCoreResponsesConnectonFactory")
+  public ConnectionFactory connectionFactory() {
+    LOGGER.info("Initializing protocolDlmsInboundOsgpCoreResponsesConnectionFactory bean.");
+    return this.jmsConfigurationFactory.getPooledConnectionFactory();
+  }
 
-    @Bean(name = "protcolDlmsInboundOsgpCoreResponsesMessageListenerContainer")
-    public DefaultMessageListenerContainer messageListenerContainer(
-            @Qualifier("protocolDlmsInboundOsgpCoreResponsesMessageListener") final MessageListener messageListener) {
-        LOGGER.info("Initializing protocolDlmsInboundOsgpCoreResponsesMessageListenerContainer bean.");
-        return this.jmsConfigurationFactory.initMessageListenerContainer(messageListener);
-    }
+  @Bean(name = "protcolDlmsInboundOsgpCoreResponsesMessageListenerContainer")
+  public DefaultMessageListenerContainer messageListenerContainer(
+      @Qualifier("protocolDlmsInboundOsgpCoreResponsesMessageListener")
+          final MessageListener messageListener) {
+    LOGGER.info("Initializing protocolDlmsInboundOsgpCoreResponsesMessageListenerContainer bean.");
+    return this.jmsConfigurationFactory.initMessageListenerContainer(messageListener);
+  }
 
-    @Bean("protocolDlmsInboundOsgpResponsesMessageProcessorMap")
-    public MessageProcessorMap messageProcessorMap() {
-        return new BaseMessageProcessorMap("InboundOsgpResponsesMessageProcessorMap");
-    }
-
+  @Bean("protocolDlmsInboundOsgpResponsesMessageProcessorMap")
+  public MessageProcessorMap messageProcessorMap() {
+    return new BaseMessageProcessorMap("InboundOsgpResponsesMessageProcessorMap");
+  }
 }

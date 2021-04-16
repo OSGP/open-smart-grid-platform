@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2021 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.messageprocessors;
 
@@ -21,22 +22,26 @@ import org.springframework.stereotype.Component;
 @Component
 public class ActualPowerQualityRequestMessageProcessor extends BaseRequestMessageProcessor {
 
-    @Autowired
-    @Qualifier("domainSmartMeteringMonitoringService")
-    private MonitoringService monitoringService;
+  @Autowired
+  @Qualifier("domainSmartMeteringMonitoringService")
+  private MonitoringService monitoringService;
 
-    @Autowired
-    public ActualPowerQualityRequestMessageProcessor(
-            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
-        super(messageProcessorMap, MessageType.GET_ACTUAL_POWER_QUALITY);
-    }
+  @Autowired
+  public ActualPowerQualityRequestMessageProcessor(
+      @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
+          final MessageProcessorMap messageProcessorMap) {
+    super(messageProcessorMap, MessageType.GET_ACTUAL_POWER_QUALITY);
+  }
 
-    @Override
-    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
-            throws FunctionalException {
+  @Override
+  protected void handleMessage(
+      final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
+      throws FunctionalException {
 
-        final ActualPowerQualityRequest actualPowerQualityRequest = (ActualPowerQualityRequest) dataObject;
+    final ActualPowerQualityRequest actualPowerQualityRequest =
+        (ActualPowerQualityRequest) dataObject;
 
-        this.monitoringService.requestActualPowerQuality(deviceMessageMetadata, actualPowerQualityRequest);
-    }
+    this.monitoringService.requestActualPowerQuality(
+        deviceMessageMetadata, actualPowerQualityRequest);
+  }
 }

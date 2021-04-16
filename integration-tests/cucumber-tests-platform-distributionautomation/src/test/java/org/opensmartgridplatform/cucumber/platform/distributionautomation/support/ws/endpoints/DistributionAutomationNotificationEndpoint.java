@@ -1,9 +1,9 @@
-/**
+/*
  * Copyright 2019 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform.distributionautomation.support.ws.endpoints;
 
@@ -23,27 +23,34 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 @Endpoint
 public class DistributionAutomationNotificationEndpoint {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DistributionAutomationNotificationEndpoint.class);
-    private static final String DISTRIBUTION_AUTOMATION_NOTIFICATION_NAMESPACE = "http://www.opensmartgridplatform.org/schemas/distributionautomation/notification/2017/04";
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(DistributionAutomationNotificationEndpoint.class);
+  private static final String DISTRIBUTION_AUTOMATION_NOTIFICATION_NAMESPACE =
+      "http://www.opensmartgridplatform.org/schemas/distributionautomation/notification/2017/04";
 
-    @Autowired
-    private NotificationService notificationService;
+  @Autowired private NotificationService notificationService;
 
-    public DistributionAutomationNotificationEndpoint() {
-        // Default constructor
-    }
+  public DistributionAutomationNotificationEndpoint() {
+    // Default constructor
+  }
 
-    @PayloadRoot(localPart = "SendNotificationRequest", namespace = DISTRIBUTION_AUTOMATION_NOTIFICATION_NAMESPACE)
-    @ResponsePayload
-    public SendNotificationResponse sendNotification(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SendNotificationRequest request) throws WebServiceException {
+  @PayloadRoot(
+      localPart = "SendNotificationRequest",
+      namespace = DISTRIBUTION_AUTOMATION_NOTIFICATION_NAMESPACE)
+  @ResponsePayload
+  public SendNotificationResponse sendNotification(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SendNotificationRequest request)
+      throws WebServiceException {
 
-        LOGGER.info("Incoming SendNotificationRequest for organisation: {} device: {}.", organisationIdentification,
-                request.getNotification().getDeviceIdentification());
+    LOGGER.info(
+        "Incoming SendNotificationRequest for organisation: {} device: {}.",
+        organisationIdentification,
+        request.getNotification().getDeviceIdentification());
 
-        this.notificationService.handleNotification(request.getNotification(), organisationIdentification);
+    this.notificationService.handleNotification(
+        request.getNotification(), organisationIdentification);
 
-        return new SendNotificationResponse();
-    }
+    return new SendNotificationResponse();
+  }
 }

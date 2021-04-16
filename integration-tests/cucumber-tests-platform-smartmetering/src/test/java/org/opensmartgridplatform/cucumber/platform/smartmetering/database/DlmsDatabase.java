@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.database;
 
@@ -11,7 +12,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
-
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
@@ -27,78 +27,73 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * DLMS related database steps.
- */
+/** DLMS related database steps. */
 @Component
 public class DlmsDatabase {
 
-    @Autowired
-    private DlmsDeviceRepository dlmsDeviceRepo;
+  @Autowired private DlmsDeviceRepository dlmsDeviceRepo;
 
-    @Autowired
-    private DbEncryptionKeyRepository encryptionKeyRepository;
+  @Autowired private DbEncryptionKeyRepository encryptionKeyRepository;
 
-    @Autowired
-    private DbEncryptedSecretRepository secretRepository;
+  @Autowired private DbEncryptedSecretRepository secretRepository;
 
-    @Autowired
-    private ResponseDataRepository responseDataRepo;
+  @Autowired private ResponseDataRepository responseDataRepo;
 
-    @Autowired
-    private ResponseUrlDataRepository responseUrlDataRepo;
+  @Autowired private ResponseUrlDataRepository responseUrlDataRepo;
 
-    @Autowired
-    private NotificationWebServiceConfigurationRepository notificationWebServiceConfigurationRepository;
+  @Autowired
+  private NotificationWebServiceConfigurationRepository
+      notificationWebServiceConfigurationRepository;
 
-    /**
-     * This method is used to create default data not directly related to the
-     * specific tests. For example: A default dlms gateway device.
-     */
-    private void insertDefaultData() {
-        this.notificationWebServiceConfigurationRepository.saveAll(this.notificationEndpointConfigurations());
-    }
+  /**
+   * This method is used to create default data not directly related to the specific tests. For
+   * example: A default dlms gateway device.
+   */
+  private void insertDefaultData() {
+    this.notificationWebServiceConfigurationRepository.saveAll(
+        this.notificationEndpointConfigurations());
+  }
 
-    private List<NotificationWebServiceConfiguration> notificationEndpointConfigurations() {
-        final NotificationWebServiceConfigurationBuilder builder = new NotificationWebServiceConfigurationBuilder()
-                .withApplicationName(ApplicationConstants.APPLICATION_NAME)
-                .withMarshallerContextPath("org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification")
-                .withTargetUri("http://localhost:8843/notifications").withoutCircuitBreakerConfig();
-        final NotificationWebServiceConfiguration testOrgConfig = builder.build();
-        final NotificationWebServiceConfiguration noOrganisationConfig = builder
-                .withOrganisationIdentification("no-organisation").build();
-        return Arrays.asList(testOrgConfig, noOrganisationConfig);
-    }
+  private List<NotificationWebServiceConfiguration> notificationEndpointConfigurations() {
+    final NotificationWebServiceConfigurationBuilder builder =
+        new NotificationWebServiceConfigurationBuilder()
+            .withApplicationName(ApplicationConstants.APPLICATION_NAME)
+            .withMarshallerContextPath(
+                "org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification")
+            .withTargetUri("http://localhost:8843/notifications")
+            .withoutCircuitBreakerConfig();
+    final NotificationWebServiceConfiguration testOrgConfig = builder.build();
+    final NotificationWebServiceConfiguration noOrganisationConfig =
+        builder.withOrganisationIdentification("no-organisation").build();
+    return Arrays.asList(testOrgConfig, noOrganisationConfig);
+  }
 
-    /**
-     * Before each scenario dlms related stuff needs to be removed.
-     */
-    @Transactional(transactionManager = "txMgrDlms")
-    public void prepareDatabaseForScenario() {
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+  /** Before each scenario dlms related stuff needs to be removed. */
+  @Transactional(transactionManager = "txMgrDlms")
+  public void prepareDatabaseForScenario() {
+    TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
-        this.dlmsDeviceRepo.deleteAllInBatch();
-        this.responseDataRepo.deleteAllInBatch();
-        this.responseUrlDataRepo.deleteAllInBatch();
+    this.dlmsDeviceRepo.deleteAllInBatch();
+    this.responseDataRepo.deleteAllInBatch();
+    this.responseUrlDataRepo.deleteAllInBatch();
 
-        this.secretRepository.deleteAllInBatch();
-        this.encryptionKeyRepository.deleteAllInBatch();
-        final DbEncryptionKeyReference jreEncryptionKey = this.getJreEncryptionKey(new Date());
-        this.encryptionKeyRepository.save(jreEncryptionKey);
+    this.secretRepository.deleteAllInBatch();
+    this.encryptionKeyRepository.deleteAllInBatch();
+    final DbEncryptionKeyReference jreEncryptionKey = this.getJreEncryptionKey(new Date());
+    this.encryptionKeyRepository.save(jreEncryptionKey);
 
-        this.insertDefaultData();
-    }
+    this.insertDefaultData();
+  }
 
-    private DbEncryptionKeyReference getJreEncryptionKey(Date now) {
-        final DbEncryptionKeyReference jreEncryptionKey = new DbEncryptionKeyReference();
-        jreEncryptionKey.setEncryptionProviderType(EncryptionProviderType.JRE);
-        jreEncryptionKey.setReference("1");
-        jreEncryptionKey.setValidFrom(now);
-        jreEncryptionKey.setCreationTime(now);
-        jreEncryptionKey.setModificationTime(now);
-        jreEncryptionKey.setModifiedBy("DlmsDatabase (Cucumber)");
-        jreEncryptionKey.setVersion(1L);
-        return jreEncryptionKey;
-    }
-
+  private DbEncryptionKeyReference getJreEncryptionKey(final Date now) {
+    final DbEncryptionKeyReference jreEncryptionKey = new DbEncryptionKeyReference();
+    jreEncryptionKey.setEncryptionProviderType(EncryptionProviderType.JRE);
+    jreEncryptionKey.setReference("1");
+    jreEncryptionKey.setValidFrom(now);
+    jreEncryptionKey.setCreationTime(now);
+    jreEncryptionKey.setModificationTime(now);
+    jreEncryptionKey.setModifiedBy("DlmsDatabase (Cucumber)");
+    jreEncryptionKey.setVersion(1L);
+    return jreEncryptionKey;
+  }
 }

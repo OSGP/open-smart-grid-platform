@@ -1,9 +1,8 @@
-/**
+/*
  * Copyright 2020 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -20,12 +19,16 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@Conditional(value = { OsgpSchedulingEnabledCondition.class, CommunicationMonitoringEnabledCondition.class })
-public class CommunicationMonitoringEnabledConfig extends JobEnabledConfig<CommunicationMonitoringJob> {
+@Conditional(
+    value = {OsgpSchedulingEnabledCondition.class, CommunicationMonitoringEnabledCondition.class})
+public class CommunicationMonitoringEnabledConfig
+    extends JobEnabledConfig<CommunicationMonitoringJob> {
 
-    @Autowired
-    public CommunicationMonitoringEnabledConfig(final OsgpScheduler osgpScheduler,
-            @Value("${communication.monitoring.cron.expression:0 */5 * * * ?}") final String jobCronExpression) {
-        super(CommunicationMonitoringJob.class, osgpScheduler, jobCronExpression);
-    }
+  @Autowired
+  public CommunicationMonitoringEnabledConfig(
+      final OsgpScheduler osgpScheduler,
+      @Value("${communication.monitoring.cron.expression:0 */5 * * * ?}")
+          final String jobCronExpression) {
+    super(CommunicationMonitoringJob.class, osgpScheduler, jobCronExpression);
+  }
 }

@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.domain.core.exceptions;
 
@@ -13,13 +14,12 @@ import org.springframework.ws.soap.server.endpoint.annotation.SoapFault;
 @SoapFault(faultCode = FaultCode.SERVER)
 public class ConfigurationException extends PlatformException {
 
-    /**
-     * Serial Version UID.
-     */
-    private static final long serialVersionUID = 4535607746025926682L;
-    private static final String MESSAGE = "Platform configuration is incorrect or incomplete.";
+  /** Serial Version UID. */
+  private static final long serialVersionUID = 4535607746025926682L;
 
-    public ConfigurationException() {
-        super(MESSAGE);
-    }
+  private static final String MESSAGE = "Platform configuration is incorrect or incomplete.";
+
+  public ConfigurationException() {
+    super(MESSAGE);
+  }
 }

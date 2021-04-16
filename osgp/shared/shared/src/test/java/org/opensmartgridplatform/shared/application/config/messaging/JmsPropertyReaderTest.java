@@ -1,3 +1,12 @@
+/*
+ * Copyright 2021 Alliander N.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.shared.application.config.messaging;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,91 +27,89 @@ import org.springframework.core.env.Environment;
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class JmsPropertyReaderTest {
 
-    private static String PROPERTY_PREFIX = "jms.test";
+  private static String PROPERTY_PREFIX = "jms.test";
 
-    private static String DEFAULT_QUEUE = "default-queue";
-    private static boolean DEFAULT_USE_BACKOFF = true;
+  private static String DEFAULT_QUEUE = "default-queue";
+  private static boolean DEFAULT_USE_BACKOFF = true;
 
-    private static String CUSTOM_QUEUE = "custom-queue";
-    private static boolean CUSTOM_USE_BACKOFF = false;
+  private static String CUSTOM_QUEUE = "custom-queue";
+  private static boolean CUSTOM_USE_BACKOFF = false;
 
-    @Mock
-    Environment environment;
+  @Mock Environment environment;
 
-    @Mock
-    JmsConfiguration defaultJmsConfiguration;
+  @Mock JmsConfiguration defaultJmsConfiguration;
 
-    private JmsPropertyReader jmsPropertyReader;
+  private JmsPropertyReader jmsPropertyReader;
 
-    @BeforeEach
-    public void setup() {
-        this.jmsPropertyReader = new JmsPropertyReader(this.environment, PROPERTY_PREFIX, this.defaultJmsConfiguration);
-        when(this.defaultJmsConfiguration.getQueue()).thenReturn(DEFAULT_QUEUE);
-        when(this.defaultJmsConfiguration.isUseExponentialBackOff()).thenReturn(DEFAULT_USE_BACKOFF);
-    }
+  @BeforeEach
+  public void setup() {
+    this.jmsPropertyReader =
+        new JmsPropertyReader(this.environment, PROPERTY_PREFIX, this.defaultJmsConfiguration);
+    when(this.defaultJmsConfiguration.getQueue()).thenReturn(DEFAULT_QUEUE);
+    when(this.defaultJmsConfiguration.isUseExponentialBackOff()).thenReturn(DEFAULT_USE_BACKOFF);
+  }
 
-    @Test
-    public void testGetCustomQueueValueWhenCustomPropertyExists() {
-        // Arrange
-        final String property = "queue";
-        final String propertyName = PROPERTY_PREFIX + "." + property;
-        when(this.environment.getProperty(propertyName, String.class)).thenReturn(CUSTOM_QUEUE);
+  @Test
+  public void testGetCustomQueueValueWhenCustomPropertyExists() {
+    // Arrange
+    final String property = "queue";
+    final String propertyName = PROPERTY_PREFIX + "." + property;
+    when(this.environment.getProperty(propertyName, String.class)).thenReturn(CUSTOM_QUEUE);
 
-        // Act
-        final String actual = this.jmsPropertyReader.get(property, String.class);
+    // Act
+    final String actual = this.jmsPropertyReader.get(property, String.class);
 
-        // Assert
-        verify(this.environment).getProperty(propertyName, String.class);
-        verify(this.defaultJmsConfiguration, never()).getQueue();
-        assertThat(actual).isEqualTo(CUSTOM_QUEUE);
-    }
+    // Assert
+    verify(this.environment).getProperty(propertyName, String.class);
+    verify(this.defaultJmsConfiguration, never()).getQueue();
+    assertThat(actual).isEqualTo(CUSTOM_QUEUE);
+  }
 
-    @Test
-    public void testGetDefaultQueueValueWhenCustomPropertyDoesNotExist() {
-        // Arrange
-        final String property = "queue";
-        final String propertyName = PROPERTY_PREFIX + "." + property;
-        when(this.environment.getProperty(propertyName, String.class)).thenReturn(null);
+  @Test
+  public void testGetDefaultQueueValueWhenCustomPropertyDoesNotExist() {
+    // Arrange
+    final String property = "queue";
+    final String propertyName = PROPERTY_PREFIX + "." + property;
+    when(this.environment.getProperty(propertyName, String.class)).thenReturn(null);
 
-        // Act
-        final String actual = this.jmsPropertyReader.get(property, String.class);
+    // Act
+    final String actual = this.jmsPropertyReader.get(property, String.class);
 
-        // Assert
-        verify(this.environment).getProperty(propertyName, String.class);
-        verify(this.defaultJmsConfiguration).getQueue();
-        assertThat(actual).isEqualTo(DEFAULT_QUEUE);
-    }
+    // Assert
+    verify(this.environment).getProperty(propertyName, String.class);
+    verify(this.defaultJmsConfiguration).getQueue();
+    assertThat(actual).isEqualTo(DEFAULT_QUEUE);
+  }
 
-    @Test
-    public void testGetCustomBooleanValueWhenCustomPropertyExists() {
-        // Arrange
-        final String property = "use.exponential.back.off";
-        final String propertyName = PROPERTY_PREFIX + "." + property;
-        when(this.environment.getProperty(propertyName, boolean.class)).thenReturn(CUSTOM_USE_BACKOFF);
+  @Test
+  public void testGetCustomBooleanValueWhenCustomPropertyExists() {
+    // Arrange
+    final String property = "use.exponential.back.off";
+    final String propertyName = PROPERTY_PREFIX + "." + property;
+    when(this.environment.getProperty(propertyName, boolean.class)).thenReturn(CUSTOM_USE_BACKOFF);
 
-        // Act
-        final boolean actual = this.jmsPropertyReader.get(property, boolean.class);
+    // Act
+    final boolean actual = this.jmsPropertyReader.get(property, boolean.class);
 
-        // Assert
-        verify(this.environment).getProperty(propertyName, boolean.class);
-        verify(this.defaultJmsConfiguration, never()).isUseExponentialBackOff();
-        assertThat(actual).isEqualTo(CUSTOM_USE_BACKOFF);
-    }
+    // Assert
+    verify(this.environment).getProperty(propertyName, boolean.class);
+    verify(this.defaultJmsConfiguration, never()).isUseExponentialBackOff();
+    assertThat(actual).isEqualTo(CUSTOM_USE_BACKOFF);
+  }
 
-    @Test
-    public void testGetDefaultBooleanValueWhenCustomPropertyDoesNotExist() {
-        // Arrange
-        final String property = "use.exponential.back.off";
-        final String propertyName = PROPERTY_PREFIX + "." + property;
-        when(this.environment.getProperty(propertyName, boolean.class)).thenReturn(null);
+  @Test
+  public void testGetDefaultBooleanValueWhenCustomPropertyDoesNotExist() {
+    // Arrange
+    final String property = "use.exponential.back.off";
+    final String propertyName = PROPERTY_PREFIX + "." + property;
+    when(this.environment.getProperty(propertyName, boolean.class)).thenReturn(null);
 
-        // Act
-        final boolean actual = this.jmsPropertyReader.get(property, boolean.class);
+    // Act
+    final boolean actual = this.jmsPropertyReader.get(property, boolean.class);
 
-        // Assert
-        verify(this.environment).getProperty(propertyName, boolean.class);
-        verify(this.defaultJmsConfiguration).isUseExponentialBackOff();
-        assertThat(actual).isEqualTo(DEFAULT_USE_BACKOFF);
-    }
-
+    // Assert
+    verify(this.environment).getProperty(propertyName, boolean.class);
+    verify(this.defaultJmsConfiguration).isUseExponentialBackOff();
+    assertThat(actual).isEqualTo(DEFAULT_USE_BACKOFF);
+  }
 }

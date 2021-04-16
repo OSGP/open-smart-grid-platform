@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.ws.publiclighting.config;
 
@@ -19,57 +20,62 @@ import org.springframework.xml.xsd.SimpleXsdSchema;
 @Configuration
 public class PublicLightingWebServiceConfig {
 
-    private static final String COMMON_XSD_PATH = "schemas/common.xsd";
-    private static final String PL_ADHOCMANAGEMENT_XSD_PATH = "schemas/pl-adhocmanagement.xsd";
-    private static final String PL_SCHEDULEMANAGEMENT_XSD_PATH = "schemas/pl-schedulemanagement.xsd";
-    private static final String PL_NOTIFICATION_XSD_PATH = "schemas/pl-notification.xsd";
+  private static final String COMMON_XSD_PATH = "schemas/common.xsd";
+  private static final String PL_ADHOCMANAGEMENT_XSD_PATH = "schemas/pl-adhocmanagement.xsd";
+  private static final String PL_SCHEDULEMANAGEMENT_XSD_PATH = "schemas/pl-schedulemanagement.xsd";
+  private static final String PL_NOTIFICATION_XSD_PATH = "schemas/pl-notification.xsd";
 
-    private static final String PL_ADHOC_MANAGEMENT_WSDL_PATH = "PublicLightingAdHocManagement.wsdl";
-    private static final String PL_SCHEDULE_MANAGEMENT_WSDL_PATH = "PublicLightingScheduleManagement.wsdl";
-    private static final String PL_NOTIFICATION_WSDL_PATH = "PublicLightingNotification.wsdl";
+  private static final String PL_ADHOC_MANAGEMENT_WSDL_PATH = "PublicLightingAdHocManagement.wsdl";
+  private static final String PL_SCHEDULE_MANAGEMENT_WSDL_PATH =
+      "PublicLightingScheduleManagement.wsdl";
+  private static final String PL_NOTIFICATION_WSDL_PATH = "PublicLightingNotification.wsdl";
 
-    @Bean
-    public PayloadValidatingInterceptor payloadValidatingInterceptor() {
-        final PayloadValidatingInterceptor payloadValidatingInterceptor = new PayloadValidatingInterceptor();
-        final Resource[] resources = new Resource[] { new ClassPathResource(COMMON_XSD_PATH),
-                new ClassPathResource(PL_ADHOCMANAGEMENT_XSD_PATH),
-                new ClassPathResource(PL_SCHEDULEMANAGEMENT_XSD_PATH) };
-        payloadValidatingInterceptor.setSchemas(resources);
-        return payloadValidatingInterceptor;
-    }
+  @Bean
+  public PayloadValidatingInterceptor payloadValidatingInterceptor() {
+    final PayloadValidatingInterceptor payloadValidatingInterceptor =
+        new PayloadValidatingInterceptor();
+    final Resource[] resources =
+        new Resource[] {
+          new ClassPathResource(COMMON_XSD_PATH),
+          new ClassPathResource(PL_ADHOCMANAGEMENT_XSD_PATH),
+          new ClassPathResource(PL_SCHEDULEMANAGEMENT_XSD_PATH)
+        };
+    payloadValidatingInterceptor.setSchemas(resources);
+    return payloadValidatingInterceptor;
+  }
 
-    @Bean(name = "common")
-    public SimpleXsdSchema commonXsd() {
-        return new SimpleXsdSchema(new ClassPathResource(COMMON_XSD_PATH));
-    }
+  @Bean(name = "common")
+  public SimpleXsdSchema commonXsd() {
+    return new SimpleXsdSchema(new ClassPathResource(COMMON_XSD_PATH));
+  }
 
-    @Bean(name = "PublicLightingAdHocManagement")
-    public WsdlDefinition publicLightingAdHocManagementWsdl() {
-        return new SimpleWsdl11Definition(new ClassPathResource(PL_ADHOC_MANAGEMENT_WSDL_PATH));
-    }
+  @Bean(name = "PublicLightingAdHocManagement")
+  public WsdlDefinition publicLightingAdHocManagementWsdl() {
+    return new SimpleWsdl11Definition(new ClassPathResource(PL_ADHOC_MANAGEMENT_WSDL_PATH));
+  }
 
-    @Bean(name = "pl-adhocmanagement")
-    public SimpleXsdSchema publicLightingAdHocManagementXsd() {
-        return new SimpleXsdSchema(new ClassPathResource(PL_ADHOCMANAGEMENT_XSD_PATH));
-    }
+  @Bean(name = "pl-adhocmanagement")
+  public SimpleXsdSchema publicLightingAdHocManagementXsd() {
+    return new SimpleXsdSchema(new ClassPathResource(PL_ADHOCMANAGEMENT_XSD_PATH));
+  }
 
-    @Bean(name = "PublicLightingScheduleManagement")
-    public WsdlDefinition publicLightingScheduleManagementWsdl() {
-        return new SimpleWsdl11Definition(new ClassPathResource(PL_SCHEDULE_MANAGEMENT_WSDL_PATH));
-    }
+  @Bean(name = "PublicLightingScheduleManagement")
+  public WsdlDefinition publicLightingScheduleManagementWsdl() {
+    return new SimpleWsdl11Definition(new ClassPathResource(PL_SCHEDULE_MANAGEMENT_WSDL_PATH));
+  }
 
-    @Bean(name = "pl-schedulemanagement")
-    public SimpleXsdSchema publicLightingScheduleManagementXsd() {
-        return new SimpleXsdSchema(new ClassPathResource(PL_SCHEDULEMANAGEMENT_XSD_PATH));
-    }
+  @Bean(name = "pl-schedulemanagement")
+  public SimpleXsdSchema publicLightingScheduleManagementXsd() {
+    return new SimpleXsdSchema(new ClassPathResource(PL_SCHEDULEMANAGEMENT_XSD_PATH));
+  }
 
-    @Bean(name = "PublicLightingNotification")
-    public WsdlDefinition publicLightingNotificationWsdl() {
-        return new SimpleWsdl11Definition(new ClassPathResource(PL_NOTIFICATION_WSDL_PATH));
-    }
+  @Bean(name = "PublicLightingNotification")
+  public WsdlDefinition publicLightingNotificationWsdl() {
+    return new SimpleWsdl11Definition(new ClassPathResource(PL_NOTIFICATION_WSDL_PATH));
+  }
 
-    @Bean(name = "pl-notification")
-    public SimpleXsdSchema publicLightingNotificationXsd() {
-        return new SimpleXsdSchema(new ClassPathResource(PL_NOTIFICATION_XSD_PATH));
-    }
+  @Bean(name = "pl-notification")
+  public SimpleXsdSchema publicLightingNotificationXsd() {
+    return new SimpleXsdSchema(new ClassPathResource(PL_NOTIFICATION_XSD_PATH));
+  }
 }

@@ -1,11 +1,11 @@
-/**
+/*
  * Copyright 2020 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
-
 package org.opensmartgridplatform.adapter.protocol.iec60870.application.services;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -15,7 +15,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,43 +30,55 @@ import org.opensmartgridplatform.dto.da.measurements.MeasurementReportDto;
 @ExtendWith(MockitoExtension.class)
 class LightMeasurementGatewayDeviceResponseServiceTest {
 
-    private static final String ORGANISATION_IDENTIFICATION = "TEST-ORG-1";
-    private static final String CORRELATION_UID = "TEST-CORR-1";
+  private static final String ORGANISATION_IDENTIFICATION = "TEST-ORG-1";
+  private static final String CORRELATION_UID = "TEST-CORR-1";
 
-    @InjectMocks
-    private LightMeasurementRtuDeviceResponseService lightMeasurementGatewayDeviceResponseService;
+  @InjectMocks
+  private LightMeasurementRtuDeviceResponseService lightMeasurementGatewayDeviceResponseService;
 
-    @Mock
-    private Iec60870DeviceRepository iec60870DeviceRepository;
+  @Mock private Iec60870DeviceRepository iec60870DeviceRepository;
 
-    @Mock
-    private LightSensorDeviceResponseService lightMeasurementDeviceResponseService;
+  @Mock private LightSensorDeviceResponseService lightMeasurementDeviceResponseService;
 
-    @Test
-    void processShouldDelegateProcessingReportsForEachDeviceBehindTheGateway() {
+  @Test
+  void processShouldDelegateProcessingReportsForEachDeviceBehindTheGateway() {
 
-        // Arrange
-        final Iec60870Device gatewayDevice = Iec60870DeviceFactory.getGatewayDevice();
-        final Iec60870Device lightMeasurementDevice1 = Iec60870DeviceFactory.getLightMeasurementDevice1();
-        final Iec60870Device lightMeasurementDevice2 = Iec60870DeviceFactory.getLightMeasurementDevice2();
-        when(this.iec60870DeviceRepository.findByGatewayDeviceIdentification(gatewayDevice.getDeviceIdentification()))
-                .thenReturn(Arrays.asList(lightMeasurementDevice1, lightMeasurementDevice2));
+    // Arrange
+    final Iec60870Device gatewayDevice = Iec60870DeviceFactory.getGatewayDevice();
+    final Iec60870Device lightMeasurementDevice1 =
+        Iec60870DeviceFactory.getLightMeasurementDevice1();
+    final Iec60870Device lightMeasurementDevice2 =
+        Iec60870DeviceFactory.getLightMeasurementDevice2();
+    when(this.iec60870DeviceRepository.findByGatewayDeviceIdentification(
+            gatewayDevice.getDeviceIdentification()))
+        .thenReturn(Arrays.asList(lightMeasurementDevice1, lightMeasurementDevice2));
 
-        final MeasurementReportDto measurementReportDto = MeasurementReportFactory.getMeasurementReportDto();
+    final MeasurementReportDto measurementReportDto =
+        MeasurementReportFactory.getMeasurementReportDto();
 
-        final ResponseMetadata responseMetadata = new ResponseMetadata.Builder().withCorrelationUid(CORRELATION_UID)
-                .withDeviceIdentification(Iec60870DeviceFactory.GATEWAY_DEVICE_IDENTIFICATION)
-                .withOrganisationIdentification(ORGANISATION_IDENTIFICATION)
-                .build();
+    final ResponseMetadata responseMetadata =
+        new ResponseMetadata.Builder()
+            .withCorrelationUid(CORRELATION_UID)
+            .withDeviceIdentification(Iec60870DeviceFactory.GATEWAY_DEVICE_IDENTIFICATION)
+            .withOrganisationIdentification(ORGANISATION_IDENTIFICATION)
+            .build();
 
-        // Act
-        this.lightMeasurementGatewayDeviceResponseService.process(measurementReportDto, responseMetadata);
+    // Act
+    this.lightMeasurementGatewayDeviceResponseService.process(
+        measurementReportDto, responseMetadata);
 
-        // Assert
-        verify(this.lightMeasurementDeviceResponseService, times(1)).sendLightSensorStatusResponse(
-                same(measurementReportDto), same(lightMeasurementDevice1), same(responseMetadata), anyString());
-        verify(this.lightMeasurementDeviceResponseService, times(1)).sendLightSensorStatusResponse(
-                same(measurementReportDto), same(lightMeasurementDevice2), same(responseMetadata), anyString());
-    }
-
+    // Assert
+    verify(this.lightMeasurementDeviceResponseService, times(1))
+        .sendLightSensorStatusResponse(
+            same(measurementReportDto),
+            same(lightMeasurementDevice1),
+            same(responseMetadata),
+            anyString());
+    verify(this.lightMeasurementDeviceResponseService, times(1))
+        .sendLightSensorStatusResponse(
+            same(measurementReportDto),
+            same(lightMeasurementDevice2),
+            same(responseMetadata),
+            anyString());
+  }
 }

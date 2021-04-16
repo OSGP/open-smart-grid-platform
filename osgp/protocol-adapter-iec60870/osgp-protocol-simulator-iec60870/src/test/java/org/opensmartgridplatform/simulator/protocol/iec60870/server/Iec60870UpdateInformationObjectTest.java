@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2020 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.simulator.protocol.iec60870.server;
 
@@ -15,7 +16,6 @@ import static org.opensmartgridplatform.iec60870.Iec60870InformationObjectType.S
 
 import java.io.IOException;
 import java.util.Map;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,101 +37,100 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("light_measurement_device")
 class Iec60870UpdateInformationObjectTest {
 
-    @Autowired
-    private Iec60870Server iec60870Server;
+  @Autowired private Iec60870Server iec60870Server;
 
-    @Mock
-    private Connection connection;
+  @Mock private Connection connection;
 
-    private Map<Integer, InformationElement[][]> processImageBeforeUpdate;
+  private Map<Integer, InformationElement[][]> processImageBeforeUpdate;
 
-    private static boolean ON = true;
-    private static final IeSinglePointWithQuality EXPECTED = new IeSinglePointWithQuality(ON, false, false, false,
-            false);
+  private static boolean ON = true;
+  private static final IeSinglePointWithQuality EXPECTED =
+      new IeSinglePointWithQuality(ON, false, false, false, false);
 
-    @BeforeEach
-    void setup() {
-        this.processImageBeforeUpdate = this.iec60870Server.getProcessImage();
+  @BeforeEach
+  void setup() {
+    this.processImageBeforeUpdate = this.iec60870Server.getProcessImage();
+  }
+
+  /**
+   * informationObjectAddress 42 is in application-light_measurement_device.properties with value
+   * false, we will test updating that address
+   */
+  @Test
+  void testUpdateExistingInformationObject() {
+
+    final int informationObjectAddress = 42;
+
+    this.iec60870Server.updateInformationObject(
+        informationObjectAddress, SINGLE_POINT_INFORMATION_WITH_QUALITY, ON);
+
+    this.checkProcessImage(informationObjectAddress, this.iec60870Server.getProcessImage());
+  }
+
+  private void checkProcessImage(
+      final int informationObjectAddress, final Map<Integer, InformationElement[][]> processImage) {
+    for (final int address : processImage.keySet()) {
+      final InformationElement value = processImage.get(address)[0][0];
+      if (address == informationObjectAddress) {
+
+        // check for new value
+        assertThat(value).usingRecursiveComparison().isEqualTo(EXPECTED);
+      } else {
+
+        // check that the value didn't change
+        assertThat(value)
+            .usingRecursiveComparison()
+            .isEqualTo(this.processImageBeforeUpdate.get(address)[0][0]);
+      }
     }
+  }
 
-    /**
-     * informationObjectAddress 42 is in
-     * application-light_measurement_device.properties with value false, we will
-     * test updating that address
-     */
-    @Test
-    void testUpdateExistingInformationObject() {
+  /**
+   * informationObjectAddress 2 is not in application-light_measurement_device.properties, we will
+   * test updating that address
+   */
+  @Test
+  void testAddInformationObject() {
 
-        final int informationObjectAddress = 42;
+    final int informationObjectAddress = 2;
 
-        this.iec60870Server.updateInformationObject(informationObjectAddress, SINGLE_POINT_INFORMATION_WITH_QUALITY,
-                ON);
+    this.iec60870Server.updateInformationObject(
+        informationObjectAddress, SINGLE_POINT_INFORMATION_WITH_QUALITY, ON);
 
-        this.checkProcessImage(informationObjectAddress, this.iec60870Server.getProcessImage());
-    }
+    this.checkProcessImage(informationObjectAddress, this.iec60870Server.getProcessImage());
+  }
 
-    private void checkProcessImage(final int informationObjectAddress,
-            final Map<Integer, InformationElement[][]> processImage) {
-        for (final int address : processImage.keySet()) {
-            final InformationElement value = processImage.get(address)[0][0];
-            if (address == informationObjectAddress) {
+  @Test
+  void testSendEvent() throws IOException {
 
-                // check for new value
-                assertThat(value).usingRecursiveComparison().isEqualTo(EXPECTED);
-            } else {
+    this.registerConnection();
 
-                // check that the value didn't change
-                assertThat(value).usingRecursiveComparison()
-                        .isEqualTo(this.processImageBeforeUpdate.get(address)[0][0]);
-            }
-        }
-    }
+    this.iec60870Server.updateInformationObject(1, SINGLE_POINT_INFORMATION_WITH_QUALITY, ON);
 
-    /**
-     * informationObjectAddress 2 is not in
-     * application-light_measurement_device.properties, we will test updating
-     * that address
-     */
-    @Test
-    void testAddInformationObject() {
+    // check if an event was sent
+    verify(this.connection)
+        .send(
+            argThat(
+                new AsduTypeArgumentMatcher(ASduType.M_SP_TB_1, CauseOfTransmission.SPONTANEOUS)));
+  }
 
-        final int informationObjectAddress = 2;
+  @Test
+  void testDontSendEventWhenValueDidntChange() throws IOException {
 
-        this.iec60870Server.updateInformationObject(informationObjectAddress, SINGLE_POINT_INFORMATION_WITH_QUALITY,
-                ON);
+    this.registerConnection();
 
-        this.checkProcessImage(informationObjectAddress, this.iec60870Server.getProcessImage());
-    }
+    this.iec60870Server.updateInformationObject(127, SINGLE_POINT_INFORMATION_WITH_QUALITY, ON);
 
-    @Test
-    void testSendEvent() throws IOException {
+    // check that no event was sent
+    verify(this.connection, never())
+        .send(
+            argThat(
+                new AsduTypeArgumentMatcher(ASduType.M_SP_TB_1, CauseOfTransmission.SPONTANEOUS)));
+  }
 
-        this.registerConnection();
-
-        this.iec60870Server.updateInformationObject(1, SINGLE_POINT_INFORMATION_WITH_QUALITY, ON);
-
-        // check if an event was sent
-        verify(this.connection)
-                .send(argThat(new AsduTypeArgumentMatcher(ASduType.M_SP_TB_1, CauseOfTransmission.SPONTANEOUS)));
-
-    }
-
-    @Test
-    void testDontSendEventWhenValueDidntChange() throws IOException {
-
-        this.registerConnection();
-
-        this.iec60870Server.updateInformationObject(127, SINGLE_POINT_INFORMATION_WITH_QUALITY, ON);
-
-        // check that no event was sent
-        verify(this.connection, never())
-                .send(argThat(new AsduTypeArgumentMatcher(ASduType.M_SP_TB_1, CauseOfTransmission.SPONTANEOUS)));
-
-    }
-
-    private void registerConnection() throws IOException {
-        final Iec60870ServerEventListener eventListener = this.iec60870Server.getIec60870ServerEventListener();
-        eventListener.connectionIndication(this.connection);
-    }
-
+  private void registerConnection() throws IOException {
+    final Iec60870ServerEventListener eventListener =
+        this.iec60870Server.getIec60870ServerEventListener();
+    eventListener.connectionIndication(this.connection);
+  }
 }

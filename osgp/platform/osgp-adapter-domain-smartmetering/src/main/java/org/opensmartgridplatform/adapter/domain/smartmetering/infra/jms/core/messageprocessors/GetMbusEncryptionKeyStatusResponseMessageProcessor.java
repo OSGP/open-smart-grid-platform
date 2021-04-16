@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.messageprocessors;
 
@@ -22,31 +23,40 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GetMbusEncryptionKeyStatusResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+public class GetMbusEncryptionKeyStatusResponseMessageProcessor
+    extends OsgpCoreResponseMessageProcessor {
 
-    @Autowired
-    private ConfigurationService configurationService;
+  @Autowired private ConfigurationService configurationService;
 
-    @Autowired
-    public GetMbusEncryptionKeyStatusResponseMessageProcessor(
-            WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
-        super(responseMessageSender, messageProcessorMap, MessageType.GET_MBUS_ENCRYPTION_KEY_STATUS,
-                ComponentType.DOMAIN_SMART_METERING);
-    }
+  @Autowired
+  public GetMbusEncryptionKeyStatusResponseMessageProcessor(
+      final WebServiceResponseMessageSender responseMessageSender,
+      @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
+          final MessageProcessorMap messageProcessorMap) {
+    super(
+        responseMessageSender,
+        messageProcessorMap,
+        MessageType.GET_MBUS_ENCRYPTION_KEY_STATUS,
+        ComponentType.DOMAIN_SMART_METERING);
+  }
 
-    @Override
-    protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
-        return responseMessage.getDataObject() instanceof GetMbusEncryptionKeyStatusResponseDto;
-    }
+  @Override
+  protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
+    return responseMessage.getDataObject() instanceof GetMbusEncryptionKeyStatusResponseDto;
+  }
 
-    @Override
-    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
-            final ResponseMessage responseMessage, final OsgpException osgpException) {
+  @Override
+  protected void handleMessage(
+      final DeviceMessageMetadata deviceMessageMetadata,
+      final ResponseMessage responseMessage,
+      final OsgpException osgpException) {
 
-        final GetMbusEncryptionKeyStatusResponseDto getMbusEncryptionKeyStatusResponseDto = (GetMbusEncryptionKeyStatusResponseDto) responseMessage
-                .getDataObject();
-        this.configurationService.handleGetMbusEncryptionKeyStatusResponse(deviceMessageMetadata,
-                responseMessage.getResult(), osgpException, getMbusEncryptionKeyStatusResponseDto);
-    }
+    final GetMbusEncryptionKeyStatusResponseDto getMbusEncryptionKeyStatusResponseDto =
+        (GetMbusEncryptionKeyStatusResponseDto) responseMessage.getDataObject();
+    this.configurationService.handleGetMbusEncryptionKeyStatusResponse(
+        deviceMessageMetadata,
+        responseMessage.getResult(),
+        osgpException,
+        getMbusEncryptionKeyStatusResponseDto);
+  }
 }

@@ -1,14 +1,14 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
 import java.util.List;
-
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
 import org.opensmartgridplatform.domain.core.valueobjects.Certification;
@@ -28,116 +28,166 @@ import org.springframework.transaction.annotation.Transactional;
 @Service(value = "domainCoreDeviceManagementService")
 public class DeviceManagementService extends AbstractService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
 
-    @Autowired
-    private TransactionalDeviceService transactionalDeviceService;
+  @Autowired private TransactionalDeviceService transactionalDeviceService;
 
-    @Transactional(value = "transactionManager")
-    public void setEventNotifications(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final List<EventNotificationType> eventNotifications, final String messageType,
-            final int messagePriority) throws FunctionalException {
+  @Transactional(value = "transactionManager")
+  public void setEventNotifications(
+      final String organisationIdentification,
+      final String deviceIdentification,
+      final String correlationUid,
+      final List<EventNotificationType> eventNotifications,
+      final String messageType,
+      final int messagePriority)
+      throws FunctionalException {
 
-        LOGGER.debug("setEventNotifications called with organisation {} and device {}", organisationIdentification,
-                deviceIdentification);
+    LOGGER.debug(
+        "setEventNotifications called with organisation {} and device {}",
+        organisationIdentification,
+        deviceIdentification);
 
-        this.findOrganisation(organisationIdentification);
-        final Device device = this.findActiveDevice(deviceIdentification);
+    this.findOrganisation(organisationIdentification);
+    final Device device = this.findActiveDevice(deviceIdentification);
 
-        final List<org.opensmartgridplatform.dto.valueobjects.EventNotificationTypeDto> eventNotificationsDto = this.domainCoreMapper
-                .mapAsList(eventNotifications,
-                        org.opensmartgridplatform.dto.valueobjects.EventNotificationTypeDto.class);
-        final EventNotificationMessageDataContainerDto eventNotificationMessageDataContainer = new EventNotificationMessageDataContainerDto(
-                eventNotificationsDto);
+    final List<org.opensmartgridplatform.dto.valueobjects.EventNotificationTypeDto>
+        eventNotificationsDto =
+            this.domainCoreMapper.mapAsList(
+                eventNotifications,
+                org.opensmartgridplatform.dto.valueobjects.EventNotificationTypeDto.class);
+    final EventNotificationMessageDataContainerDto eventNotificationMessageDataContainer =
+        new EventNotificationMessageDataContainerDto(eventNotificationsDto);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, eventNotificationMessageDataContainer), messageType, messagePriority,
-                device.getIpAddress());
+    this.osgpCoreRequestMessageSender.send(
+        new RequestMessage(
+            correlationUid,
+            organisationIdentification,
+            deviceIdentification,
+            eventNotificationMessageDataContainer),
+        messageType,
+        messagePriority,
+        device.getIpAddress());
+  }
+
+  @Transactional(value = "transactionManager")
+  public void updateDeviceSslCertification(
+      final String organisationIdentification,
+      final String deviceIdentification,
+      final String correlationUid,
+      final Certification certification,
+      final String messageType,
+      final int messagePriority)
+      throws FunctionalException {
+    LOGGER.debug(
+        "UpdateDeviceSslCertification called with organisation {} and device {}",
+        organisationIdentification,
+        deviceIdentification);
+
+    this.findOrganisation(organisationIdentification);
+    final Device device = this.findActiveDevice(deviceIdentification);
+
+    if (certification == null) {
+      LOGGER.info("Certification is empty, skip sending a request to device");
+      return;
     }
 
-    @Transactional(value = "transactionManager")
-    public void updateDeviceSslCertification(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Certification certification, final String messageType,
-            final int messagePriority) throws FunctionalException {
-        LOGGER.debug("UpdateDeviceSslCertification called with organisation {} and device {}",
-                organisationIdentification, deviceIdentification);
+    final org.opensmartgridplatform.dto.valueobjects.CertificationDto certificationDto =
+        this.domainCoreMapper.map(
+            certification, org.opensmartgridplatform.dto.valueobjects.CertificationDto.class);
 
-        this.findOrganisation(organisationIdentification);
-        final Device device = this.findActiveDevice(deviceIdentification);
+    this.osgpCoreRequestMessageSender.send(
+        new RequestMessage(
+            correlationUid, organisationIdentification, deviceIdentification, certificationDto),
+        messageType,
+        messagePriority,
+        device.getIpAddress());
+  }
 
-        if (certification == null) {
-            LOGGER.info("Certification is empty, skip sending a request to device");
-            return;
-        }
+  @Transactional(value = "transactionManager")
+  public void setDeviceVerificationKey(
+      final String organisationIdentification,
+      final String deviceIdentification,
+      final String correlationUid,
+      final String verificationKey,
+      final String messageType,
+      final int messagePriority)
+      throws FunctionalException {
+    LOGGER.debug(
+        "SetDeviceVerificationKey called with organisation {} and device {}",
+        organisationIdentification,
+        deviceIdentification);
 
-        final org.opensmartgridplatform.dto.valueobjects.CertificationDto certificationDto = this.domainCoreMapper
-                .map(certification, org.opensmartgridplatform.dto.valueobjects.CertificationDto.class);
+    this.findOrganisation(organisationIdentification);
+    final Device device = this.findActiveDevice(deviceIdentification);
 
-        this.osgpCoreRequestMessageSender.send(
-                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, certificationDto),
-                messageType, messagePriority, device.getIpAddress());
+    if (verificationKey == null) {
+      LOGGER.info("Verification key is empty, skip sending a request to device");
+      return;
     }
 
-    @Transactional(value = "transactionManager")
-    public void setDeviceVerificationKey(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final String verificationKey, final String messageType,
-            final int messagePriority) throws FunctionalException {
-        LOGGER.debug("SetDeviceVerificationKey called with organisation {} and device {}", organisationIdentification,
-                deviceIdentification);
+    this.osgpCoreRequestMessageSender.send(
+        new RequestMessage(
+            correlationUid, organisationIdentification, deviceIdentification, verificationKey),
+        messageType,
+        messagePriority,
+        device.getIpAddress());
+  }
 
-        this.findOrganisation(organisationIdentification);
-        final Device device = this.findActiveDevice(deviceIdentification);
+  public void setDeviceLifecycleStatus(
+      final String organisationIdentification,
+      final String deviceIdentification,
+      final String correlationUid,
+      final DeviceLifecycleStatus deviceLifecycleStatus)
+      throws FunctionalException {
 
-        if (verificationKey == null) {
-            LOGGER.info("Verification key is empty, skip sending a request to device");
-            return;
-        }
+    LOGGER.debug(
+        "SetDeviceLifecycleStatus called with organisation {}, deviceLifecycleStatus {} and deviceIdentification {}",
+        organisationIdentification,
+        deviceLifecycleStatus,
+        deviceIdentification);
 
-        this.osgpCoreRequestMessageSender.send(
-                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, verificationKey),
-                messageType, messagePriority, device.getIpAddress());
-    }
+    this.findOrganisation(organisationIdentification);
 
-    public void setDeviceLifecycleStatus(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final DeviceLifecycleStatus deviceLifecycleStatus) throws FunctionalException {
+    this.transactionalDeviceService.updateDeviceLifecycleStatus(
+        deviceIdentification, deviceLifecycleStatus);
 
-        LOGGER.debug(
-                "SetDeviceLifecycleStatus called with organisation {}, deviceLifecycleStatus {} and deviceIdentification {}",
-                organisationIdentification, deviceLifecycleStatus, deviceIdentification);
+    final ResponseMessageResultType result = ResponseMessageResultType.OK;
 
-        this.findOrganisation(organisationIdentification);
+    final ResponseMessage responseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withCorrelationUid(correlationUid)
+            .withOrganisationIdentification(organisationIdentification)
+            .withDeviceIdentification(deviceIdentification)
+            .withResult(result)
+            .build();
+    this.webServiceResponseMessageSender.send(responseMessage);
+  }
 
-        this.transactionalDeviceService.updateDeviceLifecycleStatus(deviceIdentification, deviceLifecycleStatus);
+  public void updateDeviceCdmaSettings(
+      final String organisationIdentification,
+      final String deviceIdentification,
+      final String correlationUid,
+      final CdmaSettings cdmaSettings)
+      throws FunctionalException {
+    LOGGER.debug(
+        "UpdateDeviceCdmaSettings called with organisation {}, deviceIdentification {}, and {}",
+        organisationIdentification,
+        deviceIdentification,
+        cdmaSettings);
 
-        final ResponseMessageResultType result = ResponseMessageResultType.OK;
+    this.findOrganisation(organisationIdentification);
 
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(correlationUid)
-                .withOrganisationIdentification(organisationIdentification)
-                .withDeviceIdentification(deviceIdentification)
-                .withResult(result)
-                .build();
-        this.webServiceResponseMessageSender.send(responseMessage);
-    }
+    this.transactionalDeviceService.updateDeviceCdmaSettings(deviceIdentification, cdmaSettings);
 
-    public void updateDeviceCdmaSettings(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final CdmaSettings cdmaSettings) throws FunctionalException {
-        LOGGER.debug("UpdateDeviceCdmaSettings called with organisation {}, deviceIdentification {}, and {}",
-                organisationIdentification, deviceIdentification, cdmaSettings);
+    final ResponseMessageResultType result = ResponseMessageResultType.OK;
 
-        this.findOrganisation(organisationIdentification);
-
-        this.transactionalDeviceService.updateDeviceCdmaSettings(deviceIdentification, cdmaSettings);
-
-        final ResponseMessageResultType result = ResponseMessageResultType.OK;
-
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(correlationUid)
-                .withOrganisationIdentification(organisationIdentification)
-                .withDeviceIdentification(deviceIdentification)
-                .withResult(result)
-                .build();
-        this.webServiceResponseMessageSender.send(responseMessage);
-    }
-
+    final ResponseMessage responseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withCorrelationUid(correlationUid)
+            .withOrganisationIdentification(organisationIdentification)
+            .withDeviceIdentification(deviceIdentification)
+            .withResult(result)
+            .build();
+    this.webServiceResponseMessageSender.send(responseMessage);
+  }
 }

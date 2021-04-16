@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.domain.core.valueobjects;
 
@@ -11,26 +12,25 @@ import java.io.Serializable;
 
 public class WindowType implements Serializable {
 
-    /**
-     * Serial Version UID.
-     */
-    private static final long serialVersionUID = 8216467608629392658L;
-    private long minutesBefore;
-    private long minutesAfter;
+  /** Serial Version UID. */
+  private static final long serialVersionUID = 8216467608629392658L;
 
-    public long getMinutesBefore() {
-        return this.minutesBefore;
-    }
+  private long minutesBefore;
+  private long minutesAfter;
 
-    public void setMinutesBefore(final long value) {
-        this.minutesBefore = value;
-    }
+  public long getMinutesBefore() {
+    return this.minutesBefore;
+  }
 
-    public long getMinutesAfter() {
-        return this.minutesAfter;
-    }
+  public void setMinutesBefore(final long value) {
+    this.minutesBefore = value;
+  }
 
-    public void setMinutesAfter(final long value) {
-        this.minutesAfter = value;
-    }
+  public long getMinutesAfter() {
+    return this.minutesAfter;
+  }
+
+  public void setMinutesAfter(final long value) {
+    this.minutesAfter = value;
+  }
 }

@@ -1,5 +1,11 @@
-/**
+/*
  * Copyright 2019 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.iec60870;
 
@@ -13,37 +19,39 @@ import org.openmuc.j60870.ASduType;
 import org.opensmartgridplatform.iec60870.exceptions.Iec60870AsduHandlerNotFoundException;
 
 public class Iec60870AsduHandlerRegistryTest {
-    private Iec60870AsduHandlerRegistry iec60870AsduHandlerRegistry;
+  private Iec60870AsduHandlerRegistry iec60870AsduHandlerRegistry;
 
-    @BeforeEach
-    public void setup() {
-        this.iec60870AsduHandlerRegistry = new Iec60870AsduHandlerRegistry();
-    }
+  @BeforeEach
+  public void setup() {
+    this.iec60870AsduHandlerRegistry = new Iec60870AsduHandlerRegistry();
+  }
 
-    @Test
-    public void getHandlerShouldReturnHandlerWhenPresent() throws Iec60870AsduHandlerNotFoundException {
-        // Arrange
-        final ASduType typeId = ASduType.M_ME_TF_1;
-        final Iec60870AsduHandler expected = mock(Iec60870AsduHandler.class);
-        this.iec60870AsduHandlerRegistry.registerHandler(typeId, expected);
+  @Test
+  public void getHandlerShouldReturnHandlerWhenPresent()
+      throws Iec60870AsduHandlerNotFoundException {
+    // Arrange
+    final ASduType typeId = ASduType.M_ME_TF_1;
+    final Iec60870AsduHandler expected = mock(Iec60870AsduHandler.class);
+    this.iec60870AsduHandlerRegistry.registerHandler(typeId, expected);
 
-        // Act
-        final Iec60870AsduHandler actual = this.iec60870AsduHandlerRegistry.getHandler(typeId);
+    // Act
+    final Iec60870AsduHandler actual = this.iec60870AsduHandlerRegistry.getHandler(typeId);
 
-        // Assert
-        assertThat(actual).isEqualTo(expected);
-    }
+    // Assert
+    assertThat(actual).isEqualTo(expected);
+  }
 
-    @Test
-    public void getHandlerShouldThrowExceptionWhenNotPresent() {
-        // Arrange
-        final ASduType typeId = ASduType.M_ME_TF_1;
-        final Class<?> expected = Iec60870AsduHandlerNotFoundException.class;
+  @Test
+  public void getHandlerShouldThrowExceptionWhenNotPresent() {
+    // Arrange
+    final ASduType typeId = ASduType.M_ME_TF_1;
+    final Class<?> expected = Iec60870AsduHandlerNotFoundException.class;
 
-        // Act
-        final Throwable actual = catchThrowable(() -> this.iec60870AsduHandlerRegistry.getHandler(typeId));
+    // Act
+    final Throwable actual =
+        catchThrowable(() -> this.iec60870AsduHandlerRegistry.getHandler(typeId));
 
-        // Assert
-        assertThat(actual).isInstanceOf(expected);
-    }
+    // Assert
+    assertThat(actual).isInstanceOf(expected);
+  }
 }

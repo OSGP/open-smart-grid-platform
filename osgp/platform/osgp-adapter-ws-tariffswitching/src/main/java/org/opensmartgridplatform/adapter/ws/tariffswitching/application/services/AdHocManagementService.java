@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.tariffswitching.application.services;
 
@@ -36,68 +37,83 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class AdHocManagementService {
 
-    private static final int PAGE_SIZE = 30;
+  private static final int PAGE_SIZE = 30;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AdHocManagementService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AdHocManagementService.class);
 
-    @Autowired
-    private DomainHelperService domainHelperService;
+  @Autowired private DomainHelperService domainHelperService;
 
-    @Autowired
-    private DeviceRepository deviceRepository;
+  @Autowired private DeviceRepository deviceRepository;
 
-    @Autowired
-    private CorrelationIdProviderService correlationIdProviderService;
+  @Autowired private CorrelationIdProviderService correlationIdProviderService;
 
-    @Autowired
-    private TariffSwitchingRequestMessageSender tariffSwitchingRequestMessageSender;
+  @Autowired private TariffSwitchingRequestMessageSender tariffSwitchingRequestMessageSender;
 
-    @Autowired
-    private TariffSwitchingResponseMessageFinder tariffSwitchingResponseMessageFinder;
+  @Autowired private TariffSwitchingResponseMessageFinder tariffSwitchingResponseMessageFinder;
 
-    public AdHocManagementService() {
-        // Parameterless constructor required for transactions
-    }
+  public AdHocManagementService() {
+    // Parameterless constructor required for transactions
+  }
 
-    public Page<Device> findAllDevices(@Identification final String organisationIdentification, final int pageNumber)
-            throws FunctionalException {
+  public Page<Device> findAllDevices(
+      @Identification final String organisationIdentification, final int pageNumber)
+      throws FunctionalException {
 
-        LOGGER.debug("findAllDevices called with organisation {} and pageNumber {}", organisationIdentification,
-                pageNumber);
+    LOGGER.debug(
+        "findAllDevices called with organisation {} and pageNumber {}",
+        organisationIdentification,
+        pageNumber);
 
-        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+    final Organisation organisation =
+        this.domainHelperService.findOrganisation(organisationIdentification);
 
-        final PageRequest request = PageRequest.of(pageNumber, PAGE_SIZE, Sort.Direction.DESC, "deviceIdentification");
-        return this.deviceRepository.findAllAuthorized(organisation, request);
-    }
+    final PageRequest request =
+        PageRequest.of(pageNumber, PAGE_SIZE, Sort.Direction.DESC, "deviceIdentification");
+    return this.deviceRepository.findAllAuthorized(organisation, request);
+  }
 
-    public String enqueueGetTariffStatusRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final int messagePriority) throws FunctionalException {
+  public String enqueueGetTariffStatusRequest(
+      @Identification final String organisationIdentification,
+      @Identification final String deviceIdentification,
+      final int messagePriority)
+      throws FunctionalException {
 
-        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
-        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+    final Organisation organisation =
+        this.domainHelperService.findOrganisation(organisationIdentification);
+    final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
-        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_STATUS);
+    this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_STATUS);
 
-        LOGGER.debug("enqueueGetTariffStatusRequest called with organisation {} and device {}",
-                organisationIdentification, deviceIdentification);
+    LOGGER.debug(
+        "enqueueGetTariffStatusRequest called with organisation {} and device {}",
+        organisationIdentification,
+        deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
+    final String correlationUid =
+        this.correlationIdProviderService.getCorrelationId(
+            organisationIdentification, deviceIdentification);
 
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, MessageType.GET_TARIFF_STATUS.name(), messagePriority);
+    final DeviceMessageMetadata deviceMessageMetadata =
+        new DeviceMessageMetadata(
+            deviceIdentification,
+            organisationIdentification,
+            correlationUid,
+            MessageType.GET_TARIFF_STATUS.name(),
+            messagePriority);
 
-        final TariffSwitchingRequestMessage message = new TariffSwitchingRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).build();
+    final TariffSwitchingRequestMessage message =
+        new TariffSwitchingRequestMessage.Builder()
+            .deviceMessageMetadata(deviceMessageMetadata)
+            .build();
 
-        this.tariffSwitchingRequestMessageSender.send(message);
+    this.tariffSwitchingRequestMessageSender.send(message);
 
-        return correlationUid;
-    }
+    return correlationUid;
+  }
 
-    public ResponseMessage dequeueGetTariffStatusResponse(final String correlationUid) throws OsgpException {
+  public ResponseMessage dequeueGetTariffStatusResponse(final String correlationUid)
+      throws OsgpException {
 
-        return this.tariffSwitchingResponseMessageFinder.findMessage(correlationUid);
-    }
+    return this.tariffSwitchingResponseMessageFinder.findMessage(correlationUid);
+  }
 }

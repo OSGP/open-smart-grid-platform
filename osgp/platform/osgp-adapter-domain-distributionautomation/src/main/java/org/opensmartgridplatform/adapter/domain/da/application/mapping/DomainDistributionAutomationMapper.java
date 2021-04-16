@@ -1,14 +1,16 @@
-/**
+/*
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.da.application.mapping;
 
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.converter.builtin.PassThroughConverter;
+import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.joda.time.DateTime;
 import org.opensmartgridplatform.domain.da.measurements.Measurement;
 import org.opensmartgridplatform.domain.da.measurements.MeasurementGroup;
@@ -34,31 +36,47 @@ import org.opensmartgridplatform.dto.da.measurements.elements.FloatMeasurementEl
 import org.opensmartgridplatform.dto.da.measurements.elements.TimestampMeasurementElementDto;
 import org.springframework.stereotype.Component;
 
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.converter.builtin.PassThroughConverter;
-import ma.glasnost.orika.impl.ConfigurableMapper;
-
 @Component
 public class DomainDistributionAutomationMapper extends ConfigurableMapper {
 
-    @Override
-    protected void configure(final MapperFactory factory) {
-        factory.getConverterFactory().registerConverter(new PassThroughConverter(DateTime.class));
-        factory.classMap(GetDeviceModelRequest.class, GetDeviceModelRequestDto.class).byDefault().register();
-        factory.classMap(GetHealthStatusRequest.class, GetHealthStatusRequestDto.class).byDefault().register();
-        factory.classMap(GetPQValuesRequest.class, GetPQValuesRequestDto.class).byDefault().register();
-        factory.classMap(GetPQValuesPeriodicRequest.class, GetPQValuesPeriodicRequestDto.class).byDefault().register();
+  @Override
+  protected void configure(final MapperFactory factory) {
+    factory.getConverterFactory().registerConverter(new PassThroughConverter(DateTime.class));
+    factory
+        .classMap(GetDeviceModelRequest.class, GetDeviceModelRequestDto.class)
+        .byDefault()
+        .register();
+    factory
+        .classMap(GetHealthStatusRequest.class, GetHealthStatusRequestDto.class)
+        .byDefault()
+        .register();
+    factory.classMap(GetPQValuesRequest.class, GetPQValuesRequestDto.class).byDefault().register();
+    factory
+        .classMap(GetPQValuesPeriodicRequest.class, GetPQValuesPeriodicRequestDto.class)
+        .byDefault()
+        .register();
 
-        factory.getConverterFactory().registerConverter(new StringToMeasurementTypeConverter());
-        factory.classMap(BitmaskMeasurementElementDto.class, BitmaskMeasurementElement.class).byDefault().register();
-        factory.classMap(FloatMeasurementElementDto.class, FloatMeasurementElement.class).byDefault().register();
-        factory.classMap(TimestampMeasurementElementDto.class, TimestampMeasurementElement.class).byDefault()
-                .register();
-        factory.classMap(MeasurementDto.class, Measurement.class).byDefault().register();
-        factory.classMap(MeasurementGroupDto.class, MeasurementGroup.class).byDefault().register();
+    factory.getConverterFactory().registerConverter(new StringToMeasurementTypeConverter());
+    factory
+        .classMap(BitmaskMeasurementElementDto.class, BitmaskMeasurementElement.class)
+        .byDefault()
+        .register();
+    factory
+        .classMap(FloatMeasurementElementDto.class, FloatMeasurementElement.class)
+        .byDefault()
+        .register();
+    factory
+        .classMap(TimestampMeasurementElementDto.class, TimestampMeasurementElement.class)
+        .byDefault()
+        .register();
+    factory.classMap(MeasurementDto.class, Measurement.class).byDefault().register();
+    factory.classMap(MeasurementGroupDto.class, MeasurementGroup.class).byDefault().register();
 
-        factory.classMap(MeasurementReportHeaderDto.class, MeasurementReportHeader.class).field("reason", "reasonType")
-                .byDefault().register();
-        factory.classMap(MeasurementReportDto.class, MeasurementReport.class).byDefault().register();
-    }
+    factory
+        .classMap(MeasurementReportHeaderDto.class, MeasurementReportHeader.class)
+        .field("reason", "reasonType")
+        .byDefault()
+        .register();
+    factory.classMap(MeasurementReportDto.class, MeasurementReport.class).byDefault().register();
+  }
 }

@@ -1,16 +1,15 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.core.endpoints;
 
 import java.util.List;
-
 import javax.validation.ConstraintViolationException;
-
 import org.opensmartgridplatform.adapter.ws.core.application.mapping.DeviceInstallationMapper;
 import org.opensmartgridplatform.adapter.ws.core.application.services.DeviceInstallationService;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
@@ -65,361 +64,461 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 @Endpoint
 public class DeviceInstallationEndpoint {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceInstallationEndpoint.class);
-    private static final String DEVICE_INSTALLATION_NAMESPACE = "http://www.opensmartgridplatform.org/schemas/deviceinstallation/2014/10";
-    private static final ComponentType COMPONENT_WS_CORE = ComponentType.WS_CORE;
+  private static final Logger LOGGER = LoggerFactory.getLogger(DeviceInstallationEndpoint.class);
+  private static final String DEVICE_INSTALLATION_NAMESPACE =
+      "http://www.opensmartgridplatform.org/schemas/deviceinstallation/2014/10";
+  private static final ComponentType COMPONENT_WS_CORE = ComponentType.WS_CORE;
 
-    private static final String EXCEPTION_WHILE_ADDING_DEVICE = "Exception: {} while adding device: {} for organisation {}.";
-    private static final String EXCEPTION_WHILE_UPDATING_DEVICE = "Exception: {} while updating device: {} for organisation {}.";
+  private static final String EXCEPTION_WHILE_ADDING_DEVICE =
+      "Exception: {} while adding device: {} for organisation {}.";
+  private static final String EXCEPTION_WHILE_UPDATING_DEVICE =
+      "Exception: {} while updating device: {} for organisation {}.";
 
-    private DeviceInstallationService deviceInstallationService;
-    private DeviceInstallationMapper deviceInstallationMapper;
+  private DeviceInstallationService deviceInstallationService;
+  private DeviceInstallationMapper deviceInstallationMapper;
 
-    @Autowired
-    private NotificationService notificationService;
+  @Autowired private NotificationService notificationService;
 
-    public DeviceInstallationEndpoint() {
+  public DeviceInstallationEndpoint() {}
+
+  @Autowired
+  public DeviceInstallationEndpoint(
+      @Qualifier(value = "wsCoreDeviceInstallationService")
+          final DeviceInstallationService deviceInstallationService,
+      @Qualifier(value = "coreDeviceInstallationMapper")
+          final DeviceInstallationMapper deviceInstallationMapper) {
+    this.deviceInstallationService = deviceInstallationService;
+    this.deviceInstallationMapper = deviceInstallationMapper;
+  }
+
+  @PayloadRoot(localPart = "GetStatusRequest", namespace = DEVICE_INSTALLATION_NAMESPACE)
+  @ResponsePayload
+  public GetStatusAsyncResponse getStatus(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final GetStatusRequest request,
+      @MessagePriority final String messagePriority)
+      throws OsgpException {
+
+    LOGGER.info(
+        "Get Status received from organisation: {} for device: {} with message priority: {}.",
+        organisationIdentification,
+        request.getDeviceIdentification(),
+        messagePriority);
+
+    final GetStatusAsyncResponse response = new GetStatusAsyncResponse();
+    try {
+      final String correlationUid =
+          this.deviceInstallationService.enqueueGetStatusRequest(
+              organisationIdentification,
+              request.getDeviceIdentification(),
+              MessagePriorityEnum.getMessagePriority(messagePriority));
+
+      final AsyncResponse asyncResponse = new AsyncResponse();
+      asyncResponse.setCorrelationUid(correlationUid);
+      asyncResponse.setDeviceId(request.getDeviceIdentification());
+      response.setAsyncResponse(asyncResponse);
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    @Autowired
-    public DeviceInstallationEndpoint(@Qualifier(
-            value = "wsCoreDeviceInstallationService") final DeviceInstallationService deviceInstallationService,
-            @Qualifier(
-                    value = "coreDeviceInstallationMapper") final DeviceInstallationMapper deviceInstallationMapper) {
-        this.deviceInstallationService = deviceInstallationService;
-        this.deviceInstallationMapper = deviceInstallationMapper;
+    return response;
+  }
+
+  @PayloadRoot(localPart = "GetStatusAsyncRequest", namespace = DEVICE_INSTALLATION_NAMESPACE)
+  @ResponsePayload
+  public GetStatusResponse getGetStatusResponse(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final GetStatusAsyncRequest request)
+      throws OsgpException {
+
+    LOGGER.info("Get Status Response received from organisation: {}.", organisationIdentification);
+
+    final GetStatusResponse response = new GetStatusResponse();
+
+    try {
+      final ResponseMessage message =
+          this.deviceInstallationService.dequeueGetStatusResponse(
+              request.getAsyncRequest().getCorrelationUid());
+      if (message != null) {
+        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+        final DeviceStatus deviceStatus = (DeviceStatus) message.getDataObject();
+        if (deviceStatus != null) {
+          response.setDeviceStatus(
+              this.deviceInstallationMapper.map(
+                  deviceStatus,
+                  org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.DeviceStatus
+                      .class));
+        }
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    @PayloadRoot(localPart = "GetStatusRequest", namespace = DEVICE_INSTALLATION_NAMESPACE)
-    @ResponsePayload
-    public GetStatusAsyncResponse getStatus(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetStatusRequest request, @MessagePriority final String messagePriority)
-            throws OsgpException {
+    return response;
+  }
 
-        LOGGER.info("Get Status received from organisation: {} for device: {} with message priority: {}.",
-                organisationIdentification, request.getDeviceIdentification(), messagePriority);
+  @PayloadRoot(localPart = "AddDeviceRequest", namespace = DEVICE_INSTALLATION_NAMESPACE)
+  @ResponsePayload
+  public AddDeviceResponse addDevice(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final AddDeviceRequest request)
+      throws OsgpException {
 
-        final GetStatusAsyncResponse response = new GetStatusAsyncResponse();
-        try {
-            final String correlationUid = this.deviceInstallationService.enqueueGetStatusRequest(
-                    organisationIdentification, request.getDeviceIdentification(),
-                    MessagePriorityEnum.getMessagePriority(messagePriority));
+    LOGGER.info("Adding device: {}.", request.getDevice().getDeviceIdentification());
 
-            final AsyncResponse asyncResponse = new AsyncResponse();
-            asyncResponse.setCorrelationUid(correlationUid);
-            asyncResponse.setDeviceId(request.getDeviceIdentification());
-            response.setAsyncResponse(asyncResponse);
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
+    try {
+      final Device device = this.deviceInstallationMapper.map(request.getDevice(), Device.class);
+      final String ownerOrganisationIdentification = request.getDevice().getOwner();
 
-        return response;
+      this.deviceInstallationService.addDevice(
+          organisationIdentification, device, ownerOrganisationIdentification);
+    } catch (final ConstraintViolationException e) {
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          ComponentType.WS_CORE,
+          new ValidationException(e.getConstraintViolations()));
+    } catch (final AssertionError e) {
+      throw new TechnicalException(COMPONENT_WS_CORE, e);
+    } catch (final Exception e) {
+      LOGGER.error(
+          EXCEPTION_WHILE_ADDING_DEVICE,
+          e.getMessage(),
+          request.getDevice().getDeviceIdentification(),
+          organisationIdentification,
+          e);
+      this.handleException(e);
     }
 
-    @PayloadRoot(localPart = "GetStatusAsyncRequest", namespace = DEVICE_INSTALLATION_NAMESPACE)
-    @ResponsePayload
-    public GetStatusResponse getGetStatusResponse(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetStatusAsyncRequest request) throws OsgpException {
+    return new AddDeviceResponse();
+  }
 
-        LOGGER.info("Get Status Response received from organisation: {}.", organisationIdentification);
+  @PayloadRoot(localPart = "UpdateDeviceRequest", namespace = DEVICE_INSTALLATION_NAMESPACE)
+  @ResponsePayload
+  public UpdateDeviceResponse updateDevice(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final UpdateDeviceRequest request)
+      throws OsgpException {
 
-        final GetStatusResponse response = new GetStatusResponse();
+    LOGGER.info("Updating device: {}.", request.getDeviceIdentification());
 
-        try {
-            final ResponseMessage message = this.deviceInstallationService
-                    .dequeueGetStatusResponse(request.getAsyncRequest().getCorrelationUid());
-            if (message != null) {
-                response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-                final DeviceStatus deviceStatus = (DeviceStatus) message.getDataObject();
-                if (deviceStatus != null) {
-                    response.setDeviceStatus(this.deviceInstallationMapper.map(deviceStatus,
-                            org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.DeviceStatus.class));
-                }
-            }
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
+    try {
+      final Ssld device = this.deviceInstallationMapper.map(request.getUpdatedDevice(), Ssld.class);
 
-        return response;
+      this.deviceInstallationService.updateDevice(organisationIdentification, device);
+
+    } catch (final ConstraintViolationException e) {
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          ComponentType.WS_CORE,
+          new ValidationException(e.getConstraintViolations()));
+    } catch (final Exception e) {
+      LOGGER.error(
+          EXCEPTION_WHILE_UPDATING_DEVICE,
+          e.getMessage(),
+          request.getUpdatedDevice().getDeviceIdentification(),
+          organisationIdentification,
+          e);
+      this.handleException(e);
     }
 
-    @PayloadRoot(localPart = "AddDeviceRequest", namespace = DEVICE_INSTALLATION_NAMESPACE)
-    @ResponsePayload
-    public AddDeviceResponse addDevice(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final AddDeviceRequest request) throws OsgpException {
-
-        LOGGER.info("Adding device: {}.", request.getDevice().getDeviceIdentification());
-
-        try {
-            final Device device = this.deviceInstallationMapper.map(request.getDevice(), Device.class);
-            final String ownerOrganisationIdentification = request.getDevice().getOwner();
-
-            this.deviceInstallationService.addDevice(organisationIdentification, device,
-                    ownerOrganisationIdentification);
-        } catch (final ConstraintViolationException e) {
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations()));
-        } catch (final AssertionError e) {
-            throw new TechnicalException(COMPONENT_WS_CORE, e);
-        } catch (final Exception e) {
-            LOGGER.error(EXCEPTION_WHILE_ADDING_DEVICE, e.getMessage(), request.getDevice().getDeviceIdentification(),
-                    organisationIdentification, e);
-            this.handleException(e);
-        }
-
-        return new AddDeviceResponse();
+    try {
+      this.notificationService.sendNotification(
+          organisationIdentification,
+          request.getDeviceIdentification(),
+          null,
+          null,
+          null,
+          NotificationType.DEVICE_UPDATED);
+    } catch (final Exception e) {
+      LOGGER.error(e.getMessage(), e);
     }
 
-    @PayloadRoot(localPart = "UpdateDeviceRequest", namespace = DEVICE_INSTALLATION_NAMESPACE)
-    @ResponsePayload
-    public UpdateDeviceResponse updateDevice(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final UpdateDeviceRequest request) throws OsgpException {
+    return new UpdateDeviceResponse();
+  }
 
-        LOGGER.info("Updating device: {}.", request.getDeviceIdentification());
+  @PayloadRoot(
+      localPart = "AddLightMeasurementDeviceRequest",
+      namespace = DEVICE_INSTALLATION_NAMESPACE)
+  @ResponsePayload
+  public AddLightMeasurementDeviceResponse addLightMeasurementDevice(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final AddLightMeasurementDeviceRequest request)
+      throws OsgpException {
 
-        try {
-            final Ssld device = this.deviceInstallationMapper.map(request.getUpdatedDevice(), Ssld.class);
+    LOGGER.info(
+        "Adding light measurement device: {}.",
+        request.getLightMeasurementDevice().getDeviceIdentification());
 
-            this.deviceInstallationService.updateDevice(organisationIdentification, device);
+    try {
+      final LightMeasurementDevice lmd =
+          this.deviceInstallationMapper.map(
+              request.getLightMeasurementDevice(), LightMeasurementDevice.class);
+      final String ownerOrganisationIdentification = request.getLightMeasurementDevice().getOwner();
 
-        } catch (final ConstraintViolationException e) {
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations()));
-        } catch (final Exception e) {
-            LOGGER.error(EXCEPTION_WHILE_UPDATING_DEVICE, e.getMessage(),
-                    request.getUpdatedDevice().getDeviceIdentification(), organisationIdentification, e);
-            this.handleException(e);
-        }
-
-        try {
-            this.notificationService.sendNotification(organisationIdentification, request.getDeviceIdentification(),
-                    null, null, null, NotificationType.DEVICE_UPDATED);
-        } catch (final Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-
-        return new UpdateDeviceResponse();
+      this.deviceInstallationService.addLightMeasurementDevice(
+          organisationIdentification, lmd, ownerOrganisationIdentification);
+    } catch (final ConstraintViolationException e) {
+      LOGGER.error(
+          EXCEPTION_WHILE_ADDING_DEVICE,
+          e.getMessage(),
+          request.getLightMeasurementDevice().getDeviceIdentification(),
+          organisationIdentification,
+          e);
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          ComponentType.WS_CORE,
+          new ValidationException(e.getConstraintViolations()));
+    } catch (final AssertionError e) {
+      LOGGER.error(
+          EXCEPTION_WHILE_ADDING_DEVICE,
+          e.getMessage(),
+          request.getLightMeasurementDevice().getDeviceIdentification(),
+          organisationIdentification,
+          e);
+      throw new TechnicalException(COMPONENT_WS_CORE, e);
+    } catch (final Exception e) {
+      LOGGER.error(
+          EXCEPTION_WHILE_ADDING_DEVICE,
+          e.getMessage(),
+          request.getLightMeasurementDevice().getDeviceIdentification(),
+          organisationIdentification,
+          e);
+      this.handleException(e);
     }
 
-    @PayloadRoot(localPart = "AddLightMeasurementDeviceRequest", namespace = DEVICE_INSTALLATION_NAMESPACE)
-    @ResponsePayload
-    public AddLightMeasurementDeviceResponse addLightMeasurementDevice(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final AddLightMeasurementDeviceRequest request) throws OsgpException {
+    return new AddLightMeasurementDeviceResponse();
+  }
 
-        LOGGER.info("Adding light measurement device: {}.",
-                request.getLightMeasurementDevice().getDeviceIdentification());
+  @PayloadRoot(
+      localPart = "UpdateLightMeasurementDeviceRequest",
+      namespace = DEVICE_INSTALLATION_NAMESPACE)
+  @ResponsePayload
+  public UpdateLightMeasurementDeviceResponse updateLightMeasurementDevice(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final UpdateLightMeasurementDeviceRequest request)
+      throws OsgpException {
 
-        try {
-            final LightMeasurementDevice lmd = this.deviceInstallationMapper.map(request.getLightMeasurementDevice(),
-                    LightMeasurementDevice.class);
-            final String ownerOrganisationIdentification = request.getLightMeasurementDevice().getOwner();
+    LOGGER.info("Updating light measurement device: {}.", request.getDeviceIdentification());
 
-            this.deviceInstallationService.addLightMeasurementDevice(organisationIdentification, lmd,
-                    ownerOrganisationIdentification);
-        } catch (final ConstraintViolationException e) {
-            LOGGER.error(EXCEPTION_WHILE_ADDING_DEVICE, e.getMessage(),
-                    request.getLightMeasurementDevice().getDeviceIdentification(), organisationIdentification, e);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations()));
-        } catch (final AssertionError e) {
-            LOGGER.error(EXCEPTION_WHILE_ADDING_DEVICE, e.getMessage(),
-                    request.getLightMeasurementDevice().getDeviceIdentification(), organisationIdentification, e);
-            throw new TechnicalException(COMPONENT_WS_CORE, e);
-        } catch (final Exception e) {
-            LOGGER.error(EXCEPTION_WHILE_ADDING_DEVICE, e.getMessage(),
-                    request.getLightMeasurementDevice().getDeviceIdentification(), organisationIdentification, e);
-            this.handleException(e);
-        }
+    try {
+      final LightMeasurementDevice device =
+          this.deviceInstallationMapper.map(
+              request.getUpdatedLightMeasurementDevice(), LightMeasurementDevice.class);
 
-        return new AddLightMeasurementDeviceResponse();
+      this.deviceInstallationService.updateLightMeasurementDevice(
+          organisationIdentification, device);
+    } catch (final ConstraintViolationException e) {
+      LOGGER.error("Exception update Device: {} ", e.getMessage(), e);
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          ComponentType.WS_CORE,
+          new ValidationException(e.getConstraintViolations()));
+    } catch (final Exception e) {
+      LOGGER.error(
+          EXCEPTION_WHILE_UPDATING_DEVICE,
+          e.getMessage(),
+          request.getUpdatedLightMeasurementDevice().getDeviceIdentification(),
+          organisationIdentification,
+          e);
+      this.handleException(e);
     }
 
-    @PayloadRoot(localPart = "UpdateLightMeasurementDeviceRequest", namespace = DEVICE_INSTALLATION_NAMESPACE)
-    @ResponsePayload
-    public UpdateLightMeasurementDeviceResponse updateLightMeasurementDevice(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final UpdateLightMeasurementDeviceRequest request) throws OsgpException {
-
-        LOGGER.info("Updating light measurement device: {}.", request.getDeviceIdentification());
-
-        try {
-            final LightMeasurementDevice device = this.deviceInstallationMapper
-                    .map(request.getUpdatedLightMeasurementDevice(), LightMeasurementDevice.class);
-
-            this.deviceInstallationService.updateLightMeasurementDevice(organisationIdentification, device);
-        } catch (final ConstraintViolationException e) {
-            LOGGER.error("Exception update Device: {} ", e.getMessage(), e);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations()));
-        } catch (final Exception e) {
-            LOGGER.error(EXCEPTION_WHILE_UPDATING_DEVICE, e.getMessage(),
-                    request.getUpdatedLightMeasurementDevice().getDeviceIdentification(), organisationIdentification,
-                    e);
-            this.handleException(e);
-        }
-
-        try {
-            this.notificationService.sendNotification(organisationIdentification, request.getDeviceIdentification(),
-                    null, null, null, NotificationType.DEVICE_UPDATED);
-        } catch (final Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-
-        return new UpdateLightMeasurementDeviceResponse();
+    try {
+      this.notificationService.sendNotification(
+          organisationIdentification,
+          request.getDeviceIdentification(),
+          null,
+          null,
+          null,
+          NotificationType.DEVICE_UPDATED);
+    } catch (final Exception e) {
+      LOGGER.error(e.getMessage(), e);
     }
 
-    @PayloadRoot(localPart = "FindRecentDevicesRequest", namespace = DEVICE_INSTALLATION_NAMESPACE)
-    @ResponsePayload
-    public FindRecentDevicesResponse findRecentDevices(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final FindRecentDevicesRequest request) throws OsgpException {
+    return new UpdateLightMeasurementDeviceResponse();
+  }
 
-        LOGGER.info("Finding recent devices for organisation: {}.", organisationIdentification);
+  @PayloadRoot(localPart = "FindRecentDevicesRequest", namespace = DEVICE_INSTALLATION_NAMESPACE)
+  @ResponsePayload
+  public FindRecentDevicesResponse findRecentDevices(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final FindRecentDevicesRequest request)
+      throws OsgpException {
 
-        final FindRecentDevicesResponse response = new FindRecentDevicesResponse();
+    LOGGER.info("Finding recent devices for organisation: {}.", organisationIdentification);
 
-        try {
-            final List<Device> recentDevices = this.deviceInstallationService
-                    .findRecentDevices(organisationIdentification);
-            response.getDevices()
-                    .addAll(this.deviceInstallationMapper.mapAsList(recentDevices,
-                            org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.Device.class));
-        } catch (final ConstraintViolationException e) {
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations()));
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
+    final FindRecentDevicesResponse response = new FindRecentDevicesResponse();
 
-        return response;
+    try {
+      final List<Device> recentDevices =
+          this.deviceInstallationService.findRecentDevices(organisationIdentification);
+      response
+          .getDevices()
+          .addAll(
+              this.deviceInstallationMapper.mapAsList(
+                  recentDevices,
+                  org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.Device
+                      .class));
+    } catch (final ConstraintViolationException e) {
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          ComponentType.WS_CORE,
+          new ValidationException(e.getConstraintViolations()));
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    // === START DEVICE TEST ===
+    return response;
+  }
 
-    @PayloadRoot(localPart = "StartDeviceTestRequest", namespace = DEVICE_INSTALLATION_NAMESPACE)
-    @ResponsePayload
-    public StartDeviceTestAsyncResponse startDeviceTest(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final StartDeviceTestRequest request, @MessagePriority final String messagePriority)
-            throws OsgpException {
+  // === START DEVICE TEST ===
 
-        LOGGER.info(
-                "Start Device Test Request received from organisation: {} for device: {} with message priority: {}.",
-                organisationIdentification, request.getDeviceIdentification(), messagePriority);
+  @PayloadRoot(localPart = "StartDeviceTestRequest", namespace = DEVICE_INSTALLATION_NAMESPACE)
+  @ResponsePayload
+  public StartDeviceTestAsyncResponse startDeviceTest(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final StartDeviceTestRequest request,
+      @MessagePriority final String messagePriority)
+      throws OsgpException {
 
-        final StartDeviceTestAsyncResponse response = new StartDeviceTestAsyncResponse();
+    LOGGER.info(
+        "Start Device Test Request received from organisation: {} for device: {} with message priority: {}.",
+        organisationIdentification,
+        request.getDeviceIdentification(),
+        messagePriority);
 
-        try {
-            final AsyncResponse asyncResponse = new AsyncResponse();
-            final String correlationUid = this.deviceInstallationService.enqueueStartDeviceTestRequest(
-                    organisationIdentification, request.getDeviceIdentification(),
-                    MessagePriorityEnum.getMessagePriority(messagePriority));
-            asyncResponse.setCorrelationUid(correlationUid);
-            asyncResponse.setDeviceId(request.getDeviceIdentification());
-            response.setAsyncResponse(asyncResponse);
+    final StartDeviceTestAsyncResponse response = new StartDeviceTestAsyncResponse();
 
-        } catch (final ConstraintViolationException e) {
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations()));
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
+    try {
+      final AsyncResponse asyncResponse = new AsyncResponse();
+      final String correlationUid =
+          this.deviceInstallationService.enqueueStartDeviceTestRequest(
+              organisationIdentification,
+              request.getDeviceIdentification(),
+              MessagePriorityEnum.getMessagePriority(messagePriority));
+      asyncResponse.setCorrelationUid(correlationUid);
+      asyncResponse.setDeviceId(request.getDeviceIdentification());
+      response.setAsyncResponse(asyncResponse);
 
-        return response;
+    } catch (final ConstraintViolationException e) {
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          ComponentType.WS_CORE,
+          new ValidationException(e.getConstraintViolations()));
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    @PayloadRoot(localPart = "StartDeviceTestAsyncRequest", namespace = DEVICE_INSTALLATION_NAMESPACE)
-    @ResponsePayload
-    public StartDeviceTestResponse getStartDeviceTestResponse(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final StartDeviceTestAsyncRequest request) throws OsgpException {
+    return response;
+  }
 
-        LOGGER.info("Get Start Device Test Response received from organisation: {} for device: {}.",
-                organisationIdentification, request.getAsyncRequest().getDeviceId());
+  @PayloadRoot(localPart = "StartDeviceTestAsyncRequest", namespace = DEVICE_INSTALLATION_NAMESPACE)
+  @ResponsePayload
+  public StartDeviceTestResponse getStartDeviceTestResponse(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final StartDeviceTestAsyncRequest request)
+      throws OsgpException {
 
-        final StartDeviceTestResponse response = new StartDeviceTestResponse();
+    LOGGER.info(
+        "Get Start Device Test Response received from organisation: {} for device: {}.",
+        organisationIdentification,
+        request.getAsyncRequest().getDeviceId());
 
-        try {
-            final ResponseMessage message = this.deviceInstallationService
-                    .dequeueStartDeviceTestResponse(request.getAsyncRequest().getCorrelationUid());
-            if (message != null) {
-                response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-            }
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
+    final StartDeviceTestResponse response = new StartDeviceTestResponse();
 
-        return response;
+    try {
+      final ResponseMessage message =
+          this.deviceInstallationService.dequeueStartDeviceTestResponse(
+              request.getAsyncRequest().getCorrelationUid());
+      if (message != null) {
+        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    // === STOP DEVICE TEST ===
+    return response;
+  }
 
-    @PayloadRoot(localPart = "StopDeviceTestRequest", namespace = DEVICE_INSTALLATION_NAMESPACE)
-    @ResponsePayload
-    public StopDeviceTestAsyncResponse stopDeviceTest(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final StopDeviceTestRequest request, @MessagePriority final String messagePriority)
-            throws OsgpException {
+  // === STOP DEVICE TEST ===
 
-        LOGGER.info("Stop Device Test Request received from organisation: {} for device: {} with message priority: {}.",
-                organisationIdentification, request.getDeviceIdentification(), messagePriority);
+  @PayloadRoot(localPart = "StopDeviceTestRequest", namespace = DEVICE_INSTALLATION_NAMESPACE)
+  @ResponsePayload
+  public StopDeviceTestAsyncResponse stopDeviceTest(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final StopDeviceTestRequest request,
+      @MessagePriority final String messagePriority)
+      throws OsgpException {
 
-        final StopDeviceTestAsyncResponse response = new StopDeviceTestAsyncResponse();
+    LOGGER.info(
+        "Stop Device Test Request received from organisation: {} for device: {} with message priority: {}.",
+        organisationIdentification,
+        request.getDeviceIdentification(),
+        messagePriority);
 
-        try {
-            final AsyncResponse asyncResponse = new AsyncResponse();
-            final String correlationUid = this.deviceInstallationService.enqueueStopDeviceTestRequest(
-                    organisationIdentification, request.getDeviceIdentification(),
-                    MessagePriorityEnum.getMessagePriority(messagePriority));
-            asyncResponse.setCorrelationUid(correlationUid);
-            asyncResponse.setDeviceId(request.getDeviceIdentification());
-            response.setAsyncResponse(asyncResponse);
+    final StopDeviceTestAsyncResponse response = new StopDeviceTestAsyncResponse();
 
-        } catch (final ConstraintViolationException e) {
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations()));
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
+    try {
+      final AsyncResponse asyncResponse = new AsyncResponse();
+      final String correlationUid =
+          this.deviceInstallationService.enqueueStopDeviceTestRequest(
+              organisationIdentification,
+              request.getDeviceIdentification(),
+              MessagePriorityEnum.getMessagePriority(messagePriority));
+      asyncResponse.setCorrelationUid(correlationUid);
+      asyncResponse.setDeviceId(request.getDeviceIdentification());
+      response.setAsyncResponse(asyncResponse);
 
-        return response;
+    } catch (final ConstraintViolationException e) {
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          ComponentType.WS_CORE,
+          new ValidationException(e.getConstraintViolations()));
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    @PayloadRoot(localPart = "StopDeviceTestAsyncRequest", namespace = DEVICE_INSTALLATION_NAMESPACE)
-    @ResponsePayload
-    public StopDeviceTestResponse getStopDeviceTestResponse(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final StopDeviceTestAsyncRequest request) throws OsgpException {
+    return response;
+  }
 
-        LOGGER.info("Get Stop Device Test Response received from organisation: {} for device: {}.",
-                organisationIdentification, request.getAsyncRequest().getDeviceId());
+  @PayloadRoot(localPart = "StopDeviceTestAsyncRequest", namespace = DEVICE_INSTALLATION_NAMESPACE)
+  @ResponsePayload
+  public StopDeviceTestResponse getStopDeviceTestResponse(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final StopDeviceTestAsyncRequest request)
+      throws OsgpException {
 
-        final StopDeviceTestResponse response = new StopDeviceTestResponse();
+    LOGGER.info(
+        "Get Stop Device Test Response received from organisation: {} for device: {}.",
+        organisationIdentification,
+        request.getAsyncRequest().getDeviceId());
 
-        try {
-            final ResponseMessage message = this.deviceInstallationService
-                    .dequeueStopDeviceTestResponse(request.getAsyncRequest().getCorrelationUid());
-            if (message != null) {
-                response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-            }
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
+    final StopDeviceTestResponse response = new StopDeviceTestResponse();
 
-        return response;
+    try {
+      final ResponseMessage message =
+          this.deviceInstallationService.dequeueStopDeviceTestResponse(
+              request.getAsyncRequest().getCorrelationUid());
+      if (message != null) {
+        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    private void handleException(final Exception e) throws OsgpException {
-        // Rethrow exception if it already is a functional or technical
-        // exception,
-        // otherwise throw new technical exception.
-        if (e instanceof OsgpException) {
-            LOGGER.error("Exception occurred: ", e);
-            throw (OsgpException) e;
-        } else {
-            LOGGER.error("Exception occurred: ", e);
-            throw new TechnicalException(COMPONENT_WS_CORE, e);
-        }
+    return response;
+  }
+
+  private void handleException(final Exception e) throws OsgpException {
+    // Rethrow exception if it already is a functional or technical
+    // exception,
+    // otherwise throw new technical exception.
+    if (e instanceof OsgpException) {
+      LOGGER.error("Exception occurred: ", e);
+      throw (OsgpException) e;
+    } else {
+      LOGGER.error("Exception occurred: ", e);
+      throw new TechnicalException(COMPONENT_WS_CORE, e);
     }
+  }
 }

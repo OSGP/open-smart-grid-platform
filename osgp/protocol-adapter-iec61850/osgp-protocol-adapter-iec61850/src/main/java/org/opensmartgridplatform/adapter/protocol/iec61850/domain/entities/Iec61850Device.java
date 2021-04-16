@@ -1,122 +1,115 @@
-/**
+/*
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.iec61850.domain.entities;
 
 import java.util.Objects;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 
 @Entity
 @Table(name = "iec61850_device")
 public class Iec61850Device extends AbstractEntity {
 
-    /**
-     * Serial Version UID.
-     */
-    private static final long serialVersionUID = 182081847594067712L;
+  /** Serial Version UID. */
+  private static final long serialVersionUID = 182081847594067712L;
 
-    @Column(unique = true, nullable = false, length = 40)
-    private String deviceIdentification;
+  @Column(unique = true, nullable = false, length = 40)
+  private String deviceIdentification;
 
-    @Column(length = 40)
-    private String icdFilename;
+  @Column(length = 40)
+  private String icdFilename;
 
-    @Column
-    private Integer port;
+  @Column private Integer port;
 
-    @Column
-    private String serverName;
+  @Column private String serverName;
 
-    @Column
-    private boolean enableAllReportsOnConnect;
+  @Column private boolean enableAllReportsOnConnect;
 
-    @Column
-    private boolean useCombinedLoad;
+  @Column private boolean useCombinedLoad;
 
-    public Iec61850Device() {
-        // Default constructor
+  public Iec61850Device() {
+    // Default constructor
+  }
+
+  public Iec61850Device(final String deviceIdentification) {
+    this.deviceIdentification = deviceIdentification;
+  }
+
+  @Override
+  public String toString() {
+    return String.format(
+        "Iec61850Device[deviceId=%s, icdFilename=%s, port=%s]",
+        this.deviceIdentification, this.icdFilename, this.port);
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Iec61850Device)) {
+      return false;
     }
 
-    public Iec61850Device(final String deviceIdentification) {
-        this.deviceIdentification = deviceIdentification;
-    }
+    final Iec61850Device device = (Iec61850Device) o;
 
-    @Override
-    public String toString() {
-        return String.format("Iec61850Device[deviceId=%s, icdFilename=%s, port=%s]", this.deviceIdentification,
-                this.icdFilename, this.port);
-    }
+    return Objects.equals(this.deviceIdentification, device.deviceIdentification);
+  }
 
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Iec61850Device)) {
-            return false;
-        }
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(this.deviceIdentification);
+  }
 
-        final Iec61850Device device = (Iec61850Device) o;
+  public String getDeviceIdentification() {
+    return this.deviceIdentification;
+  }
 
-        return Objects.equals(this.deviceIdentification, device.deviceIdentification);
-    }
+  public String getIcdFilename() {
+    return this.icdFilename;
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(this.deviceIdentification);
-    }
+  public void setIcdFilename(final String icdFilename) {
+    this.icdFilename = icdFilename;
+  }
 
-    public String getDeviceIdentification() {
-        return this.deviceIdentification;
-    }
+  public Integer getPort() {
+    return this.port;
+  }
 
-    public String getIcdFilename() {
-        return this.icdFilename;
-    }
+  public void setPort(final Integer port) {
+    this.port = port;
+  }
 
-    public void setIcdFilename(final String icdFilename) {
-        this.icdFilename = icdFilename;
-    }
+  public String getServerName() {
+    return this.serverName;
+  }
 
-    public Integer getPort() {
-        return this.port;
-    }
+  public void setServerName(final String serverName) {
+    this.serverName = serverName;
+  }
 
-    public void setPort(final Integer port) {
-        this.port = port;
-    }
+  public boolean isEnableAllReportsOnConnect() {
+    return this.enableAllReportsOnConnect;
+  }
 
-    public String getServerName() {
-        return this.serverName;
-    }
+  public void setEnableAllReportsOnConnect(final boolean enableAllReportsOnConnect) {
+    this.enableAllReportsOnConnect = enableAllReportsOnConnect;
+  }
 
-    public void setServerName(final String serverName) {
-        this.serverName = serverName;
-    }
+  public boolean isUseCombinedLoad() {
+    return this.useCombinedLoad;
+  }
 
-    public boolean isEnableAllReportsOnConnect() {
-        return this.enableAllReportsOnConnect;
-    }
-
-    public void setEnableAllReportsOnConnect(final boolean enableAllReportsOnConnect) {
-        this.enableAllReportsOnConnect = enableAllReportsOnConnect;
-    }
-
-    public boolean isUseCombinedLoad() {
-        return this.useCombinedLoad;
-    }
-
-    public void setUseCombinedLoad(final boolean useCombinedLoad) {
-        this.useCombinedLoad = useCombinedLoad;
-    }
-
+  public void setUseCombinedLoad(final boolean useCombinedLoad) {
+    this.useCombinedLoad = useCombinedLoad;
+  }
 }

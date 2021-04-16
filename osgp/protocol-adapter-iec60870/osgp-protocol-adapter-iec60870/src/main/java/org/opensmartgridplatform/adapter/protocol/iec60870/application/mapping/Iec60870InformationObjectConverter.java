@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2019 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.application.mapping;
 
@@ -11,7 +12,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.metadata.Type;
 import org.openmuc.j60870.ie.IeQuality;
 import org.openmuc.j60870.ie.IeShortFloat;
 import org.openmuc.j60870.ie.IeSinglePointWithQuality;
@@ -27,49 +30,52 @@ import org.opensmartgridplatform.dto.da.measurements.elements.TimestampMeasureme
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.MappingContext;
-import ma.glasnost.orika.metadata.Type;
+public class Iec60870InformationObjectConverter
+    extends CustomConverter<InformationObject, MeasurementGroupDto> {
 
-public class Iec60870InformationObjectConverter extends CustomConverter<InformationObject, MeasurementGroupDto> {
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(Iec60870InformationObjectConverter.class);
+  private static final Map<
+          Class<? extends InformationElement>, Class<? extends MeasurementElementDto>>
+      CLASS_MAP;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Iec60870InformationObjectConverter.class);
-    private static final Map<Class<? extends InformationElement>, Class<? extends MeasurementElementDto>> CLASS_MAP;
+  static {
+    CLASS_MAP = new HashMap<>();
+    CLASS_MAP.put(IeQuality.class, BitmaskMeasurementElementDto.class);
+    CLASS_MAP.put(IeShortFloat.class, FloatMeasurementElementDto.class);
+    CLASS_MAP.put(IeSinglePointWithQuality.class, BitmaskMeasurementElementDto.class);
+    CLASS_MAP.put(IeTime56.class, TimestampMeasurementElementDto.class);
+  }
 
-    static {
-        CLASS_MAP = new HashMap<>();
-        CLASS_MAP.put(IeQuality.class, BitmaskMeasurementElementDto.class);
-        CLASS_MAP.put(IeShortFloat.class, FloatMeasurementElementDto.class);
-        CLASS_MAP.put(IeSinglePointWithQuality.class, BitmaskMeasurementElementDto.class);
-        CLASS_MAP.put(IeTime56.class, TimestampMeasurementElementDto.class);
+  @Override
+  public MeasurementGroupDto convert(
+      final InformationObject source,
+      final Type<? extends MeasurementGroupDto> destinationType,
+      final MappingContext mappingContext) {
+
+    final String identification = String.valueOf(source.getInformationObjectAddress());
+    final List<MeasurementDto> measurements = new ArrayList<>();
+
+    for (final InformationElement[] ieArray : source.getInformationElements()) {
+      measurements.add(this.convert(ieArray));
     }
 
-    @Override
-    public MeasurementGroupDto convert(final InformationObject source,
-            final Type<? extends MeasurementGroupDto> destinationType, final MappingContext mappingContext) {
+    return new MeasurementGroupDto(identification, measurements);
+  }
 
-        final String identification = String.valueOf(source.getInformationObjectAddress());
-        final List<MeasurementDto> measurements = new ArrayList<>();
+  private MeasurementDto convert(final InformationElement[] source) {
+    final List<MeasurementElementDto> elements = new ArrayList<>();
 
-        for (final InformationElement[] ieArray : source.getInformationElements()) {
-            measurements.add(this.convert(ieArray));
-        }
+    for (final InformationElement ie : source) {
 
-        return new MeasurementGroupDto(identification, measurements);
+      final Class<? extends MeasurementElementDto> clazz = CLASS_MAP.get(ie.getClass());
+      if (clazz == null) {
+        LOGGER.warn(
+            "Could not convert unknown information element {}", ie.getClass().getSimpleName());
+      } else {
+        elements.add(this.mapperFacade.map(ie, clazz));
+      }
     }
-
-    private MeasurementDto convert(final InformationElement[] source) {
-        final List<MeasurementElementDto> elements = new ArrayList<>();
-
-        for (final InformationElement ie : source) {
-
-            final Class<? extends MeasurementElementDto> clazz = CLASS_MAP.get(ie.getClass());
-            if (clazz == null) {
-                LOGGER.warn("Could not convert unknown information element {}", ie.getClass().getSimpleName());
-            } else {
-                elements.add(this.mapperFacade.map(ie, clazz));
-            }
-        }
-        return new MeasurementDto(elements);
-    }
+    return new MeasurementDto(elements);
+  }
 }

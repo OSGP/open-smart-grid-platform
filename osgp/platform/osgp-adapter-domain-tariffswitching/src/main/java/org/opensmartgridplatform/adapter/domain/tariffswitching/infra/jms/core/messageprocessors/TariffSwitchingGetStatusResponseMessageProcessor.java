@@ -1,15 +1,15 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.tariffswitching.infra.jms.core.messageprocessors;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
-
 import org.opensmartgridplatform.adapter.domain.tariffswitching.application.services.AdHocManagementService;
 import org.opensmartgridplatform.adapter.domain.tariffswitching.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.valueobjects.DomainType;
@@ -30,81 +30,91 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-/**
- * Class for processing tariff switching get status response messages
- */
+/** Class for processing tariff switching get status response messages */
 @Component("domainTariffSwitchingGetStatusResponseMessageProcessor")
 public class TariffSwitchingGetStatusResponseMessageProcessor extends BaseMessageProcessor {
-    /**
-     * Logger for this class
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(TariffSwitchingGetStatusResponseMessageProcessor.class);
+  /** Logger for this class */
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(TariffSwitchingGetStatusResponseMessageProcessor.class);
 
-    @Autowired
-    @Qualifier("domainTariffSwitchingAdHocManagementService")
-    private AdHocManagementService adHocManagementService;
+  @Autowired
+  @Qualifier("domainTariffSwitchingAdHocManagementService")
+  private AdHocManagementService adHocManagementService;
 
-    @Autowired
-    protected TariffSwitchingGetStatusResponseMessageProcessor(
-            final WebServiceResponseMessageSender webServiceResponseMessageSender,
-            @Qualifier("domainTariffSwitchingInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
-        super(webServiceResponseMessageSender, messageProcessorMap, MessageType.GET_TARIFF_STATUS,
-                ComponentType.DOMAIN_TARIFF_SWITCHING);
+  @Autowired
+  protected TariffSwitchingGetStatusResponseMessageProcessor(
+      final WebServiceResponseMessageSender webServiceResponseMessageSender,
+      @Qualifier("domainTariffSwitchingInboundOsgpCoreResponsesMessageProcessorMap")
+          final MessageProcessorMap messageProcessorMap) {
+    super(
+        webServiceResponseMessageSender,
+        messageProcessorMap,
+        MessageType.GET_TARIFF_STATUS,
+        ComponentType.DOMAIN_TARIFF_SWITCHING);
+  }
+
+  @Override
+  public void processMessage(final ObjectMessage message) throws JMSException {
+    LOGGER.debug("Processing tariff switching get status response message");
+
+    String correlationUid = null;
+    String messageType = null;
+    int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
+    String organisationIdentification = null;
+    String deviceIdentification = null;
+
+    ResponseMessage responseMessage;
+    ResponseMessageResultType responseMessageResultType = null;
+    OsgpException osgpException = null;
+    Object dataObject;
+
+    try {
+      correlationUid = message.getJMSCorrelationID();
+      messageType = message.getJMSType();
+      messagePriority = message.getJMSPriority();
+      organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
+      deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
+
+      responseMessage = (ResponseMessage) message.getObject();
+      responseMessageResultType = responseMessage.getResult();
+      osgpException = responseMessage.getOsgpException();
+      dataObject = responseMessage.getDataObject();
+    } catch (final JMSException e) {
+      LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
+      LOGGER.debug("correlationUid: {}", correlationUid);
+      LOGGER.debug("messageType: {}", messageType);
+      LOGGER.debug("messagePriority: {}", messagePriority);
+      LOGGER.debug("organisationIdentification: {}", organisationIdentification);
+      LOGGER.debug("deviceIdentification: {}", deviceIdentification);
+      LOGGER.debug("responseMessageResultType: {}", responseMessageResultType);
+      LOGGER.debug("deviceIdentification: {}", deviceIdentification);
+      LOGGER.debug("osgpException", osgpException);
+      return;
     }
 
-    @Override
-    public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing tariff switching get status response message");
+    try {
+      LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-        String correlationUid = null;
-        String messageType = null;
-        int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
-        String organisationIdentification = null;
-        String deviceIdentification = null;
+      final DeviceStatusDto deviceLightStatus = (DeviceStatusDto) dataObject;
 
-        ResponseMessage responseMessage;
-        ResponseMessageResultType responseMessageResultType = null;
-        OsgpException osgpException = null;
-        Object dataObject;
+      final CorrelationIds ids =
+          new CorrelationIds(organisationIdentification, deviceIdentification, correlationUid);
+      this.adHocManagementService.handleGetStatusResponse(
+          deviceLightStatus,
+          DomainType.TARIFF_SWITCHING,
+          ids,
+          messagePriority,
+          responseMessageResultType,
+          osgpException);
 
-        try {
-            correlationUid = message.getJMSCorrelationID();
-            messageType = message.getJMSType();
-            messagePriority = message.getJMSPriority();
-            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-
-            responseMessage = (ResponseMessage) message.getObject();
-            responseMessageResultType = responseMessage.getResult();
-            osgpException = responseMessage.getOsgpException();
-            dataObject = responseMessage.getDataObject();
-        } catch (final JMSException e) {
-            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            LOGGER.debug("correlationUid: {}", correlationUid);
-            LOGGER.debug("messageType: {}", messageType);
-            LOGGER.debug("messagePriority: {}", messagePriority);
-            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("responseMessageResultType: {}", responseMessageResultType);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("osgpException", osgpException);
-            return;
-        }
-
-        try {
-            LOGGER.info("Calling application service function to handle response: {}", messageType);
-
-            final DeviceStatusDto deviceLightStatus = (DeviceStatusDto) dataObject;
-
-            final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
-                    correlationUid);
-            this.adHocManagementService.handleGetStatusResponse(deviceLightStatus, DomainType.TARIFF_SWITCHING, ids,
-                    messagePriority, responseMessageResultType, osgpException);
-
-        } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,
-                    messagePriority);
-        }
+    } catch (final Exception e) {
+      this.handleError(
+          e,
+          correlationUid,
+          organisationIdentification,
+          deviceIdentification,
+          messageType,
+          messagePriority);
     }
+  }
 }

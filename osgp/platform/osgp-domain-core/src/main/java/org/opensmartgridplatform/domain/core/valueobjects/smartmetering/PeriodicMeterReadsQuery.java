@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
@@ -17,50 +18,57 @@ import java.util.Date;
  */
 public class PeriodicMeterReadsQuery implements Serializable {
 
-    private static final long serialVersionUID = -2483665562035897062L;
+  private static final long serialVersionUID = -2483665562035897062L;
 
-    private final PeriodType periodType;
-    private final Date beginDate;
-    private final Date endDate;
-    private final boolean mbusDevice;
-    private final String deviceIdentification;
+  private final PeriodType periodType;
+  private final Date beginDate;
+  private final Date endDate;
+  private final boolean mbusDevice;
+  private final String deviceIdentification;
 
-    public PeriodicMeterReadsQuery(final PeriodType periodType, final Date beginDate, final Date endDate,
-            final boolean mbusDevice) {
-        this(periodType, beginDate, endDate, mbusDevice, "");
-    }
+  public PeriodicMeterReadsQuery(
+      final PeriodType periodType,
+      final Date beginDate,
+      final Date endDate,
+      final boolean mbusDevice) {
+    this(periodType, beginDate, endDate, mbusDevice, "");
+  }
 
-    public PeriodicMeterReadsQuery(final PeriodType periodType, final Date beginDate, final Date endDate,
-            final boolean mbusDevice, final String deviceIdentification) {
-        this.periodType = periodType;
-        this.beginDate = new Date(beginDate.getTime());
-        this.endDate = new Date(endDate.getTime());
-        this.mbusDevice = mbusDevice;
-        this.deviceIdentification = deviceIdentification;
-    }
+  public PeriodicMeterReadsQuery(
+      final PeriodType periodType,
+      final Date beginDate,
+      final Date endDate,
+      final boolean mbusDevice,
+      final String deviceIdentification) {
+    this.periodType = periodType;
+    this.beginDate = new Date(beginDate.getTime());
+    this.endDate = new Date(endDate.getTime());
+    this.mbusDevice = mbusDevice;
+    this.deviceIdentification = deviceIdentification;
+  }
 
-    public PeriodicMeterReadsQuery(final PeriodType periodType, final Date beginDate, final Date endDate) {
-        this(periodType, beginDate, endDate, false, "");
-    }
+  public PeriodicMeterReadsQuery(
+      final PeriodType periodType, final Date beginDate, final Date endDate) {
+    this(periodType, beginDate, endDate, false, "");
+  }
 
-    public PeriodType getPeriodType() {
-        return this.periodType;
-    }
+  public PeriodType getPeriodType() {
+    return this.periodType;
+  }
 
-    public Date getBeginDate() {
-        return new Date(this.beginDate.getTime());
-    }
+  public Date getBeginDate() {
+    return new Date(this.beginDate.getTime());
+  }
 
-    public Date getEndDate() {
-        return new Date(this.endDate.getTime());
-    }
+  public Date getEndDate() {
+    return new Date(this.endDate.getTime());
+  }
 
-    public boolean isMbusDevice() {
-        return this.mbusDevice;
-    }
+  public boolean isMbusDevice() {
+    return this.mbusDevice;
+  }
 
-    public String getDeviceIdentification() {
-        return this.deviceIdentification;
-    }
-
+  public String getDeviceIdentification() {
+    return this.deviceIdentification;
+  }
 }

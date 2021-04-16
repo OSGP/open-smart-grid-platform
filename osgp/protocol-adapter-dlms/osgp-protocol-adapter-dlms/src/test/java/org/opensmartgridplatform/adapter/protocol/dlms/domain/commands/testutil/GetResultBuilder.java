@@ -1,8 +1,8 @@
-/**
+/*
  * Copyright 2018 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -13,11 +13,10 @@ import org.openmuc.jdlms.datatypes.DataObject;
 
 /** Creates new instances, for testing purposes only!. */
 public class GetResultBuilder {
-    static int counter = 0;
+  static int counter = 0;
 
-    public GetResult build() {
-        counter += 1;
-        return new GetResultImpl(DataObject.newInteger32Data(100 + counter));
-    }
-
+  public GetResult build() {
+    counter += 1;
+    return new GetResultImpl(DataObject.newInteger32Data(100 + counter));
+  }
 }

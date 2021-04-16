@@ -1,9 +1,8 @@
-/**
+/*
  * Copyright 2018 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -13,8 +12,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShort;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import java.util.Map;
-
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.UpdateDeviceCdmaSettingsAsyncRequest;
@@ -34,94 +34,104 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
-
 public class UpdateDeviceCdmaSettingsSteps {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UpdateDeviceCdmaSettingsSteps.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(UpdateDeviceCdmaSettingsSteps.class);
 
-    @Autowired
-    private CoreDeviceManagementClient client;
+  @Autowired private CoreDeviceManagementClient client;
 
-    @Autowired
-    private DeviceRepository deviceRepository;
+  @Autowired private DeviceRepository deviceRepository;
 
-    @When("^an update device CDMA settings request is received$")
-    public void receiveAnUpdateDeviceCdmaSettingsRequest(final Map<String, String> requestParameters) throws Throwable {
-        final String deviceIdentification = getString(requestParameters, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
-        final String mastSegment = getString(requestParameters, PlatformKeys.KEY_CDMA_MAST_SEGMENT);
-        final Short batchNumber = getShort(requestParameters, PlatformKeys.KEY_CDMA_BATCH_NUMBER);
+  @When("^an update device CDMA settings request is received$")
+  public void receiveAnUpdateDeviceCdmaSettingsRequest(final Map<String, String> requestParameters)
+      throws Throwable {
+    final String deviceIdentification =
+        getString(
+            requestParameters,
+            PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+            PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
+    final String mastSegment = getString(requestParameters, PlatformKeys.KEY_CDMA_MAST_SEGMENT);
+    final Short batchNumber = getShort(requestParameters, PlatformKeys.KEY_CDMA_BATCH_NUMBER);
 
-        LOGGER.info(
-                "WHEN: Receive UpdateDeviceCdmaSettingsRequest [deviceIdentification={}, mastSegment={}, batchNumber={}]",
-                deviceIdentification, mastSegment, batchNumber);
+    LOGGER.info(
+        "WHEN: Receive UpdateDeviceCdmaSettingsRequest [deviceIdentification={}, mastSegment={}, batchNumber={}]",
+        deviceIdentification,
+        mastSegment,
+        batchNumber);
 
-        final UpdateDeviceCdmaSettingsRequest request = new UpdateDeviceCdmaSettingsRequest();
-        request.setDeviceIdentification(deviceIdentification);
-        if (!StringUtils.isBlank(mastSegment)) {
-            request.setMastSegment(mastSegment);
-        }
-        if (batchNumber != null) {
-            request.setBatchNumber(batchNumber);
-        }
-
-        final UpdateDeviceCdmaSettingsAsyncResponse asyncResponse = this.client.updateDeviceCdmaSettings(request);
-
-        ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
-        ScenarioContext.current().put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, asyncResponse.getDeviceId());
+    final UpdateDeviceCdmaSettingsRequest request = new UpdateDeviceCdmaSettingsRequest();
+    request.setDeviceIdentification(deviceIdentification);
+    if (!StringUtils.isBlank(mastSegment)) {
+      request.setMastSegment(mastSegment);
+    }
+    if (batchNumber != null) {
+      request.setBatchNumber(batchNumber);
     }
 
-    @Then("^the platform should buffer an update device CDMA settings response message$")
-    public void thePlatformShouldBufferAnUpdateDeviceCdmaSettingsResponseMessage(
-            final Map<String, String> responseParameters) {
-        final String deviceIdentification = (String) ScenarioContext.current()
-                .get(PlatformKeys.KEY_DEVICE_IDENTIFICATION);
-        final String correlationUid = (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
+    final UpdateDeviceCdmaSettingsAsyncResponse asyncResponse =
+        this.client.updateDeviceCdmaSettings(request);
 
-        final OsgpResultType expectedResult = Enum.valueOf(OsgpResultType.class,
-                responseParameters.get(PlatformKeys.KEY_RESULT));
+    ScenarioContext.current()
+        .put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
+    ScenarioContext.current()
+        .put(PlatformKeys.KEY_DEVICE_IDENTIFICATION, asyncResponse.getDeviceId());
+  }
 
-        LOGGER.info("THEN: Buffer UpdateCdmaSettingsResponse [correlationUid={}, deviceIdentification={}, result={}]",
-                correlationUid, deviceIdentification, expectedResult);
+  @Then("^the platform should buffer an update device CDMA settings response message$")
+  public void thePlatformShouldBufferAnUpdateDeviceCdmaSettingsResponseMessage(
+      final Map<String, String> responseParameters) {
+    final String deviceIdentification =
+        (String) ScenarioContext.current().get(PlatformKeys.KEY_DEVICE_IDENTIFICATION);
+    final String correlationUid =
+        (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
 
-        final UpdateDeviceCdmaSettingsAsyncRequest request = new UpdateDeviceCdmaSettingsAsyncRequest();
-        request.setDeviceId(deviceIdentification);
-        request.setCorrelationUid(correlationUid);
+    final OsgpResultType expectedResult =
+        Enum.valueOf(OsgpResultType.class, responseParameters.get(PlatformKeys.KEY_RESULT));
 
-        Wait.until(() -> {
-            UpdateDeviceCdmaSettingsResponse response = null;
-            try {
-                response = this.client.getUpdateDeviceCdmaSettingsResponse(request);
-            } catch (final WebServiceSecurityException e) {
-                // do nothing
-            }
-            assertThat(response).isNotNull();
-            assertThat(response.getResult()).isEqualTo(expectedResult);
+    LOGGER.info(
+        "THEN: Buffer UpdateCdmaSettingsResponse [correlationUid={}, deviceIdentification={}, result={}]",
+        correlationUid,
+        deviceIdentification,
+        expectedResult);
+
+    final UpdateDeviceCdmaSettingsAsyncRequest request = new UpdateDeviceCdmaSettingsAsyncRequest();
+    request.setDeviceId(deviceIdentification);
+    request.setCorrelationUid(correlationUid);
+
+    Wait.until(
+        () -> {
+          UpdateDeviceCdmaSettingsResponse response = null;
+          try {
+            response = this.client.getUpdateDeviceCdmaSettingsResponse(request);
+          } catch (final WebServiceSecurityException e) {
+            // do nothing
+          }
+          assertThat(response).isNotNull();
+          assertThat(response.getResult()).isEqualTo(expectedResult);
         });
+  }
+
+  @Then("^the device CDMA settings should be stored in the platform$")
+  public void theDeviceCdmaSettingsShouldBeSet(final Map<String, String> settings) {
+    final String mastSegment = getString(settings, PlatformKeys.KEY_CDMA_MAST_SEGMENT);
+    final Short batchNumber = getShort(settings, PlatformKeys.KEY_CDMA_BATCH_NUMBER);
+
+    CdmaSettings expectedCdmaSettings = null;
+    if (StringUtils.isNotBlank(mastSegment) || batchNumber != null) {
+      expectedCdmaSettings = new CdmaSettings(mastSegment, batchNumber);
     }
 
-    @Then("^the device CDMA settings should be stored in the platform$")
-    public void theDeviceCdmaSettingsShouldBeSet(final Map<String, String> settings) {
-        final String mastSegment = getString(settings, PlatformKeys.KEY_CDMA_MAST_SEGMENT);
-        final Short batchNumber = getShort(settings, PlatformKeys.KEY_CDMA_BATCH_NUMBER);
+    LOGGER.info(
+        "THEN: Store {}", expectedCdmaSettings == null ? "null" : expectedCdmaSettings.toString());
 
-        CdmaSettings expectedCdmaSettings = null;
-        if (StringUtils.isNotBlank(mastSegment) || batchNumber != null) {
-            expectedCdmaSettings = new CdmaSettings(mastSegment, batchNumber);
-        }
+    final String deviceIdentification =
+        (String) ScenarioContext.current().get(PlatformKeys.KEY_DEVICE_IDENTIFICATION);
+    final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
 
-        LOGGER.info("THEN: Store {}", expectedCdmaSettings == null ? "null" : expectedCdmaSettings.toString());
-
-        final String deviceIdentification = (String) ScenarioContext.current()
-                .get(PlatformKeys.KEY_DEVICE_IDENTIFICATION);
-        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-
-        if (expectedCdmaSettings == null) {
-            assertThat(device.getCdmaSettings()).isNull();
-        } else {
-            assertThat(device.getCdmaSettings()).isEqualTo(expectedCdmaSettings);
-        }
+    if (expectedCdmaSettings == null) {
+      assertThat(device.getCdmaSettings()).isNull();
+    } else {
+      assertThat(device.getCdmaSettings()).isEqualTo(expectedCdmaSettings);
     }
+  }
 }

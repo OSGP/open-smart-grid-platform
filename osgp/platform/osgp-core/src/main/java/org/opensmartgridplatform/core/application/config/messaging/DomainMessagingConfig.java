@@ -1,14 +1,14 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.core.application.config.messaging;
 
 import java.util.List;
-
 import org.opensmartgridplatform.core.infra.jms.domain.DefaultDomainJmsConfiguration;
 import org.opensmartgridplatform.core.infra.jms.domain.inbound.DomainRequestMessageListenerContainerFactory;
 import org.opensmartgridplatform.core.infra.jms.domain.inbound.DomainResponseMessageListenerContainerFactory;
@@ -27,75 +27,77 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class DomainMessagingConfig extends AbstractConfig {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DomainMessagingConfig.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DomainMessagingConfig.class);
 
-    @Value("${netmanagement.organisation:test-org}")
-    private String netmanagementOrganisation;
+  @Value("${netmanagement.organisation:test-org}")
+  private String netmanagementOrganisation;
 
-    // JMS Settings: SSL settings for the domain requests and responses
-    @Value("${jms.domain.activemq.broker.client.key.store:/etc/osp/activemq/client.ks}")
-    private String clientKeyStore;
+  // JMS Settings: SSL settings for the domain requests and responses
+  @Value("${jms.domain.activemq.broker.client.key.store:/etc/osp/activemq/client.ks}")
+  private String clientKeyStore;
 
-    @Value("${jms.domain.activemq.broker.client.key.store.pwd:password}")
-    private String clientKeyStorePwd;
+  @Value("${jms.domain.activemq.broker.client.key.store.pwd:password}")
+  private String clientKeyStorePwd;
 
-    @Value("${jms.domain.activemq.broker.client.trust.store:/etc/osp/activemq/client.ts}")
-    private String trustKeyStore;
+  @Value("${jms.domain.activemq.broker.client.trust.store:/etc/osp/activemq/client.ts}")
+  private String trustKeyStore;
 
-    @Value("${jms.domain.activemq.broker.client.trust.store.pwd:password}")
-    private String trustKeyStorePwd;
+  @Value("${jms.domain.activemq.broker.client.trust.store.pwd:password}")
+  private String trustKeyStorePwd;
 
-    private List<DomainInfo> domainInfos;
-    private List<ProtocolInfo> protocolInfos;
+  private List<DomainInfo> domainInfos;
+  private List<ProtocolInfo> protocolInfos;
 
-    public DomainMessagingConfig(final DomainInfoRepository domainInfoRepository,
-            final ProtocolInfoRepository protocolInfoRepository) {
+  public DomainMessagingConfig(
+      final DomainInfoRepository domainInfoRepository,
+      final ProtocolInfoRepository protocolInfoRepository) {
 
-        this.domainInfos = domainInfoRepository.findAll();
-        this.protocolInfos = protocolInfoRepository.findAll();
-    }
+    this.domainInfos = domainInfoRepository.findAll();
+    this.protocolInfos = protocolInfoRepository.findAll();
+  }
 
-    @Bean
-    public DefaultDomainJmsConfiguration defaultDomainJmsConfiguration() {
-        return new DefaultDomainJmsConfiguration();
-    }
+  @Bean
+  public DefaultDomainJmsConfiguration defaultDomainJmsConfiguration() {
+    return new DefaultDomainJmsConfiguration();
+  }
 
-    // bean used for sending domain response messages
-    // (outbound domain responses)
-    @Bean
-    public DomainResponseMessageJmsTemplateFactory domainResponseJmsTemplateFactory() {
-        LOGGER.debug("Creating bean: domainResponseJmsTemplateFactory");
+  // bean used for sending domain response messages
+  // (outbound domain responses)
+  @Bean
+  public DomainResponseMessageJmsTemplateFactory domainResponseJmsTemplateFactory() {
+    LOGGER.debug("Creating bean: domainResponseJmsTemplateFactory");
 
-        return new DomainResponseMessageJmsTemplateFactory(this.environment, this.domainInfos);
-    }
+    return new DomainResponseMessageJmsTemplateFactory(this.environment, this.domainInfos);
+  }
 
-    // bean used for receiving domain request messages
-    // (inbound domain requests)
-    @Bean
-    public DomainRequestMessageListenerContainerFactory domainRequestMessageListenerContainerFactory() {
-        LOGGER.debug("Creating bean: domainResponseMessageListenerContainerFactory");
+  // bean used for receiving domain request messages
+  // (inbound domain requests)
+  @Bean
+  public DomainRequestMessageListenerContainerFactory
+      domainRequestMessageListenerContainerFactory() {
+    LOGGER.debug("Creating bean: domainResponseMessageListenerContainerFactory");
 
-        return new DomainRequestMessageListenerContainerFactory(this.environment, this.domainInfos);
-    }
+    return new DomainRequestMessageListenerContainerFactory(this.environment, this.domainInfos);
+  }
 
-    // bean used for sending domain request messages
-    // (outbound domain requests)
-    @Bean
-    public DomainRequestMessageJmsTemplateFactory domainRequestMessageJmsTemplateFactory() {
+  // bean used for sending domain request messages
+  // (outbound domain requests)
+  @Bean
+  public DomainRequestMessageJmsTemplateFactory domainRequestMessageJmsTemplateFactory() {
 
-        return new DomainRequestMessageJmsTemplateFactory(this.environment, this.domainInfos);
-    }
+    return new DomainRequestMessageJmsTemplateFactory(this.environment, this.domainInfos);
+  }
 
-    // bean used for receiving domain response messages
-    // (inbound domain responses)
-    @Bean
-    public DomainResponseMessageListenerContainerFactory domainResponseMessageListenerContainer() {
-        return new DomainResponseMessageListenerContainerFactory(this.environment, this.domainInfos,
-                this.protocolInfos);
-    }
+  // bean used for receiving domain response messages
+  // (inbound domain responses)
+  @Bean
+  public DomainResponseMessageListenerContainerFactory domainResponseMessageListenerContainer() {
+    return new DomainResponseMessageListenerContainerFactory(
+        this.environment, this.domainInfos, this.protocolInfos);
+  }
 
-    @Bean
-    public String netmanagementOrganisation() {
-        return this.netmanagementOrganisation;
-    }
+  @Bean
+  public String netmanagementOrganisation() {
+    return this.netmanagementOrganisation;
+  }
 }

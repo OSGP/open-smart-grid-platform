@@ -1,14 +1,14 @@
-/**
+/*
  * Copyright 2018 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.tariffswitching.application.services;
 
 import javax.annotation.PostConstruct;
-
 import org.opensmartgridplatform.adapter.ws.schema.tariffswitching.notification.NotificationType;
 import org.opensmartgridplatform.adapter.ws.shared.services.AbstractResendNotificationService;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
@@ -21,19 +21,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(value = "transactionManager")
 public class ResendNotificationService extends AbstractResendNotificationService<NotificationType> {
 
-    @Autowired
-    private NotificationService tariffSwitchingNotificationService;
+  @Autowired private NotificationService tariffSwitchingNotificationService;
 
-    @Value("${web.service.notification.application.name}")
-    private String webserviceNotificationApplicationName;
+  @Value("${web.service.notification.application.name}")
+  private String webserviceNotificationApplicationName;
 
-    public ResendNotificationService() {
-        super(NotificationType.class);
-    }
+  public ResendNotificationService() {
+    super(NotificationType.class);
+  }
 
-    @PostConstruct
-    public void initialize() {
-        this.setNotificationService(this.tariffSwitchingNotificationService);
-        this.setApplicationName(this.webserviceNotificationApplicationName);
-    }
+  @PostConstruct
+  public void initialize() {
+    this.setNotificationService(this.tariffSwitchingNotificationService);
+    this.setApplicationName(this.webserviceNotificationApplicationName);
+  }
 }

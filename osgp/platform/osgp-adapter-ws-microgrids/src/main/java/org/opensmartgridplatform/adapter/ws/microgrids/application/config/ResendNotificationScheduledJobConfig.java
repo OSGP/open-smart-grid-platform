@@ -1,14 +1,14 @@
-/**
+/*
  * Copyright 2019 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.microgrids.application.config;
 
 import javax.annotation.PostConstruct;
-
 import org.opensmartgridplatform.adapter.ws.shared.services.ResendNotificationJob;
 import org.opensmartgridplatform.shared.application.scheduling.OsgpScheduler;
 import org.quartz.SchedulerException;
@@ -24,46 +24,46 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource(value = "file:${osgp/AdapterWsMicrogrids/config}", ignoreResourceNotFound = true)
 public class ResendNotificationScheduledJobConfig {
 
-    @Value("${microgrids.scheduling.job.resend.notification.cron.expression}")
-    private String cronExpressionResendNotification;
+  @Value("${microgrids.scheduling.job.resend.notification.cron.expression}")
+  private String cronExpressionResendNotification;
 
-    @Value("${microgrids.scheduling.job.resend.notification.maximum}")
-    private short resendNotificationMaximum;
+  @Value("${microgrids.scheduling.job.resend.notification.maximum}")
+  private short resendNotificationMaximum;
 
-    @Value("${microgrids.scheduling.job.resend.notification.multiplier}")
-    private int resendNotificationMultiplier;
+  @Value("${microgrids.scheduling.job.resend.notification.multiplier}")
+  private int resendNotificationMultiplier;
 
-    @Value("${microgrids.scheduling.job.resend.notification.resend.threshold.in.minutes}")
-    private int resendThresholdInMinutes;
+  @Value("${microgrids.scheduling.job.resend.notification.resend.threshold.in.minutes}")
+  private int resendThresholdInMinutes;
 
-    @Value("${microgrids.scheduling.job.resend.notification.page.size}")
-    private int resendPageSize;
+  @Value("${microgrids.scheduling.job.resend.notification.page.size}")
+  private int resendPageSize;
 
-    @Autowired
-    private OsgpScheduler osgpScheduler;
+  @Autowired private OsgpScheduler osgpScheduler;
 
-    @Bean
-    public short resendNotificationMaximum() {
-        return this.resendNotificationMaximum;
-    }
+  @Bean
+  public short resendNotificationMaximum() {
+    return this.resendNotificationMaximum;
+  }
 
-    @Bean
-    public int resendNotificationMultiplier() {
-        return this.resendNotificationMultiplier;
-    }
+  @Bean
+  public int resendNotificationMultiplier() {
+    return this.resendNotificationMultiplier;
+  }
 
-    @Bean
-    public int resendThresholdInMinutes() {
-        return this.resendThresholdInMinutes;
-    }
+  @Bean
+  public int resendThresholdInMinutes() {
+    return this.resendThresholdInMinutes;
+  }
 
-    @Bean
-    public int resendPageSize() {
-        return this.resendPageSize;
-    }
+  @Bean
+  public int resendPageSize() {
+    return this.resendPageSize;
+  }
 
-    @PostConstruct
-    private void initializeScheduledJob() throws SchedulerException {
-        this.osgpScheduler.createAndScheduleJob(ResendNotificationJob.class, this.cronExpressionResendNotification);
-    }
+  @PostConstruct
+  private void initializeScheduledJob() throws SchedulerException {
+    this.osgpScheduler.createAndScheduleJob(
+        ResendNotificationJob.class, this.cronExpressionResendNotification);
+  }
 }

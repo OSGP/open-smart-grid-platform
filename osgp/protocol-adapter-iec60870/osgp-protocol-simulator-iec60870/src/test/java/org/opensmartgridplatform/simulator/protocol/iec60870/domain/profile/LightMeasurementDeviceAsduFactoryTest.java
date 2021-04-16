@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2020 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.simulator.protocol.iec60870.domain.profile;
 
@@ -26,36 +27,41 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("light_measurement_device")
 class LightMeasurementDeviceAsduFactoryTest {
 
-    @Autowired
-    private Iec60870AsduFactory iec60870AsduFactory;
+  @Autowired private Iec60870AsduFactory iec60870AsduFactory;
 
-    @Autowired
-    private InformationElementFactory informationElementFactory;
+  @Autowired private InformationElementFactory informationElementFactory;
 
-    @Test
-    void shouldCreateInterrogationCommandResponse() {
+  @Test
+  void shouldCreateInterrogationCommandResponse() {
 
-        // Arrange
-        this.iec60870AsduFactory.initialize();
+    // Arrange
+    this.iec60870AsduFactory.initialize();
 
-        final InformationObject[] expectedInformationObjects = new InformationObject[4];
-        expectedInformationObjects[0] = new InformationObject(42, this.createInformationElement(false));
-        expectedInformationObjects[1] = new InformationObject(78, this.createInformationElement(false));
-        expectedInformationObjects[2] = new InformationObject(127, this.createInformationElement(true));
-        expectedInformationObjects[3] = new InformationObject(95, this.createInformationElement(false));
-        final ASdu expected = new ASdu(ASduType.M_SP_NA_1, false, CauseOfTransmission.INTERROGATED_BY_STATION, false,
-                false, 0, 1, expectedInformationObjects);
+    final InformationObject[] expectedInformationObjects = new InformationObject[4];
+    expectedInformationObjects[0] = new InformationObject(42, this.createInformationElement(false));
+    expectedInformationObjects[1] = new InformationObject(78, this.createInformationElement(false));
+    expectedInformationObjects[2] = new InformationObject(127, this.createInformationElement(true));
+    expectedInformationObjects[3] = new InformationObject(95, this.createInformationElement(false));
+    final ASdu expected =
+        new ASdu(
+            ASduType.M_SP_NA_1,
+            false,
+            CauseOfTransmission.INTERROGATED_BY_STATION,
+            false,
+            false,
+            0,
+            1,
+            expectedInformationObjects);
 
-        // Act
-        final ASdu actual = this.iec60870AsduFactory.createInterrogationCommandResponseAsdu();
+    // Act
+    final ASdu actual = this.iec60870AsduFactory.createInterrogationCommandResponseAsdu();
 
-        // Assert
-        assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
-    }
+    // Assert
+    assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
+  }
 
-    private InformationElement[][] createInformationElement(final boolean on) {
-        return this.informationElementFactory
-                .createInformationElements(Iec60870InformationObjectType.SINGLE_POINT_INFORMATION_WITH_QUALITY, on);
-    }
-
+  private InformationElement[][] createInformationElement(final boolean on) {
+    return this.informationElementFactory.createInformationElements(
+        Iec60870InformationObjectType.SINGLE_POINT_INFORMATION_WITH_QUALITY, on);
+  }
 }

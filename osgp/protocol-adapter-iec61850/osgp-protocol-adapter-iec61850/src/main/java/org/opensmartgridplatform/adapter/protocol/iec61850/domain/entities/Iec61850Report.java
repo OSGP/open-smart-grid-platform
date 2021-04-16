@@ -1,85 +1,85 @@
-/**
+/*
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.iec61850.domain.entities;
 
-import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
-
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 
 @Entity
 @Table(name = "iec61850_report")
 public class Iec61850Report extends AbstractEntity {
 
-    /**
-     * Serial Version UID.
-     */
-    private static final long serialVersionUID = 182081847594063328L;
+  /** Serial Version UID. */
+  private static final long serialVersionUID = 182081847594063328L;
 
-    @Column(unique = true, nullable = false, length = 255)
-    private String logicalDevice;
+  @Column(unique = true, nullable = false, length = 255)
+  private String logicalDevice;
 
-    @Column(unique = true, nullable = false, length = 255)
-    private String logicalNode;
+  @Column(unique = true, nullable = false, length = 255)
+  private String logicalNode;
 
-    @Column(unique = true, nullable = false, length = 255)
-    private String name;
+  @Column(unique = true, nullable = false, length = 255)
+  private String name;
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "iec61850Reports")
-    private final Set<Iec61850ReportGroup> iec61850ReportGroups = new HashSet<>(0);
+  @ManyToMany(fetch = FetchType.LAZY, mappedBy = "iec61850Reports")
+  private final Set<Iec61850ReportGroup> iec61850ReportGroups = new HashSet<>(0);
 
-    public Iec61850Report() {
-        // Default constructor
+  public Iec61850Report() {
+    // Default constructor
+  }
+
+  @Override
+  public String toString() {
+    return String.format(
+        "Iec61850Report[logicalDevice=%s, logicalNode=%s, name=%s]",
+        this.logicalDevice, this.logicalNode, this.name);
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Iec61850Report)) {
+      return false;
     }
 
-    @Override
-    public String toString() {
-        return String.format("Iec61850Report[logicalDevice=%s, logicalNode=%s, name=%s]", this.logicalDevice, this.logicalNode, this.name);
-    }
+    final Iec61850Report report = (Iec61850Report) o;
 
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Iec61850Report)) {
-            return false;
-        }
+    return Objects.equals(this.logicalNode, report.logicalNode);
+  }
 
-        final Iec61850Report report = (Iec61850Report) o;
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(this.logicalNode);
+  }
 
-        return Objects.equals(this.logicalNode, report.logicalNode);
-    }
+  public String getLogicalDevice() {
+    return this.logicalDevice;
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(this.logicalNode);
-    }
+  public String getLogicalNode() {
+    return this.logicalNode;
+  }
 
-    public String getLogicalDevice() {
-        return this.logicalDevice;
-    }
+  public String getName() {
+    return this.name;
+  }
 
-    public String getLogicalNode() {
-        return this.logicalNode;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public Set<Iec61850ReportGroup> getIec61850ReportGroups() {
-        return this.iec61850ReportGroups;
-    }
+  public Set<Iec61850ReportGroup> getIec61850ReportGroups() {
+    return this.iec61850ReportGroups;
+  }
 }

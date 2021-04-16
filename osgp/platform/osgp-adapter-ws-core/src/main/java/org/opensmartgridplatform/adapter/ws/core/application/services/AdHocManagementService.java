@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.core.application.services;
 
@@ -37,68 +38,80 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class AdHocManagementService {
 
-    private static final int PAGE_SIZE = 30;
+  private static final int PAGE_SIZE = 30;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AdHocManagementService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AdHocManagementService.class);
 
-    @Autowired
-    private DomainHelperService domainHelperService;
+  @Autowired private DomainHelperService domainHelperService;
 
-    @Autowired
-    private DeviceRepository deviceRepository;
+  @Autowired private DeviceRepository deviceRepository;
 
-    @Autowired
-    private CorrelationIdProviderService correlationIdProviderService;
+  @Autowired private CorrelationIdProviderService correlationIdProviderService;
 
-    @Autowired
-    private CommonRequestMessageSender commonRequestMessageSender;
+  @Autowired private CommonRequestMessageSender commonRequestMessageSender;
 
-    @Autowired
-    private CommonResponseMessageFinder commonResponseMessageFinder;
+  @Autowired private CommonResponseMessageFinder commonResponseMessageFinder;
 
-    public AdHocManagementService() {
-        // Parameterless constructor required for transactions
-    }
+  public AdHocManagementService() {
+    // Parameterless constructor required for transactions
+  }
 
-    public Page<Device> findAllDevices(@Identification final String organisationIdentification, final int pageNumber)
-            throws FunctionalException {
-        LOGGER.debug("findAllDevices called with organisation {} and pageNumber {}", organisationIdentification,
-                pageNumber);
+  public Page<Device> findAllDevices(
+      @Identification final String organisationIdentification, final int pageNumber)
+      throws FunctionalException {
+    LOGGER.debug(
+        "findAllDevices called with organisation {} and pageNumber {}",
+        organisationIdentification,
+        pageNumber);
 
-        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+    final Organisation organisation =
+        this.domainHelperService.findOrganisation(organisationIdentification);
 
-        final Pageable request = PageRequest.of(pageNumber, PAGE_SIZE, Sort.Direction.DESC, "deviceIdentification");
-        return this.deviceRepository.findAllAuthorized(organisation, request);
-    }
+    final Pageable request =
+        PageRequest.of(pageNumber, PAGE_SIZE, Sort.Direction.DESC, "deviceIdentification");
+    return this.deviceRepository.findAllAuthorized(organisation, request);
+  }
 
-    public String enqueueSetRebootRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final int messagePriority) throws FunctionalException {
+  public String enqueueSetRebootRequest(
+      @Identification final String organisationIdentification,
+      @Identification final String deviceIdentification,
+      final int messagePriority)
+      throws FunctionalException {
 
-        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
-        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+    final Organisation organisation =
+        this.domainHelperService.findOrganisation(organisationIdentification);
+    final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
-        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_REBOOT);
-        this.domainHelperService.isInMaintenance(device);
+    this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_REBOOT);
+    this.domainHelperService.isInMaintenance(device);
 
-        LOGGER.debug("enqueueSetRebootRequest called with organisation {} and device {}", organisationIdentification,
-                deviceIdentification);
+    LOGGER.debug(
+        "enqueueSetRebootRequest called with organisation {} and device {}",
+        organisationIdentification,
+        deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
+    final String correlationUid =
+        this.correlationIdProviderService.getCorrelationId(
+            organisationIdentification, deviceIdentification);
 
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, MessageType.SET_REBOOT.name(), messagePriority);
+    final DeviceMessageMetadata deviceMessageMetadata =
+        new DeviceMessageMetadata(
+            deviceIdentification,
+            organisationIdentification,
+            correlationUid,
+            MessageType.SET_REBOOT.name(),
+            messagePriority);
 
-        final CommonRequestMessage message = new CommonRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).build();
+    final CommonRequestMessage message =
+        new CommonRequestMessage.Builder().deviceMessageMetadata(deviceMessageMetadata).build();
 
-        this.commonRequestMessageSender.send(message);
+    this.commonRequestMessageSender.send(message);
 
-        return correlationUid;
-    }
+    return correlationUid;
+  }
 
-    public ResponseMessage dequeueSetRebootResponse(final String correlationUid) throws OsgpException {
-        return this.commonResponseMessageFinder.findMessage(correlationUid);
-    }
-
+  public ResponseMessage dequeueSetRebootResponse(final String correlationUid)
+      throws OsgpException {
+    return this.commonResponseMessageFinder.findMessage(correlationUid);
+  }
 }

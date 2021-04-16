@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.messageprocessors;
 
@@ -21,20 +22,22 @@ import org.springframework.stereotype.Component;
 @Component
 public class ReplaceKeysRequestMessageProcessor extends BaseRequestMessageProcessor {
 
-    @Autowired
-    @Qualifier("domainSmartMeteringConfigurationService")
-    private ConfigurationService configurationService;
+  @Autowired
+  @Qualifier("domainSmartMeteringConfigurationService")
+  private ConfigurationService configurationService;
 
-    @Autowired
-    protected ReplaceKeysRequestMessageProcessor(
-            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
-        super(messageProcessorMap, MessageType.REPLACE_KEYS);
-    }
+  @Autowired
+  protected ReplaceKeysRequestMessageProcessor(
+      @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
+          final MessageProcessorMap messageProcessorMap) {
+    super(messageProcessorMap, MessageType.REPLACE_KEYS);
+  }
 
-    @Override
-    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
-            throws FunctionalException {
+  @Override
+  protected void handleMessage(
+      final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
+      throws FunctionalException {
 
-        this.configurationService.replaceKeys(deviceMessageMetadata, (SetKeysRequestData) dataObject);
-    }
+    this.configurationService.replaceKeys(deviceMessageMetadata, (SetKeysRequestData) dataObject);
+  }
 }
