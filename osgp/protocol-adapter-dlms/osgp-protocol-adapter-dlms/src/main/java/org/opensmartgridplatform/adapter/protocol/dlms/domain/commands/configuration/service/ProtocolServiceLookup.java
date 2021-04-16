@@ -42,7 +42,7 @@ public class ProtocolServiceLookup {
         .findAny()
         .orElseThrow(
             () ->
-            new ProtocolAdapterException(
-                String.format("Cannot find %s for protocol %s", type, protocol)));
+                new ProtocolAdapterException(
+                    String.format("Cannot find %s for protocol %s", type, protocol)));
   }
 }

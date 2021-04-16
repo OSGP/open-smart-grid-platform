@@ -57,22 +57,22 @@ public class GetPowerQualityProfileSelectiveAccessHandlerTest {
             new ArrayList<>());
 
     when(this.dlmsHelper.getAndCheck(
-        any(DlmsConnectionManager.class),
-        any(DlmsDevice.class),
-        any(String.class),
-        any(AttributeAddress.class)))
-    .thenReturn(
-        this.createCaptureObjects(),
-        this.createProfileEntries(),
-        this.createCaptureObjectsProfile2(),
-        this.createProfileEntries());
+            any(DlmsConnectionManager.class),
+            any(DlmsDevice.class),
+            any(String.class),
+            any(AttributeAddress.class)))
+        .thenReturn(
+            this.createCaptureObjects(),
+            this.createProfileEntries(),
+            this.createCaptureObjectsProfile2(),
+            this.createProfileEntries());
 
     when(this.dlmsHelper.readLogicalName(any(DataObject.class), any(String.class)))
-    .thenCallRealMethod();
+        .thenCallRealMethod();
     when(this.dlmsHelper.readObjectDefinition(any(DataObject.class), any(String.class)))
-    .thenCallRealMethod();
+        .thenCallRealMethod();
     when(this.dlmsHelper.readLongNotNull(any(DataObject.class), any(String.class)))
-    .thenCallRealMethod();
+        .thenCallRealMethod();
     when(this.dlmsHelper.readLong(any(DataObject.class), any(String.class))).thenCallRealMethod();
     when(this.dlmsHelper.convertDataObjectToDateTime(any(DataObject.class))).thenCallRealMethod();
     when(this.dlmsHelper.fromDateTimeValue(any())).thenCallRealMethod();
@@ -90,12 +90,12 @@ public class GetPowerQualityProfileSelectiveAccessHandlerTest {
 
     assertThat(responseDto.getPowerQualityProfileResponseDatas().size()).isEqualTo(2);
     assertThat(responseDto.getPowerQualityProfileResponseDatas().get(0).getCaptureObjects().size())
-    .isEqualTo(3);
+        .isEqualTo(3);
     assertThat(responseDto.getPowerQualityProfileResponseDatas().get(0).getProfileEntries().size())
-    .isEqualTo(4);
+        .isEqualTo(4);
 
     for (final ProfileEntryDto profileEntryDto :
-      responseDto.getPowerQualityProfileResponseDatas().get(0).getProfileEntries()) {
+        responseDto.getPowerQualityProfileResponseDatas().get(0).getProfileEntries()) {
       assertThat(profileEntryDto.getProfileEntryValues().size()).isEqualTo(3);
     }
   }

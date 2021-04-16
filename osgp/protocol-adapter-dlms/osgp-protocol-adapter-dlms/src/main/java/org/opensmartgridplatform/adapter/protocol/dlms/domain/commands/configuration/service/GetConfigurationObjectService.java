@@ -35,16 +35,16 @@ public abstract class GetConfigurationObjectService implements ProtocolService {
     final AttributeAddress attributeAddress =
         AttributeAddressFactory.getConfigurationObjectAddress();
     conn.getDlmsMessageListener()
-    .setDescription(
-        String.format(
-            "Retrieve current ConfigurationObject, attribute: %s",
-            JdlmsObjectToStringUtil.describeAttributes(attributeAddress)));
+        .setDescription(
+            String.format(
+                "Retrieve current ConfigurationObject, attribute: %s",
+                JdlmsObjectToStringUtil.describeAttributes(attributeAddress)));
     return this.getConfigurationObject(this.getGetResult(conn, attributeAddress));
   }
 
   private GetResult getGetResult(
       final DlmsConnectionManager conn, final AttributeAddress attributeAddress)
-          throws ProtocolAdapterException {
+      throws ProtocolAdapterException {
     LOGGER.info("Get current ConfigurationObject using AttributeAddress {}", attributeAddress);
     try {
       return this.handleBadResults(conn.getConnection().get(attributeAddress));
@@ -76,9 +76,9 @@ public abstract class GetConfigurationObjectService implements ProtocolService {
     for (int index = 0; index < word.length(); index++) {
       if (word.charAt(index) == '1') {
         this.getFlagType(index)
-        .ifPresent(
-            configurationFlagType ->
-            flags.add(new ConfigurationFlagDto(configurationFlagType, true)));
+            .ifPresent(
+                configurationFlagType ->
+                    flags.add(new ConfigurationFlagDto(configurationFlagType, true)));
       }
     }
     return flags;

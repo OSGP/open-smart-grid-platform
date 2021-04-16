@@ -26,7 +26,7 @@ public class GetPowerQualityProfileCommandExecutorTest {
 
   @Mock
   private GetPowerQualityProfileNoSelectiveAccessHandler
-  getPowerQualityProfileNoSelectiveAccessHandler;
+      getPowerQualityProfileNoSelectiveAccessHandler;
 
   @Mock
   private GetPowerQualityProfileSelectiveAccessHandler getPowerQualityProfileSelectiveAccessHandler;
@@ -46,10 +46,10 @@ public class GetPowerQualityProfileCommandExecutorTest {
     this.executor.execute(this.conn, dlmsDevice, this.getPowerQualityProfileRequestDataDto);
 
     verify(this.getPowerQualityProfileSelectiveAccessHandler)
-    .handle(
-        any(DlmsConnectionManager.class),
-        any(DlmsDevice.class),
-        any(GetPowerQualityProfileRequestDataDto.class));
+        .handle(
+            any(DlmsConnectionManager.class),
+            any(DlmsDevice.class),
+            any(GetPowerQualityProfileRequestDataDto.class));
   }
 
   @Test
@@ -61,9 +61,9 @@ public class GetPowerQualityProfileCommandExecutorTest {
     this.executor.execute(this.conn, dlmsDevice, this.getPowerQualityProfileRequestDataDto);
 
     verify(this.getPowerQualityProfileNoSelectiveAccessHandler)
-    .handle(
-        any(DlmsConnectionManager.class),
-        any(DlmsDevice.class),
-        any(GetPowerQualityProfileRequestDataDto.class));
+        .handle(
+            any(DlmsConnectionManager.class),
+            any(DlmsDevice.class),
+            any(GetPowerQualityProfileRequestDataDto.class));
   }
 }

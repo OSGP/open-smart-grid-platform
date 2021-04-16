@@ -179,7 +179,7 @@ public class DeviceConverterTest {
     assertThat(jaxbDevice.getOutputSettings().size()).isEqualTo(3);
     for (int i = 0; i < 3; i++) {
       assertThat(device.getOutputSettings().get(i).getAlias())
-      .isEqualTo(jaxbDevice.getOutputSettings().get(i).getAlias());
+          .isEqualTo(jaxbDevice.getOutputSettings().get(i).getAlias());
     }
     assertThat(jaxbDevice.getTechnicalInstallationDate()).isEqualTo(xmlGregorianCalendar);
 
@@ -202,7 +202,7 @@ public class DeviceConverterTest {
     assertThat(mappedBack.getOutputSettings().size()).isEqualTo(3);
     for (int i = 0; i < 3; i++) {
       assertThat(device.getOutputSettings().get(i).getAlias())
-      .isEqualTo(mappedBack.getOutputSettings().get(i).getAlias());
+          .isEqualTo(mappedBack.getOutputSettings().get(i).getAlias());
     }
     assertThat(mappedBack.getTechnicalInstallationDate()).isEqualTo(date);
   }
