@@ -45,6 +45,14 @@
         </xsd:complexType>
     </xsd:element>
 
+    <xsd:element name="GetCommunicationNetworkInformationRequest">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="DeviceIdentification" type="xsd:string"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
     <xsd:element name="CoupleMbusDeviceRequest">
         <xsd:complexType>
             <xsd:sequence>
