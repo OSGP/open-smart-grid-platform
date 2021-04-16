@@ -35,6 +35,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetAllAt
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfigurationObjectResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetModemInfoResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetOutagesResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterReads;
@@ -60,6 +61,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetAllAttributeV
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetModemInfoResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetOutagesResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MeterReadsGasResponseDto;
@@ -127,6 +129,7 @@ public class ActionMapperResponseService {
         SetDeviceLifecycleStatusByChannelResponseData.class);
     classMap.put(ScanMbusChannelsResponseDto.class, ScanMbusChannelsResponseData.class);
     classMap.put(GetOutagesResponseDto.class, GetOutagesResponseData.class);
+    classMap.put(GetModemInfoResponseDto.class, GetModemInfoResponseData.class);
   }
 
   /** Specifies which mapper to use for the DTO class received. */
@@ -157,6 +160,7 @@ public class ActionMapperResponseService {
     classToMapperMap.put(SetDeviceLifecycleStatusByChannelResponseDto.class, this.managementMapper);
     classToMapperMap.put(ScanMbusChannelsResponseDto.class, this.configurationMapper);
     classToMapperMap.put(GetOutagesResponseDto.class, this.managementMapper);
+    classToMapperMap.put(GetModemInfoResponseDto.class, this.managementMapper);
   }
 
   public BundleMessagesResponse mapAllActions(

@@ -16,10 +16,14 @@ import org.opensmartgridplatform.domain.core.repositories.SmartMeterRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventMessagesResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FindEventsRequestDataList;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetModemInfoRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetModemInfoResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelResponseData;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FindEventsRequestList;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetModemInfoRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetModemInfoResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceCommunicationSettingsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelResponseDto;
@@ -280,6 +284,61 @@ public class ManagementService {
     mbusDevice.setDeviceLifecycleStatus(
         DeviceLifecycleStatus.valueOf(responseDto.getDeviceLifecycleStatus().name()));
     this.smartMeterRepository.save(mbusDevice);
+  }
+
+  public void getModemInfo(
+      final DeviceMessageMetadata deviceMessageMetadata, final GetModemInfoRequestData request)
+      throws FunctionalException {
+
+    LOGGER.info(
+        "Get modem info for organisationIdentification: {} for deviceIdentification: {}",
+        deviceMessageMetadata.getOrganisationIdentification(),
+        deviceMessageMetadata.getDeviceIdentification());
+
+    final GetModemInfoRequestDto requestDto =
+        this.managementMapper.map(request, GetModemInfoRequestDto.class);
+    final SmartMeter smartMeteringDevice =
+        this.domainHelperService.findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+
+    this.osgpCoreRequestMessageSender.send(
+        new RequestMessage(
+            deviceMessageMetadata.getCorrelationUid(),
+            deviceMessageMetadata.getOrganisationIdentification(),
+            deviceMessageMetadata.getDeviceIdentification(),
+            smartMeteringDevice.getIpAddress(),
+            requestDto),
+        deviceMessageMetadata.getMessageType(),
+        deviceMessageMetadata.getMessagePriority(),
+        deviceMessageMetadata.getScheduleTime(),
+        deviceMessageMetadata.bypassRetry());
+  }
+
+  public void handleGetModemInfoResponse(
+      final DeviceMessageMetadata deviceMessageMetadata,
+      final ResponseMessageResultType result,
+      final OsgpException osgpException,
+      final GetModemInfoResponseDto responseDto) {
+
+    LOGGER.info(
+        "handleGetModemInfoResponse for MessageType: {}", deviceMessageMetadata.getMessageType());
+
+    final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
+
+    final GetModemInfoResponseData responseData =
+        this.managementMapper.map(responseDto, GetModemInfoResponseData.class);
+
+    final ResponseMessage responseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+            .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+            .withDeviceIdentification(deviceIdentification)
+            .withResult(result)
+            .withOsgpException(osgpException)
+            .withDataObject(responseData)
+            .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+            .build();
+    this.webServiceResponseMessageSender.send(
+        responseMessage, deviceMessageMetadata.getMessageType());
   }
 
   private void sendMetadataOnlyRequestMessage(final DeviceMessageMetadata deviceMessageMetadata)
