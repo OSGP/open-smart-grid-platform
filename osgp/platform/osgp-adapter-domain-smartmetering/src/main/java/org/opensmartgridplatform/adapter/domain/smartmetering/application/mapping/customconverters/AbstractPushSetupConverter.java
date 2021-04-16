@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2018 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters;
 
@@ -24,59 +25,61 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.WindowElementDto
 @SuppressWarnings("squid:S2160")
 public abstract class AbstractPushSetupConverter<S, D> extends CustomConverter<S, D> {
 
-    private final ConfigurationMapper configurationMapper;
+  private final ConfigurationMapper configurationMapper;
 
-    protected AbstractPushSetupConverter(final ConfigurationMapper configurationMapper) {
-        this.configurationMapper = configurationMapper;
+  protected AbstractPushSetupConverter(final ConfigurationMapper configurationMapper) {
+    this.configurationMapper = configurationMapper;
+  }
+
+  /**
+   * Converts a push setup implementation to its corresponding DTO.
+   *
+   * <p><strong>NB</strong> Classes extending this abstract converter should implement {@link
+   * #newBuilder()} to return a builder appropriate to the specific push setup type to be converted.
+   *
+   * @param pushSetup the specific push setup to be converted
+   * @return the DTO corresponding to the given {@code pushSetup}
+   */
+  protected AbstractPushSetupDto convert(final AbstractPushSetup pushSetup) {
+
+    if (pushSetup == null) {
+      return null;
     }
 
-    /**
-     * Converts a push setup implementation to its corresponding DTO.
-     * <p>
-     * <strong>NB</strong> Classes extending this abstract converter should
-     * implement {@link #newBuilder()} to return a builder appropriate to the
-     * specific push setup type to be converted.
-     *
-     * @param pushSetup
-     *            the specific push setup to be converted
-     * @return the DTO corresponding to the given {@code pushSetup}
-     */
-    protected AbstractPushSetupDto convert(final AbstractPushSetup pushSetup) {
+    final AbstractPushSetupDto.AbstractBuilder<?> builder = this.newBuilder();
+    this.configureBuilder(builder, pushSetup);
+    return builder.build();
+  }
 
-        if (pushSetup == null) {
-            return null;
-        }
+  /**
+   * Returns a builder that is used to create the correct type of PushSetup DTO from {@link
+   * #convert(AbstractPushSetup)}.
+   *
+   * @return a new builder appropriate for the specific PushSetup type
+   */
+  protected abstract <T extends AbstractPushSetupDto.AbstractBuilder<T>>
+      AbstractPushSetupDto.AbstractBuilder<T> newBuilder();
 
-        final AbstractPushSetupDto.AbstractBuilder<?> builder = this.newBuilder();
-        this.configureBuilder(builder, pushSetup);
-        return builder.build();
+  private void configureBuilder(
+      final AbstractPushSetupDto.AbstractBuilder<?> builder, final AbstractPushSetup pushSetup) {
+
+    if (pushSetup.getCommunicationWindow() != null) {
+      builder.withCommunicationWindow(
+          this.configurationMapper.mapAsList(
+              pushSetup.getCommunicationWindow(), WindowElementDto.class));
     }
-
-    /**
-     * Returns a builder that is used to create the correct type of PushSetup
-     * DTO from {@link #convert(AbstractPushSetup)}.
-     *
-     * @return a new builder appropriate for the specific PushSetup type
-     */
-    protected abstract <T extends AbstractPushSetupDto.AbstractBuilder<T>> AbstractPushSetupDto.AbstractBuilder<T> newBuilder();
-
-    private void configureBuilder(final AbstractPushSetupDto.AbstractBuilder<?> builder,
-            final AbstractPushSetup pushSetup) {
-
-        if (pushSetup.getCommunicationWindow() != null) {
-            builder.withCommunicationWindow(
-                    this.configurationMapper.mapAsList(pushSetup.getCommunicationWindow(), WindowElementDto.class));
-        }
-        builder.withLogicalName(this.configurationMapper.map(pushSetup.getLogicalName(), CosemObisCodeDto.class));
-        builder.withNumberOfRetries(pushSetup.getNumberOfRetries());
-        if (pushSetup.getPushObjectList() != null) {
-            builder.withPushObjectList(
-                    this.configurationMapper.mapAsList(pushSetup.getPushObjectList(), CosemObjectDefinitionDto.class));
-        }
-        builder.withRandomisationStartInterval(pushSetup.getRandomisationStartInterval());
-        builder.withRepetitionDelay(pushSetup.getRepetitionDelay());
-        builder.withSendDestinationAndMethod(this.configurationMapper.map(pushSetup.getSendDestinationAndMethod(),
-                SendDestinationAndMethodDto.class));
+    builder.withLogicalName(
+        this.configurationMapper.map(pushSetup.getLogicalName(), CosemObisCodeDto.class));
+    builder.withNumberOfRetries(pushSetup.getNumberOfRetries());
+    if (pushSetup.getPushObjectList() != null) {
+      builder.withPushObjectList(
+          this.configurationMapper.mapAsList(
+              pushSetup.getPushObjectList(), CosemObjectDefinitionDto.class));
     }
-
+    builder.withRandomisationStartInterval(pushSetup.getRandomisationStartInterval());
+    builder.withRepetitionDelay(pushSetup.getRepetitionDelay());
+    builder.withSendDestinationAndMethod(
+        this.configurationMapper.map(
+            pushSetup.getSendDestinationAndMethod(), SendDestinationAndMethodDto.class));
+  }
 }

@@ -1,17 +1,16 @@
-/**
+/*
  * Copyright 2014-2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
-
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
-
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ClockStatus;
@@ -35,181 +34,198 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.WindowElementDto
 
 public class PushSetupSmsMappingTest {
 
-    private final ConfigurationMapper configurationMapper = new ConfigurationMapper();
+  private final ConfigurationMapper configurationMapper = new ConfigurationMapper();
 
-    // To test if a PushSetupAlarm can be mapped if instance variables are
-    // null.
-    @Test
-    public void testPushSetupSmsMappingNull() {
+  // To test if a PushSetupAlarm can be mapped if instance variables are
+  // null.
+  @Test
+  public void testPushSetupSmsMappingNull() {
 
-        // build test data
-        final PushSetupSms pushSetupSms = new PushSetupSmsBuilder().withNullValues().build();
+    // build test data
+    final PushSetupSms pushSetupSms = new PushSetupSmsBuilder().withNullValues().build();
 
-        // actual mapping
-        final PushSetupSmsDto pushSetupSmsDto = this.configurationMapper.map(pushSetupSms, PushSetupSmsDto.class);
+    // actual mapping
+    final PushSetupSmsDto pushSetupSmsDto =
+        this.configurationMapper.map(pushSetupSms, PushSetupSmsDto.class);
 
-        // check values
-        assertThat(pushSetupSmsDto).isNotNull();
-        assertThat(pushSetupSmsDto.getLogicalName()).isNull();
-        assertThat(pushSetupSmsDto.getPushObjectList()).isNull();
-        assertThat(pushSetupSmsDto.getSendDestinationAndMethod()).isNull();
-        assertThat(pushSetupSmsDto.getCommunicationWindow()).isNull();
-        assertThat(pushSetupSmsDto.getRandomisationStartInterval()).isNull();
-        assertThat(pushSetupSmsDto.getNumberOfRetries()).isNull();
-        assertThat(pushSetupSmsDto.getRepetitionDelay()).isNull();
+    // check values
+    assertThat(pushSetupSmsDto).isNotNull();
+    assertThat(pushSetupSmsDto.getLogicalName()).isNull();
+    assertThat(pushSetupSmsDto.getPushObjectList()).isNull();
+    assertThat(pushSetupSmsDto.getSendDestinationAndMethod()).isNull();
+    assertThat(pushSetupSmsDto.getCommunicationWindow()).isNull();
+    assertThat(pushSetupSmsDto.getRandomisationStartInterval()).isNull();
+    assertThat(pushSetupSmsDto.getNumberOfRetries()).isNull();
+    assertThat(pushSetupSmsDto.getRepetitionDelay()).isNull();
+  }
 
-    }
+  // To test if a PushSetupAlarm can be mapped if instance variables are
+  // initialized and lists are empty.
+  @Test
+  public void testPushSetupSmsMappingWithEmptyLists() {
 
-    // To test if a PushSetupAlarm can be mapped if instance variables are
-    // initialized and lists are empty.
-    @Test
-    public void testPushSetupSmsMappingWithEmptyLists() {
+    // build test data
+    final ArrayList<CosemObjectDefinition> pushObjectList = new ArrayList<>();
+    final ArrayList<WindowElement> communicationWindow = new ArrayList<>();
 
-        // build test data
-        final ArrayList<CosemObjectDefinition> pushObjectList = new ArrayList<>();
-        final ArrayList<WindowElement> communicationWindow = new ArrayList<>();
+    final PushSetupSms pushSetupSms =
+        new PushSetupSmsBuilder().withEmptyLists(pushObjectList, communicationWindow).build();
 
-        final PushSetupSms pushSetupSms = new PushSetupSmsBuilder().withEmptyLists(pushObjectList, communicationWindow)
-                .build();
+    // actual mapping
+    final PushSetupSmsDto pushSetupSmsDto =
+        this.configurationMapper.map(pushSetupSms, PushSetupSmsDto.class);
 
-        // actual mapping
-        final PushSetupSmsDto pushSetupSmsDto = this.configurationMapper.map(pushSetupSms, PushSetupSmsDto.class);
+    // check values
+    this.checkCosemObisCodeMapping(pushSetupSms.getLogicalName(), pushSetupSmsDto.getLogicalName());
+    this.checkSendDestinationAndMethodMapping(pushSetupSms, pushSetupSmsDto);
+    this.checkIntegerMapping(pushSetupSms, pushSetupSmsDto);
 
-        // check values
-        this.checkCosemObisCodeMapping(pushSetupSms.getLogicalName(), pushSetupSmsDto.getLogicalName());
-        this.checkSendDestinationAndMethodMapping(pushSetupSms, pushSetupSmsDto);
-        this.checkIntegerMapping(pushSetupSms, pushSetupSmsDto);
+    assertThat(pushSetupSmsDto.getPushObjectList()).isNotNull();
+    assertThat(pushSetupSmsDto.getCommunicationWindow()).isNotNull();
+  }
 
-        assertThat(pushSetupSmsDto.getPushObjectList()).isNotNull();
-        assertThat(pushSetupSmsDto.getCommunicationWindow()).isNotNull();
+  // To test Mapping if lists contain values
+  @Test
+  public void testPushSetupSmsMappingWithLists() {
 
-    }
+    // build test data
+    final CosemObisCode logicalName = new CosemObisCode(new int[] {1, 2, 3, 4, 5, 6});
+    final CosemObjectDefinition cosemObjectDefinition =
+        new CosemObjectDefinition(1, logicalName, 2);
+    final CosemDateTime startTime =
+        new CosemDateTime(
+            new CosemDate(2016, 3, 17),
+            new CosemTime(11, 52, 45),
+            0,
+            new ClockStatus(ClockStatus.STATUS_NOT_SPECIFIED));
+    final CosemDateTime endTime =
+        new CosemDateTime(
+            new CosemDate(2016, 3, 17),
+            new CosemTime(11, 52, 45),
+            0,
+            new ClockStatus(ClockStatus.STATUS_NOT_SPECIFIED));
+    final WindowElement windowElement = new WindowElement(startTime, endTime);
 
-    // To test Mapping if lists contain values
-    @Test
-    public void testPushSetupSmsMappingWithLists() {
+    final PushSetupSms pushSetupSms =
+        new PushSetupSmsBuilder().withFilledLists(cosemObjectDefinition, windowElement).build();
 
-        // build test data
-        final CosemObisCode logicalName = new CosemObisCode(new int[] { 1, 2, 3, 4, 5, 6 });
-        final CosemObjectDefinition cosemObjectDefinition = new CosemObjectDefinition(1, logicalName, 2);
-        final CosemDateTime startTime = new CosemDateTime(new CosemDate(2016, 3, 17), new CosemTime(11, 52, 45), 0,
-                new ClockStatus(ClockStatus.STATUS_NOT_SPECIFIED));
-        final CosemDateTime endTime = new CosemDateTime(new CosemDate(2016, 3, 17), new CosemTime(11, 52, 45), 0,
-                new ClockStatus(ClockStatus.STATUS_NOT_SPECIFIED));
-        final WindowElement windowElement = new WindowElement(startTime, endTime);
+    // actual mapping
+    final PushSetupSmsDto pushSetupSmsDto =
+        this.configurationMapper.map(pushSetupSms, PushSetupSmsDto.class);
 
-        final PushSetupSms pushSetupSms = new PushSetupSmsBuilder()
-                .withFilledLists(cosemObjectDefinition, windowElement)
-                .build();
+    // check values
+    this.checkCosemObisCodeMapping(pushSetupSms.getLogicalName(), pushSetupSmsDto.getLogicalName());
+    this.checkSendDestinationAndMethodMapping(pushSetupSms, pushSetupSmsDto);
+    this.checkIntegerMapping(pushSetupSms, pushSetupSmsDto);
+    this.checkNonEmptyListMapping(pushSetupSms, pushSetupSmsDto);
+  }
 
-        // actual mapping
-        final PushSetupSmsDto pushSetupSmsDto = this.configurationMapper.map(pushSetupSms, PushSetupSmsDto.class);
+  // method to test Integer object mapping
+  private void checkIntegerMapping(
+      final PushSetupSms pushSetupSms, final PushSetupSmsDto pushSetupSmsDto) {
 
-        // check values
-        this.checkCosemObisCodeMapping(pushSetupSms.getLogicalName(), pushSetupSmsDto.getLogicalName());
-        this.checkSendDestinationAndMethodMapping(pushSetupSms, pushSetupSmsDto);
-        this.checkIntegerMapping(pushSetupSms, pushSetupSmsDto);
-        this.checkNonEmptyListMapping(pushSetupSms, pushSetupSmsDto);
+    // make sure none is null
+    assertThat(pushSetupSmsDto.getRandomisationStartInterval()).isNotNull();
+    assertThat(pushSetupSmsDto.getNumberOfRetries()).isNotNull();
+    assertThat(pushSetupSmsDto.getRepetitionDelay()).isNotNull();
 
-    }
+    // make sure all values are equal
+    assertThat(pushSetupSmsDto.getRandomisationStartInterval())
+        .isEqualTo(pushSetupSms.getRandomisationStartInterval());
+    assertThat(pushSetupSmsDto.getNumberOfRetries()).isEqualTo(pushSetupSms.getNumberOfRetries());
+    assertThat(pushSetupSmsDto.getRepetitionDelay()).isEqualTo(pushSetupSms.getRepetitionDelay());
+  }
 
-    // method to test Integer object mapping
-    private void checkIntegerMapping(final PushSetupSms pushSetupSms, final PushSetupSmsDto pushSetupSmsDto) {
+  // method to test CosemObisCode object mapping
+  private void checkCosemObisCodeMapping(
+      final CosemObisCode cosemObisCode, final CosemObisCodeDto cosemObisCodeDto) {
 
-        // make sure none is null
-        assertThat(pushSetupSmsDto.getRandomisationStartInterval()).isNotNull();
-        assertThat(pushSetupSmsDto.getNumberOfRetries()).isNotNull();
-        assertThat(pushSetupSmsDto.getRepetitionDelay()).isNotNull();
+    // make sure neither is null
+    assertThat(cosemObisCode).isNotNull();
+    assertThat(cosemObisCodeDto).isNotNull();
 
-        // make sure all values are equal
-        assertThat(pushSetupSmsDto.getRandomisationStartInterval())
-                .isEqualTo(pushSetupSms.getRandomisationStartInterval());
-        assertThat(pushSetupSmsDto.getNumberOfRetries()).isEqualTo(pushSetupSms.getNumberOfRetries());
-        assertThat(pushSetupSmsDto.getRepetitionDelay()).isEqualTo(pushSetupSms.getRepetitionDelay());
-    }
+    // make sure all instance variables are equal
+    assertThat(cosemObisCodeDto).isEqualToComparingFieldByField(cosemObisCode);
+  }
 
-    // method to test CosemObisCode object mapping
-    private void checkCosemObisCodeMapping(final CosemObisCode cosemObisCode, final CosemObisCodeDto cosemObisCodeDto) {
+  // method to test SendDestinationAndMethod mapping
+  private void checkSendDestinationAndMethodMapping(
+      final PushSetupSms pushSetupSms, final PushSetupSmsDto pushSetupSmsDto) {
+    final SendDestinationAndMethod sendDestinationAndMethod =
+        pushSetupSms.getSendDestinationAndMethod();
+    final SendDestinationAndMethodDto sendDestinationAndMethodDto =
+        pushSetupSmsDto.getSendDestinationAndMethod();
 
-        // make sure neither is null
-        assertThat(cosemObisCode).isNotNull();
-        assertThat(cosemObisCodeDto).isNotNull();
+    // make sure neither is null
+    assertThat(sendDestinationAndMethod).isNotNull();
+    assertThat(sendDestinationAndMethodDto).isNotNull();
 
-        // make sure all instance variables are equal
-        assertThat(cosemObisCodeDto).isEqualToComparingFieldByField(cosemObisCode);
-    }
+    // make sure all instance variables are equal
+    assertThat(sendDestinationAndMethodDto.getTransportService().name())
+        .isEqualTo(sendDestinationAndMethod.getTransportService().name());
+    assertThat(sendDestinationAndMethodDto.getMessage().name())
+        .isEqualTo(sendDestinationAndMethod.getMessage().name());
+    assertThat(sendDestinationAndMethodDto.getDestination())
+        .isEqualTo(sendDestinationAndMethod.getDestination());
+  }
 
-    // method to test SendDestinationAndMethod mapping
-    private void checkSendDestinationAndMethodMapping(final PushSetupSms pushSetupSms,
-            final PushSetupSmsDto pushSetupSmsDto) {
-        final SendDestinationAndMethod sendDestinationAndMethod = pushSetupSms.getSendDestinationAndMethod();
-        final SendDestinationAndMethodDto sendDestinationAndMethodDto = pushSetupSmsDto.getSendDestinationAndMethod();
+  // method to test non-empty list mapping
+  private void checkNonEmptyListMapping(
+      final PushSetupSms pushSetupSms, final PushSetupSmsDto pushSetupSmsDto) {
 
-        // make sure neither is null
-        assertThat(sendDestinationAndMethod).isNotNull();
-        assertThat(sendDestinationAndMethodDto).isNotNull();
+    // test pushObjectList mapping
+    assertThat(pushSetupSms.getPushObjectList()).isNotNull();
+    assertThat(pushSetupSmsDto.getPushObjectList()).isNotNull();
+    assertThat(pushSetupSmsDto.getPushObjectList().size())
+        .isEqualTo(pushSetupSms.getPushObjectList().size());
 
-        // make sure all instance variables are equal
-        assertThat(sendDestinationAndMethodDto.getTransportService().name())
-                .isEqualTo(sendDestinationAndMethod.getTransportService().name());
-        assertThat(sendDestinationAndMethodDto.getMessage().name())
-                .isEqualTo(sendDestinationAndMethod.getMessage().name());
-        assertThat(sendDestinationAndMethodDto.getDestination()).isEqualTo(sendDestinationAndMethod.getDestination());
-    }
+    final CosemObjectDefinition cosemObjectDefinition = pushSetupSms.getPushObjectList().get(0);
+    final CosemObjectDefinitionDto cosemObjectDefinitionDto =
+        pushSetupSmsDto.getPushObjectList().get(0);
+    assertThat(cosemObjectDefinitionDto.getAttributeIndex())
+        .isEqualTo(cosemObjectDefinition.getAttributeIndex());
+    assertThat(cosemObjectDefinitionDto.getClassId()).isEqualTo(cosemObjectDefinition.getClassId());
+    assertThat(cosemObjectDefinitionDto.getDataIndex())
+        .isEqualTo(cosemObjectDefinition.getDataIndex());
 
-    // method to test non-empty list mapping
-    private void checkNonEmptyListMapping(final PushSetupSms pushSetupSms, final PushSetupSmsDto pushSetupSmsDto) {
+    this.checkCosemObisCodeMapping(
+        cosemObjectDefinition.getLogicalName(), cosemObjectDefinitionDto.getLogicalName());
 
-        // test pushObjectList mapping
-        assertThat(pushSetupSms.getPushObjectList()).isNotNull();
-        assertThat(pushSetupSmsDto.getPushObjectList()).isNotNull();
-        assertThat(pushSetupSmsDto.getPushObjectList().size()).isEqualTo(pushSetupSms.getPushObjectList().size());
+    // test communicationWindow mapping
+    assertThat(pushSetupSms.getCommunicationWindow()).isNotNull();
+    assertThat(pushSetupSmsDto.getCommunicationWindow()).isNotNull();
+    assertThat(pushSetupSmsDto.getCommunicationWindow().size())
+        .isEqualTo(pushSetupSms.getCommunicationWindow().size());
 
-        final CosemObjectDefinition cosemObjectDefinition = pushSetupSms.getPushObjectList().get(0);
-        final CosemObjectDefinitionDto cosemObjectDefinitionDto = pushSetupSmsDto.getPushObjectList().get(0);
-        assertThat(cosemObjectDefinitionDto.getAttributeIndex()).isEqualTo(cosemObjectDefinition.getAttributeIndex());
-        assertThat(cosemObjectDefinitionDto.getClassId()).isEqualTo(cosemObjectDefinition.getClassId());
-        assertThat(cosemObjectDefinitionDto.getDataIndex()).isEqualTo(cosemObjectDefinition.getDataIndex());
+    final WindowElement windowElement = pushSetupSms.getCommunicationWindow().get(0);
+    final WindowElementDto windowElementDto = pushSetupSmsDto.getCommunicationWindow().get(0);
 
-        this.checkCosemObisCodeMapping(cosemObjectDefinition.getLogicalName(),
-                cosemObjectDefinitionDto.getLogicalName());
+    this.checkCosemDateTimeMapping(windowElement.getStartTime(), windowElementDto.getStartTime());
+    this.checkCosemDateTimeMapping(windowElement.getEndTime(), windowElementDto.getEndTime());
+  }
 
-        // test communicationWindow mapping
-        assertThat(pushSetupSms.getCommunicationWindow()).isNotNull();
-        assertThat(pushSetupSmsDto.getCommunicationWindow()).isNotNull();
-        assertThat(pushSetupSmsDto.getCommunicationWindow().size())
-                .isEqualTo(pushSetupSms.getCommunicationWindow().size());
+  // method to test mapping of CosemDateTime objects
+  private void checkCosemDateTimeMapping(
+      final CosemDateTime cosemDateTime, final CosemDateTimeDto cosemDateTimeDto) {
 
-        final WindowElement windowElement = pushSetupSms.getCommunicationWindow().get(0);
-        final WindowElementDto windowElementDto = pushSetupSmsDto.getCommunicationWindow().get(0);
+    // make sure neither is null
+    assertThat(cosemDateTime).isNotNull();
+    assertThat(cosemDateTimeDto).isNotNull();
 
-        this.checkCosemDateTimeMapping(windowElement.getStartTime(), windowElementDto.getStartTime());
-        this.checkCosemDateTimeMapping(windowElement.getEndTime(), windowElementDto.getEndTime());
+    // check variables
+    assertThat(cosemDateTimeDto.getDeviation()).isEqualTo(cosemDateTime.getDeviation());
 
-    }
+    final ClockStatus clockStatus = cosemDateTime.getClockStatus();
+    final ClockStatusDto clockStatusDto = cosemDateTimeDto.getClockStatus();
+    assertThat(clockStatusDto.getStatus()).isEqualTo(clockStatus.getStatus());
+    assertThat(clockStatusDto.isSpecified()).isEqualTo(clockStatus.isSpecified());
 
-    // method to test mapping of CosemDateTime objects
-    private void checkCosemDateTimeMapping(final CosemDateTime cosemDateTime, final CosemDateTimeDto cosemDateTimeDto) {
+    final CosemDate cosemDate = cosemDateTime.getDate();
+    final CosemDateDto cosemDateDto = cosemDateTimeDto.getDate();
+    assertThat(cosemDateDto).isEqualToComparingFieldByField(cosemDate);
 
-        // make sure neither is null
-        assertThat(cosemDateTime).isNotNull();
-        assertThat(cosemDateTimeDto).isNotNull();
-
-        // check variables
-        assertThat(cosemDateTimeDto.getDeviation()).isEqualTo(cosemDateTime.getDeviation());
-
-        final ClockStatus clockStatus = cosemDateTime.getClockStatus();
-        final ClockStatusDto clockStatusDto = cosemDateTimeDto.getClockStatus();
-        assertThat(clockStatusDto.getStatus()).isEqualTo(clockStatus.getStatus());
-        assertThat(clockStatusDto.isSpecified()).isEqualTo(clockStatus.isSpecified());
-
-        final CosemDate cosemDate = cosemDateTime.getDate();
-        final CosemDateDto cosemDateDto = cosemDateTimeDto.getDate();
-        assertThat(cosemDateDto).isEqualToComparingFieldByField(cosemDate);
-
-        final CosemTime cosemTime = cosemDateTime.getTime();
-        final CosemTimeDto cosemTimeDto = cosemDateTimeDto.getTime();
-        assertThat(cosemTimeDto).isEqualToComparingFieldByField(cosemTime);
-    }
-
+    final CosemTime cosemTime = cosemDateTime.getTime();
+    final CosemTimeDto cosemTimeDto = cosemDateTimeDto.getTime();
+    assertThat(cosemTimeDto).isEqualToComparingFieldByField(cosemTime);
+  }
 }

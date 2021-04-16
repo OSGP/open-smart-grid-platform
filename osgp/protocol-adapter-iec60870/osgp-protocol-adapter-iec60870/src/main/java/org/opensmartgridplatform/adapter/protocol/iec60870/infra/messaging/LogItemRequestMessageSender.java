@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2019 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging;
 
@@ -11,7 +12,6 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
-
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.LogItem;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.slf4j.Logger;
@@ -25,49 +25,49 @@ import org.springframework.stereotype.Component;
 @Component(value = "protocolIec60870OutboundLogItemRequestsMessageSender")
 public class LogItemRequestMessageSender {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LogItemRequestMessageSender.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(LogItemRequestMessageSender.class);
 
-    private static final String DEFAULT_ENCODED_MESSAGE = null;
-    private static final String DEFAULT_VALID = "true";
-    private static final int DEFAULT_SIZE = 0;
+  private static final String DEFAULT_ENCODED_MESSAGE = null;
+  private static final String DEFAULT_VALID = "true";
+  private static final int DEFAULT_SIZE = 0;
 
-    @Autowired
-    @Qualifier("protocolIec60870OutboundLogItemRequestsJmsTemplate")
-    private JmsTemplate jmsTemplate;
+  @Autowired
+  @Qualifier("protocolIec60870OutboundLogItemRequestsJmsTemplate")
+  private JmsTemplate jmsTemplate;
 
-    public void send(final LogItem logItem) {
+  public void send(final LogItem logItem) {
 
-        LOGGER.debug("Sending LogItemRequestMessage");
+    LOGGER.debug("Sending LogItemRequestMessage");
 
-        final LogItemMessageCreator messageCreator = new LogItemMessageCreator(logItem);
-        this.jmsTemplate.send(messageCreator);
+    final LogItemMessageCreator messageCreator = new LogItemMessageCreator(logItem);
+    this.jmsTemplate.send(messageCreator);
+  }
 
+  private static class LogItemMessageCreator implements MessageCreator {
+
+    private final LogItem logItem;
+
+    public LogItemMessageCreator(final LogItem logItem) {
+      this.logItem = logItem;
     }
 
-    private static class LogItemMessageCreator implements MessageCreator {
-
-        private final LogItem logItem;
-
-        public LogItemMessageCreator(final LogItem logItem) {
-            this.logItem = logItem;
-        }
-
-        @Override
-        public Message createMessage(final Session session) throws JMSException {
-            final ObjectMessage objectMessage = session.createObjectMessage();
-            objectMessage.setJMSType(Constants.IEC60870_LOG_ITEM_REQUEST);
-            objectMessage.setStringProperty(Constants.IS_INCOMING, this.logItem.isIncoming().toString());
-            objectMessage.setStringProperty(Constants.DECODED_MESSAGE, this.logItem.getMessage());
-            objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION, this.logItem.getDeviceIdentification());
-            objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
-                    this.logItem.getOrganisationIdentification());
-            // Properties below are expected by OSGP Logging component, but
-            // currently not used in this protocol adapter, therefore default
-            // values are passed.
-            objectMessage.setStringProperty(Constants.ENCODED_MESSAGE, DEFAULT_ENCODED_MESSAGE);
-            objectMessage.setStringProperty(Constants.IS_VALID, DEFAULT_VALID);
-            objectMessage.setIntProperty(Constants.PAYLOAD_MESSAGE_SERIALIZED_SIZE, DEFAULT_SIZE);
-            return objectMessage;
-        }
+    @Override
+    public Message createMessage(final Session session) throws JMSException {
+      final ObjectMessage objectMessage = session.createObjectMessage();
+      objectMessage.setJMSType(Constants.IEC60870_LOG_ITEM_REQUEST);
+      objectMessage.setStringProperty(Constants.IS_INCOMING, this.logItem.isIncoming().toString());
+      objectMessage.setStringProperty(Constants.DECODED_MESSAGE, this.logItem.getMessage());
+      objectMessage.setStringProperty(
+          Constants.DEVICE_IDENTIFICATION, this.logItem.getDeviceIdentification());
+      objectMessage.setStringProperty(
+          Constants.ORGANISATION_IDENTIFICATION, this.logItem.getOrganisationIdentification());
+      // Properties below are expected by OSGP Logging component, but
+      // currently not used in this protocol adapter, therefore default
+      // values are passed.
+      objectMessage.setStringProperty(Constants.ENCODED_MESSAGE, DEFAULT_ENCODED_MESSAGE);
+      objectMessage.setStringProperty(Constants.IS_VALID, DEFAULT_VALID);
+      objectMessage.setIntProperty(Constants.PAYLOAD_MESSAGE_SERIALIZED_SIZE, DEFAULT_SIZE);
+      return objectMessage;
     }
+  }
 }

@@ -1,8 +1,8 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -24,27 +24,34 @@ import org.springframework.stereotype.Component;
 @Component
 public class ReplaceKeysResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
-    @Autowired
-    private ConfigurationService configurationService;
+  @Autowired private ConfigurationService configurationService;
 
-    @Autowired
-    protected ReplaceKeysResponseMessageProcessor(WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
-        super(responseMessageSender, messageProcessorMap, MessageType.REPLACE_KEYS,
-                ComponentType.DOMAIN_SMART_METERING);
-    }
+  @Autowired
+  protected ReplaceKeysResponseMessageProcessor(
+      final WebServiceResponseMessageSender responseMessageSender,
+      @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
+          final MessageProcessorMap messageProcessorMap) {
+    super(
+        responseMessageSender,
+        messageProcessorMap,
+        MessageType.REPLACE_KEYS,
+        ComponentType.DOMAIN_SMART_METERING);
+  }
 
-    @Override
-    protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
-        // Only the Result (OK/NOK/Exception) is returned, no need to check the (contents of the dataObject).
-        return true;
-    }
+  @Override
+  protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
+    // Only the Result (OK/NOK/Exception) is returned, no need to check the (contents of the
+    // dataObject).
+    return true;
+  }
 
-    @Override
-    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
-            final ResponseMessage responseMessage, final OsgpException osgpException) {
+  @Override
+  protected void handleMessage(
+      final DeviceMessageMetadata deviceMessageMetadata,
+      final ResponseMessage responseMessage,
+      final OsgpException osgpException) {
 
-        this.configurationService.handleReplaceKeysResponse(deviceMessageMetadata, responseMessage.getResult(),
-                osgpException);
-    }
+    this.configurationService.handleReplaceKeysResponse(
+        deviceMessageMetadata, responseMessage.getResult(), osgpException);
+  }
 }

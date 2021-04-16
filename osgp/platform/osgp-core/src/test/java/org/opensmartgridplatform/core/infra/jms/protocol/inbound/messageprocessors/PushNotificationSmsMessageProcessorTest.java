@@ -1,8 +1,8 @@
-/**
+/*
  * Copyright 2019 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -16,10 +16,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Date;
-
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,64 +40,75 @@ import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class PushNotificationSmsMessageProcessorTest {
 
-    private static final String DEVICE_IDENTIFICATION = "dvc-1";
+  private static final String DEVICE_IDENTIFICATION = "dvc-1";
 
-    private static final String IP_ADDRESS = "127.0.0.1";
+  private static final String IP_ADDRESS = "127.0.0.1";
 
-    @Mock
-    private PushNotificationSmsDto pushNotificationSms;
+  @Mock private PushNotificationSmsDto pushNotificationSms;
 
-    @Mock
-    private EventNotificationMessageService eventNotificationMessageService;
+  @Mock private EventNotificationMessageService eventNotificationMessageService;
 
-    @Mock
-    private DeviceRepository deviceRepository;
-    @InjectMocks
-    private PushNotificationSmsMessageProcessor pushNotificationSmsMessageProcessor;
-    private ObjectMessage message;
+  @Mock private DeviceRepository deviceRepository;
+  @InjectMocks private PushNotificationSmsMessageProcessor pushNotificationSmsMessageProcessor;
+  private ObjectMessage message;
 
-    @BeforeEach
-    public void init() throws JMSException {
+  @BeforeEach
+  public void init() throws JMSException {
 
-        final String correlationUid = "corr-uid-1";
-        final String organisationIdentification = "test-org";
+    final String correlationUid = "corr-uid-1";
+    final String organisationIdentification = "test-org";
 
-        final RequestMessage requestMessage = new RequestMessage(correlationUid, organisationIdentification,
-                DEVICE_IDENTIFICATION, IP_ADDRESS, this.pushNotificationSms);
+    final RequestMessage requestMessage =
+        new RequestMessage(
+            correlationUid,
+            organisationIdentification,
+            DEVICE_IDENTIFICATION,
+            IP_ADDRESS,
+            this.pushNotificationSms);
 
-        this.message = new ObjectMessageBuilder().withCorrelationUid(correlationUid)
-                .withMessageType(MessageType.PUSH_NOTIFICATION_SMS.name())
-                .withDeviceIdentification(DEVICE_IDENTIFICATION)
-                .withObject(requestMessage)
-                .build();
-    }
+    this.message =
+        new ObjectMessageBuilder()
+            .withCorrelationUid(correlationUid)
+            .withMessageType(MessageType.PUSH_NOTIFICATION_SMS.name())
+            .withDeviceIdentification(DEVICE_IDENTIFICATION)
+            .withObject(requestMessage)
+            .build();
+  }
 
-    @Test
-    public void testProcessMessageSuccess() throws JMSException, UnknownEntityException {
+  @Test
+  public void testProcessMessageSuccess() throws JMSException, UnknownEntityException {
 
-        when(this.pushNotificationSms.getIpAddress()).thenReturn(IP_ADDRESS);
-        doNothing().when(this.eventNotificationMessageService)
-                .handleEvent(any(String.class), any(Date.class), any(EventType.class), any(String.class),
-                        any(Integer.class));
+    when(this.pushNotificationSms.getIpAddress()).thenReturn(IP_ADDRESS);
+    doNothing()
+        .when(this.eventNotificationMessageService)
+        .handleEvent(
+            any(String.class),
+            any(Date.class),
+            any(EventType.class),
+            any(String.class),
+            any(Integer.class));
 
-        final Device device = new Device(DEVICE_IDENTIFICATION);
+    final Device device = new Device(DEVICE_IDENTIFICATION);
 
-        when(this.deviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION)).thenReturn(device);
+    when(this.deviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION))
+        .thenReturn(device);
 
-        assertThat(device.getLastSuccessfulConnectionTimestamp()).isNull();
+    assertThat(device.getLastSuccessfulConnectionTimestamp()).isNull();
 
-        this.pushNotificationSmsMessageProcessor.processMessage(this.message);
+    this.pushNotificationSmsMessageProcessor.processMessage(this.message);
 
-        assertThat(device.getLastSuccessfulConnectionTimestamp()).isNotNull();
+    assertThat(device.getLastSuccessfulConnectionTimestamp()).isNotNull();
 
-        verify(this.deviceRepository).save(device);
-    }
+    verify(this.deviceRepository).save(device);
+  }
 
-    @Test
-    public void testUnknownDevice() {
-        when(this.deviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION)).thenReturn(null);
-        assertThatExceptionOfType(JMSException.class).isThrownBy(() -> {
-            this.pushNotificationSmsMessageProcessor.processMessage(this.message);
-        });
-    }
+  @Test
+  public void testUnknownDevice() {
+    when(this.deviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION)).thenReturn(null);
+    assertThatExceptionOfType(JMSException.class)
+        .isThrownBy(
+            () -> {
+              this.pushNotificationSmsMessageProcessor.processMessage(this.message);
+            });
+  }
 }

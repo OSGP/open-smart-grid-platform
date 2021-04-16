@@ -1,8 +1,8 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -43,101 +43,112 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class ManagementService {
 
-    private static final int PAGE_SIZE = 30;
+  private static final int PAGE_SIZE = 30;
 
-    @Autowired
-    private RequestService requestService;
+  @Autowired private RequestService requestService;
 
-    @Autowired
-    private DomainHelperService domainHelperService;
+  @Autowired private DomainHelperService domainHelperService;
 
-    @Autowired
-    private DeviceRepository deviceRepository;
+  @Autowired private DeviceRepository deviceRepository;
 
-    @Autowired
-    private ResponseDataRepository responseDataRepository;
+  @Autowired private ResponseDataRepository responseDataRepository;
 
-    @Autowired
-    private CorrelationIdProviderService correlationIdProviderService;
+  @Autowired private CorrelationIdProviderService correlationIdProviderService;
 
-    @Autowired
-    private FindMessageLogsSyncRequestExecutor findMessageLogsSyncRequestExecutor;
+  @Autowired private FindMessageLogsSyncRequestExecutor findMessageLogsSyncRequestExecutor;
 
-    public ManagementService() {
-        // Parameterless constructor required for transactions
-    }
+  public ManagementService() {
+    // Parameterless constructor required for transactions
+  }
 
-    public AsyncResponse enqueueAndSendFindLogsRequest(final RequestMessageMetadata requestMessageMetadata,
-        final int pageNumber) throws FunctionalException {
+  public AsyncResponse enqueueAndSendFindLogsRequest(
+      final RequestMessageMetadata requestMessageMetadata, final int pageNumber)
+      throws FunctionalException {
 
-        log.debug("{} called with organisation {} and device {}", requestMessageMetadata.getMessageType(),
-            requestMessageMetadata.getOrganisationIdentification(), requestMessageMetadata.getDeviceIdentification());
+    log.debug(
+        "{} called with organisation {} and device {}",
+        requestMessageMetadata.getMessageType(),
+        requestMessageMetadata.getOrganisationIdentification(),
+        requestMessageMetadata.getDeviceIdentification());
 
-        this.requestService.checkAllowed(requestMessageMetadata.getOrganisationIdentification(), requestMessageMetadata.getDeviceIdentification(), requestMessageMetadata.getDeviceFunction());
+    this.requestService.checkAllowed(
+        requestMessageMetadata.getOrganisationIdentification(),
+        requestMessageMetadata.getDeviceIdentification(),
+        requestMessageMetadata.getDeviceFunction());
 
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(
+    final String correlationUid =
+        this.correlationIdProviderService.getCorrelationId(
             requestMessageMetadata.getOrganisationIdentification(),
             requestMessageMetadata.getDeviceIdentification());
 
-        final DeviceMessageMetadata deviceMessageMetadata = requestMessageMetadata.newDeviceMessageMetadata(correlationUid);
+    final DeviceMessageMetadata deviceMessageMetadata =
+        requestMessageMetadata.newDeviceMessageMetadata(correlationUid);
 
-        this.findMessageLogsSyncRequestExecutor.execute(requestMessageMetadata.getOrganisationIdentification(),
-            requestMessageMetadata.getDeviceIdentification(), correlationUid, pageNumber);
+    this.findMessageLogsSyncRequestExecutor.execute(
+        requestMessageMetadata.getOrganisationIdentification(),
+        requestMessageMetadata.getDeviceIdentification(),
+        correlationUid,
+        pageNumber);
 
-        return this.requestService.createAsyncResponse(correlationUid, deviceMessageMetadata.getDeviceIdentification());
-    }
+    return this.requestService.createAsyncResponse(
+        correlationUid, deviceMessageMetadata.getDeviceIdentification());
+  }
 
-    public Page<Device> findAllDevices(@Identification final String organisationIdentification, final int pageNumber)
-            throws FunctionalException {
+  public Page<Device> findAllDevices(
+      @Identification final String organisationIdentification, final int pageNumber)
+      throws FunctionalException {
 
-        log.debug("findAllDevices called with organisation {} and pageNumber {}", organisationIdentification,
-                pageNumber);
+    log.debug(
+        "findAllDevices called with organisation {} and pageNumber {}",
+        organisationIdentification,
+        pageNumber);
 
-        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
-
-        final PageRequest request = PageRequest.of(pageNumber, PAGE_SIZE, Sort.Direction.DESC, "deviceIdentification");
-        return this.deviceRepository.findAllAuthorized(organisation, request);
-    }
-
-    public List<Event> findEventsByCorrelationUid(final String organisationIdentification, final String correlationUid)
-            throws OsgpException {
-
-        log.info("findEventsByCorrelationUid called with organisation {}}", organisationIdentification);
-
+    final Organisation organisation =
         this.domainHelperService.findOrganisation(organisationIdentification);
 
-        final ResponseData responseData = this.responseDataRepository.findByCorrelationUid(correlationUid);
-        final List<Event> events = new ArrayList<>();
+    final PageRequest request =
+        PageRequest.of(pageNumber, PAGE_SIZE, Sort.Direction.DESC, "deviceIdentification");
+    return this.deviceRepository.findAllAuthorized(organisation, request);
+  }
 
-        final Serializable messageData = responseData.getMessageData();
+  public List<Event> findEventsByCorrelationUid(
+      final String organisationIdentification, final String correlationUid) throws OsgpException {
 
-        if (messageData instanceof EventMessagesResponse) {
-            events.addAll(((EventMessagesResponse) messageData).getEvents());
+    log.info("findEventsByCorrelationUid called with organisation {}}", organisationIdentification);
 
-            log.info("deleting ResponseData for correlation uid {}.", correlationUid);
-            this.responseDataRepository.delete(responseData);
+    this.domainHelperService.findOrganisation(organisationIdentification);
 
-        } else {
-            /**
-             * If the returned data is not an EventMessageContainer but a
-             * String, there has been an exception. The exception message has
-             * been put in the messageData.
-             *
-             * As there is no way of knowing what the type of the exception was
-             * (because it is passed as a String) it is thrown as a
-             * TechnicalException because the user is most probably not to blame
-             * for the exception.
-             */
-            if (messageData instanceof String) {
-                throw new TechnicalException(ComponentType.UNKNOWN, (String) messageData);
-            }
-            log.info(
-                    "findEventsByCorrelationUid found other type of meter response data: {} for correlation UID: {}",
-                    messageData.getClass().getName(), correlationUid);
-        }
+    final ResponseData responseData =
+        this.responseDataRepository.findByCorrelationUid(correlationUid);
+    final List<Event> events = new ArrayList<>();
 
-        log.info("returning a list containing {} events", events.size());
-        return events;
+    final Serializable messageData = responseData.getMessageData();
+
+    if (messageData instanceof EventMessagesResponse) {
+      events.addAll(((EventMessagesResponse) messageData).getEvents());
+
+      log.info("deleting ResponseData for correlation uid {}.", correlationUid);
+      this.responseDataRepository.delete(responseData);
+
+    } else {
+      /**
+       * If the returned data is not an EventMessageContainer but a String, there has been an
+       * exception. The exception message has been put in the messageData.
+       *
+       * <p>As there is no way of knowing what the type of the exception was (because it is passed
+       * as a String) it is thrown as a TechnicalException because the user is most probably not to
+       * blame for the exception.
+       */
+      if (messageData instanceof String) {
+        throw new TechnicalException(ComponentType.UNKNOWN, (String) messageData);
+      }
+      log.info(
+          "findEventsByCorrelationUid found other type of meter response data: {} for correlation UID: {}",
+          messageData.getClass().getName(),
+          correlationUid);
     }
-}
 
+    log.info("returning a list containing {} events", events.size());
+    return events;
+  }
+}

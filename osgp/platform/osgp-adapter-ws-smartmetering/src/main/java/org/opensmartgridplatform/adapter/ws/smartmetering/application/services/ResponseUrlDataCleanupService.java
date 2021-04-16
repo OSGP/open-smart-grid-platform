@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2018 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.services;
 
@@ -18,16 +19,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(value = "transactionManager")
 public class ResponseUrlDataCleanupService {
 
-    @Autowired
-    private ResponseUrlDataRepository responseUrlDataRepository;
+  @Autowired private ResponseUrlDataRepository responseUrlDataRepository;
 
-    @Autowired
-    private int urlDataCleanupJobRetentionTimeInDays;
+  @Autowired private int urlDataCleanupJobRetentionTimeInDays;
 
-    public void execute() {
+  public void execute() {
 
-        final DateTime removeBeforeDateTime = DateTime.now(DateTimeZone.UTC)
-                .minusDays(this.urlDataCleanupJobRetentionTimeInDays);
-        this.responseUrlDataRepository.removeByCreationTimeBefore(removeBeforeDateTime.toDate());
-    }
+    final DateTime removeBeforeDateTime =
+        DateTime.now(DateTimeZone.UTC).minusDays(this.urlDataCleanupJobRetentionTimeInDays);
+    this.responseUrlDataRepository.removeByCreationTimeBefore(removeBeforeDateTime.toDate());
+  }
 }

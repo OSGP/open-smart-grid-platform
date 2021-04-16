@@ -21,11 +21,15 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource("classpath:osgp-adapter-protocol-mqtt.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterProtocolMqtt/config}", ignoreResourceNotFound = true)
-@Import(value = { InboundOsgpCoreRequestsMessagingConfig.class, OutboundOsgpCoreResponsesMessagingConfig.class })
+@Import(
+    value = {
+      InboundOsgpCoreRequestsMessagingConfig.class,
+      OutboundOsgpCoreResponsesMessagingConfig.class
+    })
 public class MessagingConfig extends AbstractConfig {
 
-    @Bean
-    public DefaultJmsConfiguration defaultJmsConfiguration() {
-        return new DefaultJmsConfiguration();
-    }
+  @Bean
+  public DefaultJmsConfiguration defaultJmsConfiguration() {
+    return new DefaultJmsConfiguration();
+  }
 }

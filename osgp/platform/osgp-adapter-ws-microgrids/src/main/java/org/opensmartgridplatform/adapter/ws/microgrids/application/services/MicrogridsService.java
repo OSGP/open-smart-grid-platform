@@ -1,14 +1,14 @@
-/**
+/*
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.microgrids.application.services;
 
 import javax.validation.constraints.NotNull;
-
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.microgrids.application.exceptionhandling.ResponseNotFoundException;
 import org.opensmartgridplatform.adapter.ws.microgrids.infra.jms.MicrogridsRequestMessage;
@@ -41,124 +41,147 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class MicrogridsService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MicrogridsService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MicrogridsService.class);
 
-    @Autowired
-    private DomainHelperService domainHelperService;
+  @Autowired private DomainHelperService domainHelperService;
 
-    @Autowired
-    private CorrelationIdProviderService correlationIdProviderService;
+  @Autowired private CorrelationIdProviderService correlationIdProviderService;
 
-    @Autowired
-    private MicrogridsRequestMessageSender requestMessageSender;
+  @Autowired private MicrogridsRequestMessageSender requestMessageSender;
 
-    @Autowired
-    private ResponseDataService responseDataService;
+  @Autowired private ResponseDataService responseDataService;
 
-    public MicrogridsService() {
-        // Parameterless constructor required for transactions
+  public MicrogridsService() {
+    // Parameterless constructor required for transactions
+  }
+
+  public String enqueueGetDataRequest(
+      @Identification final String organisationIdentification,
+      @Identification final String deviceIdentification,
+      @NotNull final GetDataRequest dataRequest)
+      throws OsgpException {
+
+    LOGGER.debug(
+        "enqueueGetDataRequest called with organisation {} and device {}",
+        organisationIdentification,
+        deviceIdentification);
+
+    final Organisation organisation =
+        this.domainHelperService.findOrganisation(organisationIdentification);
+
+    final String correlationUid =
+        this.correlationIdProviderService.getCorrelationId(
+            organisationIdentification, deviceIdentification);
+
+    final RtuDevice device = this.domainHelperService.findDevice(deviceIdentification);
+    this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_DATA);
+
+    final MicrogridsRequestMessage message =
+        new MicrogridsRequestMessage(
+            MessageType.GET_DATA,
+            correlationUid,
+            organisationIdentification,
+            deviceIdentification,
+            dataRequest);
+
+    try {
+      this.requestMessageSender.send(message);
+    } catch (final ArgumentNullOrEmptyException e) {
+      throw new TechnicalException(ComponentType.WS_MICROGRIDS, e);
     }
 
-    public String enqueueGetDataRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, @NotNull final GetDataRequest dataRequest)
-            throws OsgpException {
+    return correlationUid;
+  }
 
-        LOGGER.debug("enqueueGetDataRequest called with organisation {} and device {}", organisationIdentification,
-                deviceIdentification);
+  public GetDataResponse dequeueGetDataResponse(final String correlationUid) throws OsgpException {
 
-        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+    LOGGER.debug("dequeueGetDataRequest called with correlation uid {}", correlationUid);
 
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
+    final ResponseData responseData =
+        this.responseDataService.dequeue(
+            correlationUid, ResponseMessage.class, ComponentType.WS_MICROGRIDS);
+    final ResponseMessage response = (ResponseMessage) responseData.getMessageData();
 
-        final RtuDevice device = this.domainHelperService.findDevice(deviceIdentification);
-        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_DATA);
-
-        final MicrogridsRequestMessage message = new MicrogridsRequestMessage(MessageType.GET_DATA, correlationUid,
-                organisationIdentification, deviceIdentification, dataRequest);
-
-        try {
-            this.requestMessageSender.send(message);
-        } catch (final ArgumentNullOrEmptyException e) {
-            throw new TechnicalException(ComponentType.WS_MICROGRIDS, e);
+    switch (response.getResult()) {
+      case NOT_FOUND:
+        throw new ResponseNotFoundException(
+            ComponentType.WS_MICROGRIDS, "Response message not found.");
+      case NOT_OK:
+        if (response.getOsgpException() != null) {
+          throw response.getOsgpException();
         }
+        throw new TechnicalException(ComponentType.WS_MICROGRIDS, "Response message not ok.");
+      case OK:
+        return (GetDataResponse) response.getDataObject();
+      default:
+        // Should not get here
+        throw new TechnicalException(
+            ComponentType.WS_MICROGRIDS, "Response message contains invalid result.");
+    }
+  }
 
-        return correlationUid;
+  public String enqueueSetDataRequest(
+      final String organisationIdentification,
+      final String deviceIdentification,
+      final SetDataRequest setDataRequest)
+      throws OsgpException {
+
+    LOGGER.debug(
+        "enqueueSetDataRequest called with organisation {} and device {}",
+        organisationIdentification,
+        deviceIdentification);
+
+    final Organisation organisation =
+        this.domainHelperService.findOrganisation(organisationIdentification);
+
+    final String correlationUid =
+        this.correlationIdProviderService.getCorrelationId(
+            organisationIdentification, deviceIdentification);
+
+    final RtuDevice device = this.domainHelperService.findDevice(deviceIdentification);
+    this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_DATA);
+
+    final MicrogridsRequestMessage message =
+        new MicrogridsRequestMessage(
+            MessageType.SET_DATA,
+            correlationUid,
+            organisationIdentification,
+            deviceIdentification,
+            setDataRequest);
+
+    try {
+      this.requestMessageSender.send(message);
+    } catch (final ArgumentNullOrEmptyException e) {
+      throw new TechnicalException(ComponentType.WS_MICROGRIDS, e);
     }
 
-    public GetDataResponse dequeueGetDataResponse(final String correlationUid) throws OsgpException {
+    return correlationUid;
+  }
 
-        LOGGER.debug("dequeueGetDataRequest called with correlation uid {}", correlationUid);
+  public EmptyResponse dequeueSetDataResponse(final String correlationUid) throws OsgpException {
 
-        final ResponseData responseData = this.responseDataService.dequeue(correlationUid, ResponseMessage.class,
-                ComponentType.WS_MICROGRIDS);
-        final ResponseMessage response = (ResponseMessage) responseData.getMessageData();
+    LOGGER.debug("dequeueSetDataRequest called with correlation uid {}", correlationUid);
 
-        switch (response.getResult()) {
-        case NOT_FOUND:
-            throw new ResponseNotFoundException(ComponentType.WS_MICROGRIDS, "Response message not found.");
-        case NOT_OK:
-            if (response.getOsgpException() != null) {
-                throw response.getOsgpException();
-            }
-            throw new TechnicalException(ComponentType.WS_MICROGRIDS, "Response message not ok.");
-        case OK:
-            return (GetDataResponse) response.getDataObject();
-        default:
-            // Should not get here
-            throw new TechnicalException(ComponentType.WS_MICROGRIDS, "Response message contains invalid result.");
+    final ResponseData responseData =
+        this.responseDataService.dequeue(
+            correlationUid, ResponseMessage.class, ComponentType.WS_MICROGRIDS);
+    final ResponseMessage response = (ResponseMessage) responseData.getMessageData();
+
+    switch (response.getResult()) {
+      case NOT_FOUND:
+        throw new ResponseNotFoundException(
+            ComponentType.WS_MICROGRIDS, "Response message not found.");
+      case NOT_OK:
+        if (response.getOsgpException() != null) {
+          throw response.getOsgpException();
         }
-
+        throw new TechnicalException(ComponentType.WS_MICROGRIDS, "Response message not ok.");
+      case OK:
+        return new EmptyResponse();
+      default:
+        // Should not get here
+        throw new TechnicalException(
+            ComponentType.WS_MICROGRIDS, "Response message contains invalid result.");
     }
-
-    public String enqueueSetDataRequest(final String organisationIdentification, final String deviceIdentification,
-            final SetDataRequest setDataRequest) throws OsgpException {
-
-        LOGGER.debug("enqueueSetDataRequest called with organisation {} and device {}", organisationIdentification,
-                deviceIdentification);
-
-        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
-
-        final RtuDevice device = this.domainHelperService.findDevice(deviceIdentification);
-        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_DATA);
-
-        final MicrogridsRequestMessage message = new MicrogridsRequestMessage(MessageType.SET_DATA, correlationUid,
-                organisationIdentification, deviceIdentification, setDataRequest);
-
-        try {
-            this.requestMessageSender.send(message);
-        } catch (final ArgumentNullOrEmptyException e) {
-            throw new TechnicalException(ComponentType.WS_MICROGRIDS, e);
-        }
-
-        return correlationUid;
-    }
-
-    public EmptyResponse dequeueSetDataResponse(final String correlationUid) throws OsgpException {
-
-        LOGGER.debug("dequeueSetDataRequest called with correlation uid {}", correlationUid);
-
-        final ResponseData responseData = this.responseDataService.dequeue(correlationUid, ResponseMessage.class,
-                ComponentType.WS_MICROGRIDS);
-        final ResponseMessage response = (ResponseMessage) responseData.getMessageData();
-
-        switch (response.getResult()) {
-        case NOT_FOUND:
-            throw new ResponseNotFoundException(ComponentType.WS_MICROGRIDS, "Response message not found.");
-        case NOT_OK:
-            if (response.getOsgpException() != null) {
-                throw response.getOsgpException();
-            }
-            throw new TechnicalException(ComponentType.WS_MICROGRIDS, "Response message not ok.");
-        case OK:
-            return new EmptyResponse();
-        default:
-            // Should not get here
-            throw new TechnicalException(ComponentType.WS_MICROGRIDS, "Response message contains invalid result.");
-        }
-
-    }
+  }
 }

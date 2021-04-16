@@ -1,66 +1,75 @@
+/*
+ * Copyright 2021 Alliander N.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.shared.application.config.messaging;
 
 public interface JmsConfiguration {
 
-    String getBrokerUrl();
+  String getBrokerUrl();
 
-    int getConnectionPoolSize();
+  int getConnectionPoolSize();
 
-    int getConnectionPoolMaxActiveSessions();
+  int getConnectionPoolMaxActiveSessions();
 
-    int getMaxThreadPoolSize();
+  int getMaxThreadPoolSize();
 
-    boolean isConnectionPoolBlockIfSessionPoolIsFull();
+  boolean isConnectionPoolBlockIfSessionPoolIsFull();
 
-    long getConnectionPoolBlockIfSessionPoolIsFullTimeout();
+  long getConnectionPoolBlockIfSessionPoolIsFullTimeout();
 
-    long getConnectionPoolExpiryTimeout();
+  long getConnectionPoolExpiryTimeout();
 
-    long getConnectionPoolTimeBetweenExpirationCheckMillis();
+  long getConnectionPoolTimeBetweenExpirationCheckMillis();
 
-    int getConnectionPoolIdleTimeout();
+  int getConnectionPoolIdleTimeout();
 
-    int getConnectionQueuePrefetch();
+  int getConnectionQueuePrefetch();
 
-    int getConnectionSendTimeout();
+  int getConnectionSendTimeout();
 
-    boolean isTrustAllPackages();
+  boolean isTrustAllPackages();
 
-    String getTrustedPackages();
+  String getTrustedPackages();
 
-    String getBrokerClientKeyStore();
+  String getBrokerClientKeyStore();
 
-    String getBrokerClientKeyStorePwd();
+  String getBrokerClientKeyStorePwd();
 
-    String getBrokerClientTrustStore();
+  String getBrokerClientTrustStore();
 
-    String getBrokerClientTrustStorePwd();
+  String getBrokerClientTrustStorePwd();
 
-    String getBrokerUsername();
+  String getBrokerUsername();
 
-    String getBrokerPassword();
+  String getBrokerPassword();
 
-    int getMaxConcurrentConsumers();
+  int getMaxConcurrentConsumers();
 
-    int getConcurrentConsumers();
+  int getConcurrentConsumers();
 
-    boolean isUseExponentialBackOff();
+  boolean isUseExponentialBackOff();
 
-    double getBackOffMultiplier();
+  double getBackOffMultiplier();
 
-    long getMaximumRedeliveryDelay();
+  long getMaximumRedeliveryDelay();
 
-    long getInitialRedeliveryDelay();
+  long getInitialRedeliveryDelay();
 
-    int getMaximumRedeliveries();
+  int getMaximumRedeliveries();
 
-    long getRedeliveryDelay();
+  long getRedeliveryDelay();
 
-    boolean isDeliveryPersistent();
+  boolean isDeliveryPersistent();
 
-    long getTimeToLive();
+  long getTimeToLive();
 
-    boolean isExplicitQosEnabled();
+  boolean isExplicitQosEnabled();
 
-    String getQueue();
+  String getQueue();
 }

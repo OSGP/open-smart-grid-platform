@@ -8,10 +8,9 @@
  */
 package org.opensmartgridplatform.adapter.protocol.mqtt.application.config;
 
+import com.zaxxer.hikari.HikariDataSource;
 import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
-
-import com.zaxxer.hikari.HikariDataSource;
 import org.flywaydb.core.Flyway;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.repositories.MqttDeviceRepository;
 import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
@@ -26,8 +25,9 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-@EnableJpaRepositories(entityManagerFactoryRef = "mqttEntityManagerFactory",
-        basePackageClasses = { MqttDeviceRepository.class })
+@EnableJpaRepositories(
+    entityManagerFactoryRef = "mqttEntityManagerFactory",
+    basePackageClasses = {MqttDeviceRepository.class})
 @Configuration
 @EnableTransactionManagement()
 @PropertySource("classpath:osgp-adapter-protocol-mqtt.properties")
@@ -35,57 +35,62 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @PropertySource(value = "file:${osgp/AdapterProtocolMqtt/config}", ignoreResourceNotFound = true)
 public class MqttPersistenceConfig extends AbstractPersistenceConfig {
 
-    @Value("${db.username.mqtt}")
-    private String username;
+  @Value("${db.username.mqtt}")
+  private String username;
 
-    @Value("${db.password.mqtt}")
-    private String password;
+  @Value("${db.password.mqtt}")
+  private String password;
 
-    @Value("${db.host.mqtt}")
-    private String databaseHost;
+  @Value("${db.host.mqtt}")
+  private String databaseHost;
 
-    @Value("${db.port.mqtt}")
-    private int databasePort;
+  @Value("${db.port.mqtt}")
+  private int databasePort;
 
-    @Value("${db.name.mqtt}")
-    private String databaseName;
+  @Value("${db.name.mqtt}")
+  private String databaseName;
 
-    private HikariDataSource dataSourceMqtt;
+  private HikariDataSource dataSourceMqtt;
 
-    public DataSource getDataSourceMqtt() {
-        if (this.dataSourceMqtt == null) {
-            final DefaultConnectionPoolFactory.Builder builder = super.builder().withUsername(
-                    this.username).withPassword(this.password).withDatabaseHost(this.databaseHost).withDatabasePort(
-                    this.databasePort).withDatabaseName(this.databaseName);
-            final DefaultConnectionPoolFactory factory = builder.build();
-            this.dataSourceMqtt = factory.getDefaultConnectionPool();
-        }
-        return this.dataSourceMqtt;
+  public DataSource getDataSourceMqtt() {
+    if (this.dataSourceMqtt == null) {
+      final DefaultConnectionPoolFactory.Builder builder =
+          super.builder()
+              .withUsername(this.username)
+              .withPassword(this.password)
+              .withDatabaseHost(this.databaseHost)
+              .withDatabasePort(this.databasePort)
+              .withDatabaseName(this.databaseName);
+      final DefaultConnectionPoolFactory factory = builder.build();
+      this.dataSourceMqtt = factory.getDefaultConnectionPool();
     }
+    return this.dataSourceMqtt;
+  }
 
-    @Override
-    @Bean
-    public JpaTransactionManager transactionManager() {
-        return super.transactionManager();
-    }
+  @Override
+  @Bean
+  public JpaTransactionManager transactionManager() {
+    return super.transactionManager();
+  }
 
-    @Bean(initMethod = "migrate")
-    public Flyway mqttFlyway() {
-        return super.createFlyway(this.getDataSourceMqtt());
-    }
+  @Bean(initMethod = "migrate")
+  public Flyway mqttFlyway() {
+    return super.createFlyway(this.getDataSourceMqtt());
+  }
 
-    @Override
-    @Bean(name = "mqttEntityManagerFactory")
-    @DependsOn("mqttFlyway")
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-        return super.entityManagerFactory("OSGP_PROTOCOL_ADAPTER_MQTT_SETTINGS", this.getDataSourceMqtt());
-    }
+  @Override
+  @Bean(name = "mqttEntityManagerFactory")
+  @DependsOn("mqttFlyway")
+  public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+    return super.entityManagerFactory(
+        "OSGP_PROTOCOL_ADAPTER_MQTT_SETTINGS", this.getDataSourceMqtt());
+  }
 
-    @Override
-    @PreDestroy
-    public void destroyDataSource() {
-        if (this.dataSourceMqtt != null) {
-            this.dataSourceMqtt.close();
-        }
+  @Override
+  @PreDestroy
+  public void destroyDataSource() {
+    if (this.dataSourceMqtt != null) {
+      this.dataSourceMqtt.close();
     }
+  }
 }

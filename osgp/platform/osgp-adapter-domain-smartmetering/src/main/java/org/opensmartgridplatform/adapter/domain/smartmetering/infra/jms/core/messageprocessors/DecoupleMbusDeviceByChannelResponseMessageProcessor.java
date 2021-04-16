@@ -1,9 +1,8 @@
-/**
+/*
  * Copyright 2021 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -24,29 +23,39 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DecoupleMbusDeviceByChannelResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+public class DecoupleMbusDeviceByChannelResponseMessageProcessor
+    extends OsgpCoreResponseMessageProcessor {
 
-    private InstallationService installationService;
+  private InstallationService installationService;
 
-    protected DecoupleMbusDeviceByChannelResponseMessageProcessor(
-            final WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap messageProcessorMap,
-            final InstallationService installationService) {
-        super(responseMessageSender, messageProcessorMap, MessageType.DECOUPLE_MBUS_DEVICE_BY_CHANNEL,
-                ComponentType.DOMAIN_SMART_METERING);
-        this.installationService = installationService;
-    }
+  protected DecoupleMbusDeviceByChannelResponseMessageProcessor(
+      final WebServiceResponseMessageSender responseMessageSender,
+      @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
+          final MessageProcessorMap messageProcessorMap,
+      final InstallationService installationService) {
+    super(
+        responseMessageSender,
+        messageProcessorMap,
+        MessageType.DECOUPLE_MBUS_DEVICE_BY_CHANNEL,
+        ComponentType.DOMAIN_SMART_METERING);
+    this.installationService = installationService;
+  }
 
-    @Override
-    protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
-        return responseMessage.getDataObject() instanceof DecoupleMbusDeviceResponseDto;
-    }
+  @Override
+  protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
+    return responseMessage.getDataObject() instanceof DecoupleMbusDeviceResponseDto;
+  }
 
-    @Override
-    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
-            final ResponseMessage responseMessage, final OsgpException osgpException) throws FunctionalException {
-        this.installationService.handleDecoupleMbusDeviceByChannelResponse(deviceMessageMetadata,
-                responseMessage.getResult(), responseMessage.getOsgpException(),
-                (DecoupleMbusDeviceResponseDto) responseMessage.getDataObject());
-    }
+  @Override
+  protected void handleMessage(
+      final DeviceMessageMetadata deviceMessageMetadata,
+      final ResponseMessage responseMessage,
+      final OsgpException osgpException)
+      throws FunctionalException {
+    this.installationService.handleDecoupleMbusDeviceByChannelResponse(
+        deviceMessageMetadata,
+        responseMessage.getResult(),
+        responseMessage.getOsgpException(),
+        (DecoupleMbusDeviceResponseDto) responseMessage.getDataObject());
+  }
 }

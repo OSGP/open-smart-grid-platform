@@ -1,19 +1,18 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.core.infra.jms.protocol.inbound;
 
 import java.util.List;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
-
 import org.opensmartgridplatform.core.domain.model.domain.DomainRequestService;
 import org.opensmartgridplatform.domain.core.entities.DomainInfo;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
@@ -25,79 +24,81 @@ import org.slf4j.LoggerFactory;
 
 public class ProtocolRequestMessageListener implements MessageListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolRequestMessageListener.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(ProtocolRequestMessageListener.class);
 
-    private DomainRequestService domainRequestService;
-    private List<DomainInfo> domainInfos;
-    private MessageProcessorMap protocolRequestMessageProcessorMap;
+  private DomainRequestService domainRequestService;
+  private List<DomainInfo> domainInfos;
+  private MessageProcessorMap protocolRequestMessageProcessorMap;
 
-    public ProtocolRequestMessageListener(final DomainRequestService domainRequestService,
-            final List<DomainInfo> domainInfos, final MessageProcessorMap protocolRequestMessageProcessorMap) {
-        this.domainRequestService = domainRequestService;
-        this.domainInfos = domainInfos;
-        this.protocolRequestMessageProcessorMap = protocolRequestMessageProcessorMap;
+  public ProtocolRequestMessageListener(
+      final DomainRequestService domainRequestService,
+      final List<DomainInfo> domainInfos,
+      final MessageProcessorMap protocolRequestMessageProcessorMap) {
+    this.domainRequestService = domainRequestService;
+    this.domainInfos = domainInfos;
+    this.protocolRequestMessageProcessorMap = protocolRequestMessageProcessorMap;
+  }
+
+  @Override
+  public void onMessage(final Message message) {
+    try {
+      LOGGER.info("Received message of type: {}", message.getJMSType());
+      final ObjectMessage objectMessage = (ObjectMessage) message;
+
+      // Check if message can be processed by generic OSGP-CORE
+      // message processor.
+      try {
+        final MessageProcessor processor =
+            this.protocolRequestMessageProcessorMap.getMessageProcessor(objectMessage);
+
+        processor.processMessage(objectMessage);
+
+      } catch (final JMSException ex) {
+        LOGGER.error("JMSException", ex);
+        // The message needs to be sent to a domain adapter.
+        this.sendMessageToDomainAdapter(
+            (RequestMessage) objectMessage.getObject(), message.getJMSType());
+      }
+
+    } catch (final JMSException e) {
+      LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
+    }
+  }
+
+  /**
+   * Send the RequestMessage to a domain adapter.
+   *
+   * @param requestMessage The RequestMessage to process.
+   * @param messageType The MessageType of the RequestMessage to process.
+   */
+  private void sendMessageToDomainAdapter(
+      final RequestMessage requestMessage, final String messageType) {
+
+    String domain;
+    final String domainVersion;
+    if (DeviceFunction.PUSH_NOTIFICATION_ALARM.name().equals(messageType)) {
+      domain = "SMART_METERING";
+      domainVersion = "1.0";
+    } else {
+      domain = "CORE";
+      domainVersion = "1.0";
+    }
+    DomainInfo domainInfo = null;
+
+    for (final DomainInfo di : this.domainInfos) {
+      if (domain.equals(di.getDomain()) && domainVersion.equals(di.getDomainVersion())) {
+        domainInfo = di;
+      }
     }
 
-    @Override
-    public void onMessage(final Message message) {
-        try {
-            LOGGER.info("Received message of type: {}", message.getJMSType());
-            final ObjectMessage objectMessage = (ObjectMessage) message;
-
-            // Check if message can be processed by generic OSGP-CORE
-            // message processor.
-            try {
-                final MessageProcessor processor = this.protocolRequestMessageProcessorMap
-                        .getMessageProcessor(objectMessage);
-
-                processor.processMessage(objectMessage);
-
-            } catch (final JMSException ex) {
-                LOGGER.error("JMSException", ex);
-                // The message needs to be sent to a domain adapter.
-                this.sendMessageToDomainAdapter((RequestMessage) objectMessage.getObject(), message.getJMSType());
-
-            }
-
-        } catch (final JMSException e) {
-            LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
-        }
+    if (domainInfo == null) {
+      LOGGER.error(
+          "No DomainInfo found, unable to send message of message type: {} to domain adapater. RequestMessage dropped.",
+          messageType);
+    } else {
+      // Send message to domain adapter.
+      this.domainRequestService.send(requestMessage, messageType, domainInfo);
     }
-
-    /**
-     * Send the RequestMessage to a domain adapter.
-     *
-     * @param requestMessage
-     *            The RequestMessage to process.
-     * @param messageType
-     *            The MessageType of the RequestMessage to process.
-     */
-    private void sendMessageToDomainAdapter(final RequestMessage requestMessage, final String messageType) {
-
-        String domain;
-        final String domainVersion;
-        if (DeviceFunction.PUSH_NOTIFICATION_ALARM.name().equals(messageType)) {
-            domain = "SMART_METERING";
-            domainVersion = "1.0";
-        } else {
-            domain = "CORE";
-            domainVersion = "1.0";
-        }
-        DomainInfo domainInfo = null;
-
-        for (final DomainInfo di : this.domainInfos) {
-            if (domain.equals(di.getDomain()) && domainVersion.equals(di.getDomainVersion())) {
-                domainInfo = di;
-            }
-        }
-
-        if (domainInfo == null) {
-            LOGGER.error(
-                    "No DomainInfo found, unable to send message of message type: {} to domain adapater. RequestMessage dropped.",
-                    messageType);
-        } else {
-            // Send message to domain adapter.
-            this.domainRequestService.send(requestMessage, messageType, domainInfo);
-        }
-    }
+  }
 }

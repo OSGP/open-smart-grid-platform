@@ -15,5 +15,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MqttDeviceRepository extends JpaRepository<MqttDevice, Long> {
 
-    MqttDevice findByDeviceIdentification(String deviceIdentification);
+  MqttDevice findByDeviceIdentification(String deviceIdentification);
 }

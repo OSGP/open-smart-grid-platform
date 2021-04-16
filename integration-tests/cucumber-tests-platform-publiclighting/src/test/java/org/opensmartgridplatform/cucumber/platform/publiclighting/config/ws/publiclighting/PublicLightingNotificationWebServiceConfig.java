@@ -1,9 +1,9 @@
-/**
+/*
  * Copyright 2019 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform.publiclighting.config.ws.publiclighting;
 
@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
@@ -36,72 +35,79 @@ import org.springframework.ws.transport.http.WebServiceMessageReceiverHttpHandle
 @Configuration
 public class PublicLightingNotificationWebServiceConfig extends WsConfigurerAdapter {
 
-    private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
+  private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
 
-    @Value("${jaxb2.marshaller.context.path.publiclighting.notification}")
-    private String contextPathMicrogridsNotification;
+  @Value("${jaxb2.marshaller.context.path.publiclighting.notification}")
+  private String contextPathMicrogridsNotification;
 
-    @Value("${web.service.notification.context}")
-    private String notificationContextPath;
+  @Value("${web.service.notification.context}")
+  private String notificationContextPath;
 
-    @Value("${web.service.notification.port}")
-    private int notificationPort;
+  @Value("${web.service.notification.port}")
+  private int notificationPort;
 
-    @Bean
-    public DefaultMethodEndpointAdapter defaultMethodEndpointAdapter() {
-        final DefaultMethodEndpointAdapter defaultMethodEndpointAdapter = new DefaultMethodEndpointAdapter();
+  @Bean
+  public DefaultMethodEndpointAdapter defaultMethodEndpointAdapter() {
+    final DefaultMethodEndpointAdapter defaultMethodEndpointAdapter =
+        new DefaultMethodEndpointAdapter();
 
-        final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<>();
-        methodArgumentResolvers.add(this.publicLightingNotificationMarshallingPayloadMethodProcessor());
-        methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(ORGANISATION_IDENTIFICATION_HEADER,
-                OrganisationIdentification.class));
-        defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
+    final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<>();
+    methodArgumentResolvers.add(this.publicLightingNotificationMarshallingPayloadMethodProcessor());
+    methodArgumentResolvers.add(
+        new AnnotationMethodArgumentResolver(
+            ORGANISATION_IDENTIFICATION_HEADER, OrganisationIdentification.class));
+    defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
 
-        final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<>();
-        methodReturnValueHandlers.add(this.publicLightingNotificationMarshallingPayloadMethodProcessor());
-        defaultMethodEndpointAdapter.setMethodReturnValueHandlers(methodReturnValueHandlers);
+    final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<>();
+    methodReturnValueHandlers.add(
+        this.publicLightingNotificationMarshallingPayloadMethodProcessor());
+    defaultMethodEndpointAdapter.setMethodReturnValueHandlers(methodReturnValueHandlers);
 
-        return defaultMethodEndpointAdapter;
-    }
+    return defaultMethodEndpointAdapter;
+  }
 
-    @Override
-    public void addInterceptors(final List<EndpointInterceptor> interceptors) {
-        interceptors.add(new SoapHeaderEndpointInterceptor(ORGANISATION_IDENTIFICATION_HEADER,
-                ORGANISATION_IDENTIFICATION_HEADER));
-    }
+  @Override
+  public void addInterceptors(final List<EndpointInterceptor> interceptors) {
+    interceptors.add(
+        new SoapHeaderEndpointInterceptor(
+            ORGANISATION_IDENTIFICATION_HEADER, ORGANISATION_IDENTIFICATION_HEADER));
+  }
 
-    @Bean
-    public SimpleHttpServerFactoryBean httpServer(final SaajSoapMessageFactory messageFactory,
-            final DefaultMethodEndpointAdapter defaultMethodEndpointAdapter,
-            final PayloadRootAnnotationMethodEndpointMapping mapping) {
+  @Bean
+  public SimpleHttpServerFactoryBean httpServer(
+      final SaajSoapMessageFactory messageFactory,
+      final DefaultMethodEndpointAdapter defaultMethodEndpointAdapter,
+      final PayloadRootAnnotationMethodEndpointMapping mapping) {
 
-        final SoapMessageDispatcher soapMessageDispatcher = new SoapMessageDispatcher();
-        soapMessageDispatcher.setEndpointMappings(Arrays.asList(mapping));
-        soapMessageDispatcher.setEndpointAdapters(Arrays.asList(defaultMethodEndpointAdapter));
+    final SoapMessageDispatcher soapMessageDispatcher = new SoapMessageDispatcher();
+    soapMessageDispatcher.setEndpointMappings(Arrays.asList(mapping));
+    soapMessageDispatcher.setEndpointAdapters(Arrays.asList(defaultMethodEndpointAdapter));
 
-        final WebServiceMessageReceiverHttpHandler httpHandler = new WebServiceMessageReceiverHttpHandler();
-        httpHandler.setMessageReceiver(soapMessageDispatcher);
-        httpHandler.setMessageFactory(messageFactory);
+    final WebServiceMessageReceiverHttpHandler httpHandler =
+        new WebServiceMessageReceiverHttpHandler();
+    httpHandler.setMessageReceiver(soapMessageDispatcher);
+    httpHandler.setMessageFactory(messageFactory);
 
-        final SimpleHttpServerFactoryBean httpServer = new SimpleHttpServerFactoryBean();
-        httpServer.setContexts(Collections.singletonMap(this.notificationContextPath, httpHandler));
-        httpServer.setPort(this.notificationPort);
+    final SimpleHttpServerFactoryBean httpServer = new SimpleHttpServerFactoryBean();
+    httpServer.setContexts(Collections.singletonMap(this.notificationContextPath, httpHandler));
+    httpServer.setPort(this.notificationPort);
 
-        return httpServer;
-    }
+    return httpServer;
+  }
 
-    @Bean
-    public Jaxb2Marshaller publicLightingNotificationMarshaller() {
-        final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+  @Bean
+  public Jaxb2Marshaller publicLightingNotificationMarshaller() {
+    final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-        marshaller.setContextPath(this.contextPathMicrogridsNotification);
+    marshaller.setContextPath(this.contextPathMicrogridsNotification);
 
-        return marshaller;
-    }
+    return marshaller;
+  }
 
-    @Bean
-    public MarshallingPayloadMethodProcessor publicLightingNotificationMarshallingPayloadMethodProcessor() {
-        return new MarshallingPayloadMethodProcessor(this.publicLightingNotificationMarshaller(),
-                this.publicLightingNotificationMarshaller());
-    }
+  @Bean
+  public MarshallingPayloadMethodProcessor
+      publicLightingNotificationMarshallingPayloadMethodProcessor() {
+    return new MarshallingPayloadMethodProcessor(
+        this.publicLightingNotificationMarshaller(), this.publicLightingNotificationMarshaller());
+  }
 }

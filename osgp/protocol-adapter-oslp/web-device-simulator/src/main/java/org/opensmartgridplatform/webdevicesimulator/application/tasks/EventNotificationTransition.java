@@ -1,75 +1,87 @@
+/*
+ * Copyright 2021 Alliander N.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.webdevicesimulator.application.tasks;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.oslp.Oslp;
 import org.opensmartgridplatform.webdevicesimulator.application.services.DeviceManagementService;
 import org.opensmartgridplatform.webdevicesimulator.domain.entities.DeviceMessageStatus;
 import org.opensmartgridplatform.webdevicesimulator.domain.valueobjects.EventNotificationToBeSent;
 import org.opensmartgridplatform.webdevicesimulator.service.RegisterDevice;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class EventNotificationTransition implements Runnable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EventNotificationTransition.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(EventNotificationTransition.class);
 
-    @Autowired
-    private DeviceManagementService deviceManagementService;
+  @Autowired private DeviceManagementService deviceManagementService;
 
-    @Autowired
-    private RegisterDevice registerDevice;
+  @Autowired private RegisterDevice registerDevice;
 
-    @Override
-    public void run() {
+  @Override
+  public void run() {
 
-        if (this.deviceManagementService.getEventNotification()) {
-            // The original list with listofeventtobesent
-            final List<EventNotificationToBeSent> listeventNotificationToBeSent = this.deviceManagementService
-                    .getEventNotificationToBeSent();
+    if (Boolean.TRUE.equals(this.deviceManagementService.getEventNotification())) {
+      // The original list with listofeventtobesent
+      final List<EventNotificationToBeSent> listeventNotificationToBeSent =
+          this.deviceManagementService.getEventNotificationToBeSent();
 
-            // The local list of events
-            final List<EventNotificationToBeSent> listOfEvents = new ArrayList<>();
+      // The local list of events
+      final List<EventNotificationToBeSent> listOfEvents = new ArrayList<>();
 
-            // add content of the original list into the local list of events
-            listOfEvents.addAll(listeventNotificationToBeSent);
+      // add content of the original list into the local list of events
+      listOfEvents.addAll(listeventNotificationToBeSent);
 
-            // run through the list of events and send each
-            for (final EventNotificationToBeSent event : listOfEvents) {
+      // run through the list of events and send each
+      for (final EventNotificationToBeSent event : listOfEvents) {
 
-                DeviceMessageStatus status;
+        DeviceMessageStatus status;
 
-                if (event.getLightOn()) {
-                    // Send EventNotifications for Light Transition ON
-                    LOGGER.info("Sending LIGHT_EVENTS_LIGHT_ON_VALUE event for device: {}", event.getdeviceId());
-                    status = this.registerDevice.sendEventNotificationCommand(event.getdeviceId(),
-                            Oslp.Event.LIGHT_EVENTS_LIGHT_ON_VALUE,
-                            "LIGHT_EVENTS_LIGHT_ON_VALUE event occurred on Light Switching on ", null);
+        if (Boolean.TRUE.equals(event.getLightOn())) {
+          // Send EventNotifications for Light Transition ON
+          LOGGER.info(
+              "Sending LIGHT_EVENTS_LIGHT_ON_VALUE event for device: {}", event.getdeviceId());
+          status =
+              this.registerDevice.sendEventNotificationCommand(
+                  event.getdeviceId(),
+                  Oslp.Event.LIGHT_EVENTS_LIGHT_ON_VALUE,
+                  "LIGHT_EVENTS_LIGHT_ON_VALUE event occurred on Light Switching on ",
+                  null);
 
-                } else {
-                    // Send EventNotifications for Light Transition OFF
-                    LOGGER.info("Sending LIGHT_EVENTS_LIGHT_OFF_VALUE event for device: {}", event.getdeviceId());
-                    status = this.registerDevice.sendEventNotificationCommand(event.getdeviceId(),
-                            Oslp.Event.LIGHT_EVENTS_LIGHT_OFF_VALUE,
-                            "LIGHT_EVENTS_LIGHT_OFF_VALUE event occurred on light Switching off ", null);
-                }
-
-                // when the event notification is sent successfully. Remove the
-                // event from original list. If there are multiple event for a
-                // same
-                // device then this doesnt work.
-                if (status == DeviceMessageStatus.OK) {
-                    listeventNotificationToBeSent.remove(event);
-                }
-
-            }
-            // The local list of events
-            listOfEvents.clear();
+        } else {
+          // Send EventNotifications for Light Transition OFF
+          LOGGER.info(
+              "Sending LIGHT_EVENTS_LIGHT_OFF_VALUE event for device: {}", event.getdeviceId());
+          status =
+              this.registerDevice.sendEventNotificationCommand(
+                  event.getdeviceId(),
+                  Oslp.Event.LIGHT_EVENTS_LIGHT_OFF_VALUE,
+                  "LIGHT_EVENTS_LIGHT_OFF_VALUE event occurred on light Switching off ",
+                  null);
         }
+
+        // when the event notification is sent successfully. Remove the
+        // event from original list. If there are multiple event for a
+        // same
+        // device then this doesnt work.
+        if (status == DeviceMessageStatus.OK) {
+          listeventNotificationToBeSent.remove(event);
+        }
+      }
+      // The local list of events
+      listOfEvents.clear();
     }
+  }
 }

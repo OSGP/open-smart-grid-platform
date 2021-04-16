@@ -1,11 +1,11 @@
-/**
+/*
  * Copyright 2020 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
-
 package org.opensmartgridplatform.core.application.services;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -33,37 +33,32 @@ import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 @ExtendWith(MockitoExtension.class)
 public class EventNotificationMessageServiceTest {
 
-    @Mock
-    private CorrelationIdProviderTimestampService correlationIdProviderTimestampService;
+  @Mock private CorrelationIdProviderTimestampService correlationIdProviderTimestampService;
 
-    @Mock
-    private DomainRequestService domainRequestService;
+  @Mock private DomainRequestService domainRequestService;
 
-    @Mock
-    private EventNotificationHelperService eventNotificationHelperService;
+  @Mock private EventNotificationHelperService eventNotificationHelperService;
 
-    @InjectMocks
-    private EventNotificationMessageService eventNotificationMessageService;
+  @InjectMocks private EventNotificationMessageService eventNotificationMessageService;
 
-    @Test
-    void sendsLightSensorReportsLightEventToDomainTest() throws UnknownEntityException {
-        final String deviceUid = "testUid";
-        final String deviceIdentification = "testIdentification";
-        final DateTime dateTime = DateTime.now();
-        final EventTypeDto eventTypeDto = EventTypeDto.LIGHT_SENSOR_REPORTS_LIGHT;
-        final String description = "Sensor reports light";
-        final Integer index = 0;
-        final EventNotificationDto eventNotificationDto = new EventNotificationDto(deviceUid, dateTime, eventTypeDto,
-                description, index);
+  @Test
+  void sendsLightSensorReportsLightEventToDomainTest() throws UnknownEntityException {
+    final String deviceUid = "testUid";
+    final String deviceIdentification = "testIdentification";
+    final DateTime dateTime = DateTime.now();
+    final EventTypeDto eventTypeDto = EventTypeDto.LIGHT_SENSOR_REPORTS_LIGHT;
+    final String description = "Sensor reports light";
+    final Integer index = 0;
+    final EventNotificationDto eventNotificationDto =
+        new EventNotificationDto(deviceUid, dateTime, eventTypeDto, description, index);
 
-        this.eventNotificationMessageService.handleEvent(deviceIdentification, eventNotificationDto);
+    this.eventNotificationMessageService.handleEvent(deviceIdentification, eventNotificationDto);
 
-        final ArgumentMatcher<RequestMessage> matchesEventType = (
-                final RequestMessage message) -> ((Event) message.getRequest())
-                        .getEventType() == EventType.LIGHT_SENSOR_REPORTS_LIGHT;
+    final ArgumentMatcher<RequestMessage> matchesEventType =
+        (final RequestMessage message) ->
+            ((Event) message.getRequest()).getEventType() == EventType.LIGHT_SENSOR_REPORTS_LIGHT;
 
-        verify(this.domainRequestService).send(argThat(matchesEventType), eq(MessageType.EVENT_NOTIFICATION.name()),
-                any());
-
-    }
+    verify(this.domainRequestService)
+        .send(argThat(matchesEventType), eq(MessageType.EVENT_NOTIFICATION.name()), any());
+  }
 }

@@ -1,8 +1,8 @@
-/**
+/*
  * Copyright 2018 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -11,7 +11,6 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.mappi
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.MappingContext;
@@ -28,78 +27,89 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryValueDto;
 
 public class GetPowerQualityProfileDtoConverter
-        extends CustomConverter<GetPowerQualityProfileResponseDto, GetPowerQualityProfileResponse> {
+    extends CustomConverter<GetPowerQualityProfileResponseDto, GetPowerQualityProfileResponse> {
 
-    private final MapperFactory mapperFactory;
+  private final MapperFactory mapperFactory;
 
-    public GetPowerQualityProfileDtoConverter(final MapperFactory mapperFactory) {
-        this.mapperFactory = mapperFactory;
+  public GetPowerQualityProfileDtoConverter(final MapperFactory mapperFactory) {
+    this.mapperFactory = mapperFactory;
+  }
+
+  @Override
+  public GetPowerQualityProfileResponse convert(
+      final GetPowerQualityProfileResponseDto source,
+      final Type<? extends GetPowerQualityProfileResponse> destinationType,
+      final MappingContext mappingContext) {
+
+    final GetPowerQualityProfileResponse response = new GetPowerQualityProfileResponse();
+
+    final List<PowerQualityProfileData> powerQualityProfileDatas = new ArrayList<>();
+
+    for (final PowerQualityProfileDataDto responseDataDto :
+        source.getPowerQualityProfileResponseDatas()) {
+
+      final ObisCodeValues obisCodeValues =
+          this.mapperFactory
+              .getMapperFacade()
+              .map(responseDataDto.getLogicalName(), ObisCodeValues.class);
+
+      final List<CaptureObject> captureObjects =
+          new ArrayList<>(
+              this.mapperFacade.mapAsList(
+                  responseDataDto.getCaptureObjects(), CaptureObject.class));
+
+      final List<ProfileEntry> profileEntries = this.makeProfileEntries(responseDataDto);
+
+      powerQualityProfileDatas.add(
+          new PowerQualityProfileData(obisCodeValues, captureObjects, profileEntries));
     }
 
-    @Override
-    public GetPowerQualityProfileResponse convert(GetPowerQualityProfileResponseDto source,
-            Type<? extends GetPowerQualityProfileResponse> destinationType, MappingContext mappingContext) {
+    response.setPowerQualityProfileDatas(powerQualityProfileDatas);
 
-        GetPowerQualityProfileResponse response = new GetPowerQualityProfileResponse();
+    return response;
+  }
 
-        List<PowerQualityProfileData> powerQualityProfileDatas = new ArrayList<>();
+  @Override
+  public boolean equals(final Object other) {
+    if (!(other instanceof GetPowerQualityProfileDtoConverter)) {
+      return false;
+    }
+    if (!super.equals(other)) {
+      return false;
+    }
+    final GetPowerQualityProfileDtoConverter o = (GetPowerQualityProfileDtoConverter) other;
+    if (this.mapperFactory.getMapperFacade() == null) {
+      return o.mapperFactory.getMapperFacade() == null;
+    }
+    return this.mapperFactory
+        .getMapperFacade()
+        .getClass()
+        .equals(o.mapperFactory.getMapperFacade().getClass());
+  }
 
-        for (PowerQualityProfileDataDto responseDataDto : source.getPowerQualityProfileResponseDatas()) {
+  @Override
+  public int hashCode() {
+    return super.hashCode() + Objects.hashCode(this.mapperFactory.getMapperFacade());
+  }
 
-            ObisCodeValues obisCodeValues = this.mapperFactory.getMapperFacade().map(responseDataDto.getLogicalName(),
-                    ObisCodeValues.class);
+  private List<ProfileEntry> makeProfileEntries(final PowerQualityProfileDataDto responseDataDto) {
 
-            List<CaptureObject> captureObjects = new ArrayList<>(
-                    this.mapperFacade.mapAsList(responseDataDto.getCaptureObjects(), CaptureObject.class));
+    final List<ProfileEntry> profileEntries = new ArrayList<>();
 
-            List<ProfileEntry> profileEntries = makeProfileEntries(responseDataDto);
+    for (final ProfileEntryDto profileEntryDto : responseDataDto.getProfileEntries()) {
 
-            powerQualityProfileDatas.add(new PowerQualityProfileData(obisCodeValues, captureObjects, profileEntries));
+      final List<ProfileEntryValue> profileEntryValues = new ArrayList<>();
 
-        }
+      for (final ProfileEntryValueDto profileEntryValueDto :
+          profileEntryDto.getProfileEntryValues()) {
 
-        response.setPowerQualityProfileDatas(powerQualityProfileDatas);
-
-        return response;
+        final ProfileEntryValue profileEntryValue =
+            this.mapperFactory.getMapperFacade().map(profileEntryValueDto, ProfileEntryValue.class);
+        profileEntryValues.add(profileEntryValue);
+      }
+      profileEntries.add(new ProfileEntry(profileEntryValues));
     }
 
-    @Override
-    public boolean equals(final Object other) {
-        if (!(other instanceof GetPowerQualityProfileDtoConverter)) {
-            return false;
-        }
-        if (!super.equals(other)) {
-            return false;
-        }
-        final GetPowerQualityProfileDtoConverter o = (GetPowerQualityProfileDtoConverter) other;
-        if (this.mapperFactory.getMapperFacade() == null) {
-            return o.mapperFactory.getMapperFacade() == null;
-        }
-        return this.mapperFactory.getMapperFacade().getClass().equals(o.mapperFactory.getMapperFacade().getClass());
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode() + Objects.hashCode(this.mapperFactory.getMapperFacade());
-    }
-
-    private List<ProfileEntry> makeProfileEntries(PowerQualityProfileDataDto responseDataDto) {
-
-        List<ProfileEntry> profileEntries = new ArrayList<>();
-
-        for (ProfileEntryDto profileEntryDto : responseDataDto.getProfileEntries()) {
-
-            List<ProfileEntryValue> profileEntryValues = new ArrayList<>();
-
-            for (ProfileEntryValueDto profileEntryValueDto : profileEntryDto.getProfileEntryValues()) {
-
-                ProfileEntryValue profileEntryValue = this.mapperFactory.getMapperFacade().map(profileEntryValueDto,
-                        ProfileEntryValue.class);
-                profileEntryValues.add(profileEntryValue);
-            }
-            profileEntries.add(new ProfileEntry(profileEntryValues));
-        }
-
-        return profileEntries;
-    }
+    return profileEntries;
+  }
 }

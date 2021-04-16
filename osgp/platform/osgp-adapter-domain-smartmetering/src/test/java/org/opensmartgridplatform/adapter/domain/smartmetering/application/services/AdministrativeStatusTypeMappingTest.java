@@ -1,11 +1,11 @@
-/**
+/*
  * Copyright 2014-2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
-
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,69 +17,68 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdministrativeSt
 
 public class AdministrativeStatusTypeMappingTest {
 
-    private final ConfigurationMapper configurationMapper = new ConfigurationMapper();
+  private final ConfigurationMapper configurationMapper = new ConfigurationMapper();
 
-    // To see if mapping succeeds when a value is set to undefined.
-    @Test
-    public void testForValueUndefined() {
+  // To see if mapping succeeds when a value is set to undefined.
+  @Test
+  public void testForValueUndefined() {
 
-        // build test data
-        final AdministrativeStatusType administrativeStatusType = AdministrativeStatusType.UNDEFINED;
+    // build test data
+    final AdministrativeStatusType administrativeStatusType = AdministrativeStatusType.UNDEFINED;
 
-        // actual mapping
-        final AdministrativeStatusTypeDto administrativeStatusTypeDto = this.configurationMapper
-                .map(administrativeStatusType, AdministrativeStatusTypeDto.class);
+    // actual mapping
+    final AdministrativeStatusTypeDto administrativeStatusTypeDto =
+        this.configurationMapper.map(administrativeStatusType, AdministrativeStatusTypeDto.class);
 
-        // check if value is mapped correctly
-        assertThat(administrativeStatusTypeDto).isNotNull();
-        assertThat(administrativeStatusTypeDto.name()).isEqualTo(administrativeStatusType.name());
-    }
+    // check if value is mapped correctly
+    assertThat(administrativeStatusTypeDto).isNotNull();
+    assertThat(administrativeStatusTypeDto.name()).isEqualTo(administrativeStatusType.name());
+  }
 
-    // To see if mapping succeeds when a value is set to On.
-    @Test
-    public void testForValueOn() {
+  // To see if mapping succeeds when a value is set to On.
+  @Test
+  public void testForValueOn() {
 
-        // build test data
-        final AdministrativeStatusType administrativeStatusType = AdministrativeStatusType.ON;
+    // build test data
+    final AdministrativeStatusType administrativeStatusType = AdministrativeStatusType.ON;
 
-        // actual mapping
-        final AdministrativeStatusTypeDto administrativeStatusTypeDto = this.configurationMapper
-                .map(administrativeStatusType, AdministrativeStatusTypeDto.class);
+    // actual mapping
+    final AdministrativeStatusTypeDto administrativeStatusTypeDto =
+        this.configurationMapper.map(administrativeStatusType, AdministrativeStatusTypeDto.class);
 
-        // check if value is mapped correctly
-        assertThat(administrativeStatusTypeDto).isNotNull();
-        assertThat(administrativeStatusTypeDto.name()).isEqualTo(administrativeStatusType.name());
-    }
+    // check if value is mapped correctly
+    assertThat(administrativeStatusTypeDto).isNotNull();
+    assertThat(administrativeStatusTypeDto.name()).isEqualTo(administrativeStatusType.name());
+  }
 
-    // To see if mapping succeeds when a value is set to Off.
-    @Test
-    public void testForValueOff() {
+  // To see if mapping succeeds when a value is set to Off.
+  @Test
+  public void testForValueOff() {
 
-        // build test data
-        final AdministrativeStatusType administrativeStatusType = AdministrativeStatusType.OFF;
+    // build test data
+    final AdministrativeStatusType administrativeStatusType = AdministrativeStatusType.OFF;
 
-        // actual mapping
-        final AdministrativeStatusTypeDto administrativeStatusTypeDto = this.configurationMapper
-                .map(administrativeStatusType, AdministrativeStatusTypeDto.class);
+    // actual mapping
+    final AdministrativeStatusTypeDto administrativeStatusTypeDto =
+        this.configurationMapper.map(administrativeStatusType, AdministrativeStatusTypeDto.class);
 
-        // check if value is mapped correctly
-        assertThat(administrativeStatusTypeDto).isNotNull();
-        assertThat(administrativeStatusTypeDto.name()).isEqualTo(administrativeStatusType.name());
-    }
+    // check if value is mapped correctly
+    assertThat(administrativeStatusTypeDto).isNotNull();
+    assertThat(administrativeStatusTypeDto.name()).isEqualTo(administrativeStatusType.name());
+  }
 
-    // check if mapping succeeds if the object is null.
-    @Test
-    public void testNull() {
+  // check if mapping succeeds if the object is null.
+  @Test
+  public void testNull() {
 
-        // build test data
-        final AdministrativeStatusType administrativeStatusType = null;
+    // build test data
+    final AdministrativeStatusType administrativeStatusType = null;
 
-        // actual mapping
-        final AdministrativeStatusTypeDto administrativeStatusTypeDto = this.configurationMapper
-                .map(administrativeStatusType, AdministrativeStatusTypeDto.class);
+    // actual mapping
+    final AdministrativeStatusTypeDto administrativeStatusTypeDto =
+        this.configurationMapper.map(administrativeStatusType, AdministrativeStatusTypeDto.class);
 
-        // check if value is mapped correctly
-        assertThat(administrativeStatusTypeDto).isNull();
-    }
-
+    // check if value is mapped correctly
+    assertThat(administrativeStatusTypeDto).isNull();
+  }
 }

@@ -17,49 +17,54 @@ import org.slf4j.LoggerFactory;
 
 public class SimulatorSpecPublishingClient extends Client {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SimulatorSpecPublishingClient.class);
+  private static final Logger LOG = LoggerFactory.getLogger(SimulatorSpecPublishingClient.class);
 
-    private final SimulatorSpec simulatorSpec;
-    private int i = 0;
+  private final SimulatorSpec simulatorSpec;
+  private int i = 0;
 
-    public SimulatorSpecPublishingClient(final SimulatorSpec simulatorSpec) {
-        super(simulatorSpec.getBrokerHost(), simulatorSpec.getBrokerPort());
-        this.simulatorSpec = simulatorSpec;
+  public SimulatorSpecPublishingClient(final SimulatorSpec simulatorSpec) {
+    super(simulatorSpec.getBrokerHost(), simulatorSpec.getBrokerPort());
+    this.simulatorSpec = simulatorSpec;
+  }
+
+  @Override
+  void onConnect(final Mqtt3BlockingClient client) {
+    if (this.hasMessages()) {
+      while (this.isRunning()) {
+        final Message message = this.getNextMessage();
+        this.publish(client, message);
+        this.pause(message.getPauseMillis());
+      }
     }
+  }
 
-    @Override
-    void onConnect(final Mqtt3BlockingClient client) {
-        if (this.hasMessages()) {
-            while (this.isRunning()) {
-                final Message message = this.getNextMessage();
-                this.publish(client, message);
-                this.pause(message.getPauseMillis());
-            }
-        }
+  private Message getNextMessage() {
+    final Message[] messages = this.simulatorSpec.getMessages();
+    if (this.i >= messages.length) {
+      this.i = 0;
     }
+    return messages[this.i++];
+  }
 
-    private Message getNextMessage() {
-        final Message[] messages = this.simulatorSpec.getMessages();
-        if (this.i >= messages.length) {
-            this.i = 0;
-        }
-        return messages[this.i++];
-    }
+  private boolean hasMessages() {
+    return this.simulatorSpec.getMessages() != null && this.simulatorSpec.getMessages().length > 0;
+  }
 
-    private boolean hasMessages() {
-        return this.simulatorSpec.getMessages() != null && this.simulatorSpec.getMessages().length > 0;
+  private void pause(final long millis) {
+    try {
+      Thread.sleep(millis);
+    } catch (final InterruptedException e) {
+      LOG.warn("Interrupted sleep", e);
+      Thread.currentThread().interrupt();
     }
+  }
 
-    private void pause(final long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (final InterruptedException e) {
-            LOG.warn("Interrupted sleep", e);
-        }
-    }
-
-    public void publish(final Mqtt3BlockingClient client, final Message message) {
-        client.publishWith().topic(message.getTopic()).qos(MqttQos.AT_LEAST_ONCE).payload(
-                message.getPayload().getBytes()).send();
-    }
+  public void publish(final Mqtt3BlockingClient client, final Message message) {
+    client
+        .publishWith()
+        .topic(message.getTopic())
+        .qos(MqttQos.AT_LEAST_ONCE)
+        .payload(message.getPayload().getBytes())
+        .send();
+  }
 }

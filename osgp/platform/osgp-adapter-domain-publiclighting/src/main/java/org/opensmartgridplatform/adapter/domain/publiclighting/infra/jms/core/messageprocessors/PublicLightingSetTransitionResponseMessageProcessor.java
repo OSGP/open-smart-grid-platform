@@ -1,15 +1,15 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.core.messageprocessors;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
-
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.AdHocManagementService;
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.DefaultDeviceResponseService;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -29,90 +29,94 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-/**
- * Class for processing public lighting set transition response messages
- */
+/** Class for processing public lighting set transition response messages */
 @Component("domainPublicLightingSetTransitionResponseMessageProcessor")
 public class PublicLightingSetTransitionResponseMessageProcessor extends BaseMessageProcessor {
-    /**
-     * Logger for this class
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(PublicLightingSetTransitionResponseMessageProcessor.class);
+  /** Logger for this class */
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(PublicLightingSetTransitionResponseMessageProcessor.class);
 
-    @Autowired
-    @Qualifier("domainPublicLightingAdHocManagementService")
-    private AdHocManagementService adHocManagementService;
+  @Autowired
+  @Qualifier("domainPublicLightingAdHocManagementService")
+  private AdHocManagementService adHocManagementService;
 
-    @Autowired
-    @Qualifier("domainPublicLightingDefaultDeviceResponseService")
-    private DefaultDeviceResponseService defaultDeviceResponseService;
+  @Autowired
+  @Qualifier("domainPublicLightingDefaultDeviceResponseService")
+  private DefaultDeviceResponseService defaultDeviceResponseService;
 
-    @Autowired
-    private Boolean isSetTransitionResponseLoggingEnabled;
+  @Autowired private Boolean isSetTransitionResponseLoggingEnabled;
 
-    @Autowired
-    protected PublicLightingSetTransitionResponseMessageProcessor(
-            final ResponseMessageSender webServiceResponseMessageSender,
-            @Qualifier("domainPublicLightingInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap osgpCoreResponseMessageProcessorMap) {
-        super(webServiceResponseMessageSender, osgpCoreResponseMessageProcessorMap, MessageType.SET_TRANSITION,
-                ComponentType.DOMAIN_PUBLIC_LIGHTING);
+  @Autowired
+  protected PublicLightingSetTransitionResponseMessageProcessor(
+      final ResponseMessageSender webServiceResponseMessageSender,
+      @Qualifier("domainPublicLightingInboundOsgpCoreResponsesMessageProcessorMap")
+          final MessageProcessorMap osgpCoreResponseMessageProcessorMap) {
+    super(
+        webServiceResponseMessageSender,
+        osgpCoreResponseMessageProcessorMap,
+        MessageType.SET_TRANSITION,
+        ComponentType.DOMAIN_PUBLIC_LIGHTING);
+  }
+
+  @Override
+  public void processMessage(final ObjectMessage message) throws JMSException {
+    LOGGER.debug("Processing public lighting set transition response message");
+
+    String correlationUid = null;
+    String messageType = null;
+    int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
+    String organisationIdentification = null;
+    String deviceIdentification = null;
+
+    ResponseMessage responseMessage;
+    ResponseMessageResultType responseMessageResultType = null;
+    OsgpException osgpException = null;
+
+    try {
+      correlationUid = message.getJMSCorrelationID();
+      messageType = message.getJMSType();
+      messagePriority = message.getJMSPriority();
+      organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
+      deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
+
+      responseMessage = (ResponseMessage) message.getObject();
+      responseMessageResultType = responseMessage.getResult();
+      osgpException = responseMessage.getOsgpException();
+    } catch (final JMSException e) {
+      LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
+      LOGGER.debug("correlationUid: {}", correlationUid);
+      LOGGER.debug("messageType: {}", messageType);
+      LOGGER.debug("messagePriority: {}", messagePriority);
+      LOGGER.debug("organisationIdentification: {}", organisationIdentification);
+      LOGGER.debug("deviceIdentification: {}", deviceIdentification);
+      LOGGER.debug("responseMessageResultType: {}", responseMessageResultType);
+      LOGGER.debug("deviceIdentification: {}", deviceIdentification);
+      LOGGER.debug("osgpException", osgpException);
+      return;
     }
 
-    @Override
-    public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing public lighting set transition response message");
+    try {
+      LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-        String correlationUid = null;
-        String messageType = null;
-        int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
-        String organisationIdentification = null;
-        String deviceIdentification = null;
-
-        ResponseMessage responseMessage;
-        ResponseMessageResultType responseMessageResultType = null;
-        OsgpException osgpException = null;
-
-        try {
-            correlationUid = message.getJMSCorrelationID();
-            messageType = message.getJMSType();
-            messagePriority = message.getJMSPriority();
-            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-
-            responseMessage = (ResponseMessage) message.getObject();
-            responseMessageResultType = responseMessage.getResult();
-            osgpException = responseMessage.getOsgpException();
-        } catch (final JMSException e) {
-            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            LOGGER.debug("correlationUid: {}", correlationUid);
-            LOGGER.debug("messageType: {}", messageType);
-            LOGGER.debug("messagePriority: {}", messagePriority);
-            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("responseMessageResultType: {}", responseMessageResultType);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("osgpException", osgpException);
-            return;
-        }
-
-        try {
-            LOGGER.info("Calling application service function to handle response: {}", messageType);
-
-            if (this.isSetTransitionResponseLoggingEnabled) {
-                final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
-                        correlationUid);
-                this.adHocManagementService.handleSetTransitionResponse(ids, messageType, messagePriority,
-                        responseMessageResultType, osgpException);
-            } else {
-                final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
-                        correlationUid);
-                this.defaultDeviceResponseService.handleDefaultDeviceResponse(ids, messageType, messagePriority,
-                        responseMessageResultType, osgpException);
-            }
-        } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,
-                    messagePriority);
-        }
+      if (this.isSetTransitionResponseLoggingEnabled) {
+        final CorrelationIds ids =
+            new CorrelationIds(organisationIdentification, deviceIdentification, correlationUid);
+        this.adHocManagementService.handleSetTransitionResponse(
+            ids, messageType, messagePriority, responseMessageResultType, osgpException);
+      } else {
+        final CorrelationIds ids =
+            new CorrelationIds(organisationIdentification, deviceIdentification, correlationUid);
+        this.defaultDeviceResponseService.handleDefaultDeviceResponse(
+            ids, messageType, messagePriority, responseMessageResultType, osgpException);
+      }
+    } catch (final Exception e) {
+      this.handleError(
+          e,
+          correlationUid,
+          organisationIdentification,
+          deviceIdentification,
+          messageType,
+          messagePriority);
     }
+  }
 }

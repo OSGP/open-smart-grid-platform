@@ -1,17 +1,16 @@
-/**
+/*
  * Copyright 2014-2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.processors;
 
 import java.io.IOException;
-
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
-
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceResponseHandler;
@@ -27,86 +26,102 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-/**
- * Class for processing common get configuration request messages
- */
+/** Class for processing common get configuration request messages */
 @Component("oslpCommonSwitchConfigurationRequestMessageProcessor")
 public class CommonSwitchConfigurationRequestMessageProcessor extends DeviceRequestMessageProcessor
-        implements OslpEnvelopeProcessor {
-    /**
-     * Logger for this class
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(CommonSwitchConfigurationRequestMessageProcessor.class);
+    implements OslpEnvelopeProcessor {
+  /** Logger for this class */
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(CommonSwitchConfigurationRequestMessageProcessor.class);
 
-    public CommonSwitchConfigurationRequestMessageProcessor() {
-        super(MessageType.SWITCH_CONFIGURATION_BANK);
+  public CommonSwitchConfigurationRequestMessageProcessor() {
+    super(MessageType.SWITCH_CONFIGURATION_BANK);
+  }
+
+  @Override
+  public void processMessage(final ObjectMessage message) {
+    LOGGER.debug("Processing common get configuration message");
+
+    MessageMetadata messageMetadata;
+    String configurationBank;
+    try {
+      messageMetadata = MessageMetadata.fromMessage(message);
+      configurationBank = (String) message.getObject();
+    } catch (final JMSException e) {
+      LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
+      return;
     }
 
-    @Override
-    public void processMessage(final ObjectMessage message) {
-        LOGGER.debug("Processing common get configuration message");
+    this.printDomainInfo(
+        messageMetadata.getMessageType(),
+        messageMetadata.getDomain(),
+        messageMetadata.getDomainVersion());
 
-        MessageMetadata messageMetadata;
-        String configurationBank;
-        try {
-            messageMetadata = MessageMetadata.fromMessage(message);
-            configurationBank = (String) message.getObject();
-        } catch (final JMSException e) {
-            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            return;
-        }
+    final SwitchConfigurationBankRequest deviceRequest =
+        new SwitchConfigurationBankRequest(
+            DeviceRequest.newBuilder().messageMetaData(messageMetadata), configurationBank);
 
-        this.printDomainInfo(messageMetadata.getMessageType(), messageMetadata.getDomain(),
-                messageMetadata.getDomainVersion());
+    this.deviceService.switchConfiguration(deviceRequest);
+  }
 
-        final SwitchConfigurationBankRequest deviceRequest = new SwitchConfigurationBankRequest(
-                DeviceRequest.newBuilder().messageMetaData(messageMetadata), configurationBank);
+  @Override
+  public void processSignedOslpEnvelope(
+      final String deviceIdentification, final SignedOslpEnvelopeDto signedOslpEnvelopeDto) {
 
-        this.deviceService.switchConfiguration(deviceRequest);
-    }
+    final UnsignedOslpEnvelopeDto unsignedOslpEnvelopeDto =
+        signedOslpEnvelopeDto.getUnsignedOslpEnvelopeDto();
+    final OslpEnvelope oslpEnvelope = signedOslpEnvelopeDto.getOslpEnvelope();
+    final String correlationUid = unsignedOslpEnvelopeDto.getCorrelationUid();
+    final String organisationIdentification =
+        unsignedOslpEnvelopeDto.getOrganisationIdentification();
+    final String domain = unsignedOslpEnvelopeDto.getDomain();
+    final String domainVersion = unsignedOslpEnvelopeDto.getDomainVersion();
+    final String messageType = unsignedOslpEnvelopeDto.getMessageType();
+    final int messagePriority = unsignedOslpEnvelopeDto.getMessagePriority();
+    final String ipAddress = unsignedOslpEnvelopeDto.getIpAddress();
+    final int retryCount = unsignedOslpEnvelopeDto.getRetryCount();
+    final boolean isScheduled = unsignedOslpEnvelopeDto.isScheduled();
 
-    @Override
-    public void processSignedOslpEnvelope(final String deviceIdentification,
-            final SignedOslpEnvelopeDto signedOslpEnvelopeDto) {
+    final DeviceResponseHandler deviceResponseHandler =
+        new DeviceResponseHandler() {
 
-        final UnsignedOslpEnvelopeDto unsignedOslpEnvelopeDto = signedOslpEnvelopeDto.getUnsignedOslpEnvelopeDto();
-        final OslpEnvelope oslpEnvelope = signedOslpEnvelopeDto.getOslpEnvelope();
-        final String correlationUid = unsignedOslpEnvelopeDto.getCorrelationUid();
-        final String organisationIdentification = unsignedOslpEnvelopeDto.getOrganisationIdentification();
-        final String domain = unsignedOslpEnvelopeDto.getDomain();
-        final String domainVersion = unsignedOslpEnvelopeDto.getDomainVersion();
-        final String messageType = unsignedOslpEnvelopeDto.getMessageType();
-        final int messagePriority = unsignedOslpEnvelopeDto.getMessagePriority();
-        final String ipAddress = unsignedOslpEnvelopeDto.getIpAddress();
-        final int retryCount = unsignedOslpEnvelopeDto.getRetryCount();
-        final boolean isScheduled = unsignedOslpEnvelopeDto.isScheduled();
+          @Override
+          public void handleResponse(final DeviceResponse deviceResponse) {
+            CommonSwitchConfigurationRequestMessageProcessor.this.handleEmptyDeviceResponse(
+                deviceResponse,
+                CommonSwitchConfigurationRequestMessageProcessor.this.responseMessageSender,
+                domain,
+                domainVersion,
+                messageType,
+                retryCount);
+          }
 
-        final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
-
-            @Override
-            public void handleResponse(final DeviceResponse deviceResponse) {
-                CommonSwitchConfigurationRequestMessageProcessor.this.handleEmptyDeviceResponse(deviceResponse,
-                        CommonSwitchConfigurationRequestMessageProcessor.this.responseMessageSender, domain,
-                        domainVersion, messageType, retryCount);
-            }
-
-            @Override
-            public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
-                CommonSwitchConfigurationRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
-                        deviceResponse, t, domain, domainVersion, messageType, isScheduled, retryCount);
-            }
-
+          @Override
+          public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
+            CommonSwitchConfigurationRequestMessageProcessor.this
+                .handleUnableToConnectDeviceResponse(
+                    deviceResponse, t, domain, domainVersion, messageType, isScheduled, retryCount);
+          }
         };
 
-        final DeviceRequest deviceRequest = new DeviceRequest(organisationIdentification, deviceIdentification,
-                correlationUid, messagePriority);
+    final DeviceRequest deviceRequest =
+        new DeviceRequest(
+            organisationIdentification, deviceIdentification, correlationUid, messagePriority);
 
-        try {
-            this.deviceService.doSwitchConfiguration(oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress);
-        } catch (final IOException e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain, domainVersion,
-                    messageType, messagePriority, retryCount);
-        }
+    try {
+      this.deviceService.doSwitchConfiguration(
+          oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress);
+    } catch (final IOException e) {
+      this.handleError(
+          e,
+          correlationUid,
+          organisationIdentification,
+          deviceIdentification,
+          domain,
+          domainVersion,
+          messageType,
+          messagePriority,
+          retryCount);
     }
+  }
 }

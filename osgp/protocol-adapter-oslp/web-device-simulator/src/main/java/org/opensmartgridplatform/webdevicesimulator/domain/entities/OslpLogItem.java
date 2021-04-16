@@ -1,88 +1,89 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.webdevicesimulator.domain.entities;
 
+import com.google.protobuf.Message;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
-import com.google.protobuf.Message;
 
 @Entity
 public class OslpLogItem extends AbstractEntity {
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -7937120696814867266L;
+  /** */
+  private static final long serialVersionUID = -7937120696814867266L;
 
-    private static final int MAX_MESSAGE_LENGTH = 8000;
+  private static final int MAX_MESSAGE_LENGTH = 8000;
 
-    private boolean incoming;
+  private boolean incoming;
 
-    private String deviceUid;
+  private String deviceUid;
 
-    @Column(length = MAX_MESSAGE_LENGTH)
-    private String encodedMessage;
+  @Column(length = MAX_MESSAGE_LENGTH)
+  private String encodedMessage;
 
-    @Column(length = MAX_MESSAGE_LENGTH)
-    private String decodedMessage;
+  @Column(length = MAX_MESSAGE_LENGTH)
+  private String decodedMessage;
 
-    private String deviceIdentification;
+  private String deviceIdentification;
 
-    @SuppressWarnings("unused")
-    private OslpLogItem() {
-        // Empty constructor for Hibernate.
-    }
+  @SuppressWarnings("unused")
+  private OslpLogItem() {
+    // Empty constructor for Hibernate.
+  }
 
-    public OslpLogItem(final byte[] deviceUid, final String deviceIdentification, final boolean incoming,
-            final Message message) {
-        this.deviceUid = Base64.encodeBase64String(deviceUid);
-        this.deviceIdentification = deviceIdentification;
-        this.incoming = incoming;
+  public OslpLogItem(
+      final byte[] deviceUid,
+      final String deviceIdentification,
+      final boolean incoming,
+      final Message message) {
+    this.deviceUid = Base64.encodeBase64String(deviceUid);
+    this.deviceIdentification = deviceIdentification;
+    this.incoming = incoming;
 
-        // Truncate the logitems to length
-        this.encodedMessage = StringUtils.substring(OslpLogItem.bytesToCArray(message.toByteArray()), 0,
-                MAX_MESSAGE_LENGTH);
-        this.decodedMessage = StringUtils.substring(message.toString(), 0, MAX_MESSAGE_LENGTH);
-    }
+    // Truncate the logitems to length
+    this.encodedMessage =
+        StringUtils.substring(
+            OslpLogItem.bytesToCArray(message.toByteArray()), 0, MAX_MESSAGE_LENGTH);
+    this.decodedMessage = StringUtils.substring(message.toString(), 0, MAX_MESSAGE_LENGTH);
+  }
 
-    public boolean isIncoming() {
-        return this.incoming;
-    }
+  public boolean isIncoming() {
+    return this.incoming;
+  }
 
-    public String getDeviceUid() {
-        return this.deviceUid;
-    }
+  public String getDeviceUid() {
+    return this.deviceUid;
+  }
 
-    public String getEncodedMessage() {
-        return this.encodedMessage;
-    }
+  public String getEncodedMessage() {
+    return this.encodedMessage;
+  }
 
-    public String getDecodedMessage() {
-        return this.decodedMessage;
-    }
+  public String getDecodedMessage() {
+    return this.decodedMessage;
+  }
 
-    public String getDeviceIdentification() {
-        return this.deviceIdentification;
-    }
+  public String getDeviceIdentification() {
+    return this.deviceIdentification;
+  }
 
-    private static String bytesToCArray(final byte[] bytes) {
-        String s = javax.xml.bind.DatatypeConverter.printHexBinary(bytes);
+  private static String bytesToCArray(final byte[] bytes) {
+    String s = javax.xml.bind.DatatypeConverter.printHexBinary(bytes);
 
-        // Split every two chars with ', ' to create a C array.
-        s = s.replaceAll("(.{2})", ", 0x$1");
+    // Split every two chars with ', ' to create a C array.
+    s = s.replaceAll("(.{2})", ", 0x$1");
 
-        // Remove the leading comma.
-        s = s.substring(2);
+    // Remove the leading comma.
+    s = s.substring(2);
 
-        return s;
-    }
+    return s;
+  }
 }

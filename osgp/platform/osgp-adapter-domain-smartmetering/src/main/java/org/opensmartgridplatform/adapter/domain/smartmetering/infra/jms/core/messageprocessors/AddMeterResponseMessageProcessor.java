@@ -1,8 +1,8 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -23,48 +23,57 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-/**
- * Class for processing smart metering default response messages
- */
+/** Class for processing smart metering default response messages */
 @Component
 public class AddMeterResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AddMeterResponseMessageProcessor.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(AddMeterResponseMessageProcessor.class);
 
-    @Autowired
-    private InstallationService installationService;
+  @Autowired private InstallationService installationService;
 
-    @Autowired
-    protected AddMeterResponseMessageProcessor(WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
-        super(responseMessageSender, messageProcessorMap, MessageType.ADD_METER, ComponentType.DOMAIN_SMART_METERING);
+  @Autowired
+  protected AddMeterResponseMessageProcessor(
+      final WebServiceResponseMessageSender responseMessageSender,
+      @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
+          final MessageProcessorMap messageProcessorMap) {
+    super(
+        responseMessageSender,
+        messageProcessorMap,
+        MessageType.ADD_METER,
+        ComponentType.DOMAIN_SMART_METERING);
+  }
+
+  @Override
+  protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
+    // Only the Result (OK/NOK/Exception) is returned, no need to check the (contents of the
+    // dataObject).
+    return true;
+  }
+
+  @Override
+  protected void handleMessage(
+      final DeviceMessageMetadata deviceMessageMetadata,
+      final ResponseMessage responseMessage,
+      final OsgpException osgpException) {
+
+    this.installationService.handleAddMeterResponse(
+        deviceMessageMetadata, responseMessage.getResult(), osgpException);
+  }
+
+  @Override
+  protected void handleError(final Exception e, final DeviceMessageMetadata deviceMessageMetadata) {
+    try {
+      this.installationService.removeMeter(deviceMessageMetadata);
+    } catch (final Exception ex) {
+      LOGGER.error(
+          "Error removing meter {} for organization {} from core database with correlation UID {}",
+          deviceMessageMetadata.getDeviceIdentification(),
+          deviceMessageMetadata.getOrganisationIdentification(),
+          deviceMessageMetadata.getCorrelationUid(),
+          ex);
     }
 
-    @Override
-    protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
-        // Only the Result (OK/NOK/Exception) is returned, no need to check the (contents of the dataObject).
-        return true;
-    }
-
-    @Override
-    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
-            final ResponseMessage responseMessage, final OsgpException osgpException) {
-
-        this.installationService.handleAddMeterResponse(deviceMessageMetadata, responseMessage.getResult(),
-                osgpException);
-    }
-
-    @Override
-    protected void handleError(final Exception e, final DeviceMessageMetadata deviceMessageMetadata) {
-        try {
-            this.installationService.removeMeter(deviceMessageMetadata);
-        } catch (final Exception ex) {
-            LOGGER.error("Error removing meter {} for organization {} from core database with correlation UID {}",
-                    deviceMessageMetadata.getDeviceIdentification(),
-                    deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getCorrelationUid(),
-                    ex);
-        }
-
-        super.handleError(e, deviceMessageMetadata);
-    }
+    super.handleError(e, deviceMessageMetadata);
+  }
 }

@@ -1,69 +1,69 @@
-/**
+/*
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.rtu.RtuWriteCommand;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.rtu.RtuWriteCommandFactory;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.commands.Iec61850ScheduleAbsTimeCommand;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.ProfileDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public final class Iec61850WriteProfileCommandFactory implements RtuWriteCommandFactory<ProfileDto> {
+public final class Iec61850WriteProfileCommandFactory
+    implements RtuWriteCommandFactory<ProfileDto> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850WriteProfileCommandFactory.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(Iec61850WriteProfileCommandFactory.class);
 
-    private static final int ID_START = 1;
-    private static final int ID_END = 4;
+  private static final int ID_START = 1;
+  private static final int ID_END = 4;
 
-    private static final Map<String, RtuWriteCommand<ProfileDto>> RTU_COMMAND_MAP = new HashMap<>();
+  private static final Map<String, RtuWriteCommand<ProfileDto>> RTU_COMMAND_MAP = new HashMap<>();
 
-    static {
-        initializeCommandMap();
+  static {
+    initializeCommandMap();
+  }
+
+  private static Iec61850WriteProfileCommandFactory instance;
+
+  private Iec61850WriteProfileCommandFactory() {}
+
+  public static synchronized Iec61850WriteProfileCommandFactory getInstance() {
+    if (instance == null) {
+      instance = new Iec61850WriteProfileCommandFactory();
     }
+    return instance;
+  }
 
-    private static Iec61850WriteProfileCommandFactory instance;
+  @Override
+  public RtuWriteCommand<ProfileDto> getCommand(final String node) {
 
-    private Iec61850WriteProfileCommandFactory() {
+    final RtuWriteCommand<ProfileDto> command = RTU_COMMAND_MAP.get(node);
+
+    if (command == null) {
+      LOGGER.warn("No command found for data attribute {}", node);
     }
+    return command;
+  }
 
-    public static synchronized Iec61850WriteProfileCommandFactory getInstance() {
-        if (instance == null) {
-            instance = new Iec61850WriteProfileCommandFactory();
-        }
-        return instance;
+  private static void initializeCommandMap() {
+    for (int i = ID_START; i <= ID_END; i++) {
+
+      RTU_COMMAND_MAP.put(
+          createMapKey(DataAttribute.SCHEDULE_ABS_TIME, i), new Iec61850ScheduleAbsTimeCommand(i));
     }
+  }
 
-    @Override
-    public RtuWriteCommand<ProfileDto> getCommand(final String node) {
-
-        final RtuWriteCommand<ProfileDto> command = RTU_COMMAND_MAP.get(node);
-
-        if (command == null) {
-            LOGGER.warn("No command found for data attribute {}", node);
-        }
-        return command;
-    }
-
-    private static void initializeCommandMap() {
-        for (int i = ID_START; i <= ID_END; i++) {
-
-            RTU_COMMAND_MAP.put(createMapKey(DataAttribute.SCHEDULE_ABS_TIME, i),
-                    new Iec61850ScheduleAbsTimeCommand(i));
-        }
-    }
-
-    private static String createMapKey(final DataAttribute dataAttribute, final int index) {
-        return dataAttribute.getDescription() + index;
-    }
+  private static String createMapKey(final DataAttribute dataAttribute, final int index) {
+    return dataAttribute.getDescription() + index;
+  }
 }

@@ -1,8 +1,8 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -10,7 +10,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.FindEventsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.SetDeviceLifecycleStatusByChannelCommandExecutor;
@@ -34,67 +33,76 @@ import org.springframework.stereotype.Service;
 @Service(value = "dlmsManagementService")
 public class ManagementService {
 
-    @Autowired
-    private FindEventsCommandExecutor findEventsCommandExecutor;
+  @Autowired private FindEventsCommandExecutor findEventsCommandExecutor;
 
-    @Autowired
-    private SetDeviceLifecycleStatusByChannelCommandExecutor setDeviceLifecycleStatusByChannelCommandExecutor;
+  @Autowired
+  private SetDeviceLifecycleStatusByChannelCommandExecutor
+      setDeviceLifecycleStatusByChannelCommandExecutor;
 
-    @Autowired
-    private DlmsDeviceRepository dlmsDeviceRepository;
+  @Autowired private DlmsDeviceRepository dlmsDeviceRepository;
 
-    // === FIND EVENTS ===
+  // === FIND EVENTS ===
 
-    public EventMessageDataResponseDto findEvents(final DlmsConnectionManager conn, final DlmsDevice device,
-            final FindEventsRequestList findEventsQueryMessageDataContainer) throws ProtocolAdapterException {
+  public EventMessageDataResponseDto findEvents(
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final FindEventsRequestList findEventsQueryMessageDataContainer)
+      throws ProtocolAdapterException {
 
-        final List<EventDto> events = new ArrayList<>();
+    final List<EventDto> events = new ArrayList<>();
 
-        log.info("findEvents setting up connection with meter {}", device.getDeviceIdentification());
+    log.info("findEvents setting up connection with meter {}", device.getDeviceIdentification());
 
-        for (final FindEventsRequestDto findEventsQuery :
-                findEventsQueryMessageDataContainer.getFindEventsQueryList()) {
-            log.info("findEventsQuery.eventLogCategory: {}, findEventsQuery.from: {}, findEventsQuery.until: {}",
-                    findEventsQuery.getEventLogCategory().toString(), findEventsQuery.getFrom(),
-                    findEventsQuery.getUntil());
+    for (final FindEventsRequestDto findEventsQuery :
+        findEventsQueryMessageDataContainer.getFindEventsQueryList()) {
+      log.info(
+          "findEventsQuery.eventLogCategory: {}, findEventsQuery.from: {}, findEventsQuery.until: {}",
+          findEventsQuery.getEventLogCategory().toString(),
+          findEventsQuery.getFrom(),
+          findEventsQuery.getUntil());
 
-            events.addAll(this.findEventsCommandExecutor.execute(conn, device, findEventsQuery));
-        }
-
-        return new EventMessageDataResponseDto(events);
+      events.addAll(this.findEventsCommandExecutor.execute(conn, device, findEventsQuery));
     }
 
-    public void changeInDebugMode(final DlmsDevice device, final boolean debugMode) {
-        device.setInDebugMode(debugMode);
-        this.dlmsDeviceRepository.save(device);
-    }
+    return new EventMessageDataResponseDto(events);
+  }
 
-    public void setDeviceCommunicationSettings(final DlmsDevice device,
-            final SetDeviceCommunicationSettingsRequestDto deviceCommunicationSettings) {
+  public void changeInDebugMode(final DlmsDevice device, final boolean debugMode) {
+    device.setInDebugMode(debugMode);
+    this.dlmsDeviceRepository.save(device);
+  }
 
-        this.dlmsDeviceRepository.save(this.setDeviceCommunicationSettings(device,
-                deviceCommunicationSettings.getSetDeviceCommunicationSettingsData()));
-    }
+  public void setDeviceCommunicationSettings(
+      final DlmsDevice device,
+      final SetDeviceCommunicationSettingsRequestDto deviceCommunicationSettings) {
 
-    private DlmsDevice setDeviceCommunicationSettings(final DlmsDevice device,
-            final SetDeviceCommunicationSettingsRequestDataDto setCommunicationSettingsDataDto) {
-        device.setChallengeLength(setCommunicationSettingsDataDto.getChallengeLength());
-        device.setWithListSupported(setCommunicationSettingsDataDto.isWithListSupported());
-        device.setSelectiveAccessSupported(setCommunicationSettingsDataDto.isSelectiveAccessSupported());
-        device.setIpAddressIsStatic(setCommunicationSettingsDataDto.isIpAddressIsStatic());
-        device.setUseSn(setCommunicationSettingsDataDto.isUseSn());
-        device.setUseHdlc(setCommunicationSettingsDataDto.isUseHdlc());
+    this.dlmsDeviceRepository.save(
+        this.setDeviceCommunicationSettings(
+            device, deviceCommunicationSettings.getSetDeviceCommunicationSettingsData()));
+  }
 
-        return device;
-    }
+  private DlmsDevice setDeviceCommunicationSettings(
+      final DlmsDevice device,
+      final SetDeviceCommunicationSettingsRequestDataDto setCommunicationSettingsDataDto) {
+    device.setChallengeLength(setCommunicationSettingsDataDto.getChallengeLength());
+    device.setWithListSupported(setCommunicationSettingsDataDto.isWithListSupported());
+    device.setSelectiveAccessSupported(
+        setCommunicationSettingsDataDto.isSelectiveAccessSupported());
+    device.setIpAddressIsStatic(setCommunicationSettingsDataDto.isIpAddressIsStatic());
+    device.setUseSn(setCommunicationSettingsDataDto.isUseSn());
+    device.setUseHdlc(setCommunicationSettingsDataDto.isUseHdlc());
 
-    public SetDeviceLifecycleStatusByChannelResponseDto setDeviceLifecycleStatusByChannel(
-            final DlmsConnectionManager conn, final DlmsDevice device,
-            final SetDeviceLifecycleStatusByChannelRequestDataDto setDeviceLifecycleStatusByChannelRequest)
-            throws OsgpException {
+    return device;
+  }
 
-        return this.setDeviceLifecycleStatusByChannelCommandExecutor.execute(conn, device,
-                setDeviceLifecycleStatusByChannelRequest);
-    }
+  public SetDeviceLifecycleStatusByChannelResponseDto setDeviceLifecycleStatusByChannel(
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final SetDeviceLifecycleStatusByChannelRequestDataDto
+          setDeviceLifecycleStatusByChannelRequest)
+      throws OsgpException {
 
+    return this.setDeviceLifecycleStatusByChannelCommandExecutor.execute(
+        conn, device, setDeviceLifecycleStatusByChannelRequest);
+  }
 }

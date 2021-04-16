@@ -1,15 +1,15 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.messageprocessors;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
-
 import org.opensmartgridplatform.adapter.domain.core.application.services.DeviceManagementService;
 import org.opensmartgridplatform.domain.core.valueobjects.EventNotificationMessageDataContainer;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -25,68 +25,78 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-/**
- * Class for processing common set event notifications request messages
- */
+/** Class for processing common set event notifications request messages */
 @Component("domainCoreCommonSetEventNotificationsRequestMessageProcessor")
 public class CommonSetEventNotificationsRequestMessageProcessor extends BaseMessageProcessor {
-    /**
-     * Logger for this class
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(CommonSetEventNotificationsRequestMessageProcessor.class);
+  /** Logger for this class */
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(CommonSetEventNotificationsRequestMessageProcessor.class);
 
-    @Autowired
-    @Qualifier("domainCoreDeviceManagementService")
-    private DeviceManagementService deviceManagementService;
+  @Autowired
+  @Qualifier("domainCoreDeviceManagementService")
+  private DeviceManagementService deviceManagementService;
 
-    @Autowired
-    public CommonSetEventNotificationsRequestMessageProcessor(
-            @Qualifier("domainCoreOutboundWebServiceResponsesMessageSender") final ResponseMessageSender responseMessageSender,
-            @Qualifier("domainCoreInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
-        super(responseMessageSender, messageProcessorMap, MessageType.SET_EVENT_NOTIFICATIONS,
-                ComponentType.DOMAIN_CORE);
+  @Autowired
+  public CommonSetEventNotificationsRequestMessageProcessor(
+      @Qualifier("domainCoreOutboundWebServiceResponsesMessageSender")
+          final ResponseMessageSender responseMessageSender,
+      @Qualifier("domainCoreInboundWebServiceRequestsMessageProcessorMap")
+          final MessageProcessorMap messageProcessorMap) {
+    super(
+        responseMessageSender,
+        messageProcessorMap,
+        MessageType.SET_EVENT_NOTIFICATIONS,
+        ComponentType.DOMAIN_CORE);
+  }
+
+  @Override
+  public void processMessage(final ObjectMessage message) {
+    LOGGER.debug("Processing common set event notifications request message");
+
+    String correlationUid = null;
+    String messageType = null;
+    int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
+    String organisationIdentification = null;
+    String deviceIdentification = null;
+
+    try {
+      correlationUid = message.getJMSCorrelationID();
+      messageType = message.getJMSType();
+      messagePriority = message.getJMSPriority();
+      organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
+      deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
+    } catch (final JMSException e) {
+      LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
+      LOGGER.debug("correlationUid: {}", correlationUid);
+      LOGGER.debug("messageType: {}", messageType);
+      LOGGER.debug("messagePriority: {}", messagePriority);
+      LOGGER.debug("organisationIdentification: {}", organisationIdentification);
+      LOGGER.debug("deviceIdentification: {}", deviceIdentification);
+      return;
     }
 
-    @Override
-    public void processMessage(final ObjectMessage message) {
-        LOGGER.debug("Processing common set event notifications request message");
+    try {
+      final EventNotificationMessageDataContainer eventNotificationMessageDataContainer =
+          (EventNotificationMessageDataContainer) message.getObject();
 
-        String correlationUid = null;
-        String messageType = null;
-        int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
-        String organisationIdentification = null;
-        String deviceIdentification = null;
+      LOGGER.info("Calling application service function: {}", messageType);
 
-        try {
-            correlationUid = message.getJMSCorrelationID();
-            messageType = message.getJMSType();
-            messagePriority = message.getJMSPriority();
-            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-        } catch (final JMSException e) {
-            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            LOGGER.debug("correlationUid: {}", correlationUid);
-            LOGGER.debug("messageType: {}", messageType);
-            LOGGER.debug("messagePriority: {}", messagePriority);
-            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            return;
-        }
+      this.deviceManagementService.setEventNotifications(
+          organisationIdentification,
+          deviceIdentification,
+          correlationUid,
+          eventNotificationMessageDataContainer.getEventNotifications(),
+          messageType,
+          messagePriority);
 
-        try {
-            final EventNotificationMessageDataContainer eventNotificationMessageDataContainer = (EventNotificationMessageDataContainer) message
-                    .getObject();
-
-            LOGGER.info("Calling application service function: {}", messageType);
-
-            this.deviceManagementService.setEventNotifications(organisationIdentification, deviceIdentification,
-                    correlationUid, eventNotificationMessageDataContainer.getEventNotifications(), messageType,
-                    messagePriority);
-
-        } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,
-                    messagePriority);
-        }
+    } catch (final Exception e) {
+      this.handleError(
+          e,
+          correlationUid,
+          organisationIdentification,
+          deviceIdentification,
+          messageType,
+          messagePriority);
     }
+  }
 }

@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.deviceinstallation;
 
@@ -12,10 +13,11 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 import static org.opensmartgridplatform.cucumber.platform.core.CorrelationUidHelper.saveCorrelationUidInScenarioContext;
 
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Map;
-
 import org.opensmartgridplatform.adapter.ws.schema.core.common.AsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.StartDeviceTestAsyncRequest;
@@ -32,90 +34,97 @@ import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityExce
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
-
 public class StartDeviceSteps {
 
-    @Autowired
-    private CoreDeviceInstallationClient client;
+  @Autowired private CoreDeviceInstallationClient client;
 
-    @When("receiving a start device request")
-    public void receivingAStartDeviceRequest(final Map<String, String> requestParameters)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
-        final StartDeviceTestRequest request = new StartDeviceTestRequest();
-        request.setDeviceIdentification(getString(requestParameters, PlatformKeys.KEY_DEVICE_IDENTIFICATION,
-                PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+  @When("receiving a start device request")
+  public void receivingAStartDeviceRequest(final Map<String, String> requestParameters)
+      throws WebServiceSecurityException, GeneralSecurityException, IOException {
+    final StartDeviceTestRequest request = new StartDeviceTestRequest();
+    request.setDeviceIdentification(
+        getString(
+            requestParameters,
+            PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+            PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION));
 
-        try {
-            ScenarioContext.current().put(PlatformKeys.RESPONSE, this.client.startDeviceTest(request));
-        } catch (final SoapFaultClientException ex) {
-            ScenarioContext.current().put(PlatformKeys.RESPONSE, ex);
-        }
+    try {
+      ScenarioContext.current().put(PlatformKeys.RESPONSE, this.client.startDeviceTest(request));
+    } catch (final SoapFaultClientException ex) {
+      ScenarioContext.current().put(PlatformKeys.RESPONSE, ex);
     }
+  }
 
-    @Then("^the platform buffers a start device response message for device \"([^\"]*)\"$")
-    public void thePlatformBuffersAStartDeviceResponseMessageForDevice(final String deviceIdentification,
-            final Map<String, String> expectedResult) throws InterruptedException {
-        final StartDeviceTestAsyncRequest request = new StartDeviceTestAsyncRequest();
-        final AsyncRequest asyncRequest = new AsyncRequest();
-        asyncRequest.setDeviceId(deviceIdentification);
-        asyncRequest.setCorrelationUid((String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID));
-        request.setAsyncRequest(asyncRequest);
+  @Then("^the platform buffers a start device response message for device \"([^\"]*)\"$")
+  public void thePlatformBuffersAStartDeviceResponseMessageForDevice(
+      final String deviceIdentification, final Map<String, String> expectedResult)
+      throws InterruptedException {
+    final StartDeviceTestAsyncRequest request = new StartDeviceTestAsyncRequest();
+    final AsyncRequest asyncRequest = new AsyncRequest();
+    asyncRequest.setDeviceId(deviceIdentification);
+    asyncRequest.setCorrelationUid(
+        (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID));
+    request.setAsyncRequest(asyncRequest);
 
-        Wait.until(() -> {
-            StartDeviceTestResponse response = null;
-            try {
-                response = this.client.getStartDeviceTestResponse(request);
-            } catch (final Exception e) {
-                // do nothing
-            }
-            assertThat(response).isNotNull();
-            assertThat(response.getResult())
-                    .isEqualTo(getEnum(expectedResult, PlatformKeys.KEY_RESULT, OsgpResultType.class));
+    Wait.until(
+        () -> {
+          StartDeviceTestResponse response = null;
+          try {
+            response = this.client.getStartDeviceTestResponse(request);
+          } catch (final Exception e) {
+            // do nothing
+          }
+          assertThat(response).isNotNull();
+          assertThat(response.getResult())
+              .isEqualTo(getEnum(expectedResult, PlatformKeys.KEY_RESULT, OsgpResultType.class));
         });
-    }
+  }
 
-    @Then("^the platform buffers no start device test response message for device \"([^\"]*)\"$")
-    public void thePlatformBuffersNoStartDeviceTestResponseMessageForDevice(final String deviceIdentification)
-            throws InterruptedException {
-        final StartDeviceTestAsyncRequest request = new StartDeviceTestAsyncRequest();
-        final AsyncRequest asyncRequest = new AsyncRequest();
-        asyncRequest.setDeviceId(deviceIdentification);
-        asyncRequest.setCorrelationUid((String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID));
-        request.setAsyncRequest(asyncRequest);
+  @Then("^the platform buffers no start device test response message for device \"([^\"]*)\"$")
+  public void thePlatformBuffersNoStartDeviceTestResponseMessageForDevice(
+      final String deviceIdentification) throws InterruptedException {
+    final StartDeviceTestAsyncRequest request = new StartDeviceTestAsyncRequest();
+    final AsyncRequest asyncRequest = new AsyncRequest();
+    asyncRequest.setDeviceId(deviceIdentification);
+    asyncRequest.setCorrelationUid(
+        (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID));
+    request.setAsyncRequest(asyncRequest);
 
-        Wait.until(() -> {
-            StartDeviceTestResponse response = null;
-            try {
-                response = this.client.getStartDeviceTestResponse(request);
-            } catch (final Exception e) {
-                // do nothing
-            }
-            assertThat(response).isNotNull();
-            assertThat(response.getResult()).isNotEqualTo(OsgpResultType.NOT_FOUND);
-
+    Wait.until(
+        () -> {
+          StartDeviceTestResponse response = null;
+          try {
+            response = this.client.getStartDeviceTestResponse(request);
+          } catch (final Exception e) {
+            // do nothing
+          }
+          assertThat(response).isNotNull();
+          assertThat(response.getResult()).isNotEqualTo(OsgpResultType.NOT_FOUND);
         });
-    }
+  }
 
-    @Then("the start device async response contains")
-    public void theStartDeviceAsyncResponseContains(final Map<String, String> expectedResponseData) throws Throwable {
-        final StartDeviceTestAsyncResponse asyncResponse = (StartDeviceTestAsyncResponse) ScenarioContext.current()
-                .get(PlatformKeys.RESPONSE);
+  @Then("the start device async response contains")
+  public void theStartDeviceAsyncResponseContains(final Map<String, String> expectedResponseData)
+      throws Throwable {
+    final StartDeviceTestAsyncResponse asyncResponse =
+        (StartDeviceTestAsyncResponse) ScenarioContext.current().get(PlatformKeys.RESPONSE);
 
-        assertThat(asyncResponse.getAsyncResponse().getCorrelationUid()).isNotNull();
-        assertThat(asyncResponse.getAsyncResponse().getDeviceId())
-                .isEqualTo(getString(expectedResponseData, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
+    assertThat(asyncResponse.getAsyncResponse().getCorrelationUid()).isNotNull();
+    assertThat(asyncResponse.getAsyncResponse().getDeviceId())
+        .isEqualTo(getString(expectedResponseData, PlatformKeys.KEY_DEVICE_IDENTIFICATION));
 
-        // Save the returned CorrelationUid in the Scenario related context for
-        // further use.
-        saveCorrelationUidInScenarioContext(asyncResponse.getAsyncResponse().getCorrelationUid(),
-                getString(expectedResponseData, PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
-                        PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-    }
+    // Save the returned CorrelationUid in the Scenario related context for
+    // further use.
+    saveCorrelationUidInScenarioContext(
+        asyncResponse.getAsyncResponse().getCorrelationUid(),
+        getString(
+            expectedResponseData,
+            PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
+            PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
+  }
 
-    @Then("^the start device response contains soap fault$")
-    public void theStartDeviceResponseContainsSoapFault(final Map<String, String> expectedResult) {
-        GenericResponseSteps.verifySoapFault(expectedResult);
-    }
+  @Then("^the start device response contains soap fault$")
+  public void theStartDeviceResponseContainsSoapFault(final Map<String, String> expectedResult) {
+    GenericResponseSteps.verifySoapFault(expectedResult);
+  }
 }

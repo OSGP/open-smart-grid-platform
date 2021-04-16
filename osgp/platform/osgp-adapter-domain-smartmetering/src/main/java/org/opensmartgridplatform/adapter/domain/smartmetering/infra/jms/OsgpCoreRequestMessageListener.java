@@ -1,16 +1,16 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms;
 
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
-
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.slf4j.Logger;
@@ -23,30 +23,31 @@ import org.springframework.stereotype.Component;
 @Component(value = "domainSmartMeteringInboundOsgpCoreRequestsMessageListener")
 public class OsgpCoreRequestMessageListener implements MessageListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OsgpCoreRequestMessageListener.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(OsgpCoreRequestMessageListener.class);
 
-    @Autowired
-    @Qualifier("domainSmartMeteringInboundOsgpCoreRequestsMessageProcessorMap")
-    private MessageProcessorMap messageProcessorMap;
+  @Autowired
+  @Qualifier("domainSmartMeteringInboundOsgpCoreRequestsMessageProcessorMap")
+  private MessageProcessorMap messageProcessorMap;
 
-    @Override
-    public void onMessage(final Message message) {
-        try {
-            LOGGER.info("Received message of type: {}", message.getJMSType());
-            final ObjectMessage objectMessage = (ObjectMessage) message;
+  @Override
+  public void onMessage(final Message message) {
+    try {
+      LOGGER.info("Received message of type: {}", message.getJMSType());
+      final ObjectMessage objectMessage = (ObjectMessage) message;
 
-            final MessageProcessor processor = this.messageProcessorMap
-                    .getMessageProcessor(objectMessage);
+      final MessageProcessor processor =
+          this.messageProcessorMap.getMessageProcessor(objectMessage);
 
-            processor.processMessage(objectMessage);
+      processor.processMessage(objectMessage);
 
-        } catch (final Exception e) {
-            /*
-             * Just catch and log any exception. There is no response flow for
-             * requests coming in from OSGP-Core, where exceptions should be
-             * rapported to.
-             */
-            LOGGER.error("Exception while handling a request from OSGP-Core: ", e);
-        }
+    } catch (final Exception e) {
+      /*
+       * Just catch and log any exception. There is no response flow for
+       * requests coming in from OSGP-Core, where exceptions should be
+       * rapported to.
+       */
+      LOGGER.error("Exception while handling a request from OSGP-Core: ", e);
     }
+  }
 }

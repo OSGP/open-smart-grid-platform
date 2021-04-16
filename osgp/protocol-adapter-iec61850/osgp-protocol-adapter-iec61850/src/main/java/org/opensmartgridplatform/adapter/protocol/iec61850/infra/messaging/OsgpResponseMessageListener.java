@@ -1,8 +1,8 @@
-/**
+/*
  * Copyright 2014-2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -12,7 +12,6 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
@@ -27,43 +26,50 @@ import org.springframework.stereotype.Component;
 @Component(value = "protocolIec61850InboundOsgpCoreResponsesMessageListener")
 public class OsgpResponseMessageListener implements MessageListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OsgpResponseMessageListener.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(OsgpResponseMessageListener.class);
 
-    @Override
-    public void onMessage(final Message message) {
-        try {
-            LOGGER.info("Received message of type: {}", message.getJMSType());
+  @Override
+  public void onMessage(final Message message) {
+    try {
+      LOGGER.info("Received message of type: {}", message.getJMSType());
 
-            final ObjectMessage objectMessage = (ObjectMessage) message;
-            final String messageType = objectMessage.getJMSType();
-            final String deviceIdentification = objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-            final ResponseMessage responseMessage = (ResponseMessage) objectMessage.getObject();
-            final String result = responseMessage == null ? null : responseMessage.getResult().toString();
-            final OsgpException osgpException = responseMessage == null ? null : responseMessage.getOsgpException();
+      final ObjectMessage objectMessage = (ObjectMessage) message;
+      final String messageType = objectMessage.getJMSType();
+      final String deviceIdentification =
+          objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION);
+      final ResponseMessage responseMessage = (ResponseMessage) objectMessage.getObject();
+      final String result = responseMessage == null ? null : responseMessage.getResult().toString();
+      final OsgpException osgpException =
+          responseMessage == null ? null : responseMessage.getOsgpException();
 
-            if (MessageType.valueOf(messageType) == (MessageType.REGISTER_DEVICE)) {
-                handleDeviceRegistration(result, deviceIdentification, messageType, osgpException);
-            } else {
-                throw new UnknownMessageTypeException("Unknown JMSType: " + messageType);
-            }
+      if (MessageType.valueOf(messageType) == (MessageType.REGISTER_DEVICE)) {
+        handleDeviceRegistration(result, deviceIdentification, messageType, osgpException);
+      } else {
+        throw new UnknownMessageTypeException("Unknown JMSType: " + messageType);
+      }
 
-        } catch (final JMSException ex) {
-            LOGGER.error("Exception: {} ", ex.getMessage(), ex);
-        } catch (final ProtocolAdapterException e) {
-            LOGGER.error("ProtocolAdapterException", e);
-        } catch (final UnknownMessageTypeException e) {
-            LOGGER.error("UnknownMessageTypeException", e);
-        }
+    } catch (final JMSException ex) {
+      LOGGER.error("Exception: {} ", ex.getMessage(), ex);
+    } catch (final ProtocolAdapterException e) {
+      LOGGER.error("ProtocolAdapterException", e);
+    } catch (final UnknownMessageTypeException e) {
+      LOGGER.error("UnknownMessageTypeException", e);
     }
+  }
 
-    private static void handleDeviceRegistration(final String result, final String deviceIdentification,
-            final String messageType, final OsgpException osgpException) throws ProtocolAdapterException {
-        if (ResponseMessageResultType.valueOf(result) == (ResponseMessageResultType.NOT_OK)) {
-            throw new ProtocolAdapterException(
-                    String.format("Response for device: %s for MessageType: %s is: %s, error: %s", deviceIdentification,
-                            messageType, result, osgpException));
-        } else {
-            LOGGER.info("Device registration successful for device: {}", deviceIdentification);
-        }
+  private static void handleDeviceRegistration(
+      final String result,
+      final String deviceIdentification,
+      final String messageType,
+      final OsgpException osgpException)
+      throws ProtocolAdapterException {
+    if (ResponseMessageResultType.valueOf(result) == (ResponseMessageResultType.NOT_OK)) {
+      throw new ProtocolAdapterException(
+          String.format(
+              "Response for device: %s for MessageType: %s is: %s, error: %s",
+              deviceIdentification, messageType, result, osgpException));
+    } else {
+      LOGGER.info("Device registration successful for device: {}", deviceIdentification);
     }
+  }
 }

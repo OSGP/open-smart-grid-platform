@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform.common.support.ws.core;
 
@@ -39,88 +40,101 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 @Component
 public class CoreFirmwareManagementClient extends BaseClient {
 
-    @Autowired
-    private DefaultWebServiceTemplateFactory coreFirmwareManagementWstf;
+  @Autowired private DefaultWebServiceTemplateFactory coreFirmwareManagementWstf;
 
-    public GetFirmwareVersionAsyncResponse getFirmwareVersion(final GetFirmwareVersionRequest request)
-            throws WebServiceSecurityException {
-        final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(),
-                this.getUserName());
-        return (GetFirmwareVersionAsyncResponse) wst.marshalSendAndReceive(request);
-    }
+  public GetFirmwareVersionAsyncResponse getFirmwareVersion(final GetFirmwareVersionRequest request)
+      throws WebServiceSecurityException {
+    final WebServiceTemplate wst =
+        this.coreFirmwareManagementWstf.getTemplate(
+            this.getOrganizationIdentification(), this.getUserName());
+    return (GetFirmwareVersionAsyncResponse) wst.marshalSendAndReceive(request);
+  }
 
-    public GetFirmwareVersionResponse getGetFirmwareVersion(final GetFirmwareVersionAsyncRequest request)
-            throws WebServiceSecurityException {
-        final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(),
-                this.getUserName());
-        return (GetFirmwareVersionResponse) wst.marshalSendAndReceive(request);
-    }
+  public GetFirmwareVersionResponse getGetFirmwareVersion(
+      final GetFirmwareVersionAsyncRequest request) throws WebServiceSecurityException {
+    final WebServiceTemplate wst =
+        this.coreFirmwareManagementWstf.getTemplate(
+            this.getOrganizationIdentification(), this.getUserName());
+    return (GetFirmwareVersionResponse) wst.marshalSendAndReceive(request);
+  }
 
-    public UpdateFirmwareAsyncResponse updateFirmware(final UpdateFirmwareRequest request)
-            throws WebServiceSecurityException {
-        final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(),
-                this.getUserName());
-        return (UpdateFirmwareAsyncResponse) wst.marshalSendAndReceive(request);
-    }
+  public UpdateFirmwareAsyncResponse updateFirmware(final UpdateFirmwareRequest request)
+      throws WebServiceSecurityException {
+    final WebServiceTemplate wst =
+        this.coreFirmwareManagementWstf.getTemplate(
+            this.getOrganizationIdentification(), this.getUserName());
+    return (UpdateFirmwareAsyncResponse) wst.marshalSendAndReceive(request);
+  }
 
-    public UpdateFirmwareResponse getUpdateFirmware(final UpdateFirmwareAsyncRequest request)
-            throws WebServiceSecurityException {
-        final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(),
-                this.getUserName());
-        return (UpdateFirmwareResponse) wst.marshalSendAndReceive(request);
-    }
+  public UpdateFirmwareResponse getUpdateFirmware(final UpdateFirmwareAsyncRequest request)
+      throws WebServiceSecurityException {
+    final WebServiceTemplate wst =
+        this.coreFirmwareManagementWstf.getTemplate(
+            this.getOrganizationIdentification(), this.getUserName());
+    return (UpdateFirmwareResponse) wst.marshalSendAndReceive(request);
+  }
 
-    public ChangeFirmwareResponse changeFirmware(final ChangeFirmwareRequest request)
-            throws WebServiceSecurityException {
-        final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(),
-                this.getUserName());
-        return (ChangeFirmwareResponse) wst.marshalSendAndReceive(request);
-    }
+  public ChangeFirmwareResponse changeFirmware(final ChangeFirmwareRequest request)
+      throws WebServiceSecurityException {
+    final WebServiceTemplate wst =
+        this.coreFirmwareManagementWstf.getTemplate(
+            this.getOrganizationIdentification(), this.getUserName());
+    return (ChangeFirmwareResponse) wst.marshalSendAndReceive(request);
+  }
 
-    public RemoveFirmwareResponse removeFirmware(final RemoveFirmwareRequest request)
-            throws WebServiceSecurityException {
-        final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(),
-                this.getUserName());
-        return (RemoveFirmwareResponse) wst.marshalSendAndReceive(request);
-    }
+  public RemoveFirmwareResponse removeFirmware(final RemoveFirmwareRequest request)
+      throws WebServiceSecurityException {
+    final WebServiceTemplate wst =
+        this.coreFirmwareManagementWstf.getTemplate(
+            this.getOrganizationIdentification(), this.getUserName());
+    return (RemoveFirmwareResponse) wst.marshalSendAndReceive(request);
+  }
 
-    public AddFirmwareResponse addFirmware(final AddFirmwareRequest request) throws WebServiceSecurityException {
-        final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(),
-                this.getUserName());
-        return (AddFirmwareResponse) wst.marshalSendAndReceive(request);
-    }
+  public AddFirmwareResponse addFirmware(final AddFirmwareRequest request)
+      throws WebServiceSecurityException {
+    final WebServiceTemplate wst =
+        this.coreFirmwareManagementWstf.getTemplate(
+            this.getOrganizationIdentification(), this.getUserName());
+    return (AddFirmwareResponse) wst.marshalSendAndReceive(request);
+  }
 
-    public ChangeDeviceModelResponse changeDeviceModel(final ChangeDeviceModelRequest request)
-            throws WebServiceSecurityException {
-        final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(),
-                this.getUserName());
-        return (ChangeDeviceModelResponse) wst.marshalSendAndReceive(request);
-    }
+  public ChangeDeviceModelResponse changeDeviceModel(final ChangeDeviceModelRequest request)
+      throws WebServiceSecurityException {
+    final WebServiceTemplate wst =
+        this.coreFirmwareManagementWstf.getTemplate(
+            this.getOrganizationIdentification(), this.getUserName());
+    return (ChangeDeviceModelResponse) wst.marshalSendAndReceive(request);
+  }
 
-    public RemoveDeviceModelResponse removeDeviceModel(final RemoveDeviceModelRequest request)
-            throws WebServiceSecurityException {
-        final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(),
-                this.getUserName());
-        return (RemoveDeviceModelResponse) wst.marshalSendAndReceive(request);
-    }
+  public RemoveDeviceModelResponse removeDeviceModel(final RemoveDeviceModelRequest request)
+      throws WebServiceSecurityException {
+    final WebServiceTemplate wst =
+        this.coreFirmwareManagementWstf.getTemplate(
+            this.getOrganizationIdentification(), this.getUserName());
+    return (RemoveDeviceModelResponse) wst.marshalSendAndReceive(request);
+  }
 
-    public FindAllDeviceModelsResponse findAllDeviceModels(final FindAllDeviceModelsRequest request)
-            throws WebServiceSecurityException {
-        final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(),
-                this.getUserName());
-        return (FindAllDeviceModelsResponse) wst.marshalSendAndReceive(request);
-    }
+  public FindAllDeviceModelsResponse findAllDeviceModels(final FindAllDeviceModelsRequest request)
+      throws WebServiceSecurityException {
+    final WebServiceTemplate wst =
+        this.coreFirmwareManagementWstf.getTemplate(
+            this.getOrganizationIdentification(), this.getUserName());
+    return (FindAllDeviceModelsResponse) wst.marshalSendAndReceive(request);
+  }
 
-    public AddDeviceModelRequest addDeviceModel(final AddDeviceModelRequest request)
-            throws WebServiceSecurityException {
-        final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(),
-                this.getUserName());
-        return (AddDeviceModelRequest) wst.marshalSendAndReceive(request);
-    }
+  public AddDeviceModelRequest addDeviceModel(final AddDeviceModelRequest request)
+      throws WebServiceSecurityException {
+    final WebServiceTemplate wst =
+        this.coreFirmwareManagementWstf.getTemplate(
+            this.getOrganizationIdentification(), this.getUserName());
+    return (AddDeviceModelRequest) wst.marshalSendAndReceive(request);
+  }
 
-    public FindFirmwareRequest findFirmware(final FindFirmwareRequest request) throws WebServiceSecurityException {
-        final WebServiceTemplate wst = this.coreFirmwareManagementWstf.getTemplate(this.getOrganizationIdentification(),
-                this.getUserName());
-        return (FindFirmwareRequest) wst.marshalSendAndReceive(request);
-    }
+  public FindFirmwareRequest findFirmware(final FindFirmwareRequest request)
+      throws WebServiceSecurityException {
+    final WebServiceTemplate wst =
+        this.coreFirmwareManagementWstf.getTemplate(
+            this.getOrganizationIdentification(), this.getUserName());
+    return (FindFirmwareRequest) wst.marshalSendAndReceive(request);
+  }
 }

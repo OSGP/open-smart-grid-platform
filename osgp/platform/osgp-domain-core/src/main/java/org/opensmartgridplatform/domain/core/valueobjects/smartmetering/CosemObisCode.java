@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
@@ -12,128 +13,134 @@ import java.util.Arrays;
 
 public class CosemObisCode implements Serializable {
 
-    private static final long serialVersionUID = -4096303352316355492L;
+  private static final long serialVersionUID = -4096303352316355492L;
 
-    private final int a;
-    private final int b;
-    private final int c;
-    private final int d;
-    private final int e;
-    private final int f;
+  private final int a;
+  private final int b;
+  private final int c;
+  private final int d;
+  private final int e;
+  private final int f;
 
-    public CosemObisCode(final int a, final int b, final int c, final int d, final int e, final int f) {
-        this.checkValues(a, b, c, d, e, f);
-        this.a = a;
-        this.b = b;
-        this.c = c;
-        this.d = d;
-        this.e = e;
-        this.f = f;
+  public CosemObisCode(
+      final int a, final int b, final int c, final int d, final int e, final int f) {
+    this.checkValues(a, b, c, d, e, f);
+    this.a = a;
+    this.b = b;
+    this.c = c;
+    this.d = d;
+    this.e = e;
+    this.f = f;
+  }
+
+  private void checkValues(
+      final int a, final int b, final int c, final int d, final int e, final int f) {
+    this.checkValue("a", a);
+    this.checkValue("b", b);
+    this.checkValue("c", c);
+    this.checkValue("d", d);
+    this.checkValue("e", e);
+    this.checkValue("f", f);
+  }
+
+  private void checkValue(final String letter, final int value) {
+    if (value < 0 || value > 255) {
+      throw new IllegalArgumentException(letter + " not in [0..0xFF]");
     }
+  }
 
-    private void checkValues(final int a, final int b, final int c, final int d, final int e, final int f) {
-        this.checkValue("a", a);
-        this.checkValue("b", b);
-        this.checkValue("c", c);
-        this.checkValue("d", d);
-        this.checkValue("e", e);
-        this.checkValue("f", f);
+  public CosemObisCode(final int[] code) {
+    if (code.length != 6) {
+      throw new IllegalArgumentException("ObisCode must have 6 values: " + code.length);
     }
+    this.a = code[0];
+    this.b = code[1];
+    this.c = code[2];
+    this.d = code[3];
+    this.e = code[4];
+    this.f = code[5];
+    this.checkValues(this.a, this.b, this.c, this.d, this.e, this.f);
+  }
 
-    private void checkValue(final String letter, final int value) {
-        if (value < 0 || value > 255) {
-            throw new IllegalArgumentException(letter + " not in [0..0xFF]");
-        }
+  public CosemObisCode(final byte[] code) {
+    if (code.length != 6) {
+      throw new IllegalArgumentException("ObisCode must have 6 values: " + code.length);
     }
+    this.a = code[0] & 0xFF;
+    this.b = code[1] & 0xFF;
+    this.c = code[2] & 0xFF;
+    this.d = code[3] & 0xFF;
+    this.e = code[4] & 0xFF;
+    this.f = code[5] & 0xFF;
+  }
 
-    public CosemObisCode(final int[] code) {
-        if (code.length != 6) {
-            throw new IllegalArgumentException("ObisCode must have 6 values: " + code.length);
-        }
-        this.a = code[0];
-        this.b = code[1];
-        this.c = code[2];
-        this.d = code[3];
-        this.e = code[4];
-        this.f = code[5];
-        this.checkValues(this.a, this.b, this.c, this.d, this.e, this.f);
-    }
+  public CosemObisCode(final String code) {
+    this(parseCode(code));
+  }
 
-    public CosemObisCode(final byte[] code) {
-        if (code.length != 6) {
-            throw new IllegalArgumentException("ObisCode must have 6 values: " + code.length);
-        }
-        this.a = code[0] & 0xFF;
-        this.b = code[1] & 0xFF;
-        this.c = code[2] & 0xFF;
-        this.d = code[3] & 0xFF;
-        this.e = code[4] & 0xFF;
-        this.f = code[5] & 0xFF;
+  private static int[] parseCode(final String code) {
+    final String[] parts = code.split("\\.|:|-");
+    if (parts.length != 6) {
+      throw new IllegalArgumentException(
+          "Unable to parse code into 6 integer parts: " + Arrays.toString(parts));
     }
+    final int[] values = new int[6];
+    for (int i = 0; i < 6; i++) {
+      try {
+        values[i] = Integer.parseInt(parts[i]);
+      } catch (final NumberFormatException e) {
+        throw new IllegalArgumentException(
+            "Unable to parse code into 6 integer parts: " + Arrays.toString(parts), e);
+      }
+    }
+    return values;
+  }
 
-    public CosemObisCode(final String code) {
-        this(parseCode(code));
-    }
+  public int getA() {
+    return this.a;
+  }
 
-    private static int[] parseCode(final String code) {
-        final String[] parts = code.split("\\.|:|-");
-        if (parts.length != 6) {
-            throw new IllegalArgumentException("Unable to parse code into 6 integer parts: " + Arrays.toString(parts));
-        }
-        final int[] values = new int[6];
-        for (int i = 0; i < 6; i++) {
-            try {
-                values[i] = Integer.parseInt(parts[i]);
-            } catch (final NumberFormatException e) {
-                throw new IllegalArgumentException("Unable to parse code into 6 integer parts: "
-                        + Arrays.toString(parts), e);
-            }
-        }
-        return values;
-    }
+  public int getB() {
+    return this.b;
+  }
 
-    public int getA() {
-        return this.a;
-    }
+  public int getC() {
+    return this.c;
+  }
 
-    public int getB() {
-        return this.b;
-    }
+  public int getD() {
+    return this.d;
+  }
 
-    public int getC() {
-        return this.c;
-    }
+  public int getE() {
+    return this.e;
+  }
 
-    public int getD() {
-        return this.d;
-    }
+  public int getF() {
+    return this.f;
+  }
 
-    public int getE() {
-        return this.e;
-    }
+  @Override
+  public String toString() {
+    return String.format("%d.%d.%d.%d.%d.%d", this.a, this.b, this.c, this.d, this.e, this.f);
+  }
 
-    public int getF() {
-        return this.f;
-    }
+  public String toDsmrString() {
+    return String.format("%d-%d:%d.%d.%d.%d", this.a, this.b, this.c, this.d, this.e, this.f);
+  }
 
-    @Override
-    public String toString() {
-        return String.format("%d.%d.%d.%d.%d.%d", this.a, this.b, this.c, this.d, this.e, this.f);
-    }
+  public String toHexString() {
+    return String.format(
+        "%02X%02X%02X%02X%02X%02X", this.a, this.b, this.c, this.d, this.e, this.f);
+  }
 
-    public String toDsmrString() {
-        return String.format("%d-%d:%d.%d.%d.%d", this.a, this.b, this.c, this.d, this.e, this.f);
-    }
+  public byte[] toByteArray() {
+    return new byte[] {
+      (byte) this.a, (byte) this.b, (byte) this.c, (byte) this.d, (byte) this.e, (byte) this.f
+    };
+  }
 
-    public String toHexString() {
-        return String.format("%02X%02X%02X%02X%02X%02X", this.a, this.b, this.c, this.d, this.e, this.f);
-    }
-
-    public byte[] toByteArray() {
-        return new byte[] { (byte) this.a, (byte) this.b, (byte) this.c, (byte) this.d, (byte) this.e, (byte) this.f };
-    }
-
-    public int[] toIntArray() {
-        return new int[] { this.a, this.b, this.c, this.d, this.e, this.f };
-    }
+  public int[] toIntArray() {
+    return new int[] {this.a, this.b, this.c, this.d, this.e, this.f};
+  }
 }

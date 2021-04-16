@@ -1,3 +1,12 @@
+/*
+ * Copyright 2021 Alliander N.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,42 +30,37 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObj
 @ExtendWith(MockitoExtension.class)
 public class SetConfigurationObjectCommandExecutorTest {
 
-    @InjectMocks
-    private SetConfigurationObjectCommandExecutor instance;
-    @Mock
-    private ProtocolServiceLookup protocolServiceLookup;
-    @Mock
-    private DlmsConnectionManager conn;
-    @Mock
-    private ConfigurationObjectDto configurationOnDevice;
-    @Mock
-    private GetConfigurationObjectService getService;
-    @Mock
-    private SetConfigurationObjectService setService;
+  @InjectMocks private SetConfigurationObjectCommandExecutor instance;
+  @Mock private ProtocolServiceLookup protocolServiceLookup;
+  @Mock private DlmsConnectionManager conn;
+  @Mock private ConfigurationObjectDto configurationOnDevice;
+  @Mock private GetConfigurationObjectService getService;
+  @Mock private SetConfigurationObjectService setService;
 
-    @Mock
-    private ConfigurationObjectDto configurationToSet;
+  @Mock private ConfigurationObjectDto configurationToSet;
 
-    @Test
-    public void execute() throws ProtocolAdapterException {
+  @Test
+  public void execute() throws ProtocolAdapterException {
 
-        // SETUP
-        final DlmsDevice device = new DlmsDevice();
-        final Protocol protocol = Protocol.DSMR_4_2_2;
-        device.setProtocol(protocol);
+    // SETUP
+    final DlmsDevice device = new DlmsDevice();
+    final Protocol protocol = Protocol.DSMR_4_2_2;
+    device.setProtocol(protocol);
 
-        when(this.protocolServiceLookup.lookupGetService(protocol)).thenReturn(this.getService);
-        when(this.getService.getConfigurationObject(this.conn)).thenReturn(this.configurationOnDevice);
+    when(this.protocolServiceLookup.lookupGetService(protocol)).thenReturn(this.getService);
+    when(this.getService.getConfigurationObject(this.conn)).thenReturn(this.configurationOnDevice);
 
-        when(this.protocolServiceLookup.lookupSetService(protocol)).thenReturn(this.setService);
-        final AccessResultCode accessResultCode = AccessResultCode.SUCCESS;
-        when(this.setService.setConfigurationObject(this.conn, this.configurationToSet, this.configurationOnDevice))
-                .thenReturn(accessResultCode);
+    when(this.protocolServiceLookup.lookupSetService(protocol)).thenReturn(this.setService);
+    final AccessResultCode accessResultCode = AccessResultCode.SUCCESS;
+    when(this.setService.setConfigurationObject(
+            this.conn, this.configurationToSet, this.configurationOnDevice))
+        .thenReturn(accessResultCode);
 
-        // CALL
-        final AccessResultCode result = this.instance.execute(this.conn, device, this.configurationToSet);
+    // CALL
+    final AccessResultCode result =
+        this.instance.execute(this.conn, device, this.configurationToSet);
 
-        // VERIFY
-        assertThat(result).isSameAs(accessResultCode);
-    }
+    // VERIFY
+    assertThat(result).isSameAs(accessResultCode);
+  }
 }

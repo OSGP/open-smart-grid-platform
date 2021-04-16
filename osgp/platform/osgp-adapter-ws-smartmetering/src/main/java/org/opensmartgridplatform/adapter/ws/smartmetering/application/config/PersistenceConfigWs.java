@@ -1,14 +1,14 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.config;
 
 import javax.sql.DataSource;
-
 import org.flywaydb.core.Flyway;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
@@ -21,11 +21,11 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-/**
- * An application context Java configuration class.
- */
-@EnableJpaRepositories(transactionManagerRef = "transactionManager", entityManagerFactoryRef = "entityManagerFactory", basePackageClasses = {
-        ResponseDataRepository.class })
+/** An application context Java configuration class. */
+@EnableJpaRepositories(
+    transactionManagerRef = "transactionManager",
+    entityManagerFactoryRef = "entityManagerFactory",
+    basePackageClasses = {ResponseDataRepository.class})
 @Configuration
 @EnableTransactionManagement()
 @PropertySource("classpath:osgp-adapter-ws-smartmetering.properties")
@@ -33,30 +33,30 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true)
 public class PersistenceConfigWs extends AbstractPersistenceConfig {
 
-    public PersistenceConfigWs() {
-        // Empty default constructor
-    }
+  public PersistenceConfigWs() {
+    // Empty default constructor
+  }
 
-    @Bean(destroyMethod = "close")
-    public DataSource dataSource() {
-        return super.getDataSource();
-    }
+  @Bean(destroyMethod = "close")
+  public DataSource dataSource() {
+    return super.getDataSource();
+  }
 
-    @Override
-    @Bean(name = "transactionManager")
-    public JpaTransactionManager transactionManager() {
-        return super.transactionManager();
-    }
+  @Override
+  @Bean(name = "transactionManager")
+  public JpaTransactionManager transactionManager() {
+    return super.transactionManager();
+  }
 
-    @Bean(initMethod = "migrate")
-    public Flyway flyway() {
-        return super.createFlyway();
-    }
+  @Bean(initMethod = "migrate")
+  public Flyway flyway() {
+    return super.createFlyway();
+  }
 
-    @Override
-    @Bean
-    @DependsOn("flyway")
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-        return super.entityManagerFactory("OSGP_ADAPTER_WS_SMARTMETERING");
-    }
+  @Override
+  @Bean
+  @DependsOn("flyway")
+  public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+    return super.entityManagerFactory("OSGP_ADAPTER_WS_SMARTMETERING");
+  }
 }
