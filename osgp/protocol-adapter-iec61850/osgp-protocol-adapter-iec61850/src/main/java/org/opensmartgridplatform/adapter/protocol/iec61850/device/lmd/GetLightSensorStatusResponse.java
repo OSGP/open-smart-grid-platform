@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2021 Alliander N.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,16 +15,19 @@ import org.opensmartgridplatform.dto.valueobjects.LightSensorStatusDto;
 
 public class GetLightSensorStatusResponse extends DeviceResponse {
 
-    private final LightSensorStatusDto lightSensorStatus;
+  private final LightSensorStatusDto lightSensorStatus;
 
-    public GetLightSensorStatusResponse(final DeviceRequest deviceRequest,
-            final LightSensorStatusDto lightSensorStatus) {
-        super(deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                deviceRequest.getCorrelationUid(), deviceRequest.getMessagePriority());
-        this.lightSensorStatus = lightSensorStatus;
-    }
+  public GetLightSensorStatusResponse(
+      final DeviceRequest deviceRequest, final LightSensorStatusDto lightSensorStatus) {
+    super(
+        deviceRequest.getOrganisationIdentification(),
+        deviceRequest.getDeviceIdentification(),
+        deviceRequest.getCorrelationUid(),
+        deviceRequest.getMessagePriority());
+    this.lightSensorStatus = lightSensorStatus;
+  }
 
-    public LightSensorStatusDto getLightSensorStatus() {
-        return this.lightSensorStatus;
-    }
+  public LightSensorStatusDto getLightSensorStatus() {
+    return this.lightSensorStatus;
+  }
 }
