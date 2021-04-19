@@ -17,13 +17,13 @@ import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.publiclighting.application.mapping.AdHocManagementMapper;
 import org.opensmartgridplatform.adapter.ws.publiclighting.application.services.AdHocManagementService;
-import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.GetStatusAsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.GetStatusAsyncResponse;
-import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.GetStatusRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.GetStatusResponse;
-import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.DevicePage;
+import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.DevicePage;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.FindAllDevicesRequest;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.FindAllDevicesResponse;
+import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusRequest;
+import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusResponse;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.ResumeScheduleAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.ResumeScheduleAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.ResumeScheduleRequest;
@@ -38,6 +38,8 @@ import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagemen
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.SetTransitionAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.SetTransitionRequest;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.SetTransitionResponse;
+import org.opensmartgridplatform.adapter.ws.schema.publiclighting.common.AsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.publiclighting.common.OsgpResultType;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.LightMeasurementDevice;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
