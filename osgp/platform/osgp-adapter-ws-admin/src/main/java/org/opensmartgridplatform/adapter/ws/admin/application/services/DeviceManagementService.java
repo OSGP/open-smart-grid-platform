@@ -566,7 +566,7 @@ public class DeviceManagementService {
             device.setCellId(cellId);
         }
 
-        Device updatedDevice = this.deviceRepository.save(device);
+        final Device updatedDevice = this.deviceRepository.save(device);
         LOGGER.info("CommunicationNetworkInformation for Device {} updated to : ipAddress={}, btsId={}, cellId={} ",
                 deviceIdentification, updatedDevice.getIpAddress(), updatedDevice.getBtsId(), updatedDevice.getCellId());
 
