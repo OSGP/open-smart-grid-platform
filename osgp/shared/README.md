@@ -16,4 +16,5 @@ Grid eXchange Fabric detailed documentation:
 * [documentation.gxf.lfenergy.org](https://documentation.gxf.lfenergy.org/)
 
 Grid eXchange Fabric issue tracker:
-* [Grid eXchange Fabric Jira](https://smartsocietyservices.atlassian.net/projects/OC/issues/)
+* [github.com/OSGP/Documentation/issues](https://github.com/OSGP/Documentation/issues)
+

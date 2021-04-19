@@ -1,10 +1,3 @@
-package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig;
-
-import java.util.ArrayList;
-import java.util.List;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
 /*
  * Copyright 2019 Smart Society Services B.V.
  *
@@ -13,6 +6,13 @@ import org.springframework.context.annotation.Configuration;
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig;
+
+import java.util.ArrayList;
+import java.util.List;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
 @Configuration
 public class DlmsObjectConfigConfiguration {
 
