@@ -8,6 +8,8 @@
  */
 package org.opensmartgridplatform.adapter.ws.admin.application.services;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceException;
@@ -651,6 +653,44 @@ public class DeviceManagementService {
         protocol,
         protocolVersion,
         deviceIdentification);
+  }
+
+  public Device updateCommunicationNetworkInformation(
+      final String deviceIdentification,
+      final String ipAddress,
+      final Integer btsId,
+      final Integer cellId)
+      throws FunctionalException {
+
+    final Device device = this.findDevice(deviceIdentification);
+
+    if (ipAddress != null) {
+      try {
+        device.setNetworkAddress(InetAddress.getByName(ipAddress));
+      } catch (final UnknownHostException e) {
+        LOGGER.error("Invalid ip address found {} for device {}", ipAddress, deviceIdentification);
+        throw new FunctionalException(
+            FunctionalExceptionType.INVALID_IP_ADDRESS, ComponentType.DOMAIN_SMART_METERING);
+      }
+    }
+
+    if (btsId != null) {
+      device.setBtsId(btsId);
+    }
+
+    if (cellId != null) {
+      device.setCellId(cellId);
+    }
+
+    final Device updatedDevice = this.deviceRepository.save(device);
+    LOGGER.info(
+        "CommunicationNetworkInformation for Device {} updated to : ipAddress={}, btsId={}, cellId={} ",
+        deviceIdentification,
+        updatedDevice.getIpAddress(),
+        updatedDevice.getBtsId(),
+        updatedDevice.getCellId());
+
+    return updatedDevice;
   }
 
   private Device findDevice(final String deviceIdentification) throws FunctionalException {

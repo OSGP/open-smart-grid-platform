@@ -29,6 +29,7 @@ import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.Platfo
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.ProtocolInfo;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.RemoveOrganisationRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.RevokeKeyRequest;
+import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.SetCommunicationNetworkInformationRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.SetOwnerRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.UpdateDeviceProtocolRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.UpdateKeyRequest;
@@ -165,6 +166,8 @@ public class AuthorizePlatformFunctionsSteps {
         case REMOVE_FIRMWARE:
           this.removeFirmware(requestParameters);
           break;
+        case SET_COMMUNICATION_NETWORK_INFORMATION:
+          this.setCommunicationNetworkInformation(requestParameters);
         default:
           throw new OperationNotSupportedException(
               "PlatformFunction " + this.platformFunction + " does not exist.");
@@ -487,5 +490,18 @@ public class AuthorizePlatformFunctionsSteps {
         .put(
             PlatformCommonKeys.RESPONSE,
             this.coreDeviceManagementClient.findScheduledTasks(request));
+  }
+
+  private void setCommunicationNetworkInformation(final Map<String, String> requestParameters)
+      throws WebServiceSecurityException {
+    final SetCommunicationNetworkInformationRequest  request =
+        new SetCommunicationNetworkInformationRequest();
+    request.setDeviceIdentification(PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION);
+    request.setBtsId(10);
+    request.setCellId(1);
+    ScenarioContext.current()
+        .put(
+            PlatformCommonKeys.RESPONSE,
+            this.adminDeviceManagementClient.setCommunicationNetworkInformation(request));
   }
 }

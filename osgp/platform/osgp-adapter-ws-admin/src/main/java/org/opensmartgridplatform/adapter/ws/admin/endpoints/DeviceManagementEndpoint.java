@@ -15,6 +15,7 @@ import org.opensmartgridplatform.adapter.ws.admin.application.mapping.DeviceMana
 import org.opensmartgridplatform.adapter.ws.admin.application.services.DeviceManagementService;
 import org.opensmartgridplatform.adapter.ws.admin.application.valueobjects.WsMessageLogFilter;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
+import org.opensmartgridplatform.adapter.ws.schema.admin.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.ActivateOrganisationRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.ActivateOrganisationResponse;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.ChangeOrganisationRequest;
@@ -39,6 +40,8 @@ import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.Remove
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.RemoveOrganisationResponse;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.RevokeKeyRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.RevokeKeyResponse;
+import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.SetCommunicationNetworkInformationRequest;
+import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.SetCommunicationNetworkInformationResponse;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.SetOwnerRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.SetOwnerResponse;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.UpdateDeviceAuthorisationsRequest;
@@ -568,6 +571,64 @@ public class DeviceManagementEndpoint {
     }
 
     return new UpdateDeviceProtocolResponse();
+  }
+
+  @PayloadRoot(
+      localPart = "SetCommunicationNetworkInformationRequest",
+      namespace = DEVICE_MANAGEMENT_NAMESPACE)
+  @ResponsePayload
+  public SetCommunicationNetworkInformationResponse setCommunicationNetworkInformation(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetCommunicationNetworkInformationRequest request)
+      throws OsgpException {
+
+    LOGGER.info(
+        "SetCommunicationNetworkInformation for organisation: {} and device: {}.",
+        organisationIdentification,
+        request.getDeviceIdentification());
+
+    SetCommunicationNetworkInformationResponse response = null;
+    try {
+      response = new SetCommunicationNetworkInformationResponse();
+
+      final org.opensmartgridplatform.domain.core.entities.Device updatedDevice =
+          this.deviceManagementService.updateCommunicationNetworkInformation(
+              request.getDeviceIdentification(),
+              request.getIpAddress(),
+              request.getBtsId(),
+              request.getCellId());
+
+      response.setResult(OsgpResultType.OK);
+      response.setIpAddress(updatedDevice.getIpAddress());
+      response.setBtsId(updatedDevice.getBtsId());
+      response.setCellId(updatedDevice.getCellId());
+
+    } catch (final ConstraintViolationException e) {
+
+      LOGGER.error(
+          "Exception: {} while setting subscription information for device: {} for organisation {}.",
+          e.getMessage(),
+          request.getDeviceIdentification(),
+          organisationIdentification,
+          e);
+
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          COMPONENT_TYPE_WS_ADMIN,
+          new ValidationException(e.getConstraintViolations()));
+
+    } catch (final Exception e) {
+
+      LOGGER.error(
+          "Exception: {} while updating device: {} for organisation {}.",
+          e.getMessage(),
+          request.getDeviceIdentification(),
+          organisationIdentification,
+          e);
+
+      this.handleException(e);
+    }
+    return response;
   }
 
   private void handleException(final Exception e) throws OsgpException {
