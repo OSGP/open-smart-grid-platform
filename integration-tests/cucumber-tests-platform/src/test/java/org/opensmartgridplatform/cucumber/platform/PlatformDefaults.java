@@ -239,4 +239,6 @@ public class PlatformDefaults {
   public static final String DEFAULT_LMD_CODE = "LmdCode";
   public static final String DEFAULT_LMD_COLOR = "LmdColor";
   public static final Short DEFAULT_LMD_DIGITAL_INPUT = 1;
+
+  public static final Integer DEFAULT_BTS_ID = 10;
 }

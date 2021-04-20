@@ -52,6 +52,7 @@ import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Remov
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.RemoveFirmwareRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.RemoveManufacturerRequest;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
+import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonDefaults;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonKeys;
@@ -497,7 +498,7 @@ public class AuthorizePlatformFunctionsSteps {
     final SetCommunicationNetworkInformationRequest request =
         new SetCommunicationNetworkInformationRequest();
     request.setDeviceIdentification(PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION);
-    request.setBtsId(10);
+    request.setBtsId(PlatformDefaults.DEFAULT_BTS_ID);
     request.setCellId(1);
     ScenarioContext.current()
         .put(

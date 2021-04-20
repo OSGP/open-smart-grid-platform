@@ -385,14 +385,6 @@
     </xsd:restriction>
   </xsd:simpleType>
 
-  <xsd:element name="GetCommunicationNetworkInformationRequest">
-    <xsd:complexType>
-      <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="xsd:string" />
-      </xsd:sequence>
-    </xsd:complexType>
-  </xsd:element>
-
   <xsd:element name="SetCommunicationNetworkInformationRequest">
     <xsd:complexType>
       <xsd:sequence>
@@ -433,5 +425,3 @@
   </xsd:element>
 
 </xsd:schema>
-
-
