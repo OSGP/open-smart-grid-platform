@@ -26,12 +26,20 @@ public enum ModemRegistrationStatusDto {
     return this.index;
   }
 
-  public static ModemRegistrationStatusDto fromValue(final int value) {
+  public static ModemRegistrationStatusDto fromIndexValue(final int value) {
     for (final ModemRegistrationStatusDto status : ModemRegistrationStatusDto.values()) {
       if (status.index == value) {
         return status;
       }
     }
     return null;
+  }
+
+  public String value() {
+    return this.name();
+  }
+
+  public static ModemRegistrationStatusDto fromValue(final String v) {
+    return valueOf(v);
   }
 }

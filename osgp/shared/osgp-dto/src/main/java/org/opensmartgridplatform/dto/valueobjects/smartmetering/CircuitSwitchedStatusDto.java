@@ -23,12 +23,20 @@ public enum CircuitSwitchedStatusDto {
     return this.index;
   }
 
-  public static CircuitSwitchedStatusDto fromValue(final int value) {
+  public static CircuitSwitchedStatusDto fromIndexValue(final int value) {
     for (final CircuitSwitchedStatusDto status : CircuitSwitchedStatusDto.values()) {
       if (status.index == value) {
         return status;
       }
     }
     return null;
+  }
+
+  public String value() {
+    return this.name();
+  }
+
+  public static CircuitSwitchedStatusDto fromValue(final String v) {
+    return valueOf(v);
   }
 }

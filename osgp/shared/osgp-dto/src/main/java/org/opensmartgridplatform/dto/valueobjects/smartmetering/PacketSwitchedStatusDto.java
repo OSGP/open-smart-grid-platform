@@ -30,12 +30,20 @@ public enum PacketSwitchedStatusDto {
     return this.index;
   }
 
-  public static PacketSwitchedStatusDto fromValue(final int value) {
+  public static PacketSwitchedStatusDto fromIndexValue(final int value) {
     for (final PacketSwitchedStatusDto status : PacketSwitchedStatusDto.values()) {
       if (status.index == value) {
         return status;
       }
     }
     return RESERVED;
+  }
+
+  public String value() {
+    return this.name();
+  }
+
+  public static PacketSwitchedStatusDto fromValue(final String v) {
+    return valueOf(v);
   }
 }

@@ -38,7 +38,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.BitErrorRateDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CircuitSwitchedStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetModemInfoRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetModemInfoResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ModemInfoDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ModemRegistrationStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PacketSwitchedStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SignalQualityDto;
@@ -158,27 +157,24 @@ public class GetModemInfoCommandExecutorIntegrationTest {
 
     // Check response
     assertThat(response).isNotNull();
-    final ModemInfoDto modemInfoDto = response.getModemInfoDto();
-    assertThat(modemInfoDto).isNotNull();
-    assertThat(modemInfoDto.getOperator()).isEqualTo("Utility Connect");
-    assertThat(modemInfoDto.getModemRegistrationStatus())
+    assertThat(response).isNotNull();
+    assertThat(response.getOperator()).isEqualTo("Utility Connect");
+    assertThat(response.getModemRegistrationStatus())
         .isEqualTo(ModemRegistrationStatusDto.REGISTERED_ROAMING);
-    assertThat(modemInfoDto.getCircuitSwitchedStatus())
-        .isEqualTo(CircuitSwitchedStatusDto.INACTIVE);
-    assertThat(modemInfoDto.getPacketSwitchedStatus()).isEqualTo(PacketSwitchedStatusDto.CDMA);
-    assertThat(modemInfoDto.getCellId()).isEqualTo(new byte[] {93, 0, 0, 0});
-    assertThat(modemInfoDto.getLocationId()).isEqualTo(new byte[] {-72, 8});
-    assertThat(modemInfoDto.getSignalQuality()).isEqualTo(SignalQualityDto.MINUS_87_DBM);
-    assertThat(modemInfoDto.getBitErrorRate()).isEqualTo(BitErrorRateDto.RXQUAL_6);
-    assertThat(modemInfoDto.getMobileCountryCode()).isEqualTo(204);
-    assertThat(modemInfoDto.getMobileNetworkCode()).isEqualTo(66);
-    assertThat(modemInfoDto.getChannelNumber()).isEqualTo(107);
-    assertThat(modemInfoDto.getNumberOfAdjacentCells()).isEqualTo(3);
-    assertThat(modemInfoDto.getAdjacentCellId()).isEqualTo(new byte[] {85, 0, 0, 0});
-    assertThat(modemInfoDto.getAdjacentCellSignalQuality())
-        .isEqualTo(SignalQualityDto.MINUS_65_DBM);
-    assertThat(modemInfoDto.getCaptureTime())
-        .isEqualTo(new DateTime(2021, 4, 1, 9, 28, DateTimeZone.UTC));
+    assertThat(response.getCircuitSwitchedStatus()).isEqualTo(CircuitSwitchedStatusDto.INACTIVE);
+    assertThat(response.getPacketSwitchedStatus()).isEqualTo(PacketSwitchedStatusDto.CDMA);
+    assertThat(response.getCellId()).isEqualTo(new byte[] {93, 0, 0, 0});
+    assertThat(response.getLocationId()).isEqualTo(new byte[] {-72, 8});
+    assertThat(response.getSignalQuality()).isEqualTo(SignalQualityDto.MINUS_87_DBM);
+    assertThat(response.getBitErrorRate()).isEqualTo(BitErrorRateDto.RXQUAL_6);
+    assertThat(response.getMobileCountryCode()).isEqualTo(204);
+    assertThat(response.getMobileNetworkCode()).isEqualTo(66);
+    assertThat(response.getChannelNumber()).isEqualTo(107);
+    assertThat(response.getNumberOfAdjacentCells()).isEqualTo(3);
+    assertThat(response.getAdjacentCellId()).isEqualTo(new byte[] {85, 0, 0, 0});
+    assertThat(response.getAdjacentCellSignalQuality()).isEqualTo(SignalQualityDto.MINUS_65_DBM);
+    assertThat(response.getCaptureTime())
+        .isEqualTo(new DateTime(2021, 4, 1, 9, 28, DateTimeZone.UTC).toDate());
   }
 
   private DlmsDevice createDlmsDevice(final Protocol protocol, final CommunicationMethod method) {
