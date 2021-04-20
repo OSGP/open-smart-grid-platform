@@ -25,7 +25,7 @@ public class DeviceConverter extends BidirectionalConverter<SmartMeteringDeviceD
     dlmsDevice.setDeviceIdentification(source.getDeviceIdentification());
     dlmsDevice.setCommunicationMethod(source.getCommunicationMethod());
     dlmsDevice.setCommunicationProvider(source.getCommunicationProvider());
-    dlmsDevice.setIccId(source.getICCId());
+    dlmsDevice.setIccId(source.getIccId());
     dlmsDevice.setHls3Active(source.isHls3Active());
     dlmsDevice.setHls4Active(source.isHls4Active());
     dlmsDevice.setHls5Active(source.isHls5Active());

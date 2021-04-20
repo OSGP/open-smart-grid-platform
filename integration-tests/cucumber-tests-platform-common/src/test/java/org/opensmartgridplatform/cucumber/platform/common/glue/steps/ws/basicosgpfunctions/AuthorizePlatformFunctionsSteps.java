@@ -494,7 +494,7 @@ public class AuthorizePlatformFunctionsSteps {
 
   private void setCommunicationNetworkInformation(final Map<String, String> requestParameters)
       throws WebServiceSecurityException {
-    final SetCommunicationNetworkInformationRequest  request =
+    final SetCommunicationNetworkInformationRequest request =
         new SetCommunicationNetworkInformationRequest();
     request.setDeviceIdentification(PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION);
     request.setBtsId(10);

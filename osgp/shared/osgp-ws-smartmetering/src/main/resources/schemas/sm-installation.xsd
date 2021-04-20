@@ -235,7 +235,7 @@
         </xsd:simpleType>
       </xsd:element>
 
-      <xsd:element name="ICC_id" minOccurs="0">
+      <xsd:element name="Icc_id" minOccurs="0">
         <xsd:simpleType>
           <xsd:restriction base="tns:AlphaNumericType">
             <xsd:maxLength value="20"/>
@@ -267,11 +267,11 @@
         </xsd:simpleType>
       </xsd:element>
 
-      <xsd:element name="HLS3_active" type="xsd:boolean"
+      <xsd:element name="Hls3_active" type="xsd:boolean"
                    minOccurs="0"/>
-      <xsd:element name="HLS4_active" type="xsd:boolean"
+      <xsd:element name="Hls4_active" type="xsd:boolean"
                    minOccurs="0"/>
-      <xsd:element name="HLS5_active" type="xsd:boolean"
+      <xsd:element name="Hls5_active" type="xsd:boolean"
                    minOccurs="0"/>
       <!-- no type restriction for unencrypted keys for now -->
       <xsd:element name="Master_key" type="xsd:hexBinary"

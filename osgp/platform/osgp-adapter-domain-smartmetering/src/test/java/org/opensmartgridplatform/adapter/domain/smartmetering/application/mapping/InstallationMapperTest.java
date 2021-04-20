@@ -29,7 +29,7 @@ public class InstallationMapperTest {
     source.setDeviceType("typeA");
     source.setCommunicationMethod("skype");
     source.setCommunicationProvider("theInternet");
-    source.setICCId("value");
+    source.setIccId("value");
     source.setProtocolName("protocolName");
     source.setProtocolVersion("latestVersion");
     source.setMasterKey("masterKey".getBytes());
@@ -73,7 +73,7 @@ public class InstallationMapperTest {
     smartMeteringDevice.setDeviceType("typeA");
     smartMeteringDevice.setCommunicationMethod("skype");
     smartMeteringDevice.setCommunicationProvider("theInternet");
-    smartMeteringDevice.setICCId("value");
+    smartMeteringDevice.setIccId("value");
     smartMeteringDevice.setProtocolName("protocolName");
     smartMeteringDevice.setProtocolVersion("latestVersion");
     smartMeteringDevice.setMasterKey("masterKey".getBytes());

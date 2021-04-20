@@ -46,7 +46,7 @@ public class DeviceMappingTest {
     assertThat(smartMeteringDevice.getDeviceType()).isEqualTo(DEVICE_TYPE);
     assertThat(smartMeteringDevice.getCommunicationMethod()).isEqualTo(COMMUNICATION_METHOD);
     assertThat(smartMeteringDevice.getCommunicationProvider()).isEqualTo(COMMUNICATION_PROVIDER);
-    assertThat(smartMeteringDevice.getICCId()).isEqualTo(ICC_ID);
+    assertThat(smartMeteringDevice.getIccId()).isEqualTo(ICC_ID);
     assertThat(smartMeteringDevice.getProtocolName()).isEqualTo(PROTOCOL_NAME);
     assertThat(smartMeteringDevice.getProtocolVersion()).isEqualTo(PROTOCOL_VERSION);
     assertThat(smartMeteringDevice.getSupplier()).isEqualTo(SUPPLIER);
@@ -131,7 +131,7 @@ public class DeviceMappingTest {
     smartMeteringDevice.setDeviceType(DEVICE_TYPE);
     smartMeteringDevice.setCommunicationMethod(COMMUNICATION_METHOD);
     smartMeteringDevice.setCommunicationProvider(COMMUNICATION_PROVIDER);
-    smartMeteringDevice.setICCId(ICC_ID);
+    smartMeteringDevice.setIccId(ICC_ID);
     smartMeteringDevice.setProtocolName(PROTOCOL_NAME);
     smartMeteringDevice.setProtocolVersion(PROTOCOL_VERSION);
     smartMeteringDevice.setSupplier(SUPPLIER);

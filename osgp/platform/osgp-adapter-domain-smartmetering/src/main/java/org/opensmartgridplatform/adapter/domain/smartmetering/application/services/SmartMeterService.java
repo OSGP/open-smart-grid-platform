@@ -82,18 +82,6 @@ public class SmartMeterService {
     }
   }
 
-  private SmartMeter validateSmartMeterExists(final String deviceIdentification)
-      throws FunctionalException {
-    final SmartMeter smartMeter =
-        this.smartMeterRepository.findByDeviceIdentification(deviceIdentification);
-
-    if (smartMeter == null) {
-      throw new FunctionalException(
-          FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.DOMAIN_SMART_METERING);
-    }
-    return smartMeter;
-  }
-
   public SmartMeter convertSmartMeter(final SmartMeteringDevice smartMeteringDevice) {
     return this.mapperFactory.getMapperFacade().map(smartMeteringDevice, SmartMeter.class);
   }
