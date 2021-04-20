@@ -53,12 +53,20 @@ public enum SignalQualityDto {
     return this.index;
   }
 
-  public static SignalQualityDto fromValue(final int value) {
+  public static SignalQualityDto fromIndexValue(final int value) {
     for (final SignalQualityDto status : SignalQualityDto.values()) {
       if (status.index == value) {
         return status;
       }
     }
     return null;
+  }
+
+  public String value() {
+    return this.name();
+  }
+
+  public static SignalQualityDto fromValue(final String v) {
+    return valueOf(v);
   }
 }

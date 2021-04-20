@@ -18,9 +18,9 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dl
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsModemInfo.ATTRIBUTE_ID_PACKET_SWITCHED_STATUS;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.joda.time.DateTime;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -41,7 +41,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.CircuitSwitchedS
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetModemInfoRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetModemInfoResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ModemInfoDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ModemRegistrationStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PacketSwitchedStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SignalQualityDto;
@@ -179,27 +178,24 @@ public class GetModemInfoCommandExecutor
         this.getPacketSwitchedStatus(getResultList);
     final CellInfo cellInfo = this.getCellInfo(getResultList);
     final AdjacentCellsInfo adjacentCellsInfo = this.getAdjacentCellsInfo(getResultList);
-    final DateTime captureTimeDto = this.getCaptureTime(getResultList);
+    final Date captureTimeDto = this.getCaptureTime(getResultList);
 
-    final ModemInfoDto modemInfoDto =
-        new ModemInfoDto(
-            operator,
-            registrationStatus,
-            circuitSwitchedStatus,
-            packetSwitchedStatusDto,
-            cellInfo.cellId,
-            cellInfo.locationId,
-            cellInfo.signalQualityDto,
-            cellInfo.bitErrorRateDto,
-            cellInfo.mobileCountryCode,
-            cellInfo.mobileNetworkCode,
-            cellInfo.channelNumber,
-            adjacentCellsInfo.numberOfAdjacentCells,
-            adjacentCellsInfo.adjacentCellId,
-            adjacentCellsInfo.signalQualityDto,
-            captureTimeDto);
-
-    return new GetModemInfoResponseDto(modemInfoDto);
+    return new GetModemInfoResponseDto(
+        operator,
+        registrationStatus,
+        circuitSwitchedStatus,
+        packetSwitchedStatusDto,
+        cellInfo.cellId,
+        cellInfo.locationId,
+        cellInfo.signalQualityDto,
+        cellInfo.bitErrorRateDto,
+        cellInfo.mobileCountryCode,
+        cellInfo.mobileNetworkCode,
+        cellInfo.channelNumber,
+        adjacentCellsInfo.numberOfAdjacentCells,
+        adjacentCellsInfo.adjacentCellId,
+        adjacentCellsInfo.signalQualityDto,
+        captureTimeDto);
   }
 
   private String getOperator(final List<GetResult> getResultList) {
@@ -215,7 +211,7 @@ public class GetModemInfoCommandExecutor
   private ModemRegistrationStatusDto getRegistrationStatus(final List<GetResult> getResultList) {
     final GetResult result = getResultList.get(RESULT_MODEM_REGISTRATION_STATUS_INDEX);
     if (this.isResultSuccess(result)) {
-      return ModemRegistrationStatusDto.fromValue(result.getResultData().getValue());
+      return ModemRegistrationStatusDto.fromIndexValue(result.getResultData().getValue());
     } else {
       return null;
     }
@@ -224,7 +220,7 @@ public class GetModemInfoCommandExecutor
   private CircuitSwitchedStatusDto getCircuitSwitchedStatus(final List<GetResult> getResultList) {
     final GetResult result = getResultList.get(RESULT_CIRCUIT_SWITCHED_STATUS_INDEX);
     if (this.isResultSuccess(result)) {
-      return CircuitSwitchedStatusDto.fromValue(result.getResultData().getValue());
+      return CircuitSwitchedStatusDto.fromIndexValue(result.getResultData().getValue());
     } else {
       return null;
     }
@@ -233,7 +229,7 @@ public class GetModemInfoCommandExecutor
   private PacketSwitchedStatusDto getPacketSwitchedStatus(final List<GetResult> getResultList) {
     final GetResult result = getResultList.get(RESULT_PACKET_SWITCHED_STATUS_INDEX);
     if (this.isResultSuccess(result)) {
-      return PacketSwitchedStatusDto.fromValue(result.getResultData().getValue());
+      return PacketSwitchedStatusDto.fromIndexValue(result.getResultData().getValue());
     } else {
       return null;
     }
@@ -255,10 +251,10 @@ public class GetModemInfoCommandExecutor
       cellInfo.locationId =
           this.intToByteArray(cellInfoDataObjects.get(CELL_INFO_LOCATION_ID_INDEX).getValue());
       cellInfo.signalQualityDto =
-          SignalQualityDto.fromValue(
+          SignalQualityDto.fromIndexValue(
               (short) cellInfoDataObjects.get(CELL_INFO_SIGNAL_QUALITY_INDEX).getValue());
       cellInfo.bitErrorRateDto =
-          BitErrorRateDto.fromValue(
+          BitErrorRateDto.fromIndexValue(
               (short) cellInfoDataObjects.get(CELL_INFO_BIT_ERROR_RATE_INDEX).getValue());
       cellInfo.mobileCountryCode =
           cellInfoDataObjects.get(CELL_INFO_MOBILE_COUNTRY_CODE_INDEX).getValue();
@@ -282,12 +278,12 @@ public class GetModemInfoCommandExecutor
 
     if (adjacentCellsDataObjects != null) {
       adjacentCellsInfo.numberOfAdjacentCells = adjacentCellsDataObjects.size();
-      if (adjacentCellsDataObjects.size() > 0) {
+      if (!adjacentCellsDataObjects.isEmpty()) {
         final List<DataObject> firstAdjacentCell = adjacentCellsDataObjects.get(0).getValue();
         adjacentCellsInfo.adjacentCellId =
             this.longToByteArray(firstAdjacentCell.get(ADJACENT_CELLS_CELL_ID_INDEX).getValue());
         adjacentCellsInfo.signalQualityDto =
-            SignalQualityDto.fromValue(
+            SignalQualityDto.fromIndexValue(
                 (short) firstAdjacentCell.get(ADJACENT_CELLS_SIGNAL_QUALITY_INDEX).getValue());
       }
     }
@@ -295,16 +291,15 @@ public class GetModemInfoCommandExecutor
     return adjacentCellsInfo;
   }
 
-  private DateTime getCaptureTime(final List<GetResult> getResultList)
-      throws ProtocolAdapterException {
+  private Date getCaptureTime(final List<GetResult> getResultList) throws ProtocolAdapterException {
     final GetResult result = getResultList.get(RESULT_CAPTURE_TIME_INDEX);
     if (this.isResultSuccess(result)) {
       final CosemDateTimeDto cosemDateTime =
           this.dlmsHelper.readDateTime(result.getResultData(), "Clock from modem info");
 
-      final DateTime captureTime;
+      final Date captureTime;
       if (cosemDateTime.isDateTimeSpecified()) {
-        captureTime = cosemDateTime.asDateTime();
+        captureTime = cosemDateTime.asDateTime().toDate();
       } else {
         throw new ProtocolAdapterException("Unexpected values in modem info capture time");
       }

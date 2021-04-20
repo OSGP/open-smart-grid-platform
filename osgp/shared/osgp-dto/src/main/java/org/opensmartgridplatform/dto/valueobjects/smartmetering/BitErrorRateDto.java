@@ -29,12 +29,20 @@ public enum BitErrorRateDto {
     return this.index;
   }
 
-  public static BitErrorRateDto fromValue(final int value) {
+  public static BitErrorRateDto fromIndexValue(final int value) {
     for (final BitErrorRateDto status : BitErrorRateDto.values()) {
       if (status.index == value) {
         return status;
       }
     }
     return null;
+  }
+
+  public String value() {
+    return this.name();
+  }
+
+  public static BitErrorRateDto fromValue(final String v) {
+    return valueOf(v);
   }
 }
