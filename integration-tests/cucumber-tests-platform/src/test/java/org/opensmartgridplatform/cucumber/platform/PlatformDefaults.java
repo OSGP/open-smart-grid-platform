@@ -241,4 +241,5 @@ public class PlatformDefaults {
   public static final Short DEFAULT_LMD_DIGITAL_INPUT = 1;
 
   public static final Integer DEFAULT_BTS_ID = 10;
+  public static final Integer DEFAULT_CELL_ID = 1;
 }

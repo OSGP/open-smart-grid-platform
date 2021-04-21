@@ -499,7 +499,7 @@ public class AuthorizePlatformFunctionsSteps {
         new SetCommunicationNetworkInformationRequest();
     request.setDeviceIdentification(PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION);
     request.setBtsId(PlatformDefaults.DEFAULT_BTS_ID);
-    request.setCellId(1);
+    request.setCellId(PlatformDefaults.DEFAULT_CELL_ID);
     ScenarioContext.current()
         .put(
             PlatformCommonKeys.RESPONSE,

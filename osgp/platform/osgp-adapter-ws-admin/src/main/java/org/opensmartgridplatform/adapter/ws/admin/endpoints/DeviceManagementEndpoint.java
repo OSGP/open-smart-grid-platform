@@ -604,28 +604,12 @@ public class DeviceManagementEndpoint {
       response.setCellId(updatedDevice.getCellId());
 
     } catch (final ConstraintViolationException e) {
-
-      LOGGER.error(
-          "Exception: {} while setting subscription information for device: {} for organisation {}.",
-          e.getMessage(),
-          request.getDeviceIdentification(),
-          organisationIdentification,
-          e);
-
       throw new FunctionalException(
           FunctionalExceptionType.VALIDATION_ERROR,
           COMPONENT_TYPE_WS_ADMIN,
           new ValidationException(e.getConstraintViolations()));
 
     } catch (final Exception e) {
-
-      LOGGER.error(
-          "Exception: {} while updating device: {} for organisation {}.",
-          e.getMessage(),
-          request.getDeviceIdentification(),
-          organisationIdentification,
-          e);
-
       this.handleException(e);
     }
     return response;

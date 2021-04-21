@@ -396,14 +396,6 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="SetCommunicationNetworkInformationAsyncRequest">
-    <xsd:complexType>
-      <xsd:complexContent>
-        <xsd:extension base="common:AsyncRequest" />
-      </xsd:complexContent>
-    </xsd:complexType>
-  </xsd:element>
-
   <xsd:element name="SetCommunicationNetworkInformationResponse">
     <xsd:complexType>
       <xsd:sequence>
@@ -413,14 +405,6 @@
         <xsd:element name="BtsId" type="xsd:int" minOccurs="0" />
         <xsd:element name="CellId" type="xsd:int" minOccurs="0" />
       </xsd:sequence>
-    </xsd:complexType>
-  </xsd:element>
-
-  <xsd:element name="SetCommunicationNetworkInformationAsyncResponse">
-    <xsd:complexType>
-      <xsd:complexContent>
-        <xsd:extension base="common:AsyncResponse" />
-      </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
 
