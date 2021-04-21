@@ -6,12 +6,12 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.steps;
+package org.opensmartgridplatform.cucumber.protocol.iec60870.glue.steps;
 
-import static org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationKeys.INFORMATION_ELEMENT_VALUE;
-import static org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationKeys.INFORMATION_OBJECT_ADDRESS;
-import static org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationKeys.INFORMATION_OBJECT_TYPE;
-import static org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationKeys.PROFILE;
+import static org.opensmartgridplatform.cucumber.protocol.iec60870.ProtocolIec60870Keys.INFORMATION_ELEMENT_VALUE;
+import static org.opensmartgridplatform.cucumber.protocol.iec60870.ProtocolIec60870Keys.INFORMATION_OBJECT_ADDRESS;
+import static org.opensmartgridplatform.cucumber.protocol.iec60870.ProtocolIec60870Keys.INFORMATION_OBJECT_TYPE;
+import static org.opensmartgridplatform.cucumber.protocol.iec60870.ProtocolIec60870Keys.PROFILE;
 
 import io.cucumber.java.en.When;
 import java.util.Map;
