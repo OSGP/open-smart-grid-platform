@@ -11,7 +11,8 @@ package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 public enum CircuitSwitchedStatusDto {
   INACTIVE(0),
   INCOMING_CALL(1),
-  ACTIVE(2);
+  ACTIVE(2),
+  RESERVED(3);
 
   private final int index;
 
@@ -29,7 +30,7 @@ public enum CircuitSwitchedStatusDto {
         return status;
       }
     }
-    return null;
+    return RESERVED;
   }
 
   public String value() {

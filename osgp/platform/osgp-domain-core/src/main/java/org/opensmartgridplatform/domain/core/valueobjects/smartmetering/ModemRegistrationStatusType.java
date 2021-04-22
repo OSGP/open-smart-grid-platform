@@ -16,7 +16,8 @@ public enum ModemRegistrationStatusType {
   NOT_REGISTERED_CURRENT_SEARCH_OPERATOR_TO_REGISTER_TO,
   REGISTRATION_DENIED,
   UNKNOWN,
-  REGISTERED_ROAMING;
+  REGISTERED_ROAMING,
+  RESERVED;
 
   public String value() {
     return this.name();
