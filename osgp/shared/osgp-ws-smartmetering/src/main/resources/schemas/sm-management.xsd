@@ -709,8 +709,8 @@
           <xsd:element name="LocationId" type="xsd:hexBinary"/>
           <xsd:element name="SignalQuality" type="tns:SignalQuality"/>
           <xsd:element name="BitErrorRate" type="tns:BitErrorRate"/>
-          <xsd:element name="MobileCountryCode" type="xsd:unsignedInt"/>
-          <xsd:element name="MobileNetworkCode" type="xsd:unsignedInt"/>
+          <xsd:element name="MobileCountryCode" type="xsd:unsignedShort"/>
+          <xsd:element name="MobileNetworkCode" type="xsd:unsignedShort"/>
           <xsd:element name="ChannelNumber" type="xsd:unsignedInt"/>
           <xsd:element name="NumberOfAdjacentCells" type="xsd:unsignedInt"/>
           <xsd:element name="AdjacentCellId" type="xsd:hexBinary"/>
@@ -735,6 +735,8 @@
       <xsd:enumeration value="UNKNOWN"/>
       <!-- 5 - Registered roaming -->
       <xsd:enumeration value="REGISTERED_ROAMING"/>
+      <!-- 6-255 - Reserved -->
+      <xsd:enumeration value="RESERVED"/>
     </xsd:restriction>
   </xsd:simpleType>
 
@@ -746,12 +748,14 @@
       <xsd:enumeration value="INCOMING_CALL"/>
       <!-- 2 - Active -->
       <xsd:enumeration value="ACTIVE"/>
+      <!-- 3-255 - Reserved -->
+      <xsd:enumeration value="RESERVED"/>
     </xsd:restriction>
   </xsd:simpleType>
 
   <xsd:simpleType name="PacketSwitchedStatus">
     <xsd:restriction base="xsd:string">
-      <!-- 0 - Inactiva -->
+      <!-- 0 - Inactive -->
       <xsd:enumeration value="INACTIVE"/>
       <!-- 1 - GPRS -->
       <xsd:enumeration value="GPRS"/>
@@ -838,7 +842,7 @@
       <xsd:enumeration value="MINUS_55_DBM"/>
       <!-- 30 - -53 dBm -->
       <xsd:enumeration value="MINUS_53_DBM"/>
-      <!-- 31 - -51 dBm -->
+      <!-- 31 - -51 dBm or greater -->
       <xsd:enumeration value="MINUS_51_DBM"/>
       <!-- 99 - not known or not detectable -->
       <xsd:enumeration value="NOT_KNOWN_OR_NOT_DETECTABLE"/>

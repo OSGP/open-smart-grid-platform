@@ -14,7 +14,8 @@ public enum ModemRegistrationStatusDto {
   NOT_REGISTERED_CURRENT_SEARCH_OPERATOR_TO_REGISTER_TO(2),
   REGISTRATION_DENIED(3),
   UNKNOWN(4),
-  REGISTERED_ROAMING(5);
+  REGISTERED_ROAMING(5),
+  RESERVED(6);
 
   private final int index;
 
@@ -32,7 +33,7 @@ public enum ModemRegistrationStatusDto {
         return status;
       }
     }
-    return null;
+    return RESERVED;
   }
 
   public String value() {

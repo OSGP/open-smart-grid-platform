@@ -12,7 +12,8 @@ package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 public enum CircuitSwitchedStatusType {
   INACTIVE,
   INCOMING_CALL,
-  ACTIVE;
+  ACTIVE,
+  RESERVED;
 
   public String value() {
     return this.name();
