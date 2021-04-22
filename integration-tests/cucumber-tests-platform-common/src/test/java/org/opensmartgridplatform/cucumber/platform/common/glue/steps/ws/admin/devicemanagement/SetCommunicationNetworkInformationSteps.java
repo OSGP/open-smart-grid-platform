@@ -86,10 +86,11 @@ public class SetCommunicationNetworkInformationSteps {
 
     final SetCommunicationNetworkInformationRequest request = createRequestFromInput(inputSettings);
 
-    final SetCommunicationNetworkInformationResponse response =
-        this.client.setCommunicationNetworkInformation(request);
-
-    ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, response);
+    try {
+      this.client.setCommunicationNetworkInformation(request);
+    } catch (final SoapFaultClientException e) {
+      ScenarioContext.current().put(PlatformCommonKeys.RESPONSE, e);
+    }
   }
 
   @Then("the set communication network information response contains soap fault")
