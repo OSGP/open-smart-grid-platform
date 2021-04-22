@@ -68,7 +68,7 @@ public class SetCommunicationNetworkInformationSteps {
 
     request.setDeviceIdentification(inputSettings.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
     request.setIpAddress(inputSettings.get(PlatformKeys.IP_ADDRESS));
-    
+
     if (inputSettings.get(PlatformKeys.BTS_ID) != null) {
       request.setBtsId(Integer.parseInt(inputSettings.get(PlatformKeys.BTS_ID)));
     }
