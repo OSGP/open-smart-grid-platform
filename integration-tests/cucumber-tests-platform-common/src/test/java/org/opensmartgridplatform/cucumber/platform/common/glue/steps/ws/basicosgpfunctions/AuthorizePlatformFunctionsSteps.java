@@ -29,7 +29,6 @@ import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.Platfo
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.ProtocolInfo;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.RemoveOrganisationRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.RevokeKeyRequest;
-import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.SetCommunicationNetworkInformationRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.SetOwnerRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.UpdateDeviceProtocolRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.UpdateKeyRequest;
@@ -52,7 +51,6 @@ import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Remov
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.RemoveFirmwareRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.RemoveManufacturerRequest;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
-import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonDefaults;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonKeys;
@@ -490,5 +488,4 @@ public class AuthorizePlatformFunctionsSteps {
             PlatformCommonKeys.RESPONSE,
             this.coreDeviceManagementClient.findScheduledTasks(request));
   }
-
 }
