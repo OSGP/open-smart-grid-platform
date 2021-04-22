@@ -39,6 +39,7 @@ public class ResponseDataService {
   public void enqueue(final ResponseData responseData) {
     if (this.responseDataRepository.findByCorrelationUid(responseData.getCorrelationUid())
         == null) {
+      LOGGER.info("save ResponseData for CorrelationUid {}", responseData.getCorrelationUid());
       this.responseDataRepository.save(responseData);
     } else {
       LOGGER.warn(
