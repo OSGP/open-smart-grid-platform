@@ -19,9 +19,8 @@ Feature: DistributionAutomation Receive measurement reports
       | Status               | Active            |
     When Organization test-org connects to device TEST1024000000002
     And the process image on the IEC60870 server changes
-      | InformationObjectAddress |            2 |
-      | InformationObjectType    | IeShortFloat |
-      | InformationElementValue  |         10.0 |
+      | InformationObjectAddress | InformationObjectType | InformationElementValue |
+      |                        2 | SHORT_FLOAT           |                    10.0 |
     Then I get a measurement report for device TEST1024000000002 with values
       | InformationObjectAddress |            2 |
       | InformationObjectType    | IeShortFloat |
