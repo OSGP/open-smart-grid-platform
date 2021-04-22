@@ -75,6 +75,27 @@ public class Iec60870Server {
   }
 
   /**
+   * Initializes the value for a specific information object address
+   *
+   * <p>Contrary to the {@link Iec60870Server#updateInformationObject(int,
+   * Iec60870InformationObjectType, Object)} method, no event is sent to the controlling station.
+   *
+   * @param informationObjectAddress
+   * @param informationObjectType
+   * @param value
+   */
+  public void initInformationObject(
+      final int informationObjectAddress,
+      final Iec60870InformationObjectType informationObjectType,
+      final Object value) {
+
+    final InformationElement[][] informationElements =
+        this.informationElementFactory.createInformationElements(informationObjectType, value);
+
+    this.processImage.put(informationObjectAddress, informationElements);
+  }
+
+  /**
    * If the informationObjectAddress is already in the process image, the value is updated.
    * Otherwise a new item is added to the process image.
    *

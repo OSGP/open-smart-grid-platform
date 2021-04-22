@@ -8,8 +8,11 @@
  */
 package org.opensmartgridplatform.cucumber.protocol.iec60870.glue.hooks;
 
+import static org.opensmartgridplatform.cucumber.protocol.iec60870.ProtocolIec60870Keys.PROFILE;
+
 import io.cucumber.java.Before;
 import org.openmuc.j60870.ASduType;
+import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.protocol.iec60870.database.Iec60870Database;
 import org.opensmartgridplatform.cucumber.protocol.iec60870.mock.Iec60870MockServer;
 import org.opensmartgridplatform.simulator.protocol.iec60870.domain.Iec60870AsduFactory;
@@ -31,6 +34,7 @@ public class ScenarioHooks {
 
   @Before("@Iec60870MockServerLightMeasurement")
   public void initMockServerLightMeasurement() {
+    ScenarioContext.current().put(PROFILE, "light_measurement_device");
     final Iec60870AsduFactory factory = new LightMeasurementDeviceAsduFactory();
     factory.setIec60870Server(this.mockServer.getRtuSimulator());
     this.mockServer.addIec60870ASduHandler(

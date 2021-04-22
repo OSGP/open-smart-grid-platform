@@ -12,6 +12,12 @@ Feature: Light Measurement using IEC-60870 device
       | DeviceIdentification        | <LMD> |
       | GatewayDeviceIdentification | <RTU> |
       | InformationObjectAddress    | <IOA> |
+    And a process image on the IEC60870 server
+      | InformationObjectAddress | InformationObjectType                 | InformationElementValue |
+      |                        1 | SINGLE_POINT_INFORMATION_WITH_QUALITY | true                    |
+      |                        2 | SINGLE_POINT_INFORMATION_WITH_QUALITY | true                    |
+      |                        3 | SINGLE_POINT_INFORMATION_WITH_QUALITY | false                   |
+      |                        4 | SINGLE_POINT_INFORMATION_WITH_QUALITY | false                   |
     And an ssld oslp device
       | DeviceIdentification                 | <SSLD>     |
       | LightMeasurementDeviceIdentification | <LMD>      |
@@ -32,5 +38,5 @@ Feature: Light Measurement using IEC-60870 device
 
     Examples: 
       | LMD   | IOA | RTU   | SSLD   | SPI   | EVENT | TRANSITION |
-      | LMD-1 |   1 | RTU-1 | SSLD-1 | true  | DARK  | DAY_NIGHT  |
-      | LMD-1 |   1 | RTU-1 | SSLD-1 | false | LIGHT | NIGHT_DAY  |
+      | LMD-3 |   3 | RTU-1 | SSLD-1 | true  | DARK  | DAY_NIGHT  |
+      | LMD-1 |   1 | RTU-1 | SSLD-2 | false | LIGHT | NIGHT_DAY  |

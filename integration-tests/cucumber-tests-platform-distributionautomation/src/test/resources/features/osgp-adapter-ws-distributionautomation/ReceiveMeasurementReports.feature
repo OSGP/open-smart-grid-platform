@@ -15,10 +15,10 @@ Feature: DistributionAutomation Receive measurement reports
   @Iec60870MockServerDefaultControlledStation
   Scenario: Update process image of default controlled station
     Given an IEC 60870 RTU
-      | DeviceIdentification | TEST1024000000002          |
-      | Status               | Active                     |
+      | DeviceIdentification | TEST1024000000002 |
+      | Status               | Active            |
     When Organization test-org connects to device TEST1024000000002
-    And I update the information object
+    And the process image on the IEC60870 server changes
       | InformationObjectAddress |            2 |
       | InformationObjectType    | IeShortFloat |
       | InformationElementValue  |         10.0 |
@@ -26,4 +26,3 @@ Feature: DistributionAutomation Receive measurement reports
       | InformationObjectAddress |            2 |
       | InformationObjectType    | IeShortFloat |
       | InformationElementValue  |         10.0 |
-
