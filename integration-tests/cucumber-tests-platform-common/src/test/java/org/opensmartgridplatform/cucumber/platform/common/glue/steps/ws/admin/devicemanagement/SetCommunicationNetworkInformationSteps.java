@@ -68,8 +68,14 @@ public class SetCommunicationNetworkInformationSteps {
 
     request.setDeviceIdentification(inputSettings.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
     request.setIpAddress(inputSettings.get(PlatformKeys.IP_ADDRESS));
-    request.setBtsId(Integer.parseInt(inputSettings.get(PlatformKeys.BTS_ID)));
-    request.setCellId(Integer.parseInt(inputSettings.get(PlatformKeys.CELL_ID)));
+    
+    if (inputSettings.get(PlatformKeys.BTS_ID) != null) {
+      request.setBtsId(Integer.parseInt(inputSettings.get(PlatformKeys.BTS_ID)));
+    }
+
+    if (inputSettings.get(PlatformKeys.CELL_ID) != null) {
+      request.setCellId(Integer.parseInt(inputSettings.get(PlatformKeys.CELL_ID)));
+    }
 
     return request;
   }
