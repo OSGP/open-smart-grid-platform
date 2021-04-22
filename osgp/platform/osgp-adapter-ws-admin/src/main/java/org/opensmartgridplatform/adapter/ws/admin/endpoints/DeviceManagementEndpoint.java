@@ -593,6 +593,7 @@ public class DeviceManagementEndpoint {
 
       final org.opensmartgridplatform.domain.core.entities.Device updatedDevice =
           this.deviceManagementService.updateCommunicationNetworkInformation(
+              organisationIdentification,
               request.getDeviceIdentification(),
               request.getIpAddress(),
               request.getBtsId(),

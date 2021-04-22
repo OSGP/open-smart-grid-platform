@@ -656,13 +656,17 @@ public class DeviceManagementService {
   }
 
   public Device updateCommunicationNetworkInformation(
+      final String organisationIdentification,
       final String deviceIdentification,
       final String ipAddress,
       final Integer btsId,
       final Integer cellId)
       throws FunctionalException {
 
+    final Organisation organisation = this.findOrganisation(organisationIdentification);
     final Device device = this.findDevice(deviceIdentification);
+
+    this.isAllowed(organisation, device, DeviceFunction.SET_COMMUNICATION_NETWORK_INFORMATION);
 
     if (ipAddress != null) {
       try {

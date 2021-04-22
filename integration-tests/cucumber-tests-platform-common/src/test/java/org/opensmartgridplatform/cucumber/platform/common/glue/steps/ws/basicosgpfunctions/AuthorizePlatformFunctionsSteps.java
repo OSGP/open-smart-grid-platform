@@ -167,8 +167,6 @@ public class AuthorizePlatformFunctionsSteps {
         case REMOVE_FIRMWARE:
           this.removeFirmware(requestParameters);
           break;
-        case SET_COMMUNICATION_NETWORK_INFORMATION:
-          this.setCommunicationNetworkInformation(requestParameters);
         default:
           throw new OperationNotSupportedException(
               "PlatformFunction " + this.platformFunction + " does not exist.");
@@ -493,16 +491,4 @@ public class AuthorizePlatformFunctionsSteps {
             this.coreDeviceManagementClient.findScheduledTasks(request));
   }
 
-  private void setCommunicationNetworkInformation(final Map<String, String> requestParameters)
-      throws WebServiceSecurityException {
-    final SetCommunicationNetworkInformationRequest request =
-        new SetCommunicationNetworkInformationRequest();
-    request.setDeviceIdentification(PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION);
-    request.setBtsId(PlatformDefaults.DEFAULT_BTS_ID);
-    request.setCellId(PlatformDefaults.DEFAULT_CELL_ID);
-    ScenarioContext.current()
-        .put(
-            PlatformCommonKeys.RESPONSE,
-            this.adminDeviceManagementClient.setCommunicationNetworkInformation(request));
-  }
 }
