@@ -4,6 +4,9 @@ Feature: Set Communication Network Information
   I want to be able to be able to update the communication network information of a device
 
   Scenario: Set Communication Network Information
+    Given a device
+      | DeviceIdentification       | TEST1024000000001 |
+      | OrganizationIdentification | test-org          |
     When receiving a set communication network information request
       | DeviceIdentification | TEST1024000000001 |
       | IpAddress            | 10.0.0.1          |
@@ -16,6 +19,9 @@ Feature: Set Communication Network Information
       | CellId    | 1        |
 
   Scenario: Set Communication Network Information with invalid ip
+    Given a device
+      | DeviceIdentification       | TEST1024000000001 |
+      | OrganizationIdentification | test-org          |
     When receiving a set communication network information request with an invalid ip
       | DeviceIdentification | TEST1024000000001 |
       | IpAddress            | scr@mbled         |
