@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.CommunicationMethod;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsModemInfo;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsGsmDiagnostic;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsProfile;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.Medium;
@@ -75,8 +75,8 @@ public abstract class DlmsObjectConfig {
         .filter(o1 -> o1.getType().equals(type))
         .filter(
             o2 ->
-                (o2 instanceof DlmsModemInfo)
-                    && ((DlmsModemInfo) o2).getCommunicationMethod() == communicationMethod)
+                (o2 instanceof DlmsGsmDiagnostic)
+                    && ((DlmsGsmDiagnostic) o2).getCommunicationMethod() == communicationMethod)
         .findAny();
   }
 

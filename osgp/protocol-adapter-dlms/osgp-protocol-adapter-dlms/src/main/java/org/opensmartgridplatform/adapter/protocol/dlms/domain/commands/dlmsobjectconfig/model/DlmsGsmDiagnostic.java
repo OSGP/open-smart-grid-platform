@@ -9,25 +9,17 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
+import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 
-public class DlmsModemInfo extends DlmsObject {
-  private static final int CLASS_ID_MODEM_INFO = 47;
-
-  public static final int ATTRIBUTE_ID_OPERATOR = 2;
-  public static final int ATTRIBUTE_ID_MODEM_REGISTRATION_STATUS = 3;
-  public static final int ATTRIBUTE_ID_CIRCUIT_SWITCHED_STATUS = 4;
-  public static final int ATTRIBUTE_ID_PACKET_SWITCHED_STATUS = 5;
-  public static final int ATTRIBUTE_ID_CELL_INFO = 6;
-  public static final int ATTRIBUTE_ID_ADJACENT_CELLS = 7;
-  public static final int ATTRIBUTE_ID_CAPTURE_TIME = 8;
+public class DlmsGsmDiagnostic extends DlmsObject {
 
   private final CommunicationMethod communicationMethod;
 
-  public DlmsModemInfo(
+  public DlmsGsmDiagnostic(
       final DlmsObjectType type,
       final String obisCode,
       final CommunicationMethod communicationMethod) {
-    super(type, CLASS_ID_MODEM_INFO, obisCode);
+    super(type, InterfaceClass.GSM_DIAGNOSTIC.id(), obisCode);
 
     this.communicationMethod = communicationMethod;
   }

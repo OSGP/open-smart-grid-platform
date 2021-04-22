@@ -9,13 +9,13 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsModemInfo.ATTRIBUTE_ID_ADJACENT_CELLS;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsModemInfo.ATTRIBUTE_ID_CAPTURE_TIME;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsModemInfo.ATTRIBUTE_ID_CELL_INFO;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsModemInfo.ATTRIBUTE_ID_CIRCUIT_SWITCHED_STATUS;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsModemInfo.ATTRIBUTE_ID_MODEM_REGISTRATION_STATUS;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsModemInfo.ATTRIBUTE_ID_OPERATOR;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsModemInfo.ATTRIBUTE_ID_PACKET_SWITCHED_STATUS;
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.GsmDiagnosticAttribute.ADJACENT_CELLS;
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.GsmDiagnosticAttribute.CAPTURE_TIME;
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.GsmDiagnosticAttribute.CELL_INFO;
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.GsmDiagnosticAttribute.CIRCUIT_SWITCHED_STATUS;
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.GsmDiagnosticAttribute.MODEM_REGISTRATION_STATUS;
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.GsmDiagnosticAttribute.OPERATOR;
+import static org.opensmartgridplatform.dlms.interfaceclass.attribute.GsmDiagnosticAttribute.PACKET_SWITCHED_STATUS;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -157,13 +157,13 @@ public class GetModemInfoCommandExecutor
     final ObisCode obisCode = dlmsObject.getObisCode();
 
     return new AttributeAddress[] {
-      new AttributeAddress(classId, obisCode, ATTRIBUTE_ID_OPERATOR),
-      new AttributeAddress(classId, obisCode, ATTRIBUTE_ID_MODEM_REGISTRATION_STATUS),
-      new AttributeAddress(classId, obisCode, ATTRIBUTE_ID_CIRCUIT_SWITCHED_STATUS),
-      new AttributeAddress(classId, obisCode, ATTRIBUTE_ID_PACKET_SWITCHED_STATUS),
-      new AttributeAddress(classId, obisCode, ATTRIBUTE_ID_CELL_INFO),
-      new AttributeAddress(classId, obisCode, ATTRIBUTE_ID_ADJACENT_CELLS),
-      new AttributeAddress(classId, obisCode, ATTRIBUTE_ID_CAPTURE_TIME)
+      new AttributeAddress(classId, obisCode, OPERATOR.attributeId()),
+      new AttributeAddress(classId, obisCode, MODEM_REGISTRATION_STATUS.attributeId()),
+      new AttributeAddress(classId, obisCode, CIRCUIT_SWITCHED_STATUS.attributeId()),
+      new AttributeAddress(classId, obisCode, PACKET_SWITCHED_STATUS.attributeId()),
+      new AttributeAddress(classId, obisCode, CELL_INFO.attributeId()),
+      new AttributeAddress(classId, obisCode, ADJACENT_CELLS.attributeId()),
+      new AttributeAddress(classId, obisCode, CAPTURE_TIME.attributeId())
     };
   }
 

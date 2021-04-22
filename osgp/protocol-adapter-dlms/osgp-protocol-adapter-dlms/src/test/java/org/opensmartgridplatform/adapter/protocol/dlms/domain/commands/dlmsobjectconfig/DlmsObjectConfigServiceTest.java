@@ -31,7 +31,7 @@ import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.CommunicationMethod;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsClock;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsModemInfo;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsGsmDiagnostic;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsProfile;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsRegister;
@@ -93,8 +93,8 @@ public class DlmsObjectConfigServiceTest {
           ProfileCaptureTime.HOUR,
           Medium.COMBINED);
 
-  private final DlmsModemInfo modemInfo =
-      new DlmsModemInfo(DlmsObjectType.MODEM_INFO, "0.1.25.6.0.255", CommunicationMethod.CDMA);
+  private final DlmsGsmDiagnostic modemInfo =
+      new DlmsGsmDiagnostic(DlmsObjectType.MODEM_INFO, "0.1.25.6.0.255", CommunicationMethod.CDMA);
 
   private final DlmsHelper dlmsHelper = new DlmsHelper();
 
