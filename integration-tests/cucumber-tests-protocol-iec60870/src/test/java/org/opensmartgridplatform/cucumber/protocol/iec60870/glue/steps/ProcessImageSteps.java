@@ -49,7 +49,7 @@ public class ProcessImageSteps {
   }
 
   @Given("a process image on the IEC60870 server")
-  public void givenAProcessImage(final Iec60870ProcessImage processImage) {
+  public void givenAProcessImageOnTheIec60870Server(final Iec60870ProcessImage processImage) {
 
     final Consumer<Iec60870InformationObject> setInformationObject =
         informationObject ->
