@@ -7,6 +7,9 @@ Feature: Set Communication Network Information
     Given a device
       | DeviceIdentification       | TEST1024000000001 |
       | OrganizationIdentification | test-org          |
+      | IpAddress                  | 127.0.0.1         |
+      | BtsId                      | 0                 |
+      | CellId                     | 0                 |
     When receiving a set communication network information request
       | DeviceIdentification | TEST1024000000001 |
       | IpAddress            | 10.0.0.1          |

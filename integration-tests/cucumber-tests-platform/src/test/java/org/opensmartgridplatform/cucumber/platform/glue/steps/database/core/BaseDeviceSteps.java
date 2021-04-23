@@ -116,6 +116,10 @@ public abstract class BaseDeviceSteps {
     } catch (final UnknownHostException e) {
       inetAddress = InetAddress.getLoopbackAddress();
     }
+
+    device.setBtsId(getInteger(settings, PlatformKeys.BTS_ID, null));
+    device.setCellId(getInteger(settings, PlatformKeys.CELL_ID, null));
+
     device.updateRegistrationData(
         inetAddress,
         getString(settings, PlatformKeys.KEY_DEVICE_TYPE, PlatformDefaults.DEFAULT_DEVICE_TYPE));
