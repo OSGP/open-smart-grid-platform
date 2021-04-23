@@ -32,7 +32,7 @@ public class LmdDeviceCreator extends AbstractPlatformDeviceCreator<LightMeasure
 
     device = this.lmdRepository.save(device);
 
-    this.addDeviceAuthorization(device);
+    this.addDeviceAuthorization(device, settings);
 
     return device;
   }
