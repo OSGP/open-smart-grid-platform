@@ -1,12 +1,12 @@
-@SmartMetering @Platform @GetModemInfo
-Feature: SmartMetering Bundle - Get Modem Info
+@SmartMetering @Platform @GetGsmDiagnostic
+Feature: SmartMetering Bundle - Get Gsm Diagnostic
   As a grid operator
-  I want to be able to get the modem info of a smart meter
+  I want to be able to get the GSM Diagnostic of a smart meter
 
-  Scenario: Get the modem info of a E-Meter
+  Scenario: Get the GSM Diagnostic of a E-Meter
     Given a bundle request
       | DeviceIdentification | TEST1027000000001 |
-    And the bundle request contains a get modem info action
+    And the bundle request contains a get gsm diagnostic action
     And a dlms device
       | DeviceIdentification | TEST1027000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -15,7 +15,7 @@ Feature: SmartMetering Bundle - Get Modem Info
       | ProtocolVersion      |               5.1 |
       | Port                 |              1027 |
     When the bundle request is received
-    Then the bundle response should contain a get modem info response with values
+    Then the bundle response should contain a get gsm diagnostic response with values
       | operator                  | Utility Connect          |
       | modemRegistrationStatus   | REGISTERED_ROAMING       |
       | circuitSwitchedStatus     | INACTIVE                 |

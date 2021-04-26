@@ -13,7 +13,9 @@ import java.io.Serializable;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 
-public class GetModemInfoRequestData implements Serializable, ActionRequest {
+public class GetGsmDiagnosticRequestData implements Serializable, ActionRequest {
+
+  private static final long serialVersionUID = -4504267270669678533L;
 
   @Override
   public void validate() throws FunctionalException {
@@ -22,6 +24,6 @@ public class GetModemInfoRequestData implements Serializable, ActionRequest {
 
   @Override
   public DeviceFunction getDeviceFunction() {
-    return DeviceFunction.GET_MODEM_INFO;
+    return DeviceFunction.GET_GSM_DIAGNOSTIC;
   }
 }

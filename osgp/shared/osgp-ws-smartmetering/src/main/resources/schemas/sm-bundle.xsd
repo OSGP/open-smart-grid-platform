@@ -338,11 +338,11 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="GetModemInfoRequest">
+  <xsd:element name="GetGsmDiagnosticRequest">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension
-          base="smman:GetModemInfoRequestData" />
+          base="smman:GetGsmDiagnosticRequestData" />
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -404,7 +404,7 @@
         <xsd:element
           ref="tns:SetRandomisationSettingsRequest" />
         <xsd:element
-          ref="tns:GetModemInfoRequest" />
+          ref="tns:GetGsmDiagnosticRequest" />
       </xsd:choice>
     </xsd:sequence>
   </xsd:complexType>
@@ -636,10 +636,10 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="GetModemInfoResponse">
+  <xsd:element name="GetGsmDiagnosticResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="smman:GetModemInfoResponseData" />
+        <xsd:extension base="smman:GetGsmDiagnosticResponseData" />
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -680,7 +680,7 @@
           ref="tns:SetDeviceLifecycleStatusByChannelResponse" />
         <xsd:element ref="tns:ScanMbusChannelsResponse" />
         <xsd:element ref="tns:GetOutagesResponse" />
-        <xsd:element ref="tns:GetModemInfoResponse" />
+        <xsd:element ref="tns:GetGsmDiagnosticResponse" />
       </xsd:choice>
     </xsd:sequence>
   </xsd:complexType>

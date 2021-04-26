@@ -655,23 +655,23 @@
     </xsd:complexContent>
   </xsd:complexType>
 
-  <xsd:complexType name="GetModemInfoRequestData">
+  <xsd:complexType name="GetGsmDiagnosticRequestData">
     <xsd:complexContent>
       <xsd:extension base="common:Query"/>
     </xsd:complexContent>
   </xsd:complexType>
 
-  <xsd:element name="GetModemInfoRequest">
+  <xsd:element name="GetGsmDiagnosticRequest">
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
-        <xsd:element name="GetModemInfoRequestData"
-          type="tns:GetModemInfoRequestData"/>
+        <xsd:element name="GetGsmDiagnosticRequestData"
+          type="tns:GetGsmDiagnosticRequestData"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="GetModemInfoAsyncResponse">
+  <xsd:element name="GetGsmDiagnosticAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="common:AsyncResponse"/>
@@ -679,7 +679,7 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="GetModemInfoAsyncRequest">
+  <xsd:element name="GetGsmDiagnosticAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="common:AsyncRequest"/>
@@ -687,33 +687,33 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="GetModemInfoResponse">
+  <xsd:element name="GetGsmDiagnosticResponse">
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"/>
-        <xsd:element name="GetModemInfoResponseData"
-          type="tns:GetModemInfoResponseData"/>
+        <xsd:element name="GetGsmDiagnosticResponseData"
+          type="tns:GetGsmDiagnosticResponseData"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:complexType name="GetModemInfoResponseData">
+  <xsd:complexType name="GetGsmDiagnosticResponseData">
     <xsd:complexContent>
       <xsd:extension base="common:Response">
         <xsd:sequence>
-          <xsd:element name="Operator" type="common:AlphaNumericType"/>
+          <xsd:element name="Operator" type="xsd:string"/>
           <xsd:element name="ModemRegistrationStatus" type="tns:ModemRegistrationStatus"/>
           <xsd:element name="CircuitSwitchedStatus" type="tns:CircuitSwitchedStatus"/>
           <xsd:element name="PacketSwitchedStatus" type="tns:PacketSwitchedStatus"/>
-          <xsd:element name="CellId" type="xsd:hexBinary"/>
-          <xsd:element name="LocationId" type="xsd:hexBinary"/>
+          <xsd:element name="CellId" type="common:CellId"/>
+          <xsd:element name="LocationId" type="common:LocationId"/>
           <xsd:element name="SignalQuality" type="tns:SignalQuality"/>
           <xsd:element name="BitErrorRate" type="tns:BitErrorRate"/>
           <xsd:element name="MobileCountryCode" type="xsd:unsignedShort"/>
           <xsd:element name="MobileNetworkCode" type="xsd:unsignedShort"/>
           <xsd:element name="ChannelNumber" type="xsd:unsignedInt"/>
           <xsd:element name="NumberOfAdjacentCells" type="xsd:unsignedInt"/>
-          <xsd:element name="AdjacentCellId" type="xsd:hexBinary"/>
+          <xsd:element name="AdjacentCellId" type="common:CellId"/>
           <xsd:element name="AdjacentCellSignalQuality" type="tns:SignalQuality"/>
           <xsd:element name="CaptureTime" type="xsd:dateTime"/>
         </xsd:sequence>

@@ -12,41 +12,41 @@ package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.Date;
 
-public class GetModemInfoResponseData extends ActionResponse implements Serializable {
+public class GetGsmDiagnosticResponseData extends ActionResponse implements Serializable {
 
   private static final long serialVersionUID = 4966055518516878043L;
 
-  private String operator;
+  private final String operator;
 
-  private ModemRegistrationStatusType modemRegistrationStatus;
+  private final ModemRegistrationStatusType modemRegistrationStatus;
 
-  private CircuitSwitchedStatusType circuitSwitchedStatus;
+  private final CircuitSwitchedStatusType circuitSwitchedStatus;
 
-  private PacketSwitchedStatusType packetSwitchedStatus;
+  private final PacketSwitchedStatusType packetSwitchedStatus;
 
-  private byte[] cellId;
+  private final byte[] cellId;
 
-  private byte[] locationId;
+  private final byte[] locationId;
 
-  private SignalQualityType signalQuality;
+  private final SignalQualityType signalQuality;
 
-  private BitErrorRateType bitErrorRate;
+  private final BitErrorRateType bitErrorRate;
 
-  private long mobileCountryCode;
+  private final long mobileCountryCode;
 
-  private long mobileNetworkCode;
+  private final long mobileNetworkCode;
 
-  private long channelNumber;
+  private final long channelNumber;
 
-  private long numberOfAdjacentCells;
+  private final long numberOfAdjacentCells;
 
-  private byte[] adjacentCellId;
+  private final byte[] adjacentCellId;
 
-  private SignalQualityType adjacentCellSignalQuality;
+  private final SignalQualityType adjacentCellSignalQuality;
 
-  private Date captureTime;
+  private final Date captureTime;
 
-  public GetModemInfoResponseData(
+  public GetGsmDiagnosticResponseData(
       final String operator,
       final ModemRegistrationStatusType modemRegistrationStatus,
       final CircuitSwitchedStatusType circuitSwitchedStatus,

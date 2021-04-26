@@ -93,8 +93,9 @@ public class DlmsObjectConfigServiceTest {
           ProfileCaptureTime.HOUR,
           Medium.COMBINED);
 
-  private final DlmsGsmDiagnostic modemInfo =
-      new DlmsGsmDiagnostic(DlmsObjectType.MODEM_INFO, "0.1.25.6.0.255", CommunicationMethod.CDMA);
+  private final DlmsGsmDiagnostic gsmDiagnostic =
+      new DlmsGsmDiagnostic(
+          DlmsObjectType.GSM_DIAGNOSTIC, "0.1.25.6.0.255", CommunicationMethod.CDMA);
 
   private final DlmsHelper dlmsHelper = new DlmsHelper();
 
@@ -128,8 +129,8 @@ public class DlmsObjectConfigServiceTest {
         .thenReturn(Optional.of(this.profileCombined));
 
     when(this.config50.findObjectForCommunicationMethod(
-            DlmsObjectType.MODEM_INFO, CommunicationMethod.CDMA))
-        .thenReturn(Optional.of(this.modemInfo));
+            DlmsObjectType.GSM_DIAGNOSTIC, CommunicationMethod.CDMA))
+        .thenReturn(Optional.of(this.gsmDiagnostic));
 
     final List<DlmsObjectConfig> configs = Arrays.asList(this.config422, this.config50);
 
@@ -328,7 +329,8 @@ public class DlmsObjectConfigServiceTest {
   public void testFindDlmsObjectForCommunicationMethod() throws ProtocolAdapterException {
     // CALL
     final DlmsObject object =
-        this.service.findDlmsObjectForCommunicationMethod(this.device51, DlmsObjectType.MODEM_INFO);
+        this.service.findDlmsObjectForCommunicationMethod(
+            this.device51, DlmsObjectType.GSM_DIAGNOSTIC);
 
     // VERIFY
     assertThat(object.getClassId()).isEqualTo(47);
@@ -344,10 +346,10 @@ public class DlmsObjectConfigServiceTest {
 
     // CALL
     try {
-      this.service.findDlmsObjectForCommunicationMethod(deviceGprs, DlmsObjectType.MODEM_INFO);
+      this.service.findDlmsObjectForCommunicationMethod(deviceGprs, DlmsObjectType.GSM_DIAGNOSTIC);
       fail("Expected ProtocolAdapterException");
     } catch (final ProtocolAdapterException e) {
-      assertThat(e.getMessage()).contains("Did not find MODEM_INFO");
+      assertThat(e.getMessage()).contains("Did not find GSM_DIAGNOSTIC");
     }
   }
 

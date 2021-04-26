@@ -17,18 +17,18 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.BitErrorRate;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.CircuitSwitchedStatus;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetModemInfoResponseData;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetGsmDiagnosticResponseData;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ModemRegistrationStatus;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.PacketSwitchedStatus;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.SignalQuality;
 
-public class GetModemInfoResponseValidator {
-  private GetModemInfoResponseValidator() {
+public class GetGsmDiagnosticResponseValidator {
+  private GetGsmDiagnosticResponseValidator() {
     // Private constructor for utility class
   }
 
   public static void validate(
-      final GetModemInfoResponseData response, final Map<String, String> expectedValues) {
+      final GetGsmDiagnosticResponseData response, final Map<String, String> expectedValues) {
     for (final Map.Entry<String, String> expectedEntyValue : expectedValues.entrySet()) {
       final String expectedValue = expectedEntyValue.getValue();
       switch (expectedEntyValue.getKey()) {
