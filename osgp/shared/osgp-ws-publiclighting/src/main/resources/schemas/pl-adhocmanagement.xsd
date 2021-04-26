@@ -284,7 +284,7 @@
     </xsd:complexContent>
   </xsd:complexType>
 
-  <xsd:complexType name="LightMeasurementDeviceStatus">
+  <xsd:complexType name="LightSensorStatus">
     <xsd:annotation>
       <xsd:documentation>
         Light sensor status represents the retrieved status of a light measurement device.
@@ -293,7 +293,7 @@
     <xsd:complexContent>
       <xsd:extension base="tns:Status">
         <xsd:sequence>
-          <xsd:element name="LightSensorStatus" type="tns:LightSensorStatusType" maxOccurs="1" />
+          <xsd:element name="Status" type="tns:LightSensorStatusType" maxOccurs="1" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>

@@ -321,13 +321,13 @@ public class PublicLightingAdHocManagementEndpoint {
   }
 
   private org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement
-          .LightMeasurementDeviceStatus
+          .LightSensorStatus
       getLightSensorStatus(final ResponseMessage message) {
     final Status status = (LightSensorStatus) message.getDataObject();
     return this.adHocManagementMapper.map(
         status,
-        org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement
-            .LightMeasurementDeviceStatus.class);
+        org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.LightSensorStatus
+            .class);
   }
 
   // === RESUME SCHEDULE ===
