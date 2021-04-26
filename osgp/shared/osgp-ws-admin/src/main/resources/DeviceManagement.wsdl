@@ -512,7 +512,7 @@
       </wsdl:output>
     </wsdl:operation>
 
-    <wsdl:operation name="SetCommunicationNetworkInformationProtocol">
+    <wsdl:operation name="SetCommunicationNetworkInformation">
       <soap:operation soapAction="" />
       <wsdl:input name="SetCommunicationNetworkInformationRequest">
         <soap:header message="tns:SoapHeaders" part="OrganisationIdentification"
