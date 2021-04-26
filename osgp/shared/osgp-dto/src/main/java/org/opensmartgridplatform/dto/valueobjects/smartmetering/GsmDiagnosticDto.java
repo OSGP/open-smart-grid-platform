@@ -11,7 +11,7 @@ package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 import java.io.Serializable;
 import org.joda.time.DateTime;
 
-public class ModemInfoDto implements Serializable {
+public class GsmDiagnosticDto implements Serializable {
 
   private static final long serialVersionUID = 4137020381571730343L;
 
@@ -31,7 +31,7 @@ public class ModemInfoDto implements Serializable {
   private final SignalQualityDto adjacentCellSignalQuality;
   private final DateTime captureTime;
 
-  public ModemInfoDto(
+  public GsmDiagnosticDto(
       final String operator,
       final ModemRegistrationStatusDto modemRegistrationStatusDto,
       final CircuitSwitchedStatusDto circuitSwitchedStatusDto,
@@ -127,7 +127,7 @@ public class ModemInfoDto implements Serializable {
   @Override
   public String toString() {
     return String.format(
-        "ModemInfoDto[operator=%s, modemRegistrationStatus=%s', circuitSwitchedStatus=%s, packetSwitchedStatus=%s, cellId=%s]",
+        "GsmDiagnosticDto[operator=%s, modemRegistrationStatus=%s', circuitSwitchedStatus=%s, packetSwitchedStatus=%s, cellId=%s]",
         this.operator,
         this.modemRegistrationStatus.name(),
         this.circuitSwitchedStatus.name(),

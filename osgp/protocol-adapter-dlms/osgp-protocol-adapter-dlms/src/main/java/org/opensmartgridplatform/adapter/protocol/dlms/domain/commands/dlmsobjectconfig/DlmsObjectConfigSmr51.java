@@ -8,7 +8,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig;
 
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.MODEM_INFO;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.GSM_DIAGNOSTIC;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,14 +29,14 @@ public class DlmsObjectConfigSmr51 extends DlmsObjectConfigSmr50 {
   List<DlmsObject> initObjects() {
     final List<DlmsObject> objectList = super.initObjects();
 
-    final DlmsObject modemInfoGprs =
-        new DlmsGsmDiagnostic(MODEM_INFO, "0.0.25.6.0.255", CommunicationMethod.GPRS);
-    final DlmsObject modemInfoCdma =
-        new DlmsGsmDiagnostic(MODEM_INFO, "0.1.25.6.0.255", CommunicationMethod.CDMA);
-    final DlmsObject modemInfoLteM =
-        new DlmsGsmDiagnostic(MODEM_INFO, "0.2.25.6.0.255", CommunicationMethod.LTE_M);
+    final DlmsObject gsmDiagnosticGprs =
+        new DlmsGsmDiagnostic(GSM_DIAGNOSTIC, "0.0.25.6.0.255", CommunicationMethod.GPRS);
+    final DlmsObject gsmDiagnosticCdma =
+        new DlmsGsmDiagnostic(GSM_DIAGNOSTIC, "0.1.25.6.0.255", CommunicationMethod.CDMA);
+    final DlmsObject gsmDiagnosticLteM =
+        new DlmsGsmDiagnostic(GSM_DIAGNOSTIC, "0.2.25.6.0.255", CommunicationMethod.LTE_M);
 
-    objectList.addAll(Arrays.asList(modemInfoGprs, modemInfoCdma, modemInfoLteM));
+    objectList.addAll(Arrays.asList(gsmDiagnosticGprs, gsmDiagnosticCdma, gsmDiagnosticLteM));
 
     return objectList;
   }

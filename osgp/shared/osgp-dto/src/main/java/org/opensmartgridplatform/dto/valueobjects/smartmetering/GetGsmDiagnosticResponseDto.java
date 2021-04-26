@@ -11,41 +11,41 @@ package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
 import java.util.Date;
 
-public class GetModemInfoResponseDto extends ActionResponseDto {
+public class GetGsmDiagnosticResponseDto extends ActionResponseDto {
 
-  private String operator;
+  private final String operator;
 
-  private ModemRegistrationStatusDto modemRegistrationStatus;
+  private final ModemRegistrationStatusDto modemRegistrationStatus;
 
-  private CircuitSwitchedStatusDto circuitSwitchedStatus;
+  private final CircuitSwitchedStatusDto circuitSwitchedStatus;
 
-  private PacketSwitchedStatusDto packetSwitchedStatus;
+  private final PacketSwitchedStatusDto packetSwitchedStatus;
 
-  private byte[] cellId;
+  private final byte[] cellId;
 
-  private byte[] locationId;
+  private final byte[] locationId;
 
-  private SignalQualityDto signalQuality;
+  private final SignalQualityDto signalQuality;
 
-  private BitErrorRateDto bitErrorRate;
+  private final BitErrorRateDto bitErrorRate;
 
-  private long mobileCountryCode;
+  private final long mobileCountryCode;
 
-  private long mobileNetworkCode;
+  private final long mobileNetworkCode;
 
-  private long channelNumber;
+  private final long channelNumber;
 
-  private long numberOfAdjacentCells;
+  private final long numberOfAdjacentCells;
 
-  private byte[] adjacentCellId;
+  private final byte[] adjacentCellId;
 
-  private SignalQualityDto adjacentCellSignalQuality;
+  private final SignalQualityDto adjacentCellSignalQuality;
 
-  private Date captureTime;
+  private final Date captureTime;
 
   private static final long serialVersionUID = 3953818299926960294L;
 
-  public GetModemInfoResponseDto(
+  public GetGsmDiagnosticResponseDto(
       final String operator,
       final ModemRegistrationStatusDto modemRegistrationStatus,
       final CircuitSwitchedStatusDto circuitSwitchedStatus,

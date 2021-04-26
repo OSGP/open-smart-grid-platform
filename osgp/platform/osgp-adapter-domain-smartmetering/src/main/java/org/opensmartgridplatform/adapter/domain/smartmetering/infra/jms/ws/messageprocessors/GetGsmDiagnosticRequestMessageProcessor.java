@@ -11,7 +11,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.mess
 
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.ManagementService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.BaseRequestMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetModemInfoRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetGsmDiagnosticRequestData;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
@@ -21,17 +21,17 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GetModemInfoRequestMessageProcessor extends BaseRequestMessageProcessor {
+public class GetGsmDiagnosticRequestMessageProcessor extends BaseRequestMessageProcessor {
 
   @Autowired
   @Qualifier("domainSmartMeteringManagementService")
   private ManagementService managementService;
 
   @Autowired
-  protected GetModemInfoRequestMessageProcessor(
+  protected GetGsmDiagnosticRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
           final MessageProcessorMap messageProcessorMap) {
-    super(messageProcessorMap, MessageType.GET_MODEM_INFO);
+    super(messageProcessorMap, MessageType.GET_GSM_DIAGNOSTIC);
   }
 
   @Override
@@ -39,8 +39,9 @@ public class GetModemInfoRequestMessageProcessor extends BaseRequestMessageProce
       final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
       throws FunctionalException {
 
-    final GetModemInfoRequestData getModemInfoRequest = (GetModemInfoRequestData) dataObject;
+    final GetGsmDiagnosticRequestData getGsmDiagnosticRequest =
+        (GetGsmDiagnosticRequestData) dataObject;
 
-    this.managementService.getModemInfo(deviceMessageMetadata, getModemInfoRequest);
+    this.managementService.getGsmDiagnostic(deviceMessageMetadata, getGsmDiagnosticRequest);
   }
 }

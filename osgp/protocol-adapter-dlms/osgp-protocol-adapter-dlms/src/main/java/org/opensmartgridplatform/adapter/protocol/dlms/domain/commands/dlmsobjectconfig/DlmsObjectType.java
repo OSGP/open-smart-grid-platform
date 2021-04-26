@@ -36,9 +36,9 @@ public enum DlmsObjectType {
   DAILY_LOAD_PROFILE(PeriodTypeDto.DAILY),
   DIRECT_ATTACH(null),
   RANDOMISATION_SETTINGS(null),
-  MODEM_INFO(null);
+  GSM_DIAGNOSTIC(null);
 
-  private PeriodTypeDto relatedPeriodType;
+  private final PeriodTypeDto relatedPeriodType;
 
   DlmsObjectType(final PeriodTypeDto relatedPeriodType) {
     this.relatedPeriodType = relatedPeriodType;

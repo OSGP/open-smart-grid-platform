@@ -36,16 +36,16 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.BitErrorRateDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CircuitSwitchedStatusDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetModemInfoRequestDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetModemInfoResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetGsmDiagnosticRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetGsmDiagnosticResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ModemRegistrationStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PacketSwitchedStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SignalQualityDto;
 
 @ExtendWith(MockitoExtension.class)
-public class GetModemInfoCommandExecutorIntegrationTest {
+public class GetGsmDiagnosticCommandExecutorIntegrationTest {
 
-  private GetModemInfoCommandExecutor executor;
+  private GetGsmDiagnosticCommandExecutor executor;
 
   private DlmsConnectionManagerStub connectionManagerStub;
   private DlmsConnectionStub connectionStub;
@@ -67,7 +67,7 @@ public class GetModemInfoCommandExecutorIntegrationTest {
         new DlmsObjectConfigService(
             dlmsHelper, dlmsObjectConfigConfiguration.getDlmsObjectConfigs());
 
-    this.executor = new GetModemInfoCommandExecutor(dlmsHelper, dlmsObjectConfigService);
+    this.executor = new GetGsmDiagnosticCommandExecutor(dlmsHelper, dlmsObjectConfigService);
     this.connectionStub = new DlmsConnectionStub();
     this.connectionManagerStub = new DlmsConnectionManagerStub(this.connectionStub);
 
@@ -112,7 +112,7 @@ public class GetModemInfoCommandExecutorIntegrationTest {
     final DlmsDevice device = this.createDlmsDevice(protocol, method);
 
     // Create request object
-    final GetModemInfoRequestDto request = new GetModemInfoRequestDto();
+    final GetGsmDiagnosticRequestDto request = new GetGsmDiagnosticRequestDto();
 
     // Get expected addresses
     final AttributeAddress expectedAddressOperator = this.createAttributeAddress(method, 2);
@@ -135,12 +135,13 @@ public class GetModemInfoCommandExecutorIntegrationTest {
     this.setResponseForCaptureTime(expectedAddressCaptureTime, protocol, method);
 
     // CALL
-    GetModemInfoResponseDto response = null;
+    GetGsmDiagnosticResponseDto response = null;
     try {
       response = this.executor.execute(this.connectionManagerStub, device, request);
     } catch (final ProtocolAdapterException e) {
       if (expectObjectNotFound) {
-        assertThat(e.getMessage()).isEqualTo("Did not find MODEM_INFO object for device 6789012");
+        assertThat(e.getMessage())
+            .isEqualTo("Did not find GSM_DIAGNOSTIC object for device 6789012");
         return;
       } else {
         fail("Unexpected ProtocolAdapterException: " + e.getMessage());

@@ -10,29 +10,29 @@
 package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.management;
 
 import java.util.Map;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetModemInfoAsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetModemInfoRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetModemInfoRequestData;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetGsmDiagnosticAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetGsmDiagnosticRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetGsmDiagnosticRequestData;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.RequestFactoryHelper;
 
-public class GetModemInfoRequestFactory {
+public class GetGsmDiagnosticRequestFactory {
 
-  private GetModemInfoRequestFactory() {
+  private GetGsmDiagnosticRequestFactory() {
     // Private constructor for utility class
   }
 
-  public static GetModemInfoRequest fromParameterMap(final Map<String, String> settings) {
-    final GetModemInfoRequest request = new GetModemInfoRequest();
-    final GetModemInfoRequestData requestData = new GetModemInfoRequestData();
+  public static GetGsmDiagnosticRequest fromParameterMap(final Map<String, String> settings) {
+    final GetGsmDiagnosticRequest request = new GetGsmDiagnosticRequest();
+    final GetGsmDiagnosticRequestData requestData = new GetGsmDiagnosticRequestData();
     request.setDeviceIdentification(
         settings.get(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION));
-    request.setGetModemInfoRequestData(requestData);
+    request.setGetGsmDiagnosticRequestData(requestData);
     return request;
   }
 
-  public static GetModemInfoAsyncRequest fromScenarioContext() {
-    final GetModemInfoAsyncRequest asyncRequest = new GetModemInfoAsyncRequest();
+  public static GetGsmDiagnosticAsyncRequest fromScenarioContext() {
+    final GetGsmDiagnosticAsyncRequest asyncRequest = new GetGsmDiagnosticAsyncRequest();
     asyncRequest.setCorrelationUid(RequestFactoryHelper.getCorrelationUidFromScenarioContext());
     asyncRequest.setDeviceIdentification(
         RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());

@@ -12,7 +12,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.me
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.ManagementService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetModemInfoResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetGsmDiagnosticResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
@@ -24,21 +24,21 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GetModemInfoResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+public class GetGsmDiagnosticResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
   @Autowired
   @Qualifier("domainSmartMeteringManagementService")
   private ManagementService managementService;
 
   @Autowired
-  protected GetModemInfoResponseMessageProcessor(
+  protected GetGsmDiagnosticResponseMessageProcessor(
       final WebServiceResponseMessageSender responseMessageSender,
       @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
           final MessageProcessorMap messageProcessorMap) {
     super(
         responseMessageSender,
         messageProcessorMap,
-        MessageType.GET_MODEM_INFO,
+        MessageType.GET_GSM_DIAGNOSTIC,
         ComponentType.DOMAIN_SMART_METERING);
   }
 
@@ -55,10 +55,10 @@ public class GetModemInfoResponseMessageProcessor extends OsgpCoreResponseMessag
       final ResponseMessage responseMessage,
       final OsgpException osgpException) {
 
-    this.managementService.handleGetModemInfoResponse(
+    this.managementService.handleGetGsmDiagnosticResponse(
         deviceMessageMetadata,
         responseMessage.getResult(),
         osgpException,
-        (GetModemInfoResponseDto) responseMessage.getDataObject());
+        (GetGsmDiagnosticResponseDto) responseMessage.getDataObject());
   }
 }

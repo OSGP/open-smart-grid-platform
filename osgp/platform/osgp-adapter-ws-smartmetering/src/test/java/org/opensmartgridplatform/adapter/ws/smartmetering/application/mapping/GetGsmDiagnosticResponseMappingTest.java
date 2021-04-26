@@ -15,25 +15,25 @@ import java.util.Date;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.BitErrorRateType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CircuitSwitchedStatusType;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetModemInfoResponseData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetGsmDiagnosticResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ModemRegistrationStatusType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PacketSwitchedStatusType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SignalQualityType;
 
-class GetModeminfoResponseMappingTest {
+class GetGsmDiagnosticResponseMappingTest {
 
   private final ManagementMapper managementMapper = new ManagementMapper();
 
   @Test
-  void shouldConvertGetModemInfoResponse() {
-    final GetModemInfoResponseData source = this.newGetModemInfoResponseData();
+  void shouldConvertGetGsmDiagnosticResponse() {
+    final GetGsmDiagnosticResponseData source = this.newGetGsmDiagnosticResponseData();
 
-    final org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetModemInfoResponse
+    final org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetGsmDiagnosticResponse
         target =
             this.managementMapper.map(
                 source,
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle
-                    .GetModemInfoResponse.class);
+                    .GetGsmDiagnosticResponse.class);
 
     // Assert
     assertThat(target.getOperator()).isEqualTo(source.getOperator());
@@ -58,8 +58,8 @@ class GetModeminfoResponseMappingTest {
         .isEqualTo(source.getCaptureTime().getTime());
   }
 
-  private GetModemInfoResponseData newGetModemInfoResponseData() {
-    return new GetModemInfoResponseData(
+  private GetGsmDiagnosticResponseData newGetGsmDiagnosticResponseData() {
+    return new GetGsmDiagnosticResponseData(
         "operator",
         ModemRegistrationStatusType.REGISTERED_ROAMING,
         CircuitSwitchedStatusType.ACTIVE,

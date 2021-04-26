@@ -39,8 +39,8 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.BitErrorRateDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CircuitSwitchedStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetModemInfoRequestDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetModemInfoResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetGsmDiagnosticRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetGsmDiagnosticResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ModemRegistrationStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PacketSwitchedStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SignalQualityDto;
@@ -50,10 +50,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component()
-public class GetModemInfoCommandExecutor
-    extends AbstractCommandExecutor<GetModemInfoRequestDto, GetModemInfoResponseDto> {
+public class GetGsmDiagnosticCommandExecutor
+    extends AbstractCommandExecutor<GetGsmDiagnosticRequestDto, GetGsmDiagnosticResponseDto> {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(GetModemInfoCommandExecutor.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(GetGsmDiagnosticCommandExecutor.class);
 
   private static final int RESULT_OPERATOR_INDEX = 0;
   private static final int RESULT_MODEM_REGISTRATION_STATUS_INDEX = 1;
@@ -78,47 +79,47 @@ public class GetModemInfoCommandExecutor
   private final DlmsObjectConfigService dlmsObjectConfigService;
 
   @Autowired
-  public GetModemInfoCommandExecutor(
+  public GetGsmDiagnosticCommandExecutor(
       final DlmsHelper dlmsHelper, final DlmsObjectConfigService dlmsObjectConfigService) {
-    super(GetModemInfoRequestDto.class);
+    super(GetGsmDiagnosticRequestDto.class);
 
     this.dlmsHelper = dlmsHelper;
     this.dlmsObjectConfigService = dlmsObjectConfigService;
   }
 
   @Override
-  public GetModemInfoRequestDto fromBundleRequestInput(final ActionRequestDto bundleInput)
+  public GetGsmDiagnosticRequestDto fromBundleRequestInput(final ActionRequestDto bundleInput)
       throws ProtocolAdapterException {
 
     this.checkActionRequestType(bundleInput);
 
-    return new GetModemInfoRequestDto();
+    return new GetGsmDiagnosticRequestDto();
   }
 
   @Override
-  public GetModemInfoResponseDto execute(
+  public GetGsmDiagnosticResponseDto execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final GetModemInfoRequestDto getModemInfoQuery)
+      final GetGsmDiagnosticRequestDto getGsmDiagnosticQuery)
       throws ProtocolAdapterException {
 
     final DlmsObject dlmsObject =
         this.dlmsObjectConfigService.findDlmsObjectForCommunicationMethod(
-            device, DlmsObjectType.MODEM_INFO);
+            device, DlmsObjectType.GSM_DIAGNOSTIC);
 
     final AttributeAddress[] addresses = this.createAttributeAddresses(dlmsObject);
 
     conn.getDlmsMessageListener()
         .setDescription(
-            "Get ModemInfo, retrieve attributes: "
+            "Get GsmDiagnostic, retrieve attributes: "
                 + JdlmsObjectToStringUtil.describeAttributes(addresses));
 
     LOGGER.info(
-        "Get ModemInfo, retrieve attributes: "
+        "Get GsmDiagnostic, retrieve attributes: "
             + JdlmsObjectToStringUtil.describeAttributes(addresses));
 
     final List<GetResult> getResultList =
-        this.dlmsHelper.getAndCheck(conn, device, "Get ModemInfo", addresses);
+        this.dlmsHelper.getAndCheck(conn, device, "Get GsmDiagnostic", addresses);
 
     final String resultString =
         getResultList.stream().map(this::resultToString).collect(Collectors.joining("-", "{", "}"));
@@ -126,10 +127,10 @@ public class GetModemInfoCommandExecutor
 
     if (getResultList.stream()
         .noneMatch(result -> result.getResultCode() == AccessResultCode.SUCCESS)) {
-      throw new ProtocolAdapterException("Get modem info failed for " + device.getDeviceId());
+      throw new ProtocolAdapterException("Get gsm diagnostic failed for " + device.getDeviceId());
     }
 
-    return this.createGetModemInfoResponse(getResultList);
+    return this.createGetGsmDiagnosticResponse(getResultList);
   }
 
   private String resultToString(final GetResult result) {
@@ -167,8 +168,8 @@ public class GetModemInfoCommandExecutor
     };
   }
 
-  private GetModemInfoResponseDto createGetModemInfoResponse(final List<GetResult> getResultList)
-      throws ProtocolAdapterException {
+  private GetGsmDiagnosticResponseDto createGetGsmDiagnosticResponse(
+      final List<GetResult> getResultList) throws ProtocolAdapterException {
 
     final String operator = this.getOperator(getResultList);
     final ModemRegistrationStatusDto registrationStatus = this.getRegistrationStatus(getResultList);
@@ -180,7 +181,7 @@ public class GetModemInfoCommandExecutor
     final AdjacentCellsInfo adjacentCellsInfo = this.getAdjacentCellsInfo(getResultList);
     final Date captureTimeDto = this.getCaptureTime(getResultList);
 
-    return new GetModemInfoResponseDto(
+    return new GetGsmDiagnosticResponseDto(
         operator,
         registrationStatus,
         circuitSwitchedStatus,
@@ -295,13 +296,13 @@ public class GetModemInfoCommandExecutor
     final GetResult result = getResultList.get(RESULT_CAPTURE_TIME_INDEX);
     if (this.isResultSuccess(result)) {
       final CosemDateTimeDto cosemDateTime =
-          this.dlmsHelper.readDateTime(result.getResultData(), "Clock from modem info");
+          this.dlmsHelper.readDateTime(result.getResultData(), "Clock from gsm diagnostic");
 
       final Date captureTime;
       if (cosemDateTime.isDateTimeSpecified()) {
         captureTime = cosemDateTime.asDateTime().toDate();
       } else {
-        throw new ProtocolAdapterException("Unexpected values in modem info capture time");
+        throw new ProtocolAdapterException("Unexpected values in gsm diagnostic capture time");
       }
 
       return captureTime;

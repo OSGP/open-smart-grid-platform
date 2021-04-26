@@ -22,9 +22,9 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.BundleRe
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.FindEventsResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetFirmwareVersionGasResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetFirmwareVersionResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetGsmDiagnosticResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetMbusEncryptionKeyStatusByChannelResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetMbusEncryptionKeyStatusResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetModemInfoResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetOutagesResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ObjectFactory;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.PeriodicMeterReadsGasResponse;
@@ -53,9 +53,9 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.Firmware
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetAllAttributeValuesResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfigurationObjectResponse;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetGsmDiagnosticResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetModemInfoResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetOutagesResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterReads;
@@ -121,7 +121,7 @@ public class ActionMapperResponseService {
         SetDeviceLifecycleStatusByChannelResponseData.class, this.managementMapper);
     CLASS_TO_MAPPER_MAP.put(ScanMbusChannelsResponseData.class, this.adhocMapper);
     CLASS_TO_MAPPER_MAP.put(GetOutagesResponseData.class, this.managementMapper);
-    CLASS_TO_MAPPER_MAP.put(GetModemInfoResponseData.class, this.managementMapper);
+    CLASS_TO_MAPPER_MAP.put(GetGsmDiagnosticResponseData.class, this.managementMapper);
   }
 
   /** Specifies to which ws object the core object needs to be mapped. */
@@ -183,7 +183,7 @@ public class ActionMapperResponseService {
         SetDeviceLifecycleStatusByChannelResponse.class);
     CLASS_MAP.put(ScanMbusChannelsResponseData.class, ScanMbusChannelsResponse.class);
     CLASS_MAP.put(GetOutagesResponseData.class, GetOutagesResponse.class);
-    CLASS_MAP.put(GetModemInfoResponseData.class, GetModemInfoResponse.class);
+    CLASS_MAP.put(GetGsmDiagnosticResponseData.class, GetGsmDiagnosticResponse.class);
   }
 
   public BundleResponse mapAllActions(final Serializable actionList) throws FunctionalException {

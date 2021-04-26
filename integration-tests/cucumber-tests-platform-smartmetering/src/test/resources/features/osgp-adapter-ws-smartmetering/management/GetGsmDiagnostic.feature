@@ -1,9 +1,9 @@
-@SmartMetering @Platform @GetModemInfo
-Feature: SmartMetering Management - Get Modem Info
+@SmartMetering @Platform @GetGsmDiagnostic
+Feature: SmartMetering Management - Get GSM Diagnostic
   As a grid operator
-  I want to be able to get the modem info of a smart meter
+  I want to be able to get the GSM Diagnostic of a smart meter
 
-  Scenario: Get the modem info of a E-Meter
+  Scenario: Get the gsm diagnostic of a E-Meter
     And a dlms device
       | DeviceIdentification | TEST1027000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -11,9 +11,9 @@ Feature: SmartMetering Management - Get Modem Info
       | Protocol             | SMR               |
       | ProtocolVersion      |               5.1 |
       | Port                 |              1027 |
-    When a get modem info request is received
+    When a get gsm diagnostic request is received
       | DeviceIdentification | TEST1027000000001 |
-    Then the get modem info response is returned with values
+    Then the get gsm diagnostic response is returned with values
       | operator                  | Utility Connect          |
       | modemRegistrationStatus   | REGISTERED_ROAMING       |
       | circuitSwitchedStatus     | INACTIVE                 |

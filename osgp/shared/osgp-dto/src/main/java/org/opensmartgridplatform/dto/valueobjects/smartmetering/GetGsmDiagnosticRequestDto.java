@@ -8,7 +8,7 @@
  */
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
-public class GetModemInfoRequestDto implements ActionRequestDto {
+public class GetGsmDiagnosticRequestDto implements ActionRequestDto {
 
   private static final long serialVersionUID = -1099971202935583436L;
 }

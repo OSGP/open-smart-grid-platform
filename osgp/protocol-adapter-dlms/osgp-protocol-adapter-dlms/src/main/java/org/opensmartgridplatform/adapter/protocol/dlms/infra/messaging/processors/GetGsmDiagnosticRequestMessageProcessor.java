@@ -13,19 +13,19 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Mana
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetModemInfoRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetGsmDiagnosticRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GetModemInfoRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class GetGsmDiagnosticRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
   @Autowired private ManagementService managementService;
 
-  protected GetModemInfoRequestMessageProcessor() {
-    super(MessageType.GET_MODEM_INFO);
+  protected GetGsmDiagnosticRequestMessageProcessor() {
+    super(MessageType.GET_GSM_DIAGNOSTIC);
   }
 
   @Override
@@ -33,9 +33,9 @@ public class GetModemInfoRequestMessageProcessor extends DeviceRequestMessagePro
       final DlmsConnectionManager conn, final DlmsDevice device, final Serializable requestObject)
       throws OsgpException {
 
-    this.assertRequestObjectType(GetModemInfoRequestDto.class, requestObject);
+    this.assertRequestObjectType(GetGsmDiagnosticRequestDto.class, requestObject);
 
-    final GetModemInfoRequestDto requestDto = (GetModemInfoRequestDto) requestObject;
-    return this.managementService.getModemInfo(conn, device, requestDto);
+    final GetGsmDiagnosticRequestDto requestDto = (GetGsmDiagnosticRequestDto) requestObject;
+    return this.managementService.getGsmDiagnostic(conn, device, requestDto);
   }
 }

@@ -38,11 +38,11 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Find
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.FindMessageLogsResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetDevicesRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetDevicesResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetModemInfoAsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetModemInfoAsyncResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetModemInfoRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetModemInfoResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetModemInfoResponseData;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetGsmDiagnosticAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetGsmDiagnosticAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetGsmDiagnosticRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetGsmDiagnosticResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetGsmDiagnosticResponseData;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.MessageLog;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.MessageLogPage;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.SetDeviceCommunicationSettingsAsyncRequest;
@@ -447,7 +447,6 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
     try {
       response = new FindMessageLogsResponse();
 
-      @SuppressWarnings("unchecked")
       final Page<DeviceLogItem> page =
           (Page<DeviceLogItem>)
               this.responseDataService
@@ -627,30 +626,31 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
     return response;
   }
 
-  @PayloadRoot(localPart = "GetModemInfoRequest", namespace = NAMESPACE)
+  @PayloadRoot(localPart = "GetGsmDiagnosticRequest", namespace = NAMESPACE)
   @ResponsePayload
-  public GetModemInfoAsyncResponse getModemInfo(
+  public GetGsmDiagnosticAsyncResponse getGsmDiagnostic(
       @OrganisationIdentification final String organisationIdentification,
-      @RequestPayload final GetModemInfoRequest request,
+      @RequestPayload final GetGsmDiagnosticRequest request,
       @MessagePriority final String messagePriority,
       @ScheduleTime final String scheduleTime,
       @ResponseUrl final String responseUrl,
       @BypassRetry final String bypassRetry)
       throws OsgpException {
 
-    final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetModemInfoRequestData
+    final org.opensmartgridplatform.domain.core.valueobjects.smartmetering
+            .GetGsmDiagnosticRequestData
         requestData =
             this.managementMapper.map(
-                request.getGetModemInfoRequestData(),
+                request.getGetGsmDiagnosticRequestData(),
                 org.opensmartgridplatform.domain.core.valueobjects.smartmetering
-                    .GetModemInfoRequestData.class);
+                    .GetGsmDiagnosticRequestData.class);
 
     final RequestMessageMetadata requestMessageMetadata =
         RequestMessageMetadata.newBuilder()
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(request.getDeviceIdentification())
-            .withDeviceFunction(DeviceFunction.GET_MODEM_INFO)
-            .withMessageType(MessageType.GET_MODEM_INFO)
+            .withDeviceFunction(DeviceFunction.GET_GSM_DIAGNOSTIC)
+            .withMessageType(MessageType.GET_GSM_DIAGNOSTIC)
             .withMessagePriority(messagePriority)
             .withScheduleTime(scheduleTime)
             .withBypassRetry(bypassRetry)
@@ -661,34 +661,35 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
 
     this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
-    return this.managementMapper.map(asyncResponse, GetModemInfoAsyncResponse.class);
+    return this.managementMapper.map(asyncResponse, GetGsmDiagnosticAsyncResponse.class);
   }
 
-  @PayloadRoot(localPart = "GetModemInfoAsyncRequest", namespace = NAMESPACE)
+  @PayloadRoot(localPart = "GetGsmDiagnosticAsyncRequest", namespace = NAMESPACE)
   @ResponsePayload
-  public GetModemInfoResponse getModemInfoResponse(
+  public GetGsmDiagnosticResponse getGsmDiagnosticResponse(
       @OrganisationIdentification final String organisationIdentification,
-      @RequestPayload final GetModemInfoAsyncRequest request)
+      @RequestPayload final GetGsmDiagnosticAsyncRequest request)
       throws OsgpException {
 
     log.info(
-        "Get modem info response for organisation: {} and device: {}.",
+        "Get gsm diagnostic response for organisation: {} and device: {}.",
         organisationIdentification,
         request.getDeviceIdentification());
 
-    GetModemInfoResponse response = null;
+    GetGsmDiagnosticResponse response = null;
     try {
 
-      response = new GetModemInfoResponse();
+      response = new GetGsmDiagnosticResponse();
 
       final ResponseData responseData =
           this.responseDataService.dequeue(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
-      this.throwExceptionIfResultNotOk(responseData, "Get modem info");
+      this.throwExceptionIfResultNotOk(responseData, "Get gsm diagnostic");
 
-      response.setGetModemInfoResponseData(
-          this.managementMapper.map(responseData.getMessageData(), GetModemInfoResponseData.class));
+      response.setGetGsmDiagnosticResponseData(
+          this.managementMapper.map(
+              responseData.getMessageData(), GetGsmDiagnosticResponseData.class));
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
 
     } catch (final ConstraintViolationException e) {
