@@ -51,23 +51,23 @@ public class DeviceFactory {
 
     device.setCommunicationMethod(settings.get(PlatformKeys.KEY_DEVICE_COMMUNICATIONMETHOD));
     device.setCommunicationProvider(settings.get(PlatformKeys.KEY_DEVICE_COMMUNICATIONPROVIDER));
-    device.setICCId(settings.get(PlatformKeys.KEY_DEVICE_ICCID));
+    device.setIccId(settings.get(PlatformKeys.KEY_DEVICE_ICCID));
 
     device.setProtocolName(settings.get(PlatformKeys.KEY_DEVICE_PROTOCOL_NAME));
     device.setProtocolVersion(settings.get(PlatformKeys.KEY_DEVICE_PROTOCOL_VERSION));
     device.setSupplier(settings.get(PlatformKeys.KEY_DEVICE_SUPPLIER));
 
-    device.setHLS3Active(
+    device.setHls3Active(
         getBoolean(
             settings,
             PlatformKeys.KEY_DEVICE_HLS3ACTIVE,
             PlatformDefaults.DLMS_DEFAULT_HSL3_ACTIVE));
-    device.setHLS4Active(
+    device.setHls4Active(
         getBoolean(
             settings,
             PlatformKeys.KEY_DEVICE_HLS4ACTIVE,
             PlatformDefaults.DLMS_DEFAULT_HSL4_ACTIVE));
-    device.setHLS5Active(
+    device.setHls5Active(
         getBoolean(
             settings,
             PlatformKeys.KEY_DEVICE_HLS5ACTIVE,

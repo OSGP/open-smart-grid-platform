@@ -28,6 +28,8 @@ import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.Remove
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.RemoveOrganisationResponse;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.RevokeKeyRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.RevokeKeyResponse;
+import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.SetCommunicationNetworkInformationRequest;
+import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.SetCommunicationNetworkInformationResponse;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.SetOwnerRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.SetOwnerResponse;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.UpdateDeviceAuthorisationsRequest;
@@ -211,5 +213,13 @@ public class AdminDeviceManagementClient extends BaseClient {
         this.adminDeviceManagementWstf.getTemplate(
             this.getOrganizationIdentification(), this.getUserName());
     return (ChangeManufacturerRequest) wst.marshalSendAndReceive(request);
+  }
+
+  public SetCommunicationNetworkInformationResponse setCommunicationNetworkInformation(
+      SetCommunicationNetworkInformationRequest request) throws WebServiceSecurityException {
+    final WebServiceTemplate wst =
+        this.adminDeviceManagementWstf.getTemplate(
+            this.getOrganizationIdentification(), this.getUserName());
+    return (SetCommunicationNetworkInformationResponse) wst.marshalSendAndReceive(request);
   }
 }

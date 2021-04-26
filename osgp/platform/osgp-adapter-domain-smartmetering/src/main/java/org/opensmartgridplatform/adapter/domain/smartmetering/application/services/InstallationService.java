@@ -77,8 +77,11 @@ public class InstallationService {
         deviceId);
     final SmartMeteringDevice smartMeteringDevice = addSmartMeterRequest.getDevice();
 
-    final SmartMeter smartMeter =
-        this.smartMeterService.getSmartMeter(deviceId, smartMeteringDevice);
+    final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
+
+    this.smartMeterService.validateSmartMeterDoesNotExist(deviceIdentification);
+
+    final SmartMeter smartMeter = this.smartMeterService.convertSmartMeter(smartMeteringDevice);
     this.smartMeterService.storeMeter(organisationId, addSmartMeterRequest, smartMeter);
     this.osgpCoreRequestMessageSender.send(
         this.getRequestMessage(deviceMessageMetadata, smartMeteringDevice),

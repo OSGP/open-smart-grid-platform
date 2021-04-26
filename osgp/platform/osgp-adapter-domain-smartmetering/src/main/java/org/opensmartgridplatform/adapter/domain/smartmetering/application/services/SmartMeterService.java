@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
+import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.MapperFactory;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
@@ -32,11 +33,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service(value = "domainSmartMeteringSmartMeterService")
 @Transactional(value = "transactionManager")
 public class SmartMeterService {
 
-  @Autowired private SmartMeterRepository smartMeteringDeviceRepository;
+  @Autowired private SmartMeterRepository smartMeterRepository;
 
   @Autowired private ManufacturerRepository manufacturerRepository;
 
@@ -58,27 +60,29 @@ public class SmartMeterService {
     final SmartMeteringDevice smartMeteringDevice = addSmartMeterRequest.getDevice();
     smartMeter.updateProtocol(this.getProtocolInfo(smartMeteringDevice));
     smartMeter.setDeviceModel(this.getDeviceModel(addSmartMeterRequest.getDeviceModel()));
-    smartMeter = this.smartMeteringDeviceRepository.save(smartMeter);
+    smartMeter = this.smartMeterRepository.save(smartMeter);
     this.storeAuthorization(organisationIdentification, smartMeter);
   }
 
   public void removeMeter(final DeviceMessageMetadata deviceMessageMetadata) {
 
     final SmartMeter device =
-        this.smartMeteringDeviceRepository.findByDeviceIdentification(
+        this.smartMeterRepository.findByDeviceIdentification(
             deviceMessageMetadata.getDeviceIdentification());
 
     this.deviceAuthorizationRepository.deleteAll(device.getAuthorizations());
-    this.smartMeteringDeviceRepository.delete(device);
+    this.smartMeterRepository.delete(device);
   }
 
-  public SmartMeter getSmartMeter(
-      final String deviceId, final SmartMeteringDevice smartMeteringDevice)
+  public void validateSmartMeterDoesNotExist(final String deviceIdentification)
       throws FunctionalException {
-    if (this.smartMeteringDeviceRepository.findByDeviceIdentification(deviceId) != null) {
+    if (this.smartMeterRepository.findByDeviceIdentification(deviceIdentification) != null) {
       throw new FunctionalException(
           FunctionalExceptionType.EXISTING_DEVICE, ComponentType.DOMAIN_SMART_METERING);
     }
+  }
+
+  public SmartMeter convertSmartMeter(final SmartMeteringDevice smartMeteringDevice) {
     return this.mapperFactory.getMapperFacade().map(smartMeteringDevice, SmartMeter.class);
   }
 

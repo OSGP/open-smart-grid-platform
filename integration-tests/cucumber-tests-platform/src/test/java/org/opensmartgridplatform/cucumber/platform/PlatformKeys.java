@@ -294,6 +294,9 @@ public class PlatformKeys extends Keys {
   public static final String HOSTNAME = "Hostname";
   public static final String PORT = "Port";
   public static final String IP_ADDRESS = "IpAddress";
+  public static final String BTS_ID = "BtsId";
+  public static final String CELL_ID = "CellId";
+
   public static final String RANDOM_DEVICE = "RandomDevice";
 
   public static final String KEY_SCHEDULE_DESCRIPTION = "Description";
