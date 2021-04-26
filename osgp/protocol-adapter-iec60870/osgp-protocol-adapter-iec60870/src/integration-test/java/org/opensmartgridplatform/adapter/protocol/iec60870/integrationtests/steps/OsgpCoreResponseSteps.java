@@ -25,6 +25,7 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.factories.D
 import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.matchers.MeasurementReportTypeMatcher;
 import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.matchers.ProtocolResponseMessageMatcher;
 import org.opensmartgridplatform.dto.valueobjects.LightSensorStatusDto;
+import org.opensmartgridplatform.dto.valueobjects.LightSensorStatusTypeDto;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
@@ -52,13 +53,20 @@ public class OsgpCoreResponseSteps {
     verify(this.responseMessageSenderMock).send(argThat(new MeasurementReportTypeMatcher(typeId)));
   }
 
+  @Then("I should send a connect response message to osgp core")
+  public void thenIShouldSendConnectResponseMessageToOsgpCore(final Map<String, String> map) {
+    LOGGER.debug("Then I should send get status response messages to osgp core");
+
+    this.verifyResponse(this.connectResponseMessage(map));
+  }
+
   @Then("^I should send get light sensor status response messages to osgp core$")
   public void thenIShouldSendGetLightSensorStatusResponseMessagesToOsgpCore(
       final DataTable dataTable) throws Throwable {
     LOGGER.debug("Then I should send get status response messages to osgp core");
 
     final List<ProtocolResponseMessage> responseMessages =
-        dataTable.asMaps().stream().map(m -> this.protocolResponseMessage(m)).collect(toList());
+        dataTable.asMaps().stream().map(this::protocolResponseMessage).collect(toList());
 
     this.verifyNumberOfResponseMessages(responseMessages.size());
     this.verifyResponseMessages(responseMessages);
@@ -76,6 +84,23 @@ public class OsgpCoreResponseSteps {
     verify(this.responseMessageSenderMock).send(argThat(new ProtocolResponseMessageMatcher(msg)));
   }
 
+  private ProtocolResponseMessage connectResponseMessage(final Map<String, String> map) {
+    final String deviceIdentification = map.get("device_identification");
+    final Iec60870Device device = this.deviceSteps.getDevice(deviceIdentification).orElse(null);
+    final DomainInfo domainInfo = DomainInfoFactory.forDeviceType(device.getDeviceType());
+    final DeviceMessageMetadata deviceMessageMetadata =
+        DeviceMessageMetadata.newBuilder()
+            .withDeviceIdentification(deviceIdentification)
+            .withMessageType(MessageType.CONNECT.name())
+            .build();
+    return ProtocolResponseMessage.newBuilder()
+        .deviceMessageMetadata(deviceMessageMetadata)
+        .domain(domainInfo.getDomain())
+        .domainVersion(domainInfo.getDomainVersion())
+        .result(ResponseMessageResultType.OK)
+        .build();
+  }
+
   private ProtocolResponseMessage protocolResponseMessage(final Map<String, String> map) {
     final String deviceIdentification = map.get("device_identification");
     final Iec60870Device device = this.deviceSteps.getDevice(deviceIdentification).orElse(null);
@@ -89,7 +114,7 @@ public class OsgpCoreResponseSteps {
         .deviceMessageMetadata(deviceMessageMetadata)
         .domain(domainInfo.getDomain())
         .domainVersion(domainInfo.getDomainVersion())
-        .dataObject(new LightSensorStatusDto(map.get("relay_status").equalsIgnoreCase("ON")))
+        .dataObject(new LightSensorStatusDto(LightSensorStatusTypeDto.valueOf(map.get("status"))))
         .result(ResponseMessageResultType.OK)
         .build();
   }

@@ -24,6 +24,7 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.help
 import org.opensmartgridplatform.adapter.protocol.iec61850.services.DeviceMessageLoggingService;
 import org.opensmartgridplatform.core.db.api.iec61850.entities.LightMeasurementDevice;
 import org.opensmartgridplatform.dto.valueobjects.LightSensorStatusDto;
+import org.opensmartgridplatform.dto.valueobjects.LightSensorStatusTypeDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -107,7 +108,11 @@ public class Iec61850GetLightSensorStatusCommand {
           this.deviceConnection.getOrganisationIdentification(),
           false);
 
-      return new LightSensorStatusDto(stVal.getValue());
+      return new LightSensorStatusDto(this.getStatus(stVal.getValue()));
+    }
+
+    private LightSensorStatusTypeDto getStatus(final boolean on) {
+      return on ? LightSensorStatusTypeDto.DARK : LightSensorStatusTypeDto.LIGHT;
     }
   }
 }

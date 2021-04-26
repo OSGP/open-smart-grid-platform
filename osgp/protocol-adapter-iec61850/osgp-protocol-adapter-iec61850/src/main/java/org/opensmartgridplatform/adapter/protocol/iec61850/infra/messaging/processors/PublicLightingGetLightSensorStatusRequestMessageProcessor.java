@@ -11,14 +11,21 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.proc
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
+import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponse;
+import org.opensmartgridplatform.adapter.protocol.iec61850.device.lmd.GetLightSensorStatusResponse;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DomainInformation;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.LmdDeviceRequestMessageProcessor;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceResponseHandler;
+import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
+import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -27,7 +34,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class PublicLightingGetLightSensorStatusRequestMessageProcessor
     extends LmdDeviceRequestMessageProcessor {
-  /** Logger for this class */
+
   private static final Logger LOGGER =
       LoggerFactory.getLogger(PublicLightingGetLightSensorStatusRequestMessageProcessor.class);
 
@@ -85,12 +92,43 @@ public class PublicLightingGetLightSensorStatusRequestMessageProcessor
       final boolean isScheduled) {
     LOGGER.info(
         "Override for handleDeviceResponse() by PublicLightingGetLightSensorStatusRequestMessageProcessor");
+
+    final GetLightSensorStatusResponse response = (GetLightSensorStatusResponse) deviceResponse;
     this.handleGetLightSensorStatusResponse(
-        deviceResponse,
-        responseMessageSender,
-        domainInformation,
-        messageType,
-        retryCount,
-        isScheduled);
+        response, responseMessageSender, domainInformation, messageType, retryCount, isScheduled);
+  }
+
+  private void handleGetLightSensorStatusResponse(
+      final GetLightSensorStatusResponse response,
+      final ResponseMessageSender responseMessageSender,
+      final DomainInformation domainInformation,
+      final String messageType,
+      final int retryCount,
+      final boolean isScheduled) {
+    LOGGER.info(
+        "Handling getLightSensorStatusResponse for device: {}", response.getDeviceIdentification());
+    if (StringUtils.isEmpty(response.getCorrelationUid())) {
+      LOGGER.warn(
+          "CorrelationUID is null or empty, not sending response message for GetLightSensorStatusRequest message for device: {}",
+          response.getDeviceIdentification());
+      return;
+    }
+
+    final DeviceMessageMetadata deviceMessageMetadata =
+        getDeviceMessageMetadata(response, messageType);
+
+    final ProtocolResponseMessage protocolResponseMessage =
+        new ProtocolResponseMessage.Builder()
+            .domain(domainInformation.getDomain())
+            .domainVersion(domainInformation.getDomainVersion())
+            .deviceMessageMetadata(deviceMessageMetadata)
+            .result(ResponseMessageResultType.NOT_OK)
+            .osgpException(null)
+            .retryCount(retryCount)
+            .dataObject(response.getLightSensorStatus())
+            .scheduled(isScheduled)
+            .retryHeader(new RetryHeader())
+            .build();
+    responseMessageSender.send(protocolResponseMessage);
   }
 }

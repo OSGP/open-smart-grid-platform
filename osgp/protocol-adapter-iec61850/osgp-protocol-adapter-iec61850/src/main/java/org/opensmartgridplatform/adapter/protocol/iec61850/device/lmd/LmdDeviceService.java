@@ -12,14 +12,13 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.device.lmd;
 import javax.jms.JMSException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponseHandler;
-import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.responses.GetStatusDeviceResponse;
 
 public interface LmdDeviceService {
 
   /**
-   * Reads the DeviceStatus from the device.
+   * Reads the light sensor status from the device.
    *
-   * <p>Returns a {@link GetStatusDeviceResponse} via the deviceResponseHandler's callback.
+   * <p>Returns a {@link GetLightSensorStatusResponse} via the deviceResponseHandler's callback.
    */
   void getLightSensorStatus(
       DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler)

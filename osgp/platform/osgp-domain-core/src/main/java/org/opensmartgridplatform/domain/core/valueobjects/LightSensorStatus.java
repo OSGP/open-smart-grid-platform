@@ -11,17 +11,17 @@ package org.opensmartgridplatform.domain.core.valueobjects;
 
 import java.io.Serializable;
 
-public class LightSensorStatus implements Serializable {
+public class LightSensorStatus implements Status, Serializable {
 
   private static final long serialVersionUID = -6385082207732463078L;
 
-  private final boolean dark;
+  private final LightSensorStatusType status;
 
-  public LightSensorStatus(final boolean dark) {
-    this.dark = dark;
+  public LightSensorStatus(final LightSensorStatusType status) {
+    this.status = status;
   }
 
-  public boolean isDark() {
-    return this.dark;
+  public LightSensorStatusType getStatus() {
+    return this.status;
   }
 }

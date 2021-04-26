@@ -73,7 +73,7 @@ public class Iec61850Config extends AbstractConfig {
   private static final String PROPERTY_NAME_OSLP_DEFAULT_LONGITUDE = "iec61850.default.longitude";
 
   @Value("${iec61850.default.port:102}")
-  public int defaultPort;
+  private int defaultPort;
 
   @Bean
   public int iec61850DefaultPort() {

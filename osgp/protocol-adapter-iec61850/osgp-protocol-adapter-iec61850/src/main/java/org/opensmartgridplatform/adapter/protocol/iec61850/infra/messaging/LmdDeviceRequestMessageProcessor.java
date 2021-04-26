@@ -10,20 +10,10 @@
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging;
 
 import javax.annotation.PostConstruct;
-import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponse;
-import org.opensmartgridplatform.adapter.protocol.iec61850.device.lmd.GetLightSensorStatusResponse;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.lmd.LmdDeviceService;
-import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DomainInformation;
-import org.opensmartgridplatform.dto.valueobjects.LightSensorStatusDto;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
-import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -33,9 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  * MessageProcessors after dependency injection has completed.
  */
 public abstract class LmdDeviceRequestMessageProcessor extends BaseMessageProcessor {
-
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(LmdDeviceRequestMessageProcessor.class);
 
   @Autowired protected LmdDeviceService deviceService;
 
@@ -57,46 +44,14 @@ public abstract class LmdDeviceRequestMessageProcessor extends BaseMessageProces
     this.iec61850RequestMessageProcessorMap.addMessageProcessor(this.messageType, this);
   }
 
-  protected void handleGetLightSensorStatusResponse(
-      final DeviceResponse lightSensorStatusResponse,
-      final ResponseMessageSender responseMessageSender,
-      final DomainInformation domainInformation,
-      final String messageType,
-      final int retryCount,
-      final boolean isScheduled) {
-    LOGGER.info(
-        "Handling getStatusDeviceResponse for device: {}",
-        lightSensorStatusResponse.getDeviceIdentification());
-    if (StringUtils.isEmpty(lightSensorStatusResponse.getCorrelationUid())) {
-      LOGGER.warn(
-          "CorrelationUID is null or empty, not sending GetStatusResponse message for GetStatusRequest message for device: {}",
-          lightSensorStatusResponse.getDeviceIdentification());
-      return;
-    }
-
-    final GetLightSensorStatusResponse response =
-        (GetLightSensorStatusResponse) lightSensorStatusResponse;
-    final LightSensorStatusDto status = response.getLightSensorStatus();
-
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            lightSensorStatusResponse.getDeviceIdentification(),
-            lightSensorStatusResponse.getOrganisationIdentification(),
-            lightSensorStatusResponse.getCorrelationUid(),
-            messageType,
-            lightSensorStatusResponse.getMessagePriority());
-    final ProtocolResponseMessage protocolResponseMessage =
-        new ProtocolResponseMessage.Builder()
-            .domain(domainInformation.getDomain())
-            .domainVersion(domainInformation.getDomainVersion())
-            .deviceMessageMetadata(deviceMessageMetadata)
-            .result(ResponseMessageResultType.OK)
-            .osgpException(null)
-            .retryCount(retryCount)
-            .dataObject(status)
-            .scheduled(isScheduled)
-            .retryHeader(new RetryHeader())
-            .build();
-    responseMessageSender.send(protocolResponseMessage);
+  protected static DeviceMessageMetadata getDeviceMessageMetadata(
+      final DeviceResponse deviceResponse, final String messageType) {
+    return new DeviceMessageMetadata.Builder()
+        .withDeviceIdentification(deviceResponse.getDeviceIdentification())
+        .withOrganisationIdentification(deviceResponse.getOrganisationIdentification())
+        .withCorrelationUid(deviceResponse.getCorrelationUid())
+        .withMessagePriority(deviceResponse.getMessagePriority())
+        .withMessageType(messageType)
+        .build();
   }
 }

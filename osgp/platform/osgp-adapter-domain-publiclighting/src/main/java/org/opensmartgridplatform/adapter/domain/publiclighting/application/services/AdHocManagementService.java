@@ -37,6 +37,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceStatusMapped;
 import org.opensmartgridplatform.domain.core.valueobjects.DomainType;
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
 import org.opensmartgridplatform.domain.core.valueobjects.LightSensorStatus;
+import org.opensmartgridplatform.domain.core.valueobjects.LightSensorStatusType;
 import org.opensmartgridplatform.domain.core.valueobjects.LightValue;
 import org.opensmartgridplatform.domain.core.valueobjects.TransitionType;
 import org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto;
@@ -127,7 +128,9 @@ public class AdHocManagementService extends AbstractService {
     response.setOsgpException(exception);
     response.setResult(deviceResult);
     if (lightSensorStatusDto != null) {
-      response.setLightSensorStatus(new LightSensorStatus(lightSensorStatusDto.isDark()));
+      response.setLightSensorStatus(
+          new LightSensorStatus(
+              LightSensorStatusType.valueOf(lightSensorStatusDto.getStatus().toString())));
       this.updateLastCommunicationTime(ids.getDeviceIdentification());
     }
 
