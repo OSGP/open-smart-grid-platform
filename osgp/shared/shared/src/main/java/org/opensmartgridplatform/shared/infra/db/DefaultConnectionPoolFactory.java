@@ -23,6 +23,9 @@ public class DefaultConnectionPoolFactory {
   private String password;
   private int minPoolSize;
   private int maxPoolSize;
+  private long initializationFailTimeout;
+  private long validationTimeout;
+  private long connectionTimeout;
   private boolean isAutoCommit;
   private int idleTimeout;
 
@@ -74,6 +77,18 @@ public class DefaultConnectionPoolFactory {
     return this.maxPoolSize;
   }
 
+  public long getInitializationFailTimeout() {
+    return this.initializationFailTimeout;
+  }
+
+  public long getValidationTimeout() {
+    return this.validationTimeout;
+  }
+
+  public long getConnectionTimeout() {
+    return this.connectionTimeout;
+  }
+
   public boolean isAutoCommit() {
     return this.isAutoCommit;
   }
@@ -90,6 +105,9 @@ public class DefaultConnectionPoolFactory {
     hikariConfig.setPassword(this.password);
     hikariConfig.setMinimumIdle(this.minPoolSize);
     hikariConfig.setMaximumPoolSize(this.maxPoolSize);
+    hikariConfig.setInitializationFailTimeout(this.initializationFailTimeout);
+    hikariConfig.setValidationTimeout(this.validationTimeout);
+    hikariConfig.setConnectionTimeout(this.connectionTimeout);
     hikariConfig.setAutoCommit(this.isAutoCommit);
     hikariConfig.setIdleTimeout(this.idleTimeout);
     return new HikariDataSource(hikariConfig);
@@ -106,6 +124,9 @@ public class DefaultConnectionPoolFactory {
     private String pw = "";
     private int minPoolSize = 1;
     private int maxPoolSize = 2;
+    private long initializationFailTimeout = 1L;
+    private long validationTimeout = 5000L;
+    private long connectionTimeout = 30000L;
     private boolean isAutoCommit = false;
     private int idleTimeout = 120000;
 
@@ -154,6 +175,21 @@ public class DefaultConnectionPoolFactory {
       return this;
     }
 
+    public Builder withInitializationFailTimeout(final long initializationFailTimeout) {
+      this.initializationFailTimeout = initializationFailTimeout;
+      return this;
+    }
+
+    public Builder withValidationTimeout(final long validationTimeout) {
+      this.validationTimeout = validationTimeout;
+      return this;
+    }
+
+    public Builder withConnectionTimeout(final long connectionTimeout) {
+      this.connectionTimeout = connectionTimeout;
+      return this;
+    }
+
     public Builder withAutoCommit(final boolean isAutoCommit) {
       this.isAutoCommit = isAutoCommit;
       return this;
@@ -175,6 +211,9 @@ public class DefaultConnectionPoolFactory {
       factory.password = this.pw;
       factory.minPoolSize = this.minPoolSize;
       factory.maxPoolSize = this.maxPoolSize;
+      factory.initializationFailTimeout = this.initializationFailTimeout;
+      factory.validationTimeout = this.validationTimeout;
+      factory.connectionTimeout = this.connectionTimeout;
       factory.isAutoCommit = this.isAutoCommit;
       factory.idleTimeout = this.idleTimeout;
       return factory;
