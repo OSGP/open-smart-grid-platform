@@ -25,6 +25,7 @@ import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.Device
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.FindDeviceAuthorisationsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.FindDeviceAuthorisationsResponse;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.RemoveDeviceRequest;
+import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.SetCommunicationNetworkInformationRequest;
 import org.opensmartgridplatform.adapter.ws.schema.admin.devicemanagement.UpdateDeviceAuthorisationsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.adhocmanagement.SetRebootRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.configurationmanagement.Configuration;
@@ -38,6 +39,7 @@ import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.GetFi
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareRequest;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.core.Wait;
+import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonDefaults;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonKeys;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.admin.AdminDeviceManagementClient;
@@ -131,6 +133,9 @@ public class AuthorizeDeviceFunctionsSteps {
             break;
           case SET_REBOOT:
             this.setReboot(requestParameters);
+            break;
+          case SET_COMMUNICATION_NETWORK_INFORMATION:
+            this.setCommunicationNetworkInformation(requestParameters);
             break;
           default:
             throw new OperationNotSupportedException(
@@ -443,5 +448,18 @@ public class AuthorizeDeviceFunctionsSteps {
         .put(
             PlatformCommonKeys.RESPONSE,
             this.adminDeviceManagementClient.updateDeviceAuthorisations(request));
+  }
+
+  private void setCommunicationNetworkInformation(final Map<String, String> requestParameters)
+      throws WebServiceSecurityException {
+    final SetCommunicationNetworkInformationRequest request =
+        new SetCommunicationNetworkInformationRequest();
+    request.setDeviceIdentification(PlatformCommonDefaults.DEFAULT_DEVICE_IDENTIFICATION);
+    request.setBtsId(PlatformDefaults.DEFAULT_BTS_ID);
+    request.setCellId(PlatformDefaults.DEFAULT_CELL_ID);
+    ScenarioContext.current()
+        .put(
+            PlatformCommonKeys.RESPONSE,
+            this.adminDeviceManagementClient.setCommunicationNetworkInformation(request));
   }
 }

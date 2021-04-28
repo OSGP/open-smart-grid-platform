@@ -40,3 +40,5 @@ local.properties
 *~
 *.log
 .checkstyle
+
+/kafka-logs

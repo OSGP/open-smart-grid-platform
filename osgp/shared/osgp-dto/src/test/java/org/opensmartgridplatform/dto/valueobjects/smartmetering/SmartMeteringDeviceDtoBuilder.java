@@ -26,10 +26,10 @@ public class SmartMeteringDeviceDtoBuilder {
     dto.setProtocolName("protocolName" + counter);
     dto.setProtocolVersion("protocolVersion" + counter);
     dto.setGlobalEncryptionUnicastKey(("globalEncryptionUnicastKey" + counter).getBytes());
-    dto.setHLS3Active(true);
-    dto.setHLS4Active(true);
-    dto.setHLS5Active(true);
-    dto.setICCId("ICCId" + counter);
+    dto.setHls3Active(true);
+    dto.setHls4Active(true);
+    dto.setHls5Active(true);
+    dto.setIccId("ICCId" + counter);
     dto.setMasterKey(("masterKey" + counter).getBytes());
     dto.setMbusIdentificationNumber(1000L + counter);
     dto.setMbusManufacturerIdentification("mbusManufacturerIdentification" + counter);

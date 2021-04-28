@@ -33,10 +33,10 @@ public class DeviceConverterTest {
     dlmsDevice.setDeviceIdentification(dto.getDeviceIdentification());
     dlmsDevice.setCommunicationMethod(dto.getCommunicationMethod());
     dlmsDevice.setCommunicationProvider(dto.getCommunicationProvider());
-    dlmsDevice.setIccId(dto.getICCId());
-    dlmsDevice.setHls3Active(dto.isHLS3Active());
-    dlmsDevice.setHls4Active(dto.isHLS4Active());
-    dlmsDevice.setHls5Active(dto.isHLS5Active());
+    dlmsDevice.setIccId(dto.getIccId());
+    dlmsDevice.setHls3Active(dto.isHls3Active());
+    dlmsDevice.setHls4Active(dto.isHls4Active());
+    dlmsDevice.setHls5Active(dto.isHls5Active());
     dlmsDevice.setMbusIdentificationNumber(dto.getMbusIdentificationNumber());
     dlmsDevice.setMbusManufacturerIdentification(dto.getMbusManufacturerIdentification());
     dlmsDevice.setProtocol(dto.getProtocolName(), dto.getProtocolVersion());

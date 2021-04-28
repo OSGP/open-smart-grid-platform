@@ -1,11 +1,3 @@
-package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
-
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.fail;
-
-import org.junit.jupiter.api.Test;
-import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-
 /*
  * Copyright 2019 Smart Society Services B.V.
  *
@@ -14,6 +6,14 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
+
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.fail;
+
+import org.junit.jupiter.api.Test;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+
 public class SetRandomisationSettingsRequestDataTest {
 
   @Test
