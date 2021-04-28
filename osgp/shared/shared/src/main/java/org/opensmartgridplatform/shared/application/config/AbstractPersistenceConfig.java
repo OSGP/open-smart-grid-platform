@@ -57,6 +57,15 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
   @Value("${db.max_pool_size:5}")
   private int maxPoolSize;
 
+  @Value("${db.initialization_fail_timeout:1}")
+  private long initializationFailTimeout;
+
+  @Value("${db.validation_timeout:5000}")
+  private long validationTimeout;
+
+  @Value("${db.connection_timeout:30000}")
+  private long connectionTimeout;
+
   @Value("${db.auto_commit:false}")
   private boolean isAutoCommit;
 
@@ -229,6 +238,9 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
         .withMinPoolSize(this.minPoolSize)
         .withMaxPoolSize(this.maxPoolSize)
         .withAutoCommit(this.isAutoCommit)
-        .withIdleTimeout(this.idleTimeout);
+        .withIdleTimeout(this.idleTimeout)
+        .withInitializationFailTimeout(this.initializationFailTimeout)
+        .withValidationTimeout(this.validationTimeout)
+        .withConnectionTimeout(this.connectionTimeout);
   }
 }

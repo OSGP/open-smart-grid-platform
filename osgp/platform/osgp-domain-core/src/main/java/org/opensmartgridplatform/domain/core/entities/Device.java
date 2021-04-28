@@ -96,6 +96,12 @@ public class Device extends AbstractEntity {
   @Type(type = "org.opensmartgridplatform.shared.hibernate.InetAddressUserType")
   protected InetAddress networkAddress;
 
+  /** Cell ID on a Base Transceiver Station. */
+  @Column private Integer cellId;
+
+  /** Base Transceiver Station ID. */
+  @Column private Integer btsId;
+
   /**
    * Indicates if a device has been activated for the first time. This value is never updated after
    * the first time a device becomes active.
@@ -269,6 +275,22 @@ public class Device extends AbstractEntity {
 
   public void setNetworkAddress(final InetAddress networkAddress) {
     this.networkAddress = networkAddress;
+  }
+
+  public Integer getCellId() {
+    return this.cellId;
+  }
+
+  public void setCellId(final Integer cellId) {
+    this.cellId = cellId;
+  }
+
+  public Integer getBtsId() {
+    return this.btsId;
+  }
+
+  public void setBtsId(final Integer btsId) {
+    this.btsId = btsId;
   }
 
   /**

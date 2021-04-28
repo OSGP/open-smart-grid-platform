@@ -29,16 +29,16 @@ public class InstallationMapperTest {
     source.setDeviceType("typeA");
     source.setCommunicationMethod("skype");
     source.setCommunicationProvider("theInternet");
-    source.setICCId("value");
+    source.setIccId("value");
     source.setProtocolName("protocolName");
     source.setProtocolVersion("latestVersion");
     source.setMasterKey("masterKey".getBytes());
     source.setGlobalEncryptionUnicastKey("globalEncryptionUnicastKey".getBytes());
     source.setAuthenticationKey("authenticationKey".getBytes());
     source.setSupplier("supplier");
-    source.setHLS3Active(true);
-    source.setHLS4Active(true);
-    source.setHLS5Active(true);
+    source.setHls3Active(true);
+    source.setHls4Active(true);
+    source.setHls3Active(true);
     source.setDeliveryDate(new Date());
     source.setMbusIdentificationNumber(12345678L);
     source.setMbusManufacturerIdentification("XYZ");
@@ -73,16 +73,16 @@ public class InstallationMapperTest {
     smartMeteringDevice.setDeviceType("typeA");
     smartMeteringDevice.setCommunicationMethod("skype");
     smartMeteringDevice.setCommunicationProvider("theInternet");
-    smartMeteringDevice.setICCId("value");
+    smartMeteringDevice.setIccId("value");
     smartMeteringDevice.setProtocolName("protocolName");
     smartMeteringDevice.setProtocolVersion("latestVersion");
     smartMeteringDevice.setMasterKey("masterKey".getBytes());
     smartMeteringDevice.setGlobalEncryptionUnicastKey("globalEncryptionUnicastKey".getBytes());
     smartMeteringDevice.setAuthenticationKey("authenticationKey".getBytes());
     smartMeteringDevice.setSupplier("supplier");
-    smartMeteringDevice.setHLS3Active(true);
-    smartMeteringDevice.setHLS4Active(true);
-    smartMeteringDevice.setHLS5Active(true);
+    smartMeteringDevice.setHls3Active(true);
+    smartMeteringDevice.setHls4Active(true);
+    smartMeteringDevice.setHls5Active(true);
     smartMeteringDevice.setDeliveryDate(new Date());
     smartMeteringDevice.setMbusIdentificationNumber(12345678L);
     smartMeteringDevice.setMbusManufacturerIdentification("XYZ");
@@ -98,8 +98,11 @@ public class InstallationMapperTest {
     assertThat(smartMeteringDeviceDto)
         .isEqualToIgnoringGivenFields(
             smartMeteringDevice, "hls3Active", "hls4Active", "hls5Active");
-    assertThat(smartMeteringDeviceDto.isHLS3Active()).isEqualTo(smartMeteringDevice.isHLS3Active());
-    assertThat(smartMeteringDeviceDto.isHLS4Active()).isEqualTo(smartMeteringDevice.isHLS4Active());
-    assertThat(smartMeteringDeviceDto.isHLS5Active()).isEqualTo(smartMeteringDevice.isHLS5Active());
+    assertThat(smartMeteringDeviceDto.isHls3Active()).isEqualTo(smartMeteringDevice.isHls3Active());
+    assertThat(smartMeteringDeviceDto.isHls4Active()).isEqualTo(smartMeteringDevice.isHls4Active());
+    assertThat(smartMeteringDeviceDto.isHls5Active()).isEqualTo(smartMeteringDevice.isHls5Active());
+    assertThat(smartMeteringDeviceDto)
+        .isNotNull()
+        .isEqualToIgnoringGivenFields(smartMeteringDevice, "ipAddress", "btsId", "cellId");
   }
 }
