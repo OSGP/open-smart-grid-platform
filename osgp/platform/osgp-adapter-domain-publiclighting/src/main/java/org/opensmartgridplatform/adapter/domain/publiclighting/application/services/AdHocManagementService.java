@@ -130,7 +130,7 @@ public class AdHocManagementService extends AbstractService {
     if (lightSensorStatusDto != null) {
       response.setLightSensorStatus(
           new LightSensorStatus(
-              LightSensorStatusType.valueOf(lightSensorStatusDto.getStatus().toString())));
+              LightSensorStatusType.valueOf(lightSensorStatusDto.getStatus().name())));
       this.updateLastCommunicationTime(ids.getDeviceIdentification());
     }
 

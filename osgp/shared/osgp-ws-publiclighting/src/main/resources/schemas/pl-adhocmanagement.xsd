@@ -259,7 +259,7 @@
     </xsd:sequence>
   </xsd:complexType>
 
-  <xsd:complexType name="Status" />
+  <xsd:complexType name="Status" abstract="true" />
 
   <xsd:complexType name="DeviceStatus">
     <xsd:annotation>
@@ -293,7 +293,7 @@
     <xsd:complexContent>
       <xsd:extension base="tns:Status">
         <xsd:sequence>
-          <xsd:element name="Status" type="tns:LightSensorStatusType" maxOccurs="1" />
+          <xsd:element name="Status" type="tns:LightSensorStatusType" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
