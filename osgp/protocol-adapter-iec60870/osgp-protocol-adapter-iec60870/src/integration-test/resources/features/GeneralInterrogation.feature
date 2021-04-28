@@ -14,20 +14,16 @@ Feature: General Interrogation
       |                          1 | SIQ                     | OFF                       |
       |                          2 | SIQ                     | ON                        |
 
-# we have to decide what to do with this situation until then, the scenario is skipped
-@Skip
   Scenario: send general interrogation command after connecting to a controlled station
     When I receive a connect request for IEC60870 device "RTU_1" from osgp core
     Then I should send a general interrogation command to device "RTU_1"
-    And I should send get light sensor status response messages to osgp core
-      | device_identification | relay_status |
-      | LMD_1                 | OFF          |
-      | LMD_2                 | ON           |
+    And I should send a connect response message to osgp core
+      | device_identification | RTU_1 |
 
   Scenario: Send general interrogation command after receiving a get status request message from osgp core
     Given an existing connection with IEC60870 device "RTU_1" of type LIGHT_MEASUREMENT_RTU
     When I receive a get light sensor status request message for IEC60870 device "LMD_2" from osgp core
     Then I should send a general interrogation command to device "RTU_1"
     And I should send get light sensor status response messages to osgp core
-      | device_identification | relay_status |
-      | LMD_2                 | ON           |
+      | device_identification | status |
+      | LMD_2                 | DARK   |

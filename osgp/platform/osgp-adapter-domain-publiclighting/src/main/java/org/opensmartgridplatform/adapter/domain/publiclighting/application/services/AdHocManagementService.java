@@ -1,8 +1,9 @@
 /*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -36,6 +37,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceStatusMapped;
 import org.opensmartgridplatform.domain.core.valueobjects.DomainType;
 import org.opensmartgridplatform.domain.core.valueobjects.EventType;
 import org.opensmartgridplatform.domain.core.valueobjects.LightSensorStatus;
+import org.opensmartgridplatform.domain.core.valueobjects.LightSensorStatusType;
 import org.opensmartgridplatform.domain.core.valueobjects.LightValue;
 import org.opensmartgridplatform.domain.core.valueobjects.TransitionType;
 import org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto;
@@ -126,7 +128,9 @@ public class AdHocManagementService extends AbstractService {
     response.setOsgpException(exception);
     response.setResult(deviceResult);
     if (lightSensorStatusDto != null) {
-      response.setLightSensorStatus(new LightSensorStatus(lightSensorStatusDto.isOn()));
+      response.setLightSensorStatus(
+          new LightSensorStatus(
+              LightSensorStatusType.valueOf(lightSensorStatusDto.getStatus().toString())));
       this.updateLastCommunicationTime(ids.getDeviceIdentification());
     }
 

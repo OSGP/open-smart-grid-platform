@@ -1,8 +1,9 @@
 /*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -45,10 +46,9 @@ import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.LightSensorStatus;
-import org.opensmartgridplatform.domain.core.valueobjects.LightType;
 import org.opensmartgridplatform.domain.core.valueobjects.LightValue;
-import org.opensmartgridplatform.domain.core.valueobjects.LinkType;
 import org.opensmartgridplatform.domain.core.valueobjects.ResumeScheduleData;
+import org.opensmartgridplatform.domain.core.valueobjects.Status;
 import org.opensmartgridplatform.domain.core.valueobjects.TransitionMessageDataContainer;
 import org.opensmartgridplatform.shared.application.config.PageSpecifier;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -112,10 +112,10 @@ public class PublicLightingAdHocManagementEndpoint {
           this.adHocManagementService.findAllDevices(organisationIdentification, pageSpecifier);
 
       if (page != null && !page.isEmpty()) {
-        final List<Ssld> sslds = page.filter(d -> d instanceof Ssld).map(d -> (Ssld) d).toList();
+        final List<Ssld> sslds = page.filter(d -> d instanceof Ssld).map(Ssld.class::cast).toList();
         final List<LightMeasurementDevice> lmds =
             page.filter(d -> d instanceof LightMeasurementDevice)
-                .map(d -> (LightMeasurementDevice) d)
+                .map(LightMeasurementDevice.class::cast)
                 .toList();
 
         final DevicePage devicePage = new DevicePage();
@@ -180,10 +180,9 @@ public class PublicLightingAdHocManagementEndpoint {
     final SetLightAsyncResponse response = new SetLightAsyncResponse();
 
     try {
-      final List<LightValue> lightValues = new ArrayList<>();
-      lightValues.addAll(
-          this.adHocManagementMapper.mapAsList(request.getLightValue(), LightValue.class));
-
+      final List<LightValue> lightValues =
+          new ArrayList<>(
+              this.adHocManagementMapper.mapAsList(request.getLightValue(), LightValue.class));
       final String correlationUid =
           this.adHocManagementService.enqueueSetLightRequest(
               organisationIdentification,
@@ -294,9 +293,7 @@ public class PublicLightingAdHocManagementEndpoint {
               request.getAsyncRequest().getCorrelationUid());
       if (message != null) {
         response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-        if (message.getDataObject() != null) {
-          response.setDeviceStatus(this.getDeviceStatus(message));
-        }
+        response.setStatus(this.getStatus(message));
       }
     } catch (final Exception e) {
       this.handleException(e);
@@ -305,28 +302,32 @@ public class PublicLightingAdHocManagementEndpoint {
     return response;
   }
 
+  private org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Status
+      getStatus(final ResponseMessage message) {
+    if (message.getDataObject() instanceof LightSensorStatus) {
+      return this.getLightSensorStatus(message);
+    } else {
+      return this.getDeviceStatus(message);
+    }
+  }
+
   private org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.DeviceStatus
       getDeviceStatus(final ResponseMessage message) {
-    DeviceStatus deviceStatus;
-    if (message.getDataObject() instanceof LightSensorStatus) {
-      deviceStatus =
-          this.createDeviceStatusFromLightSensorStatus((LightSensorStatus) message.getDataObject());
-    } else {
-      deviceStatus = (DeviceStatus) message.getDataObject();
-    }
+    final Status status = (DeviceStatus) message.getDataObject();
     return this.adHocManagementMapper.map(
-        deviceStatus,
+        status,
         org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.DeviceStatus
             .class);
   }
 
-  private DeviceStatus createDeviceStatusFromLightSensorStatus(
-      final LightSensorStatus lightSensorStatus) {
-    final List<LightValue> sensorValues = new ArrayList<>();
-    sensorValues.add(new LightValue(1, lightSensorStatus.isOn(), 100));
-
-    return new DeviceStatus(
-        sensorValues, LinkType.ETHERNET, LinkType.ETHERNET, LightType.ONE_TO_TWENTY_FOUR_VOLT, -1);
+  private org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement
+          .LightSensorStatus
+      getLightSensorStatus(final ResponseMessage message) {
+    final Status status = (LightSensorStatus) message.getDataObject();
+    return this.adHocManagementMapper.map(
+        status,
+        org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.LightSensorStatus
+            .class);
   }
 
   // === RESUME SCHEDULE ===

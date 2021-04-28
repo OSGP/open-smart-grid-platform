@@ -46,7 +46,6 @@
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-iec60870</artifactId>
-      <version>${project.version}</version>
     </dependency>
 
     <!-- Spring Framework -->

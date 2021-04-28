@@ -206,7 +206,7 @@ public class GetStatusSteps {
               return retval;
             });
 
-    final DeviceStatus deviceStatus = response.getDeviceStatus();
+    final DeviceStatus deviceStatus = (DeviceStatus) response.getStatus();
 
     assertThat(deviceStatus.getPreferredLinkType())
         .isEqualTo(
