@@ -25,6 +25,7 @@ import org.opensmartgridplatform.dto.da.measurements.elements.TimestampMeasureme
 import org.opensmartgridplatform.dto.valueobjects.EventNotificationDto;
 import org.opensmartgridplatform.dto.valueobjects.EventTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.LightSensorStatusDto;
+import org.opensmartgridplatform.dto.valueobjects.LightSensorStatusTypeDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -268,7 +269,9 @@ public class LightSensorDeviceResponseService extends AbstractDeviceResponseServ
 
   private Optional<LightSensorStatusDto> findLightSensorStatus(
       final MeasurementGroupDto measurementGroup) {
-    return this.findSensorValue(measurementGroup).map(LightSensorStatusDto::new);
+    return this.findSensorValue(measurementGroup)
+        .map(this::determineLightSensorStatus)
+        .map(LightSensorStatusDto::new);
   }
 
   private void sendEvent(
@@ -321,6 +324,10 @@ public class LightSensorDeviceResponseService extends AbstractDeviceResponseServ
 
   private EventTypeDto determineLightSensorEventType(final boolean on) {
     return on ? EventTypeDto.LIGHT_SENSOR_REPORTS_DARK : EventTypeDto.LIGHT_SENSOR_REPORTS_LIGHT;
+  }
+
+  private LightSensorStatusTypeDto determineLightSensorStatus(final boolean on) {
+    return on ? LightSensorStatusTypeDto.DARK : LightSensorStatusTypeDto.LIGHT;
   }
 
   private Optional<EventNotificationDto> findEventNotification(

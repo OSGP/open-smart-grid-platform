@@ -8,17 +8,21 @@
  */
 package org.opensmartgridplatform.webdemoapp.web.controller;
 
+import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.DeviceStatus;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusResponse;
 import org.opensmartgridplatform.webdemoapp.application.services.OsgpPublicLightingClientSoapService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class AsyncController {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(AsyncController.class);
 
   @Autowired OsgpPublicLightingClientSoapService soapService;
 
@@ -32,7 +36,7 @@ public class AsyncController {
    * back to the device-status page. If the request is ready, it calls the deviceStatus controller
    * to display the response of the platform.
    */
-  @RequestMapping(value = "/asyncStatus/{correlationId}", method = RequestMethod.GET)
+  @GetMapping(value = "/asyncStatus/{correlationId}")
   public ModelAndView asyncGetStatusRequest(@PathVariable final String correlationId) {
 
     final ModelAndView modelView = new ModelAndView();
@@ -43,9 +47,9 @@ public class AsyncController {
     switch (responseStatus.getResult().toString()) {
       case "OK":
         return this.publicLightingController.getStatusRequest(
-            responseStatus.getDeviceStatus(), this.splitCorrelationId(correlationId)[1]);
+            (DeviceStatus) responseStatus.getStatus(), this.splitCorrelationId(correlationId)[1]);
       default:
-        System.out.println("Response not ready");
+        LOGGER.debug("Response not ready");
         modelView.addObject("correlationId", correlationId);
         modelView.setViewName("device-status");
     }

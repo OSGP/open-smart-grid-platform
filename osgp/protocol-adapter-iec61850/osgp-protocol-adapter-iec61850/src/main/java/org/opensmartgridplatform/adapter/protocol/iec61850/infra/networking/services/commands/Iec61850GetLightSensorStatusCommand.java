@@ -1,8 +1,9 @@
 /*
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -10,8 +11,6 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.ser
 
 import com.beanit.openiec61850.BdaBoolean;
 import com.beanit.openiec61850.Fc;
-import java.util.ArrayList;
-import java.util.List;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.Iec61850Client;
@@ -24,10 +23,8 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.help
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.SubDataAttribute;
 import org.opensmartgridplatform.adapter.protocol.iec61850.services.DeviceMessageLoggingService;
 import org.opensmartgridplatform.core.db.api.iec61850.entities.LightMeasurementDevice;
-import org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto;
-import org.opensmartgridplatform.dto.valueobjects.LightTypeDto;
-import org.opensmartgridplatform.dto.valueobjects.LightValueDto;
-import org.opensmartgridplatform.dto.valueobjects.LinkTypeDto;
+import org.opensmartgridplatform.dto.valueobjects.LightSensorStatusDto;
+import org.opensmartgridplatform.dto.valueobjects.LightSensorStatusTypeDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,13 +33,13 @@ public class Iec61850GetLightSensorStatusCommand {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(Iec61850GetLightSensorStatusCommand.class);
 
-  private DeviceMessageLoggingService loggingService;
+  private final DeviceMessageLoggingService loggingService;
 
   public Iec61850GetLightSensorStatusCommand(final DeviceMessageLoggingService loggingService) {
     this.loggingService = loggingService;
   }
 
-  public DeviceStatusDto getStatusFromDevice(
+  public LightSensorStatusDto getStatusFromDevice(
       final Iec61850Client iec61850Client,
       final DeviceConnection deviceConnection,
       final LightMeasurementDevice lmd)
@@ -55,7 +52,7 @@ public class Iec61850GetLightSensorStatusCommand {
         function, "GetLightSensorStatus", deviceConnection.getDeviceIdentification());
   }
 
-  private class Iec61850GetLightSensorStatusFunction implements Function<DeviceStatusDto> {
+  private class Iec61850GetLightSensorStatusFunction implements Function<LightSensorStatusDto> {
 
     final Iec61850Client iec61850Client;
     final DeviceConnection deviceConnection;
@@ -80,18 +77,10 @@ public class Iec61850GetLightSensorStatusCommand {
      * valueobjects .DeviceMessageLog)
      */
     @Override
-    public DeviceStatusDto apply(final DeviceMessageLog deviceMessageLog)
+    public LightSensorStatusDto apply(final DeviceMessageLog deviceMessageLog)
         throws ProtocolAdapterException {
       // Use digital input number as index for SPPGIO node.
       final int index = this.lmd.getDigitalInput();
-
-      // Hard-coded values which are not retrieved from the light
-      // measurement device.
-      final int luxValue = -1;
-      final LinkTypeDto preferredLinkType = LinkTypeDto.ETHERNET;
-      final LinkTypeDto actualLinkType = LinkTypeDto.ETHERNET;
-      final LightTypeDto lightType = LightTypeDto.ONE_TO_TWENTY_FOUR_VOLT;
-      final int notificationMask = -1;
 
       // Read the data attribute of the logical node.
       final LogicalNode logicalNode = LogicalNode.getSpggioByIndex(index);
@@ -113,17 +102,17 @@ public class Iec61850GetLightSensorStatusCommand {
           SubDataAttribute.STATE,
           Boolean.toString(stVal.getValue()));
 
-      final List<LightValueDto> sensorValues = new ArrayList<>();
-      sensorValues.add(new LightValueDto(index, !stVal.getValue(), luxValue));
-
       Iec61850GetLightSensorStatusCommand.this.loggingService.logMessage(
           deviceMessageLog,
           this.deviceConnection.getDeviceIdentification(),
           this.deviceConnection.getOrganisationIdentification(),
           false);
 
-      return new DeviceStatusDto(
-          sensorValues, preferredLinkType, actualLinkType, lightType, notificationMask);
+      return new LightSensorStatusDto(this.getStatus(stVal.getValue()));
+    }
+
+    private LightSensorStatusTypeDto getStatus(final boolean on) {
+      return on ? LightSensorStatusTypeDto.DARK : LightSensorStatusTypeDto.LIGHT;
     }
   }
 }

@@ -1,8 +1,9 @@
 /*
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -12,9 +13,9 @@ import javax.jms.JMSException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceMessageStatus;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponseHandler;
+import org.opensmartgridplatform.adapter.protocol.iec61850.device.lmd.GetLightSensorStatusResponse;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.lmd.LmdDeviceService;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.responses.EmptyDeviceResponse;
-import org.opensmartgridplatform.adapter.protocol.iec61850.device.ssld.responses.GetStatusDeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceConnectionParameters;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.NodeException;
@@ -27,7 +28,7 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.serv
 import org.opensmartgridplatform.adapter.protocol.iec61850.services.DeviceMessageLoggingService;
 import org.opensmartgridplatform.core.db.api.iec61850.application.services.LmdDataService;
 import org.opensmartgridplatform.core.db.api.iec61850.entities.LightMeasurementDevice;
-import org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto;
+import org.opensmartgridplatform.dto.valueobjects.LightSensorStatusDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,7 @@ public class Iec61850LmdDeviceService implements LmdDeviceService {
   @Autowired private Boolean isBufferedReportingEnabled;
 
   @Override
-  public void getStatus(
+  public void getLightSensorStatus(
       final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler)
       throws JMSException {
     DeviceConnection devCon = null;
@@ -63,16 +64,16 @@ public class Iec61850LmdDeviceService implements LmdDeviceService {
       final LightMeasurementDevice lmd =
           this.lmdDataService.findDevice(deviceRequest.getDeviceIdentification());
 
-      LOGGER.info("Iec61850LmdDeviceService.getStatus() called for LMD: {}", lmd);
+      LOGGER.info("Iec61850LmdDeviceService.getLightSensorStatus() called for LMD: {}", lmd);
 
-      final DeviceStatusDto deviceStatus =
+      final LightSensorStatusDto lightSensorStatus =
           new Iec61850GetLightSensorStatusCommand(this.deviceMessageLoggingService)
               .getStatusFromDevice(this.iec61850Client, deviceConnection, lmd);
 
-      final GetStatusDeviceResponse deviceResponse =
-          new GetStatusDeviceResponse(deviceRequest, deviceStatus);
+      final GetLightSensorStatusResponse lightSensorStatusResponse =
+          new GetLightSensorStatusResponse(deviceRequest, lightSensorStatus);
 
-      deviceResponseHandler.handleResponse(deviceResponse);
+      deviceResponseHandler.handleResponse(lightSensorStatusResponse);
 
       this.enableReporting(deviceConnection, deviceRequest);
     } catch (final ConnectionFailureException se) {

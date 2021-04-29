@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.testutils.matchers;
 
+import java.util.Objects;
 import org.mockito.ArgumentMatcher;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 
@@ -21,17 +22,16 @@ public class ProtocolResponseMessageMatcher implements ArgumentMatcher<ProtocolR
 
   @Override
   public boolean matches(final ProtocolResponseMessage argument) {
-    if (!argument
-        .getDeviceIdentification()
-        .equals(this.responseMessage.getDeviceIdentification())) {
+    if (!Objects.equals(
+        argument.getDeviceIdentification(), this.responseMessage.getDeviceIdentification())) {
       return false;
     }
-    if (!argument.getMessageType().equals(this.responseMessage.getMessageType())) {
+    if (!Objects.equals(argument.getMessageType(), this.responseMessage.getMessageType())) {
       return false;
     }
-    if (!argument.getDataObject().equals(this.responseMessage.getDataObject())) {
+    if (!Objects.equals(argument.getDataObject(), this.responseMessage.getDataObject())) {
       return false;
     }
-    return argument.getResult() == this.responseMessage.getResult();
+    return Objects.equals(argument.getResult(), this.responseMessage.getResult());
   }
 }
