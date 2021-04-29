@@ -44,11 +44,8 @@ import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.LightMeasurementDevice;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceStatus;
-import org.opensmartgridplatform.domain.core.valueobjects.LightSensorStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.LightValue;
 import org.opensmartgridplatform.domain.core.valueobjects.ResumeScheduleData;
-import org.opensmartgridplatform.domain.core.valueobjects.Status;
 import org.opensmartgridplatform.domain.core.valueobjects.TransitionMessageDataContainer;
 import org.opensmartgridplatform.shared.application.config.PageSpecifier;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -63,6 +60,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
+import org.springframework.data.util.Streamable;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
@@ -112,11 +110,9 @@ public class PublicLightingAdHocManagementEndpoint {
           this.adHocManagementService.findAllDevices(organisationIdentification, pageSpecifier);
 
       if (page != null && !page.isEmpty()) {
-        final List<Ssld> sslds = page.filter(d -> d instanceof Ssld).map(Ssld.class::cast).toList();
-        final List<LightMeasurementDevice> lmds =
-            page.filter(d -> d instanceof LightMeasurementDevice)
-                .map(LightMeasurementDevice.class::cast)
-                .toList();
+
+        final List<Ssld> sslds = listOfType(page, Ssld.class);
+        final List<LightMeasurementDevice> lmds = listOfType(page, LightMeasurementDevice.class);
 
         final DevicePage devicePage = new DevicePage();
         devicePage.setPage(
@@ -159,6 +155,11 @@ public class PublicLightingAdHocManagementEndpoint {
     }
 
     return response;
+  }
+
+  private static <T> List<T> listOfType(
+      final Streamable<? super T> streamable, final Class<T> clazz) {
+    return streamable.filter(clazz::isInstance).map(clazz::cast).toList();
   }
 
   // === SET LIGHT ===
@@ -293,41 +294,17 @@ public class PublicLightingAdHocManagementEndpoint {
               request.getAsyncRequest().getCorrelationUid());
       if (message != null) {
         response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-        response.setStatus(this.getStatus(message));
+        response.setStatus(
+            this.adHocManagementMapper.map(
+                message.getDataObject(),
+                org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Status
+                    .class));
       }
     } catch (final Exception e) {
       this.handleException(e);
     }
 
     return response;
-  }
-
-  private org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Status
-      getStatus(final ResponseMessage message) {
-    if (message.getDataObject() instanceof LightSensorStatus) {
-      return this.getLightSensorStatus(message);
-    } else {
-      return this.getDeviceStatus(message);
-    }
-  }
-
-  private org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.DeviceStatus
-      getDeviceStatus(final ResponseMessage message) {
-    final Status status = (DeviceStatus) message.getDataObject();
-    return this.adHocManagementMapper.map(
-        status,
-        org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.DeviceStatus
-            .class);
-  }
-
-  private org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement
-          .LightSensorStatus
-      getLightSensorStatus(final ResponseMessage message) {
-    final Status status = (LightSensorStatus) message.getDataObject();
-    return this.adHocManagementMapper.map(
-        status,
-        org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.LightSensorStatus
-            .class);
   }
 
   // === RESUME SCHEDULE ===

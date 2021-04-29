@@ -122,7 +122,7 @@ public class PublicLightingGetLightSensorStatusRequestMessageProcessor
             .domain(domainInformation.getDomain())
             .domainVersion(domainInformation.getDomainVersion())
             .deviceMessageMetadata(deviceMessageMetadata)
-            .result(ResponseMessageResultType.NOT_OK)
+            .result(ResponseMessageResultType.OK)
             .osgpException(null)
             .retryCount(retryCount)
             .dataObject(response.getLightSensorStatus())

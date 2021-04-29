@@ -55,7 +55,7 @@ public class OsgpCoreResponseSteps {
 
   @Then("I should send a connect response message to osgp core")
   public void thenIShouldSendConnectResponseMessageToOsgpCore(final Map<String, String> map) {
-    LOGGER.debug("Then I should send get status response messages to osgp core");
+    LOGGER.debug("Then I should send a connect response message to osgp core");
 
     this.verifyResponse(this.connectResponseMessage(map));
   }
