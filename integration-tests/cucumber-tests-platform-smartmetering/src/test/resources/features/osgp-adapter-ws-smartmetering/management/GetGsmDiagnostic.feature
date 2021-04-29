@@ -28,4 +28,4 @@ Feature: SmartMetering Management - Get GSM Diagnostic
       | numberOfAdjacentCells     |                        1 |
       | adjacentCellId            | cid2                     |
       | adjacentCellSignalQuality | MINUS_91_DBM             |
-      | captureTime               | 2021-04-13T08:45:00.000Z |
+#      | captureTime               | 2021-04-13T08:45:00.000Z |
