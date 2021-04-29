@@ -10,7 +10,6 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.GsmDiagnosticAttribute.ADJACENT_CELLS;
-import static org.opensmartgridplatform.dlms.interfaceclass.attribute.GsmDiagnosticAttribute.CAPTURE_TIME;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.GsmDiagnosticAttribute.CELL_INFO;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.GsmDiagnosticAttribute.CIRCUIT_SWITCHED_STATUS;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.GsmDiagnosticAttribute.MODEM_REGISTRATION_STATUS;
@@ -109,14 +108,12 @@ public class GetGsmDiagnosticCommandExecutor
 
     final AttributeAddress[] addresses = this.createAttributeAddresses(dlmsObject);
 
-    conn.getDlmsMessageListener()
-        .setDescription(
-            "Get GsmDiagnostic, retrieve attributes: "
-                + JdlmsObjectToStringUtil.describeAttributes(addresses));
+    final String addressesDescriptions = JdlmsObjectToStringUtil.describeAttributes(addresses);
 
-    LOGGER.info(
-        "Get GsmDiagnostic, retrieve attributes: "
-            + JdlmsObjectToStringUtil.describeAttributes(addresses));
+    conn.getDlmsMessageListener()
+        .setDescription("Get GsmDiagnostic, retrieve attributes: " + addressesDescriptions);
+
+    LOGGER.info("Get GsmDiagnostic, retrieve attributes: {}", addressesDescriptions);
 
     final List<GetResult> getResultList =
         this.dlmsHelper.getAndCheck(conn, device, "Get GsmDiagnostic", addresses);
@@ -164,7 +161,10 @@ public class GetGsmDiagnosticCommandExecutor
       new AttributeAddress(classId, obisCode, PACKET_SWITCHED_STATUS.attributeId()),
       new AttributeAddress(classId, obisCode, CELL_INFO.attributeId()),
       new AttributeAddress(classId, obisCode, ADJACENT_CELLS.attributeId()),
-      new AttributeAddress(classId, obisCode, CAPTURE_TIME.attributeId())
+      // Reading of capture_time is disabled for now, because meters seem to return an invalid
+      // date-time octet-string causing a failure in the jdlms library. Also see comment in
+      // getCaptureTime.
+      // new AttributeAddress(classId, obisCode, CAPTURE_TIME.attributeId())
     };
   }
 
@@ -293,6 +293,12 @@ public class GetGsmDiagnosticCommandExecutor
   }
 
   private Date getCaptureTime(final List<GetResult> getResultList) throws ProtocolAdapterException {
+    // Reading of capture_time is disabled, so return null here. Also see comment in
+    // createAttributeAddresses.
+    if (RESULT_CAPTURE_TIME_INDEX >= getResultList.size()) {
+      return null;
+    }
+
     final GetResult result = getResultList.get(RESULT_CAPTURE_TIME_INDEX);
     if (this.isResultSuccess(result)) {
       final CosemDateTimeDto cosemDateTime =

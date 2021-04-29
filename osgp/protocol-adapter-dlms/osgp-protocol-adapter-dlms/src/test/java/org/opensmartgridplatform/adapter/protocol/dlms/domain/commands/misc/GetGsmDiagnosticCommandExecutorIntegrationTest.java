@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.TimeZone;
-import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -123,7 +122,8 @@ public class GetGsmDiagnosticCommandExecutorIntegrationTest {
     final AttributeAddress expectedAddressCellInfo = this.createAttributeAddress(method, 6);
     final AttributeAddress expectedAddressAdjacentCells = this.createAttributeAddress(method, 7);
     final AttributeAddress expectedAddressCaptureTime = this.createAttributeAddress(method, 8);
-    final int expectedTotalNumberOfAttributeAddresses = 7;
+    // Reading of capture_time is disabled for now, therefore only 6 addresses expected
+    final int expectedTotalNumberOfAttributeAddresses = 6;
 
     // Set responses in stub
     this.setResponseForOperator(expectedAddressOperator, protocol, method);
@@ -174,8 +174,9 @@ public class GetGsmDiagnosticCommandExecutorIntegrationTest {
     assertThat(response.getNumberOfAdjacentCells()).isEqualTo(3);
     assertThat(response.getAdjacentCellId()).isEqualTo(new byte[] {85, 0, 0, 0});
     assertThat(response.getAdjacentCellSignalQuality()).isEqualTo(SignalQualityDto.MINUS_65_DBM);
-    assertThat(response.getCaptureTime())
-        .isEqualTo(new DateTime(2021, 4, 1, 9, 28, DateTimeZone.UTC).toDate());
+    // Reading of capture_time is disabled, so don't check the capture time
+    // assertThat(response.getCaptureTime())
+    //    .isEqualTo(new DateTime(2021, 4, 1, 9, 28, DateTimeZone.UTC).toDate());
   }
 
   private DlmsDevice createDlmsDevice(final Protocol protocol, final CommunicationMethod method) {
