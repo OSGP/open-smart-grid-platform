@@ -7,12 +7,12 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.protocol.iec60870.domain;
+package org.opensmartgridplatform.iec60870;
 
 import java.util.Map;
 
 public class Iec60870ProcessImage {
-  Map<Integer, Iec60870InformationObject> informationObjects;
+  private final Map<Integer, Iec60870InformationObject> informationObjects;
 
   public Iec60870ProcessImage(final Map<Integer, Iec60870InformationObject> informationObjects) {
     this.informationObjects = informationObjects;

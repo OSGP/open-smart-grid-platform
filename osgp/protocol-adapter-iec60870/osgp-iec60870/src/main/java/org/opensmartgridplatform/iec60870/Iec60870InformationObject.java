@@ -7,15 +7,13 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.cucumber.protocol.iec60870.domain;
-
-import org.opensmartgridplatform.iec60870.Iec60870InformationObjectType;
+package org.opensmartgridplatform.iec60870;
 
 public class Iec60870InformationObject {
 
-  int address;
-  Iec60870InformationObjectType type;
-  Object value;
+  private final int address;
+  private final Iec60870InformationObjectType type;
+  private final Object value;
 
   public Iec60870InformationObject(
       final int address, final Iec60870InformationObjectType type, final Object value) {

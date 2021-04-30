@@ -15,16 +15,16 @@ import io.cucumber.java.DataTableType;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.opensmartgridplatform.cucumber.core.ReadSettingsHelper;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.protocol.iec60870.ProtocolIec60870Keys;
-import org.opensmartgridplatform.cucumber.protocol.iec60870.domain.Iec60870InformationObject;
-import org.opensmartgridplatform.cucumber.protocol.iec60870.domain.Iec60870ProcessImage;
 import org.opensmartgridplatform.cucumber.protocol.iec60870.mock.Iec60870MockServer;
+import org.opensmartgridplatform.iec60870.Iec60870InformationObject;
 import org.opensmartgridplatform.iec60870.Iec60870InformationObjectType;
+import org.opensmartgridplatform.iec60870.Iec60870ProcessImage;
+import org.opensmartgridplatform.iec60870.Iec60870ProfileType;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ProcessImageSteps {
@@ -50,17 +50,7 @@ public class ProcessImageSteps {
 
   @Given("a process image on the IEC60870 server")
   public void givenAProcessImageOnTheIec60870Server(final Iec60870ProcessImage processImage) {
-
-    final Consumer<Iec60870InformationObject> setInformationObject =
-        informationObject ->
-            this.mockServer
-                .getRtuSimulator()
-                .initInformationObject(
-                    informationObject.getAddress(),
-                    informationObject.getType(),
-                    informationObject.getValue());
-
-    processImage.getInformationObjects().values().forEach(setInformationObject);
+    this.mockServer.getRtuSimulator().setProcessImage(processImage);
   }
 
   @When("the process image on the IEC60870 server changes")
@@ -91,8 +81,9 @@ public class ProcessImageSteps {
   }
 
   private static Object informationElementValue(final String value) {
-    final String profile = (String) ScenarioContext.current().get(PROFILE);
-    if ("light_measurement_device".equals(profile)) {
+    final Iec60870ProfileType profile =
+        (Iec60870ProfileType) ScenarioContext.current().get(PROFILE);
+    if (Iec60870ProfileType.LIGHT_MEASUREMENT_DEVICE == profile) {
       return Boolean.valueOf(value);
     }
     return Float.valueOf(value);
