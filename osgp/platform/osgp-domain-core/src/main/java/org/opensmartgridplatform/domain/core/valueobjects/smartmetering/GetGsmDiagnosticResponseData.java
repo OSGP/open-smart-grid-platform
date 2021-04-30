@@ -11,6 +11,7 @@ package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 public class GetGsmDiagnosticResponseData extends ActionResponse implements Serializable {
 
@@ -24,25 +25,9 @@ public class GetGsmDiagnosticResponseData extends ActionResponse implements Seri
 
   private final PacketSwitchedStatusType packetSwitchedStatus;
 
-  private final byte[] cellId;
+  private final CellInfo cellInfo;
 
-  private final byte[] locationId;
-
-  private final SignalQualityType signalQuality;
-
-  private final BitErrorRateType bitErrorRate;
-
-  private final long mobileCountryCode;
-
-  private final long mobileNetworkCode;
-
-  private final long channelNumber;
-
-  private final long numberOfAdjacentCells;
-
-  private final byte[] adjacentCellId;
-
-  private final SignalQualityType adjacentCellSignalQuality;
+  private final List<AdjacentCellInfo> adjacentCells;
 
   private final Date captureTime;
 
@@ -51,32 +36,16 @@ public class GetGsmDiagnosticResponseData extends ActionResponse implements Seri
       final ModemRegistrationStatusType modemRegistrationStatus,
       final CircuitSwitchedStatusType circuitSwitchedStatus,
       final PacketSwitchedStatusType packetSwitchedStatus,
-      final byte[] cellId,
-      final byte[] locationId,
-      final SignalQualityType signalQuality,
-      final BitErrorRateType bitErrorRate,
-      final long mobileCountryCode,
-      final long mobileNetworkCode,
-      final long channelNumber,
-      final long numberOfAdjacentCells,
-      final byte[] adjacentCellId,
-      final SignalQualityType adjacentCellSignalQuality,
+      final CellInfo cellInfo,
+      final List<AdjacentCellInfo> adjacentCells,
       final Date captureTime) {
     super();
     this.operator = operator;
     this.modemRegistrationStatus = modemRegistrationStatus;
     this.circuitSwitchedStatus = circuitSwitchedStatus;
     this.packetSwitchedStatus = packetSwitchedStatus;
-    this.cellId = cellId;
-    this.locationId = locationId;
-    this.signalQuality = signalQuality;
-    this.bitErrorRate = bitErrorRate;
-    this.mobileCountryCode = mobileCountryCode;
-    this.mobileNetworkCode = mobileNetworkCode;
-    this.channelNumber = channelNumber;
-    this.numberOfAdjacentCells = numberOfAdjacentCells;
-    this.adjacentCellId = adjacentCellId;
-    this.adjacentCellSignalQuality = adjacentCellSignalQuality;
+    this.cellInfo = cellInfo;
+    this.adjacentCells = adjacentCells;
     this.captureTime = captureTime;
   }
 
@@ -96,44 +65,12 @@ public class GetGsmDiagnosticResponseData extends ActionResponse implements Seri
     return this.packetSwitchedStatus;
   }
 
-  public byte[] getCellId() {
-    return this.cellId;
+  public CellInfo getCellInfo() {
+    return this.cellInfo;
   }
 
-  public byte[] getLocationId() {
-    return this.locationId;
-  }
-
-  public SignalQualityType getSignalQuality() {
-    return this.signalQuality;
-  }
-
-  public BitErrorRateType getBitErrorRate() {
-    return this.bitErrorRate;
-  }
-
-  public long getMobileCountryCode() {
-    return this.mobileCountryCode;
-  }
-
-  public long getMobileNetworkCode() {
-    return this.mobileNetworkCode;
-  }
-
-  public long getChannelNumber() {
-    return this.channelNumber;
-  }
-
-  public long getNumberOfAdjacentCells() {
-    return this.numberOfAdjacentCells;
-  }
-
-  public byte[] getAdjacentCellId() {
-    return this.adjacentCellId;
-  }
-
-  public SignalQualityType getAdjacentCellSignalQuality() {
-    return this.adjacentCellSignalQuality;
+  public List<AdjacentCellInfo> getAdjacentCells() {
+    return this.adjacentCells;
   }
 
   public Date getCaptureTime() {

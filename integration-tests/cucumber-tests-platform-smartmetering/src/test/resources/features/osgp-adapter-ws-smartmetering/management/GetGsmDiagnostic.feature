@@ -25,7 +25,7 @@ Feature: SmartMetering Management - Get GSM Diagnostic
       | mobileCountryCode         |                       66 |
       | mobileNetworkCode         |                      204 |
       | channelNumber             |                      107 |
-      | numberOfAdjacentCells     |                        1 |
+      | numberOfAdjacentCells     |                        2 |
       | adjacentCellId            | cid2                     |
       | adjacentCellSignalQuality | MINUS_91_DBM             |
 #      | captureTime               | 2021-04-13T08:45:00.000Z |

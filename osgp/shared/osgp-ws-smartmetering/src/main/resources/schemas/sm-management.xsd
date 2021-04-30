@@ -705,20 +705,31 @@
           <xsd:element name="ModemRegistrationStatus" type="tns:ModemRegistrationStatus"/>
           <xsd:element name="CircuitSwitchedStatus" type="tns:CircuitSwitchedStatus"/>
           <xsd:element name="PacketSwitchedStatus" type="tns:PacketSwitchedStatus"/>
-          <xsd:element name="CellId" type="common:CellId"/>
-          <xsd:element name="LocationId" type="common:LocationId"/>
-          <xsd:element name="SignalQuality" type="tns:SignalQuality"/>
-          <xsd:element name="BitErrorRate" type="tns:BitErrorRate"/>
-          <xsd:element name="MobileCountryCode" type="xsd:unsignedShort"/>
-          <xsd:element name="MobileNetworkCode" type="xsd:unsignedShort"/>
-          <xsd:element name="ChannelNumber" type="xsd:unsignedInt"/>
-          <xsd:element name="NumberOfAdjacentCells" type="xsd:unsignedInt"/>
-          <xsd:element name="AdjacentCellId" type="common:CellId"/>
-          <xsd:element name="AdjacentCellSignalQuality" type="tns:SignalQuality"/>
+          <xsd:element name="CellInfo" type="tns:CellInfo"/>
+          <xsd:element name="AdjacentCells" type="tns:AdjacentCellInfo" maxOccurs="unbounded"/>
           <xsd:element name="CaptureTime" type="xsd:dateTime"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="CellInfo">
+    <xsd:sequence>
+      <xsd:element name="CellId" type="common:CellId"/>
+      <xsd:element name="LocationId" type="common:LocationId"/>
+      <xsd:element name="SignalQuality" type="tns:SignalQuality"/>
+      <xsd:element name="BitErrorRate" type="tns:BitErrorRate"/>
+      <xsd:element name="MobileCountryCode" type="xsd:unsignedShort"/>
+      <xsd:element name="MobileNetworkCode" type="xsd:unsignedShort"/>
+      <xsd:element name="ChannelNumber" type="xsd:unsignedInt"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="AdjacentCellInfo">
+    <xsd:sequence>
+      <xsd:element name="CellId" type="common:CellId"/>
+      <xsd:element name="SignalQuality" type="tns:SignalQuality"/>
+    </xsd:sequence>
   </xsd:complexType>
 
   <xsd:simpleType name="ModemRegistrationStatus">

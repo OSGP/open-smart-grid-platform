@@ -17,6 +17,7 @@ import static org.opensmartgridplatform.dlms.interfaceclass.attribute.GsmDiagnos
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.GsmDiagnosticAttribute.PACKET_SWITCHED_STATUS;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,7 +36,9 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdjacentCellInfoDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.BitErrorRateDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CellInfoDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CircuitSwitchedStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetGsmDiagnosticRequestDto;
@@ -177,8 +180,8 @@ public class GetGsmDiagnosticCommandExecutor
         this.getCircuitSwitchedStatus(getResultList);
     final PacketSwitchedStatusDto packetSwitchedStatusDto =
         this.getPacketSwitchedStatus(getResultList);
-    final CellInfo cellInfo = this.getCellInfo(getResultList);
-    final AdjacentCellsInfo adjacentCellsInfo = this.getAdjacentCellsInfo(getResultList);
+    final CellInfoDto cellInfo = this.getCellInfo(getResultList);
+    final List<AdjacentCellInfoDto> adjacentCells = this.getAdjacentCells(getResultList);
     final Date captureTimeDto = this.getCaptureTime(getResultList);
 
     return new GetGsmDiagnosticResponseDto(
@@ -186,16 +189,8 @@ public class GetGsmDiagnosticCommandExecutor
         registrationStatus,
         circuitSwitchedStatus,
         packetSwitchedStatusDto,
-        cellInfo.cellId,
-        cellInfo.locationId,
-        cellInfo.signalQualityDto,
-        cellInfo.bitErrorRateDto,
-        cellInfo.mobileCountryCode,
-        cellInfo.mobileNetworkCode,
-        cellInfo.channelNumber,
-        adjacentCellsInfo.numberOfAdjacentCells,
-        adjacentCellsInfo.adjacentCellId,
-        adjacentCellsInfo.signalQualityDto,
+        cellInfo,
+        adjacentCells,
         captureTimeDto);
   }
 
@@ -236,7 +231,7 @@ public class GetGsmDiagnosticCommandExecutor
     }
   }
 
-  private CellInfo getCellInfo(final List<GetResult> getResultList) {
+  private CellInfoDto getCellInfo(final List<GetResult> getResultList) {
     final GetResult result = getResultList.get(RESULT_CELL_INFO_INDEX);
     if (result.getResultCode() != AccessResultCode.SUCCESS) {
       return null;
@@ -244,52 +239,44 @@ public class GetGsmDiagnosticCommandExecutor
 
     final List<DataObject> cellInfoDataObjects = result.getResultData().getValue();
 
-    final CellInfo cellInfo = new CellInfo();
-
     if (cellInfoDataObjects != null) {
-      cellInfo.cellId =
-          this.longToByteArray(cellInfoDataObjects.get(CELL_INFO_CELL_ID_INDEX).getValue());
-      cellInfo.locationId =
-          this.intToByteArray(cellInfoDataObjects.get(CELL_INFO_LOCATION_ID_INDEX).getValue());
-      cellInfo.signalQualityDto =
+      return new CellInfoDto(
+          this.longToByteArray(cellInfoDataObjects.get(CELL_INFO_CELL_ID_INDEX).getValue()),
+          this.intToByteArray(cellInfoDataObjects.get(CELL_INFO_LOCATION_ID_INDEX).getValue()),
           SignalQualityDto.fromIndexValue(
-              (short) cellInfoDataObjects.get(CELL_INFO_SIGNAL_QUALITY_INDEX).getValue());
-      cellInfo.bitErrorRateDto =
+              (short) cellInfoDataObjects.get(CELL_INFO_SIGNAL_QUALITY_INDEX).getValue()),
           BitErrorRateDto.fromIndexValue(
-              (short) cellInfoDataObjects.get(CELL_INFO_BIT_ERROR_RATE_INDEX).getValue());
-      cellInfo.mobileCountryCode =
-          cellInfoDataObjects.get(CELL_INFO_MOBILE_COUNTRY_CODE_INDEX).getValue();
-      cellInfo.mobileNetworkCode =
-          cellInfoDataObjects.get(CELL_INFO_MOBILE_NETWORK_CODE_INDEX).getValue();
-      cellInfo.channelNumber = cellInfoDataObjects.get(CELL_INFO_CHANNEL_NUMBER_INDEX).getValue();
+              (short) cellInfoDataObjects.get(CELL_INFO_BIT_ERROR_RATE_INDEX).getValue()),
+          cellInfoDataObjects.get(CELL_INFO_MOBILE_COUNTRY_CODE_INDEX).getValue(),
+          cellInfoDataObjects.get(CELL_INFO_MOBILE_NETWORK_CODE_INDEX).getValue(),
+          cellInfoDataObjects.get(CELL_INFO_CHANNEL_NUMBER_INDEX).getValue());
+    } else {
+      return null;
     }
-
-    return cellInfo;
   }
 
-  private AdjacentCellsInfo getAdjacentCellsInfo(final List<GetResult> getResultList) {
+  private List<AdjacentCellInfoDto> getAdjacentCells(final List<GetResult> getResultList) {
     final GetResult result = getResultList.get(RESULT_ADJACENT_CELLS_INDEX);
     if (result.getResultCode() != AccessResultCode.SUCCESS) {
-      return null;
+      return Collections.emptyList();
     }
 
     final List<DataObject> adjacentCellsDataObjects = result.getResultData().getValue();
 
-    final AdjacentCellsInfo adjacentCellsInfo = new AdjacentCellsInfo();
-
-    if (adjacentCellsDataObjects != null) {
-      adjacentCellsInfo.numberOfAdjacentCells = adjacentCellsDataObjects.size();
-      if (!adjacentCellsDataObjects.isEmpty()) {
-        final List<DataObject> firstAdjacentCell = adjacentCellsDataObjects.get(0).getValue();
-        adjacentCellsInfo.adjacentCellId =
-            this.longToByteArray(firstAdjacentCell.get(ADJACENT_CELLS_CELL_ID_INDEX).getValue());
-        adjacentCellsInfo.signalQualityDto =
-            SignalQualityDto.fromIndexValue(
-                (short) firstAdjacentCell.get(ADJACENT_CELLS_SIGNAL_QUALITY_INDEX).getValue());
-      }
+    if (adjacentCellsDataObjects == null) {
+      return Collections.emptyList();
+    } else {
+      return adjacentCellsDataObjects.stream()
+          .map(
+              cellInfo -> {
+                final List<DataObject> adjacentCell = cellInfo.getValue();
+                return new AdjacentCellInfoDto(
+                    this.longToByteArray(adjacentCell.get(ADJACENT_CELLS_CELL_ID_INDEX).getValue()),
+                    SignalQualityDto.fromIndexValue(
+                        (short) adjacentCell.get(ADJACENT_CELLS_SIGNAL_QUALITY_INDEX).getValue()));
+              })
+          .collect(Collectors.toList());
     }
-
-    return adjacentCellsInfo;
   }
 
   private Date getCaptureTime(final List<GetResult> getResultList) throws ProtocolAdapterException {
@@ -331,21 +318,5 @@ public class GetGsmDiagnosticCommandExecutor
 
   private byte[] intToByteArray(final int value) {
     return new byte[] {(byte) value, (byte) (value >> 8)};
-  }
-
-  private static class CellInfo {
-    private byte[] cellId;
-    private byte[] locationId;
-    private SignalQualityDto signalQualityDto;
-    private BitErrorRateDto bitErrorRateDto;
-    private Integer mobileCountryCode;
-    private Integer mobileNetworkCode;
-    private Long channelNumber;
-  }
-
-  private static class AdjacentCellsInfo {
-    private int numberOfAdjacentCells;
-    private SignalQualityDto signalQualityDto;
-    private byte[] adjacentCellId;
   }
 }

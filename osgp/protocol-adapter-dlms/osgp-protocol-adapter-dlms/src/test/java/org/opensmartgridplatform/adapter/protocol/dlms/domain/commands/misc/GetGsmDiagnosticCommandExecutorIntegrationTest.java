@@ -33,7 +33,9 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Dlm
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdjacentCellInfoDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.BitErrorRateDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CellInfoDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CircuitSwitchedStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetGsmDiagnosticRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetGsmDiagnosticResponseDto;
@@ -164,16 +166,18 @@ public class GetGsmDiagnosticCommandExecutorIntegrationTest {
         .isEqualTo(ModemRegistrationStatusDto.REGISTERED_ROAMING);
     assertThat(response.getCircuitSwitchedStatus()).isEqualTo(CircuitSwitchedStatusDto.INACTIVE);
     assertThat(response.getPacketSwitchedStatus()).isEqualTo(PacketSwitchedStatusDto.CDMA);
-    assertThat(response.getCellId()).isEqualTo(new byte[] {93, 0, 0, 0});
-    assertThat(response.getLocationId()).isEqualTo(new byte[] {-72, 8});
-    assertThat(response.getSignalQuality()).isEqualTo(SignalQualityDto.MINUS_87_DBM);
-    assertThat(response.getBitErrorRate()).isEqualTo(BitErrorRateDto.RXQUAL_6);
-    assertThat(response.getMobileCountryCode()).isEqualTo(204);
-    assertThat(response.getMobileNetworkCode()).isEqualTo(66);
-    assertThat(response.getChannelNumber()).isEqualTo(107);
-    assertThat(response.getNumberOfAdjacentCells()).isEqualTo(3);
-    assertThat(response.getAdjacentCellId()).isEqualTo(new byte[] {85, 0, 0, 0});
-    assertThat(response.getAdjacentCellSignalQuality()).isEqualTo(SignalQualityDto.MINUS_65_DBM);
+    final CellInfoDto cellInfo = response.getCellInfo();
+    assertThat(cellInfo.getCellId()).isEqualTo(new byte[] {93, 0, 0, 0});
+    assertThat(cellInfo.getLocationId()).isEqualTo(new byte[] {-72, 8});
+    assertThat(cellInfo.getSignalQuality()).isEqualTo(SignalQualityDto.MINUS_87_DBM);
+    assertThat(cellInfo.getBitErrorRate()).isEqualTo(BitErrorRateDto.RXQUAL_6);
+    assertThat(cellInfo.getMobileCountryCode()).isEqualTo(204);
+    assertThat(cellInfo.getMobileNetworkCode()).isEqualTo(66);
+    assertThat(cellInfo.getChannelNumber()).isEqualTo(107);
+    final List<AdjacentCellInfoDto> adjacentCells = response.getAdjacentCells();
+    assertThat(adjacentCells.size()).isEqualTo(3);
+    assertThat(adjacentCells.get(0).getCellId()).isEqualTo(new byte[] {85, 0, 0, 0});
+    assertThat(adjacentCells.get(0).getSignalQuality()).isEqualTo(SignalQualityDto.MINUS_65_DBM);
     // Reading of capture_time is disabled, so don't check the capture time
     // assertThat(response.getCaptureTime())
     //    .isEqualTo(new DateTime(2021, 4, 1, 9, 28, DateTimeZone.UTC).toDate());
