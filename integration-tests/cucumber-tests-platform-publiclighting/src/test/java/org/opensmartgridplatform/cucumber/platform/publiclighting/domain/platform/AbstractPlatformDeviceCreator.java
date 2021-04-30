@@ -10,6 +10,7 @@ package org.opensmartgridplatform.cucumber.platform.publiclighting.domain.platfo
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 import java.util.Map;
 import org.junit.platform.commons.util.StringUtils;
 import org.openqa.selenium.InvalidArgumentException;
@@ -93,14 +94,28 @@ public abstract class AbstractPlatformDeviceCreator<T extends Device>
     }
   }
 
-  protected Organisation ownerOrganisation() {
-    return this.organisationRepository.findByOrganisationIdentification(
-        PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
+  private Organisation getOrganisation(final Map<String, String> settings) {
+    final String organizationIdentification =
+        ReadSettingsHelper.getString(
+            settings,
+            PlatformKeys.KEY_ORGANIZATION_IDENTIFICATION,
+            PlatformDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION);
+    return this.organisationRepository.findByOrganisationIdentification(organizationIdentification);
   }
 
   protected DeviceAuthorization addDeviceAuthorization(final Device device) {
+    return this.addDeviceAuthorization(device, new HashMap<String, String>());
+  }
+
+  protected DeviceAuthorization addDeviceAuthorization(
+      final Device device, final Map<String, String> settings) {
+    return this.addDeviceAuthorization(device, this.getOrganisation(settings));
+  }
+
+  private DeviceAuthorization addDeviceAuthorization(
+      final Device device, final Organisation organization) {
     DeviceAuthorization deviceAuthorization =
-        device.addAuthorization(this.ownerOrganisation(), DeviceFunctionGroup.OWNER);
+        device.addAuthorization(organization, DeviceFunctionGroup.OWNER);
     deviceAuthorization = this.deviceAuthorizationRepository.save(deviceAuthorization);
     return deviceAuthorization;
   }

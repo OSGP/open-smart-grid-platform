@@ -33,7 +33,7 @@ public class LightMeasurementRtuDeviceCreator extends AbstractPlatformDeviceCrea
 
     device = this.rtuDeviceRepository.save(device);
 
-    this.addDeviceAuthorization(device);
+    this.addDeviceAuthorization(device, settings);
 
     return device;
   }
