@@ -48,34 +48,40 @@ public class GetGsmDiagnosticResponseValidator {
               .isEqualTo(PacketSwitchedStatus.fromValue(expectedValue));
           break;
         case "cellId":
-          assertThat(response.getCellId()).isEqualTo(expectedValue.getBytes());
+          assertThat(response.getCellInfo().getCellId()).isEqualTo(expectedValue.getBytes());
           break;
         case "locationId":
-          assertThat(response.getLocationId()).isEqualTo(expectedValue.getBytes());
+          assertThat(response.getCellInfo().getLocationId()).isEqualTo(expectedValue.getBytes());
           break;
         case "signalQuality":
-          assertThat(response.getSignalQuality()).isEqualTo(SignalQuality.fromValue(expectedValue));
+          assertThat(response.getCellInfo().getSignalQuality())
+              .isEqualTo(SignalQuality.fromValue(expectedValue));
           break;
         case "bitErrorRate":
-          assertThat(response.getBitErrorRate()).isEqualTo(BitErrorRate.fromValue(expectedValue));
+          assertThat(response.getCellInfo().getBitErrorRate())
+              .isEqualTo(BitErrorRate.fromValue(expectedValue));
           break;
         case "mobileCountryCode":
-          assertThat(response.getMobileCountryCode()).isEqualTo(Long.parseLong(expectedValue));
+          assertThat(response.getCellInfo().getMobileCountryCode())
+              .isEqualTo(Long.parseLong(expectedValue));
           break;
         case "mobileNetworkCode":
-          assertThat(response.getMobileNetworkCode()).isEqualTo(Long.parseLong(expectedValue));
+          assertThat(response.getCellInfo().getMobileNetworkCode())
+              .isEqualTo(Long.parseLong(expectedValue));
           break;
         case "channelNumber":
-          assertThat(response.getChannelNumber()).isEqualTo(Long.parseLong(expectedValue));
+          assertThat(response.getCellInfo().getChannelNumber())
+              .isEqualTo(Long.parseLong(expectedValue));
           break;
         case "numberOfAdjacentCells":
-          assertThat(response.getNumberOfAdjacentCells()).isEqualTo(Long.parseLong(expectedValue));
+          assertThat(response.getAdjacentCells().size()).isEqualTo(Long.parseLong(expectedValue));
           break;
         case "adjacentCellId":
-          assertThat(response.getAdjacentCellId()).isEqualTo(expectedValue.getBytes());
+          assertThat(response.getAdjacentCells().get(0).getCellId())
+              .isEqualTo(expectedValue.getBytes());
           break;
         case "adjacentCellSignalQuality":
-          assertThat(response.getAdjacentCellSignalQuality())
+          assertThat(response.getAdjacentCells().get(0).getSignalQuality())
               .isEqualTo(SignalQuality.fromValue(expectedValue));
           break;
         case "captureTime":

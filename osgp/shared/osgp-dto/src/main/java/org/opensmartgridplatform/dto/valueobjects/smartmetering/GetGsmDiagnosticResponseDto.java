@@ -10,6 +10,7 @@
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
 import java.util.Date;
+import java.util.List;
 
 public class GetGsmDiagnosticResponseDto extends ActionResponseDto {
 
@@ -21,25 +22,9 @@ public class GetGsmDiagnosticResponseDto extends ActionResponseDto {
 
   private final PacketSwitchedStatusDto packetSwitchedStatus;
 
-  private final byte[] cellId;
+  private final CellInfoDto cellInfo;
 
-  private final byte[] locationId;
-
-  private final SignalQualityDto signalQuality;
-
-  private final BitErrorRateDto bitErrorRate;
-
-  private final long mobileCountryCode;
-
-  private final long mobileNetworkCode;
-
-  private final long channelNumber;
-
-  private final long numberOfAdjacentCells;
-
-  private final byte[] adjacentCellId;
-
-  private final SignalQualityDto adjacentCellSignalQuality;
+  private final List<AdjacentCellInfoDto> adjacentCells;
 
   private final Date captureTime;
 
@@ -50,32 +35,16 @@ public class GetGsmDiagnosticResponseDto extends ActionResponseDto {
       final ModemRegistrationStatusDto modemRegistrationStatus,
       final CircuitSwitchedStatusDto circuitSwitchedStatus,
       final PacketSwitchedStatusDto packetSwitchedStatus,
-      final byte[] cellId,
-      final byte[] locationId,
-      final SignalQualityDto signalQuality,
-      final BitErrorRateDto bitErrorRate,
-      final long mobileCountryCode,
-      final long mobileNetworkCode,
-      final long channelNumber,
-      final long numberOfAdjacentCells,
-      final byte[] adjacentCellId,
-      final SignalQualityDto adjacentCellSignalQuality,
+      final CellInfoDto cellInfo,
+      final List<AdjacentCellInfoDto> adjacentCells,
       final Date captureTime) {
     super();
     this.operator = operator;
     this.modemRegistrationStatus = modemRegistrationStatus;
     this.circuitSwitchedStatus = circuitSwitchedStatus;
     this.packetSwitchedStatus = packetSwitchedStatus;
-    this.cellId = cellId;
-    this.locationId = locationId;
-    this.signalQuality = signalQuality;
-    this.bitErrorRate = bitErrorRate;
-    this.mobileCountryCode = mobileCountryCode;
-    this.mobileNetworkCode = mobileNetworkCode;
-    this.channelNumber = channelNumber;
-    this.numberOfAdjacentCells = numberOfAdjacentCells;
-    this.adjacentCellId = adjacentCellId;
-    this.adjacentCellSignalQuality = adjacentCellSignalQuality;
+    this.cellInfo = cellInfo;
+    this.adjacentCells = adjacentCells;
     this.captureTime = captureTime;
   }
 
@@ -95,44 +64,12 @@ public class GetGsmDiagnosticResponseDto extends ActionResponseDto {
     return this.packetSwitchedStatus;
   }
 
-  public byte[] getCellId() {
-    return this.cellId;
+  public CellInfoDto getCellInfo() {
+    return this.cellInfo;
   }
 
-  public byte[] getLocationId() {
-    return this.locationId;
-  }
-
-  public SignalQualityDto getSignalQuality() {
-    return this.signalQuality;
-  }
-
-  public BitErrorRateDto getBitErrorRate() {
-    return this.bitErrorRate;
-  }
-
-  public long getMobileCountryCode() {
-    return this.mobileCountryCode;
-  }
-
-  public long getMobileNetworkCode() {
-    return this.mobileNetworkCode;
-  }
-
-  public long getChannelNumber() {
-    return this.channelNumber;
-  }
-
-  public long getNumberOfAdjacentCells() {
-    return this.numberOfAdjacentCells;
-  }
-
-  public byte[] getAdjacentCellId() {
-    return this.adjacentCellId;
-  }
-
-  public SignalQualityDto getAdjacentCellSignalQuality() {
-    return this.adjacentCellSignalQuality;
+  public List<AdjacentCellInfoDto> getAdjacentCells() {
+    return this.adjacentCells;
   }
 
   public Date getCaptureTime() {

@@ -1,0 +1,32 @@
+/*
+ * Copyright 2018 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
+package org.opensmartgridplatform.dto.valueobjects.smartmetering;
+
+import java.io.Serializable;
+
+public class AdjacentCellInfoDto implements Serializable {
+
+  private static final long serialVersionUID = 7464070322360476966L;
+
+  private final byte[] cellId;
+  private final SignalQualityDto signalQuality;
+
+  public AdjacentCellInfoDto(final byte[] cellId, final SignalQualityDto signalQuality) {
+    this.cellId = cellId;
+    this.signalQuality = signalQuality;
+  }
+
+  public byte[] getCellId() {
+    return this.cellId;
+  }
+
+  public SignalQualityDto getSignalQuality() {
+    return this.signalQuality;
+  }
+}
