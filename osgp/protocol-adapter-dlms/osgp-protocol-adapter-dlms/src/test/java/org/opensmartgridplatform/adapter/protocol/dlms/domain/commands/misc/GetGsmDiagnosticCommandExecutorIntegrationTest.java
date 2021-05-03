@@ -169,8 +169,8 @@ public class GetGsmDiagnosticCommandExecutorIntegrationTest {
     assertThat(response.getCircuitSwitchedStatus()).isEqualTo(CircuitSwitchedStatusDto.INACTIVE);
     assertThat(response.getPacketSwitchedStatus()).isEqualTo(PacketSwitchedStatusDto.CDMA);
     final CellInfoDto cellInfo = response.getCellInfo();
-    assertThat(cellInfo.getCellId()).isEqualTo(new byte[] {93, 0, 0, 0});
-    assertThat(cellInfo.getLocationId()).isEqualTo(new byte[] {-72, 8});
+    assertThat(cellInfo.getCellId()).isEqualTo(93L);
+    assertThat(cellInfo.getLocationId()).isEqualTo(2232);
     assertThat(cellInfo.getSignalQuality()).isEqualTo(SignalQualityDto.MINUS_87_DBM);
     assertThat(cellInfo.getBitErrorRate()).isEqualTo(BitErrorRateDto.RXQUAL_6);
     assertThat(cellInfo.getMobileCountryCode()).isEqualTo(204);
@@ -178,7 +178,7 @@ public class GetGsmDiagnosticCommandExecutorIntegrationTest {
     assertThat(cellInfo.getChannelNumber()).isEqualTo(107);
     final List<AdjacentCellInfoDto> adjacentCells = response.getAdjacentCells();
     assertThat(adjacentCells.size()).isEqualTo(3);
-    assertThat(adjacentCells.get(0).getCellId()).isEqualTo(new byte[] {85, 0, 0, 0});
+    assertThat(adjacentCells.get(0).getCellId()).isEqualTo(85L);
     assertThat(adjacentCells.get(0).getSignalQuality()).isEqualTo(SignalQualityDto.MINUS_65_DBM);
     // Reading of capture_time is disabled, so don't check the capture time
     // assertThat(response.getCaptureTime())

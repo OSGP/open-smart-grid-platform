@@ -715,8 +715,8 @@
 
   <xsd:complexType name="CellInfo">
     <xsd:sequence>
-      <xsd:element name="CellId" type="common:CellId"/>
-      <xsd:element name="LocationId" type="common:LocationId"/>
+      <xsd:element name="CellId" type="xsd:unsignedInt"/>
+      <xsd:element name="LocationId" type="xsd:unsignedShort"/>
       <xsd:element name="SignalQuality" type="tns:SignalQuality"/>
       <xsd:element name="BitErrorRate" type="tns:BitErrorRate"/>
       <xsd:element name="MobileCountryCode" type="xsd:unsignedShort"/>
@@ -727,7 +727,7 @@
 
   <xsd:complexType name="AdjacentCellInfo">
     <xsd:sequence>
-      <xsd:element name="CellId" type="common:CellId"/>
+      <xsd:element name="CellId" type="xsd:unsignedInt"/>
       <xsd:element name="SignalQuality" type="tns:SignalQuality"/>
     </xsd:sequence>
   </xsd:complexType>

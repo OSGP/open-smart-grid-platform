@@ -48,10 +48,11 @@ public class GetGsmDiagnosticResponseValidator {
               .isEqualTo(PacketSwitchedStatus.fromValue(expectedValue));
           break;
         case "cellId":
-          assertThat(response.getCellInfo().getCellId()).isEqualTo(expectedValue.getBytes());
+          assertThat(response.getCellInfo().getCellId()).isEqualTo(Long.parseLong(expectedValue));
           break;
         case "locationId":
-          assertThat(response.getCellInfo().getLocationId()).isEqualTo(expectedValue.getBytes());
+          assertThat(response.getCellInfo().getLocationId())
+              .isEqualTo(Long.parseLong(expectedValue));
           break;
         case "signalQuality":
           assertThat(response.getCellInfo().getSignalQuality())
@@ -78,7 +79,7 @@ public class GetGsmDiagnosticResponseValidator {
           break;
         case "adjacentCellId":
           assertThat(response.getAdjacentCells().get(0).getCellId())
-              .isEqualTo(expectedValue.getBytes());
+              .isEqualTo(Long.parseLong(expectedValue));
           break;
         case "adjacentCellSignalQuality":
           assertThat(response.getAdjacentCells().get(0).getSignalQuality())

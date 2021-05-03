@@ -14,15 +14,15 @@ public class AdjacentCellInfoDto implements Serializable {
 
   private static final long serialVersionUID = 7464070322360476966L;
 
-  private final byte[] cellId;
+  private final long cellId;
   private final SignalQualityDto signalQuality;
 
-  public AdjacentCellInfoDto(final byte[] cellId, final SignalQualityDto signalQuality) {
+  public AdjacentCellInfoDto(final long cellId, final SignalQualityDto signalQuality) {
     this.cellId = cellId;
     this.signalQuality = signalQuality;
   }
 
-  public byte[] getCellId() {
+  public long getCellId() {
     return this.cellId;
   }
 
