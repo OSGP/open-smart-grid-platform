@@ -1251,7 +1251,7 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element type="tns:SecretType" name="secretType"
-          minOccurs="1" maxOccurs="6" />
+          minOccurs="1" maxOccurs="4" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
