@@ -785,16 +785,4 @@
     <xsd:restriction base="xsd:unsignedByte"/>
   </xsd:simpleType>
 
-  <xsd:simpleType name="CellId">
-    <xsd:restriction base="xsd:hexBinary">
-      <xsd:maxLength value="4"/>
-    </xsd:restriction>
-  </xsd:simpleType>
-
-  <xsd:simpleType name="LocationId">
-    <xsd:restriction base="xsd:hexBinary">
-      <xsd:maxLength value="2"/>
-    </xsd:restriction>
-  </xsd:simpleType>
-
 </xsd:schema>

@@ -214,8 +214,8 @@ public class GetGsmDiagnosticCommandExecutorTest {
         .isEqualTo(CircuitSwitchedStatusDto.fromIndexValue(3));
     assertThat(result.getPacketSwitchedStatus())
         .isEqualTo(PacketSwitchedStatusDto.fromIndexValue(4));
-    assertThat(result.getCellInfo().getCellId()).isEqualTo(new byte[] {-128, 0, 0, 0});
-    assertThat(result.getCellInfo().getLocationId()).isEqualTo(new byte[] {1, 0});
+    assertThat(result.getCellInfo().getCellId()).isEqualTo(128L);
+    assertThat(result.getCellInfo().getLocationId()).isEqualTo(1);
     assertThat(result.getCellInfo().getSignalQuality())
         .isEqualTo(SignalQualityDto.fromIndexValue(2));
     assertThat(result.getCellInfo().getBitErrorRate()).isEqualTo(BitErrorRateDto.fromIndexValue(3));
@@ -223,7 +223,7 @@ public class GetGsmDiagnosticCommandExecutorTest {
     assertThat(result.getCellInfo().getMobileNetworkCode()).isEqualTo(5);
     assertThat(result.getCellInfo().getChannelNumber()).isEqualTo(6);
     assertThat(result.getAdjacentCells().size()).isEqualTo(1);
-    assertThat(result.getAdjacentCells().get(0).getCellId()).isEqualTo(new byte[] {0, 1, 0, 0});
+    assertThat(result.getAdjacentCells().get(0).getCellId()).isEqualTo(256L);
     assertThat(result.getAdjacentCells().get(0).getSignalQuality())
         .isEqualTo(SignalQualityDto.fromIndexValue(7));
   }

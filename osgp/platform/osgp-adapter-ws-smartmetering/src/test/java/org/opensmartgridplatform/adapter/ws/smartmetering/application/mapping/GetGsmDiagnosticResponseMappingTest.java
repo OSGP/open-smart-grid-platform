@@ -77,16 +77,10 @@ class GetGsmDiagnosticResponseMappingTest {
   private GetGsmDiagnosticResponseData newGetGsmDiagnosticResponseData() {
     final CellInfo cellInfo =
         new CellInfo(
-            "cellId".getBytes(),
-            "locationId".getBytes(),
-            SignalQualityType.MINUS_61_DBM,
-            BitErrorRateType.RXQUAL_4,
-            31L,
-            42L,
-            1L);
+            77L, 2230L, SignalQualityType.MINUS_61_DBM, BitErrorRateType.RXQUAL_4, 31L, 42L, 1L);
 
     final AdjacentCellInfo adjacentCellInfo =
-        new AdjacentCellInfo("adjacentCellId".getBytes(), SignalQualityType.MINUS_61_DBM);
+        new AdjacentCellInfo(93L, SignalQualityType.MINUS_61_DBM);
 
     return new GetGsmDiagnosticResponseData(
         "operator",

@@ -14,8 +14,8 @@ public class CellInfoDto implements Serializable {
 
   private static final long serialVersionUID = -148054976725401235L;
 
-  private final byte[] cellId;
-  private final byte[] locationId;
+  private final long cellId;
+  private final int locationId;
   private final SignalQualityDto signalQuality;
   private final BitErrorRateDto bitErrorRate;
   private final int mobileCountryCode;
@@ -23,8 +23,8 @@ public class CellInfoDto implements Serializable {
   private final long channelNumber;
 
   public CellInfoDto(
-      final byte[] cellId,
-      final byte[] locationId,
+      final long cellId,
+      final int locationId,
       final SignalQualityDto signalQuality,
       final BitErrorRateDto bitErrorRate,
       final int mobileCountryCode,
@@ -39,11 +39,11 @@ public class CellInfoDto implements Serializable {
     this.channelNumber = channelNumber;
   }
 
-  public byte[] getCellId() {
+  public long getCellId() {
     return this.cellId;
   }
 
-  public byte[] getLocationId() {
+  public int getLocationId() {
     return this.locationId;
   }
 

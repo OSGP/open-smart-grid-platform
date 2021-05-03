@@ -241,8 +241,8 @@ public class GetGsmDiagnosticCommandExecutor
 
     if (cellInfoDataObjects != null) {
       return new CellInfoDto(
-          this.longToByteArray(cellInfoDataObjects.get(CELL_INFO_CELL_ID_INDEX).getValue()),
-          this.intToByteArray(cellInfoDataObjects.get(CELL_INFO_LOCATION_ID_INDEX).getValue()),
+          cellInfoDataObjects.get(CELL_INFO_CELL_ID_INDEX).getValue(),
+          cellInfoDataObjects.get(CELL_INFO_LOCATION_ID_INDEX).getValue(),
           SignalQualityDto.fromIndexValue(
               (short) cellInfoDataObjects.get(CELL_INFO_SIGNAL_QUALITY_INDEX).getValue()),
           BitErrorRateDto.fromIndexValue(
@@ -271,7 +271,7 @@ public class GetGsmDiagnosticCommandExecutor
               cellInfo -> {
                 final List<DataObject> adjacentCell = cellInfo.getValue();
                 return new AdjacentCellInfoDto(
-                    this.longToByteArray(adjacentCell.get(ADJACENT_CELLS_CELL_ID_INDEX).getValue()),
+                    adjacentCell.get(ADJACENT_CELLS_CELL_ID_INDEX).getValue(),
                     SignalQualityDto.fromIndexValue(
                         (short) adjacentCell.get(ADJACENT_CELLS_SIGNAL_QUALITY_INDEX).getValue()));
               })
@@ -308,15 +308,5 @@ public class GetGsmDiagnosticCommandExecutor
     return result.getResultCode() == AccessResultCode.SUCCESS
         && result.getResultData() != null
         && result.getResultData().getValue() != null;
-  }
-
-  private byte[] longToByteArray(final long value) {
-    return new byte[] {
-      (byte) value, (byte) (value >> 8), (byte) (value >> 16), (byte) (value >> 24)
-    };
-  }
-
-  private byte[] intToByteArray(final int value) {
-    return new byte[] {(byte) value, (byte) (value >> 8)};
   }
 }

@@ -18,14 +18,14 @@ Feature: SmartMetering Management - Get GSM Diagnostic
       | modemRegistrationStatus   | REGISTERED_ROAMING       |
       | circuitSwitchedStatus     | INACTIVE                 |
       | packetSwitchedStatus      | GPRS                     |
-      | cellId                    | cid1                     |
-      | locationId                | lo                       |
+      | cellId                    | 77                       |
+      | locationId                | 2230                     |
       | signalQuality             | MINUS_87_DBM             |
       | bitErrorRate              | RXQUAL_6                 |
       | mobileCountryCode         |                       66 |
       | mobileNetworkCode         |                      204 |
       | channelNumber             |                      107 |
       | numberOfAdjacentCells     |                        2 |
-      | adjacentCellId            | cid2                     |
+      | adjacentCellId            | 93                       |
       | adjacentCellSignalQuality | MINUS_91_DBM             |
 #      | captureTime               | 2021-04-13T08:45:00.000Z |
