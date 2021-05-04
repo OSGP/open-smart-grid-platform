@@ -1,8 +1,9 @@
 /*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -43,11 +44,7 @@ import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.LightMeasurementDevice;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceStatus;
-import org.opensmartgridplatform.domain.core.valueobjects.LightSensorStatus;
-import org.opensmartgridplatform.domain.core.valueobjects.LightType;
 import org.opensmartgridplatform.domain.core.valueobjects.LightValue;
-import org.opensmartgridplatform.domain.core.valueobjects.LinkType;
 import org.opensmartgridplatform.domain.core.valueobjects.ResumeScheduleData;
 import org.opensmartgridplatform.domain.core.valueobjects.TransitionMessageDataContainer;
 import org.opensmartgridplatform.shared.application.config.PageSpecifier;
@@ -63,6 +60,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
+import org.springframework.data.util.Streamable;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
@@ -112,11 +110,9 @@ public class PublicLightingAdHocManagementEndpoint {
           this.adHocManagementService.findAllDevices(organisationIdentification, pageSpecifier);
 
       if (page != null && !page.isEmpty()) {
-        final List<Ssld> sslds = page.filter(d -> d instanceof Ssld).map(d -> (Ssld) d).toList();
-        final List<LightMeasurementDevice> lmds =
-            page.filter(d -> d instanceof LightMeasurementDevice)
-                .map(d -> (LightMeasurementDevice) d)
-                .toList();
+
+        final List<Ssld> sslds = listOfType(page, Ssld.class);
+        final List<LightMeasurementDevice> lmds = listOfType(page, LightMeasurementDevice.class);
 
         final DevicePage devicePage = new DevicePage();
         devicePage.setPage(
@@ -161,6 +157,11 @@ public class PublicLightingAdHocManagementEndpoint {
     return response;
   }
 
+  private static <T> List<T> listOfType(
+      final Streamable<? super T> streamable, final Class<T> clazz) {
+    return streamable.filter(clazz::isInstance).map(clazz::cast).toList();
+  }
+
   // === SET LIGHT ===
 
   @PayloadRoot(localPart = "SetLightRequest", namespace = NAMESPACE)
@@ -180,10 +181,9 @@ public class PublicLightingAdHocManagementEndpoint {
     final SetLightAsyncResponse response = new SetLightAsyncResponse();
 
     try {
-      final List<LightValue> lightValues = new ArrayList<>();
-      lightValues.addAll(
-          this.adHocManagementMapper.mapAsList(request.getLightValue(), LightValue.class));
-
+      final List<LightValue> lightValues =
+          new ArrayList<>(
+              this.adHocManagementMapper.mapAsList(request.getLightValue(), LightValue.class));
       final String correlationUid =
           this.adHocManagementService.enqueueSetLightRequest(
               organisationIdentification,
@@ -294,39 +294,17 @@ public class PublicLightingAdHocManagementEndpoint {
               request.getAsyncRequest().getCorrelationUid());
       if (message != null) {
         response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-        if (message.getDataObject() != null) {
-          response.setDeviceStatus(this.getDeviceStatus(message));
-        }
+        response.setStatus(
+            this.adHocManagementMapper.map(
+                message.getDataObject(),
+                org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Status
+                    .class));
       }
     } catch (final Exception e) {
       this.handleException(e);
     }
 
     return response;
-  }
-
-  private org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.DeviceStatus
-      getDeviceStatus(final ResponseMessage message) {
-    DeviceStatus deviceStatus;
-    if (message.getDataObject() instanceof LightSensorStatus) {
-      deviceStatus =
-          this.createDeviceStatusFromLightSensorStatus((LightSensorStatus) message.getDataObject());
-    } else {
-      deviceStatus = (DeviceStatus) message.getDataObject();
-    }
-    return this.adHocManagementMapper.map(
-        deviceStatus,
-        org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.DeviceStatus
-            .class);
-  }
-
-  private DeviceStatus createDeviceStatusFromLightSensorStatus(
-      final LightSensorStatus lightSensorStatus) {
-    final List<LightValue> sensorValues = new ArrayList<>();
-    sensorValues.add(new LightValue(1, lightSensorStatus.isOn(), 100));
-
-    return new DeviceStatus(
-        sensorValues, LinkType.ETHERNET, LinkType.ETHERNET, LightType.ONE_TO_TWENTY_FOUR_VOLT, -1);
   }
 
   // === RESUME SCHEDULE ===

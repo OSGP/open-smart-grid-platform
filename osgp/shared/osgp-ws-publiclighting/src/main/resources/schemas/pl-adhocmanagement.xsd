@@ -102,7 +102,7 @@
         <xsd:element name="Result" type="common:OsgpResultType"
           minOccurs="1" />
         <xsd:element name="Description" type="xsd:string" />
-        <xsd:element name="DeviceStatus" type="tns:DeviceStatus" />
+        <xsd:element name="Status" type="tns:Status" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -206,34 +206,6 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:complexType name="DeviceStatus">
-    <xsd:annotation>
-      <xsd:documentation>
-        DeviceStatus represents the retrieved status of a smart device.
-      </xsd:documentation>
-    </xsd:annotation>
-    <xsd:sequence>
-      <xsd:element maxOccurs="unbounded" name="LightValues"
-        type="tns:LightValue">
-        <xsd:annotation>
-          <xsd:documentation>
-            The list of 'LightValues' can contain:
-            - relay status values in case of SSLD (Substation Lighting Device) smart devices;
-            - light sensor values in case of LMD (Light Measurement Device) smart devices.
-          </xsd:documentation>
-        </xsd:annotation>
-      </xsd:element>
-      <xsd:element name="PreferredLinkType" type="tns:LinkType"
-        minOccurs="1" maxOccurs="1" />
-      <xsd:element name="ActualLinkType" type="tns:LinkType"
-        minOccurs="1" maxOccurs="1" />
-      <xsd:element name="LightType" type="tns:LightType"
-        minOccurs="0" maxOccurs="1" />
-      <xsd:element minOccurs="0" maxOccurs="8"
-        name="EventNotifications" type="tns:EventNotificationType" />
-    </xsd:sequence>
-  </xsd:complexType>
-
   <xsd:complexType name="Device">
     <xsd:sequence>
       <xsd:element name="DeviceUid" type="xsd:string" />
@@ -287,6 +259,46 @@
     </xsd:sequence>
   </xsd:complexType>
 
+  <xsd:complexType name="Status" abstract="true" />
+
+  <xsd:complexType name="DeviceStatus">
+    <xsd:annotation>
+      <xsd:documentation>
+        DeviceStatus represents the retrieved status of a smart device.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="tns:Status">
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" name="LightValues" type="tns:LightValue" />
+          <xsd:element name="PreferredLinkType" type="tns:LinkType"
+            minOccurs="1" maxOccurs="1" />
+          <xsd:element name="ActualLinkType" type="tns:LinkType"
+            minOccurs="1" maxOccurs="1" />
+          <xsd:element name="LightType" type="tns:LightType"
+            minOccurs="0" maxOccurs="1" />
+          <xsd:element minOccurs="0" maxOccurs="8"
+            name="EventNotifications" type="tns:EventNotificationType" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="LightSensorStatus">
+    <xsd:annotation>
+      <xsd:documentation>
+        Light sensor status represents the retrieved status of a light measurement device.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="tns:Status">
+        <xsd:sequence>
+          <xsd:element name="Status" type="tns:LightSensorStatusType" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
   <xsd:complexType name="LightValue">
     <xsd:sequence>
       <xsd:element minOccurs="0" name="Index">
@@ -308,6 +320,13 @@
       </xsd:element>
     </xsd:sequence>
   </xsd:complexType>
+
+  <xsd:simpleType name="LightSensorStatusType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="DARK" />
+      <xsd:enumeration value="LIGHT" />
+    </xsd:restriction>
+  </xsd:simpleType>
 
   <xsd:simpleType name="LightType">
     <xsd:restriction base="xsd:string">

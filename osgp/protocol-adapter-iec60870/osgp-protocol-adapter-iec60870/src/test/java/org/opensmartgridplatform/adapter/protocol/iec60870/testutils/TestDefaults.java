@@ -10,7 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.testutils;
 
 public final class TestDefaults {
   public static final String DEFAULT_DEVICE_IDENTIFICATION = "TEST-DEVICE-1";
-  public static final String DEFAULT_MESSAGE_TYPE = "GET_HEALTH_STATUS";
+  public static final String DEFAULT_MESSAGE_TYPE = "CONNECT";
   public static final String DEFAULT_ORGANISATION_IDENTIFICATION = "TEST-ORGANISATION";
   public static final String DEFAULT_CORRELATION_UID = "TEST-CORR-1";
   public static final String DEFAULT_DOMAIN = "DISTRIBUTION_AUTOMATION";

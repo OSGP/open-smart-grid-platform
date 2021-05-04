@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 import org.openmuc.j60870.Server;
 import org.openmuc.j60870.ie.IeTime56;
 import org.openmuc.j60870.ie.InformationElement;
@@ -72,6 +73,41 @@ public class Iec60870Server {
 
   public void setProcessImage(final Map<Integer, InformationElement[][]> processImage) {
     this.processImage = processImage;
+  }
+
+  public void setProcessImage(final Iec60870ProcessImage processImage) {
+
+    this.processImage.clear();
+
+    final Consumer<Iec60870InformationObject> setInformationObject =
+        informationObject ->
+            this.setInformationObject(
+                informationObject.getAddress(),
+                informationObject.getType(),
+                informationObject.getValue());
+
+    processImage.getInformationObjects().values().forEach(setInformationObject);
+  }
+
+  /**
+   * Sets the value for a specific information object address
+   *
+   * <p>Contrary to the {@link Iec60870Server#updateInformationObject(int,
+   * Iec60870InformationObjectType, Object)} method, no event is sent to the controlling station.
+   *
+   * @param informationObjectAddress
+   * @param informationObjectType
+   * @param value
+   */
+  public void setInformationObject(
+      final int informationObjectAddress,
+      final Iec60870InformationObjectType informationObjectType,
+      final Object value) {
+
+    final InformationElement[][] informationElements =
+        this.informationElementFactory.createInformationElements(informationObjectType, value);
+
+    this.processImage.put(informationObjectAddress, informationElements);
   }
 
   /**

@@ -8,21 +8,22 @@
  */
 package org.opensmartgridplatform.domain.core.valueobjects;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DeviceStatus implements java.io.Serializable {
+public class DeviceStatus implements Status, Serializable {
 
   /** Serial Version UID. */
   private static final long serialVersionUID = -6922074543798047230L;
 
   private List<LightValue> lightValues;
 
-  private LinkType preferredLinkType;
+  private final LinkType preferredLinkType;
 
-  private LinkType actualLinkType;
+  private final LinkType actualLinkType;
 
-  private LightType lightType;
+  private final LightType lightType;
 
   private Integer eventNotificationsMask;
 
@@ -74,7 +75,7 @@ public class DeviceStatus implements java.io.Serializable {
   }
 
   public List<EventNotificationType> getEventNotifications() {
-    final List<EventNotificationType> events = new ArrayList<EventNotificationType>();
+    final List<EventNotificationType> events = new ArrayList<>();
     if (this.eventNotificationsMask > 0) {
       for (final EventNotificationType event : EventNotificationType.values()) {
         if ((this.eventNotificationsMask & (1 << event.ordinal())) != 0) {

@@ -1,8 +1,9 @@
 /*
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -58,8 +59,6 @@ public class Iec61850DeviceConnectionService {
 
   private static ConcurrentHashMap<String, Iec61850Connection> cache = new ConcurrentHashMap<>();
 
-  private static final int IEC61850_DEFAULT_PORT = 102;
-
   @Autowired private Iec61850DeviceRepository iec61850DeviceRepository;
 
   @Autowired private Iec61850RtuDeviceReportingService iec61850RtuDeviceReportingService;
@@ -67,6 +66,8 @@ public class Iec61850DeviceConnectionService {
   @Autowired private Iec61850ClientEventListenerFactory iec61850ClientEventListenerFactory;
 
   @Autowired private Iec61850Client iec61850Client;
+
+  @Autowired private int iec61850DefaultPort;
 
   @Autowired private int iec61850SsldPortServer;
 
@@ -219,7 +220,7 @@ public class Iec61850DeviceConnectionService {
     } else if (IED.ZOWN_RTU.equals(ied) || IED.DA_RTU.equals(ied)) {
       port = this.iec61850RtuPortServer;
     } else {
-      port = IEC61850_DEFAULT_PORT;
+      port = this.iec61850DefaultPort;
     }
     return port;
   }

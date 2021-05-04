@@ -1,8 +1,9 @@
 /*
  * Copyright 2014-2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -26,6 +27,7 @@ import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.infra.networking.DisposableNioEventLoopGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -69,6 +71,14 @@ public class Iec61850Config extends AbstractConfig {
 
   private static final String PROPERTY_NAME_OSLP_DEFAULT_LATITUDE = "iec61850.default.latitude";
   private static final String PROPERTY_NAME_OSLP_DEFAULT_LONGITUDE = "iec61850.default.longitude";
+
+  @Value("${iec61850.default.port:102}")
+  private int defaultPort;
+
+  @Bean
+  public int iec61850DefaultPort() {
+    return this.defaultPort;
+  }
 
   @Bean
   public int connectionTimeout() {
