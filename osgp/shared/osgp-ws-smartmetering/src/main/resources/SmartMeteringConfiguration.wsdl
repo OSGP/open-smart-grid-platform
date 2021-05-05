@@ -800,6 +800,24 @@
       </wsdl:output>
     </wsdl:operation>
 
+    <wsdl:operation name="GetKeys">
+      <wsdl:input message="tns:GetKeysRequest"
+        name="GetKeysRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:GetKeysAsyncResponse"
+        name="GetKeysAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetGetKeysResponse">
+      <wsdl:input message="tns:GetKeysAsyncRequest"
+        name="GetKeysAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:GetKeysResponse"
+        name="GetKeysResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
   </wsdl:portType>
 
   <wsdl:binding name="SmartMeteringConfigurationPortSoap11"

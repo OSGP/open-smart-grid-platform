@@ -1247,7 +1247,7 @@
     </xsd:complexContent>
   </xsd:complexType>
 
-  <xsd:element name="GetUnencryptedKeysRequest">
+  <xsd:element name="GetKeysRequest">
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element type="tns:SecretType" name="secretType"
@@ -1256,7 +1256,7 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="GetUnencryptedKeysAsyncRequest">
+  <xsd:element name="GetKeysAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="common:AsyncRequest" />
@@ -1264,11 +1264,11 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="GetUnencryptedKeysResponse">
+  <xsd:element name="GetKeysResponse">
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element type="tns:SecretType" name="secretType" />
-        <xsd:element type="xsd:string" name="secretValue" />
+        <xsd:element type="xsd:hexBinary" name="secretValue" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
