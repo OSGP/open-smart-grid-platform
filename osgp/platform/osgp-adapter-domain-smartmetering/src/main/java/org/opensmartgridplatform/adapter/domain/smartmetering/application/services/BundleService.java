@@ -139,8 +139,11 @@ public class BundleService {
             .withDataObject(bundleResponseMessageDataContainer)
             .withMessagePriority(deviceMessageMetadata.getMessagePriority())
             .build();
+
+    LOGGER.info("Send response for CorrelationUID: {}", deviceMessageMetadata.getCorrelationUid());
     this.webServiceResponseMessageSender.send(
         responseMessage, deviceMessageMetadata.getMessageType());
+    LOGGER.info("Response sent for CorrelationUID: {}", deviceMessageMetadata.getCorrelationUid());
   }
 
   private void checkIfAdditionalActionIsNeeded(
