@@ -8,11 +8,12 @@
  */
 package org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.substation;
 
+import java.security.SecureRandom;
 import java.util.Random;
 
 public class VoltageNode extends Node {
 
-  private static final Random rand = new Random();
+  private static final Random rand = new SecureRandom();
 
   public VoltageNode(
       final LogicalNodeNode logicalNodeNode, final String nodeId, final double value) {

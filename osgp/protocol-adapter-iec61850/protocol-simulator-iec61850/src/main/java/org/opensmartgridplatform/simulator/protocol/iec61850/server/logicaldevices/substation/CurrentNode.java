@@ -8,10 +8,11 @@
  */
 package org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevices.substation;
 
+import java.security.SecureRandom;
 import java.util.Random;
 
 public class CurrentNode extends Node {
-  private static final Random rand = new Random();
+  private static final Random rand = new SecureRandom();
 
   public CurrentNode(
       final LogicalNodeNode logicalNodeNode, final String nodeId, final double value) {

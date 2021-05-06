@@ -10,12 +10,13 @@ package org.opensmartgridplatform.simulator.protocol.iec61850.server.logicaldevi
 
 import com.beanit.openiec61850.BasicDataAttribute;
 import com.beanit.openiec61850.ServerModel;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class Iec61850ServerHelper {
-  private static final Random rand = new Random();
+  private static final Random rand = new SecureRandom();
 
   private Iec61850ServerHelper() {
     // Only static utility methods

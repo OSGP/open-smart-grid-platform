@@ -14,6 +14,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.security.PrivateKey;
+import java.security.SecureRandom;
 import java.text.MessageFormat;
 import java.util.Random;
 import javax.annotation.Resource;
@@ -67,7 +68,7 @@ public class RegisterDevice {
 
   private String errorMessage;
 
-  private final Random byteGenerator = new Random();
+  private final Random byteGenerator = new SecureRandom();
 
   public DeviceMessageStatus sendRegisterDeviceCommand(
       final long deviceId, final Boolean hasSchedule) {
@@ -303,13 +304,13 @@ public class RegisterDevice {
     }
 
     // Attempt to send the request and receive response.
-    LOGGER.info("Trying to send request: {}", request.getPayloadMessage().toString());
+    LOGGER.info("Trying to send request: {}", request.getPayloadMessage());
     final OslpEnvelope response =
         this.oslpChannelHandler.send(
             new InetSocketAddress(this.oslpAddressServer, port),
             request,
             device.getDeviceIdentification());
-    LOGGER.info("Received response: {}", response.getPayloadMessage().toString());
+    LOGGER.info("Received response: {}", response.getPayloadMessage());
     return response;
   }
 
