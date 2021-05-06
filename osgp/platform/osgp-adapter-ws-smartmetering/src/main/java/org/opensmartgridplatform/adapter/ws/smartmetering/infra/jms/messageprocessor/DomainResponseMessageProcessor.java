@@ -83,6 +83,8 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
     this.handleMessage(ids, actualMessageType, resultType, resultDescription, dataObject);
 
     try {
+      log.info("Send notification for correlationUid: {}", correlationUid);
+
       // Send notification indicating data is available.
       this.notificationService.sendNotification(
           new NotificationWebServiceLookupKey(
@@ -93,6 +95,8 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
               deviceIdentification,
               correlationUid,
               String.valueOf(notificationType)));
+
+      log.info("Notification sent for correlationUid: {}", correlationUid);
 
     } catch (final Exception e) {
       // Logging is enough, sending the notification will be done
