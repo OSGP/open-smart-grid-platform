@@ -43,14 +43,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 public class RegisterDevice {
-
   private static final Logger LOGGER = LoggerFactory.getLogger(RegisterDevice.class);
-
-  protected static final String FEEDBACK_MESSAGE_KEY_DEVICE_REGISTERED =
-      "feedback.message.device.registered";
-  protected static final String FEEDBACK_MESSAGE_KEY_DEVICE_REGISTERED_CONFIRM =
-      "feedback.message.device.registered.confirm";
-  protected static final String FEEDBACK_MESSAGE_KEY_DEVICE_ERROR = "feedback.message.device.error";
 
   @Autowired private DeviceManagementService deviceManagementService;
 
@@ -73,6 +66,8 @@ public class RegisterDevice {
   private String currentTime;
 
   private String errorMessage;
+
+  private final Random byteGenerator = new Random();
 
   public DeviceMessageStatus sendRegisterDeviceCommand(
       final long deviceId, final Boolean hasSchedule) {
@@ -376,8 +371,7 @@ public class RegisterDevice {
   private byte[] createRandomDeviceUid() {
     // Generate random bytes for UID
     final byte[] deviceUid = new byte[OslpEnvelope.DEVICE_ID_LENGTH];
-    final Random byteGenerator = new Random();
-    byteGenerator.nextBytes(deviceUid);
+    this.byteGenerator.nextBytes(deviceUid);
     // Combine manufacturer id of 2 bytes (1 is AME) and device UID of 10
     // bytes.
     return ArrayUtils.addAll(new byte[] {0, 1}, deviceUid);
