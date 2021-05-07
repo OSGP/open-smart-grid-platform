@@ -9,6 +9,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil.describeGetResults;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.GsmDiagnosticAttribute.ADJACENT_CELLS;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.GsmDiagnosticAttribute.CELL_INFO;
 import static org.opensmartgridplatform.dlms.interfaceclass.attribute.GsmDiagnosticAttribute.CIRCUIT_SWITCHED_STATUS;
@@ -121,9 +122,7 @@ public class GetGsmDiagnosticCommandExecutor
     final List<GetResult> getResultList =
         this.dlmsHelper.getAndCheck(conn, device, "Get GsmDiagnostic", addresses);
 
-    final String resultString =
-        getResultList.stream().map(this::resultToString).collect(Collectors.joining("-", "{", "}"));
-    LOGGER.info("GetResultList: {}", resultString);
+    LOGGER.info("GetResultList: {}", describeGetResults(getResultList));
 
     if (getResultList.stream()
         .noneMatch(result -> result.getResultCode() == AccessResultCode.SUCCESS)) {
@@ -131,26 +130,6 @@ public class GetGsmDiagnosticCommandExecutor
     }
 
     return this.createGetGsmDiagnosticResponse(getResultList);
-  }
-
-  private String resultToString(final GetResult result) {
-    if (result != null) {
-      String code = "";
-      String data = "";
-      if (result.getResultCode() != null) {
-        code = result.getResultCode().toString();
-      } else {
-        code = " Result code is null ";
-      }
-      if (result.getResultData() != null) {
-        data = result.getResultData().toString();
-      } else {
-        data = " Result data is null ";
-      }
-      return code + ", " + data;
-    } else {
-      return "Result is null ";
-    }
   }
 
   private AttributeAddress[] createAttributeAddresses(final DlmsObject dlmsObject) {

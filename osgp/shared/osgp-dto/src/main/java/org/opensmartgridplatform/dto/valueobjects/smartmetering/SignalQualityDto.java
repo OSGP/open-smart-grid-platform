@@ -60,7 +60,7 @@ public enum SignalQualityDto {
         return status;
       }
     }
-    return null;
+    throw new IllegalArgumentException("IndexValue " + value + " not found for SignalQualityDto");
   }
 
   public String value() {

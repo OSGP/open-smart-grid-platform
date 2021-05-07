@@ -32,6 +32,11 @@ public enum PacketSwitchedStatusDto {
   }
 
   public static PacketSwitchedStatusDto fromIndexValue(final int value) {
+    if (value < 0 || value > 255) {
+      throw new IllegalArgumentException(
+          "IndexValue " + value + " not found for PacketSwitchedStatusDto");
+    }
+
     for (final PacketSwitchedStatusDto status : PacketSwitchedStatusDto.values()) {
       if (status.index == value) {
         return status;

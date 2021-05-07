@@ -36,7 +36,7 @@ public enum BitErrorRateDto {
         return status;
       }
     }
-    return null;
+    throw new IllegalArgumentException("IndexValue " + value + " not found for BitErrorRateDto");
   }
 
   public String value() {

@@ -85,7 +85,12 @@ public class DlmsObjectConfigService {
         .orElseThrow(
             () ->
                 new ProtocolAdapterException(
-                    "Did not find " + type.name() + " object for device " + device.getDeviceId()));
+                    "Did not find "
+                        + type.name()
+                        + " object with communication method "
+                        + method.getMethodName()
+                        + " for device "
+                        + device.getDeviceId()));
   }
 
   public List<AttributeAddress> getAttributeAddressesForScalerUnit(

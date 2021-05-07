@@ -38,7 +38,6 @@ public class GetGsmDiagnosticResponseDto extends ActionResponseDto {
       final CellInfoDto cellInfo,
       final List<AdjacentCellInfoDto> adjacentCells,
       final Date captureTime) {
-    super();
     this.operator = operator;
     this.modemRegistrationStatus = modemRegistrationStatus;
     this.circuitSwitchedStatus = circuitSwitchedStatus;
