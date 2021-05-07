@@ -9,7 +9,7 @@
 package org.opensmartgridplatform.simulator.protocol.iec61850;
 
 import java.util.TimeZone;
-import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
@@ -58,6 +58,6 @@ public class SimulatorApplication extends SpringBootServletInitializer {
     // Force UTC timezone
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
-    SpringApplication.run(SimulatorApplication.class, args);
+    new SpringApplicationBuilder(SimulatorApplication.class).web(WebApplicationType.NONE).run(args);
   }
 }
