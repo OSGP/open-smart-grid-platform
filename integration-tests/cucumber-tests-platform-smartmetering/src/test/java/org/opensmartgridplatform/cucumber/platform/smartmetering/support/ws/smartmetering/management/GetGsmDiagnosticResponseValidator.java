@@ -29,9 +29,9 @@ public class GetGsmDiagnosticResponseValidator {
 
   public static void validate(
       final GetGsmDiagnosticResponseData response, final Map<String, String> expectedValues) {
-    for (final Map.Entry<String, String> expectedEntyValue : expectedValues.entrySet()) {
-      final String expectedValue = expectedEntyValue.getValue();
-      switch (expectedEntyValue.getKey()) {
+    for (final Map.Entry<String, String> expectedEntryValue : expectedValues.entrySet()) {
+      final String expectedValue = expectedEntryValue.getValue();
+      switch (expectedEntryValue.getKey()) {
         case "operator":
           assertThat(response.getOperator()).isEqualTo(expectedValue);
           break;
@@ -94,7 +94,7 @@ public class GetGsmDiagnosticResponseValidator {
           }
           break;
         default:
-          fail("Unexpected value: " + expectedEntyValue.getKey());
+          fail("Unexpected value: " + expectedEntryValue.getKey());
       }
     }
   }

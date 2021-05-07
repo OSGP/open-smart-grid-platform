@@ -65,10 +65,8 @@ public class GetGsmDiagnosticCommandExecutorTest {
   @Mock private DlmsConnectionManager connectionManager;
 
   private final DlmsDevice device = this.createDevice(Protocol.SMR_5_1, CommunicationMethod.CDMA);
-  private final long from = 1111111L;
-  private final long to = 2222222L;
   private final int classId = 99;
-  private final String obiscode = "1.2.3.4.5.6";
+  private final String obisCode = "1.2.3.4.5.6";
   private final GetGsmDiagnosticRequestDto request = new GetGsmDiagnosticRequestDto();
 
   @BeforeEach
@@ -107,16 +105,16 @@ public class GetGsmDiagnosticCommandExecutorTest {
     // SETUP
     when(this.dlmsObjectConfigService.findDlmsObjectForCommunicationMethod(
             this.device, DlmsObjectType.GSM_DIAGNOSTIC))
-        .thenReturn(new DlmsObject(DlmsObjectType.GSM_DIAGNOSTIC, this.classId, this.obiscode));
+        .thenReturn(new DlmsObject(DlmsObjectType.GSM_DIAGNOSTIC, this.classId, this.obisCode));
 
     // SETUP - mock dlms helper to return data objects on request
     final AttributeAddress[] addresses = {
-      new AttributeAddress(this.classId, this.obiscode, 2),
-      new AttributeAddress(this.classId, this.obiscode, 3),
-      new AttributeAddress(this.classId, this.obiscode, 4),
-      new AttributeAddress(this.classId, this.obiscode, 5),
-      new AttributeAddress(this.classId, this.obiscode, 6),
-      new AttributeAddress(this.classId, this.obiscode, 7)
+      new AttributeAddress(this.classId, this.obisCode, 2),
+      new AttributeAddress(this.classId, this.obisCode, 3),
+      new AttributeAddress(this.classId, this.obisCode, 4),
+      new AttributeAddress(this.classId, this.obisCode, 5),
+      new AttributeAddress(this.classId, this.obisCode, 6),
+      new AttributeAddress(this.classId, this.obisCode, 7)
       // new AttributeAddress(this.classId, this.obiscode, 8)
     };
 
@@ -234,7 +232,7 @@ public class GetGsmDiagnosticCommandExecutorTest {
     // SETUP
     when(this.dlmsObjectConfigService.findDlmsObjectForCommunicationMethod(
             this.device, DlmsObjectType.GSM_DIAGNOSTIC))
-        .thenReturn(new DlmsObject(DlmsObjectType.GSM_DIAGNOSTIC, this.classId, this.obiscode));
+        .thenReturn(new DlmsObject(DlmsObjectType.GSM_DIAGNOSTIC, this.classId, this.obisCode));
 
     final GetResult result = mock(GetResult.class);
     when(result.getResultCode()).thenReturn(AccessResultCode.HARDWARE_FAULT);
@@ -250,7 +248,7 @@ public class GetGsmDiagnosticCommandExecutorTest {
   }
 
   private String createAttributeAddress(final int attributeId) {
-    return String.format("{%s,%s,%d}", this.classId, this.obiscode, attributeId);
+    return String.format("{%s,%s,%d}", this.classId, this.obisCode, attributeId);
   }
 
   private DlmsDevice createDevice(final Protocol protocol, final CommunicationMethod method) {

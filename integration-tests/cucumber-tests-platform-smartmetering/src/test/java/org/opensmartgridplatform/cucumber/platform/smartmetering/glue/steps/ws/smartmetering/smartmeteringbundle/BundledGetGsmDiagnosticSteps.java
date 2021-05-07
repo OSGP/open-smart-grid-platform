@@ -19,7 +19,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetGsmDi
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.management.GetGsmDiagnosticResponseValidator;
 
-public class BundledGetGsmDiagnosticObjectSteps extends BaseBundleSteps {
+public class BundledGetGsmDiagnosticSteps extends BaseBundleSteps {
 
   @Given("^the bundle request contains a get gsm diagnostic action$")
   public void theBundleRequestContainsAGetGsmDiagnosticAction() throws Throwable {
@@ -35,11 +35,7 @@ public class BundledGetGsmDiagnosticObjectSteps extends BaseBundleSteps {
 
     final Response response = this.getNextBundleResponse();
 
-    assertThat(response)
-        .as(
-            "Not a valid response, expected GetGsmDiagnosticResponse but is :"
-                + response.getClass().getSimpleName())
-        .isInstanceOf(GetGsmDiagnosticResponse.class);
+    assertThat(response).isInstanceOf(GetGsmDiagnosticResponse.class);
 
     final GetGsmDiagnosticResponse getGsmDiagnosticResponse = (GetGsmDiagnosticResponse) response;
 

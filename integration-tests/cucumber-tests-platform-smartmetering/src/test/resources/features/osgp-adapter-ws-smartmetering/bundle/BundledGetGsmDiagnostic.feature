@@ -3,7 +3,7 @@ Feature: SmartMetering Bundle - Get Gsm Diagnostic
   As a grid operator
   I want to be able to get the GSM Diagnostic of a smart meter
 
-  Scenario: Get the GSM Diagnostic of a E-Meter
+  Scenario: Get the GSM Diagnostic of an E-Meter
     Given a bundle request
       | DeviceIdentification | TEST1027000000001 |
     And the bundle request contains a get gsm diagnostic action
@@ -20,14 +20,14 @@ Feature: SmartMetering Bundle - Get Gsm Diagnostic
       | modemRegistrationStatus   | REGISTERED_ROAMING       |
       | circuitSwitchedStatus     | INACTIVE                 |
       | packetSwitchedStatus      | GPRS                     |
-      | cellId                    | 77                       |
-      | locationId                | 2230                     |
+      | cellId                    |                       77 |
+      | locationId                |                     2230 |
       | signalQuality             | MINUS_87_DBM             |
       | bitErrorRate              | RXQUAL_6                 |
       | mobileCountryCode         |                       66 |
       | mobileNetworkCode         |                      204 |
       | channelNumber             |                      107 |
       | numberOfAdjacentCells     |                        2 |
-      | adjacentCellId            | 93                       |
+      | adjacentCellId            |                       93 |
       | adjacentCellSignalQuality | MINUS_91_DBM             |
 #      | captureTime               | 2021-04-13T08:45:00.000Z |
