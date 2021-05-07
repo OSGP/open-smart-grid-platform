@@ -1,46 +1,40 @@
-# IEC60870-5-104 Simulator
+# IEC61850 Simulator
 
-This simulator can be used for testing GXF against devices using the IEC60870-5-104 protocol.  
+This simulator can be used for testing GXF against devices using the IEC61850 protocol.  
 It can be ran as a standalone spring boot application or together with other GXF components in Tomcat.
 
-#### Device types
+#### Device Types
 Spring profiles are used to configure the device type to be used.  
-The simulator currently supports two types of devices:
-* Default controlled station
-* Light measurement device
-
+The simulator currently supports the following device types:
+* Light measurement rtu
+* Microgrids rtu
+* Distribution automation rtu
 
 #### Running as standalone application
 When running standalone, for example as a light measurement rtu, the following parameters should be supplied:
 
-`--spring.config.name=simulator-iec60870`  
+`--spring.config.name=simulator-iec61850`
 `--spring.profiles.active=light-measurement-rtu,default`  
 
 or when using external configuration:  
 
-`--spring.config.name=simulator-iec60870`  
+`--spring.config.name=simulator-iec61850`  
 `--spring.config.additional-location=optional:/etc/osp/`  
 
-in which case the active profiles could be set in `simulator-iec60870.properties` in the additional location.
+in which case the active profiles could be set in `simulator-iec61850.properties` in the additional location.
 
-#### Running in Tomcat  
+#### Running in Tomcat
 When running in Tomcat parameters could be configured in META-INF/context.xml
 
-`<Parameter name="spring.config.name" value="simulator-iec60870" />`  
+`<Parameter name="spring.config.name" value="simulator-iec61850" />`  
 `<Parameter name="spring.profiles.active" value="light-measurement-rtu,default" />`  
 
 or when using external configuration:  
 
-`<Parameter name="spring.config.name" value="simulator-iec60870" />`  
+`<Parameter name="spring.config.name" value="simulator-iec61850" />`  
 `<Parameter name="spring.config.additional-location" value="optional:/etc/osp/" />`  
 
-in which case the active profiles could be set in `simulator-iec60870.properties` in the additional location.  
-
-#### ASDU generation
-For manual testing the `job.asdu.generator.enabled` property can be set to `true` to enable ASDU generation.  
-The frequency of ASDU generation can be configured using the `job.asdu.generator.cron` property.
-
-For light measurement events the ASDU generator will randomly pick one of the available information object addresses and flip its value.
+in which case the active profiles could be set in `simulator-iec61850.properties` in the additional location.
 
 
 ## Grid eXchange Fabric information and news
