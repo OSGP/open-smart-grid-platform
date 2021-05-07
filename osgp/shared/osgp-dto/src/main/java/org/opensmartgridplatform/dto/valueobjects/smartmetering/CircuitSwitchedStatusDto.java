@@ -13,7 +13,7 @@ public enum CircuitSwitchedStatusDto {
   INACTIVE(0),
   INCOMING_CALL(1),
   ACTIVE(2),
-  RESERVED(3);
+  RESERVED(3); // 3 - 255
 
   private final int index;
 
@@ -26,6 +26,11 @@ public enum CircuitSwitchedStatusDto {
   }
 
   public static CircuitSwitchedStatusDto fromIndexValue(final int value) {
+    if (value < 0 || value > 255) {
+      throw new IllegalArgumentException(
+          "IndexValue " + value + " not found for CircuitSwitchedStatusDto");
+    }
+
     for (final CircuitSwitchedStatusDto status : CircuitSwitchedStatusDto.values()) {
       if (status.index == value) {
         return status;

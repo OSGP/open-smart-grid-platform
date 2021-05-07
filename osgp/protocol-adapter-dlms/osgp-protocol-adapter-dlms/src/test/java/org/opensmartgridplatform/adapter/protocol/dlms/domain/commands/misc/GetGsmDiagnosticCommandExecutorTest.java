@@ -29,7 +29,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openmuc.jdlms.AccessResultCode;
-import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
@@ -107,17 +106,6 @@ public class GetGsmDiagnosticCommandExecutorTest {
             this.device, DlmsObjectType.GSM_DIAGNOSTIC))
         .thenReturn(new DlmsObject(DlmsObjectType.GSM_DIAGNOSTIC, this.classId, this.obisCode));
 
-    // SETUP - mock dlms helper to return data objects on request
-    final AttributeAddress[] addresses = {
-      new AttributeAddress(this.classId, this.obisCode, 2),
-      new AttributeAddress(this.classId, this.obisCode, 3),
-      new AttributeAddress(this.classId, this.obisCode, 4),
-      new AttributeAddress(this.classId, this.obisCode, 5),
-      new AttributeAddress(this.classId, this.obisCode, 6),
-      new AttributeAddress(this.classId, this.obisCode, 7)
-      // new AttributeAddress(this.classId, this.obiscode, 8)
-    };
-
     // SETUP - mock return data objects
     final GetResult result2 = mock(GetResult.class);
     final GetResult result3 = mock(GetResult.class);
@@ -189,7 +177,6 @@ public class GetGsmDiagnosticCommandExecutorTest {
         this.executor.execute(this.connectionManager, this.device, this.request);
 
     // VERIFY calls to mocks
-    final String classIdAndObis = "99,1.2.3.4.5.6";
     verify(this.dlmsMessageListener)
         .setDescription(
             String.format(

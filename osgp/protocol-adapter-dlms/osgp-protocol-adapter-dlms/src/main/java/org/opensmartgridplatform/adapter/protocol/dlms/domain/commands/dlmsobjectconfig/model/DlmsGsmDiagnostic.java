@@ -12,7 +12,8 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobje
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 
-public class DlmsGsmDiagnostic extends DlmsObject {
+public class DlmsGsmDiagnostic extends DlmsObject
+    implements DlmsObjectDependingOnCommunicationMethod {
 
   private final CommunicationMethod communicationMethod;
 
@@ -25,6 +26,7 @@ public class DlmsGsmDiagnostic extends DlmsObject {
     this.communicationMethod = communicationMethod;
   }
 
+  @Override
   public CommunicationMethod getCommunicationMethod() {
     return this.communicationMethod;
   }

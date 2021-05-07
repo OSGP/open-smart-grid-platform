@@ -16,7 +16,7 @@ public enum ModemRegistrationStatusDto {
   REGISTRATION_DENIED(3),
   UNKNOWN(4),
   REGISTERED_ROAMING(5),
-  RESERVED(6);
+  RESERVED(6); // 6 - 255
 
   private final int index;
 
@@ -29,6 +29,11 @@ public enum ModemRegistrationStatusDto {
   }
 
   public static ModemRegistrationStatusDto fromIndexValue(final int value) {
+    if (value < 0 || value > 255) {
+      throw new IllegalArgumentException(
+          "IndexValue " + value + " not found for ModemRegistrationStatusDto");
+    }
+
     for (final ModemRegistrationStatusDto status : ModemRegistrationStatusDto.values()) {
       if (status.index == value) {
         return status;

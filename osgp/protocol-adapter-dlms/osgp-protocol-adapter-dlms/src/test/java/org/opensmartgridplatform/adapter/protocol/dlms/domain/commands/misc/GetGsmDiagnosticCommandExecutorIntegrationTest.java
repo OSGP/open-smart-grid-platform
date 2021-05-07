@@ -13,11 +13,10 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.TimeZone;
-import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -55,14 +54,6 @@ public class GetGsmDiagnosticCommandExecutorIntegrationTest {
 
   @BeforeEach
   public void setUp() {
-
-    final TimeZone defaultTimeZone = TimeZone.getDefault();
-    final DateTimeZone defaultDateTimeZone = DateTimeZone.getDefault();
-
-    // all time based tests must use UTC time.
-    TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-    DateTimeZone.setDefault(DateTimeZone.UTC);
-
     final DlmsHelper dlmsHelper = new DlmsHelper();
     final DlmsObjectConfigConfiguration dlmsObjectConfigConfiguration =
         new DlmsObjectConfigConfiguration();
@@ -75,10 +66,6 @@ public class GetGsmDiagnosticCommandExecutorIntegrationTest {
     this.connectionManagerStub = new DlmsConnectionManagerStub(this.connectionStub);
 
     this.connectionStub.setDefaultReturnValue(DataObject.newArrayData(Collections.emptyList()));
-
-    // reset to original TimeZone
-    TimeZone.setDefault(defaultTimeZone);
-    DateTimeZone.setDefault(defaultDateTimeZone);
   }
 
   @Test
@@ -130,13 +117,13 @@ public class GetGsmDiagnosticCommandExecutorIntegrationTest {
     final int expectedTotalNumberOfAttributeAddresses = 6;
 
     // Set responses in stub
-    this.setResponseForOperator(expectedAddressOperator, protocol, method);
-    this.setResponseForRegistrationStatus(expectedAddressRegistrationStatus, protocol, method);
-    this.setResponseForCsStatus(expectedAddressCsStatus, protocol, method);
-    this.setResponseForPsStatus(expectedAddressPsStatus, protocol, method);
-    this.setResponseForCellInfo(expectedAddressCellInfo, protocol, method);
-    this.setResponseForAdjacentCells(expectedAddressAdjacentCells, protocol, method);
-    this.setResponseForCaptureTime(expectedAddressCaptureTime, protocol, method);
+    this.setResponseForOperator(expectedAddressOperator);
+    this.setResponseForRegistrationStatus(expectedAddressRegistrationStatus);
+    this.setResponseForCsStatus(expectedAddressCsStatus);
+    this.setResponseForPsStatus(expectedAddressPsStatus);
+    this.setResponseForCellInfo(expectedAddressCellInfo);
+    this.setResponseForAdjacentCells(expectedAddressAdjacentCells);
+    this.setResponseForCaptureTime(expectedAddressCaptureTime);
 
     // CALL
     GetGsmDiagnosticResponseDto response = null;
@@ -145,7 +132,10 @@ public class GetGsmDiagnosticCommandExecutorIntegrationTest {
     } catch (final ProtocolAdapterException e) {
       if (expectObjectNotFound) {
         assertThat(e.getMessage())
-            .isEqualTo("Did not find GSM_DIAGNOSTIC object for device 6789012");
+            .isEqualTo(
+                "Did not find GSM_DIAGNOSTIC object with communication method "
+                    + method.getMethodName()
+                    + " for device 6789012");
         return;
       } else {
         fail("Unexpected ProtocolAdapterException: " + e.getMessage());
@@ -163,7 +153,7 @@ public class GetGsmDiagnosticCommandExecutorIntegrationTest {
     // Check response
     assertThat(response).isNotNull();
     assertThat(response).isNotNull();
-    assertThat(response.getOperator()).isEqualTo("Utility Connect");
+    assertThat(response.getOperator()).isEqualTo("Operator");
     assertThat(response.getModemRegistrationStatus())
         .isEqualTo(ModemRegistrationStatusDto.REGISTERED_ROAMING);
     assertThat(response.getCircuitSwitchedStatus()).isEqualTo(CircuitSwitchedStatusDto.INACTIVE);
@@ -189,7 +179,7 @@ public class GetGsmDiagnosticCommandExecutorIntegrationTest {
     final DlmsDevice device = new DlmsDevice();
     device.setDeviceIdentification("123456789012");
     device.setProtocol(protocol);
-    device.setCommunicationMethod(method.name());
+    device.setCommunicationMethod(method.getMethodName());
     return device;
   }
 
@@ -207,34 +197,28 @@ public class GetGsmDiagnosticCommandExecutorIntegrationTest {
     throw new Exception("Invalid communication method " + method.name());
   }
 
-  private void setResponseForOperator(
-      final AttributeAddress address, final Protocol protocol, final CommunicationMethod method) {
+  private void setResponseForOperator(final AttributeAddress address) {
     final DataObject responseDataObject =
-        DataObject.newVisibleStringData(
-            new byte[] {85, 116, 105, 108, 105, 116, 121, 32, 67, 111, 110, 110, 101, 99, 116});
+        DataObject.newVisibleStringData("Operator".getBytes(StandardCharsets.US_ASCII));
     this.connectionStub.addReturnValue(address, responseDataObject);
   }
 
-  private void setResponseForRegistrationStatus(
-      final AttributeAddress address, final Protocol protocol, final CommunicationMethod method) {
+  private void setResponseForRegistrationStatus(final AttributeAddress address) {
     final DataObject responseDataObject = DataObject.newEnumerateData(5);
     this.connectionStub.addReturnValue(address, responseDataObject);
   }
 
-  private void setResponseForCsStatus(
-      final AttributeAddress address, final Protocol protocol, final CommunicationMethod method) {
+  private void setResponseForCsStatus(final AttributeAddress address) {
     final DataObject responseDataObject = DataObject.newEnumerateData(0);
     this.connectionStub.addReturnValue(address, responseDataObject);
   }
 
-  private void setResponseForPsStatus(
-      final AttributeAddress address, final Protocol protocol, final CommunicationMethod method) {
+  private void setResponseForPsStatus(final AttributeAddress address) {
     final DataObject responseDataObject = DataObject.newEnumerateData(6);
     this.connectionStub.addReturnValue(address, responseDataObject);
   }
 
-  private void setResponseForCellInfo(
-      final AttributeAddress address, final Protocol protocol, final CommunicationMethod method) {
+  private void setResponseForCellInfo(final AttributeAddress address) {
     final DataObject cellId = DataObject.newUInteger32Data(93);
     final DataObject locationId = DataObject.newUInteger16Data(2232);
     final DataObject signalQuality = DataObject.newUInteger8Data((short) 13);
@@ -249,8 +233,7 @@ public class GetGsmDiagnosticCommandExecutorIntegrationTest {
     this.connectionStub.addReturnValue(address, responseDataObject);
   }
 
-  private void setResponseForAdjacentCells(
-      final AttributeAddress address, final Protocol protocol, final CommunicationMethod method) {
+  private void setResponseForAdjacentCells(final AttributeAddress address) {
     final DataObject cellId1 = DataObject.newUInteger32Data(85);
     final DataObject signalQuality1 = DataObject.newUInteger8Data((short) 24);
     final DataObject adjacentCells1 = DataObject.newStructureData(cellId1, signalQuality1);
@@ -266,16 +249,9 @@ public class GetGsmDiagnosticCommandExecutorIntegrationTest {
     this.connectionStub.addReturnValue(address, responseDataObject);
   }
 
-  private void setResponseForCaptureTime(
-      final AttributeAddress address, final Protocol protocol, final CommunicationMethod method) {
+  private void setResponseForCaptureTime(final AttributeAddress address) {
     final DataObject responseDataObject =
         DataObject.newDateTimeData(new CosemDateTime(2021, 4, 1, 9, 28, 0, 0));
     this.connectionStub.addReturnValue(address, responseDataObject);
-  }
-
-  private DataObject getDateAsOctetString(final int year, final int month, final int day) {
-    final CosemDateTime dateTime = new CosemDateTime(year, month, day, 0, 0, 0, 0);
-
-    return DataObject.newOctetStringData(dateTime.encode());
   }
 }
