@@ -41,7 +41,7 @@ public enum SignalQualityDto {
   MINUS_57_DBM(28),
   MINUS_55_DBM(29),
   MINUS_53_DBM(30),
-  MINUS_51_DBM(31),
+  MINUS_51_DBM_OR_GREATER(31),
   NOT_KNOWN_OR_NOT_DETECTABLE(99);
 
   private final int index;

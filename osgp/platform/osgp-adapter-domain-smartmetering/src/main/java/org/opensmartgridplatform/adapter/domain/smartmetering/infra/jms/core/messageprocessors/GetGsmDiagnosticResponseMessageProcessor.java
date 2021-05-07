@@ -44,9 +44,7 @@ public class GetGsmDiagnosticResponseMessageProcessor extends OsgpCoreResponseMe
 
   @Override
   protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
-    // Only the Result (OK/NOK/Exception) is returned, no need to check the (contents of the
-    // dataObject).
-    return true;
+    return responseMessage.getDataObject() instanceof GetGsmDiagnosticResponseDto;
   }
 
   @Override

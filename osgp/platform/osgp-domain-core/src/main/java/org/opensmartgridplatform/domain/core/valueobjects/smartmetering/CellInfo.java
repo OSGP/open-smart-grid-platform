@@ -18,25 +18,25 @@ public class CellInfo implements Serializable {
 
   private final long cellId;
 
-  private final long locationId;
+  private final int locationId;
 
   private final SignalQualityType signalQuality;
 
   private final BitErrorRateType bitErrorRate;
 
-  private final long mobileCountryCode;
+  private final int mobileCountryCode;
 
-  private final long mobileNetworkCode;
+  private final int mobileNetworkCode;
 
   private final long channelNumber;
 
   public CellInfo(
       final long cellId,
-      final long locationId,
+      final int locationId,
       final SignalQualityType signalQuality,
       final BitErrorRateType bitErrorRate,
-      final long mobileCountryCode,
-      final long mobileNetworkCode,
+      final int mobileCountryCode,
+      final int mobileNetworkCode,
       final long channelNumber) {
     this.cellId = cellId;
     this.locationId = locationId;
@@ -51,7 +51,7 @@ public class CellInfo implements Serializable {
     return this.cellId;
   }
 
-  public long getLocationId() {
+  public int getLocationId() {
     return this.locationId;
   }
 
@@ -63,11 +63,11 @@ public class CellInfo implements Serializable {
     return this.bitErrorRate;
   }
 
-  public long getMobileCountryCode() {
+  public int getMobileCountryCode() {
     return this.mobileCountryCode;
   }
 
-  public long getMobileNetworkCode() {
+  public int getMobileNetworkCode() {
     return this.mobileNetworkCode;
   }
 
