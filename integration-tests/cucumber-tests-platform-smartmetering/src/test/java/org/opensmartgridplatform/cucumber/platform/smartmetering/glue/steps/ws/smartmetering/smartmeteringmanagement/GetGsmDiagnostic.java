@@ -22,7 +22,6 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetG
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetGsmDiagnosticResponse;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
-import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.management.GetGsmDiagnosticRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.management.GetGsmDiagnosticResponseValidator;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.management.SmartMeteringManagementRequestClient;
@@ -56,7 +55,7 @@ public class GetGsmDiagnostic {
 
     assertThat(asyncResponse).as("getGsmDiagnosticAsyncResponse should not be null").isNotNull();
     ScenarioContext.current()
-        .put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
+        .put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
   }
 
   @Then("^the get gsm diagnostic response is returned with values$")
