@@ -854,7 +854,7 @@
       <!-- 30 - -53 dBm -->
       <xsd:enumeration value="MINUS_53_DBM"/>
       <!-- 31 - -51 dBm or greater -->
-      <xsd:enumeration value="MINUS_51_DBM"/>
+      <xsd:enumeration value="MINUS_51_DBM_OR_GREATER"/>
       <!-- 99 - not known or not detectable -->
       <xsd:enumeration value="NOT_KNOWN_OR_NOT_DETECTABLE"/>
     </xsd:restriction>

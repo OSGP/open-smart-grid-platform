@@ -39,7 +39,6 @@ public class GetGsmDiagnosticResponseData extends ActionResponse implements Seri
       final CellInfo cellInfo,
       final List<AdjacentCellInfo> adjacentCells,
       final Date captureTime) {
-    super();
     this.operator = operator;
     this.modemRegistrationStatus = modemRegistrationStatus;
     this.circuitSwitchedStatus = circuitSwitchedStatus;

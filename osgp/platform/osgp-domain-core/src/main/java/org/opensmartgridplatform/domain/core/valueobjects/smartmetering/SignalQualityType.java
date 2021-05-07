@@ -41,7 +41,7 @@ public enum SignalQualityType {
   MINUS_57_DBM,
   MINUS_55_DBM,
   MINUS_53_DBM,
-  MINUS_51_DBM,
+  MINUS_51_DBM_OR_GREATER,
   NOT_KNOWN_OR_NOT_DETECTABLE;
 
   public String value() {
