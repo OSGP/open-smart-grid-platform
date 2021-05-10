@@ -1267,11 +1267,23 @@
   <xsd:element name="GetKeysResponse">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element type="tns:SecretType" name="secretType" />
-        <xsd:element type="xsd:hexBinary" name="secretValue" />
+        <xsd:element name="Result" type="common:OsgpResultType"/>
+        <xsd:element name="GetKeysResponseData"
+          type="tns:GetKeysResponseData"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
+
+  <xsd:complexType name="GetKeysResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
+        <xsd:sequence>
+          <xsd:element type="tns:SecretType" name="secretType" />
+          <xsd:element type="xsd:hexBinary" name="secretValue" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
 
   <xsd:element name="GetUnencryptedKeysAsyncResponse">
     <xsd:complexType>
