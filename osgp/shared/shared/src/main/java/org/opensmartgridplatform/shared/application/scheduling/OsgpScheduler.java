@@ -44,6 +44,10 @@ public class OsgpScheduler {
   public OsgpScheduler(final Scheduler quartzScheduler) throws SchedulerException {
     this.quartzScheduler = quartzScheduler;
     LOGGER.info("Starting {}.", quartzScheduler.getSchedulerName());
+    // Clear existing jobs, to make sure the latest version is loaded
+    // and deleted triggers are removed from the database
+    this.quartzScheduler.clear();
+    LOGGER.info("Existing scheduler cleared for scheduler {}.", quartzScheduler.getSchedulerName());
   }
 
   /**
@@ -55,7 +59,6 @@ public class OsgpScheduler {
   public void shutdown() throws SchedulerException {
     LOGGER.info("Stopping {}.", this.quartzScheduler.getSchedulerName());
     this.quartzScheduler.shutdown(true);
-    this.quartzScheduler.clear();
   }
 
   /**
