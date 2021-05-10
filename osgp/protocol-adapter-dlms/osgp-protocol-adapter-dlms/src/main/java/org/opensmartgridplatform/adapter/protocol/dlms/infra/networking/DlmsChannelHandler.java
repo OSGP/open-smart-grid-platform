@@ -38,10 +38,9 @@ public abstract class DlmsChannelHandler extends SimpleChannelInboundHandler<Dlm
   }
 
   @Override
-  public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause)
-      throws Exception {
+  public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
     final String channelId = ctx.channel().id().asLongText();
-    LOGGER.warn("{} Unexpected exception from downstream. {}", channelId, cause);
+    LOGGER.warn("{} Unexpected exception from downstream.", channelId, cause);
     ctx.channel().close();
   }
 
