@@ -89,16 +89,6 @@ public class GetGsmDiagnosticCommandExecutorTest {
   }
 
   @Test
-  public void testBundle() throws ProtocolAdapterException {
-    // CALL
-    final GetGsmDiagnosticRequestDto request = this.executor.fromBundleRequestInput(this.request);
-
-    // VERIFY
-    // Verify that the executor creates a new request
-    assertThat(request).isNotEqualTo(this.request);
-  }
-
-  @Test
   public void testHappy() throws Exception {
 
     // SETUP
@@ -223,6 +213,10 @@ public class GetGsmDiagnosticCommandExecutorTest {
 
     final GetResult result = mock(GetResult.class);
     when(result.getResultCode()).thenReturn(AccessResultCode.HARDWARE_FAULT);
+
+    when(this.dlmsHelper.getAndCheck(
+            eq(this.connectionManager), eq(this.device), eq("Get GsmDiagnostic"), any()))
+        .thenReturn(Collections.singletonList(result));
 
     // CALL
     try {

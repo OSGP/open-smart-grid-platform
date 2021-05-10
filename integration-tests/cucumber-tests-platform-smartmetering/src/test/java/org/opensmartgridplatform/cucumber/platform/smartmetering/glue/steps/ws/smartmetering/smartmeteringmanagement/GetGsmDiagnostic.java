@@ -23,7 +23,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetG
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.management.GetGsmDiagnosticRequestFactory;
-import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.management.GetGsmDiagnosticResponseValidator;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.management.GetGsmDiagnosticResponseFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.management.SmartMeteringManagementRequestClient;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.management.SmartMeteringManagementResponseClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,9 +71,13 @@ public class GetGsmDiagnostic {
         .as(OPERATION + ", Checking result:")
         .isEqualTo(OsgpResultType.OK);
 
-    // Add asserts on settings
-    GetGsmDiagnosticResponseValidator.validate(
-        response.getGetGsmDiagnosticResponseData(), expectedValues);
+    final org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetGsmDiagnosticResponse
+        expectedResponse = GetGsmDiagnosticResponseFactory.fromParameterMap(expectedValues);
+
+    assertThat(response.getGetGsmDiagnosticResponseData())
+        .usingRecursiveComparison()
+        .ignoringFields("captureTime") // Reading of captureTime is disabled for now
+        .isEqualTo(expectedResponse);
   }
 
   @Then("^get gsm diagnostic request should return an exception$")

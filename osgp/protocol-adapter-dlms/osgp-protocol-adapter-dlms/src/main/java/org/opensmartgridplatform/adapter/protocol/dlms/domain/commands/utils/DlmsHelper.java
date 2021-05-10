@@ -201,9 +201,7 @@ public class DlmsHelper {
           "Error retrieving values with-list for device: "
               + device.getDeviceIdentification()
               + ", with-list: "
-              + (device.isWithListSupported() ? "supported" : "not supported")
-              + ", error: "
-              + (e.getMessage() != null ? e.getMessage() : "-"),
+              + (device.isWithListSupported() ? "supported" : "not supported"),
           e);
     }
   }
