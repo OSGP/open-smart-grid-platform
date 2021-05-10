@@ -17,7 +17,7 @@ import java.util.Map;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetGsmDiagnosticRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetGsmDiagnosticResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
-import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.management.GetGsmDiagnosticResponseValidator;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.management.GetGsmDiagnosticResponseFactory;
 
 public class BundledGetGsmDiagnosticSteps extends BaseBundleSteps {
 
@@ -39,6 +39,12 @@ public class BundledGetGsmDiagnosticSteps extends BaseBundleSteps {
 
     final GetGsmDiagnosticResponse getGsmDiagnosticResponse = (GetGsmDiagnosticResponse) response;
 
-    GetGsmDiagnosticResponseValidator.validate(getGsmDiagnosticResponse, expectedValues);
+    final GetGsmDiagnosticResponse expectedResponse =
+        GetGsmDiagnosticResponseFactory.fromParameterMap(expectedValues);
+
+    assertThat(getGsmDiagnosticResponse)
+        .usingRecursiveComparison()
+        .ignoringFields("captureTime") // Reading of captureTime is disabled for now
+        .isEqualTo(expectedResponse);
   }
 }

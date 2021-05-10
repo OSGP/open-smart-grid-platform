@@ -124,8 +124,8 @@ public class GetGsmDiagnosticCommandExecutor
 
     LOGGER.info("GetResultList: {}", describeGetResults(getResultList));
 
-    if (getResultList.stream()
-        .noneMatch(result -> result.getResultCode() == AccessResultCode.SUCCESS)) {
+    if (!getResultList.stream()
+        .allMatch(result -> result.getResultCode() == AccessResultCode.SUCCESS)) {
       throw new ProtocolAdapterException("Get gsm diagnostic failed for " + device.getDeviceId());
     }
 

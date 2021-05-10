@@ -14,18 +14,18 @@ Feature: SmartMetering Management - Get GSM Diagnostic
     When a get gsm diagnostic request is received
       | DeviceIdentification | TEST1027000000001 |
     Then the get gsm diagnostic response is returned with values
-      | operator                  | Utility Connect          |
-      | modemRegistrationStatus   | REGISTERED_ROAMING       |
-      | circuitSwitchedStatus     | INACTIVE                 |
-      | packetSwitchedStatus      | GPRS                     |
-      | cellId                    |                       77 |
-      | locationId                |                     2230 |
-      | signalQuality             | MINUS_87_DBM             |
-      | bitErrorRate              | RXQUAL_6                 |
-      | mobileCountryCode         |                       66 |
-      | mobileNetworkCode         |                      204 |
-      | channelNumber             |                      107 |
-      | numberOfAdjacentCells     |                        2 |
-      | adjacentCellId            |                       93 |
-      | adjacentCellSignalQuality | MINUS_91_DBM             |
+      | operator                    | Utility Connect           |
+      | modemRegistrationStatus     | REGISTERED_ROAMING        |
+      | circuitSwitchedStatus       | INACTIVE                  |
+      | packetSwitchedStatus        | GPRS                      |
+      | cellId                      |                        77 |
+      | locationId                  |                      2230 |
+      | signalQuality               | MINUS_87_DBM              |
+      | bitErrorRate                | RXQUAL_6                  |
+      | mobileCountryCode           |                        66 |
+      | mobileNetworkCode           |                       204 |
+      | channelNumber               |                       107 |
+      | adjacentCellIds             |                     93,94 |
+      | adjacentCellSignalQualities | MINUS_91_DBM,MINUS_89_DBM |
+# Reading of captureTime is disabled for now
 #      | captureTime               | 2021-04-13T08:45:00.000Z |
