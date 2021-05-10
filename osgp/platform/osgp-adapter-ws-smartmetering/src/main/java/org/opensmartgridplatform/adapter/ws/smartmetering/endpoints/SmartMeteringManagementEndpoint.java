@@ -447,6 +447,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
     try {
       response = new FindMessageLogsResponse();
 
+      @SuppressWarnings("unchecked")
       final Page<DeviceLogItem> page =
           (Page<DeviceLogItem>)
               this.responseDataService

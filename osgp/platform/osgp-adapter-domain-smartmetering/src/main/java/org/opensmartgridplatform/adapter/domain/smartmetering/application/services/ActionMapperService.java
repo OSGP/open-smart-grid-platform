@@ -275,6 +275,7 @@ public class ActionMapperService {
 
   private ActionDto mapActionWithMapper(final SmartMeter smartMeter, final ActionRequest action)
       throws FunctionalException {
+    @SuppressWarnings("unchecked")
     // TODO: fix this
     final CustomValueToDtoConverter<ActionRequest, ActionRequestDto> customValueToDtoConverter =
         (CustomValueToDtoConverter<ActionRequest, ActionRequestDto>)
