@@ -10,7 +10,6 @@
 package org.opensmartgridplatform.shared.application.config.scheduling;
 
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.Test;
@@ -30,16 +29,13 @@ class OsgpSchedulerTest {
   @InjectMocks private OsgpScheduler osgpScheduler;
 
   @Test
-  void testClearOnStartup() throws SchedulerException {
-    reset(this.quartzScheduler);
-    this.osgpScheduler = new OsgpScheduler(this.quartzScheduler);
-    this.osgpScheduler.shutdown();
+  void testClear() throws SchedulerException {
+    this.osgpScheduler.clear();
     verify(this.quartzScheduler).clear();
   }
 
   @Test
   void testShutdown() throws SchedulerException {
-    reset(this.quartzScheduler);
     this.osgpScheduler.shutdown();
     verify(this.quartzScheduler).shutdown(true);
     // Clearing on shutdown causes issues when deploying in Kubernetes

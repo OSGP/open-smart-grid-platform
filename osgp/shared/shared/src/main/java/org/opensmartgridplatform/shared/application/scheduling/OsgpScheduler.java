@@ -44,7 +44,14 @@ public class OsgpScheduler {
   public OsgpScheduler(final Scheduler quartzScheduler) throws SchedulerException {
     this.quartzScheduler = quartzScheduler;
     LOGGER.info("Starting {}.", quartzScheduler.getSchedulerName());
+  }
 
+  /**
+   * Clears all the data from the scheduler.
+   *
+   * @throws SchedulerException If the Quartz {@link Scheduler} can't clear the data.
+   */
+  public void clear() throws SchedulerException {
     // Clear existing jobs, to make sure the latest version is loaded
     // and deleted triggers are removed from the database
     LOGGER.info("Clear scheduler {}.", this.quartzScheduler.getSchedulerName());
