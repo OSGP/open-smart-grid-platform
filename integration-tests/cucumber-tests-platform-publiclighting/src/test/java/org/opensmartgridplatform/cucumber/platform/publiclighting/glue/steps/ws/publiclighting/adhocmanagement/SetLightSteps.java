@@ -47,7 +47,7 @@ public class SetLightSteps {
    * Sends a Set Light request to the platform for a given device identification.
    *
    * @param requestParameters The table with the request parameters.
-   * @throws Throwable
+   * @throws Throwable when an error occurs
    */
   @When("^receiving a set light request$")
   public void receivingASetLightRequest(final Map<String, String> requestParameters)
@@ -174,16 +174,14 @@ public class SetLightSteps {
    * @param expectedResponseData The table with the expected fields in the response.
    * @apiNote The response will contain the correlation uid, so store that in the current scenario
    *     context for later use.
-   * @throws Throwable
    */
   @Then("^the set light async response contains$")
-  public void theSetLightResponseContains(final Map<String, String> expectedResponseData)
-      throws Throwable {
+  public void theSetLightResponseContains(final Map<String, String> expectedResponseData) {
 
     final SetLightAsyncResponse asyncResponse =
         (SetLightAsyncResponse) ScenarioContext.current().get(PlatformPubliclightingKeys.RESPONSE);
 
-    assertThat(asyncResponse.getAsyncResponse().getCorrelationUid());
+    assertThat(asyncResponse.getAsyncResponse().getCorrelationUid()).isNotNull();
     assertThat(asyncResponse.getAsyncResponse().getDeviceId())
         .isEqualTo(
             getString(expectedResponseData, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION));
@@ -210,8 +208,7 @@ public class SetLightSteps {
 
   @Then("^the platform buffers a set light response message for device \"([^\"]*)\"$")
   public void thePlatformBuffersASetLightResponseMessage(
-      final String deviceIdentification, final Map<String, String> expectedResult)
-      throws Throwable {
+      final String deviceIdentification, final Map<String, String> expectedResult) {
     final SetLightAsyncRequest request = new SetLightAsyncRequest();
     final AsyncRequest asyncRequest = new AsyncRequest();
     asyncRequest.setDeviceId(deviceIdentification);
@@ -227,7 +224,7 @@ public class SetLightSteps {
           } catch (final Exception e) {
             // do nothing
           }
-          assertThat(response);
+          assertThat(response).isNotNull();
           assertThat(response.getResult())
               .isEqualTo(
                   Enum.valueOf(
