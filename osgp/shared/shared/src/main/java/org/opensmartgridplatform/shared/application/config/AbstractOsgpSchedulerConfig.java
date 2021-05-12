@@ -71,9 +71,7 @@ public class AbstractOsgpSchedulerConfig extends AbstractSchedulingConfig {
 
     final Scheduler quartzScheduler =
         this.constructAndStartQuartzScheduler(schedulingConfigProperties);
-    final OsgpScheduler osgpScheduler = new OsgpScheduler(quartzScheduler);
-    osgpScheduler.clear();
-    return osgpScheduler;
+    return new OsgpScheduler(quartzScheduler);
   }
 
   private void testIfQuartzTablesExist() {
