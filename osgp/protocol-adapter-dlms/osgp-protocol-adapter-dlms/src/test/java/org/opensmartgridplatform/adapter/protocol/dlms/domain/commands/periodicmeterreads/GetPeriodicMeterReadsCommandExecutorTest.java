@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.periodic
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Fail.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -64,7 +65,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterRea
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class GetPeriodicMeterReadsCommandExecutorTest {
+class GetPeriodicMeterReadsCommandExecutorTest {
 
   @InjectMocks private GetPeriodicMeterReadsCommandExecutor executor;
 
@@ -83,22 +84,18 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
   private final DateTime toDateTime = new DateTime(this.to);
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
   }
 
-  @Test
-  public void testExecuteNullRequest() throws ProtocolAdapterException {
-    try {
-      this.executor.execute(this.connectionManager, this.device, null);
-      fail("Calling execute with null query should fail");
-    } catch (final IllegalArgumentException e) {
-      // expected exception
-    }
+  @Test()
+  void testExecuteNullRequest() {
+    assertThatThrownBy(() -> this.executor.execute(this.connectionManager, this.device, null))
+        .isInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
-  public void testExecuteObjectNotFound() {
+  void testExecuteObjectNotFound() {
     // SETUP
     final PeriodicMeterReadsRequestDto request =
         new PeriodicMeterReadsRequestDto(
@@ -121,17 +118,21 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
   }
 
   @Test
-  public void testBundle() throws ProtocolAdapterException {
-
+  void testBundle() throws ProtocolAdapterException {
+    // SETUP
     final PeriodicMeterReadsRequestDataDto request =
         new PeriodicMeterReadsRequestDataDto(
             PeriodTypeDto.DAILY, new Date(this.from), new Date(this.to));
 
-    this.executor.fromBundleRequestInput(request);
+    // CALL
+    final PeriodicMeterReadsRequestDto dto = this.executor.fromBundleRequestInput(request);
+
+    // VERIFY
+    assertThat(dto).isNotNull();
   }
 
   @Test
-  public void testHappy() throws Exception {
+  void testHappy() throws Exception {
 
     // SETUP
     final PeriodTypeDto periodType = PeriodTypeDto.DAILY;
@@ -272,10 +273,7 @@ public class GetPeriodicMeterReadsCommandExecutorTest {
 
     assertThat(periodicMeterReads.size()).isEqualTo(2);
 
-    periodicMeterReads.forEach(
-        p -> {
-          assertThat(p.getLogTime()).isNotNull();
-        });
+    periodicMeterReads.forEach(p -> assertThat(p.getLogTime()).isNotNull());
   }
 
   private AttributeAddressForProfile createAttributeAddressForProfile(
