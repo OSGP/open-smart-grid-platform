@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootTest
+@SpringBootTest(properties = {"spring.config.name=simulator-iec60870"})
 @ActiveProfiles("default_controlled_station")
 class DefaultControlledStationAsduFactoryTest {
 
@@ -81,12 +81,10 @@ class DefaultControlledStationAsduFactoryTest {
             false,
             0,
             1,
-            new InformationObject[] {
-              new InformationObject(
-                  0,
-                  this.informationElementFactory.createInformationElements(
-                      Iec60870InformationObjectType.QUALIFIER_OF_INTERROGATION, 20))
-            });
+            new InformationObject(
+                0,
+                this.informationElementFactory.createInformationElements(
+                    Iec60870InformationObjectType.QUALIFIER_OF_INTERROGATION, 20)));
 
     // Act
     final ASdu actual = defaultControlledAsduFactory.createSingleCommandAsdu();

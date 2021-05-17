@@ -26,14 +26,23 @@
 
   <!-- Uncomment this to enable Comet connection tacking (provides events 
     on session expiration as well as webapp lifecycle) -->
-  <!-- <Valve className="org.apache.catalina.valves.CometConnectionManagerValve" 
-    /> -->
+  <!-- <Valve className="org.apache.catalina.valves.CometConnectionManagerValve" /> -->
 
   <!-- App config files -->
   <Environment name="osgp/Global/config" value="/etc/osp/global.properties" type="java.lang.String" override="false" />
   <Environment name="osgp/SimulatorProtocolIec61850/config" value="/etc/osp/osgp-simulator-protocol-iec61850.properties" type="java.lang.String" override="true" />
-  
+
   <!--  Logging config file -->
   <Environment name="osgp/SimulatorProtocolIec61850/log-config" value="/etc/osp/osgp-simulator-protocol-iec61850-logback.xml" type="java.lang.String" override="true" />
 
+  <!--  Externalized spring boot config
+    This configuration enables external spring boot configuration while running in Tomcat.
+    Spring boot will look for the following properties files at the additional location specified:
+      <spring.config.name>.properties, for example simulator-iec61850.properties.
+      <spring.config.name>-<profile>.properties, for example simulator-iec61850-light-measurement-rtu.properties.
+  -->
+  <!-- This parameter could be set here as well, however it is probably better to load from properties -->
+  <!-- <Parameter name="spring.profiles.active" value="light-measurement-rtu,default" /> -->
+  <Parameter name="spring.config.name" value="simulator-iec61850" />
+  <Parameter name="spring.config.additional-location" value="optional:/etc/osp/" />
 </Context>

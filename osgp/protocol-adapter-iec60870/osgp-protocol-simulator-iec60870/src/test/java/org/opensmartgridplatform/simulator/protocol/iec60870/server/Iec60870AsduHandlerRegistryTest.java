@@ -26,7 +26,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
+@SpringBootTest(properties = {"spring.config.name=simulator-iec60870"})
 public class Iec60870AsduHandlerRegistryTest {
   // Mock the RTU Simulator to prevent the simulator from starting, which
   // might cause 'address already in use' exceptions while running tests
