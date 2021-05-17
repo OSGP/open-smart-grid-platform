@@ -32,7 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootTest
+@SpringBootTest(properties = {"spring.config.name=simulator-iec60870"})
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("light_measurement_device")
 class Iec60870UpdateInformationObjectTest {
