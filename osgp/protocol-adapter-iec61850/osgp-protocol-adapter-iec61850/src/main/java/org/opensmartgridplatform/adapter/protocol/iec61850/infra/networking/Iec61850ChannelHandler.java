@@ -42,10 +42,9 @@ public abstract class Iec61850ChannelHandler
   }
 
   @Override
-  public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause)
-      throws Exception {
+  public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
     final String channelId = ctx.channel().id().asLongText();
-    this.logger.warn("{} Unexpected exception from downstream. {}", channelId, cause);
+    this.logger.warn("{} Unexpected exception from downstream.", channelId, cause);
     ctx.channel().close();
   }
 
