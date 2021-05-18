@@ -1267,9 +1267,9 @@
   <xsd:element name="GetKeysResponse">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="Result" type="common:OsgpResultType"/>
+        <xsd:element name="Result" type="common:OsgpResultType" />
         <xsd:element name="GetKeysResponseData"
-          type="tns:GetKeysResponseData"/>
+          type="tns:GetKeysResponseData" maxOccurs="unbounded" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
