@@ -143,9 +143,8 @@ public class GetGsmDiagnosticCommandExecutor
       new AttributeAddress(classId, obisCode, PACKET_SWITCHED_STATUS.attributeId()),
       new AttributeAddress(classId, obisCode, CELL_INFO.attributeId()),
       new AttributeAddress(classId, obisCode, ADJACENT_CELLS.attributeId()),
-      // Reading of capture_time is disabled for now, because meters seem to return an invalid
-      // date-time octet-string causing a failure in the jdlms library. Also see comment in
-      // getCaptureTime.
+      // Reading of capture_time is disabled for now, because the jDLMS library appears to handle
+      // the COSEM date-time in the response incorrectly. Also see comment in getCaptureTime.
       // new AttributeAddress(classId, obisCode, CAPTURE_TIME.attributeId())
     };
   }
