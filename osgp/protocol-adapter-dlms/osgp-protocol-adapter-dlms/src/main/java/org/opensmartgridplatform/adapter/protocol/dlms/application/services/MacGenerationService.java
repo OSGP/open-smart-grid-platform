@@ -36,8 +36,6 @@ public class MacGenerationService {
 
   @Autowired private SecretManagementService secretManagementService;
 
-  public MacGenerationService() {}
-
   public byte[] addMac(final String deviceIdentification, final FirmwareImageData firmwareImageData)
       throws ProtocolAdapterException {
 
@@ -94,58 +92,50 @@ public class MacGenerationService {
     if (!FIRMWARE_IMAGE_MAGIC_NUMBER.equals(header.getFirmwareImageMagicNumberHex())) {
       throw new ProtocolAdapterException(
           String.format(
-              "Unexpected FirmwareImageMagicNumber in header FW file: {}. Expected: {}.",
-              header.getFirmwareImageMagicNumberHex(),
-              FIRMWARE_IMAGE_MAGIC_NUMBER));
+              "Unexpected FirmwareImageMagicNumber in header FW file: %s. Expected: %s.",
+              header.getFirmwareImageMagicNumberHex(), FIRMWARE_IMAGE_MAGIC_NUMBER));
     }
     if (header.getHeaderLengthInt() != HEADER_LENGTH) {
       throw new ProtocolAdapterException(
           String.format(
-              "Unexpected length of header in header FW file: {}. Expected: {}.",
-              header.getHeaderLengthInt(),
-              HEADER_LENGTH));
+              "Unexpected length of header in header FW file: %d. Expected: %d.",
+              header.getHeaderLengthInt(), HEADER_LENGTH));
     }
     if (header.getAddressLengthInt() != ADDRESS_LENGTH) {
       throw new ProtocolAdapterException(
           String.format(
-              "Unexpected length of address in header FW file: {}. Expected: {}.",
-              header.getAddressLengthInt(),
-              ADDRESS_LENGTH));
+              "Unexpected length of address in header FW file: %d. Expected: %d.",
+              header.getAddressLengthInt(), ADDRESS_LENGTH));
     }
     if (header.getAddressTypeInt() != ADDRESS_TYPE) {
       throw new ProtocolAdapterException(
           String.format(
-              "Unexpected type of address in header FW file: {}. Expected: {}.",
-              header.getAddressTypeInt(),
-              ADDRESS_TYPE));
+              "Unexpected type of address in header FW file: %d. Expected: %d.",
+              header.getAddressTypeInt(), ADDRESS_TYPE));
     }
     if (header.getSecurityTypeInt() != SECURITY_TYPE) {
       throw new ProtocolAdapterException(
           String.format(
-              "Unexpected type of security in header FW file: {}. Expected: {}.",
-              header.getSecurityTypeInt(),
-              SECURITY_TYPE));
+              "Unexpected type of security in header FW file: %d. Expected: %d.",
+              header.getSecurityTypeInt(), SECURITY_TYPE));
     }
     if (header.getSecurityLengthInt() != SECURITY_LENGTH) {
       throw new ProtocolAdapterException(
           String.format(
-              "Unexpected length of security in header FW file: {}. Expected: {}.",
-              header.getSecurityLengthInt(),
-              SECURITY_LENGTH));
+              "Unexpected length of security in header FW file: %d. Expected: %d.",
+              header.getSecurityLengthInt(), SECURITY_LENGTH));
     }
   }
 
   public byte[] createIV(final FirmwareImageData firmwareImageData) {
     final FirmwareImageDataHeaderAddressField firmwareImageDataHeaderAddressField =
         firmwareImageData.getHeader().getFirmwareImageDataHeaderAddressField();
-    final byte[] iv =
-        ByteBuffer.allocate(12)
-            .put(firmwareImageDataHeaderAddressField.getMft())
-            .put(firmwareImageDataHeaderAddressField.getId())
-            .put(firmwareImageDataHeaderAddressField.getVersion())
-            .put(firmwareImageDataHeaderAddressField.getType())
-            .put(Arrays.reverse(firmwareImageData.getHeader().getFirmwareImageVersion()))
-            .array();
-    return iv;
+    return ByteBuffer.allocate(12)
+        .put(firmwareImageDataHeaderAddressField.getMft())
+        .put(firmwareImageDataHeaderAddressField.getId())
+        .put(firmwareImageDataHeaderAddressField.getVersion())
+        .put(firmwareImageDataHeaderAddressField.getType())
+        .put(Arrays.reverse(firmwareImageData.getHeader().getFirmwareImageVersion()))
+        .array();
   }
 }

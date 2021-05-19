@@ -51,14 +51,10 @@ public class FirmwareImageData {
   }
 
   public byte[] getFirmwareImageByteArray() {
-    final byte[] firmwareImageByteArray =
-        this.readBytes(
-            this.imageData,
-            this.getHeader().getHeaderLengthInt(),
-            this.getHeader().getHeaderLengthInt()
-                + this.getHeader().getFirmwareImageLengthInt()
-                - 1);
-    return firmwareImageByteArray;
+    return this.readBytes(
+        this.imageData,
+        this.getHeader().getHeaderLengthInt(),
+        this.getHeader().getHeaderLengthInt() + this.getHeader().getFirmwareImageLengthInt() - 1);
   }
 
   public void addIdentificationNumber(final Long mbusIdentificationNumber) {

@@ -104,32 +104,30 @@ public class FirmwareImageDataHeader {
     final StringBuilder result = new StringBuilder();
     result.append("FirmwareImageDataHeader");
     result.append(
-        "\n\tfirmwareImageMagicNumber: " + this.getFirmwareImageMagicNumberHex() + " (hex)");
-    result.append("\n\theaderVersion: " + this.getHeaderVersionInt() + " (int)");
+        String.format(
+            "\n\tfirmwareImageMagicNumber: %s (hex)", this.getFirmwareImageMagicNumberHex()));
+    result.append(String.format("\n\theaderVersion: %d (int)", this.getHeaderVersionInt()));
     result.append(
-        "\n\theaderLength : "
-            + this.getHeaderLengthHex()
-            + " (hex) --> "
-            + this.getHeaderLengthInt()
-            + " (int)");
-    result.append("\n\tfirmwareImageVersion : " + this.getFirmwareImageVersionHex() + " (hex)");
+        String.format(
+            "\n\theaderLength : %s (hex) --> %d (int)",
+            this.getHeaderLengthHex(), this.getHeaderLengthInt()));
     result.append(
-        "\n\tfirmwareImageLength : "
-            + this.getFirmwareImageLengthHex()
-            + " (hex) --> "
-            + this.getFirmwareImageLengthInt()
-            + " (int)");
-    result.append("\n\tsecurityLength : " + this.getSecurityLengthInt() + " (int)");
-    result.append("\n\tsecurityType: " + this.getSecurityTypeInt() + " (int)");
-    result.append("\n\taddressType: " + this.getAddressTypeInt() + " (int)");
-    result.append("\n\taddressLength: " + this.getAddressLengthInt() + " (int)");
-    result.append("\n\tFirmwareHeaderAddressField");
-    result.append("\n\t\tmft: " + this.getMftHex() + " (hex)");
-    result.append("\n\t\tid: " + this.getIdentificationNumber() + " (hex)");
-    result.append("\n\t\tversion: " + this.getVersionInt() + " (int)");
-    result.append("\n\t\ttype: " + this.getTypeInt() + " (int)");
-    result.append("\n\tactivationType: " + this.getActivationTypeInt() + " (int)");
-    result.append("\n\tactivationTime: " + this.getActivationTimeHex() + " (hex)");
+        String.format("\n\tfirmwareImageVersion : %s (hex)", this.getFirmwareImageVersionHex()));
+    result.append(
+        String.format(
+            "\n\tfirmwareImageLength : %s (hex) --> %d (int)",
+            this.getFirmwareImageLengthHex(), this.getFirmwareImageLengthInt()));
+    result.append(String.format("\n\tsecurityLength : %d (int)", this.getSecurityLengthInt()));
+    result.append(String.format("\n\tsecurityType: %d (int)", this.getSecurityTypeInt()));
+    result.append(String.format("\n\taddressType: %d (int)", this.getAddressTypeInt()));
+    result.append(String.format("\n\taddressLength: %d (int)", this.getAddressLengthInt()));
+    result.append(String.format("\n\tFirmwareHeaderAddressField"));
+    result.append(String.format("\n\t\tmft: %s (hex)", this.getMftHex()));
+    result.append(String.format("\n\t\tid: %s (hex)", this.getIdentificationNumber()));
+    result.append(String.format("\n\t\tversion: %d (int)", this.getVersionInt()));
+    result.append(String.format("\n\t\ttype: %d (int)", this.getTypeInt()));
+    result.append(String.format("\n\tactivationType: %d (int)", this.getActivationTypeInt()));
+    result.append(String.format("\n\tactivationTime: %s (hex)", this.getActivationTimeHex()));
     return result.toString();
   }
 
