@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import lombok.Getter;
 import lombok.Setter;
 import org.bouncycastle.util.Arrays;
+import org.bouncycastle.util.encoders.Hex;
 
 @Getter
 @Setter
@@ -31,11 +32,11 @@ public class FirmwareImageDataHeader {
   }
 
   String getMftHex() {
-    return this.toHex(this.getFirmwareImageDataHeaderAddressField().getMft());
+    return Hex.toHexString(this.getFirmwareImageDataHeaderAddressField().getMft());
   }
 
   String getActivationTimeHex() {
-    return this.toHex(this.activationTime);
+    return Hex.toHexString(this.activationTime);
   }
 
   Integer getActivationTypeInt() {
@@ -50,7 +51,7 @@ public class FirmwareImageDataHeader {
     return this.toInteger(this.addressType);
   }
 
-  Integer getSecurityTypeInt() {
+  public Integer getSecurityTypeInt() {
     return this.toInteger(this.securityType);
   }
 
@@ -59,7 +60,7 @@ public class FirmwareImageDataHeader {
   }
 
   String getFirmwareImageLengthHex() {
-    return this.toHex(this.firmwareImageLength);
+    return Hex.toHexString(this.firmwareImageLength);
   }
 
   Integer getFirmwareImageLengthInt() {
@@ -67,11 +68,11 @@ public class FirmwareImageDataHeader {
   }
 
   String getFirmwareImageVersionHex() {
-    return this.toHex(this.firmwareImageVersion);
+    return Hex.toHexString(this.firmwareImageVersion);
   }
 
   String getHeaderLengthHex() {
-    return this.toHex(this.headerLength);
+    return Hex.toHexString(this.headerLength);
   }
 
   public Integer getHeaderLengthInt() {
@@ -83,11 +84,11 @@ public class FirmwareImageDataHeader {
   }
 
   public String getFirmwareImageMagicNumberHex() {
-    return this.toHex(this.firmwareImageMagicNumber);
+    return Hex.toHexString(this.firmwareImageMagicNumber);
   }
 
   String getIdentificationNumber() {
-    return this.toHex(this.getFirmwareImageDataHeaderAddressField().getId());
+    return Hex.toHexString(this.getFirmwareImageDataHeaderAddressField().getId());
   }
 
   @Override
@@ -124,20 +125,8 @@ public class FirmwareImageDataHeader {
     return result.toString();
   }
 
-  private String toHex(final byte[] bytes) {
-    final StringBuilder result = new StringBuilder();
-    for (int i = 0; i < bytes.length; i++) {
-      String hex = Integer.toHexString(bytes[i] & 0xff);
-      if (hex.length() % 2 == 1) {
-        hex = "0" + hex;
-      }
-      result.append(hex);
-    }
-    return result.toString();
-  }
-
   private Integer toInteger(final byte[] bytes) {
-    return Integer.parseInt(this.toHex(bytes), 16);
+    return Integer.parseInt(Hex.toHexString(bytes), 16);
   }
 
   private Integer toInteger2(final byte[] bytes) {

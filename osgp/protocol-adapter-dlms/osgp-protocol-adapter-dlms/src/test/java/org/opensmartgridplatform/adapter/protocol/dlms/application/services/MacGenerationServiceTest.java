@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import javax.xml.bind.DatatypeConverter;
+import org.bouncycastle.util.encoders.Hex;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,9 +27,7 @@ public class MacGenerationServiceTest {
   @Mock SecretManagementService secretManagementService;
 
   // FIRMWARE UPDATE AUTHENTICATION KEY
-  final byte[] authenticationKey =
-      DatatypeConverter.parseHexBinary("F9AA9442108723357221D7AFCCD41BD1");
-
+  final byte[] authenticationKey = Hex.decode("F9AA9442108723357221D7AFCCD41BD1");
   final String expectedIv = "e91e40050010500300400011";
   final String expectedMac = "b4375a6b43de6d2421628bba7d6ee0e6";
 
@@ -67,7 +65,8 @@ public class MacGenerationServiceTest {
     final byte[] calculatedMac =
         this.macGenerationService.calculateMac(this.deviceIdentification, this.firmwareImageData);
     // THEN
-    assertThat(this.toHex(calculatedMac)).isEqualTo(this.expectedMac);
+    //    assertThat(this.toHex(calculatedMac)).isEqualTo(this.expectedMac);
+    assertThat(Hex.toHexString(calculatedMac)).isEqualTo(this.expectedMac);
   }
 
   @Test
@@ -75,18 +74,7 @@ public class MacGenerationServiceTest {
     // WHEN
     final byte[] iv = this.macGenerationService.createIV(this.firmwareImageData);
     // THEN
-    assertThat(this.toHex(iv)).isEqualTo(this.expectedIv);
-  }
-
-  private String toHex(final byte[] bytes) {
-    final StringBuilder result = new StringBuilder();
-    for (int i = 0; i < bytes.length; i++) {
-      String hex = Integer.toHexString(bytes[i] & 0xff);
-      if (hex.length() % 2 == 1) {
-        hex = "0" + hex;
-      }
-      result.append(hex);
-    }
-    return result.toString();
+    //    assertThat(this.toHex(iv)).isEqualTo(this.expectedIv);
+    assertThat(Hex.toHexString(iv)).isEqualTo(this.expectedIv);
   }
 }
