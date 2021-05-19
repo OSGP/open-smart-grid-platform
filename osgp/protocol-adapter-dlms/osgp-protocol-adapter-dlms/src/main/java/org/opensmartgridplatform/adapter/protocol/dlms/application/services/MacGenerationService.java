@@ -20,12 +20,11 @@ import org.springframework.stereotype.Service;
 public class MacGenerationService {
 
   private static final String FIRMWARE_IMAGE_MAGIC_NUMBER = "534d5235"; // SMR5
-
   private static final int HEADER_LENGTH = 35;
-
   private static final int ADDRESS_LENGTH = 8;
-
   private static final int ADDRESS_TYPE = 1; // M-Bus address
+  private static final int SECURITY_LENGTH = 16;
+  private static final int SECURITY_TYPE = 2; // GMAC
 
   @Autowired private SecretManagementService secretManagementService;
 
@@ -84,26 +83,47 @@ public class MacGenerationService {
 
   private void validateHeader(final FirmwareImageDataHeader header)
       throws ProtocolAdapterException {
-    // TODO check security type = GMAC else NOT implemented exception
-    if (header.getFirmwareImageMagicNumberHex() != FIRMWARE_IMAGE_MAGIC_NUMBER) {
+    if (!FIRMWARE_IMAGE_MAGIC_NUMBER.equals(header.getFirmwareImageMagicNumberHex())) {
       throw new ProtocolAdapterException(
           String.format(
-              "Unexpected FirmwareImageMagicNumber in header FW file: {}",
-              header.getFirmwareImageMagicNumberHex()));
+              "Unexpected FirmwareImageMagicNumber in header FW file: {}. Expected: {}.",
+              header.getFirmwareImageMagicNumberHex(),
+              FIRMWARE_IMAGE_MAGIC_NUMBER));
     }
     if (header.getHeaderLengthInt() != HEADER_LENGTH) {
       throw new ProtocolAdapterException(
           String.format(
-              "Unexpected length of header in header FW file: ", header.getHeaderLength()));
+              "Unexpected length of header in header FW file: {}. Expected: {}.",
+              header.getHeaderLengthInt(),
+              HEADER_LENGTH));
     }
     if (header.getAddressLengthInt() != ADDRESS_LENGTH) {
       throw new ProtocolAdapterException(
           String.format(
-              "Unexpected length of address in header FW file: ", header.getAddressLength()));
+              "Unexpected length of address in header FW file: {}. Expected: {}.",
+              header.getAddressLengthInt(),
+              ADDRESS_LENGTH));
     }
     if (header.getAddressTypeInt() != ADDRESS_TYPE) {
       throw new ProtocolAdapterException(
-          String.format("Unexpected type of address in header FW file: ", header.getAddressType()));
+          String.format(
+              "Unexpected type of address in header FW file: {}. Expected: {}.",
+              header.getAddressTypeInt(),
+              ADDRESS_TYPE));
+    }
+    if (header.getSecurityTypeInt() != SECURITY_TYPE) {
+      throw new ProtocolAdapterException(
+          String.format(
+              "Unexpected type of security in header FW file: {}. Expected: {}.",
+              header.getSecurityTypeInt(),
+              SECURITY_TYPE));
+    }
+    if (header.getSecurityLengthInt() != SECURITY_LENGTH) {
+      throw new ProtocolAdapterException(
+          String.format(
+              "Unexpected length of security in header FW file: {}. Expected: {}.",
+              header.getSecurityLengthInt(),
+              SECURITY_LENGTH));
     }
   }
 
