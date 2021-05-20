@@ -1285,7 +1285,7 @@
     </xsd:complexContent>
   </xsd:complexType>
 
-  <xsd:element name="GetUnencryptedKeysAsyncResponse">
+  <xsd:element name="GetKeysAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="common:AsyncResponse" />
