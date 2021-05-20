@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.application.mapping.informationelements;
 
+import java.util.TimeZone;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
@@ -16,11 +17,18 @@ import org.opensmartgridplatform.dto.da.measurements.elements.TimestampMeasureme
 
 public class IeTime56Converter extends CustomConverter<IeTime56, TimestampMeasurementElementDto> {
 
+  private final TimeZone timeZone;
+
+  public IeTime56Converter(final TimeZone timeZone) {
+    this.timeZone = timeZone;
+  }
+
   @Override
   public TimestampMeasurementElementDto convert(
       final IeTime56 source,
       final Type<? extends TimestampMeasurementElementDto> destinationType,
       final MappingContext mappingContext) {
-    return new TimestampMeasurementElementDto(source.getTimestamp());
+
+    return new TimestampMeasurementElementDto(source.getTimestamp(1970, this.timeZone));
   }
 }
