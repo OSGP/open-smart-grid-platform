@@ -6,7 +6,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.imagedata;
+package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile;
 
 import lombok.Getter;
 
@@ -21,18 +21,21 @@ import lombok.Getter;
  * wildcard character is hex-value: 'F'.
  */
 @Getter
-public class FirmwareImageDataHeaderAddressField {
+public class FirmwareFileHeaderAddressField {
 
-  private byte[] mft;
-  private byte[] id;
+  private byte[] manufacturerId;
+  private byte[] mbusDeviceSerialNumber;
   private byte[] version;
-  private byte[] type;
+  private byte[] deviceType;
 
-  public FirmwareImageDataHeaderAddressField(
-      final byte[] mft, final byte[] id, final byte[] version, final byte[] type) {
-    this.mft = mft;
-    this.id = id;
+  public FirmwareFileHeaderAddressField(
+      final byte[] manufacturerId,
+      final byte[] mbusDeviceSerialNumber,
+      final byte[] version,
+      final byte[] deviceType) {
+    this.manufacturerId = manufacturerId;
+    this.mbusDeviceSerialNumber = mbusDeviceSerialNumber;
     this.version = version;
-    this.type = type;
+    this.deviceType = deviceType;
   }
 }

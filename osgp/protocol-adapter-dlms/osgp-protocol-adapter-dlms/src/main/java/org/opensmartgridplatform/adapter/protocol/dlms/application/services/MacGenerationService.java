@@ -16,45 +16,52 @@ import org.bouncycastle.crypto.modes.GCMBlockCipher;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
 import org.bouncycastle.util.Arrays;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.imagedata.FirmwareImageData;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.imagedata.FirmwareImageDataHeader;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.imagedata.FirmwareImageDataHeaderAddressField;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.FirmwareFile;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.FirmwareFileHeader;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.FirmwareFileHeaderAddressField;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.enums.ActivationType;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.enums.AddressType;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.enums.DeviceType;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.enums.SecurityType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * This service generates a MAC as security part of a Firmware file as descript in Smart Meter
+ * Requirements 5.1, Supplement 4, P2 Companion Standard, Section 7. Firmware Upgrade
+ *
+ * <p>As versions earlier than 5.0 of the Smart Meter Requirements do not support the upgrade of
+ * firmware this implementation only supports Firmware files with magic number 534d5235 ('SMR5') As
+ * this is the first and only specification most entries in the Firmware File's header are fixed
+ *
+ * <ul>
+ *   <li>Firmware image magic number: 53h 4Dh 52h 35h
+ *   <li>Header Version: 00h
+ *   <li>Header length: 35
+ *   <li>Security length: 16
+ *   <li>Security type: GMAC
+ *   <li>Address length: 8
+ *   <li>Address type: M-Bus address
+ *   <li>Device type: Gas
+ *   <li>Activation type: Master initiated activation
+ */
 @Service
 public class MacGenerationService {
 
-  private static final String FIRMWARE_IMAGE_MAGIC_NUMBER = "534d5235"; // SMR5
   private static final int HEADER_LENGTH = 35;
   private static final int ADDRESS_LENGTH = 8;
-  private static final int ADDRESS_TYPE = 1; // M-Bus address
   private static final int SECURITY_LENGTH = 16;
-  private static final int SECURITY_TYPE = 2; // GMAC
 
   @Autowired private SecretManagementService secretManagementService;
 
-  public byte[] addMac(final String deviceIdentification, final FirmwareImageData firmwareImageData)
+  public byte[] calculateMac(final String deviceIdentification, final FirmwareFile firmwareFile)
       throws ProtocolAdapterException {
 
-    final byte[] calculatedMac = this.calculateMac(deviceIdentification, firmwareImageData);
+    this.validateHeader(firmwareFile.getHeader());
 
-    return ByteBuffer.allocate(firmwareImageData.length())
-        .put(firmwareImageData.getHeaderByteArray())
-        .put(firmwareImageData.getFirmwareImageByteArray())
-        .put(calculatedMac)
-        .array();
-  }
-
-  public byte[] calculateMac(
-      final String deviceIdentification, final FirmwareImageData firmwareImageData)
-      throws ProtocolAdapterException {
-
-    this.validateHeader(firmwareImageData.getHeader());
-
-    final byte[] iv = this.createIV(firmwareImageData);
+    final byte[] iv = this.createIV(firmwareFile);
 
     final byte[] decryptedFirmwareUpdateAuthenticationKey =
         this.secretManagementService.getKey(
@@ -76,8 +83,8 @@ public class MacGenerationService {
 
     mac.init(parameterWithIV);
 
-    final byte[] headerByteArray = firmwareImageData.getHeaderByteArray();
-    final byte[] firmwareImageByteArray = firmwareImageData.getFirmwareImageByteArray();
+    final byte[] headerByteArray = firmwareFile.getHeaderByteArray();
+    final byte[] firmwareImageByteArray = firmwareFile.getFirmwareImageByteArray();
     final byte[] input =
         ByteBuffer.allocate(headerByteArray.length + firmwareImageByteArray.length)
             .put(headerByteArray)
@@ -88,20 +95,25 @@ public class MacGenerationService {
     final byte[] generatedMac = new byte[mac.getMacSize()];
     mac.doFinal(generatedMac, 0);
 
-    if (firmwareImageData.getHeader().getSecurityLengthInt() != generatedMac.length) {
+    if (firmwareFile.getHeader().getSecurityLengthInt() != generatedMac.length) {
       throw new ProtocolAdapterException(
           "Unable to generate correct MAC: Defined security length in firmware header differs from length of generated MAC");
     }
     return generatedMac;
   }
 
-  private void validateHeader(final FirmwareImageDataHeader header)
-      throws ProtocolAdapterException {
-    if (!FIRMWARE_IMAGE_MAGIC_NUMBER.equals(header.getFirmwareImageMagicNumberHex())) {
+  private void validateHeader(final FirmwareFileHeader header) throws ProtocolAdapterException {
+    if (!FirmwareFile.FIRMWARE_IMAGE_MAGIC_NUMBER.equals(header.getFirmwareImageMagicNumberHex())) {
       throw new ProtocolAdapterException(
           String.format(
               "Unexpected FirmwareImageMagicNumber in header FW file: %s. Expected: %s.",
-              header.getFirmwareImageMagicNumberHex(), FIRMWARE_IMAGE_MAGIC_NUMBER));
+              header.getFirmwareImageMagicNumberHex(), FirmwareFile.FIRMWARE_IMAGE_MAGIC_NUMBER));
+    }
+    if (FirmwareFile.HEADER_VERSION != header.getHeaderVersionInt()) {
+      throw new ProtocolAdapterException(
+          String.format(
+              "Unexpected HeaderVersion in header FW file: %d. Expected: %d.",
+              header.getHeaderVersionInt(), FirmwareFile.HEADER_VERSION));
     }
     if (header.getHeaderLengthInt() != HEADER_LENGTH) {
       throw new ProtocolAdapterException(
@@ -115,17 +127,23 @@ public class MacGenerationService {
               "Unexpected length of address in header FW file: %d. Expected: %d.",
               header.getAddressLengthInt(), ADDRESS_LENGTH));
     }
-    if (header.getAddressTypeInt() != ADDRESS_TYPE) {
+    if (header.getAddressTypeEnum() != AddressType.MBUS_ADDRESS) {
       throw new ProtocolAdapterException(
           String.format(
-              "Unexpected type of address in header FW file: %d. Expected: %d.",
-              header.getAddressTypeInt(), ADDRESS_TYPE));
+              "Unexpected type of address in header FW file: %s. Expected: %s.",
+              header.getAddressTypeEnum(), AddressType.MBUS_ADDRESS.name()));
     }
-    if (header.getSecurityTypeInt() != SECURITY_TYPE) {
+    if (header.getSecurityTypeEnum() != SecurityType.GMAC) {
       throw new ProtocolAdapterException(
           String.format(
-              "Unexpected type of security in header FW file: %d. Expected: %d.",
-              header.getSecurityTypeInt(), SECURITY_TYPE));
+              "Unexpected type of security in header FW file: %s. Expected: %s.",
+              header.getSecurityTypeEnum(), SecurityType.GMAC.name()));
+    }
+    if (header.getDeviceType() != DeviceType.GAS) {
+      throw new ProtocolAdapterException(
+          String.format(
+              "Unexpected type of device in header FW file: %s. Expected: %s.",
+              header.getDeviceType(), DeviceType.GAS.name()));
     }
     if (header.getSecurityLengthInt() != SECURITY_LENGTH) {
       throw new ProtocolAdapterException(
@@ -133,17 +151,23 @@ public class MacGenerationService {
               "Unexpected length of security in header FW file: %d. Expected: %d.",
               header.getSecurityLengthInt(), SECURITY_LENGTH));
     }
+    if (header.getActivationTypeEnum() != ActivationType.MASTER_INITIATED_ACTIVATION) {
+      throw new ProtocolAdapterException(
+          String.format(
+              "Unexpected type of activation in header FW file: %s. Expected: %s.",
+              header.getActivationTypeEnum(), ActivationType.MASTER_INITIATED_ACTIVATION));
+    }
   }
 
-  public byte[] createIV(final FirmwareImageData firmwareImageData) {
-    final FirmwareImageDataHeaderAddressField firmwareImageDataHeaderAddressField =
-        firmwareImageData.getHeader().getFirmwareImageDataHeaderAddressField();
+  public byte[] createIV(final FirmwareFile firmwareFile) {
+    final FirmwareFileHeaderAddressField firmwareFileHeaderAddressField =
+        firmwareFile.getHeader().getFirmwareFileHeaderAddressField();
     return ByteBuffer.allocate(12)
-        .put(firmwareImageDataHeaderAddressField.getMft())
-        .put(firmwareImageDataHeaderAddressField.getId())
-        .put(firmwareImageDataHeaderAddressField.getVersion())
-        .put(firmwareImageDataHeaderAddressField.getType())
-        .put(Arrays.reverse(firmwareImageData.getHeader().getFirmwareImageVersion()))
+        .put(firmwareFileHeaderAddressField.getManufacturerId())
+        .put(firmwareFileHeaderAddressField.getMbusDeviceSerialNumber())
+        .put(firmwareFileHeaderAddressField.getVersion())
+        .put(firmwareFileHeaderAddressField.getDeviceType())
+        .put(Arrays.reverse(firmwareFile.getHeader().getFirmwareImageVersion()))
         .array();
   }
 }

@@ -24,8 +24,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.imagedata.FirmwareImageData;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.imagedata.FirmwareImageDataTest;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.FirmwareFile;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.FirmwareFileTest;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
@@ -42,14 +42,14 @@ public class MacGenerationServiceTest {
   final String expectedMac = "b4375a6b43de6d2421628bba7d6ee0e6";
 
   private static byte[] byteArray;
-  private static final Long identificationNumber = Long.decode("0x40050010");
+  private static final int mbusDeviceSerialNumber = Integer.decode("0x40050010");
   private final String deviceIdentification = "G0035161000054016";
 
   @BeforeAll
   public static void init() throws IOException {
     final String filename = "integra-v00400011-snffffffff-newmods.bin";
     final InputStream resourceAsStream =
-        FirmwareImageDataTest.class.getClassLoader().getResourceAsStream(filename);
+        FirmwareFileTest.class.getClassLoader().getResourceAsStream(filename);
 
     final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
     int nRead;
@@ -70,10 +70,10 @@ public class MacGenerationServiceTest {
             eq(SecurityKeyType.G_METER_FIRMWARE_UPDATE_AUTHENTICATION)))
         .thenReturn(this.authenticationKey);
     // WHEN
-    final FirmwareImageData firmwareImageData = new FirmwareImageData(byteArray);
-    firmwareImageData.addIdentificationNumber(identificationNumber);
+    final FirmwareFile firmwareFile = new FirmwareFile(byteArray);
+    firmwareFile.setMbusDeviceSerialNumber(mbusDeviceSerialNumber);
     final byte[] calculatedMac =
-        this.macGenerationService.calculateMac(this.deviceIdentification, firmwareImageData);
+        this.macGenerationService.calculateMac(this.deviceIdentification, firmwareFile);
     // THEN
     assertThat(Hex.toHexString(calculatedMac)).isEqualTo(this.expectedMac);
   }
@@ -86,14 +86,14 @@ public class MacGenerationServiceTest {
             eq(SecurityKeyType.G_METER_FIRMWARE_UPDATE_AUTHENTICATION)))
         .thenReturn(null);
     // WHEN
-    final FirmwareImageData firmwareImageData = new FirmwareImageData(byteArray);
-    firmwareImageData.addIdentificationNumber(identificationNumber);
+    final FirmwareFile firmwareFile = new FirmwareFile(byteArray);
+    firmwareFile.setMbusDeviceSerialNumber(mbusDeviceSerialNumber);
     // THEN
     final Exception exception =
         assertThrows(
             ProtocolAdapterException.class,
             () -> {
-              this.macGenerationService.calculateMac(this.deviceIdentification, firmwareImageData);
+              this.macGenerationService.calculateMac(this.deviceIdentification, firmwareFile);
             });
     assertThat(exception.getMessage())
         .contains("No key of type G_METER_FIRMWARE_UPDATE_AUTHENTICATION found for device");
@@ -102,9 +102,9 @@ public class MacGenerationServiceTest {
   @Test
   public void testIV() throws IOException {
     // WHEN
-    final FirmwareImageData firmwareImageData = new FirmwareImageData(byteArray);
-    firmwareImageData.addIdentificationNumber(identificationNumber);
-    final byte[] iv = this.macGenerationService.createIV(firmwareImageData);
+    final FirmwareFile firmwareFile = new FirmwareFile(byteArray);
+    firmwareFile.setMbusDeviceSerialNumber(mbusDeviceSerialNumber);
+    final byte[] iv = this.macGenerationService.createIV(firmwareFile);
     // THEN
     assertThat(Hex.toHexString(iv)).isEqualTo(this.expectedIv);
   }
@@ -113,15 +113,23 @@ public class MacGenerationServiceTest {
   public void testInvalidFirmwareImageMagicNumber() throws IOException, ProtocolAdapterException {
     // WHEN
     final byte[] clonedByteArray = byteArray.clone();
-    clonedByteArray[0] = Hex.decode("52")[0];
+    clonedByteArray[0] = (byte) 0;
     this.assertException(clonedByteArray, "Unexpected FirmwareImageMagicNumber in header FW file");
+  }
+
+  @Test
+  public void testInvalidHeaderVersion() throws IOException, ProtocolAdapterException {
+    // WHEN
+    final byte[] clonedByteArray = byteArray.clone();
+    clonedByteArray[4] = (byte) 1;
+    this.assertException(clonedByteArray, "Unexpected HeaderVersion in header FW file");
   }
 
   @Test
   public void testInvalidHeaderLength() throws IOException, ProtocolAdapterException {
     // WHEN
     final byte[] clonedByteArray = byteArray.clone();
-    clonedByteArray[5] = Hex.decode("22")[0];
+    clonedByteArray[5] = (byte) 0;
     this.assertException(clonedByteArray, "Unexpected length of header in header FW file");
   }
 
@@ -129,7 +137,7 @@ public class MacGenerationServiceTest {
   public void testInvalidAddressLength() throws IOException, ProtocolAdapterException {
     // WHEN
     final byte[] clonedByteArray = byteArray.clone();
-    clonedByteArray[18] = Hex.decode("09")[0];
+    clonedByteArray[18] = (byte) 0;
     this.assertException(clonedByteArray, "Unexpected length of address in header FW file");
   }
 
@@ -137,7 +145,7 @@ public class MacGenerationServiceTest {
   public void testInvalidAddressType() throws IOException, ProtocolAdapterException {
     // WHEN
     final byte[] clonedByteArray = byteArray.clone();
-    clonedByteArray[19] = Hex.decode("02")[0];
+    clonedByteArray[19] = (byte) 0;
     this.assertException(clonedByteArray, "Unexpected type of address in header FW file");
   }
 
@@ -145,7 +153,7 @@ public class MacGenerationServiceTest {
   public void testInvalidSecurityType() throws IOException, ProtocolAdapterException {
     // WHEN
     final byte[] clonedByteArray = byteArray.clone();
-    clonedByteArray[17] = Hex.decode("01")[0];
+    clonedByteArray[17] = (byte) 0;
     this.assertException(clonedByteArray, "Unexpected type of security in header FW file");
   }
 
@@ -153,21 +161,37 @@ public class MacGenerationServiceTest {
   public void testInvalidSecurityLength() throws IOException, ProtocolAdapterException {
     // WHEN
     final byte[] clonedByteArray = byteArray.clone();
-    clonedByteArray[15] = Hex.decode("15")[0];
+    clonedByteArray[15] = (byte) 0;
     this.assertException(clonedByteArray, "Unexpected length of security in header FW file");
+  }
+
+  @Test
+  public void testInvalidActivationType() throws IOException, ProtocolAdapterException {
+    // WHEN
+    final byte[] clonedByteArray = byteArray.clone();
+    clonedByteArray[28] = (byte) 0;
+    this.assertException(clonedByteArray, "Unexpected type of activation in header FW file");
+  }
+
+  @Test
+  public void testInvalidDeviceType() throws IOException, ProtocolAdapterException {
+    // WHEN
+    final byte[] clonedByteArray = byteArray.clone();
+    clonedByteArray[27] = (byte) 0;
+    this.assertException(clonedByteArray, "Unexpected type of device in header FW file");
   }
 
   private void assertException(final byte[] clonedByteArray, final String message) {
     // WHEN
-    final FirmwareImageData firmwareImageData = new FirmwareImageData(clonedByteArray);
-    log.info(firmwareImageData.getHeader().toString());
-    firmwareImageData.addIdentificationNumber(identificationNumber);
+    final FirmwareFile firmwareFile = new FirmwareFile(clonedByteArray);
+    log.info(firmwareFile.getHeader().toString());
+    firmwareFile.setMbusDeviceSerialNumber(mbusDeviceSerialNumber);
     // THEN
     final Exception exception =
         assertThrows(
             ProtocolAdapterException.class,
             () -> {
-              this.macGenerationService.calculateMac(this.deviceIdentification, firmwareImageData);
+              this.macGenerationService.calculateMac(this.deviceIdentification, firmwareFile);
             });
     assertThat(exception.getMessage()).contains(message);
   }
