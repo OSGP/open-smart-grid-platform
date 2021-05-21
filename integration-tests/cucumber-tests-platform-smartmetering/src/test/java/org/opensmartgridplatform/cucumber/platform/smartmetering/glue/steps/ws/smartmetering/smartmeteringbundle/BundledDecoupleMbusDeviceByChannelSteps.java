@@ -37,9 +37,7 @@ public class BundledDecoupleMbusDeviceByChannelSteps extends BaseBundleSteps {
 
     final Response response = this.getNextBundleResponse();
 
-    assertThat(response)
-        .as("Not a valid response")
-        .isInstanceOf(DecoupleMbusDeviceByChannelResponse.class);
+    assertThat(response).isInstanceOf(DecoupleMbusDeviceByChannelResponse.class);
 
     assertThat(((DecoupleMbusDeviceByChannelResponse) response).getMbusDeviceIdentification())
         .as("MbusDeviceIdentification")
@@ -54,9 +52,7 @@ public class BundledDecoupleMbusDeviceByChannelSteps extends BaseBundleSteps {
 
     final Response response = this.getNextBundleResponse();
 
-    assertThat(response)
-        .as("Not a valid response")
-        .isInstanceOf(DecoupleMbusDeviceByChannelResponse.class);
+    assertThat(response).isInstanceOf(DecoupleMbusDeviceByChannelResponse.class);
 
     assertThat(((DecoupleMbusDeviceByChannelResponse) response).getMbusDeviceIdentification())
         .as("MbusDeviceIdentification")

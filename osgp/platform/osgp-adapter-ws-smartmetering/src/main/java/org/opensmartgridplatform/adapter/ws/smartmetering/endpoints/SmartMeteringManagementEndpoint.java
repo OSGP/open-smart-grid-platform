@@ -38,6 +38,11 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Find
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.FindMessageLogsResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetDevicesRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetDevicesResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetGsmDiagnosticAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetGsmDiagnosticAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetGsmDiagnosticRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetGsmDiagnosticResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.GetGsmDiagnosticResponseData;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.MessageLog;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.MessageLogPage;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.SetDeviceCommunicationSettingsAsyncRequest;
@@ -609,6 +614,83 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
       response.setSetDeviceLifecycleStatusByChannelResponseData(
           this.managementMapper.map(
               responseData.getMessageData(), SetDeviceLifecycleStatusByChannelResponseData.class));
+      response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+
+    } catch (final ConstraintViolationException e) {
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          ComponentType.WS_SMART_METERING,
+          new ValidationException(e.getConstraintViolations()));
+    } catch (final Exception e) {
+      this.handleException(e);
+    }
+    return response;
+  }
+
+  @PayloadRoot(localPart = "GetGsmDiagnosticRequest", namespace = NAMESPACE)
+  @ResponsePayload
+  public GetGsmDiagnosticAsyncResponse getGsmDiagnostic(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final GetGsmDiagnosticRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
+
+    final org.opensmartgridplatform.domain.core.valueobjects.smartmetering
+            .GetGsmDiagnosticRequestData
+        requestData =
+            this.managementMapper.map(
+                request.getGetGsmDiagnosticRequestData(),
+                org.opensmartgridplatform.domain.core.valueobjects.smartmetering
+                    .GetGsmDiagnosticRequestData.class);
+
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
+            .withOrganisationIdentification(organisationIdentification)
+            .withDeviceIdentification(request.getDeviceIdentification())
+            .withDeviceFunction(DeviceFunction.GET_GSM_DIAGNOSTIC)
+            .withMessageType(MessageType.GET_GSM_DIAGNOSTIC)
+            .withMessagePriority(messagePriority)
+            .withScheduleTime(scheduleTime)
+            .withBypassRetry(bypassRetry)
+            .build();
+
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, requestData);
+
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+
+    return this.managementMapper.map(asyncResponse, GetGsmDiagnosticAsyncResponse.class);
+  }
+
+  @PayloadRoot(localPart = "GetGsmDiagnosticAsyncRequest", namespace = NAMESPACE)
+  @ResponsePayload
+  public GetGsmDiagnosticResponse getGsmDiagnosticResponse(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final GetGsmDiagnosticAsyncRequest request)
+      throws OsgpException {
+
+    log.info(
+        "Get gsm diagnostic response for organisation: {} and device: {}.",
+        organisationIdentification,
+        request.getDeviceIdentification());
+
+    GetGsmDiagnosticResponse response = null;
+    try {
+
+      response = new GetGsmDiagnosticResponse();
+
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+
+      this.throwExceptionIfResultNotOk(responseData, "Get gsm diagnostic");
+
+      response.setGetGsmDiagnosticResponseData(
+          this.managementMapper.map(
+              responseData.getMessageData(), GetGsmDiagnosticResponseData.class));
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
 
     } catch (final ConstraintViolationException e) {

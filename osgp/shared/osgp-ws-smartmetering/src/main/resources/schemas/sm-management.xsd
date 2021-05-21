@@ -655,4 +655,224 @@
     </xsd:complexContent>
   </xsd:complexType>
 
+  <xsd:complexType name="GetGsmDiagnosticRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Query"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="GetGsmDiagnosticRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
+        <xsd:element name="GetGsmDiagnosticRequestData"
+          type="tns:GetGsmDiagnosticRequestData"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="GetGsmDiagnosticAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="GetGsmDiagnosticAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="GetGsmDiagnosticResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType"/>
+        <xsd:element name="GetGsmDiagnosticResponseData"
+          type="tns:GetGsmDiagnosticResponseData"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="GetGsmDiagnosticResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
+        <xsd:sequence>
+          <xsd:element name="Operator" type="xsd:string"/>
+          <xsd:element name="ModemRegistrationStatus" type="tns:ModemRegistrationStatus"/>
+          <xsd:element name="CircuitSwitchedStatus" type="tns:CircuitSwitchedStatus"/>
+          <xsd:element name="PacketSwitchedStatus" type="tns:PacketSwitchedStatus"/>
+          <xsd:element name="CellInfo" type="tns:CellInfo"/>
+          <xsd:element name="AdjacentCells" type="tns:AdjacentCellInfo" maxOccurs="unbounded"/>
+          <xsd:element name="CaptureTime" type="xsd:dateTime"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="CellInfo">
+    <xsd:sequence>
+      <xsd:element name="CellId" type="xsd:unsignedInt"/>
+      <xsd:element name="LocationId" type="xsd:unsignedShort"/>
+      <xsd:element name="SignalQuality" type="tns:SignalQuality"/>
+      <xsd:element name="BitErrorRate" type="tns:BitErrorRate"/>
+      <xsd:element name="MobileCountryCode" type="xsd:unsignedShort"/>
+      <xsd:element name="MobileNetworkCode" type="xsd:unsignedShort"/>
+      <xsd:element name="ChannelNumber" type="xsd:unsignedInt"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="AdjacentCellInfo">
+    <xsd:sequence>
+      <xsd:element name="CellId" type="xsd:unsignedInt"/>
+      <xsd:element name="SignalQuality" type="tns:SignalQuality"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:simpleType name="ModemRegistrationStatus">
+    <xsd:restriction base="xsd:string">
+      <!-- 0 - Not registered -->
+      <xsd:enumeration value="NOT_REGISTERED"/>
+      <!-- 1 - Registered home network -->
+      <xsd:enumeration value="REGISTERED_HOME_NETWORK"/>
+      <!-- 2 - Not registered, but MT is currently search new operator to register to -->
+      <xsd:enumeration value="NOT_REGISTERED_CURRENT_SEARCH_OPERATOR_TO_REGISTER_TO"/>
+      <!-- 3 - Registration denied -->
+      <xsd:enumeration value="REGISTRATION_DENIED"/>
+      <!-- 4 - Unknown -->
+      <xsd:enumeration value="UNKNOWN"/>
+      <!-- 5 - Registered roaming -->
+      <xsd:enumeration value="REGISTERED_ROAMING"/>
+      <!-- 6-255 - Reserved -->
+      <xsd:enumeration value="RESERVED"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="CircuitSwitchedStatus">
+    <xsd:restriction base="xsd:string">
+      <!-- 0 - Inactive -->
+      <xsd:enumeration value="INACTIVE"/>
+      <!-- 1 - Incoming call -->
+      <xsd:enumeration value="INCOMING_CALL"/>
+      <!-- 2 - Active -->
+      <xsd:enumeration value="ACTIVE"/>
+      <!-- 3-255 - Reserved -->
+      <xsd:enumeration value="RESERVED"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="PacketSwitchedStatus">
+    <xsd:restriction base="xsd:string">
+      <!-- 0 - Inactive -->
+      <xsd:enumeration value="INACTIVE"/>
+      <!-- 1 - GPRS -->
+      <xsd:enumeration value="GPRS"/>
+      <!-- 2 - EDGE -->
+      <xsd:enumeration value="EDGE"/>
+      <!-- 3 - UMTS -->
+      <xsd:enumeration value="UMTS"/>
+      <!-- 4 - HSDPA -->
+      <xsd:enumeration value="HSDPA"/>
+      <!-- 5 - LTE -->
+      <xsd:enumeration value="LTE"/>
+      <!-- 6 - CDMA -->
+      <xsd:enumeration value="CDMA"/>
+      <!-- 7 - LTE Cat M1 -->
+      <xsd:enumeration value="LTE_CAT_M_18"/>
+      <!-- 8 - LTE NB-IoT -->
+      <xsd:enumeration value="LTE_NB_IOT"/>
+      <!-- 9-255 - Reserved -->
+      <xsd:enumeration value="RESERVED"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="SignalQuality">
+    <xsd:restriction base="xsd:string">
+      <!-- 0 - -113 dBm or less -->
+      <xsd:enumeration value="MINUS_113_DBM_OR_LESS"/>
+      <!-- 1 - -111 dBm -->
+      <xsd:enumeration value="MINUS_111_DBM"/>
+      <!-- 2 - -109 dBm -->
+      <xsd:enumeration value="MINUS_109_DBM"/>
+      <!-- 3 - -107 dBm -->
+      <xsd:enumeration value="MINUS_107_DBM"/>
+      <!-- 4 - -105 dBm -->
+      <xsd:enumeration value="MINUS_105_DBM"/>
+      <!-- 5 - -103 dBm -->
+      <xsd:enumeration value="MINUS_103_DBM"/>
+      <!-- 6 - -101 dBm -->
+      <xsd:enumeration value="MINUS_101_DBM"/>
+      <!-- 7 - -99 dBm -->
+      <xsd:enumeration value="MINUS_99_DBM"/>
+      <!-- 8 - -97 dBm -->
+      <xsd:enumeration value="MINUS_97_DBM"/>
+      <!-- 9 - -95 dBm -->
+      <xsd:enumeration value="MINUS_95_DBM"/>
+      <!-- 10 - -93 dBm -->
+      <xsd:enumeration value="MINUS_93_DBM"/>
+      <!-- 11 - -91 dBm -->
+      <xsd:enumeration value="MINUS_91_DBM"/>
+      <!-- 12 - -89 dBm -->
+      <xsd:enumeration value="MINUS_89_DBM"/>
+      <!-- 13 - -87 dBm -->
+      <xsd:enumeration value="MINUS_87_DBM"/>
+      <!-- 14 - -85 dBm -->
+      <xsd:enumeration value="MINUS_85_DBM"/>
+      <!-- 15 - -83 dBm -->
+      <xsd:enumeration value="MINUS_83_DBM"/>
+      <!-- 16 - -81 dBm -->
+      <xsd:enumeration value="MINUS_81_DBM"/>
+      <!-- 17 - -79 dBm -->
+      <xsd:enumeration value="MINUS_79_DBM"/>
+      <!-- 18 - -77 dBm -->
+      <xsd:enumeration value="MINUS_77_DBM"/>
+      <!-- 19 - -75 dBm -->
+      <xsd:enumeration value="MINUS_75_DBM"/>
+      <!-- 20 - -73 dBm -->
+      <xsd:enumeration value="MINUS_73_DBM"/>
+      <!-- 21 - -71 dBm -->
+      <xsd:enumeration value="MINUS_71_DBM"/>
+      <!-- 22 - -69 dBm -->
+      <xsd:enumeration value="MINUS_69_DBM"/>
+      <!-- 23 - -67 dBm -->
+      <xsd:enumeration value="MINUS_67_DBM"/>
+      <!-- 24 - -65 dBm -->
+      <xsd:enumeration value="MINUS_65_DBM"/>
+      <!-- 25 - -63 dBm -->
+      <xsd:enumeration value="MINUS_63_DBM"/>
+      <!-- 26 - -61 dBm -->
+      <xsd:enumeration value="MINUS_61_DBM"/>
+      <!-- 27 - -59 dBm -->
+      <xsd:enumeration value="MINUS_59_DBM"/>
+      <!-- 28 - -57 dBm -->
+      <xsd:enumeration value="MINUS_57_DBM"/>
+      <!-- 29 - -55 dBm -->
+      <xsd:enumeration value="MINUS_55_DBM"/>
+      <!-- 30 - -53 dBm -->
+      <xsd:enumeration value="MINUS_53_DBM"/>
+      <!-- 31 - -51 dBm or greater -->
+      <xsd:enumeration value="MINUS_51_DBM_OR_GREATER"/>
+      <!-- 99 - not known or not detectable -->
+      <xsd:enumeration value="NOT_KNOWN_OR_NOT_DETECTABLE"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="BitErrorRate">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="RXQUAL_0"/>
+      <xsd:enumeration value="RXQUAL_1"/>
+      <xsd:enumeration value="RXQUAL_2"/>
+      <xsd:enumeration value="RXQUAL_3"/>
+      <xsd:enumeration value="RXQUAL_4"/>
+      <xsd:enumeration value="RXQUAL_5"/>
+      <xsd:enumeration value="RXQUAL_6"/>
+      <xsd:enumeration value="RXQUAL_7"/>
+      <!-- 99 - not known or not detectable -->
+      <xsd:enumeration value="NOT_KNOWN_OR_NOT_DETECTABLE"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
 </xsd:schema>

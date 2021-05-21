@@ -46,11 +46,7 @@ public class BundledGetActualPowerQualitySteps extends BaseBundleSteps {
 
     final Response response = this.getNextBundleResponse();
 
-    assertThat(response)
-        .as(
-            "Not a valid response, expected ActualPowerQualityResponse but is :"
-                + response.getClass().getSimpleName())
-        .isInstanceOf(ActualPowerQualityResponse.class);
+    assertThat(response).isInstanceOf(ActualPowerQualityResponse.class);
 
     final ActualPowerQualityResponse actualPowerQualityResponse =
         (ActualPowerQualityResponse) response;

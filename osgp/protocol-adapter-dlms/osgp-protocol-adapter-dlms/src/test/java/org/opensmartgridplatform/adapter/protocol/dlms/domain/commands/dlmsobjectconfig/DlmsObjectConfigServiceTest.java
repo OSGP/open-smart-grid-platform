@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Fail.fail;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -28,7 +29,9 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.CommunicationMethod;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsClock;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsGsmDiagnostic;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsProfile;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsRegister;
@@ -39,6 +42,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -89,6 +93,10 @@ public class DlmsObjectConfigServiceTest {
           ProfileCaptureTime.HOUR,
           Medium.COMBINED);
 
+  private final DlmsGsmDiagnostic gsmDiagnostic =
+      new DlmsGsmDiagnostic(
+          DlmsObjectType.GSM_DIAGNOSTIC, "0.1.25.6.0.255", CommunicationMethod.CDMA);
+
   private final DlmsHelper dlmsHelper = new DlmsHelper();
 
   @Mock private DlmsObjectConfig config422;
@@ -120,6 +128,10 @@ public class DlmsObjectConfigServiceTest {
     when(this.config50.findObject(DlmsObjectType.DAILY_LOAD_PROFILE, Medium.GAS))
         .thenReturn(Optional.of(this.profileCombined));
 
+    when(this.config50.findObjectForCommunicationMethod(
+            DlmsObjectType.GSM_DIAGNOSTIC, CommunicationMethod.CDMA))
+        .thenReturn(Optional.of(this.gsmDiagnostic));
+
     final List<DlmsObjectConfig> configs = Arrays.asList(this.config422, this.config50);
 
     this.service = new DlmsObjectConfigService(this.dlmsHelper, configs);
@@ -130,6 +142,8 @@ public class DlmsObjectConfigServiceTest {
     this.device422_noSelectiveAccess.setSelectiveAccessSupported(false);
     this.device51.setProtocol(Protocol.SMR_5_1);
     this.device51.setSelectiveAccessSupported(true);
+    this.device51.setCommunicationMethod("CDMA");
+    this.device51.setDeviceIdentification("5151515151");
   }
 
   @Test
@@ -309,6 +323,34 @@ public class DlmsObjectConfigServiceTest {
         attributeAddressForProfile.get().getAttributeAddress(), expectedAddress);
     assertThat(attributeAddressForProfile.get().getSelectedObjects())
         .isEqualTo(this.captureObjectsCombined);
+  }
+
+  @Test
+  public void testFindDlmsObjectForCommunicationMethod() throws ProtocolAdapterException {
+    // CALL
+    final DlmsObject object =
+        this.service.findDlmsObjectForCommunicationMethod(
+            this.device51, DlmsObjectType.GSM_DIAGNOSTIC);
+
+    // VERIFY
+    assertThat(object.getClassId()).isEqualTo(47);
+    assertThat(object.getObisCodeAsString()).isEqualTo("0.1.25.6.0.255");
+  }
+
+  @Test
+  public void testNoMatchingDlmsObjectForCommunicationMethod() throws ProtocolAdapterException {
+    // SETUP
+    final DlmsDevice deviceGprs = new DlmsDevice();
+    deviceGprs.setDeviceIdentification("5151515151");
+    deviceGprs.setCommunicationMethod("GPRS");
+
+    // CALL
+    try {
+      this.service.findDlmsObjectForCommunicationMethod(deviceGprs, DlmsObjectType.GSM_DIAGNOSTIC);
+      fail("Expected ProtocolAdapterException");
+    } catch (final ProtocolAdapterException e) {
+      assertThat(e.getMessage()).contains("Did not find GSM_DIAGNOSTIC");
+    }
   }
 
   private ObisCode getObisCodeWithChannel(final String obisAsString, final Integer channel) {
