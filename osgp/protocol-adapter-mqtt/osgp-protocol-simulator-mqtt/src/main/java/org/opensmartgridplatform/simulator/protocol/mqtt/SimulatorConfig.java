@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.simulator.protocol.mqtt;
 
 import java.io.IOException;
+import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,14 +21,24 @@ public class SimulatorConfig {
 
   private static final Logger LOG = LoggerFactory.getLogger(SimulatorConfig.class);
 
+  @Value("${mqtt.simulator.ssl.enabled}")
+  private boolean sslEnabled;
+
+  @Bean
+  public Boolean isSslEnabled() {
+    return this.sslEnabled;
+  }
+
   @Bean
   public Simulator simulator(
       @Value("${mqtt.simulator.spec}") final String spec,
-      @Value("${mqtt.simulator.startClient}") final boolean startClient)
+      @Value("${mqtt.simulator.startClient}") final boolean startClient,
+      final Properties brokerProperties,
+      final Properties clientProperties)
       throws IOException {
     LOG.info("Start MQTT simulator with spec={}, startClient={}", spec, startClient);
     final Simulator app = new Simulator();
-    app.run(spec, startClient);
+    app.run(spec, startClient, brokerProperties, clientProperties);
     return app;
   }
 }

@@ -24,9 +24,11 @@ public class Simulator {
 
   public static void main(final String[] args) throws IOException {
     final String spec = getFirstArgOrNull(args);
+    final Properties sslServerProperties = new Properties();
+    final Properties sslClientProperties = new Properties();
     final boolean startClient = getSecondArgOrTrue(args);
     final Simulator app = new Simulator();
-    app.run(spec, startClient);
+    app.run(spec, startClient, sslServerProperties, sslClientProperties);
   }
 
   private static String getFirstArgOrNull(final String[] args) {
@@ -44,12 +46,22 @@ public class Simulator {
     return Boolean.parseBoolean(args[1]);
   }
 
-  public void run(final String specJsonPath, final boolean startClient) throws IOException {
-    this.run(this.getSimulatorSpec(specJsonPath), startClient);
+  public void run(
+      final String specJsonPath,
+      final boolean startClient,
+      final Properties brokerProperties,
+      final Properties clientProperties)
+      throws IOException {
+    this.run(this.getSimulatorSpec(specJsonPath), startClient, brokerProperties, clientProperties);
   }
 
-  public void run(final SimulatorSpec simulatorSpec, final boolean startClient) throws IOException {
-    final Broker broker = new Broker(this.getConfig(simulatorSpec));
+  public void run(
+      final SimulatorSpec simulatorSpec,
+      final boolean startClient,
+      final Properties brokerProperties,
+      final Properties clientProperties)
+      throws IOException {
+    final Broker broker = new Broker(new MemoryConfig(brokerProperties));
     broker.start();
     try {
       Thread.sleep(simulatorSpec.getStartupPauseMillis());
@@ -59,16 +71,9 @@ public class Simulator {
     }
     if (startClient) {
       final SimulatorSpecPublishingClient publishingClient =
-          new SimulatorSpecPublishingClient(simulatorSpec);
+          new SimulatorSpecPublishingClient(simulatorSpec, clientProperties);
       publishingClient.start();
     }
-  }
-
-  private MemoryConfig getConfig(final SimulatorSpec simulatorSpec) {
-    final MemoryConfig memoryConfig = new MemoryConfig(new Properties());
-    memoryConfig.setProperty("host", simulatorSpec.getBrokerHost());
-    memoryConfig.setProperty("port", String.valueOf(simulatorSpec.getBrokerPort()));
-    return memoryConfig;
   }
 
   private SimulatorSpec getSimulatorSpec(final String jsonPath) throws IOException {

@@ -8,10 +8,16 @@
  */
 package org.opensmartgridplatform.simulator.protocol.mqtt;
 
+import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAck;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.security.KeyStore;
+import java.util.Properties;
 import java.util.UUID;
+import javax.net.ssl.TrustManagerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,30 +33,73 @@ public abstract class Client extends Thread {
   private final UUID uuid;
   private final String host;
   private final int port;
+  private final Properties clientProperties;
   private volatile boolean running;
   private Mqtt3BlockingClient mqtt3BlockingClient;
 
-  public Client(final String host, final int port) {
+  protected Client(final String host, final int port, final Properties clientProperties) {
     this.host = host;
     this.port = port;
+    this.clientProperties = clientProperties;
     this.uuid = UUID.randomUUID();
   }
 
   @Override
   public void run() {
     this.running = true;
-    this.mqtt3BlockingClient =
-        Mqtt3Client.builder()
-            .identifier(this.uuid.toString())
-            .serverHost(this.host)
-            .serverPort(this.port)
-            .buildBlocking();
-    final Mqtt3ConnAck ack = this.mqtt3BlockingClient.connect();
-    LOG.info(
-        String.format("Client %s received Ack %s", this.getClass().getSimpleName(), ack.getType()));
-    this.addShutdownHook();
-    LOG.info(String.format("Client %s started", this.getClass().getSimpleName()));
-    this.onConnect(this.mqtt3BlockingClient);
+
+    try {
+      this.mqtt3BlockingClient =
+          Mqtt3Client.builder()
+              .identifier(this.uuid.toString())
+              .serverHost(this.host)
+              .serverPort(this.port)
+              .sslConfig(getSslConfig(this.clientProperties))
+              .buildBlocking();
+
+      final Mqtt3ConnAck ack = this.mqtt3BlockingClient.connect();
+      LOG.info("Client {} received Ack {}", this.getClass().getSimpleName(), ack.getType());
+      this.addShutdownHook();
+      LOG.info("Client {} started", this.getClass().getSimpleName());
+      this.onConnect(this.mqtt3BlockingClient);
+    } catch (final Exception ex) {
+      LOG.error("Exception while starting client.", ex);
+      this.stopClient();
+    }
+  }
+
+  private static MqttClientSslConfig getSslConfig(final Properties clientProperties)
+      throws Exception {
+    if (clientProperties == null || clientProperties.isEmpty()) {
+      return null;
+    }
+    return MqttClientSslConfig.builder()
+        .trustManagerFactory(getTruststoreFactory(clientProperties))
+        .build();
+  }
+
+  private static TrustManagerFactory getTruststoreFactory(final Properties sslClientProperties)
+      throws Exception {
+
+    final String trustStoreType =
+        sslClientProperties.getProperty(ClientConstants.SSL_TRUSTSTORE_TYPE_PROPERTY_NAME);
+    final String trustStorePath =
+        sslClientProperties.getProperty(ClientConstants.SSL_TRUSTSTORE_PATH_PROPERTY_NAME);
+    final String trustStorePW =
+        sslClientProperties.getProperty(ClientConstants.SSL_TRUSTSTORE_PASSWORD_PROPERTY_NAME);
+
+    final KeyStore trustStore = KeyStore.getInstance(trustStoreType);
+    InputStream in = ClassLoader.getSystemResourceAsStream(trustStorePath);
+    if (in == null) {
+      in = new FileInputStream(trustStorePath);
+    }
+    trustStore.load(in, trustStorePW.toCharArray());
+
+    final TrustManagerFactory tmf =
+        TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+    tmf.init(trustStore);
+
+    return tmf;
   }
 
   /** Implementations must override this to define behavior after connecting */
@@ -61,15 +110,14 @@ public abstract class Client extends Thread {
   }
 
   private void addShutdownHook() {
-    Runtime.getRuntime()
-        .addShutdownHook(
-            new Thread(
-                () -> {
-                  LOG.info(String.format("Stopping client %s", this.getClass().getSimpleName()));
-                  this.disconnect();
-                  this.running = false;
-                  LOG.info(String.format("Client %s stopped", this.getClass().getSimpleName()));
-                }));
+    Runtime.getRuntime().addShutdownHook(new Thread(this::stopClient));
+  }
+
+  private void stopClient() {
+    LOG.info("Stopping client {}", this.getClass().getSimpleName());
+    this.disconnect();
+    this.running = false;
+    LOG.info("Client {} stopped", this.getClass().getSimpleName());
   }
 
   private void disconnect() {
@@ -78,6 +126,8 @@ public abstract class Client extends Thread {
     } catch (final InterruptedException e) {
       LOG.error("Interrupted during sleep", e);
     }
-    this.mqtt3BlockingClient.disconnect();
+    if (this.mqtt3BlockingClient != null) {
+      this.mqtt3BlockingClient.disconnect();
+    }
   }
 }
