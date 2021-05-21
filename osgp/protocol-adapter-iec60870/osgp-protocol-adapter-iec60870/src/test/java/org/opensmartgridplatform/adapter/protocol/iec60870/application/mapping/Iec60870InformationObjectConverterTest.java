@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.application.mapping;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
+import java.util.TimeZone;
 import org.junit.jupiter.api.Test;
 import org.openmuc.j60870.ie.IeQuality;
 import org.openmuc.j60870.ie.IeShortFloat;
@@ -27,7 +28,7 @@ import org.opensmartgridplatform.dto.da.measurements.elements.TimestampMeasureme
 
 public class Iec60870InformationObjectConverterTest {
 
-  private final Iec60870Mapper mapper = new Iec60870Mapper();
+  private final Iec60870Mapper mapper = new Iec60870Mapper(TimeZone.getTimeZone("Europe/Paris"));
 
   private static final long TIMESTAMP_NOW = System.currentTimeMillis();
 
@@ -53,6 +54,7 @@ public class Iec60870InformationObjectConverterTest {
   @Test
   public void testConvertInformationObjectToMeasurementGroupDto() {
     // Arrange
+    this.mapper.initialize();
     final MeasurementGroupDto expected = MEASUREMENT_GROUP_DTO;
     final InformationObject source = INFORMATION_OBJECT;
 

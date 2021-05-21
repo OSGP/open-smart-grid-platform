@@ -13,6 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.TimeZone;
 import org.junit.jupiter.api.Test;
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
@@ -31,7 +32,7 @@ import org.opensmartgridplatform.dto.da.measurements.elements.FloatMeasurementEl
 import org.opensmartgridplatform.dto.da.measurements.elements.TimestampMeasurementElementDto;
 
 public class Iec60870AsduConverterTest {
-  private final Iec60870Mapper mapper = new Iec60870Mapper();
+  private final Iec60870Mapper mapper = new Iec60870Mapper(TimeZone.getTimeZone("Europe/Paris"));
 
   private static final long TIMESTAMP_NOW =
       ZonedDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli();
@@ -73,6 +74,7 @@ public class Iec60870AsduConverterTest {
   @Test
   public void shouldConvertAsduToMeasurementReportDto() {
     // Arrange
+    this.mapper.initialize();
     final MeasurementReportDto expected = MEASUREMENT_REPORT_DTO;
     final ASdu source = ASDU;
 

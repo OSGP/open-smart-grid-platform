@@ -11,7 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asdu
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import ma.glasnost.orika.MapperFacade;
+import java.util.TimeZone;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -53,11 +53,12 @@ public class MeasurementAsduHandlerTest {
 
   @Mock private LoggingService loggingService;
 
-  private final MapperFacade mapper = new Iec60870Mapper();
+  private final Iec60870Mapper mapper = new Iec60870Mapper(TimeZone.getTimeZone("Europe/Paris"));
 
   @Test
   void shouldSendMeasurementReportWhenHandlingAsdu() throws Exception {
     // Arrange
+    this.mapper.initialize();
     final ASdu asdu = AsduFactory.ofType(ASduType.M_ME_TF_1);
     final MeasurementReportDto measurementReportDto =
         this.mapper.map(asdu, MeasurementReportDto.class);
