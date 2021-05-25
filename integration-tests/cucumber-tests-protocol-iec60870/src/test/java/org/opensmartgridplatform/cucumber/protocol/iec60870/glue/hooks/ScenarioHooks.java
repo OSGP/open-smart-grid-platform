@@ -36,7 +36,7 @@ public class ScenarioHooks {
   @Before("@Iec60870MockServerLightMeasurement")
   public void initMockServerLightMeasurement() {
     ScenarioContext.current().put(PROFILE, Iec60870ProfileType.LIGHT_MEASUREMENT_DEVICE);
-    final Iec60870AsduFactory factory = new LightMeasurementDeviceAsduFactory();
+    final Iec60870AsduFactory factory = new LightMeasurementDeviceAsduFactory("UTC");
     factory.setIec60870Server(this.mockServer.getRtuSimulator());
     this.mockServer.addIec60870ASduHandler(
         ASduType.C_IC_NA_1, new Iec60870InterrogationCommandAsduHandler(factory));
