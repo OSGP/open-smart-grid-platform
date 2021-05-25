@@ -45,13 +45,17 @@ public class LightMeasurementDeviceAsduFactory implements Iec60870AsduFactory {
   @Value("${general_interrogation_element_values}")
   private final boolean[] iev = new boolean[0];
 
-  @Value("${job.asdu.generator.time.zone}")
-  private final String timeZoneString = null;
+  private final String timeZoneString;
 
   @Autowired private Iec60870Server iec60870Server;
 
   private final InformationElementFactory informationElementFactory =
       new InformationElementFactory();
+
+  public LightMeasurementDeviceAsduFactory(
+      @Value("${job.asdu.generator.time.zone}") final String timeZoneString) {
+    this.timeZoneString = timeZoneString;
+  }
 
   @PostConstruct
   @Override
