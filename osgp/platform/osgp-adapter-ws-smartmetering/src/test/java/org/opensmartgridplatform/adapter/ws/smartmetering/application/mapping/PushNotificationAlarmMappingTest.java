@@ -67,7 +67,7 @@ class PushNotificationAlarmMappingTest {
     assertThat(mapped).isNotNull();
     assertThat(mapped.getDeviceIdentification()).isNotNull();
     assertThat(mapped.getAlarmRegister()).isNotNull();
-    assertThat(mapped.getAlarmRegister().getAlarmTypes()).isNotNull().isNotEmpty();
+    assertThat(mapped.getAlarmRegister().getAlarmTypes()).isNotEmpty();
     assertThat(mapped.getAlarmRegister().getAlarmTypes().get(0)).isNotNull();
 
     assertThat(mapped.getDeviceIdentification()).isEqualTo(DEVICE_ID);

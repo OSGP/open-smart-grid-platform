@@ -119,15 +119,12 @@ class GetPeriodicMeterReadsCommandExecutorTest {
 
   @Test
   void testBundle() throws ProtocolAdapterException {
-    // SETUP
     final PeriodicMeterReadsRequestDataDto request =
         new PeriodicMeterReadsRequestDataDto(
             PeriodTypeDto.DAILY, new Date(this.from), new Date(this.to));
 
-    // CALL
     final PeriodicMeterReadsRequestDto dto = this.executor.fromBundleRequestInput(request);
 
-    // VERIFY
     assertThat(dto).isNotNull();
   }
 
@@ -174,12 +171,12 @@ class GetPeriodicMeterReadsCommandExecutorTest {
     final AttributeAddress attributeAddress = this.createAttributeAddress(dlmsProfile);
 
     when(this.dlmsObjectConfigService.findAttributeAddressForProfile(
-            eq(this.device),
-            eq(DlmsObjectType.DAILY_LOAD_PROFILE),
-            eq(0),
-            eq(this.fromDateTime),
-            eq(this.toDateTime),
-            eq(Medium.ELECTRICITY)))
+            this.device,
+            DlmsObjectType.DAILY_LOAD_PROFILE,
+            0,
+            this.fromDateTime,
+            this.toDateTime,
+            Medium.ELECTRICITY))
         .thenReturn(Optional.of(attributeAddressForProfile));
 
     final DlmsObject intervalTime = mock(DlmsObject.class);
@@ -224,10 +221,10 @@ class GetPeriodicMeterReadsCommandExecutorTest {
     when(this.dlmsHelper.readDataObject(result0, PERIODIC_E_METER_READS)).thenReturn(resultData);
 
     when(this.dlmsHelper.getAndCheck(
-            eq(this.connectionManager),
-            eq(this.device),
-            eq(expectedDescription),
-            eq(attributeAddressForProfile.getAttributeAddress())))
+            this.connectionManager,
+            this.device,
+            expectedDescription,
+            attributeAddressForProfile.getAttributeAddress()))
         .thenReturn(Collections.singletonList(getResult));
     when(this.dlmsHelper.getAndCheck(
             this.connectionManager, this.device, expectedDescription, attributeAddress))
