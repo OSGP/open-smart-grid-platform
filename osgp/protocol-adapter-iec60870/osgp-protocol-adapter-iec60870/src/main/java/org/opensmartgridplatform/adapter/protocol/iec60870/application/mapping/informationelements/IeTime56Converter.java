@@ -35,6 +35,14 @@ public class IeTime56Converter extends CustomConverter<IeTime56, TimestampMeasur
 
   @Override
   public boolean equals(final Object that) {
+    if (this == that) {
+      return true;
+    }
+
+    if (!(that instanceof IeTime56Converter)) {
+      return false;
+    }
+
     return Objects.equals(this.timeZone, ((IeTime56Converter) that).timeZone);
   }
 
