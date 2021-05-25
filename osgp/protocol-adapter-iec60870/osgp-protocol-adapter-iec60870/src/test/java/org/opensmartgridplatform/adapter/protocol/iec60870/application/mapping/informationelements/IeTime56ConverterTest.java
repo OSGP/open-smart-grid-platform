@@ -19,15 +19,16 @@ import org.opensmartgridplatform.dto.da.measurements.elements.TimestampMeasureme
 
 public class IeTime56ConverterTest {
 
-  private final IeTime56Converter converter =
-      new IeTime56Converter(TimeZone.getTimeZone("Europe/Paris"));
+  private final TimeZone timeZone = TimeZone.getTimeZone("UTC");
+
+  private final IeTime56Converter converter = new IeTime56Converter(this.timeZone);
 
   @Test
   public void shouldConvertIeTime56ToTimestamp() {
     // Arrange
     final long timestamp = ZonedDateTime.now(ZoneOffset.UTC).toInstant().toEpochMilli();
     final TimestampMeasurementElementDto expected = new TimestampMeasurementElementDto(timestamp);
-    final IeTime56 source = new IeTime56(timestamp);
+    final IeTime56 source = new IeTime56(timestamp, this.timeZone, false);
 
     // Act
     final TimestampMeasurementElementDto actual = this.converter.convert(source, null, null);
