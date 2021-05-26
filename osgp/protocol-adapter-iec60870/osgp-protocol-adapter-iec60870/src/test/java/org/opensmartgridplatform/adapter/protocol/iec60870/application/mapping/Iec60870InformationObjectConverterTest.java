@@ -55,7 +55,6 @@ public class Iec60870InformationObjectConverterTest {
   @Test
   public void testConvertInformationObjectToMeasurementGroupDto() {
     // Arrange
-    this.mapper.initialize();
     final MeasurementGroupDto expected = MEASUREMENT_GROUP_DTO;
     final InformationObject source = INFORMATION_OBJECT;
 

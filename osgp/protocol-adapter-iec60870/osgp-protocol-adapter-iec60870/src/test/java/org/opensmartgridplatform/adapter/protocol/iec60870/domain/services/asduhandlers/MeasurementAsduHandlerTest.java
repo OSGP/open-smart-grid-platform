@@ -58,7 +58,6 @@ public class MeasurementAsduHandlerTest {
   @Test
   void shouldSendMeasurementReportWhenHandlingAsdu() throws Exception {
     // Arrange
-    this.mapper.initialize();
     final ASdu asdu = AsduFactory.ofType(ASduType.M_ME_TF_1);
     final MeasurementReportDto measurementReportDto =
         this.mapper.map(asdu, MeasurementReportDto.class);

@@ -76,7 +76,6 @@ public class Iec60870AsduConverterTest {
   @Test
   public void shouldConvertAsduToMeasurementReportDto() {
     // Arrange
-    this.mapper.initialize();
     final MeasurementReportDto expected = MEASUREMENT_REPORT_DTO;
     final ASdu source = ASDU;
 

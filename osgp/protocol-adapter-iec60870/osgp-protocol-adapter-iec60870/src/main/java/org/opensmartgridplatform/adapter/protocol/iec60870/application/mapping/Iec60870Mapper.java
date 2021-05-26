@@ -9,7 +9,6 @@
 package org.opensmartgridplatform.adapter.protocol.iec60870.application.mapping;
 
 import java.util.TimeZone;
-import javax.annotation.PostConstruct;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.mapping.informationelements.IeQualityConverter;
@@ -23,18 +22,12 @@ public class Iec60870Mapper extends ConfigurableMapper {
 
   public Iec60870Mapper(final TimeZone timeZone) {
     super(false);
-
     this.timeZone = timeZone;
-  }
-
-  @PostConstruct
-  public void initialize() {
     this.init();
   }
 
   @Override
   protected void configure(final MapperFactory factory) {
-
     factory.getConverterFactory().registerConverter(new IeShortFloatConverter());
     factory.getConverterFactory().registerConverter(new IeQualityConverter());
     factory.getConverterFactory().registerConverter(new IeSinglePointWithQualityConverter());

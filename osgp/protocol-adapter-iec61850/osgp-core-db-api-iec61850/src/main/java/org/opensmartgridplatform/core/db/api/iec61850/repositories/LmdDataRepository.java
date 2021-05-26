@@ -18,8 +18,6 @@ import org.springframework.stereotype.Repository;
 public interface LmdDataRepository extends JpaRepository<LightMeasurementDevice, Long> {
   LightMeasurementDevice findByDeviceIdentification(String deviceIdentification);
 
-  List<LightMeasurementDevice> findByDigitalInputBetween(short start, short end);
-
   List<LightMeasurementDevice> findByProtocolInfoAndDigitalInputBetween(
       ProtocolInfo protocolInfo, short start, short end);
 }
