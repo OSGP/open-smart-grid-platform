@@ -81,7 +81,7 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
     final MessageMetadata messageMetadata =
         new Builder().withMessagePriority(MessagePriorityEnum.HIGH.getPriority()).build();
 
-    log.info("Sending push notification alarm to OSGP with correlation ID: {}", correlationId);
+    log.info("Sending push notification alarm to GXF with correlation ID: {}", correlationId);
     this.osgpRequestMessageSender.send(
         requestMessage, MessageType.PUSH_NOTIFICATION_ALARM.name(), messageMetadata);
   }
