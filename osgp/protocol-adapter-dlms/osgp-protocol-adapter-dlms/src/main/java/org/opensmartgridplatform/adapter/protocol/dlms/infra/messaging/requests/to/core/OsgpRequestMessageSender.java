@@ -31,7 +31,7 @@ public class OsgpRequestMessageSender {
       final RequestMessage requestMessage,
       final String messageType,
       final MessageMetadata messageMetadata) {
-    log.info("Sending request message to OSGP.");
+    log.info("Sending request message to GXF.");
 
     this.jmsTemplate.send(
         (final Session session) -> {
