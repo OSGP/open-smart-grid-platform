@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.iec60870.integrationtests.con
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
+import java.util.TimeZone;
 import ma.glasnost.orika.MapperFacade;
 import org.openmuc.j60870.Connection;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.mapping.Iec60870Mapper;
@@ -113,7 +114,7 @@ public class TestConfiguration {
 
   @Bean
   public MapperFacade iec60870Mapper() {
-    return new Iec60870Mapper();
+    return new Iec60870Mapper(TimeZone.getTimeZone("UTC"));
   }
 
   @Bean
