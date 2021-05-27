@@ -100,7 +100,7 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
         new RequestMessage(
             correlationId, "no-organisation", deviceIdentification, ipAddress, pushNotificationSms);
 
-    log.info("Sending push notification sms wakeup to OSGP with correlation ID: {}", correlationId);
+    log.info("Sending push notification sms wakeup to GXF with correlation ID: {}", correlationId);
     this.osgpRequestMessageSender.send(
         requestMessage, MessageType.PUSH_NOTIFICATION_SMS.name(), null);
   }
