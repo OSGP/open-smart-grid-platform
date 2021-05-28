@@ -1250,11 +1250,23 @@
   <xsd:element name="GetKeysRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element type="tns:SecretType" name="secretType"
-          minOccurs="1" maxOccurs="4" />
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+        <xsd:element name="GetKeysData"
+          type="tns:GetKeysRequestData" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
+
+  <xsd:complexType name="GetKeysRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Query">
+        <xsd:sequence>
+          <xsd:element type="tns:SecretType" name="secretType"
+            minOccurs="1" maxOccurs="4" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
 
   <xsd:element name="GetKeysAsyncRequest">
     <xsd:complexType>

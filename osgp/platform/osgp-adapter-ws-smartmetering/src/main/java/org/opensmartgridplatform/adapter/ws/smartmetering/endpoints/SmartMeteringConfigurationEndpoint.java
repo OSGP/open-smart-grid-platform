@@ -46,6 +46,11 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.G
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionGasResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysResponseData;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusByChannelAsyncRequest;
@@ -116,6 +121,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.Encrypti
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersionGasResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetFirmwareVersionQuery;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetKeysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
@@ -1580,6 +1586,74 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
       if (responseData.getMessageData() instanceof String) {
         response.setDescription((String) responseData.getMessageData());
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
+    }
+    return response;
+  }
+
+  @PayloadRoot(localPart = "GetKeysRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public GetKeysAsyncResponse getKeys(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final GetKeysRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
+
+    final GetKeysRequestData dataRequest =
+        this.configurationMapper.map(request.getGetKeysData(), GetKeysRequestData.class);
+
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
+            .withOrganisationIdentification(organisationIdentification)
+            .withDeviceIdentification(request.getDeviceIdentification())
+            .withDeviceFunction(DeviceFunction.GET_KEYS)
+            .withMessageType(MessageType.GET_KEYS)
+            .withMessagePriority(messagePriority)
+            .withScheduleTime(scheduleTime)
+            .withBypassRetry(bypassRetry)
+            .build();
+
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, dataRequest);
+
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+
+    return this.configurationMapper.map(asyncResponse, GetKeysAsyncResponse.class);
+  }
+
+  @PayloadRoot(localPart = "GetKeysAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public GetKeysResponse getGetKeysResponse(@RequestPayload final GetKeysAsyncRequest request)
+      throws OsgpException {
+
+    GetKeysResponse response = null;
+    try {
+      response = new GetKeysResponse();
+
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+
+      this.throwExceptionIfResultNotOk(responseData, "Get keys");
+
+      response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+
+      if (responseData.getMessageData() != null) {
+        final List<GetKeysResponseData> target = response.getGetKeysResponseData();
+        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetKeysResponse
+            getKeysResponse =
+                (org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetKeysResponse)
+                    responseData.getMessageData();
+        target.addAll(
+            this.configurationMapper.mapAsList(
+                getKeysResponse.getKeys(), GetKeysResponseData.class));
+      } else {
+        log.info("Get keys response is null");
       }
     } catch (final Exception e) {
       this.handleException(e);
