@@ -42,11 +42,7 @@ public class BundledGetPowerQualityProfileDataSteps extends BaseBundleSteps {
 
     final Response response = this.getNextBundleResponse();
 
-    assertThat(response instanceof GetPowerQualityProfileResponse)
-        .as(
-            "Not a valid response, expected GetPowerQualityProfileResponse but is :"
-                + response.getClass().getSimpleName())
-        .isTrue();
+    assertThat(response).isInstanceOf(GetPowerQualityProfileResponse.class);
 
     final GetPowerQualityProfileResponse getPowerQualityProfileResponse =
         (GetPowerQualityProfileResponse) response;

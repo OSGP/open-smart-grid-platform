@@ -1,0 +1,48 @@
+/*
+ * Copyright 2021 Alliander N.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ */
+package org.opensmartgridplatform.dlms.interfaceclass.attribute;
+
+import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
+
+/** This class contains the attributes defined for IC GsmDiagnostic. */
+public enum GsmDiagnosticAttribute implements AttributeClass {
+  LOGICAL_NAME(1),
+  OPERATOR(2),
+  MODEM_REGISTRATION_STATUS(3),
+  CIRCUIT_SWITCHED_STATUS(4),
+  PACKET_SWITCHED_STATUS(5),
+  CELL_INFO(6),
+  ADJACENT_CELLS(7),
+  CAPTURE_TIME(8);
+
+  static final InterfaceClass INTERFACE_CLASS = InterfaceClass.GSM_DIAGNOSTIC;
+
+  private final int attributeId;
+
+  private GsmDiagnosticAttribute(final int attributeId) {
+    this.attributeId = attributeId;
+  }
+
+  @Override
+  public int attributeId() {
+    return this.attributeId;
+  }
+
+  @Override
+  public String attributeName() {
+    return this.name();
+  }
+
+  @Override
+  public InterfaceClass interfaceClass() {
+    return INTERFACE_CLASS;
+  }
+}

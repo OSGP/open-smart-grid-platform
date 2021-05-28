@@ -28,7 +28,7 @@ import org.springframework.ws.transport.http.HttpComponentsMessageSender;
  * urlendpoint or account values). These are in the junit test class mocked.
  */
 @Configuration
-public class JasperWirelessConfigTest {
+public class JasperWirelessTestConfig {
 
   // JMS Settings
   private static final String PROPERTY_NAME_CONTROLCENTER_SMS_URI = "jwcc.uri.sms";

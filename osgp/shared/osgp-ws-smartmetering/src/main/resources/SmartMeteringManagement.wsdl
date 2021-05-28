@@ -156,6 +156,24 @@
     </wsdl:part>
   </wsdl:message>
 
+  <wsdl:message name="GetGsmDiagnosticRequest">
+    <wsdl:part element="smman:GetGsmDiagnosticRequest" name="GetGsmDiagnosticRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetGsmDiagnosticAsyncResponse">
+    <wsdl:part element="smman:GetGsmDiagnosticAsyncResponse" name="GetGsmDiagnosticAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="GetGsmDiagnosticAsyncRequest">
+    <wsdl:part element="smman:GetGsmDiagnosticAsyncRequest" name="GetGsmDiagnosticAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetGsmDiagnosticResponse">
+    <wsdl:part element="smman:GetGsmDiagnosticResponse" name="GetGsmDiagnosticResponse">
+    </wsdl:part>
+  </wsdl:message>
+
   <wsdl:portType name="SmartMeteringManagementPort">
 
     <wsdl:operation name="FindEvents">
@@ -263,6 +281,20 @@
       </wsdl:input>
       <wsdl:output message="tns:SetDeviceLifecycleStatusByChannelResponse"
         name="SetDeviceLifecycleStatusByChannelResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetGsmDiagnostic">
+      <wsdl:input message="tns:GetGsmDiagnosticRequest" name="GetGsmDiagnosticRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:GetGsmDiagnosticAsyncResponse" name="GetGsmDiagnosticAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetGetGsmDiagnosticResponse">
+      <wsdl:input message="tns:GetGsmDiagnosticAsyncRequest" name="GetGsmDiagnosticAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:GetGsmDiagnosticResponse" name="GetGsmDiagnosticResponse">
       </wsdl:output>
     </wsdl:operation>
 
@@ -478,6 +510,38 @@
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="SetDeviceLifecycleStatusByChannelResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetGsmDiagnostic">
+      <soap:operation soapAction="" />
+      <wsdl:input name="GetGsmDiagnosticRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetGsmDiagnosticAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetGetGsmDiagnosticResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="GetGsmDiagnosticAsyncRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="GetGsmDiagnosticResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>

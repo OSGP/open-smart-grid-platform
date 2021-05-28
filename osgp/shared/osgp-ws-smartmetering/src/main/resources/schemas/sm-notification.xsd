@@ -81,6 +81,7 @@
       <xsd:enumeration value="SCAN_MBUS_CHANNELS" />
       <xsd:enumeration value="DECOUPLE_MBUS_DEVICE_BY_CHANNEL" />
       <xsd:enumeration value="SET_RANDOMISATION_SETTINGS" />
+      <xsd:enumeration value="GET_GSM_DIAGNOSTIC" />
       <xsd:enumeration value="SET_COMMUNICATION_NETWORK_INFORMATION" />
     </xsd:restriction>
   </xsd:simpleType>

@@ -338,6 +338,14 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+  <xsd:element name="GetGsmDiagnosticRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension
+          base="smman:GetGsmDiagnosticRequestData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
 
   <xsd:complexType name="Actions">
     <xsd:sequence>
@@ -395,6 +403,8 @@
         <xsd:element ref="tns:ScanMbusChannelsRequest" />
         <xsd:element
           ref="tns:SetRandomisationSettingsRequest" />
+        <xsd:element
+          ref="tns:GetGsmDiagnosticRequest" />
       </xsd:choice>
     </xsd:sequence>
   </xsd:complexType>
@@ -626,6 +636,13 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+  <xsd:element name="GetGsmDiagnosticResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="smman:GetGsmDiagnosticResponseData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
 
   <xsd:complexType name="AllResponses">
     <xsd:sequence>
@@ -663,6 +680,7 @@
           ref="tns:SetDeviceLifecycleStatusByChannelResponse" />
         <xsd:element ref="tns:ScanMbusChannelsResponse" />
         <xsd:element ref="tns:GetOutagesResponse" />
+        <xsd:element ref="tns:GetGsmDiagnosticResponse" />
       </xsd:choice>
     </xsd:sequence>
   </xsd:complexType>

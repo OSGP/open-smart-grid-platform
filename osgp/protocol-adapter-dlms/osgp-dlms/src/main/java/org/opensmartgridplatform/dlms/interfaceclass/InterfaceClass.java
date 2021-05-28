@@ -56,6 +56,7 @@ public enum InterfaceClass {
   PPP_SETUP(44, 0),
   GPRS_MODEM_SETUP(45, 0),
   SMTP_SETUP(46, 0),
+  GSM_DIAGNOSTIC(47, 2),
   SECURITY_SETUP(64, 0),
 
   UNKNOWN(-1, -1);
