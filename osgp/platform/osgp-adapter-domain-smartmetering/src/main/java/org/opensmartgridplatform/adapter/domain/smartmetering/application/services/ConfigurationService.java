@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.servi
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
@@ -26,7 +27,11 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.Firmware
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfigurationObjectRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfigurationObjectResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetFirmwareVersionQuery;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetKeysRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetKeysResponse;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetKeysResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SecretType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetClockConfigurationRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetKeysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
@@ -45,12 +50,16 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GMeterInfoDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfigurationObjectRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersionQueryDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.KeyDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupSmsDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SecretTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetClockConfigurationRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeysRequestDto;
@@ -1399,6 +1408,72 @@ public class ConfigurationService {
             .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
             .withResult(result)
             .withOsgpException(exception)
+            .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+            .build();
+    this.webServiceResponseMessageSender.send(
+        responseMessage, deviceMessageMetadata.getMessageType());
+  }
+
+  public void getKeys(
+      final DeviceMessageMetadata deviceMessageMetadata,
+      final GetKeysRequestData getKeysRequestData)
+      throws FunctionalException {
+
+    LOGGER.info(
+        "getKeys for organisationIdentification: {} for deviceIdentification: {}",
+        deviceMessageMetadata.getOrganisationIdentification(),
+        deviceMessageMetadata.getDeviceIdentification());
+
+    final SmartMeter gatewayDevice =
+        this.domainHelperService.findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+
+    final List<SecretTypeDto> secretTypes =
+        getKeysRequestData.getSecretTypes().stream()
+            .map(secretType -> SecretTypeDto.valueOf(secretType.name()))
+            .collect(Collectors.toList());
+
+    this.osgpCoreRequestMessageSender.send(
+        new RequestMessage(
+            deviceMessageMetadata.getCorrelationUid(),
+            deviceMessageMetadata.getOrganisationIdentification(),
+            gatewayDevice.getDeviceIdentification(),
+            gatewayDevice.getIpAddress(),
+            new GetKeysRequestDto(secretTypes)),
+        deviceMessageMetadata.getMessageType(),
+        deviceMessageMetadata.getMessagePriority(),
+        deviceMessageMetadata.getScheduleTime(),
+        deviceMessageMetadata.bypassRetry());
+  }
+
+  public void handleGetKeysResponse(
+      final DeviceMessageMetadata deviceMessageMetadata,
+      final ResponseMessageResultType resultType,
+      final OsgpException exception,
+      final GetKeysResponseDto getKeysResponseDto) {
+
+    LOGGER.info(
+        "handleGetKeysResponse for MessageType: {}", deviceMessageMetadata.getMessageType());
+
+    final List<KeyDto> keys = getKeysResponseDto.getKeys();
+
+    final List<GetKeysResponseData> getKeysResponseData =
+        keys.stream()
+            .map(
+                key ->
+                    new GetKeysResponseData(
+                        SecretType.valueOf(key.getSecretType().name()), key.getSecret()))
+            .collect(Collectors.toList());
+
+    final GetKeysResponse getKeysResponse = new GetKeysResponse(getKeysResponseData);
+
+    final ResponseMessage responseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+            .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+            .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+            .withResult(resultType)
+            .withOsgpException(exception)
+            .withDataObject(getKeysResponse)
             .withMessagePriority(deviceMessageMetadata.getMessagePriority())
             .build();
     this.webServiceResponseMessageSender.send(
