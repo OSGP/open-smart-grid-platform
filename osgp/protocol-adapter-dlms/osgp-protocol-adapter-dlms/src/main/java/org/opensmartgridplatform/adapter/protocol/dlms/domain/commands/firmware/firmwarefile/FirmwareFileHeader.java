@@ -34,17 +34,17 @@ public class FirmwareFileHeader {
   private byte[] activationType;
   private byte[] activationTime;
 
-  public DeviceType getDeviceType() {
-    return DeviceType.getByCode(this.getFirmwareFileHeaderAddressField().getDeviceType()[0]);
+  public DeviceType getMbusDeviceType() {
+    return DeviceType.getByCode(this.getFirmwareFileHeaderAddressField().getMbusDeviceType()[0]);
   }
 
-  Integer getVersionInt() {
-    return this.toInteger(this.getFirmwareFileHeaderAddressField().getVersion());
+  Integer getMbusVersionInt() {
+    return this.toInt(this.getFirmwareFileHeaderAddressField().getMbusVersion());
   }
 
-  ManufacturerId getManufacturerId() {
+  ManufacturerId getMbusManufacturerId() {
     return ManufacturerId.fromId(
-        this.toInteger(this.getFirmwareFileHeaderAddressField().getManufacturerId()));
+        this.toInt(this.getFirmwareFileHeaderAddressField().getMbusManufacturerId()));
   }
 
   String getActivationTimeHex() {
@@ -55,8 +55,8 @@ public class FirmwareFileHeader {
     return ActivationType.getByCode(this.activationType[0]);
   }
 
-  public Integer getAddressLengthInt() {
-    return this.toInteger(this.addressLength);
+  public int getAddressLengthInt() {
+    return this.toInt(this.addressLength);
   }
 
   public AddressType getAddressTypeEnum() {
@@ -67,12 +67,12 @@ public class FirmwareFileHeader {
     return SecurityType.getByCode(this.securityType[0]);
   }
 
-  public Integer getSecurityLengthInt() {
-    return this.toInteger(this.securityLength);
+  public int getSecurityLengthInt() {
+    return this.toInt(this.securityLength);
   }
 
-  Integer getFirmwareImageLengthInt() {
-    return this.toInteger(this.firmwareImageLength);
+  int getFirmwareImageLengthInt() {
+    return this.toInt(this.firmwareImageLength);
   }
 
   public byte[] getFirmwareImageVersion() {
@@ -83,12 +83,12 @@ public class FirmwareFileHeader {
     return Hex.toHexString(this.firmwareImageVersion);
   }
 
-  public Integer getHeaderLengthInt() {
-    return this.toInteger(this.headerLength);
+  public int getHeaderLengthInt() {
+    return this.toInt(this.headerLength);
   }
 
   public Integer getHeaderVersionInt() {
-    return this.toInteger(this.headerVersion);
+    return this.toInt(this.headerVersion);
   }
 
   public String getFirmwareImageMagicNumberHex() {
@@ -122,18 +122,20 @@ public class FirmwareFileHeader {
     result.append(String.format("%n  addressLength: %d (int)", this.getAddressLengthInt()));
     result.append(String.format("%n  FirmwareHeaderAddressField"));
     result.append(
-        String.format("%n    manufacturerId: %s", this.getManufacturerId().getIdentification()));
+        String.format(
+            "%n    manufacturerId: %s", this.getMbusManufacturerId().getIdentification()));
     result.append(
         String.format("%n    mbusDeviceSerialNumber: %s (hex)", this.getMbusDeviceSerialNumber()));
-    result.append(String.format("%n    version: %d (int)", this.getVersionInt()));
-    result.append(String.format("%n    deviceType: %s", this.getDeviceType()));
+    result.append(String.format("%n    version: %d (int)", this.getMbusVersionInt()));
+    result.append(String.format("%n    deviceType: %s", this.getMbusDeviceType()));
     result.append(String.format("%n  activationType: %s", this.getActivationTypeEnum()));
     result.append(String.format("%n  activationTime: %s (hex)", this.getActivationTimeHex()));
     return result.toString();
   }
 
-  private Integer toInteger(final byte[] bytes) {
-    final ByteBuffer intBuffer = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).put(bytes);
+  private int toInt(final byte[] bytesLSBfirst) {
+    final ByteBuffer intBuffer =
+        ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).put(bytesLSBfirst);
     intBuffer.rewind();
     return intBuffer.getInt();
   }

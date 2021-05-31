@@ -33,7 +33,12 @@ public enum SecurityType {
   }
 
   public static SecurityType getByCode(final byte code) {
-    return map.get(code);
+    final SecurityType type = map.get(code);
+    if (type == null) {
+      throw new IllegalArgumentException(
+          String.format("No SecurityType found with code %d (byte)", code));
+    }
+    return type;
   }
 
   public byte getCode() {

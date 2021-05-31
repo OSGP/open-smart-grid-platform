@@ -10,7 +10,9 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 /**
@@ -22,6 +24,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
  * <ul>
  *   <li>Firmware image magic number: 53h 4Dh 52h 35h
  *   <li>Header Version: 00h
+ * </ul>
  */
 @Slf4j
 public class FirmwareFile {
@@ -33,9 +36,10 @@ public class FirmwareFile {
 
   public FirmwareFile(final byte[] imageData) {
     this.imageData = imageData;
-    final Integer firmwareImageLength = this.getHeader().getFirmwareImageLengthInt();
-    final Integer securityLength = this.getHeader().getSecurityLengthInt();
-    final Integer headerLength = this.getHeader().getHeaderLengthInt();
+    final FirmwareFileHeader header = this.getHeader();
+    final Integer firmwareImageLength = header.getFirmwareImageLengthInt();
+    final Integer securityLength = header.getSecurityLengthInt();
+    final Integer headerLength = header.getHeaderLengthInt();
     if (imageData.length != (firmwareImageLength + securityLength + headerLength)) {
       log.warn(
           "Byte array length doesn't match lengths defined in header: "
@@ -62,14 +66,14 @@ public class FirmwareFile {
   }
 
   public byte[] getHeaderByteArray() {
-    return this.readBytes(this.imageData, 0, this.getHeader().getHeaderLengthInt() - 1);
+    return this.readBytes(this.imageData, 0, this.getHeader().getHeaderLengthInt());
   }
 
   public byte[] getFirmwareImageByteArray() {
     return this.readBytes(
         this.imageData,
         this.getHeader().getHeaderLengthInt(),
-        this.getHeader().getHeaderLengthInt() + this.getHeader().getFirmwareImageLengthInt() - 1);
+        this.getHeader().getHeaderLengthInt() + this.getHeader().getFirmwareImageLengthInt());
   }
 
   public void setSecurityByteArray(final byte[] security) throws ProtocolAdapterException {
@@ -85,45 +89,71 @@ public class FirmwareFile {
             .array();
   }
 
-  public void setMbusDeviceSerialNumber(final int mbusDeviceSerialNumber) {
+  public void setMbusDeviceSerialNumber(final int mbusDeviceSerialNumber)
+      throws ProtocolAdapterException {
 
+    this.checkWildcard(mbusDeviceSerialNumber);
     final byte[] mbusDeviceSerialNumberByteArray =
-        ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN).putInt(mbusDeviceSerialNumber).array();
+        ByteBuffer.allocate(4)
+            .order(ByteOrder.LITTLE_ENDIAN)
+            .putInt(mbusDeviceSerialNumber)
+            .array();
+
     final ByteBuffer buffer = ByteBuffer.wrap(this.imageData);
     buffer.position(22);
     buffer.put(mbusDeviceSerialNumberByteArray);
     this.imageData = buffer.array();
   }
 
+  /**
+   * The Identification number can be wildcarded, a firmware file can be made available for a range
+   * or all individual meters. The wildcard character is hex-value: 'F'.
+   */
+  private void checkWildcard(final int mbusDeviceSerialNumber) throws ProtocolAdapterException {
+    final String mbusDeviceSerialNumberString =
+        StringUtils.leftPad(Integer.toString(mbusDeviceSerialNumber), 8, "0");
+    final String pattern =
+        new StringBuffer(this.getHeader().getMbusDeviceSerialNumber())
+            .reverse()
+            .toString()
+            .replace('f', '.');
+    if (!Pattern.matches(pattern, mbusDeviceSerialNumberString)) {
+      throw new ProtocolAdapterException(
+          String.format(
+              "MbusDevice Serial Number (%s) does not fit the range of serial numbers supported by this Firmware File (%s)",
+              mbusDeviceSerialNumberString, this.getHeader().getMbusDeviceSerialNumber()));
+    }
+  }
+
   public FirmwareFileHeader getHeader() {
     final FirmwareFileHeader firmwareFileHeader = new FirmwareFileHeader();
 
-    firmwareFileHeader.setFirmwareImageMagicNumber(this.readBytes(this.imageData, 0, 3));
-    firmwareFileHeader.setHeaderVersion(this.readBytes(this.imageData, 4, 4));
-    firmwareFileHeader.setHeaderLength(this.readBytes(this.imageData, 5, 6));
-    firmwareFileHeader.setFirmwareImageVersion(this.readBytes(this.imageData, 7, 10));
-    firmwareFileHeader.setFirmwareImageLength(this.readBytes(this.imageData, 11, 14));
-    firmwareFileHeader.setSecurityLength(this.readBytes(this.imageData, 15, 15));
-    firmwareFileHeader.setSecurityType(this.readBytes(this.imageData, 17, 17));
-    firmwareFileHeader.setAddressLength(this.readBytes(this.imageData, 18, 18));
-    firmwareFileHeader.setAddressType(this.readBytes(this.imageData, 19, 19));
+    firmwareFileHeader.setFirmwareImageMagicNumber(this.readBytes(this.imageData, 0, 4));
+    firmwareFileHeader.setHeaderVersion(this.readBytes(this.imageData, 4, 5));
+    firmwareFileHeader.setHeaderLength(this.readBytes(this.imageData, 5, 7));
+    firmwareFileHeader.setFirmwareImageVersion(this.readBytes(this.imageData, 7, 11));
+    firmwareFileHeader.setFirmwareImageLength(this.readBytes(this.imageData, 11, 15));
+    firmwareFileHeader.setSecurityLength(this.readBytes(this.imageData, 15, 16));
+    firmwareFileHeader.setSecurityType(this.readBytes(this.imageData, 17, 18));
+    firmwareFileHeader.setAddressLength(this.readBytes(this.imageData, 18, 19));
+    firmwareFileHeader.setAddressType(this.readBytes(this.imageData, 19, 20));
     this.setAddressField(firmwareFileHeader);
-    firmwareFileHeader.setActivationType(this.readBytes(this.imageData, 28, 28));
-    firmwareFileHeader.setActivationTime(this.readBytes(this.imageData, 29, 34));
+    firmwareFileHeader.setActivationType(this.readBytes(this.imageData, 28, 29));
+    firmwareFileHeader.setActivationTime(this.readBytes(this.imageData, 29, 35));
     return firmwareFileHeader;
   }
 
   private void setAddressField(final FirmwareFileHeader firmwareFileHeader) {
     final FirmwareFileHeaderAddressField firmwareFileHeaderAddressField =
         new FirmwareFileHeaderAddressField(
-            this.readBytes(this.imageData, 20, 21),
-            this.readBytes(this.imageData, 22, 25),
-            this.readBytes(this.imageData, 26, 26),
-            this.readBytes(this.imageData, 27, 27));
+            this.readBytes(this.imageData, 20, 22),
+            this.readBytes(this.imageData, 22, 26),
+            this.readBytes(this.imageData, 26, 27),
+            this.readBytes(this.imageData, 27, 28));
     firmwareFileHeader.setFirmwareFileHeaderAddressField(firmwareFileHeaderAddressField);
   }
 
   private byte[] readBytes(final byte[] bytes, final int begin, final int end) {
-    return ByteBuffer.allocate(end - begin + 1).put(bytes, begin, (end - begin + 1)).array();
+    return java.util.Arrays.copyOfRange(bytes, begin, end);
   }
 }

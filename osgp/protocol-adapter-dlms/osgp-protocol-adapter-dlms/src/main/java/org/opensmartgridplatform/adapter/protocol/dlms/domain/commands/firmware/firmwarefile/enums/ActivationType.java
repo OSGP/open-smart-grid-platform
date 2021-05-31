@@ -30,7 +30,12 @@ public enum ActivationType {
   }
 
   public static ActivationType getByCode(final byte code) {
-    return map.get(code);
+    final ActivationType type = map.get(code);
+    if (type == null) {
+      throw new IllegalArgumentException(
+          String.format("No ActivationType found with code %d (byte)", code));
+    }
+    return type;
   }
 
   public byte getCode() {

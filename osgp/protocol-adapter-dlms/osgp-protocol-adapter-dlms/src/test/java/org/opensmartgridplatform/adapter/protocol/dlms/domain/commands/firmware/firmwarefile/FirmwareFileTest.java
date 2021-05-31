@@ -9,46 +9,40 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.file.Files;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.bouncycastle.util.encoders.Hex;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.enums.ActivationType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.enums.AddressType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.enums.DeviceType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.enums.SecurityType;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.springframework.core.io.ClassPathResource;
 
 @Slf4j
 public class FirmwareFileTest {
 
-  private FirmwareFile firmwareFile;
+  private static byte[] byteArray;
+  private static final String filename = "integra-v00400011-snffffffff-newmods.bin";
 
   @BeforeEach
   public void init() throws IOException {
-    final String filename = "integra-v00400011-snffffffff-newmods.bin";
-    final InputStream resourceAsStream =
-        FirmwareFileTest.class.getClassLoader().getResourceAsStream(filename);
-
-    final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-    int nRead;
-    final byte[] data = new byte[1024];
-    while ((nRead = resourceAsStream.read(data, 0, data.length)) != -1) {
-      buffer.write(data, 0, nRead);
-    }
-
-    buffer.flush();
-    final byte[] byteArray = buffer.toByteArray();
-
-    this.firmwareFile = new FirmwareFile(byteArray);
+    byteArray = Files.readAllBytes(new ClassPathResource(filename).getFile().toPath());
   }
 
   @Test
   public void testHeader() throws UnsupportedEncodingException {
-    final FirmwareFileHeader header = this.firmwareFile.getHeader();
+    final FirmwareFile firmwareFile = new FirmwareFile(byteArray);
+    final FirmwareFileHeader header = firmwareFile.getHeader();
     log.debug(header.toString());
     assertThat(header.getFirmwareImageMagicNumberHex())
         .isEqualTo(FirmwareFile.FIRMWARE_IMAGE_MAGIC_NUMBER);
@@ -61,20 +55,65 @@ public class FirmwareFileTest {
     assertThat(header.getAddressLengthInt()).isEqualTo(8);
     assertThat(header.getAddressTypeEnum()).isEqualTo(AddressType.MBUS_ADDRESS);
     assertThat(header.getMbusDeviceSerialNumber()).isEqualTo("ffffffff");
-    assertThat(header.getManufacturerId().getIdentification()).isEqualTo("GWI");
-    assertThat(header.getVersionInt()).isEqualTo(80);
-    assertThat(header.getDeviceType()).isEqualTo(DeviceType.GAS);
+    assertThat(header.getMbusManufacturerId().getIdentification()).isEqualTo("GWI");
+    assertThat(header.getMbusVersionInt()).isEqualTo(80);
+    assertThat(header.getMbusDeviceType()).isEqualTo(DeviceType.GAS);
     assertThat(header.getActivationTypeEnum())
         .isEqualTo(ActivationType.MASTER_INITIATED_ACTIVATION);
     assertThat(header.getActivationTimeHex()).isEqualTo("000000000000");
   }
 
   @Test
-  public void testMbusDeviceSerialNumber() throws IOException {
-    final String idHex = "40050010";
-    final int mbusDeviceSerialNumber = Integer.decode("0x" + idHex);
-    this.firmwareFile.setMbusDeviceSerialNumber(mbusDeviceSerialNumber);
-    log.debug(this.firmwareFile.getHeader().toString());
-    assertThat(this.firmwareFile.getHeader().getMbusDeviceSerialNumber()).isEqualTo(idHex);
+  public void testMisfitMbusDeviceSerialNumber() throws IOException, ProtocolAdapterException {
+    // Changed fully wildcarded (FFFFFFFF) MbusDeviceSerialNumber in header with partially
+    // wildcarded one (FFFF0000, LSB first)
+    final byte[] compliantMbusDeviceSerialNumber =
+        new byte[] {(byte) 255, (byte) 255, (byte) 0, (byte) 0};
+
+    final byte[] clonedByteArray = byteArray.clone();
+    clonedByteArray[22] = compliantMbusDeviceSerialNumber[0];
+    clonedByteArray[23] = compliantMbusDeviceSerialNumber[1];
+    clonedByteArray[24] = compliantMbusDeviceSerialNumber[2];
+    clonedByteArray[25] = compliantMbusDeviceSerialNumber[3];
+
+    final FirmwareFile firmwareFile = new FirmwareFile(clonedByteArray);
+
+    log.debug(firmwareFile.getHeader().toString());
+
+    final int noncompliantMbusDeviceSerialNumberInt = 10000;
+
+    final Exception exception =
+        assertThrows(
+            ProtocolAdapterException.class,
+            () -> {
+              firmwareFile.setMbusDeviceSerialNumber(noncompliantMbusDeviceSerialNumberInt);
+            });
+    assertThat(exception)
+        .hasMessage(
+            "MbusDevice Serial Number (%s) does not fit the range of serial numbers supported by this Firmware File (%s)",
+            StringUtils.leftPad(Integer.toString(noncompliantMbusDeviceSerialNumberInt), 8, "0"),
+            Hex.toHexString(compliantMbusDeviceSerialNumber));
+  }
+
+  @Test
+  public void testMbusDeviceSerialNumber() throws IOException, ProtocolAdapterException {
+    final String idHex = "10000540";
+    final int mbusDeviceSerialNumberInput = Integer.parseInt(idHex, 16);
+    final byte[] mbusDeviceSerialNumberByteArrayOutput =
+        ByteBuffer.allocate(4)
+            .order(ByteOrder.LITTLE_ENDIAN)
+            .putInt(mbusDeviceSerialNumberInput)
+            .array();
+
+    final FirmwareFile firmwareFile = new FirmwareFile(byteArray);
+    firmwareFile.setMbusDeviceSerialNumber(mbusDeviceSerialNumberInput);
+    log.debug(firmwareFile.getHeader().toString());
+
+    assertThat(
+            firmwareFile
+                .getHeader()
+                .getFirmwareFileHeaderAddressField()
+                .getMbusDeviceSerialNumber())
+        .isEqualTo(mbusDeviceSerialNumberByteArrayOutput);
   }
 }

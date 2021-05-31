@@ -28,7 +28,12 @@ public enum DeviceType {
   }
 
   public static DeviceType getByCode(final byte code) {
-    return map.get(code);
+    final DeviceType type = map.get(code);
+    if (type == null) {
+      throw new IllegalArgumentException(
+          String.format("No DeviceType found with code %d (byte)", code));
+    }
+    return type;
   }
 
   public byte getCode() {

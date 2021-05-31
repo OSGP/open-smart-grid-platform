@@ -28,7 +28,12 @@ public enum AddressType {
   }
 
   public static AddressType getByCode(final byte code) {
-    return map.get(code);
+    final AddressType type = map.get(code);
+    if (type == null) {
+      throw new IllegalArgumentException(
+          String.format("No AddressType found with code %d (byte)", code));
+    }
+    return type;
   }
 
   public byte getCode() {

@@ -29,12 +29,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * This service generates a MAC as security part of a Firmware file as descript in Smart Meter
- * Requirements 5.1, Supplement 4, P2 Companion Standard, Section 7. Firmware Upgrade
+ * This service generates a MAC as security part of a Gas Meter Firmware file as described in Smart
+ * Meter Requirements 5.1, Supplement 4, P2 Companion Standard, Section 7. Firmware Upgrade
  *
- * <p>As versions earlier than 5.0 of the Smart Meter Requirements do not support the upgrade of
- * firmware this implementation only supports Firmware files with magic number 534d5235 ('SMR5') As
- * this is the first and only specification most entries in the Firmware File's header are fixed
+ * <p>As versions earlier than 5.0 of the Smart Meter Requirements do not support the upgrade of Gas
+ * Meter Firmware this implementation only supports Gas Meter Firmware files with magic number
+ * 534d5235 ('SMR5') As this is the first and only specification most entries in the Firmware File's
+ * header are fixed
  *
  * <ul>
  *   <li>Firmware image magic number: 53h 4Dh 52h 35h
@@ -46,6 +47,7 @@ import org.springframework.stereotype.Service;
  *   <li>Address type: M-Bus address
  *   <li>Device type: Gas
  *   <li>Activation type: Master initiated activation
+ * </ul>
  */
 @Service
 public class MacGenerationService {
@@ -59,7 +61,8 @@ public class MacGenerationService {
   public byte[] calculateMac(final String deviceIdentification, final FirmwareFile firmwareFile)
       throws ProtocolAdapterException {
 
-    this.validateHeader(firmwareFile.getHeader());
+    final FirmwareFileHeader header = firmwareFile.getHeader();
+    this.validateHeader(header);
 
     final byte[] iv = this.createIV(firmwareFile);
 
@@ -79,7 +82,8 @@ public class MacGenerationService {
         new KeyParameter(decryptedFirmwareUpdateAuthenticationKey);
     final ParametersWithIV parameterWithIV = new ParametersWithIV(cipherParameters, iv);
 
-    final GMac mac = new GMac(new GCMBlockCipher(new AESEngine()), 128);
+    final int macSizeBits = header.getSecurityLengthInt() * 8;
+    final GMac mac = new GMac(new GCMBlockCipher(new AESEngine()), macSizeBits);
 
     mac.init(parameterWithIV);
 
@@ -95,9 +99,11 @@ public class MacGenerationService {
     final byte[] generatedMac = new byte[mac.getMacSize()];
     mac.doFinal(generatedMac, 0);
 
-    if (firmwareFile.getHeader().getSecurityLengthInt() != generatedMac.length) {
+    if (header.getSecurityLengthInt() != generatedMac.length) {
       throw new ProtocolAdapterException(
-          "Unable to generate correct MAC: Defined security length in firmware header differs from length of generated MAC");
+          String.format(
+              "Unable to generate correct MAC: Defined security length in firmware header (%d) differs from length of generated MAC (%d)",
+              header.getSecurityLengthInt(), generatedMac.length));
     }
     return generatedMac;
   }
@@ -139,11 +145,11 @@ public class MacGenerationService {
               "Unexpected type of security in header FW file: %s. Expected: %s.",
               header.getSecurityTypeEnum(), SecurityType.GMAC.name()));
     }
-    if (header.getDeviceType() != DeviceType.GAS) {
+    if (header.getMbusDeviceType() != DeviceType.GAS) {
       throw new ProtocolAdapterException(
           String.format(
               "Unexpected type of device in header FW file: %s. Expected: %s.",
-              header.getDeviceType(), DeviceType.GAS.name()));
+              header.getMbusDeviceType(), DeviceType.GAS.name()));
     }
     if (header.getSecurityLengthInt() != SECURITY_LENGTH) {
       throw new ProtocolAdapterException(
@@ -163,10 +169,10 @@ public class MacGenerationService {
     final FirmwareFileHeaderAddressField firmwareFileHeaderAddressField =
         firmwareFile.getHeader().getFirmwareFileHeaderAddressField();
     return ByteBuffer.allocate(12)
-        .put(firmwareFileHeaderAddressField.getManufacturerId())
+        .put(firmwareFileHeaderAddressField.getMbusManufacturerId())
         .put(firmwareFileHeaderAddressField.getMbusDeviceSerialNumber())
-        .put(firmwareFileHeaderAddressField.getVersion())
-        .put(firmwareFileHeaderAddressField.getDeviceType())
+        .put(firmwareFileHeaderAddressField.getMbusVersion())
+        .put(firmwareFileHeaderAddressField.getMbusDeviceType())
         .put(Arrays.reverse(firmwareFile.getHeader().getFirmwareImageVersion()))
         .array();
   }

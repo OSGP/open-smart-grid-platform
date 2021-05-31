@@ -23,19 +23,19 @@ import lombok.Getter;
 @Getter
 public class FirmwareFileHeaderAddressField {
 
-  private byte[] manufacturerId;
+  private byte[] mbusManufacturerId;
   private byte[] mbusDeviceSerialNumber;
-  private byte[] version;
-  private byte[] deviceType;
+  private byte[] mbusVersion;
+  private byte[] mbusDeviceType;
 
   public FirmwareFileHeaderAddressField(
-      final byte[] manufacturerId,
+      final byte[] mbusManufacturerId,
       final byte[] mbusDeviceSerialNumber,
-      final byte[] version,
-      final byte[] deviceType) {
-    this.manufacturerId = manufacturerId;
+      final byte[] mbusVersion,
+      final byte[] mbusDeviceType) {
+    this.mbusManufacturerId = mbusManufacturerId;
     this.mbusDeviceSerialNumber = mbusDeviceSerialNumber;
-    this.version = version;
-    this.deviceType = deviceType;
+    this.mbusVersion = mbusVersion;
+    this.mbusDeviceType = mbusDeviceType;
   }
 }
