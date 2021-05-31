@@ -55,6 +55,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetSpeci
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SynchronizeTimeRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.UpdateFirmwareRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Action;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysRequest;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.AdhocMapper;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.InstallationMapper;
@@ -78,6 +79,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfi
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetFirmwareVersionGasRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetFirmwareVersionRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetGsmDiagnosticRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetKeysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetOutagesRequestData;
@@ -299,6 +301,7 @@ public class ActionMapperService {
     CLASS_MAP.put(GetOutagesRequest.class, GetOutagesRequestData.class);
     CLASS_MAP.put(GetActualPowerQualityRequest.class, ActualPowerQualityRequest.class);
     CLASS_MAP.put(GetGsmDiagnosticRequest.class, GetGsmDiagnosticRequestData.class);
+    CLASS_MAP.put(GetKeysRequest.class, GetKeysRequestData.class);
   }
 
   @Autowired private ManagementMapper managementMapper;
@@ -520,6 +523,11 @@ public class ActionMapperService {
             .SetRandomisationSettingsRequestData.class,
         this.configurationMapper);
     CLASS_TO_MAPPER_MAP.put(SetRandomisationSettingsRequest.class, this.configurationMapper);
+    CLASS_TO_MAPPER_MAP.put(
+        org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysRequestData
+            .class,
+        this.configurationMapper);
+    CLASS_TO_MAPPER_MAP.put(GetKeysRequest.class, this.configurationMapper);
   }
 
   public List<ActionRequest> mapAllActions(final List<? extends Action> actionList)

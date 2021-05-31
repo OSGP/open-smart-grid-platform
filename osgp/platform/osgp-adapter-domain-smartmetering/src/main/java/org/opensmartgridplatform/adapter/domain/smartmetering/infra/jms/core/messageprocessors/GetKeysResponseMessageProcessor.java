@@ -12,7 +12,6 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.me
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.ConfigurationService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetGsmDiagnosticResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -45,7 +44,7 @@ public class GetKeysResponseMessageProcessor extends OsgpCoreResponseMessageProc
 
   @Override
   protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
-    return responseMessage.getDataObject() instanceof GetGsmDiagnosticResponseDto;
+    return responseMessage.getDataObject() instanceof GetKeysResponseDto;
   }
 
   @Override
