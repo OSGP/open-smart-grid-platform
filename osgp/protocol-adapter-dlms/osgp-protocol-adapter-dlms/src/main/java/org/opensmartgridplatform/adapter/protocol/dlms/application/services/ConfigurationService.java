@@ -13,6 +13,7 @@ import java.util.List;
 import org.openmuc.jdlms.AccessResultCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm.SetAlarmNotificationsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.GetConfigurationObjectCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.GetKeysCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.SetConfigurationObjectCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.SetRandomisationSettingsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.datetime.SetActivityCalendarCommandExecutor;
@@ -44,6 +45,8 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.DefinableLoadPro
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GMeterInfoDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersionQueryDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMBusDeviceOnChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelResponseDto;
@@ -125,6 +128,8 @@ public class ConfigurationService {
 
   @Autowired
   private SetRandomisationSettingsCommandExecutor setRandomisationSettingsCommandExecutor;
+
+  @Autowired private GetKeysCommandExecutor getKeysCommandExecutor;
 
   public void setSpecialDays(
       final DlmsConnectionManager conn,
@@ -451,5 +456,14 @@ public class ConfigurationService {
       throw new ProtocolAdapterException(
           "AccessResultCode for set randomisation settings was not SUCCESS: " + accessResultCode);
     }
+  }
+
+  public GetKeysResponseDto requestGetKeys(
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final GetKeysRequestDto getKeysRequestDto)
+      throws ProtocolAdapterException {
+
+    return this.getKeysCommandExecutor.execute(conn, device, getKeysRequestDto);
   }
 }
