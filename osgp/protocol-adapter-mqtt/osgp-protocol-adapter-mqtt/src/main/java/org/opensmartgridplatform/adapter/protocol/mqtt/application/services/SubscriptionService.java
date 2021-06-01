@@ -12,6 +12,8 @@ import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAck;
 import com.hivemq.client.mqtt.mqtt3.message.subscribe.suback.Mqtt3SubAck;
 import java.util.Arrays;
+import java.util.Properties;
+import org.opensmartgridplatform.adapter.protocol.mqtt.application.config.MqttConstants;
 import org.opensmartgridplatform.adapter.protocol.mqtt.application.messaging.OutboundOsgpCoreResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.entities.MqttDevice;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.repositories.MqttDeviceRepository;
@@ -22,7 +24,6 @@ import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service(value = "mqttSubcriptionService")
@@ -34,26 +35,20 @@ public class SubscriptionService implements MqttClientEventHandler {
   private final OutboundOsgpCoreResponseMessageSender outboundOsgpCoreResponseMessageSender;
   private final MqttClientAdapterFactory mqttClientAdapterFactory;
 
-  private final int defaultPort;
-  private final String defaultTopics;
-  private final String defaultQos;
+  private final Properties mqttClientProperties;
 
   public SubscriptionService(
       final MqttDeviceRepository mqttDeviceRepository,
       final MqttClientAdapterFactory mqttClientAdapterFactory,
       final OutboundOsgpCoreResponseMessageSender outboundOsgpCoreResponseMessageSender,
-      @Value("#{new Integer('${mqtt.broker.defaultPort}')}") final int defaultPort,
-      @Value("${mqtt.broker.defaultTopics}") final String defaultTopics,
-      @Value("${mqtt.broker.defaultQos}") final String defaultQos) {
+      final Properties mqttClientProperties) {
     this.mqttDeviceRepository = mqttDeviceRepository;
     this.mqttClientAdapterFactory = mqttClientAdapterFactory;
     this.outboundOsgpCoreResponseMessageSender = outboundOsgpCoreResponseMessageSender;
-    this.defaultPort = defaultPort;
-    this.defaultTopics = defaultTopics;
-    this.defaultQos = defaultQos;
+    this.mqttClientProperties = mqttClientProperties;
   }
 
-  public void subscribe(final MessageMetadata messageMetadata) {
+  public void subscribe(final MessageMetadata messageMetadata) throws Exception {
     final MqttDevice device = this.getOrCreateDevice(messageMetadata);
     final MqttClientAdapter mqttClientAdapter =
         this.mqttClientAdapterFactory.create(device, messageMetadata, this);
@@ -67,9 +62,9 @@ public class SubscriptionService implements MqttClientEventHandler {
     if (device == null) {
       device = new MqttDevice(messageMetadata.getDeviceIdentification());
       device.setHost(messageMetadata.getIpAddress());
-      device.setPort(this.defaultPort);
-      device.setTopics(this.defaultTopics);
-      device.setQos(this.defaultQos);
+      device.setPort(this.getDefaultPort());
+      device.setTopics(this.getDefaultTopics());
+      device.setQos(this.getDefaultQos());
       this.mqttDeviceRepository.save(device);
     }
     return device;
@@ -84,18 +79,17 @@ public class SubscriptionService implements MqttClientEventHandler {
       this.onConnectSuccess(mqttClientAdapter, ack);
     } else {
       LOG.info(
-          String.format(
-              "Client connect failed for device:%s",
-              mqttClientAdapter.getMessageMetadata().getDeviceIdentification()),
+          "Client connect failed for device:{}",
+          mqttClientAdapter.getMessageMetadata().getDeviceIdentification(),
           throwable);
     }
   }
 
   private void onConnectSuccess(final MqttClientAdapter mqttClientAdapter, final Mqtt3ConnAck ack) {
     LOG.info(
-        String.format(
-            "Client connected for device:%s ack:%s",
-            mqttClientAdapter.getMessageMetadata().getDeviceIdentification(), ack.getType()));
+        "Client connected for device:{} ack:{}",
+        mqttClientAdapter.getMessageMetadata().getDeviceIdentification(),
+        ack.getType());
     final MqttDevice device = mqttClientAdapter.getDevice();
     final MqttQos qos = this.getQosOrDefault(device);
     final String[] topics = device.getTopics().split(",");
@@ -108,7 +102,7 @@ public class SubscriptionService implements MqttClientEventHandler {
       mqttQos = MqttQos.valueOf(device.getQos());
     } catch (final IllegalArgumentException | NullPointerException e) {
       LOG.warn(String.format("Illegal or missing QoS value %s, using default", device.getQos()), e);
-      device.setQos(this.defaultQos);
+      device.setQos(this.getDefaultQos());
       mqttQos = MqttQos.valueOf(device.getQos());
     }
     return mqttQos;
@@ -122,14 +116,13 @@ public class SubscriptionService implements MqttClientEventHandler {
     final MessageMetadata messageMetadata = mqttClientAdapter.getMessageMetadata();
     if (throwable == null) {
       LOG.info(
-          String.format(
-              "Client subscribed for device:%s suback:%s",
-              messageMetadata.getDeviceIdentification(), subAck.getType()));
+          "Client subscribed for device:{} suback:{}",
+          messageMetadata.getDeviceIdentification(),
+          subAck.getType());
     } else {
       LOG.info(
-          String.format(
-              "Client subscription for device:%s failed",
-              messageMetadata.getDeviceIdentification()),
+          "Client subscription for device:{} failed",
+          messageMetadata.getDeviceIdentification(),
           throwable);
     }
   }
@@ -139,9 +132,9 @@ public class SubscriptionService implements MqttClientEventHandler {
     final String payload = new String(payloadAsBytes);
     final MessageMetadata messageMetadata = mqttClientAdapter.getMessageMetadata();
     LOG.info(
-        String.format(
-            "Client for device:%s received payload:%s",
-            messageMetadata.getDeviceIdentification(), payload));
+        "Client for device:{} received payload:{}",
+        messageMetadata.getDeviceIdentification(),
+        payload);
     final ResponseMessage responseMessage =
         new ProtocolResponseMessage.Builder()
             .deviceMessageMetadata(new DeviceMessageMetadata(messageMetadata))
@@ -151,5 +144,18 @@ public class SubscriptionService implements MqttClientEventHandler {
             .result(ResponseMessageResultType.OK)
             .build();
     this.outboundOsgpCoreResponseMessageSender.send(responseMessage);
+  }
+
+  private int getDefaultPort() {
+    return Integer.valueOf(
+        this.mqttClientProperties.getProperty(MqttConstants.DEFAULT_PORT_PROPERTY_NAME));
+  }
+
+  private String getDefaultQos() {
+    return this.mqttClientProperties.getProperty(MqttConstants.DEFAULT_QOS_PROPERTY_NAME);
+  }
+
+  private String getDefaultTopics() {
+    return this.mqttClientProperties.getProperty(MqttConstants.DEFAULT_TOPICS_PROPERTY_NAME);
   }
 }

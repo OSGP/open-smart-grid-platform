@@ -8,11 +8,18 @@
  */
 package org.opensmartgridplatform.adapter.protocol.mqtt.application.services;
 
+import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.security.KeyStore;
+import java.util.Properties;
 import java.util.UUID;
+import javax.net.ssl.TrustManagerFactory;
+import org.opensmartgridplatform.adapter.protocol.mqtt.application.config.MqttConstants;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.entities.MqttDevice;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
@@ -20,25 +27,29 @@ public class MqttClientAdapter {
 
   private final MqttDevice device;
   private final MessageMetadata messageMetadata;
+  private final Properties mqttClientProperties;
   private final MqttClientEventHandler mqttClientEventHandler;
   private Mqtt3AsyncClient client;
 
   public MqttClientAdapter(
       final MqttDevice device,
       final MessageMetadata messageMetadata,
+      final Properties mqttClientProperties,
       final MqttClientEventHandler mqttClientEventHandler) {
     this.device = device;
     this.messageMetadata = messageMetadata;
+    this.mqttClientProperties = mqttClientProperties;
     this.mqttClientEventHandler = mqttClientEventHandler;
   }
 
-  public void connect() {
+  public void connect() throws Exception {
     final String id = UUID.randomUUID().toString();
     this.client =
         Mqtt3Client.builder()
             .identifier(id)
             .serverHost(this.device.getHost())
             .serverPort(this.device.getPort())
+            .sslConfig(getSslConfig(this.mqttClientProperties))
             .buildAsync();
     this.client
         .connectWith()
@@ -72,5 +83,39 @@ public class MqttClientAdapter {
 
   public MessageMetadata getMessageMetadata() {
     return this.messageMetadata;
+  }
+
+  private static MqttClientSslConfig getSslConfig(final Properties mqttProperties)
+      throws Exception {
+    if (mqttProperties == null || mqttProperties.isEmpty()) {
+      return null;
+    }
+    return MqttClientSslConfig.builder()
+        .trustManagerFactory(getTruststoreFactory(mqttProperties))
+        .build();
+  }
+
+  private static TrustManagerFactory getTruststoreFactory(final Properties mqttProperties)
+      throws Exception {
+
+    final String trustStoreType =
+        mqttProperties.getProperty(MqttConstants.SSL_TRUSTSTORE_TYPE_PROPERTY_NAME);
+    final String trustStorePath =
+        mqttProperties.getProperty(MqttConstants.SSL_TRUSTSTORE_PATH_PROPERTY_NAME);
+    final String trustStorePW =
+        mqttProperties.getProperty(MqttConstants.SSL_TRUSTSTORE_PASSWORD_PROPERTY_NAME);
+
+    final KeyStore trustStore = KeyStore.getInstance(trustStoreType);
+    InputStream in = ClassLoader.getSystemResourceAsStream(trustStorePath);
+    if (in == null) {
+      in = new FileInputStream(trustStorePath);
+    }
+    trustStore.load(in, trustStorePW.toCharArray());
+
+    final TrustManagerFactory tmf =
+        TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+    tmf.init(trustStore);
+
+    return tmf;
   }
 }

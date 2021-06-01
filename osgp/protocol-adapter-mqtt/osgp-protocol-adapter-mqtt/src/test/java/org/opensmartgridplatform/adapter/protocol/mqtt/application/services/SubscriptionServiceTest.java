@@ -21,6 +21,7 @@ import static org.mockito.Mockito.when;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAck;
 import com.hivemq.client.mqtt.mqtt3.message.subscribe.suback.Mqtt3SubAck;
+import java.util.Properties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,6 +29,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.opensmartgridplatform.adapter.protocol.mqtt.application.config.MqttConstants;
 import org.opensmartgridplatform.adapter.protocol.mqtt.application.messaging.OutboundOsgpCoreResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.entities.MqttDevice;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.repositories.MqttDeviceRepository;
@@ -53,21 +55,33 @@ class SubscriptionServiceTest {
   @Mock private MqttClientAdapter mqttClientAdapter;
   @Captor private ArgumentCaptor<ProtocolResponseMessage> protocolResponseMessageCaptor;
 
+  @Mock private Properties mqttClientProperties;
+
   @BeforeEach
   public void setUp() {
+
     this.instance =
         new SubscriptionService(
             this.mqttDeviceRepository,
             this.mqttClientAdapterFactory,
             this.outboundOsgpCoreResponseMessageSender,
-            DEFAULT_PORT,
-            DEFAULT_TOPICS,
-            DEFAULT_QOS.name());
+            this.mqttClientProperties);
+
     lenient().when(this.mqttClientAdapter.getMessageMetadata()).thenReturn(this.messageMetadata);
+
+    lenient()
+        .when(this.mqttClientProperties.getProperty(MqttConstants.DEFAULT_PORT_PROPERTY_NAME))
+        .thenReturn(String.valueOf(DEFAULT_PORT));
+    lenient()
+        .when(this.mqttClientProperties.getProperty(MqttConstants.DEFAULT_QOS_PROPERTY_NAME))
+        .thenReturn(DEFAULT_QOS.name());
+    lenient()
+        .when(this.mqttClientProperties.getProperty(MqttConstants.DEFAULT_TOPICS_PROPERTY_NAME))
+        .thenReturn(DEFAULT_TOPICS);
   }
 
   @Test
-  void subscribeNewDevice() {
+  void subscribeNewDevice() throws Exception {
     // SETUP
     when(this.messageMetadata.getDeviceIdentification()).thenReturn("test-metadata-device-id");
     when(this.messageMetadata.getIpAddress()).thenReturn("test-metadata-host");
@@ -96,7 +110,7 @@ class SubscriptionServiceTest {
   }
 
   @Test
-  void subscribeExistingDevice() {
+  void subscribeExistingDevice() throws Exception {
     // SETUP
     when(this.messageMetadata.getDeviceIdentification()).thenReturn("test-metadata-device-id");
     final MqttDevice device = mock(MqttDevice.class);
