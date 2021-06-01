@@ -90,7 +90,7 @@ public class MacGenerationServiceTest {
   }
 
   private FirmwareFile createFirmwareFile() throws ProtocolAdapterException {
-    final FirmwareFile firmwareFile = new FirmwareFile(byteArray);
+    final FirmwareFile firmwareFile = new FirmwareFile(byteArray.clone());
     firmwareFile.setMbusDeviceSerialNumber(mbusDeviceSerialNumber);
     return firmwareFile;
   }

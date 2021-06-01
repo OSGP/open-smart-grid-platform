@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
@@ -17,8 +18,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.bouncycastle.util.encoders.Hex;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.enums.ActivationType;
@@ -64,24 +63,22 @@ public class FirmwareFileTest {
   }
 
   @Test
+  public void testFittingMbusDeviceSerialNumber() throws IOException, ProtocolAdapterException {
+    final FirmwareFile firmwareFile = this.createPartialWildcardFirmwareFile();
+
+    final String idHex = "0000FFFF";
+    final int noncompliantMbusDeviceSerialNumberInt = Integer.parseInt(idHex, 16);
+
+    assertDoesNotThrow(
+        () -> firmwareFile.setMbusDeviceSerialNumber(noncompliantMbusDeviceSerialNumberInt));
+  }
+
+  @Test
   public void testMisfitMbusDeviceSerialNumber() throws IOException, ProtocolAdapterException {
-    // Changed fully wildcarded (FFFFFFFF) MbusDeviceSerialNumber in header with partially
-    // wildcarded one (FFFF0000, LSB first)
-    final byte[] compliantMbusDeviceSerialNumber =
-        new byte[] {(byte) 255, (byte) 255, (byte) 0, (byte) 0};
+    final FirmwareFile firmwareFile = this.createPartialWildcardFirmwareFile();
 
-    final byte[] clonedByteArray = byteArray.clone();
-    clonedByteArray[22] = compliantMbusDeviceSerialNumber[0];
-    clonedByteArray[23] = compliantMbusDeviceSerialNumber[1];
-    clonedByteArray[24] = compliantMbusDeviceSerialNumber[2];
-    clonedByteArray[25] = compliantMbusDeviceSerialNumber[3];
-
-    final FirmwareFile firmwareFile = new FirmwareFile(clonedByteArray);
-
-    log.debug(firmwareFile.getHeader().toString());
-
-    final int noncompliantMbusDeviceSerialNumberInt = 10000;
-
+    final String idHex = "00010000";
+    final int noncompliantMbusDeviceSerialNumberInt = Integer.parseInt(idHex, 16);
     final Exception exception =
         assertThrows(
             ProtocolAdapterException.class,
@@ -91,8 +88,24 @@ public class FirmwareFileTest {
     assertThat(exception)
         .hasMessage(
             "MbusDevice Serial Number (%s) does not fit the range of serial numbers supported by this Firmware File (%s)",
-            StringUtils.leftPad(Integer.toString(noncompliantMbusDeviceSerialNumberInt), 8, "0"),
-            Hex.toHexString(compliantMbusDeviceSerialNumber));
+            idHex,
+            new StringBuffer(firmwareFile.getHeader().getMbusDeviceSerialNumber())
+                .reverse()
+                .toString());
+  }
+
+  private FirmwareFile createPartialWildcardFirmwareFile() {
+    // Changed fully wildcarded (FFFFFFFF) MbusDeviceSerialNumber in header with partially
+    // wildcarded one (FFFF0000, LSB first)
+    // So meters with IDs 00000001 to 00009999 [decimal] do fit
+    final byte[] clonedByteArray = byteArray.clone();
+    clonedByteArray[22] = (byte) 255;
+    clonedByteArray[23] = (byte) 255;
+    clonedByteArray[24] = (byte) 0;
+    clonedByteArray[25] = (byte) 0;
+
+    final FirmwareFile firmwareFile = new FirmwareFile(clonedByteArray);
+    return firmwareFile;
   }
 
   @Test

@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
+import org.bouncycastle.util.encoders.Hex;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 /**
@@ -92,12 +92,18 @@ public class FirmwareFile {
   public void setMbusDeviceSerialNumber(final int mbusDeviceSerialNumber)
       throws ProtocolAdapterException {
 
-    this.checkWildcard(mbusDeviceSerialNumber);
     final byte[] mbusDeviceSerialNumberByteArray =
         ByteBuffer.allocate(4)
             .order(ByteOrder.LITTLE_ENDIAN)
             .putInt(mbusDeviceSerialNumber)
             .array();
+
+    this.checkWildcard(
+        Hex.toHexString(
+            ByteBuffer.allocate(4)
+                .order(ByteOrder.BIG_ENDIAN)
+                .putInt(mbusDeviceSerialNumber)
+                .array()));
 
     final ByteBuffer buffer = ByteBuffer.wrap(this.imageData);
     buffer.position(22);
@@ -109,19 +115,15 @@ public class FirmwareFile {
    * The Identification number can be wildcarded, a firmware file can be made available for a range
    * or all individual meters. The wildcard character is hex-value: 'F'.
    */
-  private void checkWildcard(final int mbusDeviceSerialNumber) throws ProtocolAdapterException {
-    final String mbusDeviceSerialNumberString =
-        StringUtils.leftPad(Integer.toString(mbusDeviceSerialNumber), 8, "0");
+  private void checkWildcard(final String mbusDeviceSerialNumberHex)
+      throws ProtocolAdapterException {
     final String pattern =
-        new StringBuffer(this.getHeader().getMbusDeviceSerialNumber())
-            .reverse()
-            .toString()
-            .replace('f', '.');
-    if (!Pattern.matches(pattern, mbusDeviceSerialNumberString)) {
+        new StringBuffer(this.getHeader().getMbusDeviceSerialNumber()).reverse().toString();
+    if (!Pattern.matches(pattern.replace('f', '.'), mbusDeviceSerialNumberHex)) {
       throw new ProtocolAdapterException(
           String.format(
               "MbusDevice Serial Number (%s) does not fit the range of serial numbers supported by this Firmware File (%s)",
-              mbusDeviceSerialNumberString, this.getHeader().getMbusDeviceSerialNumber()));
+              mbusDeviceSerialNumberHex, pattern));
     }
   }
 
