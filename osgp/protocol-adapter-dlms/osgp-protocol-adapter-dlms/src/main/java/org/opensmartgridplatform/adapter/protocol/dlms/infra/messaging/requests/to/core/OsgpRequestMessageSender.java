@@ -10,20 +10,18 @@ package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.requests
 
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component(value = "protocolDlmsOutboundOsgpCoreRequestsMessageSender")
 public class OsgpRequestMessageSender {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(OsgpRequestMessageSender.class);
 
   @Autowired
   @Qualifier("protocolDlmsOutboundOsgpCoreRequestsJmsTemplate")
@@ -33,7 +31,7 @@ public class OsgpRequestMessageSender {
       final RequestMessage requestMessage,
       final String messageType,
       final MessageMetadata messageMetadata) {
-    LOGGER.info("Sending request message to OSGP.");
+    log.info("Sending request message to GXF.");
 
     this.jmsTemplate.send(
         (final Session session) -> {
@@ -46,6 +44,7 @@ public class OsgpRequestMessageSender {
           objectMessage.setStringProperty(
               Constants.DEVICE_IDENTIFICATION, requestMessage.getDeviceIdentification());
           if (messageMetadata != null) {
+            objectMessage.setJMSPriority(messageMetadata.getMessagePriority());
             objectMessage.setStringProperty(Constants.DOMAIN, messageMetadata.getDomain());
             objectMessage.setStringProperty(
                 Constants.DOMAIN_VERSION, messageMetadata.getDomainVersion());

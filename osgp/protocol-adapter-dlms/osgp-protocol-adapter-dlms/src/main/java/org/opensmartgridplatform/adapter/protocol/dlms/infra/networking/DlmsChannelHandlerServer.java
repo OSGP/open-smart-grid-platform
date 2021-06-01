@@ -12,20 +12,21 @@ import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import java.net.InetSocketAddress;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessageSender;
 import org.opensmartgridplatform.dlms.DlmsPushNotification;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushNotificationAlarmDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushNotificationSmsDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata.Builder;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Sharable
+@Slf4j
 public class DlmsChannelHandlerServer extends DlmsChannelHandler {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(DlmsChannelHandlerServer.class);
 
   private static final String PUSH_ALARM_TRIGGER = "Push alarm monitor";
   private static final String PUSH_SMS_TRIGGER = "Push sms wakeup";
@@ -33,8 +34,7 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
   @Autowired private OsgpRequestMessageSender osgpRequestMessageSender;
 
   @Override
-  public void channelRead0(final ChannelHandlerContext ctx, final DlmsPushNotification message)
-      throws Exception {
+  public void channelRead0(final ChannelHandlerContext ctx, final DlmsPushNotification message) {
 
     final String correlationId = UUID.randomUUID().toString().replace("-", "");
     final String deviceIdentification = message.getEquipmentIdentifier();
@@ -55,7 +55,7 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
       this.processPushedAlarm(message, correlationId, deviceIdentification, ipAddress);
 
     } else {
-      LOGGER.info("Unknown received message, skip processing");
+      log.info("Unknown received message, skip processing");
     }
   }
 
@@ -78,9 +78,12 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
             ipAddress,
             pushNotificationAlarm);
 
-    LOGGER.info("Sending push notification alarm to OSGP with correlation ID: {}", correlationId);
+    final MessageMetadata messageMetadata =
+        new Builder().withMessagePriority(MessagePriorityEnum.HIGH.getPriority()).build();
+
+    log.info("Sending push notification alarm to GXF with correlation ID: {}", correlationId);
     this.osgpRequestMessageSender.send(
-        requestMessage, MessageType.PUSH_NOTIFICATION_ALARM.name(), null);
+        requestMessage, MessageType.PUSH_NOTIFICATION_ALARM.name(), messageMetadata);
   }
 
   private void processPushedSms(
@@ -97,8 +100,7 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
         new RequestMessage(
             correlationId, "no-organisation", deviceIdentification, ipAddress, pushNotificationSms);
 
-    LOGGER.info(
-        "Sending push notification sms wakeup to OSGP with correlation ID: {}", correlationId);
+    log.info("Sending push notification sms wakeup to GXF with correlation ID: {}", correlationId);
     this.osgpRequestMessageSender.send(
         requestMessage, MessageType.PUSH_NOTIFICATION_SMS.name(), null);
   }
@@ -108,12 +110,12 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
     String ipAddress = null;
     try {
       ipAddress = ((InetSocketAddress) ctx.channel().remoteAddress()).getHostString();
-      LOGGER.info(
+      log.info(
           "Push notification for device {} received from IP address {}",
           deviceIdentification,
           ipAddress);
     } catch (final Exception ex) {
-      LOGGER.info("Unable to determine IP address of the meter sending a push notification: ", ex);
+      log.info("Unable to determine IP address of the meter sending a push notification: ", ex);
     }
     return ipAddress;
   }
