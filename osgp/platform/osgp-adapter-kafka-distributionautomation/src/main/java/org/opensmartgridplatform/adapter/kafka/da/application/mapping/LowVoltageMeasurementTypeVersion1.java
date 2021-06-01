@@ -11,7 +11,7 @@ package org.opensmartgridplatform.adapter.kafka.da.application.mapping;
 import com.alliander.data.scadameasurementpublishedevent.UnitMultiplier;
 import com.alliander.data.scadameasurementpublishedevent.UnitSymbol;
 
-public enum LowVoltageMeasurementType implements LowVoltageMeasurementDefinition {
+public enum LowVoltageMeasurementTypeVersion1 implements LowVoltageMeasurementDefinition {
   VOLTAGE_L1(0, "U-L1-E", UnitSymbol.V),
   VOLTAGE_L2(1, "U-L2-E", UnitSymbol.V),
   VOLTAGE_L3(2, "U-L3-E", UnitSymbol.V),
@@ -52,29 +52,19 @@ public enum LowVoltageMeasurementType implements LowVoltageMeasurementDefinition
   CURRENT_HARMONIC_I3_H13(37, "I3-H13", UnitSymbol.A),
   CURRENT_HARMONIC_I1_H15(38, "I1-H15", UnitSymbol.A),
   CURRENT_HARMONIC_I2_H15(39, "I2-H15", UnitSymbol.A),
-  CURRENT_HARMONIC_I3_H15(40, "I3-H15", UnitSymbol.A),
-  RMS_CURRENT_N0(41, "INULL", UnitSymbol.A),
-  P_PLUS(42, "Pplus", UnitSymbol.none),
-  P_MIN(43, "Pmin", UnitSymbol.none),
-  Q_PLUS(44, "Qplus", UnitSymbol.none),
-  Q_MIN(45, "Qmin", UnitSymbol.none),
-  VOLTAGE_RMS_L1(46, "U-L1-E", UnitSymbol.V),
-  VOLTAGE_RMS_L2(47, "U-L2-E", UnitSymbol.V),
-  VOLTAGE_RMS_L3(48, "U-L3-E", UnitSymbol.V),
-  TEMPERATURE(49, "T", UnitSymbol.C),
-  FREQUENCY(50, "F", UnitSymbol.Hz);
+  CURRENT_HARMONIC_I3_H15(40, "I3-H15", UnitSymbol.A);
 
   private int index;
   private String description;
   private UnitSymbol unitSymbol;
   private UnitMultiplier unitMultiplier;
 
-  LowVoltageMeasurementType(
+  LowVoltageMeasurementTypeVersion1(
       final int index, final String description, final UnitSymbol unitSymbol) {
     this(index, description, unitSymbol, UnitMultiplier.none);
   }
 
-  LowVoltageMeasurementType(
+  LowVoltageMeasurementTypeVersion1(
       final int index,
       final String description,
       final UnitSymbol unitSymbol,
