@@ -30,7 +30,7 @@ public class SimulatorClientConfig {
   private String sslClientTruststoreType;
 
   @Bean
-  public Properties clientProperties() {
+  public Properties mqttClientProperties() {
     final Properties p = new Properties();
     if (this.sslEnabled) {
       p.put(ClientConstants.SSL_TRUSTSTORE_TYPE_PROPERTY_NAME, this.sslClientTruststoreType);

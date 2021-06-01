@@ -15,13 +15,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 @Configuration
+@Import(SimulatorClientConfig.class)
 public class SimulatorConfig {
 
   private static final Logger LOG = LoggerFactory.getLogger(SimulatorConfig.class);
 
-  @Value("${mqtt.simulator.ssl.enabled}")
+  @Value("${mqtt.ssl.enabled:false}")
   private boolean sslEnabled;
 
   @Bean
@@ -33,12 +35,12 @@ public class SimulatorConfig {
   public Simulator simulator(
       @Value("${mqtt.simulator.spec}") final String spec,
       @Value("${mqtt.simulator.startClient}") final boolean startClient,
-      final Properties brokerProperties,
-      final Properties clientProperties)
+      final Properties mqttBrokerProperties,
+      final Properties mqttClientProperties)
       throws IOException {
     LOG.info("Start MQTT simulator with spec={}, startClient={}", spec, startClient);
     final Simulator app = new Simulator();
-    app.run(spec, startClient, brokerProperties, clientProperties);
+    app.run(spec, startClient, mqttBrokerProperties, mqttClientProperties);
     return app;
   }
 }

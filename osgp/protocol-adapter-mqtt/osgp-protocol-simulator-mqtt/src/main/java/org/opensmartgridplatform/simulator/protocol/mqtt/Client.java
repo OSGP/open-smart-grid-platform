@@ -33,14 +33,14 @@ public abstract class Client extends Thread {
   private final UUID uuid;
   private final String host;
   private final int port;
-  private final Properties clientProperties;
+  private final Properties mqttClientProperties;
   private volatile boolean running;
   private Mqtt3BlockingClient mqtt3BlockingClient;
 
-  protected Client(final String host, final int port, final Properties clientProperties) {
+  protected Client(final String host, final int port, final Properties mqttClientProperties) {
     this.host = host;
     this.port = port;
-    this.clientProperties = clientProperties;
+    this.mqttClientProperties = mqttClientProperties;
     this.uuid = UUID.randomUUID();
   }
 
@@ -54,7 +54,7 @@ public abstract class Client extends Thread {
               .identifier(this.uuid.toString())
               .serverHost(this.host)
               .serverPort(this.port)
-              .sslConfig(getSslConfig(this.clientProperties))
+              .sslConfig(getSslConfig(this.mqttClientProperties))
               .buildBlocking();
 
       final Mqtt3ConnAck ack = this.mqtt3BlockingClient.connect();
@@ -68,25 +68,25 @@ public abstract class Client extends Thread {
     }
   }
 
-  private static MqttClientSslConfig getSslConfig(final Properties clientProperties)
+  private static MqttClientSslConfig getSslConfig(final Properties mqttClientProperties)
       throws Exception {
-    if (clientProperties == null || clientProperties.isEmpty()) {
+    if (mqttClientProperties == null || mqttClientProperties.isEmpty()) {
       return null;
     }
     return MqttClientSslConfig.builder()
-        .trustManagerFactory(getTruststoreFactory(clientProperties))
+        .trustManagerFactory(getTruststoreFactory(mqttClientProperties))
         .build();
   }
 
-  private static TrustManagerFactory getTruststoreFactory(final Properties sslClientProperties)
+  private static TrustManagerFactory getTruststoreFactory(final Properties mqttClientProperties)
       throws Exception {
 
     final String trustStoreType =
-        sslClientProperties.getProperty(ClientConstants.SSL_TRUSTSTORE_TYPE_PROPERTY_NAME);
+        mqttClientProperties.getProperty(ClientConstants.SSL_TRUSTSTORE_TYPE_PROPERTY_NAME);
     final String trustStorePath =
-        sslClientProperties.getProperty(ClientConstants.SSL_TRUSTSTORE_PATH_PROPERTY_NAME);
+        mqttClientProperties.getProperty(ClientConstants.SSL_TRUSTSTORE_PATH_PROPERTY_NAME);
     final String trustStorePW =
-        sslClientProperties.getProperty(ClientConstants.SSL_TRUSTSTORE_PASSWORD_PROPERTY_NAME);
+        mqttClientProperties.getProperty(ClientConstants.SSL_TRUSTSTORE_PASSWORD_PROPERTY_NAME);
 
     final KeyStore trustStore = KeyStore.getInstance(trustStoreType);
     InputStream in = ClassLoader.getSystemResourceAsStream(trustStorePath);

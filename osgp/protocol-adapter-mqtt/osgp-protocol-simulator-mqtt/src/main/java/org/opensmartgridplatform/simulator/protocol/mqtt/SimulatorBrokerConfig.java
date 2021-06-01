@@ -43,7 +43,7 @@ public class SimulatorBrokerConfig {
   private int sslPort;
 
   @Bean
-  public Properties brokerProperties() {
+  public Properties mqttBrokerProperties() {
     final Properties p = new Properties();
     p.put(BrokerConstants.HOST, this.host);
     p.put(BrokerConstants.PORT, this.port);
