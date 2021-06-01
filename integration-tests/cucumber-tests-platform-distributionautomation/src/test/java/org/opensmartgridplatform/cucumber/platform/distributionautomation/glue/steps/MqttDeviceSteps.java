@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import org.apache.avro.util.Utf8;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.entities.MqttDevice;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.repositories.MqttDeviceRepository;
@@ -72,7 +73,11 @@ public class MqttDeviceSteps {
     final Message message = new Message(topic, payload, 10000);
     final Message[] messages = {message};
     spec.setMessages(messages);
-    final SimulatorSpecPublishingClient publishingClient = new SimulatorSpecPublishingClient(spec);
+
+    final Properties properties = new Properties();
+
+    final SimulatorSpecPublishingClient publishingClient =
+        new SimulatorSpecPublishingClient(spec, properties);
     publishingClient.start();
   }
 
