@@ -106,7 +106,8 @@ public class MqttClientAdapter {
         mqttProperties.getProperty(MqttConstants.SSL_TRUSTSTORE_PASSWORD_PROPERTY_NAME);
 
     final KeyStore trustStore = KeyStore.getInstance(trustStoreType);
-    InputStream in = ClassLoader.getSystemResourceAsStream(trustStorePath);
+    InputStream in =
+        Thread.currentThread().getContextClassLoader().getResourceAsStream(trustStorePath);
     if (in == null) {
       in = new FileInputStream(trustStorePath);
     }
