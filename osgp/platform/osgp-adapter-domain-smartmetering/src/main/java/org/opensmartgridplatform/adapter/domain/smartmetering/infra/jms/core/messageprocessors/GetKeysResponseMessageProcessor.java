@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 public class GetKeysResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
   @Autowired
-  @Qualifier("domainSmartMeteringManagementService")
+  @Qualifier("domainSmartMeteringConfigurationService")
   private ConfigurationService configurationService;
 
   @Autowired

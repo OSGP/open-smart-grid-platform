@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 public class GetKeysRequestMessageProcessor extends BaseRequestMessageProcessor {
 
   @Autowired
-  @Qualifier("domainSmartMeteringManagementService")
+  @Qualifier("domainSmartMeteringConfigurationService")
   private ConfigurationService configurationService;
 
   @Autowired

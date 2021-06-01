@@ -1,0 +1,66 @@
+/*
+ * Copyright 2021 Alliander N.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
+package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+import java.util.Map;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysResponse;
+import org.opensmartgridplatform.cucumber.core.ScenarioContext;
+import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.GetKeysRequestFactory;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
+import org.springframework.beans.factory.annotation.Autowired;
+
+public class GetKeys {
+
+  @Autowired private SmartMeteringConfigurationClient smartMeteringConfigurationClient;
+
+  @When("^a get keys request is received$")
+  public void aGetKeysRequestIsReceived(final Map<String, String> settings) throws Throwable {
+
+    final GetKeysRequest request = GetKeysRequestFactory.fromParameterMap(settings);
+
+    final GetKeysAsyncResponse asyncResponse =
+        this.smartMeteringConfigurationClient.getKeys(request);
+
+    assertThat(asyncResponse).as("getKeysAsyncResponse should not be null").isNotNull();
+    ScenarioContext.current()
+        .put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
+  }
+
+  @Then("^the get keys response should return the requested keys$")
+  public void theGetKeysResponseIsReturned(final Map<String, String> expectedValues)
+      throws Throwable {
+
+    final GetKeysAsyncRequest asyncRequest = GetKeysRequestFactory.fromScenarioContext();
+    final GetKeysResponse response =
+        this.smartMeteringConfigurationClient.retrieveGetKeysResponse(asyncRequest);
+
+    assertThat(response).isNotNull();
+  }
+  //
+  //    assertThat(response.getResult())
+  //        .as(OPERATION + ", Checking result:")
+  //        .isEqualTo(OsgpResultType.OK);
+  //
+  //    final GetKeysResponse
+  //        expectedResponse = GetKeysResponseFactory.fromParameterMap(expectedValues);
+  //
+  //    assertThat(response.getGetKeysResponseData())
+  //        .usingRecursiveComparison()
+  //        .isEqualTo(expectedResponse);
+  //  }
+}

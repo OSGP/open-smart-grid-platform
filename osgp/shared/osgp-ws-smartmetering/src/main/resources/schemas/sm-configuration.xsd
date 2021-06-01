@@ -1261,7 +1261,7 @@
     <xsd:complexContent>
       <xsd:extension base="common:Query">
         <xsd:sequence>
-          <xsd:element type="tns:SecretType" name="secretType"
+          <xsd:element type="tns:SecretType" name="secretTypes"
             minOccurs="1" maxOccurs="4" />
         </xsd:sequence>
       </xsd:extension>
