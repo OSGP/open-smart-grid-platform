@@ -53,8 +53,9 @@ public class ScadaMeasurementPublishedEventConverter
       analogList = new LowVoltageMeasurementToAnalogList().convertToAnalogList(measurementValues);
     } catch (final IllegalArgumentException e) {
       LOGGER.error(
-          "Measurement values does not have the expected amount of fields. Expecting: {} or {}, actual: {}. Payload: {}.",
+          "Measurement values does not have the expected amount of fields. Expecting: {}, {} or {}, actual: {}. Payload: {}.",
           LowVoltageMeasurementTypeVersion1.values().length,
+          LowVoltageMeasurementTypeVersion2.values().length,
           LowVoltageMetaMeasurementType.values().length,
           measurementValues.length,
           source,
