@@ -15,7 +15,7 @@ public class PlatformDistributionAutomationDefaults {
   public static final String FEEDER_NAME = "feeder-1";
   public static final Integer FEEDER_NUMBER = 1;
   public static final String MQTT_HOST = "127.0.0.1";
-  public static final Integer MQTT_PORT = 8883;
+  public static final Integer MQTT_PORT = 1883;
   public static final String MQTT_QOS = "EXACTLY_ONCE";
   public static final String PROFILE = "default_controlled_station";
   public static final String SUBSTATION_IDENTIFICATION = "sub-1";
