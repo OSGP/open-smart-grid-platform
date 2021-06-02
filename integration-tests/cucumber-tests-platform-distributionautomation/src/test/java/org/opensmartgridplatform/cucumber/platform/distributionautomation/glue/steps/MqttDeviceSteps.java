@@ -118,6 +118,7 @@ public class MqttDeviceSteps {
   private ArrayList<Name> getNames(final Map<String, String> parameters) {
     final String substationIdentification =
         getString(parameters, PlatformDistributionAutomationKeys.SUBSTATION_IDENTIFICATION);
+    final String version = getString(parameters, PlatformDistributionAutomationKeys.VERSION);
     final String substationName =
         getString(parameters, PlatformDistributionAutomationKeys.SUBSTATION_NAME);
     final String bayPosition =
@@ -127,6 +128,7 @@ public class MqttDeviceSteps {
 
     final ArrayList<Name> names = new ArrayList<>();
     names.add(new Name(new NameType("gisbehuizingnummer"), substationIdentification));
+    names.add(new Name(new NameType("versie"), version));
     names.add(new Name(new NameType("msr naam"), substationName));
     names.add(new Name(new NameType("bay positie"), bayPosition));
     names.add(new Name(new NameType("bay identificatie"), bayIdentification));
