@@ -14,10 +14,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.Map;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SecretType;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.GetKeysRequestFactory;
@@ -25,6 +27,8 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smar
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class GetKeys {
+
+  private static final String OPERATION = "Get keys";
 
   @Autowired private SmartMeteringConfigurationClient smartMeteringConfigurationClient;
 
@@ -50,17 +54,17 @@ public class GetKeys {
         this.smartMeteringConfigurationClient.retrieveGetKeysResponse(asyncRequest);
 
     assertThat(response).isNotNull();
+
+    assertThat(response.getResult())
+        .as(OPERATION + ", Checking result:")
+        .isEqualTo(OsgpResultType.OK);
+
+    final byte[] key1 = response.getGetKeysResponseData().get(0).getSecretValue();
+    final SecretType key1Type = response.getGetKeysResponseData().get(0).getSecretType();
+    final byte[] key2 = response.getGetKeysResponseData().get(1).getSecretValue();
+    final SecretType key2Type = response.getGetKeysResponseData().get(1).getSecretType();
+
+    // TODO: Compare to expected secrettypes and compare to default keys
+    //    PlatformSmartmeteringDefaults.SECURITY_KEY_A_DB
   }
-  //
-  //    assertThat(response.getResult())
-  //        .as(OPERATION + ", Checking result:")
-  //        .isEqualTo(OsgpResultType.OK);
-  //
-  //    final GetKeysResponse
-  //        expectedResponse = GetKeysResponseFactory.fromParameterMap(expectedValues);
-  //
-  //    assertThat(response.getGetKeysResponseData())
-  //        .usingRecursiveComparison()
-  //        .isEqualTo(expectedResponse);
-  //  }
 }
