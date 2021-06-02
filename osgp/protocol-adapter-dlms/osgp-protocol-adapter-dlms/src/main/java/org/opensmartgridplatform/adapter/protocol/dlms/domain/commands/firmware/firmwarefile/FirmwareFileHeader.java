@@ -38,7 +38,7 @@ public class FirmwareFileHeader {
     return DeviceType.getByCode(this.getFirmwareFileHeaderAddressField().getMbusDeviceType()[0]);
   }
 
-  Integer getMbusVersionInt() {
+  int getMbusVersionInt() {
     return this.toInt(this.getFirmwareFileHeaderAddressField().getMbusVersion());
   }
 
@@ -87,7 +87,7 @@ public class FirmwareFileHeader {
     return this.toInt(this.headerLength);
   }
 
-  public Integer getHeaderVersionInt() {
+  public int getHeaderVersionInt() {
     return this.toInt(this.headerVersion);
   }
 
@@ -95,8 +95,9 @@ public class FirmwareFileHeader {
     return Hex.toHexString(this.firmwareImageMagicNumber);
   }
 
-  String getMbusDeviceSerialNumber() {
-    return Hex.toHexString(this.getFirmwareFileHeaderAddressField().getMbusDeviceSerialNumber());
+  String getMbusDeviceIdentificationNumber() {
+    return Hex.toHexString(
+        this.getFirmwareFileHeaderAddressField().getMbusDeviceIdentificationNumber());
   }
 
   public FirmwareFileHeaderAddressField getFirmwareFileHeaderAddressField() {
@@ -125,7 +126,9 @@ public class FirmwareFileHeader {
         String.format(
             "%n    manufacturerId: %s", this.getMbusManufacturerId().getIdentification()));
     result.append(
-        String.format("%n    mbusDeviceSerialNumber: %s (hex)", this.getMbusDeviceSerialNumber()));
+        String.format(
+            "%n    mbusDeviceIdentificationNumber: %s (hex)",
+            this.getMbusDeviceIdentificationNumber()));
     result.append(String.format("%n    version: %d (int)", this.getMbusVersionInt()));
     result.append(String.format("%n    deviceType: %s", this.getMbusDeviceType()));
     result.append(String.format("%n  activationType: %s", this.getActivationTypeEnum()));

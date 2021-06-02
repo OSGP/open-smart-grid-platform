@@ -170,7 +170,7 @@ public class MacGenerationService {
         firmwareFile.getHeader().getFirmwareFileHeaderAddressField();
     return ByteBuffer.allocate(12)
         .put(firmwareFileHeaderAddressField.getMbusManufacturerId())
-        .put(firmwareFileHeaderAddressField.getMbusDeviceSerialNumber())
+        .put(firmwareFileHeaderAddressField.getMbusDeviceIdentificationNumber())
         .put(firmwareFileHeaderAddressField.getMbusVersion())
         .put(firmwareFileHeaderAddressField.getMbusDeviceType())
         .put(Arrays.reverse(firmwareFile.getHeader().getFirmwareImageVersion()))

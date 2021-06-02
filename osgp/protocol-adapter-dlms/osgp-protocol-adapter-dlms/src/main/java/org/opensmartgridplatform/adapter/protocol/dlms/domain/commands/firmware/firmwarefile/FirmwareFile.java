@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Hex;
@@ -89,25 +90,25 @@ public class FirmwareFile {
             .array();
   }
 
-  public void setMbusDeviceSerialNumber(final int mbusDeviceSerialNumber)
+  public void setMbusDeviceIdentificationNumber(final int mbusDeviceIdentificationNumber)
       throws ProtocolAdapterException {
 
-    final byte[] mbusDeviceSerialNumberByteArray =
+    final byte[] mbusDeviceIdentificationNumberByteArray =
         ByteBuffer.allocate(4)
             .order(ByteOrder.LITTLE_ENDIAN)
-            .putInt(mbusDeviceSerialNumber)
+            .putInt(mbusDeviceIdentificationNumber)
             .array();
 
     this.checkWildcard(
         Hex.toHexString(
             ByteBuffer.allocate(4)
                 .order(ByteOrder.BIG_ENDIAN)
-                .putInt(mbusDeviceSerialNumber)
+                .putInt(mbusDeviceIdentificationNumber)
                 .array()));
 
     final ByteBuffer buffer = ByteBuffer.wrap(this.imageData);
     buffer.position(22);
-    buffer.put(mbusDeviceSerialNumberByteArray);
+    buffer.put(mbusDeviceIdentificationNumberByteArray);
     this.imageData = buffer.array();
   }
 
@@ -115,16 +116,33 @@ public class FirmwareFile {
    * The Identification number can be wildcarded, a firmware file can be made available for a range
    * or all individual meters. The wildcard character is hex-value: 'F'.
    */
-  private void checkWildcard(final String mbusDeviceSerialNumberHex)
+  private void checkWildcard(final String mbusDeviceIdentificationNumberHex)
       throws ProtocolAdapterException {
-    final String pattern =
-        new StringBuffer(this.getHeader().getMbusDeviceSerialNumber()).reverse().toString();
-    if (!Pattern.matches(pattern.replace('f', '.'), mbusDeviceSerialNumberHex)) {
+    final String lsbFirstPattern = this.getHeader().getMbusDeviceIdentificationNumber();
+    final String msbFirstPattern = this.reverseHexString(lsbFirstPattern);
+    if (!Pattern.matches(
+        msbFirstPattern.replaceAll("[fF]", "[0-9]"), mbusDeviceIdentificationNumberHex)) {
       throw new ProtocolAdapterException(
           String.format(
-              "MbusDevice Serial Number (%s) does not fit the range of serial numbers supported by this Firmware File (%s)",
-              mbusDeviceSerialNumberHex, pattern));
+              "M-Bus Device Identification Number (%s) does not fit the range of Identification Numbers supported by this Firmware File (%s)",
+              mbusDeviceIdentificationNumberHex, msbFirstPattern));
     }
+  }
+
+  private String reverseHexString(final String hex) {
+    String hexIn = hex;
+    if (hexIn.length() % 2 != 0) {
+      hexIn = "0" + hexIn;
+    }
+    final int numberOfPairs = hexIn.length() / 2;
+    final StringBuilder patternBuilder = new StringBuilder(hexIn.length());
+    for (int i = 0; i < numberOfPairs; i++) {
+      final int positionAfterPairToCopy = 2 * (numberOfPairs - i);
+      patternBuilder
+          .append(hexIn.charAt(positionAfterPairToCopy - 2))
+          .append(hexIn.charAt(positionAfterPairToCopy - 1));
+    }
+    return patternBuilder.toString();
   }
 
   public FirmwareFileHeader getHeader() {
@@ -156,6 +174,6 @@ public class FirmwareFile {
   }
 
   private byte[] readBytes(final byte[] bytes, final int begin, final int end) {
-    return java.util.Arrays.copyOfRange(bytes, begin, end);
+    return Arrays.copyOfRange(bytes, begin, end);
   }
 }

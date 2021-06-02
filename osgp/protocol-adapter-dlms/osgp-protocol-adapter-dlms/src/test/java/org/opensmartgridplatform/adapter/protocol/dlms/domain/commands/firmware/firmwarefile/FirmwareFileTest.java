@@ -14,10 +14,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Hex;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.enums.ActivationType;
@@ -53,7 +55,7 @@ public class FirmwareFileTest {
     assertThat(header.getSecurityTypeEnum()).isEqualTo(SecurityType.GMAC);
     assertThat(header.getAddressLengthInt()).isEqualTo(8);
     assertThat(header.getAddressTypeEnum()).isEqualTo(AddressType.MBUS_ADDRESS);
-    assertThat(header.getMbusDeviceSerialNumber()).isEqualTo("ffffffff");
+    assertThat(header.getMbusDeviceIdentificationNumber()).isEqualTo("ffffffff");
     assertThat(header.getMbusManufacturerId().getIdentification()).isEqualTo("GWI");
     assertThat(header.getMbusVersionInt()).isEqualTo(80);
     assertThat(header.getMbusDeviceType()).isEqualTo(DeviceType.GAS);
@@ -63,70 +65,105 @@ public class FirmwareFileTest {
   }
 
   @Test
-  public void testFittingMbusDeviceSerialNumber() throws IOException, ProtocolAdapterException {
-    final FirmwareFile firmwareFile = this.createPartialWildcardFirmwareFile();
+  public void testFittingMbusDeviceIdentificationNumber()
+      throws IOException, ProtocolAdapterException {
 
-    final String idHex = "0000FFFF";
-    final int noncompliantMbusDeviceSerialNumberInt = Integer.parseInt(idHex, 16);
+    final FirmwareFile firmwareFile = this.createPartialWildcardFirmwareFile("FFFF0000");
+
+    final String idHex = "00009999";
+    final int fittingMbusDeviceIdentificationNumberInt = Integer.parseInt(idHex, 16);
 
     assertDoesNotThrow(
-        () -> firmwareFile.setMbusDeviceSerialNumber(noncompliantMbusDeviceSerialNumberInt));
+        () ->
+            firmwareFile.setMbusDeviceIdentificationNumber(
+                fittingMbusDeviceIdentificationNumberInt));
   }
 
   @Test
-  public void testMisfitMbusDeviceSerialNumber() throws IOException, ProtocolAdapterException {
-    final FirmwareFile firmwareFile = this.createPartialWildcardFirmwareFile();
+  public void testMisfitMbusDeviceIdentificationNumber()
+      throws IOException, ProtocolAdapterException {
+    final FirmwareFile firmwareFile = this.createPartialWildcardFirmwareFile("FFFF0000");
 
     final String idHex = "00010000";
-    final int noncompliantMbusDeviceSerialNumberInt = Integer.parseInt(idHex, 16);
+    final int misfittingMbusDeviceIdentificationNumberInt = Integer.parseInt(idHex, 16);
     final Exception exception =
         assertThrows(
             ProtocolAdapterException.class,
             () -> {
-              firmwareFile.setMbusDeviceSerialNumber(noncompliantMbusDeviceSerialNumberInt);
+              firmwareFile.setMbusDeviceIdentificationNumber(
+                  misfittingMbusDeviceIdentificationNumberInt);
             });
     assertThat(exception)
         .hasMessage(
-            "MbusDevice Serial Number (%s) does not fit the range of serial numbers supported by this Firmware File (%s)",
+            "M-Bus Device Identification Number (%s) does not fit the range of Identification Numbers supported by this Firmware File (%s)",
             idHex,
-            new StringBuffer(firmwareFile.getHeader().getMbusDeviceSerialNumber())
+            new StringBuffer(firmwareFile.getHeader().getMbusDeviceIdentificationNumber())
                 .reverse()
                 .toString());
   }
 
-  private FirmwareFile createPartialWildcardFirmwareFile() {
-    // Changed fully wildcarded (FFFFFFFF) MbusDeviceSerialNumber in header with partially
-    // wildcarded one (FFFF0000, LSB first)
-    // So meters with IDs 00000001 to 00009999 [decimal] do fit
-    final byte[] clonedByteArray = byteArray.clone();
-    clonedByteArray[22] = (byte) 255;
-    clonedByteArray[23] = (byte) 255;
-    clonedByteArray[24] = (byte) 0;
-    clonedByteArray[25] = (byte) 0;
+  @Test
+  void acceptIdentificationNumberThatDoesNotMatchLessRegularPattern() {
+    // wildcard accepts identifications 98470000 through 98479999
+    final FirmwareFile firmwareFile1 = this.createPartialWildcardFirmwareFile("FFFF4798");
+    final String idHex = "98478634";
+    final int fittingMbusIdentificationNumberInt = (int) Long.parseLong(idHex, 16);
 
+    assertDoesNotThrow(
+        () -> firmwareFile1.setMbusDeviceIdentificationNumber(fittingMbusIdentificationNumberInt));
+  }
+
+  @Test
+  void rejectIdentificationNumberThatDoesNotMatchLessRegularPattern() {
+    // wildcard accepts identifications 98470000 through 98479999
+    final FirmwareFile firmwareFile2 = this.createPartialWildcardFirmwareFile("FFFF4798");
+
+    final String idHex = "80215922"; // outside range 98470000 through 98479999
+    final int misfittingMbusIdentificationNumberInt = (int) Long.parseLong(idHex, 16);
+    final Exception exception =
+        assertThrows(
+            ProtocolAdapterException.class,
+            () -> {
+              firmwareFile2.setMbusDeviceIdentificationNumber(
+                  misfittingMbusIdentificationNumberInt);
+            });
+    assertThat(exception)
+        .hasMessage(
+            "M-Bus Device Identification Number (%s) does not fit the range of Identification Numbers supported by this Firmware File (%s)",
+            idHex,
+            Hex.encodeHexString(new byte[] {(byte) 0x98, (byte) 0x47, (byte) 255, (byte) 255}));
+  }
+
+  private FirmwareFile createPartialWildcardFirmwareFile(final String hexWildcard) {
+    final byte[] clonedByteArray = byteArray.clone();
+    final byte[] byteArray = new BigInteger(hexWildcard.toLowerCase(), 16).toByteArray();
+    clonedByteArray[22] = byteArray[1];
+    clonedByteArray[23] = byteArray[2];
+    clonedByteArray[24] = byteArray[3];
+    clonedByteArray[25] = byteArray[4];
     final FirmwareFile firmwareFile = new FirmwareFile(clonedByteArray);
     return firmwareFile;
   }
 
   @Test
-  public void testMbusDeviceSerialNumber() throws IOException, ProtocolAdapterException {
+  public void testMbusDeviceIdentificationNumber() throws IOException, ProtocolAdapterException {
     final String idHex = "10000540";
-    final int mbusDeviceSerialNumberInput = Integer.parseInt(idHex, 16);
-    final byte[] mbusDeviceSerialNumberByteArrayOutput =
+    final int mbusDeviceIdentificationNumberInput = Integer.parseInt(idHex, 16);
+    final byte[] mbusDeviceIdentificationNumberByteArrayOutput =
         ByteBuffer.allocate(4)
             .order(ByteOrder.LITTLE_ENDIAN)
-            .putInt(mbusDeviceSerialNumberInput)
+            .putInt(mbusDeviceIdentificationNumberInput)
             .array();
 
     final FirmwareFile firmwareFile = new FirmwareFile(byteArray);
-    firmwareFile.setMbusDeviceSerialNumber(mbusDeviceSerialNumberInput);
+    firmwareFile.setMbusDeviceIdentificationNumber(mbusDeviceIdentificationNumberInput);
     log.debug(firmwareFile.getHeader().toString());
 
     assertThat(
             firmwareFile
                 .getHeader()
                 .getFirmwareFileHeaderAddressField()
-                .getMbusDeviceSerialNumber())
-        .isEqualTo(mbusDeviceSerialNumberByteArrayOutput);
+                .getMbusDeviceIdentificationNumber())
+        .isEqualTo(mbusDeviceIdentificationNumberByteArrayOutput);
   }
 }

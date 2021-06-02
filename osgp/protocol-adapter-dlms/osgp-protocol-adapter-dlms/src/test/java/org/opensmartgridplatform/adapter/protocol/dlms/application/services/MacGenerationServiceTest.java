@@ -37,7 +37,7 @@ public class MacGenerationServiceTest {
   final String expectedMac = "b4375a6b43de6d2421628bba7d6ee0e6";
 
   private static byte[] byteArray;
-  private static final int mbusDeviceSerialNumber = Integer.parseInt("10000540", 16);
+  private static final int mbusDeviceIdentificationNumber = Integer.parseInt("10000540", 16);
   private static final String deviceIdentification = "G0035161000054016";
 
   @BeforeAll
@@ -91,7 +91,7 @@ public class MacGenerationServiceTest {
 
   private FirmwareFile createFirmwareFile() throws ProtocolAdapterException {
     final FirmwareFile firmwareFile = new FirmwareFile(byteArray.clone());
-    firmwareFile.setMbusDeviceSerialNumber(mbusDeviceSerialNumber);
+    firmwareFile.setMbusDeviceIdentificationNumber(mbusDeviceIdentificationNumber);
     return firmwareFile;
   }
 
@@ -215,7 +215,7 @@ public class MacGenerationServiceTest {
       throws ProtocolAdapterException {
 
     final FirmwareFile firmwareFile = new FirmwareFile(malformedFirmwareFile);
-    firmwareFile.setMbusDeviceSerialNumber(mbusDeviceSerialNumber);
+    firmwareFile.setMbusDeviceIdentificationNumber(mbusDeviceIdentificationNumber);
 
     final Exception exception =
         assertThrows(
