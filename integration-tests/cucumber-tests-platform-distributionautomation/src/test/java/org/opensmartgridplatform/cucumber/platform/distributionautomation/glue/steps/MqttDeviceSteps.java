@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import org.apache.avro.util.Utf8;
+import org.opensmartgridplatform.adapter.protocol.mqtt.application.config.MqttConstants;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.entities.MqttDevice;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.repositories.MqttDeviceRepository;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationDefaults;
@@ -75,6 +76,24 @@ public class MqttDeviceSteps {
     spec.setMessages(messages);
 
     final Properties properties = new Properties();
+
+    properties.put(MqttConstants.DEFAULT_HOST_PROPERTY_NAME, host);
+    properties.put(MqttConstants.DEFAULT_PORT_PROPERTY_NAME, port);
+    properties.put(
+        MqttConstants.DEFAULT_QOS_PROPERTY_NAME, PlatformDistributionAutomationDefaults.MQTT_QOS);
+    properties.put(MqttConstants.DEFAULT_TOPICS_PROPERTY_NAME, topic);
+
+    if (PlatformDistributionAutomationDefaults.MQTT_SSL_ENABLED) {
+      properties.put(
+          MqttConstants.SSL_TRUSTSTORE_TYPE_PROPERTY_NAME,
+          PlatformDistributionAutomationDefaults.MQTT_SSL_CLIENT_TRUSTSTORE_TYPE);
+      properties.put(
+          MqttConstants.SSL_TRUSTSTORE_PASSWORD_PROPERTY_NAME,
+          PlatformDistributionAutomationDefaults.MQTT_SSL_CLIENT_TRUSTSTORE_PASSWORD);
+      properties.put(
+          MqttConstants.SSL_TRUSTSTORE_PATH_PROPERTY_NAME,
+          PlatformDistributionAutomationDefaults.MQTT_SSL_CLIENT_TRUSTSTORE_LOCATION);
+    }
 
     final SimulatorSpecPublishingClient publishingClient =
         new SimulatorSpecPublishingClient(spec, properties);
