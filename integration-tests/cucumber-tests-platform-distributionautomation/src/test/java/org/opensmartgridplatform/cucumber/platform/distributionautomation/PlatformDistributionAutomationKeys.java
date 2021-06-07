@@ -33,4 +33,5 @@ public class PlatformDistributionAutomationKeys {
   public static final String UNIT_MULTIPLIER = "unitMultiplier";
   public static final String UNIT_SYMBOL = "unitSymbol";
   public static final String VALUE = "value";
+  public static final String VERSION = "version";
 }
