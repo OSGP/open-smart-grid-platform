@@ -13,7 +13,6 @@ import java.util.List;
 import org.openmuc.jdlms.AccessResultCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm.SetAlarmNotificationsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.GetConfigurationObjectCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.GetKeysCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.SetConfigurationObjectCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.SetRandomisationSettingsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.datetime.SetActivityCalendarCommandExecutor;
@@ -129,7 +128,7 @@ public class ConfigurationService {
   @Autowired
   private SetRandomisationSettingsCommandExecutor setRandomisationSettingsCommandExecutor;
 
-  @Autowired private GetKeysCommandExecutor getKeysCommandExecutor;
+  @Autowired private GetKeysService getKeysService;
 
   public void setSpecialDays(
       final DlmsConnectionManager conn,
@@ -459,11 +458,8 @@ public class ConfigurationService {
   }
 
   public GetKeysResponseDto requestGetKeys(
-      final DlmsConnectionManager conn,
-      final DlmsDevice device,
-      final GetKeysRequestDto getKeysRequestDto)
-      throws ProtocolAdapterException {
+      final DlmsDevice device, final GetKeysRequestDto getKeysRequestDto) throws OsgpException {
 
-    return this.getKeysCommandExecutor.execute(conn, device, getKeysRequestDto);
+    return this.getKeysService.getKeys(device, getKeysRequestDto);
   }
 }
