@@ -80,6 +80,9 @@ public class ScadaMeasurementPublishedEventConverter
     if (source.getBayIdentification() != null) {
       names.add(new Name(new NameType("bay identificatie"), source.getBayIdentification()));
     }
+    if (source.getAssetLabel() != null) {
+      names.add(new Name(new NameType("functieplaatslabel"), source.getAssetLabel()));
+    }
     final Voltage voltage = new Voltage(UnitMultiplier.k, UnitSymbol.V, LOW_VOLTAGE_NOMINAL);
     return new ConductingEquipment(new BaseVoltage("LS", voltage), names);
   }

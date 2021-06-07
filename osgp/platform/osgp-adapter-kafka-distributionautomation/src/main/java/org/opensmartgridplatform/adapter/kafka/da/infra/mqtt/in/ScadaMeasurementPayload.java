@@ -30,6 +30,7 @@ public class ScadaMeasurementPayload {
   private String substationName;
   private String feeder;
   private String bayIdentification;
+  private String assetLabel;
 
   @JsonProperty("D")
   private String date;

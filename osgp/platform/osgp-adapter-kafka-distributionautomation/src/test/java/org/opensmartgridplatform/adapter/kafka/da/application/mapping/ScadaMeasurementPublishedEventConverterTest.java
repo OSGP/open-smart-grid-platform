@@ -27,6 +27,7 @@ class ScadaMeasurementPublishedEventConverterTest {
   private static final String VERSION = "2";
   private static final String SUBSTATION_NAME = "Test location";
   private static final String BAY_IDENTIFICATION = "03FQ03";
+  private static final String ASSET_LABEL = "test asset label";
 
   @Test
   void testConvertScadaMeasurementPublishedEventVersion1() {
@@ -42,6 +43,7 @@ class ScadaMeasurementPublishedEventConverterTest {
             .substationName(SUBSTATION_NAME)
             .feeder(String.valueOf(feeder))
             .bayIdentification(BAY_IDENTIFICATION)
+            .assetLabel(ASSET_LABEL)
             .createdUtcSeconds(utcSeconds)
             .data(data.split(","))
             .build();
@@ -74,6 +76,7 @@ class ScadaMeasurementPublishedEventConverterTest {
             .substationName(SUBSTATION_NAME)
             .feeder(String.valueOf(feeder))
             .bayIdentification(BAY_IDENTIFICATION)
+            .assetLabel(ASSET_LABEL)
             .createdUtcSeconds(utcSeconds)
             .data(data.split(","))
             .build();
@@ -100,6 +103,7 @@ class ScadaMeasurementPublishedEventConverterTest {
     names.add(new Name(new NameType("bay positie"), String.valueOf(feeder)));
     if (feeder != 100) {
       names.add(new Name(new NameType("bay identificatie"), BAY_IDENTIFICATION));
+      names.add(new Name(new NameType("functieplaatslabel"), ASSET_LABEL));
     }
     return names;
   }
@@ -122,7 +126,7 @@ class ScadaMeasurementPublishedEventConverterTest {
         this.mapper.map(payload, ScadaMeasurementPublishedEvent.class);
     final List<Analog> measurements = event.getMeasurements();
 
-    assertThat(event.getCreatedDateTime()).isEqualTo(utcSeconds * 1000l);
+    assertThat(event.getCreatedDateTime()).isEqualTo(utcSeconds * 1000L);
     assertThat(measurements)
         .usingElementComparatorIgnoringFields("mRID")
         .isEqualTo(LovVoltageMessageFactory.expectedMetaMeasurements());
