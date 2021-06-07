@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.mqtt.application.services;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAck;
 import com.hivemq.client.mqtt.mqtt3.message.subscribe.suback.Mqtt3SubAck;
+import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.Properties;
 import org.opensmartgridplatform.adapter.protocol.mqtt.application.config.MqttConstants;
@@ -48,7 +49,7 @@ public class SubscriptionService implements MqttClientEventHandler {
     this.mqttClientProperties = mqttClientProperties;
   }
 
-  public void subscribe(final MessageMetadata messageMetadata) throws Exception {
+  public void subscribe(final MessageMetadata messageMetadata) throws GeneralSecurityException {
     final MqttDevice device = this.getOrCreateDevice(messageMetadata);
     final MqttClientAdapter mqttClientAdapter =
         this.mqttClientAdapterFactory.create(device, messageMetadata, this);
