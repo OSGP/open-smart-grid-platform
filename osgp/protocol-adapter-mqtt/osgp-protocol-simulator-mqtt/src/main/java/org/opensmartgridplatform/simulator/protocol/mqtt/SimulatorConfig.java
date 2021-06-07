@@ -23,7 +23,7 @@ public class SimulatorConfig {
 
   private static final Logger LOG = LoggerFactory.getLogger(SimulatorConfig.class);
 
-  @Value("${mqtt.ssl.enabled:false}")
+  @Value("${mqtt.simulator.ssl.enabled:false}")
   private boolean sslEnabled;
 
   @Bean
