@@ -149,6 +149,8 @@ public class MqttDeviceSteps {
         getString(parameters, PlatformDistributionAutomationKeys.BAY_POSITION);
     final String bayIdentification =
         getString(parameters, PlatformDistributionAutomationKeys.BAY_IDENTIFICATION);
+    final String assetLabel =
+        getString(parameters, PlatformDistributionAutomationKeys.FEEDER_ASSET_LABEL);
 
     final ArrayList<Name> names = new ArrayList<>();
     names.add(new Name(new NameType("gisbehuizingnummer"), substationIdentification));
@@ -156,6 +158,7 @@ public class MqttDeviceSteps {
     names.add(new Name(new NameType("msr naam"), substationName));
     names.add(new Name(new NameType("bay positie"), bayPosition));
     names.add(new Name(new NameType("bay identificatie"), bayIdentification));
+    names.add(new Name(new NameType("functieplaatslabel"), assetLabel));
     return names;
   }
 
