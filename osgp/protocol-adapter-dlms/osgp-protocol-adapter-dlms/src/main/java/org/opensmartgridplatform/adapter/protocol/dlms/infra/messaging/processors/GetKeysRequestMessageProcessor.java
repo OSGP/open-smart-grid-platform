@@ -12,7 +12,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processo
 import java.io.Serializable;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ConfigurationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -30,13 +29,17 @@ public class GetKeysRequestMessageProcessor extends DeviceRequestMessageProcesso
   }
 
   @Override
-  protected Serializable handleMessage(
-      final DlmsConnectionManager conn, final DlmsDevice device, final Serializable requestObject)
+  protected boolean usesDeviceConnection() {
+    return false;
+  }
+
+  @Override
+  protected Serializable handleMessage(final DlmsDevice device, final Serializable requestObject)
       throws OsgpException {
 
     this.assertRequestObjectType(GetKeysRequestDto.class, requestObject);
 
     final GetKeysRequestDto requestDto = (GetKeysRequestDto) requestObject;
-    return this.configurationService.requestGetKeys(conn, device, requestDto);
+    return this.configurationService.requestGetKeys(device, requestDto);
   }
 }
