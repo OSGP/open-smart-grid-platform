@@ -32,9 +32,9 @@ public class MacGenerationServiceTest {
   @InjectMocks MacGenerationService macGenerationService;
   @Mock SecretManagementService secretManagementService;
 
-  final byte[] firmwareUpdateAuthenticationKey = Hex.decode("F9AA9442108723357221D7AFCCD41BD1");
+  final byte[] firmwareUpdateAuthenticationKey = Hex.decode("F9AA0123456789012345D7AFCCD41BD1");
   final String expectedIv = "e91e40050010500300400011";
-  final String expectedMac = "b4375a6b43de6d2421628bba7d6ee0e6";
+  final String expectedMac = "9a72acd7a949861cc4df4612cbdbdef6";
 
   private static byte[] byteArray;
   private static final int mbusDeviceIdentificationNumber = Integer.parseInt("10000540", 16);
@@ -42,7 +42,7 @@ public class MacGenerationServiceTest {
 
   @BeforeAll
   public static void init() throws IOException {
-    final String filename = "integra-v00400011-snffffffff-newmods.bin";
+    final String filename = "test-short-v00400011-snffffffff-newmods.bin";
     byteArray = Files.readAllBytes(new ClassPathResource(filename).getFile().toPath());
   }
 

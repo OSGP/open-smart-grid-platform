@@ -33,7 +33,7 @@ import org.springframework.core.io.ClassPathResource;
 public class FirmwareFileTest {
 
   private static byte[] byteArray;
-  private static final String filename = "integra-v00400011-snffffffff-newmods.bin";
+  private static final String filename = "test-short-v00400011-snffffffff-newmods.bin";
 
   @BeforeEach
   public void init() throws IOException {
@@ -50,7 +50,7 @@ public class FirmwareFileTest {
     assertThat(header.getHeaderVersionInt()).isEqualTo(0);
     assertThat(header.getHeaderLengthInt()).isEqualTo(35);
     assertThat(header.getFirmwareImageVersionHex()).isEqualTo("11004000");
-    assertThat(header.getFirmwareImageLengthInt()).isEqualTo(161456);
+    assertThat(header.getFirmwareImageLengthInt()).isEqualTo(1000 - (35 + 16));
     assertThat(header.getSecurityLengthInt()).isEqualTo(16);
     assertThat(header.getSecurityTypeEnum()).isEqualTo(SecurityType.GMAC);
     assertThat(header.getAddressLengthInt()).isEqualTo(8);
