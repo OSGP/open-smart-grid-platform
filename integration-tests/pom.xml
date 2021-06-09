@@ -78,9 +78,47 @@
     <module>cucumber-tests-protocol-iec60870</module>
 
     <module>cucumber-tests-platform-common</module>
-    <module>cucumber-tests-platform-distributionautomation</module>
-    <module>cucumber-tests-platform-publiclighting</module>
-    <module>cucumber-tests-platform-smartmetering</module>
-    <module>cucumber-tests-platform-microgrids</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>flexovl</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>cucumber-tests-platform-publiclighting</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>smhe</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>cucumber-tests-platform-smartmetering</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>da</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>cucumber-tests-platform-distributionautomation</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>mg</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <modules>
+        <module>cucumber-tests-platform-microgrids</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>

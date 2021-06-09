@@ -35,7 +35,6 @@
   <modules>
     <module>osgp</module>
     <module>integration-tests</module>
-    <module>public-lighting-demo-app</module>
   </modules>
 
   <distributionManagement>
