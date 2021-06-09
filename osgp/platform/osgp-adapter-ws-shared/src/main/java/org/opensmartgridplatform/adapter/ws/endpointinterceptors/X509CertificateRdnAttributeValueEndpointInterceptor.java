@@ -14,8 +14,6 @@ import java.util.Set;
 import javax.naming.NamingException;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.server.endpoint.interceptor.EndpointInterceptorAdapter;
 import org.springframework.ws.transport.context.TransportContext;
@@ -29,8 +27,6 @@ import org.springframework.ws.transport.http.HttpServletConnection;
 public class X509CertificateRdnAttributeValueEndpointInterceptor
     extends EndpointInterceptorAdapter {
 
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(X509CertificateRdnAttributeValueEndpointInterceptor.class);
   private final String attributeId;
   private final String contextPropertyName;
 
@@ -84,7 +80,7 @@ public class X509CertificateRdnAttributeValueEndpointInterceptor
         }
       }
     } catch (final NamingException e) {
-      LOGGER.info("Getting CN from X509 certificate failed.", e);
+      this.logger.info("Getting CN from X509 certificate failed.", e);
     }
 
     return "";
@@ -107,7 +103,7 @@ public class X509CertificateRdnAttributeValueEndpointInterceptor
     if (x509CertificateAttribute instanceof X509Certificate[]) {
       return (X509Certificate[]) x509CertificateAttribute;
     } else {
-      LOGGER.info("HTTPServletRequest's attribute was not an array of X509Certificates.");
+      this.logger.info("HTTPServletRequest's attribute was not an array of X509Certificates.");
       return new X509Certificate[] {};
     }
   }
