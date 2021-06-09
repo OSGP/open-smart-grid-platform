@@ -11,6 +11,7 @@ package org.opensmartgridplatform.cucumber.platform.glue.steps.database.core;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBoolean;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getEnum;
+import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getHexDecoded;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
 import com.google.common.io.Files;
@@ -109,21 +110,36 @@ public class FirmwareFileSteps {
      * identification then no longer needs to be added to the constructor
      * used to create the firmware.)
      */
-    final String identification =
+    String identification =
         getString(
             settings,
             PlatformKeys.FIRMWARE_FILE_FILENAME,
             UUID.randomUUID().toString().replace("-", ""));
+    /*
+     * To enable tests for Firmware File upload the FirmwareFileIdentification
+     * as actually used to uniquely identify the Firmware File. In these scenario's
+     * the FirmwareFileIdentification is added and will overrule the filename as identification.
+     */
+    identification = getString(settings, PlatformKeys.FIRMWARE_FILE_IDENTIFICATION, identification);
+
+    /*
+     * The File contents can either be present in the Scenario parameters under label FirmwareFile
+     * The File Content is than provided in hexadecimal
+     * or the File contents can be read into a byte array using Firmware File's Filename
+     */
     final String filename = getString(settings, PlatformKeys.FIRMWARE_FILE_FILENAME, "");
-    final boolean fileExists =
-        getBoolean(
-            settings, PlatformKeys.FIRMWARE_FILE_EXISTS, PlatformDefaults.FIRMWARE_FILE_EXISTS);
-    final byte[] file;
-    if (fileExists) {
-      file = this.readFile(deviceModel, filename, isForSmartMeters);
+    byte[] file = null;
+    if (settings.containsKey(PlatformKeys.FIRMWARE_FILE)) {
+      file = getHexDecoded(settings, PlatformKeys.FIRMWARE_FILE, null);
     } else {
-      file = null;
+      final boolean fileExists =
+          getBoolean(
+              settings, PlatformKeys.FIRMWARE_FILE_EXISTS, PlatformDefaults.FIRMWARE_FILE_EXISTS);
+      if (fileExists) {
+        file = this.readFile(deviceModel, filename, isForSmartMeters);
+      }
     }
+
     FirmwareFile firmwareFile =
         new FirmwareFile.Builder()
             .withIdentification(identification)

@@ -26,6 +26,8 @@ import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddFi
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddFirmwareResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddManufacturerRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddManufacturerResponse;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddOrChangeFirmwareRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddOrChangeFirmwareResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeDeviceModelRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeDeviceModelResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeFirmwareRequest;
@@ -869,12 +871,23 @@ public class FirmwareManagementEndpoint {
           this.firmwareManagementMapper.map(
               request.getFirmware().getFirmwareModuleData(), FirmwareModuleData.class);
 
+      // TODO The AddFirmwareRequest accepts multiple DeviceModels to be related to a Firmware.
+      // This FirmwareManagementService only accepts ONE for now
+      final List<org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.DeviceModel>
+          wsDeviceModels = request.getFirmware().getDeviceModels();
+      String modelCode = null;
+      String manufacturer = null;
+      if (wsDeviceModels.size() > 0) {
+        modelCode = wsDeviceModels.get(0).getModelCode();
+        manufacturer = wsDeviceModels.get(0).getManufacturer();
+      }
+
       this.firmwareManagementService.addFirmware(
           organisationIdentification,
           this.firmwareFileRequestFor(request.getFirmware()),
           request.getFirmware().getFile(),
-          request.getFirmware().getManufacturer(),
-          request.getFirmware().getModelCode(),
+          manufacturer,
+          modelCode,
           firmwareModuleData);
     } catch (final ConstraintViolationException e) {
       LOGGER.error("Exception adding firmware ", e);
@@ -904,6 +917,7 @@ public class FirmwareManagementEndpoint {
 
   private FirmwareFileRequest firmwareFileRequestFor(final Firmware firmware) {
     return new FirmwareFileRequest(
+        firmware.getIdentification(),
         firmware.getDescription(),
         firmware.getFilename(),
         firmware.isPushToNewDevices(),
@@ -923,13 +937,24 @@ public class FirmwareManagementEndpoint {
         this.firmwareManagementMapper.map(
             request.getFirmware().getFirmwareModuleData(), FirmwareModuleData.class);
 
+    // TODO The ChangeFirmwareRequest accepts multiple DeviceModels to be related to a Firmware.
+    // This FirmwareManagementService only accepts ONE for now
+    final List<org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.DeviceModel>
+        wsDeviceModels = request.getFirmware().getDeviceModels();
+    String modelCode = null;
+    String manufacturer = null;
+    if (wsDeviceModels.size() > 0) {
+      modelCode = wsDeviceModels.get(0).getModelCode();
+      manufacturer = wsDeviceModels.get(0).getManufacturer();
+    }
+
     try {
       this.firmwareManagementService.changeFirmware(
           organisationIdentification,
           request.getId(),
           this.firmwareFileRequestFor(request.getFirmware()),
-          request.getFirmware().getManufacturer(),
-          request.getFirmware().getModelCode(),
+          manufacturer,
+          modelCode,
           firmwareModuleData);
     } catch (final ConstraintViolationException e) {
       LOGGER.error("Exception Changing firmware", e);
@@ -948,6 +973,65 @@ public class FirmwareManagementEndpoint {
     changeFirmwareResponse.setResult(OsgpResultType.OK);
 
     return changeFirmwareResponse;
+  }
+
+  @PayloadRoot(localPart = "AddOrChangeFirmwareRequest", namespace = NAMESPACE)
+  @ResponsePayload
+  public AddOrChangeFirmwareResponse addOrChangeFirmware(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final AddOrChangeFirmwareRequest request)
+      throws OsgpException {
+
+    LOGGER.info("Adding Or changing firmware:{}.", request.getFirmware().getFilename());
+    final AddOrChangeFirmwareResponse addOrChangeFirmwareResponse =
+        new AddOrChangeFirmwareResponse();
+
+    try {
+      final FirmwareModuleData firmwareModuleData =
+          this.firmwareManagementMapper.map(
+              request.getFirmware().getFirmwareModuleData(), FirmwareModuleData.class);
+
+      final List<org.opensmartgridplatform.domain.core.valueobjects.DeviceModel> deviceModels =
+          new ArrayList<>();
+      for (final org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.DeviceModel
+          wsDeviceModel : request.getFirmware().getDeviceModels()) {
+        final org.opensmartgridplatform.domain.core.valueobjects.DeviceModel deviceModel =
+            this.firmwareManagementMapper.map(
+                wsDeviceModel,
+                org.opensmartgridplatform.domain.core.valueobjects.DeviceModel.class);
+        deviceModels.add(deviceModel);
+      }
+
+      this.firmwareManagementService.addOrChangeFirmware(
+          organisationIdentification,
+          this.firmwareFileRequestFor(request.getFirmware()),
+          request.getFirmware().getFile(),
+          deviceModels,
+          firmwareModuleData);
+    } catch (final ConstraintViolationException e) {
+      LOGGER.error("Exception adding or changing firmware ", e);
+      this.handleException(e);
+    } catch (final FunctionalException e) {
+      LOGGER.error("Exception adding or changing firmware: {} ", e.getMessage(), e);
+      if (FunctionalExceptionType.EXISTING_FIRMWARE == e.getExceptionType()) {
+        addOrChangeFirmwareResponse.setResult(OsgpResultType.NOT_OK);
+        addOrChangeFirmwareResponse.setDescription(ADD_FIRMWARE_EXISTING_FIRMWARE);
+        return addOrChangeFirmwareResponse;
+      }
+      this.handleException(e);
+    } catch (final Exception e) {
+      LOGGER.error(
+          "Exception: {} while adding or changing firmware: {} for organisation {}",
+          e.getMessage(),
+          request.getFirmware().getFilename(),
+          organisationIdentification,
+          e);
+      this.handleException(e);
+    }
+
+    addOrChangeFirmwareResponse.setResult(OsgpResultType.OK);
+
+    return addOrChangeFirmwareResponse;
   }
 
   @PayloadRoot(localPart = "RemoveFirmwareRequest", namespace = NAMESPACE)
