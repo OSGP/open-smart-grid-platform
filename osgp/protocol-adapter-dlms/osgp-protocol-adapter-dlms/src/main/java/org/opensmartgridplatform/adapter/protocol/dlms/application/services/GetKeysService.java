@@ -74,6 +74,12 @@ public class GetKeysService {
         this.secretManagementService.getKey(deviceIdentification, securityKeyType);
 
     //    final byte[] encryptedKey = this.encryptionHelperService.rsaEncrypt(unencryptedKey);
+
+    if (unencryptedKey == null) {
+      // return null to indicate the key is not found
+      return new KeyDto(secretTypeDto, null);
+    }
+
     final byte[] encryptedKey = this.rsaEncrypter.encrypt(unencryptedKey);
 
     return new KeyDto(secretTypeDto, encryptedKey);
