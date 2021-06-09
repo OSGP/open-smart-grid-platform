@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2021 Alliander N.V.
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.osgp</groupId>
+  <artifactId>osgp</artifactId>
+  <version>5.14.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>platform</module>
+    <module>shared</module>
+    <module>protocol-adapter-dlms</module>
+    <module>protocol-adapter-iec60870</module>
+    <module>protocol-adapter-iec61850</module>
+    <module>protocol-adapter-mqtt</module>
+    <module>protocol-adapter-oslp</module>
+  </modules>
+</project>

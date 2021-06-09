@@ -36,9 +36,6 @@
   <modules>
     <module>parent-os-webapps</module>
     <module>web-demo-app</module>
-    <module>../osgp/shared/osgp-ws-core</module>
-    <module>../osgp/shared/osgp-ws-admin</module>
-    <module>../osgp/shared/osgp-ws-publiclighting</module>
   </modules>
 
   <distributionManagement>

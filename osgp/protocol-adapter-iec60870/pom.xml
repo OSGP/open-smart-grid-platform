@@ -35,8 +35,6 @@
   <modules>
     <!-- Shared Libs -->
     <module>parent-pa-iec60870</module>
-    <module>../shared/shared</module>
-    <module>../shared/osgp-dto</module>
     <module>osgp-iec60870</module>
 
     <!-- Protocol Adapter IEC60870 -->
