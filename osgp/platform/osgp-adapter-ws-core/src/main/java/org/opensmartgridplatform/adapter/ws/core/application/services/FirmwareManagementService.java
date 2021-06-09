@@ -384,15 +384,7 @@ public class FirmwareManagementService {
         this.domainHelperService.findOrganisation(organisationIdentification);
     this.domainHelperService.isAllowed(organisation, PlatformFunction.CREATE_DEVICE_MODEL);
 
-    final Manufacturer manufacturer = this.manufacturerRepository.findByCode(manufacturerCode);
-
-    if (manufacturer == null) {
-      LOGGER.info("Manufacturer doesn't exist.");
-      throw new FunctionalException(
-          FunctionalExceptionType.EXISTING_MANUFACTURER,
-          ComponentType.WS_CORE,
-          new UnknownEntityException(Manufacturer.class, manufacturerCode));
-    }
+    final Manufacturer manufacturer = this.findManufacturerByCode(manufacturerCode);
 
     final DeviceModel savedDeviceModel =
         this.deviceModelRepository.findByManufacturerAndModelCode(manufacturer, modelCode);
@@ -603,15 +595,7 @@ public class FirmwareManagementService {
         this.domainHelperService.findOrganisation(organisationIdentification);
     this.domainHelperService.isAllowed(organisation, PlatformFunction.CREATE_FIRMWARE);
 
-    final Manufacturer databaseManufacturer = this.manufacturerRepository.findByCode(manufacturer);
-
-    if (databaseManufacturer == null) {
-      LOGGER.info("Manufacturer doesn't exist.");
-      throw new FunctionalException(
-          FunctionalExceptionType.UNKNOWN_MANUFACTURER,
-          ComponentType.WS_CORE,
-          new UnknownEntityException(Manufacturer.class, manufacturer));
-    }
+    final Manufacturer databaseManufacturer = this.findManufacturerByCode(manufacturer);
 
     final DeviceModel databaseDeviceModel =
         this.deviceModelRepository.findByManufacturerAndModelCode(databaseManufacturer, modelCode);
@@ -678,6 +662,20 @@ public class FirmwareManagementService {
     this.firmwareFileRepository.save(savedFirmwareFile);
   }
 
+  private Manufacturer findManufacturerByCode(final String manufacturer)
+      throws FunctionalException {
+    final Manufacturer databaseManufacturer = this.manufacturerRepository.findByCode(manufacturer);
+
+    if (databaseManufacturer == null) {
+      LOGGER.info("Manufacturer doesn't exist.");
+      throw new FunctionalException(
+          FunctionalExceptionType.UNKNOWN_MANUFACTURER,
+          ComponentType.WS_CORE,
+          new UnknownEntityException(Manufacturer.class, manufacturer));
+    }
+    return databaseManufacturer;
+  }
+
   @Transactional(value = "writableTransactionManager")
   public void addOrChangeFirmware(
       @Identification final String organisationIdentification,
@@ -701,16 +699,10 @@ public class FirmwareManagementService {
     final List<DeviceModel> databaseDeviceModels = new ArrayList<>();
     for (final org.opensmartgridplatform.domain.core.valueobjects.DeviceModel deviceModel :
         deviceModels) {
-      final Manufacturer databaseManufacturer =
-          this.manufacturerRepository.findByCode(deviceModel.getManufacturer());
 
-      if (databaseManufacturer == null) {
-        LOGGER.info("Manufacturer doesn't exist.");
-        throw new FunctionalException(
-            FunctionalExceptionType.UNKNOWN_MANUFACTURER,
-            ComponentType.WS_CORE,
-            new UnknownEntityException(Manufacturer.class, deviceModel.getManufacturer()));
-      }
+      final Manufacturer databaseManufacturer =
+          this.findManufacturerByCode(deviceModel.getManufacturer());
+
       final DeviceModel databaseDeviceModel =
           this.deviceModelRepository.findByManufacturerAndModelCode(
               databaseManufacturer, deviceModel.getModelCode());

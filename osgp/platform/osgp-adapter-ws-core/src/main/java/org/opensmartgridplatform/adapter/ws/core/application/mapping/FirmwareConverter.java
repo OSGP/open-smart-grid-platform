@@ -95,6 +95,7 @@ class FirmwareConverter
             .MODULE_DESCRIPTION_SIMPLE_VERSION_INFO:
           firmwareModuleData.setModuleVersionSimple(moduleVersion.getValue());
           break;
+        default:
       }
     }
     output.setFirmwareModuleData(firmwareModuleData);
