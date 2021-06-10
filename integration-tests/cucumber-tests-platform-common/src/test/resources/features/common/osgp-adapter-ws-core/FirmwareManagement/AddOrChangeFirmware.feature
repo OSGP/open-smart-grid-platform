@@ -60,7 +60,7 @@ Feature: FirmwareManagement add or change firmware
       | ManufacturerName           | Test                                                           |
     Then the add or change firmware response contains
       | Result | OK |
-   And the firmware file '1234567890ABCBEF' exists
+    And the firmware file '1234567890ABCBEF' exists
       | FirmwareFile               | 57696520646974206c656573742069732067656b                       |
       | FirmwareFilename           | NewFirmware_test3                                              |
       | FirmwareDescription        | Add 3 - Firmware is newly created with related FirmwareModules |

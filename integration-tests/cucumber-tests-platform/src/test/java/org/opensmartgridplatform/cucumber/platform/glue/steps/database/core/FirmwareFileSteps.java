@@ -253,41 +253,20 @@ public class FirmwareFileSteps {
           final DeviceModel deviceModel = firmwareFile.getDeviceModels().iterator().next();
 
           assertThat(firmwareFile.getDescription())
-              .isEqualTo(
-                  getString(
-                      expectedEntity,
-                      PlatformKeys.FIRMWARE_DESCRIPTION,
-                      PlatformDefaults.FIRMWARE_DESCRIPTION));
+              .isEqualTo(getString(expectedEntity, PlatformKeys.FIRMWARE_DESCRIPTION, null));
           assertThat(firmwareFile.getModuleVersionComm())
               .isEqualTo(
-                  getString(
-                      expectedEntity,
-                      PlatformKeys.FIRMWARE_MODULE_VERSION_COMM,
-                      PlatformDefaults.FIRMWARE_MODULE_VERSION_COMM));
+                  getString(expectedEntity, PlatformKeys.FIRMWARE_MODULE_VERSION_COMM, null));
           assertThat(firmwareFile.getModuleVersionFunc())
               .isEqualTo(
-                  getString(
-                      expectedEntity,
-                      PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC,
-                      PlatformDefaults.FIRMWARE_MODULE_VERSION_FUNC));
+                  getString(expectedEntity, PlatformKeys.FIRMWARE_MODULE_VERSION_FUNC, null));
           assertThat(firmwareFile.getModuleVersionMa())
-              .isEqualTo(
-                  getString(
-                      expectedEntity,
-                      PlatformKeys.FIRMWARE_MODULE_VERSION_MA,
-                      PlatformDefaults.FIRMWARE_MODULE_VERSION_MA));
+              .isEqualTo(getString(expectedEntity, PlatformKeys.FIRMWARE_MODULE_VERSION_MA, null));
           assertThat(firmwareFile.getModuleVersionMbus())
               .isEqualTo(
-                  getString(
-                      expectedEntity,
-                      PlatformKeys.FIRMWARE_MODULE_VERSION_MBUS,
-                      PlatformDefaults.FIRMWARE_MODULE_VERSION_MBUS));
+                  getString(expectedEntity, PlatformKeys.FIRMWARE_MODULE_VERSION_MBUS, null));
           assertThat(firmwareFile.getModuleVersionSec())
-              .isEqualTo(
-                  getString(
-                      expectedEntity,
-                      PlatformKeys.FIRMWARE_MODULE_VERSION_SEC,
-                      PlatformDefaults.FIRMWARE_MODULE_VERSION_SEC));
+              .isEqualTo(getString(expectedEntity, PlatformKeys.FIRMWARE_MODULE_VERSION_SEC, null));
 
           assertThat(deviceModel.getModelCode())
               .isEqualTo(

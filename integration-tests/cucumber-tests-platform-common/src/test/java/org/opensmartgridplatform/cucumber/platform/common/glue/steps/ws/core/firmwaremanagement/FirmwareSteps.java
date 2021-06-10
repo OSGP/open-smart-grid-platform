@@ -58,23 +58,6 @@ public class FirmwareSteps {
             PlatformKeys.FIRMWARE_PUSH_TO_NEW_DEVICES,
             PlatformDefaults.FIRMWARE_PUSH_TO_NEW_DEVICE));
 
-    //    final String manufacturer =
-    //        getString(
-    //            requestParameters,
-    //            PlatformKeys.MANUFACTURER_NAME,
-    //            PlatformDefaults.DEFAULT_MANUFACTURER_NAME);
-    //    firmware.setManufacturer(manufacturer);
-
-    //    final DeviceModel deviceModel = new DeviceModel();
-    //    final String modelCode =
-    //        getString(
-    //            requestParameters,
-    //            PlatformKeys.DEVICEMODEL_MODELCODE,
-    //            PlatformDefaults.DEVICE_MODEL_MODEL_CODE);
-    //    deviceModel.setModelCode(modelCode);
-    //    deviceModel.setManufacturer(manufacturer);
-    //    firmware.getDeviceModels().add(deviceModel);
-
     firmware.setFirmwareModuleData(new FirmwareModuleData());
     if (requestParameters.containsKey(PlatformKeys.FIRMWARE_MODULE_VERSION_COMM)) {
       firmware
