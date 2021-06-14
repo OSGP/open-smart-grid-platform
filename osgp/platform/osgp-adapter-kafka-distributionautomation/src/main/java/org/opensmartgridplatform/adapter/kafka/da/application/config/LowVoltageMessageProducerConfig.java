@@ -55,11 +55,11 @@ public class LowVoltageMessageProducerConfig extends AbstractKafkaProducerConfig
       final Environment environment,
       @Value("${distributionautomation.kafka.common.properties.prefix}")
           final String propertiesPrefix,
-      @Value("${distributionautomation.kafka.topic}") final String topic) {
+      @Value("${distributionautomation.kafka.topic.low.voltage}") final String topic) {
     super(environment, propertiesPrefix, topic);
   }
 
-  @Bean("distributionAutomationKafkaTemplate")
+  @Bean("distributionAutomationLowVoltageKafkaTemplate")
   @Override
   public KafkaTemplate<String, Message> kafkaTemplate() {
     return this.getKafkaTemplate();
