@@ -21,6 +21,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 @Configuration
 public class MediumVoltageMessageProducerConfig
     extends AbstractKafkaProducerConfig<String, Message> {
+
   @Autowired
   public MediumVoltageMessageProducerConfig(
       final Environment environment,

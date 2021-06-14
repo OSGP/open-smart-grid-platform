@@ -95,7 +95,7 @@ public class VoltageMessageProducer {
         final MessageId messageId = new MessageId(UuidUtil.getBytesFromRandomUuid());
         final Message message =
             new Message(messageId, System.currentTimeMillis(), "GXF", null, event);
-        this.messageSigner.sign(message);
+
         /*
          * No need for callback functionality now; by default, the
          * template is configured with a LoggingProducerListener, which
@@ -104,6 +104,7 @@ public class VoltageMessageProducer {
         if (MV_MEASUREMENT_FEEDER == feeder) {
           this.mediumVoltageKafkaTemplate.sendDefault(message);
         } else {
+          this.messageSigner.sign(message);
           this.lowVoltageKafkaTemplate.sendDefault(message);
         }
       }
