@@ -14,10 +14,42 @@
   <modules>
     <module>platform</module>
     <module>shared</module>
-    <module>protocol-adapter-dlms</module>
     <module>protocol-adapter-iec60870</module>
     <module>protocol-adapter-iec61850</module>
     <module>protocol-adapter-mqtt</module>
-    <module>protocol-adapter-oslp</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>flexovl</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>protocol-adapter-oslp</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>smhe</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>protocol-adapter-dlms</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <!-- backwards compatibility, deprecated -->
+      <id>build-all</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <modules>
+        <module>protocol-adapter-oslp</module>
+        <module>protocol-adapter-dlms</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>

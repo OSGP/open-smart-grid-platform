@@ -163,5 +163,33 @@
         <module>osgp-domain-microgrids</module>
       </modules>
     </profile>
+
+    <profile>
+      <!-- backwards compatibility, deprecated -->
+      <id>build-all</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <modules>
+        <module>osgp-adapter-domain-publiclighting</module>
+        <module>osgp-adapter-domain-tariffswitching</module>
+        <module>osgp-adapter-ws-publiclighting</module>
+        <module>osgp-adapter-ws-tariffswitching</module>
+
+        <module>osgp-adapter-domain-smartmetering</module>
+        <module>osgp-adapter-ws-smartmetering</module>
+
+        <module>osgp-domain-distributionautomation</module>
+        <module>osgp-adapter-domain-distributionautomation</module>
+        <module>osgp-adapter-kafka-distributionautomation</module>
+        <module>osgp-adapter-kafka-logging</module>
+        <module>osgp-adapter-ws-distributionautomation</module>
+
+        <module>osgp-adapter-domain-microgrids</module>
+        <module>osgp-adapter-ws-microgrids</module>
+        <module>osgp-domain-microgrids</module>
+
+      </modules>
+    </profile>
   </profiles>
 </project>
