@@ -39,6 +39,8 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
+@SuppressWarnings(
+    "squid:S3753") // setting sessionStatus as complete is not necessary in the web device simulator
 @SessionAttributes
 public class DeviceManagementController extends AbstractController {
 
