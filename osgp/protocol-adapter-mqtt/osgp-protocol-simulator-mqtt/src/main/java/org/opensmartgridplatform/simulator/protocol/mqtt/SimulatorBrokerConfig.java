@@ -46,7 +46,7 @@ public class SimulatorBrokerConfig {
   public Properties mqttBrokerProperties() {
     final Properties p = new Properties();
     p.put(BrokerConstants.HOST_PROPERTY_NAME, this.host);
-    p.put(BrokerConstants.PORT_PROPERTY_NAME, this.port);
+    p.put(BrokerConstants.PORT_PROPERTY_NAME, String.valueOf(this.port));
     if (this.sslEnabled) {
       p.put(BrokerConstants.JKS_PATH_PROPERTY_NAME, this.sslServerKeystoreLocation);
       p.put(BrokerConstants.KEY_STORE_PASSWORD_PROPERTY_NAME, this.sslServerKeystorePassword);
