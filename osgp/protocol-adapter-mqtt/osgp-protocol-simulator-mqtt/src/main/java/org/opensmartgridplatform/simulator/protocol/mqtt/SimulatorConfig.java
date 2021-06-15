@@ -16,21 +16,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 @Configuration
-@Import(SimulatorClientConfig.class)
 public class SimulatorConfig {
 
   private static final Logger LOG = LoggerFactory.getLogger(SimulatorConfig.class);
-
-  @Value("${mqtt.simulator.ssl.enabled:false}")
-  private boolean sslEnabled;
-
-  @Bean
-  public Boolean isSslEnabled() {
-    return this.sslEnabled;
-  }
 
   @Bean
   public Simulator simulator(
