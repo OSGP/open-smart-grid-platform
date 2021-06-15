@@ -155,7 +155,7 @@
     <profile>
       <id>mg</id>
       <activation>
-        <activeByDefault>false</activeByDefault>
+        <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
         <module>osgp-adapter-domain-microgrids</module>
@@ -188,7 +188,6 @@
         <module>osgp-adapter-domain-microgrids</module>
         <module>osgp-adapter-ws-microgrids</module>
         <module>osgp-domain-microgrids</module>
-
       </modules>
     </profile>
   </profiles>

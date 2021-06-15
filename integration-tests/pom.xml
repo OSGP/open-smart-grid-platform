@@ -114,7 +114,7 @@
     <profile>
       <id>mg</id>
       <activation>
-        <activeByDefault>false</activeByDefault>
+        <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
         <module>cucumber-tests-platform-microgrids</module>
