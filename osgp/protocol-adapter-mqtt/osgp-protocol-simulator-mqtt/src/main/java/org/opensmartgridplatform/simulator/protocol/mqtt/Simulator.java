@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.simulator.protocol.mqtt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hivemq.client.mqtt.MqttClientSslConfig;
 import io.moquette.broker.config.MemoryConfig;
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +26,7 @@ public class Simulator {
   public static void main(final String[] args) throws IOException {
     final String spec = getFirstArgOrNull(args);
     final Properties sslServerProperties = new Properties();
-    final Properties sslClientProperties = new Properties();
+    final MqttClientSslConfig sslClientProperties = null;
     final boolean startClient = getSecondArgOrTrue(args);
     final Simulator app = new Simulator();
     app.run(spec, startClient, sslServerProperties, sslClientProperties);
@@ -50,16 +51,16 @@ public class Simulator {
       final String specJsonPath,
       final boolean startClient,
       final Properties brokerProperties,
-      final Properties clientProperties)
+      final MqttClientSslConfig clientSslConfig)
       throws IOException {
-    this.run(this.getSimulatorSpec(specJsonPath), startClient, brokerProperties, clientProperties);
+    this.run(this.getSimulatorSpec(specJsonPath), startClient, brokerProperties, clientSslConfig);
   }
 
   public void run(
       final SimulatorSpec simulatorSpec,
       final boolean startClient,
       final Properties brokerProperties,
-      final Properties clientProperties)
+      final MqttClientSslConfig clientSslConfig)
       throws IOException {
     final Broker broker = new Broker(new MemoryConfig(brokerProperties));
     broker.start();
@@ -71,7 +72,7 @@ public class Simulator {
     }
     if (startClient) {
       final SimulatorSpecPublishingClient publishingClient =
-          new SimulatorSpecPublishingClient(simulatorSpec, clientProperties);
+          new SimulatorSpecPublishingClient(simulatorSpec, clientSslConfig);
       publishingClient.start();
     }
   }

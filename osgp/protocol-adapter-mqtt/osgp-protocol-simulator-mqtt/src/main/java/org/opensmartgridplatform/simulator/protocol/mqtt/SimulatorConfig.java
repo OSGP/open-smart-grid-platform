@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.simulator.protocol.mqtt;
 
+import com.hivemq.client.mqtt.MqttClientSslConfig;
 import java.io.IOException;
 import java.util.Properties;
 import org.slf4j.Logger;
@@ -36,11 +37,11 @@ public class SimulatorConfig {
       @Value("${mqtt.simulator.spec}") final String spec,
       @Value("${mqtt.simulator.startClient}") final boolean startClient,
       final Properties mqttBrokerProperties,
-      final Properties mqttClientProperties)
+      final MqttClientSslConfig mqttClientSslConfig)
       throws IOException {
     LOG.info("Start MQTT simulator with spec={}, startClient={}", spec, startClient);
     final Simulator app = new Simulator();
-    app.run(spec, startClient, mqttBrokerProperties, mqttClientProperties);
+    app.run(spec, startClient, mqttBrokerProperties, mqttClientSslConfig);
     return app;
   }
 }

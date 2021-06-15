@@ -12,16 +12,7 @@ import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3BlockingClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAck;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.security.GeneralSecurityException;
-import java.security.KeyStore;
-import java.util.Properties;
 import java.util.UUID;
-import javax.net.ssl.TrustManagerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,14 +28,15 @@ public abstract class Client extends Thread {
   private final UUID uuid;
   private final String host;
   private final int port;
-  private final Properties mqttClientProperties;
+  private final MqttClientSslConfig mqttClientSslConfig;
   private volatile boolean running;
   private Mqtt3BlockingClient mqtt3BlockingClient;
 
-  protected Client(final String host, final int port, final Properties mqttClientProperties) {
+  protected Client(
+      final String host, final int port, final MqttClientSslConfig mqttClientSslConfig) {
     this.host = host;
     this.port = port;
-    this.mqttClientProperties = mqttClientProperties;
+    this.mqttClientSslConfig = mqttClientSslConfig;
     this.uuid = UUID.randomUUID();
   }
 
@@ -58,7 +50,7 @@ public abstract class Client extends Thread {
               .identifier(this.uuid.toString())
               .serverHost(this.host)
               .serverPort(this.port)
-              .sslConfig(getSslConfig(this.mqttClientProperties))
+              .sslConfig(this.mqttClientSslConfig)
               .buildBlocking();
 
       final Mqtt3ConnAck ack = this.mqtt3BlockingClient.connect();
@@ -70,42 +62,6 @@ public abstract class Client extends Thread {
       LOG.error("Exception while starting client.", ex);
       this.stopClient();
     }
-  }
-
-  private static MqttClientSslConfig getSslConfig(final Properties mqttClientProperties)
-      throws GeneralSecurityException {
-    if (mqttClientProperties == null || mqttClientProperties.isEmpty()) {
-      return null;
-    }
-    return MqttClientSslConfig.builder()
-        .trustManagerFactory(getTruststoreFactory(mqttClientProperties))
-        .build();
-  }
-
-  private static TrustManagerFactory getTruststoreFactory(final Properties mqttClientProperties)
-      throws GeneralSecurityException {
-
-    final String trustStoreType =
-        mqttClientProperties.getProperty(ClientConstants.SSL_TRUSTSTORE_TYPE_PROPERTY_NAME);
-    final String trustStorePath =
-        mqttClientProperties.getProperty(ClientConstants.SSL_TRUSTSTORE_PATH_PROPERTY_NAME);
-    final String trustStorePW =
-        mqttClientProperties.getProperty(ClientConstants.SSL_TRUSTSTORE_PASSWORD_PROPERTY_NAME);
-
-    KeyStore trustStore;
-    if (Files.exists(Paths.get(trustStorePath))) {
-      LOG.info("Load external truststore from path: {}", trustStorePath);
-      trustStore = loadTrustStoreFromExternalPath(trustStoreType, trustStorePath, trustStorePW);
-    } else {
-      LOG.info("Load default truststore from classpath: {}", trustStorePath);
-      trustStore = loadTrustStoreFromClassPath(trustStoreType, trustStorePath, trustStorePW);
-    }
-
-    final TrustManagerFactory tmf =
-        TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-    tmf.init(trustStore);
-
-    return tmf;
   }
 
   /** Implementations must override this to define behavior after connecting */
@@ -129,41 +85,12 @@ public abstract class Client extends Thread {
   private void disconnect() {
     try {
       Thread.sleep(2000);
+      if (this.mqtt3BlockingClient != null) {
+        this.mqtt3BlockingClient.disconnect();
+      }
     } catch (final InterruptedException e) {
       LOG.error("Interrupted during sleep", e);
-    }
-    if (this.mqtt3BlockingClient != null) {
-      this.mqtt3BlockingClient.disconnect();
-    }
-  }
-
-  private static KeyStore loadTrustStoreFromExternalPath(
-      final String trustStoreType, final String trustStorePath, final String trustStorePW)
-      throws GeneralSecurityException {
-
-    try (InputStream in = new FileInputStream(trustStorePath)) {
-      final KeyStore trustStore = KeyStore.getInstance(trustStoreType);
-      trustStore.load(in, trustStorePW.toCharArray());
-      return trustStore;
-    } catch (final Exception e) {
-      throw new GeneralSecurityException("Failed loading keystore from external path.", e);
-    }
-  }
-
-  private static KeyStore loadTrustStoreFromClassPath(
-      final String trustStoreType, final String trustStorePath, final String trustStorePW)
-      throws GeneralSecurityException {
-
-    try (InputStream in =
-        Thread.currentThread().getContextClassLoader().getResourceAsStream(trustStorePath)) {
-      final KeyStore trustStore = KeyStore.getInstance(trustStoreType);
-      if (in == null) {
-        throw new FileNotFoundException(trustStorePath);
-      }
-      trustStore.load(in, trustStorePW.toCharArray());
-      return trustStore;
-    } catch (final Exception e) {
-      throw new GeneralSecurityException("Failed loading keystore from classpath.", e);
+      Thread.currentThread().interrupt();
     }
   }
 }
