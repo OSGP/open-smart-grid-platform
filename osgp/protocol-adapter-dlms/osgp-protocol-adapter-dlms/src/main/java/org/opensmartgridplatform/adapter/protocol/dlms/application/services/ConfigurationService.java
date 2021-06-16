@@ -458,7 +458,7 @@ public class ConfigurationService {
   }
 
   public GetKeysResponseDto requestGetKeys(
-      final DlmsDevice device, final GetKeysRequestDto getKeysRequestDto) throws OsgpException {
+      final DlmsDevice device, final GetKeysRequestDto getKeysRequestDto) {
 
     return this.getKeysService.getKeys(device, getKeysRequestDto);
   }

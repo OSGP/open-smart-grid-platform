@@ -27,13 +27,4 @@ public class EncryptionHelperService {
           FunctionalExceptionType.DECRYPTION_EXCEPTION, ComponentType.PROTOCOL_DLMS, e);
     }
   }
-
-  public byte[] rsaEncrypt(final byte[] unencryptedKey) throws FunctionalException {
-    try {
-      return this.rsaEncryptionService.encrypt(unencryptedKey);
-    } catch (final Exception e) {
-      throw new FunctionalException(
-          FunctionalExceptionType.ENCRYPTION_EXCEPTION, ComponentType.PROTOCOL_DLMS, e);
-    }
-  }
 }
