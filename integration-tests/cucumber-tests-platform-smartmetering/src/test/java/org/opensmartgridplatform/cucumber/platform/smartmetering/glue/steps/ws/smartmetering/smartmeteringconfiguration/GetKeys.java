@@ -10,9 +10,11 @@
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.GetKeysRequestFactory.getSecretTypesFromParameterMap;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import java.util.List;
 import java.util.Map;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysAsyncRequest;
@@ -64,7 +66,11 @@ public class GetKeys {
     final byte[] key2 = response.getGetKeysResponseData().get(1).getSecretValue();
     final SecretType key2Type = response.getGetKeysResponseData().get(1).getSecretType();
 
-    // TODO: Compare to expected secrettypes and compare to default keys
-    //    PlatformSmartmeteringDefaults.SECURITY_KEY_A_DB
+    final List<SecretType> secretTypes = getSecretTypesFromParameterMap(expectedValues);
+
+    assertThat(key1Type).isEqualTo(secretTypes.get(0));
+    assertThat(key1).isNotEmpty();
+    assertThat(key2Type).isEqualTo(secretTypes.get(1));
+    assertThat(key2).isNotEmpty();
   }
 }

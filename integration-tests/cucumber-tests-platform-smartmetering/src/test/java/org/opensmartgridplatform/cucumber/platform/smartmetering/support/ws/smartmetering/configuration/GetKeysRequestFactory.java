@@ -31,11 +31,7 @@ public class GetKeysRequestFactory {
   public static GetKeysRequest fromParameterMap(final Map<String, String> settings) {
     final GetKeysRequest request = new GetKeysRequest();
     final GetKeysRequestData requestData = new GetKeysRequestData();
-    final List<String> secretTypesAsString =
-        Arrays.asList(getString(settings, "SecretTypes").split(","));
-    requestData
-        .getSecretTypes()
-        .addAll(secretTypesAsString.stream().map(SecretType::valueOf).collect(Collectors.toList()));
+    requestData.getSecretTypes().addAll(getSecretTypesFromParameterMap(settings));
     request.setDeviceIdentification(settings.get(PlatformKeys.KEY_DEVICE_IDENTIFICATION));
     request.setGetKeysData(requestData);
     return request;
@@ -47,5 +43,12 @@ public class GetKeysRequestFactory {
     asyncRequest.setDeviceIdentification(
         RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
     return asyncRequest;
+  }
+
+  public static List<SecretType> getSecretTypesFromParameterMap(
+      final Map<String, String> settings) {
+    final List<String> secretTypesAsString =
+        Arrays.asList(getString(settings, "SecretTypes").split(","));
+    return secretTypesAsString.stream().map(SecretType::valueOf).collect(Collectors.toList());
   }
 }
