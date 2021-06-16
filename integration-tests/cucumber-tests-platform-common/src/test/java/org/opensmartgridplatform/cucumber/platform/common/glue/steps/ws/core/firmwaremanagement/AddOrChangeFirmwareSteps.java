@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Smart Society Services B.V.
+ * Copyright 2021 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
@@ -15,68 +15,80 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.Map;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.OsgpResultType;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeFirmwareRequest;
-import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeFirmwareResponse;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddOrChangeFirmwareRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddOrChangeFirmwareResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Firmware;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.common.PlatformCommonKeys;
 import org.opensmartgridplatform.cucumber.platform.common.support.ws.core.CoreFirmwareManagementClient;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.ws.GenericResponseSteps;
-import org.opensmartgridplatform.domain.core.repositories.FirmwareFileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
 /** Class with all the firmware requests steps */
-public class ChangeFirmwareSteps extends FirmwareSteps {
+public class AddOrChangeFirmwareSteps extends FirmwareSteps {
 
   @Autowired private CoreFirmwareManagementClient client;
 
-  @Autowired private FirmwareFileRepository firmwareFileRepository;
-
   /**
-   * Sends a Change Firmware request to the platform for a given device identification.
+   * Sends a Add or Change Firmware request to the platform.
    *
    * @param requestParameters The table with the request parameters.
    * @throws Throwable
    */
-  @When("^receiving an change firmware request$")
-  public void receivingAnChangeFirmwareRequest(final Map<String, String> requestParameters)
+  @When("^receiving an add or change firmware request$")
+  public void receivingAnAddOrChangeFirmwareRequest(final Map<String, String> requestParameters)
       throws Throwable {
 
-    final ChangeFirmwareRequest request = new ChangeFirmwareRequest();
-
-    long firmwareFileId = 0;
-    if (this.firmwareFileRepository.findAll() != null && this.firmwareFileRepository.count() > 0) {
-      firmwareFileId = this.firmwareFileRepository.findAll().get(0).getId();
-    }
-
-    request.setId((int) firmwareFileId);
+    final AddOrChangeFirmwareRequest request = new AddOrChangeFirmwareRequest();
 
     final Firmware firmware = this.createAndGetFirmware(requestParameters);
-    firmware.setId((int) firmwareFileId);
+
     request.setFirmware(firmware);
 
     try {
-      ScenarioContext.current().put(PlatformKeys.RESPONSE, this.client.changeFirmware(request));
+      ScenarioContext.current()
+          .put(PlatformKeys.RESPONSE, this.client.addOrChangeFirmware(request));
     } catch (final SoapFaultClientException ex) {
       ScenarioContext.current().put(PlatformKeys.RESPONSE, ex);
     }
   }
 
-  @Then("^the change firmware response contains$")
-  public void theChangeFirmwareResponseContains(final Map<String, String> expectedResponseData)
+  @Then("^the add or change firmware response contains$")
+  public void theAddOrChangeFirmwareResponseContains(final Map<String, String> expectedResponseData)
       throws Throwable {
-    final ChangeFirmwareResponse response =
-        (ChangeFirmwareResponse) ScenarioContext.current().get(PlatformCommonKeys.RESPONSE);
+    final AddOrChangeFirmwareResponse response =
+        (AddOrChangeFirmwareResponse) ScenarioContext.current().get(PlatformCommonKeys.RESPONSE);
 
     assertThat(response.getResult())
         .isEqualTo(getEnum(expectedResponseData, PlatformKeys.KEY_RESULT, OsgpResultType.class));
   }
 
-  @Then("^the change firmware response contains soap fault$")
-  public void theChangeFirmwareResponseContainsSoapFault(
+  @Then("^the add or change firmware response contains soap fault$")
+  public void theAddOrChangeFirmwareResponseContainsSoapFault(
       final Map<String, String> expectedResponseData) throws Throwable {
     GenericResponseSteps.verifySoapFault(expectedResponseData);
+  }
+
+  @Then("the firmware file {string} exists")
+  public void theFirmwareFileExists(
+      final String identification, final Map<String, String> firmwareFileProperties)
+      throws Throwable {
+    this.assertFirmwareFileExists(identification, firmwareFileProperties);
+  }
+
+  @Then("the firmware file {string} has module versions")
+  public void theFirmwareFileHasModuleVersions(
+      final String identification, final Map<String, String> expectedmoduleVersions)
+      throws Throwable {
+    this.assertFirmwareFileHasModuleVersions(identification, expectedmoduleVersions);
+  }
+
+  @Then("the firmware file {string} has device models")
+  public void theFirmwareFileHasDeviceModels(
+      final String identification, final Map<String, String> expectedDeviceModels)
+      throws Throwable {
+    this.assertFirmwareFileHasDeviceModels(identification, expectedDeviceModels);
   }
 }
