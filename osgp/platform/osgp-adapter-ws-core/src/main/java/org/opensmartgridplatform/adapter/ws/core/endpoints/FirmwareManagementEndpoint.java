@@ -873,14 +873,8 @@ public class FirmwareManagementEndpoint {
 
       // The AddFirmwareRequest accepts multiple DeviceModels to be related to a Firmware.
       // This FirmwareManagementService only accepts ONE for now
-      final List<org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.DeviceModel>
-          wsDeviceModels = request.getFirmware().getDeviceModels();
-      String modelCode = null;
-      String manufacturer = null;
-      if (!wsDeviceModels.isEmpty()) {
-        modelCode = wsDeviceModels.get(0).getModelCode();
-        manufacturer = wsDeviceModels.get(0).getManufacturer();
-      }
+      final String manufacturer = this.getManufacturerFromFirmware(request.getFirmware());
+      final String modelCode = this.getModelCodeFromFirmware(request.getFirmware());
 
       this.firmwareManagementService.addFirmware(
           organisationIdentification,
@@ -939,14 +933,8 @@ public class FirmwareManagementEndpoint {
 
     // The ChangeFirmwareRequest accepts multiple DeviceModels to be related to a Firmware.
     // This FirmwareManagementService only accepts ONE for now
-    final List<org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.DeviceModel>
-        wsDeviceModels = request.getFirmware().getDeviceModels();
-    String modelCode = null;
-    String manufacturer = null;
-    if (!wsDeviceModels.isEmpty()) {
-      modelCode = wsDeviceModels.get(0).getModelCode();
-      manufacturer = wsDeviceModels.get(0).getManufacturer();
-    }
+    final String manufacturer = this.getManufacturerFromFirmware(request.getFirmware());
+    final String modelCode = this.getModelCodeFromFirmware(request.getFirmware());
 
     try {
       this.firmwareManagementService.changeFirmware(
@@ -1138,6 +1126,20 @@ public class FirmwareManagementEndpoint {
     }
 
     return response;
+  }
+
+  private String getManufacturerFromFirmware(final Firmware firmware) {
+    return firmware.getDeviceModels().stream()
+        .map(dm -> dm.getManufacturer())
+        .findFirst()
+        .orElse(null);
+  }
+
+  private String getModelCodeFromFirmware(final Firmware firmware) {
+    return firmware.getDeviceModels().stream()
+        .map(dm -> dm.getModelCode())
+        .findFirst()
+        .orElse(null);
   }
 
   private void handleException(final Exception e) throws OsgpException {
