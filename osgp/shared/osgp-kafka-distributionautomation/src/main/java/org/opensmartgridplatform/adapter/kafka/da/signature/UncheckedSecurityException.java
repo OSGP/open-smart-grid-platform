@@ -6,7 +6,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.shared.exceptionhandling;
+package org.opensmartgridplatform.adapter.kafka.da.signature;
 
 import java.io.IOException;
 import java.io.InvalidObjectException;

@@ -29,7 +29,6 @@ import java.util.Base64;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
-import org.opensmartgridplatform.shared.exceptionhandling.UncheckedSecurityException;
 
 /**
  * MessageSigner can be used for signing {@link Message messages} or verifying {@link Message

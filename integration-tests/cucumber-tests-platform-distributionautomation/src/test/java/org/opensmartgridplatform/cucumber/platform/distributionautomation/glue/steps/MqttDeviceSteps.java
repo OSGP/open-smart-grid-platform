@@ -45,7 +45,6 @@ import org.opensmartgridplatform.cucumber.core.ReadSettingsHelper;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationDefaults;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationKeys;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.kafka.in.LowVoltageMessageConsumer;
-import org.opensmartgridplatform.shared.exceptionhandling.UncheckedSecurityException;
 import org.opensmartgridplatform.simulator.protocol.mqtt.SimulatorSpecPublishingClient;
 import org.opensmartgridplatform.simulator.protocol.mqtt.spec.Message;
 import org.opensmartgridplatform.simulator.protocol.mqtt.spec.SimulatorSpec;
@@ -162,7 +161,7 @@ public class MqttDeviceSteps {
     } catch (final IOException e) {
       throw new UncheckedIOException(e);
     } catch (final GeneralSecurityException e) {
-      throw new UncheckedSecurityException(e);
+      throw new SecurityException(e);
     }
   }
 
