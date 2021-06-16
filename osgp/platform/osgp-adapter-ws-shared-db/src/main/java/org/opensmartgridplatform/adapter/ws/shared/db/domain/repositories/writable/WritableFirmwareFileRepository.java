@@ -21,6 +21,9 @@ import org.springframework.stereotype.Repository;
 public interface WritableFirmwareFileRepository
     extends JpaRepository<FirmwareFile, Long>, JpaSpecificationExecutor<FirmwareFile> {
 
+  @Query("SELECT ff FROM FirmwareFile ff WHERE ff.identification = :identification ")
+  FirmwareFile findByIdentification(@Param("identification") String identification);
+
   @Query("SELECT ff FROM FirmwareFile ff WHERE :deviceModel MEMBER OF ff.deviceModels")
   List<FirmwareFile> findByDeviceModel(@Param("deviceModel") DeviceModel deviceModel);
 

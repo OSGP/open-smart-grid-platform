@@ -22,6 +22,10 @@ Feature: FirmwareManagement change firmware
       | FirmwareDescription      | Firmware is changed! |
     Then the change firmware response contains
       | Result | OK |
+    And the entity firmware exists
+      | ModelCode                 | TestModel            |
+      | FirmwareFilename          | NewFirmware          |
+      | FirmwareDescription       | Firmware is changed! |
 
   Scenario Outline: Change firmware with an unknown or empty devicemodel
     Given a device

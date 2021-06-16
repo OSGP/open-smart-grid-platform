@@ -11,6 +11,8 @@ package org.opensmartgridplatform.cucumber.platform.common.support.ws.core;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddDeviceModelRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddFirmwareRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddFirmwareResponse;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddOrChangeFirmwareRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.AddOrChangeFirmwareResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeDeviceModelRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeDeviceModelResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.ChangeFirmwareRequest;
@@ -96,6 +98,14 @@ public class CoreFirmwareManagementClient extends BaseClient {
         this.coreFirmwareManagementWstf.getTemplate(
             this.getOrganizationIdentification(), this.getUserName());
     return (AddFirmwareResponse) wst.marshalSendAndReceive(request);
+  }
+
+  public AddOrChangeFirmwareResponse addOrChangeFirmware(final AddOrChangeFirmwareRequest request)
+      throws WebServiceSecurityException {
+    final WebServiceTemplate wst =
+        this.coreFirmwareManagementWstf.getTemplate(
+            this.getOrganizationIdentification(), this.getUserName());
+    return (AddOrChangeFirmwareResponse) wst.marshalSendAndReceive(request);
   }
 
   public ChangeDeviceModelResponse changeDeviceModel(final ChangeDeviceModelRequest request)
