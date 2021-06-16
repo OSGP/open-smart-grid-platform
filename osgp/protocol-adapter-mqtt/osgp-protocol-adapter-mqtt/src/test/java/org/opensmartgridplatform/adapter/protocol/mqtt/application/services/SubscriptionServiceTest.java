@@ -21,7 +21,6 @@ import static org.mockito.Mockito.when;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAck;
 import com.hivemq.client.mqtt.mqtt3.message.subscribe.suback.Mqtt3SubAck;
-import java.util.Properties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,10 +28,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.opensmartgridplatform.adapter.protocol.mqtt.application.config.MqttConstants;
 import org.opensmartgridplatform.adapter.protocol.mqtt.application.messaging.OutboundOsgpCoreResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.entities.MqttDevice;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.repositories.MqttDeviceRepository;
+import org.opensmartgridplatform.adapter.protocol.mqtt.domain.valueobjects.MqttClientDefaults;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -40,6 +39,7 @@ import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 @ExtendWith(MockitoExtension.class)
 class SubscriptionServiceTest {
 
+  private static final String DEFAULT_HOST = "localhost";
   private static final int DEFAULT_PORT = 11111;
   private static final String DEFAULT_TOPICS = "test-default-topics";
   private static final MqttQos DEFAULT_QOS = MqttQos.AT_MOST_ONCE;
@@ -55,29 +55,22 @@ class SubscriptionServiceTest {
   @Mock private MqttClientAdapter mqttClientAdapter;
   @Captor private ArgumentCaptor<ProtocolResponseMessage> protocolResponseMessageCaptor;
 
-  @Mock private Properties mqttClientProperties;
+  private MqttClientDefaults mqttClientDefaults;
 
   @BeforeEach
   public void setUp() {
+
+    this.mqttClientDefaults =
+        new MqttClientDefaults(DEFAULT_HOST, DEFAULT_PORT, DEFAULT_QOS.name(), DEFAULT_TOPICS);
 
     this.instance =
         new SubscriptionService(
             this.mqttDeviceRepository,
             this.mqttClientAdapterFactory,
             this.outboundOsgpCoreResponseMessageSender,
-            this.mqttClientProperties);
+            this.mqttClientDefaults);
 
     lenient().when(this.mqttClientAdapter.getMessageMetadata()).thenReturn(this.messageMetadata);
-
-    lenient()
-        .when(this.mqttClientProperties.getProperty(MqttConstants.DEFAULT_PORT_PROPERTY_NAME))
-        .thenReturn(String.valueOf(DEFAULT_PORT));
-    lenient()
-        .when(this.mqttClientProperties.getProperty(MqttConstants.DEFAULT_QOS_PROPERTY_NAME))
-        .thenReturn(DEFAULT_QOS.name());
-    lenient()
-        .when(this.mqttClientProperties.getProperty(MqttConstants.DEFAULT_TOPICS_PROPERTY_NAME))
-        .thenReturn(DEFAULT_TOPICS);
   }
 
   @Test

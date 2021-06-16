@@ -11,13 +11,11 @@ package org.opensmartgridplatform.adapter.protocol.mqtt.application.services;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAck;
 import com.hivemq.client.mqtt.mqtt3.message.subscribe.suback.Mqtt3SubAck;
-import java.security.GeneralSecurityException;
 import java.util.Arrays;
-import java.util.Properties;
-import org.opensmartgridplatform.adapter.protocol.mqtt.application.config.MqttConstants;
 import org.opensmartgridplatform.adapter.protocol.mqtt.application.messaging.OutboundOsgpCoreResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.entities.MqttDevice;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.repositories.MqttDeviceRepository;
+import org.opensmartgridplatform.adapter.protocol.mqtt.domain.valueobjects.MqttClientDefaults;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
@@ -36,20 +34,20 @@ public class SubscriptionService implements MqttClientEventHandler {
   private final OutboundOsgpCoreResponseMessageSender outboundOsgpCoreResponseMessageSender;
   private final MqttClientAdapterFactory mqttClientAdapterFactory;
 
-  private final Properties mqttClientProperties;
+  private final MqttClientDefaults mqttClientDefaults;
 
   public SubscriptionService(
       final MqttDeviceRepository mqttDeviceRepository,
       final MqttClientAdapterFactory mqttClientAdapterFactory,
       final OutboundOsgpCoreResponseMessageSender outboundOsgpCoreResponseMessageSender,
-      final Properties mqttClientProperties) {
+      final MqttClientDefaults mqttClientDefaults) {
     this.mqttDeviceRepository = mqttDeviceRepository;
     this.mqttClientAdapterFactory = mqttClientAdapterFactory;
     this.outboundOsgpCoreResponseMessageSender = outboundOsgpCoreResponseMessageSender;
-    this.mqttClientProperties = mqttClientProperties;
+    this.mqttClientDefaults = mqttClientDefaults;
   }
 
-  public void subscribe(final MessageMetadata messageMetadata) throws GeneralSecurityException {
+  public void subscribe(final MessageMetadata messageMetadata) {
     final MqttDevice device = this.getOrCreateDevice(messageMetadata);
     final MqttClientAdapter mqttClientAdapter =
         this.mqttClientAdapterFactory.create(device, messageMetadata, this);
@@ -63,9 +61,9 @@ public class SubscriptionService implements MqttClientEventHandler {
     if (device == null) {
       device = new MqttDevice(messageMetadata.getDeviceIdentification());
       device.setHost(messageMetadata.getIpAddress());
-      device.setPort(this.getDefaultPort());
-      device.setTopics(this.getDefaultTopics());
-      device.setQos(this.getDefaultQos());
+      device.setPort(this.mqttClientDefaults.getDefaultPort());
+      device.setTopics(this.mqttClientDefaults.getDefaultTopics());
+      device.setQos(this.mqttClientDefaults.getDefaultQos());
       this.mqttDeviceRepository.save(device);
     }
     return device;
@@ -103,7 +101,7 @@ public class SubscriptionService implements MqttClientEventHandler {
       mqttQos = MqttQos.valueOf(device.getQos());
     } catch (final IllegalArgumentException | NullPointerException e) {
       LOG.warn(String.format("Illegal or missing QoS value %s, using default", device.getQos()), e);
-      device.setQos(this.getDefaultQos());
+      device.setQos(this.mqttClientDefaults.getDefaultQos());
       mqttQos = MqttQos.valueOf(device.getQos());
     }
     return mqttQos;
@@ -145,18 +143,5 @@ public class SubscriptionService implements MqttClientEventHandler {
             .result(ResponseMessageResultType.OK)
             .build();
     this.outboundOsgpCoreResponseMessageSender.send(responseMessage);
-  }
-
-  private int getDefaultPort() {
-    return Integer.valueOf(
-        this.mqttClientProperties.getProperty(MqttConstants.DEFAULT_PORT_PROPERTY_NAME));
-  }
-
-  private String getDefaultQos() {
-    return this.mqttClientProperties.getProperty(MqttConstants.DEFAULT_QOS_PROPERTY_NAME);
-  }
-
-  private String getDefaultTopics() {
-    return this.mqttClientProperties.getProperty(MqttConstants.DEFAULT_TOPICS_PROPERTY_NAME);
   }
 }
