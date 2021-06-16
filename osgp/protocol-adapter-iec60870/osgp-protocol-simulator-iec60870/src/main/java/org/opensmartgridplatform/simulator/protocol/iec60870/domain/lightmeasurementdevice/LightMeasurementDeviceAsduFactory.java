@@ -11,6 +11,7 @@ package org.opensmartgridplatform.simulator.protocol.iec60870.domain.lightmeasur
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.TimeZone;
 import javax.annotation.PostConstruct;
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
@@ -44,10 +45,17 @@ public class LightMeasurementDeviceAsduFactory implements Iec60870AsduFactory {
   @Value("${general_interrogation_element_values}")
   private final boolean[] iev = new boolean[0];
 
+  private final String timeZoneString;
+
   @Autowired private Iec60870Server iec60870Server;
 
   private final InformationElementFactory informationElementFactory =
       new InformationElementFactory();
+
+  public LightMeasurementDeviceAsduFactory(
+      @Value("${job.asdu.generator.time.zone}") final String timeZoneString) {
+    this.timeZoneString = timeZoneString;
+  }
 
   @PostConstruct
   @Override
@@ -118,8 +126,15 @@ public class LightMeasurementDeviceAsduFactory implements Iec60870AsduFactory {
 
   private InformationElement[][] createInformationElementWithTimetag(
       final boolean value, final long timestamp) {
+
+    final TimeZone timeZone = TimeZone.getTimeZone(this.timeZoneString);
+    final boolean invalid = false;
+
     return new InformationElement[][] {
-      {new IeSinglePointWithQuality(value, false, false, false, false), new IeTime56(timestamp)}
+      {
+        new IeSinglePointWithQuality(value, false, false, false, false),
+        new IeTime56(timestamp, timeZone, invalid)
+      }
     };
   }
 }

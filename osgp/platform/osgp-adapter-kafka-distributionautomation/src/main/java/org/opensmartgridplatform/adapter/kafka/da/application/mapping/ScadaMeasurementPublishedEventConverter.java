@@ -53,8 +53,9 @@ public class ScadaMeasurementPublishedEventConverter
       analogList = new LowVoltageMeasurementToAnalogList().convertToAnalogList(measurementValues);
     } catch (final IllegalArgumentException e) {
       LOGGER.error(
-          "Measurement values does not have the expected amount of fields. Expecting: {} or {}, actual: {}. Payload: {}.",
-          LowVoltageMeasurementType.values().length,
+          "Measurement values does not have the expected amount of fields. Expecting: {}, {} or {}, actual: {}. Payload: {}.",
+          LowVoltageMeasurementTypeVersion1.values().length,
+          LowVoltageMeasurementTypeVersion2.values().length,
           LowVoltageMetaMeasurementType.values().length,
           measurementValues.length,
           source,
@@ -73,10 +74,14 @@ public class ScadaMeasurementPublishedEventConverter
   private ConductingEquipment createPowerSystemResource(final ScadaMeasurementPayload source) {
     final ArrayList<Name> names = new ArrayList<>();
     names.add(new Name(new NameType("gisbehuizingnummer"), source.getSubstationIdentification()));
+    names.add(new Name(new NameType("versie"), source.getVersion()));
     names.add(new Name(new NameType("msr naam"), source.getSubstationName()));
     names.add(new Name(new NameType("bay positie"), source.getFeeder()));
     if (source.getBayIdentification() != null) {
       names.add(new Name(new NameType("bay identificatie"), source.getBayIdentification()));
+    }
+    if (source.getAssetLabel() != null) {
+      names.add(new Name(new NameType("functieplaatslabel"), source.getAssetLabel()));
     }
     final Voltage voltage = new Voltage(UnitMultiplier.k, UnitSymbol.V, LOW_VOLTAGE_NOMINAL);
     return new ConductingEquipment(new BaseVoltage("LS", voltage), names);

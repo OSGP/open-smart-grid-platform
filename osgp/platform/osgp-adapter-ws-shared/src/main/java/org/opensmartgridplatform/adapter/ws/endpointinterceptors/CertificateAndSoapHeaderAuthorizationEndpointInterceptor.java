@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.domain.core.exceptions.CertificateInvalidException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.server.endpoint.interceptor.EndpointInterceptorAdapter;
 
@@ -24,8 +22,6 @@ import org.springframework.ws.server.endpoint.interceptor.EndpointInterceptorAda
 public class CertificateAndSoapHeaderAuthorizationEndpointInterceptor
     extends EndpointInterceptorAdapter {
 
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(CertificateAndSoapHeaderAuthorizationEndpointInterceptor.class);
   private final String rdnAttributeValuesPropertyName;
   private final String soapHeaderPropertyName;
 
@@ -51,7 +47,7 @@ public class CertificateAndSoapHeaderAuthorizationEndpointInterceptor
         this.getStringFromMessageContext(messageContext, this.soapHeaderPropertyName);
 
     if (rdnAttributeValues.isEmpty() || StringUtils.isBlank(soapHeaderValue)) {
-      LOGGER.warn("Soapheader or CN is empty.");
+      this.logger.warn("Soapheader or CN is empty.");
       throw new CertificateInvalidException(soapHeaderValue);
     }
 
@@ -59,7 +55,7 @@ public class CertificateAndSoapHeaderAuthorizationEndpointInterceptor
       return true;
     }
 
-    LOGGER.warn("Access is not granted because CN and Header are not equal");
+    this.logger.warn("Access is not granted because CN and Header are not equal");
     throw new CertificateInvalidException(soapHeaderValue);
   }
 
