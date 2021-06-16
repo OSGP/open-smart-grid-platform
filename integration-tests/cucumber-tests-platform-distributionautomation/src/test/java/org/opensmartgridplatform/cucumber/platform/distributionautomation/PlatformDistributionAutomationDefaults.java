@@ -23,7 +23,7 @@ public class PlatformDistributionAutomationDefaults {
   public static final UnitMultiplier UNIT_MULTIPLIER = UnitMultiplier.none;
 
   public static final Boolean MQTT_SSL_ENABLED = true;
-  public static final String MQTT_SSL_CLIENT_TRUSTSTORE_LOCATION = "mqtt_client_truststore.jks";
-  public static final String MQTT_SSL_CLIENT_TRUSTSTORE_PASSWORD = "123456";
-  public static final String MQTT_SSL_CLIENT_TRUSTSTORE_TYPE = "JKS";
+  public static final String MQTT_SSL_TRUSTSTORE_LOCATION = "classpath:mqtt_client_truststore.jks";
+  public static final String MQTT_SSL_TRUSTSTORE_PASSWORD = "123456";
+  public static final String MQTT_SSL_TRUSTSTORE_TYPE = "JKS";
 }

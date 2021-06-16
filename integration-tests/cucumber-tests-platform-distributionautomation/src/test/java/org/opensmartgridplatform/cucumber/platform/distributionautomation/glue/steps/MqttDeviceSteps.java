@@ -25,27 +25,36 @@ import com.alliander.data.scadameasurementpublishedevent.ScadaMeasurementPublish
 import com.alliander.data.scadameasurementpublishedevent.UnitMultiplier;
 import com.alliander.data.scadameasurementpublishedevent.UnitSymbol;
 import com.alliander.data.scadameasurementpublishedevent.Voltage;
+import com.hivemq.client.mqtt.MqttClientSslConfig;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
+import javax.net.ssl.TrustManagerFactory;
 import org.apache.avro.util.Utf8;
-import org.opensmartgridplatform.adapter.protocol.mqtt.application.config.MqttConstants;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.entities.MqttDevice;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.repositories.MqttDeviceRepository;
+import org.opensmartgridplatform.cucumber.core.ReadSettingsHelper;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationDefaults;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationKeys;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.kafka.in.LowVoltageMessageConsumer;
+import org.opensmartgridplatform.shared.exceptionhandling.UncheckedSecurityException;
 import org.opensmartgridplatform.simulator.protocol.mqtt.SimulatorSpecPublishingClient;
 import org.opensmartgridplatform.simulator.protocol.mqtt.spec.Message;
 import org.opensmartgridplatform.simulator.protocol.mqtt.spec.SimulatorSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 
 public class MqttDeviceSteps {
 
@@ -67,37 +76,94 @@ public class MqttDeviceSteps {
     final int port = device.getPort();
     final String topic = device.getTopics();
 
-    final SimulatorSpec spec = new SimulatorSpec(host, port);
-    spec.setStartupPauseMillis(2000);
     final String payload = parameters.get(PlatformDistributionAutomationKeys.PAYLOAD);
     LOGGER.info("Payload: {}", payload);
+
+    this.startPublishingClient(host, port, topic, payload, parameters);
+  }
+
+  private void startPublishingClient(
+      final String host,
+      final int port,
+      final String topic,
+      final String payload,
+      final Map<String, String> parameters) {
+    final SimulatorSpec spec = new SimulatorSpec(host, port);
+    spec.setStartupPauseMillis(2000);
     final Message message = new Message(topic, payload, 10000);
     final Message[] messages = {message};
     spec.setMessages(messages);
 
-    final Properties properties = new Properties();
+    MqttClientSslConfig mqttClientSslConfig = null;
 
-    properties.put(MqttConstants.DEFAULT_HOST_PROPERTY_NAME, host);
-    properties.put(MqttConstants.DEFAULT_PORT_PROPERTY_NAME, port);
-    properties.put(
-        MqttConstants.DEFAULT_QOS_PROPERTY_NAME, PlatformDistributionAutomationDefaults.MQTT_QOS);
-    properties.put(MqttConstants.DEFAULT_TOPICS_PROPERTY_NAME, topic);
+    final boolean mqttSslEnabled =
+        ReadSettingsHelper.getBoolean(
+            parameters,
+            PlatformDistributionAutomationKeys.MQTT_SSL_ENABLED,
+            PlatformDistributionAutomationDefaults.MQTT_SSL_ENABLED);
 
-    if (PlatformDistributionAutomationDefaults.MQTT_SSL_ENABLED) {
-      properties.put(
-          MqttConstants.SSL_TRUSTSTORE_TYPE_PROPERTY_NAME,
-          PlatformDistributionAutomationDefaults.MQTT_SSL_CLIENT_TRUSTSTORE_TYPE);
-      properties.put(
-          MqttConstants.SSL_TRUSTSTORE_PASSWORD_PROPERTY_NAME,
-          PlatformDistributionAutomationDefaults.MQTT_SSL_CLIENT_TRUSTSTORE_PASSWORD);
-      properties.put(
-          MqttConstants.SSL_TRUSTSTORE_PATH_PROPERTY_NAME,
-          PlatformDistributionAutomationDefaults.MQTT_SSL_CLIENT_TRUSTSTORE_LOCATION);
+    if (mqttSslEnabled) {
+
+      final String truststoreLocation =
+          ReadSettingsHelper.getString(
+              parameters,
+              PlatformDistributionAutomationKeys.MQTT_SSL_TRUSTSTORE_LOCATION,
+              PlatformDistributionAutomationDefaults.MQTT_SSL_TRUSTSTORE_LOCATION);
+      final String truststorePassword =
+          ReadSettingsHelper.getString(
+              parameters,
+              PlatformDistributionAutomationKeys.MQTT_SSL_TRUSTSTORE_PASSWORD,
+              PlatformDistributionAutomationDefaults.MQTT_SSL_TRUSTSTORE_PASSWORD);
+      final String truststoreType =
+          ReadSettingsHelper.getString(
+              parameters,
+              PlatformDistributionAutomationKeys.MQTT_SSL_TRUSTSTORE_TYPE,
+              PlatformDistributionAutomationDefaults.MQTT_SSL_TRUSTSTORE_TYPE);
+
+      final ResourceLoader resourceLoader = new DefaultResourceLoader();
+      final Resource trustStoreResource = resourceLoader.getResource(truststoreLocation);
+
+      mqttClientSslConfig =
+          this.mqttClientSslConfig(trustStoreResource, truststorePassword, truststoreType);
     }
 
     final SimulatorSpecPublishingClient publishingClient =
-        new SimulatorSpecPublishingClient(spec, properties);
+        new SimulatorSpecPublishingClient(spec, mqttClientSslConfig);
     publishingClient.start();
+  }
+
+  private MqttClientSslConfig mqttClientSslConfig(
+      final Resource truststoreLocation,
+      final String truststorePassword,
+      final String truststoreType) {
+
+    return MqttClientSslConfig.builder()
+        .trustManagerFactory(
+            this.getTruststoreFactory(truststoreLocation, truststorePassword, truststoreType))
+        .build();
+  }
+
+  private TrustManagerFactory getTruststoreFactory(
+      final Resource trustStoreResource,
+      final String trustStorePassword,
+      final String trustStoreType) {
+
+    try (InputStream in = trustStoreResource.getInputStream()) {
+      LOGGER.info("Load truststore from path: {}", trustStoreResource.getURI());
+
+      final KeyStore trustStore = KeyStore.getInstance(trustStoreType);
+      trustStore.load(in, trustStorePassword.toCharArray());
+
+      final TrustManagerFactory tmf =
+          TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+      tmf.init(trustStore);
+
+      return tmf;
+    } catch (final IOException e) {
+      throw new UncheckedIOException(e);
+    } catch (final GeneralSecurityException e) {
+      throw new UncheckedSecurityException(e);
+    }
   }
 
   @Then("a message is published to Kafka")
