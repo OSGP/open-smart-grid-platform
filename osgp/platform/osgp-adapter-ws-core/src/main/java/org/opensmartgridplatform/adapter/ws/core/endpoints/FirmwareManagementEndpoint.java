@@ -1130,14 +1130,18 @@ public class FirmwareManagementEndpoint {
 
   private String getManufacturerFromFirmware(final Firmware firmware) {
     return firmware.getDeviceModels().stream()
-        .map(dm -> dm.getManufacturer())
+        .map(
+            org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.DeviceModel
+                ::getManufacturer)
         .findFirst()
         .orElse(null);
   }
 
   private String getModelCodeFromFirmware(final Firmware firmware) {
     return firmware.getDeviceModels().stream()
-        .map(dm -> dm.getModelCode())
+        .map(
+            org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.DeviceModel
+                ::getModelCode)
         .findFirst()
         .orElse(null);
   }
