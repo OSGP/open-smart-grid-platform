@@ -15,7 +15,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConditionalOnProperty(name = "mqtt.simulator.ssl.enabled", havingValue = "false")
+@ConditionalOnProperty(
+    name = "mqtt.simulator.ssl.enabled",
+    havingValue = "false",
+    matchIfMissing = true)
 public class MqttClientSslDisabledConfig {
 
   @Bean
