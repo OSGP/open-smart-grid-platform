@@ -29,15 +29,10 @@ import com.hivemq.client.mqtt.MqttClientSslConfig;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
-import java.security.GeneralSecurityException;
-import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import javax.net.ssl.TrustManagerFactory;
 import org.apache.avro.util.Utf8;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.entities.MqttDevice;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.repositories.MqttDeviceRepository;
@@ -45,6 +40,7 @@ import org.opensmartgridplatform.cucumber.core.ReadSettingsHelper;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationDefaults;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationKeys;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.kafka.in.LowVoltageMessageConsumer;
+import org.opensmartgridplatform.shared.application.config.mqtt.MqttClientSslConfigFactory;
 import org.opensmartgridplatform.simulator.protocol.mqtt.SimulatorSpecPublishingClient;
 import org.opensmartgridplatform.simulator.protocol.mqtt.spec.Message;
 import org.opensmartgridplatform.simulator.protocol.mqtt.spec.SimulatorSpec;
@@ -123,46 +119,13 @@ public class MqttDeviceSteps {
       final Resource trustStoreResource = resourceLoader.getResource(truststoreLocation);
 
       mqttClientSslConfig =
-          this.mqttClientSslConfig(trustStoreResource, truststorePassword, truststoreType);
+          MqttClientSslConfigFactory.getMqttClientSslConfig(
+              trustStoreResource, truststorePassword, truststoreType);
     }
 
     final SimulatorSpecPublishingClient publishingClient =
         new SimulatorSpecPublishingClient(spec, mqttClientSslConfig);
     publishingClient.start();
-  }
-
-  private MqttClientSslConfig mqttClientSslConfig(
-      final Resource truststoreLocation,
-      final String truststorePassword,
-      final String truststoreType) {
-
-    return MqttClientSslConfig.builder()
-        .trustManagerFactory(
-            this.getTruststoreFactory(truststoreLocation, truststorePassword, truststoreType))
-        .build();
-  }
-
-  private TrustManagerFactory getTruststoreFactory(
-      final Resource trustStoreResource,
-      final String trustStorePassword,
-      final String trustStoreType) {
-
-    try (InputStream in = trustStoreResource.getInputStream()) {
-      LOGGER.info("Load truststore from path: {}", trustStoreResource.getURI());
-
-      final KeyStore trustStore = KeyStore.getInstance(trustStoreType);
-      trustStore.load(in, trustStorePassword.toCharArray());
-
-      final TrustManagerFactory tmf =
-          TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-      tmf.init(trustStore);
-
-      return tmf;
-    } catch (final IOException e) {
-      throw new UncheckedIOException(e);
-    } catch (final GeneralSecurityException e) {
-      throw new SecurityException(e);
-    }
   }
 
   @Then("a message is published to Kafka")

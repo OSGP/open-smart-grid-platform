@@ -10,12 +10,7 @@
 package org.opensmartgridplatform.adapter.protocol.mqtt.application.config;
 
 import com.hivemq.client.mqtt.MqttClientSslConfig;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
-import java.security.GeneralSecurityException;
-import java.security.KeyStore;
-import javax.net.ssl.TrustManagerFactory;
+import org.opensmartgridplatform.shared.application.config.mqtt.MqttClientSslConfigFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,32 +33,7 @@ public class MqttClientSslEnabledConfig {
 
     LOG.info("MQTT SSL ENABLED.");
 
-    return MqttClientSslConfig.builder()
-        .trustManagerFactory(
-            this.getTruststoreFactory(truststoreLocation, truststorePassword, truststoreType))
-        .build();
-  }
-
-  private TrustManagerFactory getTruststoreFactory(
-      final Resource trustStoreResource,
-      final String trustStorePassword,
-      final String trustStoreType) {
-
-    try (InputStream in = trustStoreResource.getInputStream()) {
-      LOG.info("Load truststore from path: {}", trustStoreResource.getURI());
-
-      final KeyStore trustStore = KeyStore.getInstance(trustStoreType);
-      trustStore.load(in, trustStorePassword.toCharArray());
-
-      final TrustManagerFactory tmf =
-          TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-      tmf.init(trustStore);
-
-      return tmf;
-    } catch (final IOException e) {
-      throw new UncheckedIOException(e);
-    } catch (final GeneralSecurityException e) {
-      throw new SecurityException(e);
-    }
+    return MqttClientSslConfigFactory.getMqttClientSslConfig(
+        truststoreLocation, truststorePassword, truststoreType);
   }
 }

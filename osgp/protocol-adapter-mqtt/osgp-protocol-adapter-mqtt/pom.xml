@@ -24,7 +24,6 @@
   <properties>
     <display.version>${project.version}-${BUILD_TAG}</display.version>
     <skipITs>true</skipITs>
-    <hivemq-mqtt-client.version>1.2.0</hivemq-mqtt-client.version>
   </properties>
 
   <dependencies>
@@ -52,7 +51,6 @@
     <dependency>
       <groupId>com.hivemq</groupId>
       <artifactId>hivemq-mqtt-client</artifactId>
-      <version>${hivemq-mqtt-client.version}</version>
     </dependency>
 
     <dependency>
