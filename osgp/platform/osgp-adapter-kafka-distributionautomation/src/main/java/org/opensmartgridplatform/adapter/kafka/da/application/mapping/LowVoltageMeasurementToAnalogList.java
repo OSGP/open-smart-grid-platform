@@ -30,7 +30,7 @@ public class LowVoltageMeasurementToAnalogList implements StringArrayToAnalogLis
       final int length) {
     return (Class<T>)
         Stream.of(LowVoltageMeasurementType.class, LowVoltageMetaMeasurementType.class)
-            .filter(clazz -> clazz.getEnumConstants().length == length)
+            .filter(clazz -> clazz.getEnumConstants().length == length || 41 == length)
             .findFirst()
             .orElseThrow(
                 () -> new IllegalArgumentException("Unsupported value string length: " + length));
