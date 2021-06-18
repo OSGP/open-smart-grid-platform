@@ -11,7 +11,9 @@ package org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.alliander.data.scadameasurementpublishedevent.Message;
+import com.alliander.data.scadameasurementpublishedevent.Name;
 import com.alliander.data.scadameasurementpublishedevent.ScadaMeasurementPublishedEvent;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,10 +78,20 @@ public class LowVoltageMessageConsumer {
   }
 
   private static String getSubstationFromMessage(final ScadaMeasurementPublishedEvent event) {
+    if (event.getPowerSystemResource() == null
+        || event.getPowerSystemResource().getNames() == null) {
+      return StringUtils.EMPTY;
+    }
     return event.getPowerSystemResource().getNames().stream()
-        .filter(n -> "gisbehuizingnummer".equals(n.getNameType().getDescription().toString()))
+        .filter(LowVoltageMessageConsumer::isSubstationName)
         .map(n -> n.getName().toString())
         .findFirst()
-        .orElse("");
+        .orElse(StringUtils.EMPTY);
+  }
+
+  private static boolean isSubstationName(final Name n) {
+    return n != null
+        && n.getNameType().getDescription() != null
+        && "gisbehuizingnummer".equals(n.getNameType().getDescription().toString());
   }
 }
