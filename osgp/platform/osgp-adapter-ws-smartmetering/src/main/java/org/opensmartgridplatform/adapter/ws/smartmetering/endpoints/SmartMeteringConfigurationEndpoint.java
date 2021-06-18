@@ -1639,7 +1639,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
           this.responseDataService.dequeue(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
-      this.throwExceptionIfResultNotOk(responseData, "Get keys");
+      this.throwExceptionIfResultNotOk(responseData, "getting keys");
 
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
 

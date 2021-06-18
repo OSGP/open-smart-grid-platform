@@ -22,8 +22,6 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
@@ -44,8 +42,7 @@ import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
-public class ConfigurationServiceTest {
+class ConfigurationServiceTest {
 
   private static final String DEVICE_IDENTIFICATION = "test-device-identification";
   private static final String ORGANISATION_IDENTIFICATION = "organisation";
@@ -86,7 +83,7 @@ public class ConfigurationServiceTest {
   @Captor private ArgumentCaptor<ResponseMessage> responseMessageCaptor;
 
   @Test
-  public void getKeys() throws FunctionalException {
+  void getKeys() throws FunctionalException {
 
     // SETUP
     when(this.domainHelperService.findSmartMeter(DEVICE_IDENTIFICATION)).thenReturn(device);
@@ -121,7 +118,7 @@ public class ConfigurationServiceTest {
   }
 
   @Test
-  public void handleGetKeysResponse() {
+  void handleGetKeysResponse() {
 
     // CALL
     this.instance.handleGetKeysResponse(

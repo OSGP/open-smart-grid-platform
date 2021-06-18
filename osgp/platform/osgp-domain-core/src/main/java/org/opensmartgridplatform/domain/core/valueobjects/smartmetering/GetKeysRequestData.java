@@ -11,7 +11,9 @@ package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
 import java.util.List;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 
 public class GetKeysRequestData implements ActionRequest {
 
@@ -24,7 +26,12 @@ public class GetKeysRequestData implements ActionRequest {
 
   @Override
   public void validate() throws FunctionalException {
-    // No validation needed
+    if (this.secretTypes.isEmpty()) {
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          ComponentType.WS_SMART_METERING,
+          new Exception("GetKeysRequest has an empty secret types list"));
+    }
   }
 
   @Override

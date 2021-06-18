@@ -17,13 +17,5 @@ public enum SecretType {
   G_METER_MASTER_KEY,
   G_METER_ENCRYPTION_KEY,
   G_METER_FIRMWARE_UPDATE_AUTHENTICATION_KEY,
-  G_METER_OPTICAL_PORT_KEY;
-
-  public String value() {
-    return this.name();
-  }
-
-  public static SecretType fromValue(final String v) {
-    return valueOf(v);
-  }
+  G_METER_OPTICAL_PORT_KEY
 }

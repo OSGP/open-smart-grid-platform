@@ -9,6 +9,9 @@
  */
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
+import lombok.Getter;
+
+@Getter
 public class KeyDto extends ActionResponseDto {
 
   private final SecretTypeDto secretType;
@@ -20,13 +23,5 @@ public class KeyDto extends ActionResponseDto {
   public KeyDto(final SecretTypeDto secretType, final byte[] secret) {
     this.secretType = secretType;
     this.secret = secret;
-  }
-
-  public SecretTypeDto getSecretType() {
-    return this.secretType;
-  }
-
-  public byte[] getSecret() {
-    return this.secret;
   }
 }

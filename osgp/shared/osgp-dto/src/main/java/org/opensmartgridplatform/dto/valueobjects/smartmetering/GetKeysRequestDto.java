@@ -13,7 +13,6 @@ import java.util.List;
 
 public class GetKeysRequestDto implements ActionRequestDto {
 
-  /** Serial Version UID. */
   private static final long serialVersionUID = 490478142616065020L;
 
   private final List<SecretTypeDto> secretTypes;

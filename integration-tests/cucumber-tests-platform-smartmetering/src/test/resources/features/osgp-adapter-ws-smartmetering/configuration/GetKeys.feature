@@ -1,7 +1,7 @@
 @SmartMetering @Platform @SmartMeteringConfiguration @GetKeys
 Feature: SmartMetering - Configuration - Get Keys
   As a product owner
-  I want to be able to obtain the unencrypted keys of a device
+  I want to be able to obtain the keys of a device
   So I can support technical services
 
   Scenario: Get keys from a device

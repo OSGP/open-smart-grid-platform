@@ -23,12 +23,18 @@ import org.opensmartgridplatform.ws.schema.core.secret.management.SecretType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component()
+@Component
 public class GetKeysService {
 
-  @Autowired private SecretManagementService secretManagementService;
+  private final SecretManagementService secretManagementService;
+  private final RsaEncrypter rsaEncrypter;
 
-  @Autowired private RsaEncrypter rsaEncrypter;
+  @Autowired
+  public GetKeysService(
+      final SecretManagementService secretManagementService, final RsaEncrypter rsaEncrypter) {
+    this.secretManagementService = secretManagementService;
+    this.rsaEncrypter = rsaEncrypter;
+  }
 
   public GetKeysResponseDto getKeys(
       final DlmsDevice device, final GetKeysRequestDto getKeysRequestDto) {

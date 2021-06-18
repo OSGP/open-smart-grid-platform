@@ -21,6 +21,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.G
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysResponseData;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.SecretType;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
@@ -61,10 +62,13 @@ public class GetKeys {
         .as(OPERATION + ", Checking result:")
         .isEqualTo(OsgpResultType.OK);
 
-    final byte[] key1 = response.getGetKeysResponseData().get(0).getSecretValue();
-    final SecretType key1Type = response.getGetKeysResponseData().get(0).getSecretType();
-    final byte[] key2 = response.getGetKeysResponseData().get(1).getSecretValue();
-    final SecretType key2Type = response.getGetKeysResponseData().get(1).getSecretType();
+    final List<GetKeysResponseData> responseDataList = response.getGetKeysResponseData();
+    assertThat(responseDataList).hasSize(2);
+
+    final byte[] key1 = responseDataList.get(0).getSecretValue();
+    final SecretType key1Type = responseDataList.get(0).getSecretType();
+    final byte[] key2 = responseDataList.get(1).getSecretValue();
+    final SecretType key2Type = responseDataList.get(1).getSecretType();
 
     final List<SecretType> secretTypes = getSecretTypesFromParameterMap(expectedValues);
 
