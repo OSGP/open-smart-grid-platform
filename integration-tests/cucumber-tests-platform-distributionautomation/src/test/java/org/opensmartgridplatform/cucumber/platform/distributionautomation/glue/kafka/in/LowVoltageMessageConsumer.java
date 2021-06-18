@@ -41,18 +41,45 @@ public class LowVoltageMessageConsumer {
 
     final long startTime = System.currentTimeMillis();
     long remaining = this.waitFailMillis;
-    while (remaining > 0 && this.consumerRecord == null) {
+
+    final String expectedSubstation = getSubstationFromMessage(expectedMessage);
+    while (remaining > 0
+        && waitForConsumerRecordFromSubstation(expectedSubstation, this.consumerRecord)) {
       final long elapsed = System.currentTimeMillis() - startTime;
       remaining = this.waitFailMillis - elapsed;
     }
     assertThat(this.consumerRecord).isNotNull();
     final Message message = this.consumerRecord.value();
     assertThat(message.getMessageId()).isNotNull();
-    assertThat(message.getProducerId().toString()).isEqualTo("GXF");
+    assertThat(message.getProducerId()).hasToString("GXF");
     final ScadaMeasurementPublishedEvent event = message.getPayload();
     assertThat(event.getPowerSystemResource()).isEqualTo(expectedMessage.getPowerSystemResource());
     assertThat(event.getMeasurements())
         .usingElementComparatorIgnoringFields("mRID")
         .isEqualTo(expectedMessage.getMeasurements());
+  }
+
+  private static boolean waitForConsumerRecordFromSubstation(
+      final String substationIdentification, final ConsumerRecord<String, Message> consumerRecord) {
+    return consumerRecord == null
+        || !isMessageFromExpectedSubstation(substationIdentification, consumerRecord.value());
+  }
+
+  private static boolean isMessageFromExpectedSubstation(
+      final String expectedSubstation, final Message message) {
+    final String actualSubstation = getSubstationFromMessage(message.getPayload());
+    LOGGER.info(
+        "Checking if message (actual substation: {}) is from expected substation: {}.",
+        actualSubstation,
+        expectedSubstation);
+    return expectedSubstation.equalsIgnoreCase(actualSubstation);
+  }
+
+  private static String getSubstationFromMessage(final ScadaMeasurementPublishedEvent event) {
+    return event.getPowerSystemResource().getNames().stream()
+        .filter(n -> "gisbehuizingnummer".equals(n.getNameType().getDescription().toString()))
+        .map(n -> n.getName().toString())
+        .findFirst()
+        .orElse("");
   }
 }
