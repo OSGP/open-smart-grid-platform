@@ -8,12 +8,12 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
+import java.io.IOException;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.DeviceSessionTerminatedAfterReadingInvocationCounterException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.slf4j.Logger;
@@ -52,16 +52,6 @@ public class InvocationCounterManager {
   public void initializeInvocationCounter(final DlmsDevice device) throws OsgpException {
     this.initializeWithInvocationCounterStoredOnDevice(device);
     this.deviceRepository.save(device);
-
-    // At this point proceeding to create a new connection will fail due to a current limitation in
-    // the OpenMUC
-    // jDLMS library, therefore don't even try but throw a very specific exception signalling the
-    // problem.
-    // The exception will cause a retry header to be set so the operation will be retried, but the
-    // exception
-    // itself will not be logged.
-    throw new DeviceSessionTerminatedAfterReadingInvocationCounterException(
-        device.getDeviceIdentification());
   }
 
   private void initializeWithInvocationCounterStoredOnDevice(final DlmsDevice device)
@@ -74,17 +64,30 @@ public class InvocationCounterManager {
               + "stored on the device: {}",
           device.getDeviceIdentification(),
           device.getInvocationCounter());
+      try {
+        /*
+         * Call disconnect on the connectionManager instead of depending on the try-with-resources
+         * handling calling close. Calling disconnect terminates the connection more gracefully
+         * allowing connections to be set up on the management client after the invocation counter
+         * has been retrieved utilizing the public client.
+         */
+        connectionManager.disconnect();
+      } catch (final IOException e) {
+        LOGGER.warn(
+            "Failure disconnecting from the public client connection to {}",
+            device.getDeviceIdentification(),
+            e);
+      }
     }
   }
 
-  @SuppressWarnings("squid:S1905") // Casting to Number is necessary here.
   private long getInvocationCounter(final DlmsConnectionManager connectionManager)
       throws FunctionalException {
-    return ((Number)
-            this.dlmsHelper
-                .getAttributeValue(connectionManager, ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE)
-                .getValue())
-        .longValue();
+    final Number invocationCounter =
+        this.dlmsHelper
+            .getAttributeValue(connectionManager, ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE)
+            .getValue();
+    return invocationCounter.longValue();
   }
 
   public void resetInvocationCounter(final DlmsDevice device) {

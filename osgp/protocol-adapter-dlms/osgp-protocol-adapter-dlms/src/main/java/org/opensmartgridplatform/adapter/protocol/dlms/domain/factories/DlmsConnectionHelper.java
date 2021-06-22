@@ -50,37 +50,56 @@ public class DlmsConnectionHelper {
   public DlmsConnectionManager createConnectionForDevice(
       final DlmsDevice device, final DlmsMessageListener messageListener) throws OsgpException {
 
-    if (this.devicePingConfig.pingingEnabled() && StringUtils.hasText(device.getIpAddress())) {
+    final boolean pingDevice =
+        this.devicePingConfig.pingingEnabled() && StringUtils.hasText(device.getIpAddress());
+    final boolean initializeInvocationCounter =
+        device.needsInvocationCounter() && !device.isInvocationCounterInitialized();
+    return this.createConnectionForDevice(
+        device, messageListener, pingDevice, initializeInvocationCounter);
+  }
+
+  private DlmsConnectionManager createConnectionForDevice(
+      final DlmsDevice device,
+      final DlmsMessageListener messageListener,
+      final boolean pingDevice,
+      final boolean initializeInvocationCounter)
+      throws OsgpException {
+
+    if (pingDevice) {
       this.devicePingConfig.pinger().ping(device.getIpAddress());
     }
 
-    if (device.needsInvocationCounter() && !device.isInvocationCounterInitialized()) {
+    if (initializeInvocationCounter) {
       this.invocationCounterManager.initializeInvocationCounter(device);
     }
 
     try {
       return this.connectionFactory.getConnection(device, messageListener);
     } catch (final ConnectionException e) {
-      if (device.needsInvocationCounter() && this.indicatesInvocationCounterOutOfSync(e)) {
-        this.resetInvocationCounter(device);
+      if ((device.needsInvocationCounter() && this.indicatesInvocationCounterOutOfSync(e))
+          && !initializeInvocationCounter) {
+        LOGGER.warn(
+            "Invocation counter appears to be out of sync for {}, retry initializing the counter",
+            device.getDeviceIdentification());
+        /*
+         * The connection exception is likely caused by an already initialized invocation counter
+         * that does not have an appropriate value compared to the counter on the actual device.
+         * Retry creating the connection, do not ping anymore, as the device should have already
+         * been pinged if that was appropriate. Make sure the invocation counter is initialized,
+         * regardless of whether it has already been initialized before or not.
+         */
+        return this.createConnectionForDevice(device, messageListener, false, true);
       }
-      // Retrow exception, for two reasons:
-      // - The error should still be logged, since it can be caused by a problem other than the
-      // invocation
-      //   counter being out of sync.
-      // - This will cause a retry header to be set so the operation will be retried.
+      /*
+       * The connection exception is assumed not to be related to the invocation counter, or has
+       * occurred despite the attempt to initialize the invocation counter.
+       * Do not go into a loop trying to repeat setting up the connection possibly trying to
+       * initialize the invocation counter over and over again.
+       * Throw the connection exception and have other parts of the code decide whether or not a
+       * retry will be scheduled.
+       */
       throw e;
     }
-  }
-
-  private void resetInvocationCounter(final DlmsDevice device) {
-    LOGGER.info(
-        "Property invocationCounter of device {} reset, because the ConnectionException logged below could "
-            + "result from its current value {} being out of sync with the invocation counter stored on the "
-            + "device.",
-        device.getDeviceIdentification(),
-        device.getInvocationCounter());
-    this.invocationCounterManager.resetInvocationCounter(device);
   }
 
   private boolean indicatesInvocationCounterOutOfSync(final ConnectionException e) {
