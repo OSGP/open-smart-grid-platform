@@ -15,6 +15,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NonRetryableException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -174,7 +175,8 @@ public abstract class DlmsConnectionMessageProcessor {
     }
 
     final RetryHeader retryHeader;
-    if (result == ResponseMessageResultType.NOT_OK) {
+    if (result == ResponseMessageResultType.NOT_OK
+        && !(exception instanceof NonRetryableException)) {
       retryHeader = this.retryHeaderFactory.createRetryHeader(messageMetadata.getRetryCount());
     } else {
       retryHeader = this.retryHeaderFactory.createEmtpyRetryHeader();
