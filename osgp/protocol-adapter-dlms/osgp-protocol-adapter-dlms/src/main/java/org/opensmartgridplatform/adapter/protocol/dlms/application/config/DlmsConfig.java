@@ -159,17 +159,9 @@ public class DlmsConfig extends AbstractConfig {
   @Scope("prototype")
   public RecoverKeyProcess recoverKeyProcess(
       final DomainHelperService domainHelperService,
-      @Value("${jdlms.response_timeout}") final int responseTimeout,
-      @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress,
       final Hls5Connector hls5Connector,
       final SecretManagementService secretManagementService) {
-    return new RecoverKeyProcess(
-        domainHelperService,
-        responseTimeout,
-        logicalDeviceAddress,
-        DlmsDeviceAssociation.MANAGEMENT_CLIENT,
-        hls5Connector,
-        secretManagementService);
+    return new RecoverKeyProcess(domainHelperService, hls5Connector, secretManagementService);
   }
 
   @Bean

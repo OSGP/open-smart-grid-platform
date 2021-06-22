@@ -18,7 +18,6 @@ import org.openmuc.jdlms.DlmsConnection;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsDeviceAssociation;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Hls5Connector;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.RecoverKeyException;
 
@@ -26,12 +25,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.RecoverKeyExce
 public class RecoverKeyProcess implements Runnable {
 
   private final DomainHelperService domainHelperService;
-
-  private final int responseTimeout;
-
-  private final int logicalDeviceAddress;
-
-  private final int clientId;
 
   private String deviceIdentification;
 
@@ -43,15 +36,9 @@ public class RecoverKeyProcess implements Runnable {
 
   public RecoverKeyProcess(
       final DomainHelperService domainHelperService,
-      final int responseTimeout,
-      final int logicalDeviceAddress,
-      final DlmsDeviceAssociation deviceAssociation,
       final Hls5Connector hls5Connector,
       final SecretManagementService secretManagementService) {
     this.domainHelperService = domainHelperService;
-    this.responseTimeout = responseTimeout;
-    this.logicalDeviceAddress = logicalDeviceAddress;
-    this.clientId = deviceAssociation.getClientId();
     this.hls5Connector = hls5Connector;
     this.secretManagementService = secretManagementService;
   }
