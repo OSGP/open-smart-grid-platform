@@ -22,6 +22,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import javax.inject.Provider;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcess;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsDeviceAssociation;
@@ -124,20 +125,26 @@ public class DlmsConfig extends AbstractConfig {
   public Hls5Connector hls5Connector(
       final RecoverKeyProcessInitiator recoverKeyProcessInitiator,
       @Value("${jdlms.response_timeout}") final int responseTimeout,
-      @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress) {
+      @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress,
+      final SecretManagementService secretManagementService) {
     return new Hls5Connector(
         recoverKeyProcessInitiator,
         responseTimeout,
         logicalDeviceAddress,
-        DlmsDeviceAssociation.MANAGEMENT_CLIENT);
+        DlmsDeviceAssociation.MANAGEMENT_CLIENT,
+        secretManagementService);
   }
 
   @Bean
   public Lls1Connector lls1Connector(
       @Value("${jdlms.lls1.response.timeout}") final int responseTimeout,
-      @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress) {
+      @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress,
+      final SecretManagementService secretManagementService) {
     return new Lls1Connector(
-        responseTimeout, logicalDeviceAddress, DlmsDeviceAssociation.MANAGEMENT_CLIENT);
+        responseTimeout,
+        logicalDeviceAddress,
+        DlmsDeviceAssociation.MANAGEMENT_CLIENT,
+        secretManagementService);
   }
 
   @Bean
@@ -153,12 +160,16 @@ public class DlmsConfig extends AbstractConfig {
   public RecoverKeyProcess recoverKeyProcess(
       final DomainHelperService domainHelperService,
       @Value("${jdlms.response_timeout}") final int responseTimeout,
-      @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress) {
+      @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress,
+      final Hls5Connector hls5Connector,
+      final SecretManagementService secretManagementService) {
     return new RecoverKeyProcess(
         domainHelperService,
         responseTimeout,
         logicalDeviceAddress,
-        DlmsDeviceAssociation.MANAGEMENT_CLIENT);
+        DlmsDeviceAssociation.MANAGEMENT_CLIENT,
+        hls5Connector,
+        secretManagementService);
   }
 
   @Bean
