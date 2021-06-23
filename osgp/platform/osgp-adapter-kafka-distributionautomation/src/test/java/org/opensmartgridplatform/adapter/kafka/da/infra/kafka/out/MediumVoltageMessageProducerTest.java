@@ -24,6 +24,7 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -128,5 +129,10 @@ class MediumVoltageMessageProducerTest {
         new ConductingEquipment(new BaseVoltage(description, null), new ArrayList<>());
     return new ScadaMeasurementPublishedEvent(
         measurements, powerSystemResource, createdDateTime, description, mRid);
+  }
+
+  @AfterEach
+  public void destroy() {
+    this.embeddedKafka.destroy();
   }
 }
