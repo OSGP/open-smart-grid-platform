@@ -49,10 +49,10 @@ public class BundleService {
       final BundleMessagesRequestDto request) {
 
     request.getActionList().stream()
-        .filter(action -> this.shouldExecute(action))
+        .filter(this::shouldExecute)
         .forEach(
             action -> {
-              final CommandExecutor executor = this.getCommandExecutor(action);
+              final CommandExecutor<?, ?> executor = this.getCommandExecutor(action);
 
               if (executor == null) {
                 this.handleMissingExecutor(action, device);
@@ -65,7 +65,7 @@ public class BundleService {
     return request;
   }
 
-  private CommandExecutor getCommandExecutor(final ActionDto action) {
+  private CommandExecutor<?, ?> getCommandExecutor(final ActionDto action) {
     return this.commandExecutorMap.getCommandExecutor(action.getRequest().getClass());
   }
 
@@ -99,7 +99,7 @@ public class BundleService {
   }
 
   private void callExecutor(
-      final CommandExecutor executor,
+      final CommandExecutor<?, ?> executor,
       final ActionDto action,
       final DlmsConnectionManager conn,
       final DlmsDevice device) {

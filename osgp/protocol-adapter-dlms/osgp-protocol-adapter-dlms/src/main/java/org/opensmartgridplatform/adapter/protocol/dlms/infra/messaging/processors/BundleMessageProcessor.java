@@ -9,12 +9,14 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors;
 
 import java.io.Serializable;
+import java.util.Objects;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.BundleService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FaultResponseDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -62,8 +64,8 @@ public class BundleMessageProcessor extends DeviceRequestMessageProcessor {
       final BundleMessagesRequestDto response = (BundleMessagesRequestDto) responseObject;
       final boolean shouldRetry =
           response.getActionList().stream()
-              .map(a -> a.getResponse())
-              .filter(r -> r != null)
+              .map(ActionDto::getResponse)
+              .filter(Objects::nonNull)
               .filter(r -> r instanceof FaultResponseDto)
               .anyMatch(f -> ((FaultResponseDto) f).isRetryable());
 
