@@ -10,8 +10,11 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,11 +29,13 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionDtoBuilder;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FaultResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FaultResponseParameterDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FindEventsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.OsgpResultTypeDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 
 @ExtendWith(MockitoExtension.class)
@@ -125,6 +130,69 @@ public class BundleServiceTest {
         exception.getClass().getName(),
         message,
         this.parameters);
+  }
+
+  @Test
+  public void shouldHandleActionsWithoutPreviousResult() {
+    final BundleMessagesRequestDto bundleMessagesRequest =
+        new BundleMessagesRequestDto(
+            Arrays.asList(
+                this.createAction(this.builder.makePeriodicMeterReadsRequestDataDto(), null)));
+
+    final BundleMessagesRequestDto result =
+        this.bundleService.callExecutors(null, new DlmsDevice(), bundleMessagesRequest);
+
+    verify(this.bundleCommandExecutorMap)
+        .getCommandExecutor(PeriodicMeterReadsRequestDataDto.class);
+    assertThat(result.getAllResponses().size()).isOne();
+    assertThat(result.getAllResponses().get(0)).isNotNull();
+  }
+
+  @Test
+  public void shouldHandleActionsWithResultContainingFaultResponseWithRetryableException() {
+    final ActionResponseDto faultResponse = this.createFaultResponse(true);
+    final BundleMessagesRequestDto bundleMessagesRequest =
+        new BundleMessagesRequestDto(
+            Arrays.asList(
+                this.createAction(
+                    this.builder.makePeriodicMeterReadsRequestDataDto(), faultResponse)));
+
+    final BundleMessagesRequestDto result =
+        this.bundleService.callExecutors(null, new DlmsDevice(), bundleMessagesRequest);
+
+    verify(this.bundleCommandExecutorMap)
+        .getCommandExecutor(PeriodicMeterReadsRequestDataDto.class);
+    assertThat(result.getAllResponses().size()).isOne();
+    assertThat(result.getAllResponses().get(0)).isNotNull();
+  }
+
+  @Test
+  public void shouldNotHandleActionsContainingResult() {
+    final ActionResponseDto previousActionResponse = new ActionResponseDto();
+    final BundleMessagesRequestDto bundleMessagesRequest =
+        new BundleMessagesRequestDto(
+            Arrays.asList(
+                this.createAction(
+                    this.builder.makePeriodicMeterReadsRequestDataDto(), previousActionResponse)));
+
+    final BundleMessagesRequestDto result =
+        this.bundleService.callExecutors(null, new DlmsDevice(), bundleMessagesRequest);
+
+    verify(this.bundleCommandExecutorMap, never())
+        .getCommandExecutor(PeriodicMeterReadsRequestDataDto.class);
+    assertThat(result.getAllResponses().size()).isOne();
+    assertThat(result.getAllResponses().get(0)).isEqualTo(previousActionResponse);
+  }
+
+  private ActionDto createAction(
+      final ActionRequestDto actionRequestDto, final ActionResponseDto actionResponseDto) {
+    final ActionDto action = new ActionDto(actionRequestDto);
+    action.setResponse(actionResponseDto);
+    return action;
+  }
+
+  private FaultResponseDto createFaultResponse(final boolean retryable) {
+    return new FaultResponseDto.Builder().withRetryable(retryable).build();
   }
 
   public void assertResponse(

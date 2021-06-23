@@ -8,7 +8,10 @@
  */
 package org.opensmartgridplatform.cucumber.core;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -252,6 +255,9 @@ public class ReadSettingsHelper {
       final Map<String, String> settings, final String key, final String defaultValue) {
     try {
       if (!settings.containsKey(key)) {
+        if (defaultValue == null) {
+          return null;
+        }
         return Hex.decodeHex(defaultValue.toCharArray());
       } else {
         return Hex.decodeHex(settings.get(key).toCharArray());
@@ -284,6 +290,14 @@ public class ReadSettingsHelper {
     }
 
     return Enum.valueOf(enumType, settings.get(key));
+  }
+
+  public static List<String> getStringList(
+      final Map<String, String> settings, final String key, final String separator) {
+    if (!settings.containsKey(key) || StringUtils.isBlank(settings.get(key))) {
+      return new ArrayList<String>(0);
+    }
+    return Arrays.asList(settings.get(key).split(separator));
   }
 
   public static <E extends Enum<E>> E getEnum(

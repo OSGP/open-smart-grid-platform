@@ -9,7 +9,11 @@
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
 import java.util.Objects;
+import lombok.Getter;
+import lombok.ToString;
 
+@ToString
+@Getter
 public class FaultResponseDto extends ActionResponseDto {
 
   private static final long serialVersionUID = -2599283959144295334L;
@@ -20,6 +24,7 @@ public class FaultResponseDto extends ActionResponseDto {
   private final String innerException;
   private final String innerMessage;
   private final FaultResponseParametersDto faultResponseParameters;
+  private final boolean retryable;
 
   private FaultResponseDto(final Builder builder) {
     super(OsgpResultTypeDto.NOT_OK, null, null);
@@ -32,72 +37,7 @@ public class FaultResponseDto extends ActionResponseDto {
     this.innerException = builder.innerException;
     this.innerMessage = builder.innerMessage;
     this.faultResponseParameters = builder.faultResponseParameters;
-  }
-
-  @Override
-  public String toString() {
-    final StringBuilder sb = new StringBuilder("FaultResponseDto[");
-    if (this.hasCode()) {
-      sb.append("code=").append(this.code).append(", ");
-    }
-    sb.append("message=").append(this.message);
-    if (this.hasComponent()) {
-      sb.append(", component=").append(this.component);
-    }
-    if (this.hasInnerException()) {
-      sb.append(", innerException=").append(this.innerException);
-    }
-    if (this.hasInnerMessage()) {
-      sb.append(", innerMessage=").append(this.innerMessage);
-    }
-    if (this.hasFaultResponseParameters()) {
-      sb.append(", ").append(this.faultResponseParameters);
-    }
-    return sb.append(']').toString();
-  }
-
-  public boolean hasCode() {
-    return this.code != null;
-  }
-
-  public Integer getCode() {
-    return this.code;
-  }
-
-  public String getMessage() {
-    return this.message;
-  }
-
-  public boolean hasComponent() {
-    return this.component != null;
-  }
-
-  public String getComponent() {
-    return this.component;
-  }
-
-  public boolean hasInnerException() {
-    return this.innerException != null;
-  }
-
-  public String getInnerException() {
-    return this.innerException;
-  }
-
-  public boolean hasInnerMessage() {
-    return this.innerMessage != null;
-  }
-
-  public String getInnerMessage() {
-    return this.innerMessage;
-  }
-
-  public boolean hasFaultResponseParameters() {
-    return this.faultResponseParameters != null;
-  }
-
-  public FaultResponseParametersDto getFaultResponseParameters() {
-    return this.faultResponseParameters;
+    this.retryable = builder.retryable;
   }
 
   public static class Builder {
@@ -108,6 +48,7 @@ public class FaultResponseDto extends ActionResponseDto {
     private String innerException;
     private String innerMessage;
     private FaultResponseParametersDto faultResponseParameters;
+    private boolean retryable = true;
 
     public Builder withCode(final Integer code) {
       this.code = code;
@@ -137,6 +78,11 @@ public class FaultResponseDto extends ActionResponseDto {
     public Builder withFaultResponseParameters(
         final FaultResponseParametersDto faultResponseParameters) {
       this.faultResponseParameters = faultResponseParameters;
+      return this;
+    }
+
+    public Builder withRetryable(final boolean retryable) {
+      this.retryable = retryable;
       return this;
     }
 
