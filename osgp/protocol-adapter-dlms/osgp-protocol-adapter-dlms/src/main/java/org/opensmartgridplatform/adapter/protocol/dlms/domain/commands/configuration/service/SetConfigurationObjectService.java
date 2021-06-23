@@ -23,6 +23,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Dlm
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NotSupportedByProtocolException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
@@ -135,6 +136,7 @@ public abstract class SetConfigurationObjectService implements ProtocolService {
 
   private String toWord(final List<ConfigurationFlagDto> flags) throws ProtocolAdapterException {
     final StringBuilder sb = this.createEmptyWord();
+
     for (final ConfigurationFlagDto flag : flags) {
       if (flag.isEnabled()) {
         final ConfigurationFlagTypeDto flagType = flag.getConfigurationFlagType();
@@ -142,7 +144,7 @@ public abstract class SetConfigurationObjectService implements ProtocolService {
             this.getBitPosition(flagType)
                 .orElseThrow(
                     () ->
-                        new ProtocolAdapterException(
+                        new NotSupportedByProtocolException(
                             String.format(
                                 "ConfigurationFlagTypeDto %s not known for protocol", flagType)));
         sb.setCharAt(bitPosition, '1');
