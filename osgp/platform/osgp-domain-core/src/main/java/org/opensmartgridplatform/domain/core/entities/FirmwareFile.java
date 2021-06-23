@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -100,6 +101,11 @@ public class FirmwareFile extends AbstractEntity {
   public void updateFirmwareModuleData(final Map<FirmwareModule, String> versionsByModule) {
     this.firmwareModules.clear();
     versionsByModule.forEach(this::addFirmwareModule);
+  }
+
+  public void updateFirmwareDeviceModels(final List<DeviceModel> deviceModels) {
+    this.deviceModels.clear();
+    deviceModels.forEach(this::addDeviceModel);
   }
 
   public String getIdentification() {
@@ -356,7 +362,9 @@ public class FirmwareFile extends AbstractEntity {
     private boolean active;
 
     public Builder withIdentification(final String identification) {
-      this.identification = identification;
+      if (identification != null) {
+        this.identification = identification;
+      }
       return this;
     }
 

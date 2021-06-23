@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.mqtt.application.services;
 
+import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
@@ -20,15 +21,18 @@ public class MqttClientAdapter {
 
   private final MqttDevice device;
   private final MessageMetadata messageMetadata;
+  private final MqttClientSslConfig mqttClientSslConfig;
   private final MqttClientEventHandler mqttClientEventHandler;
   private Mqtt3AsyncClient client;
 
   public MqttClientAdapter(
       final MqttDevice device,
       final MessageMetadata messageMetadata,
+      final MqttClientSslConfig mqttClientSslConfig,
       final MqttClientEventHandler mqttClientEventHandler) {
     this.device = device;
     this.messageMetadata = messageMetadata;
+    this.mqttClientSslConfig = mqttClientSslConfig;
     this.mqttClientEventHandler = mqttClientEventHandler;
   }
 
@@ -39,6 +43,7 @@ public class MqttClientAdapter {
             .identifier(id)
             .serverHost(this.device.getHost())
             .serverPort(this.device.getPort())
+            .sslConfig(this.mqttClientSslConfig)
             .buildAsync();
     this.client
         .connectWith()

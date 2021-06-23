@@ -1,5 +1,5 @@
 {
-  "brokerHost": "0.0.0.0",
+  "brokerHost": "localhost",
   "brokerPort": 8883,
   "startupPauseMillis": 2000,
   "messages": [
