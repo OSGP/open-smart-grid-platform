@@ -14,7 +14,7 @@
       xmlns:xsd="http://www.w3.org/2001/XMLSchema">
       <xsd:import
         namespace="http://www.opensmartgridplatform.org/schemas/publiclighting/schedulemanagement/2014/10"
-        schemaLocation="schemas/pl-schedulemanagement.xsd" />
+        schemaLocation="schemas/schedulemanagement-ws-publiclighting.xsd" />
     </xsd:schema>
   </wsdl:types>
 

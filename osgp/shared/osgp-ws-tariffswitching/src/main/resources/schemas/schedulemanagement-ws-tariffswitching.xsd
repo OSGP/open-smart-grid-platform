@@ -14,7 +14,7 @@
   targetNamespace="http://www.opensmartgridplatform.org/schemas/tariffswitching/schedulemanagement/2014/10">
 
   <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/common/2014/10"
-    schemaLocation="common.xsd" />
+    schemaLocation="common-ws-tariffswitching.xsd" />
 
   <xsd:element name="SetScheduleRequest">
     <xsd:complexType>

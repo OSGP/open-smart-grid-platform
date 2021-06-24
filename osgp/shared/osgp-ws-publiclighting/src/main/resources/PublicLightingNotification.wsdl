@@ -14,7 +14,7 @@
       xmlns:xsd="http://www.w3.org/2001/XMLSchema">
       <xsd:import
         namespace="http://www.opensmartgridplatform.org/schemas/netmanagement/osgp-notification/public-lighting/2019/01"
-        schemaLocation="schemas/pl-notification.xsd" />
+        schemaLocation="schemas/notification-ws-publiclighting.xsd" />
     </xsd:schema>
   </wsdl:types>
 

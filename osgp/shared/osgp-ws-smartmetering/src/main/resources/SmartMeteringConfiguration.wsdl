@@ -15,7 +15,7 @@
 
       <xsd:import
           namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-configuration/2014/10"
-          schemaLocation="schemas/sm-configuration.xsd"/>
+          schemaLocation="schemas/configuration-ws-smartmetering.xsd"/>
     </xsd:schema>
   </wsdl:types>
 

@@ -15,7 +15,7 @@
 
       <xsd:import
         namespace="http://www.opensmartgridplatform.org/schemas/distributionautomation/notification/2017/04"
-        schemaLocation="schemas/notification.xsd"/>
+        schemaLocation="schemas/notification-ws-distributionautomation.xsd"/>
     </xsd:schema>
   </wsdl:types>
 
