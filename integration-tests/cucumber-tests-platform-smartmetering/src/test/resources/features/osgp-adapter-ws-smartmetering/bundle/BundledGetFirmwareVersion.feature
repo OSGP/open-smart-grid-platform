@@ -45,3 +45,24 @@ Feature: SmartMetering Bundle - GetFirmwareVersion
     And the database should be updated with the device firmware version
       | DeviceIdentification | TEST1027000000002 |
       | SimpleVersionInfo    |          19180706 |
+
+  Scenario: Retrieve the firmware version of a mbus device with a none supporting protocol in a bundle request
+    Given a dlms device
+      | DeviceIdentification | TEST1027000000001 |
+      | DeviceType           | SMART_METER_E     |
+      | Protocol             | DSMR              |
+      | ProtocolVersion      |             4.2.2 |
+      | Port                 |              1027 |
+    And a dlms device
+      | DeviceIdentification        | TEST1027000000002 |
+      | DeviceType                  | SMART_METER_G     |
+      | GatewayDeviceIdentification | TEST1027000000001 |
+      | Channel                     |                 2 |
+      | MbusPrimaryAddress          |                 2 |
+    And a bundle request
+      | DeviceIdentification | TEST1027000000001 |
+    And the bundle request contains a get firmware version gas action
+      | DeviceIdentification | TEST1027000000002 |
+    When the bundle request is received
+    Then the bundle response should be a FaultResponse with message containing
+      | Message | Simple Version Info not supported by protocol |
