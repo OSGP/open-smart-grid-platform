@@ -30,7 +30,8 @@ public class SmartmeteringWebServiceConfig {
   private static final String SMART_METERING_MONITORING_XSD_PATH =
       "schemas/monitoring-ws-smartmetering.xsd";
   private static final String SMART_METERING_ADHOC_XSD_PATH = "schemas/adhoc-ws-smartmetering.xsd";
-  private static final String SMART_METERING_CONFIGURATION_XSD_PATH = "schemas/configuration.xsd";
+  private static final String SMART_METERING_CONFIGURATION_XSD_PATH =
+      "schemas/configuration-ws-smartmetering.xsd";
 
   private static final String SMART_METERING_INSTALLATION_WSDL_PATH =
       "SmartMeteringInstallation.wsdl";
@@ -99,7 +100,7 @@ public class SmartmeteringWebServiceConfig {
     return new SimpleWsdl11Definition(new ClassPathResource(SMART_METERING_MONITORING_WSDL_PATH));
   }
 
-  @Bean(name = "monitoring")
+  @Bean(name = "monitoring-ws-smartmetering")
   public SimpleXsdSchema smartMeteringMonitoringXsd() {
     return new SimpleXsdSchema(new ClassPathResource(SMART_METERING_MONITORING_XSD_PATH));
   }
