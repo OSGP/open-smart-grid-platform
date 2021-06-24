@@ -251,6 +251,21 @@
     </wsdl:part>
   </wsdl:message>
 
+  <wsdl:message name="AddOrChangeFirmwareHeader">
+    <wsdl:part element="common:OrganisationIdentification"
+      name="OrganisationIdentification" />
+    <wsdl:part element="common:UserName" name="UserName" />
+    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+  </wsdl:message>
+  <wsdl:message name="AddOrChangeFirmwareRequest">
+    <wsdl:part element="fman:AddOrChangeFirmwareRequest" name="AddOrChangeFirmwareRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="AddOrChangeFirmwareResponse">
+    <wsdl:part element="fman:AddOrChangeFirmwareResponse" name="AddOrChangeFirmwareResponse">
+    </wsdl:part>
+  </wsdl:message>
+
   <wsdl:message name="GetDeviceFirmwareHistoryHeader">
     <wsdl:part element="common:OrganisationIdentification"
       name="OrganisationIdentification" />
@@ -531,6 +546,14 @@
       </wsdl:output>
     </wsdl:operation>
 
+    <wsdl:operation name="AddOrChangeFirmware">
+      <wsdl:input message="tns:AddOrChangeFirmwareRequest" name="AddOrChangeFirmwareRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:AddOrChangeFirmwareResponse"
+        name="AddOrChangeFirmwareResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
     <wsdl:operation name="RemoveFirmware">
       <wsdl:input message="tns:RemoveFirmwareRequest" name="RemoveFirmwareRequest">
       </wsdl:input>
@@ -804,6 +827,22 @@
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="ChangeFirmwareResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="AddOrChangeFirmware">
+      <soap:operation soapAction="" />
+      <wsdl:input name="AddOrChangeFirmwareRequest">
+        <soap:header message="tns:AddOrChangeFirmwareHeader"
+          part="OrganisationIdentification" use="literal" />
+        <soap:header message="tns:AddOrChangeFirmwareHeader"
+          part="UserName" use="literal" />
+        <soap:header message="tns:AddOrChangeFirmwareHeader"
+          part="ApplicationName" use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="AddOrChangeFirmwareResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>

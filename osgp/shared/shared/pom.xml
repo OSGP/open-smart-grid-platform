@@ -185,6 +185,12 @@
       <artifactId>quartz</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>com.hivemq</groupId>
+      <artifactId>hivemq-mqtt-client</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- Junit -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
