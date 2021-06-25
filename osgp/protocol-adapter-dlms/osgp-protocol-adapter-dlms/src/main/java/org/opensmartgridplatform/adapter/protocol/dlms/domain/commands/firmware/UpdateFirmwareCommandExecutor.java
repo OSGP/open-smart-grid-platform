@@ -8,7 +8,6 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware;
 
-import java.util.List;
 import javax.annotation.PostConstruct;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -16,7 +15,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.FirmwareFileCachingRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ImageTransferException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
@@ -41,14 +39,6 @@ public class UpdateFirmwareCommandExecutor
 
   @Autowired private FirmwareFileCachingRepository firmwareFileCachingRepository;
 
-  @Autowired private GetFirmwareVersionsCommandExecutor getFirmwareVersionsCommandExecutor;
-
-  @Value("${command.updatefirmware.activationstatuscheck.interval}")
-  private int activationStatusCheckInterval;
-
-  @Value("${command.updatefirmware.activationstatuscheck.timeout}")
-  private int activationStatusCheckTimeout;
-
   @Value("${command.updatefirmware.verificationstatuscheck.interval}")
   private int verificationStatusCheckInterval;
 
@@ -71,9 +61,6 @@ public class UpdateFirmwareCommandExecutor
   @Override
   public void init() {
     this.imageTransferProperties = new ImageTransfer.ImageTranferProperties();
-    this.imageTransferProperties.setActivationStatusCheckInterval(
-        this.activationStatusCheckInterval);
-    this.imageTransferProperties.setActivationStatusCheckTimeout(this.activationStatusCheckTimeout);
     this.imageTransferProperties.setVerificationStatusCheckInterval(
         this.verificationStatusCheckInterval);
     this.imageTransferProperties.setVerificationStatusCheckTimeout(
