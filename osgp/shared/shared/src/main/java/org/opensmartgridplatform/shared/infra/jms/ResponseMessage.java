@@ -9,9 +9,11 @@
 package org.opensmartgridplatform.shared.infra.jms;
 
 import java.io.Serializable;
+import lombok.Getter;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
+@Getter
 public class ResponseMessage implements Serializable {
 
   /** Serial Version UID. */
@@ -28,6 +30,7 @@ public class ResponseMessage implements Serializable {
   private final Serializable dataObject;
   private final int messagePriority;
   private final boolean scheduled;
+  private final Long maxScheduleTime;
   private final boolean bypassRetry;
   private final RetryHeader retryHeader;
 
@@ -41,6 +44,7 @@ public class ResponseMessage implements Serializable {
     this.dataObject = builder.dataObject;
     this.messagePriority = builder.messagePriority;
     this.scheduled = builder.scheduled;
+    this.maxScheduleTime = builder.maxScheduleTime;
     this.bypassRetry = builder.bypassRetry;
     this.retryHeader = builder.retryHeader;
   }
@@ -78,6 +82,7 @@ public class ResponseMessage implements Serializable {
     private Serializable dataObject = null;
     private int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
     private boolean scheduled = false;
+    private Long maxScheduleTime = null;
     private boolean bypassRetry = DEFAULT_BYPASS_RETRY;
     private RetryHeader retryHeader;
 
@@ -138,6 +143,11 @@ public class ResponseMessage implements Serializable {
       return this;
     }
 
+    public Builder withMaxScheduleTime(final Long maxScheduleTime) {
+      this.maxScheduleTime = maxScheduleTime;
+      return this;
+    }
+
     public Builder withRetryHeader(final RetryHeader retryHeader) {
       this.retryHeader = retryHeader;
       return this;
@@ -151,6 +161,7 @@ public class ResponseMessage implements Serializable {
       this.messagePriority = deviceMessageMetadata.getMessagePriority();
       this.bypassRetry = deviceMessageMetadata.bypassRetry();
       this.scheduled = deviceMessageMetadata.isScheduled();
+      this.maxScheduleTime = deviceMessageMetadata.getScheduleTime();
       this.retryHeader = new RetryHeader();
       return this;
     }
@@ -164,47 +175,7 @@ public class ResponseMessage implements Serializable {
     return new Builder();
   }
 
-  public String getMessageType() {
-    return this.messageType;
-  }
-
-  public String getCorrelationUid() {
-    return this.correlationUid;
-  }
-
-  public String getOrganisationIdentification() {
-    return this.organisationIdentification;
-  }
-
-  public String getDeviceIdentification() {
-    return this.deviceIdentification;
-  }
-
-  public ResponseMessageResultType getResult() {
-    return this.result;
-  }
-
-  public OsgpException getOsgpException() {
-    return this.osgpException;
-  }
-
-  public Serializable getDataObject() {
-    return this.dataObject;
-  }
-
-  public int getMessagePriority() {
-    return this.messagePriority;
-  }
-
   public boolean bypassRetry() {
     return this.bypassRetry;
-  }
-
-  public boolean isScheduled() {
-    return this.scheduled;
-  }
-
-  public RetryHeader getRetryHeader() {
-    return this.retryHeader;
   }
 }

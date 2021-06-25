@@ -46,6 +46,9 @@ public abstract class AbstractScheduledTask extends AbstractEntity {
   @Column(length = 255)
   protected Timestamp scheduledTime;
 
+  @Column(length = 255)
+  protected Timestamp maxScheduledTime;
+
   @Column(name = "status")
   protected ScheduledTaskStatusType status;
 
@@ -66,7 +69,8 @@ public abstract class AbstractScheduledTask extends AbstractEntity {
       final DeviceMessageMetadata deviceMessageMetadata,
       final String domain,
       final String domainVersion,
-      final Timestamp scheduledTime) {
+      final Timestamp scheduledTime,
+      final Timestamp maxScheduledTime) {
 
     this.correlationUid = deviceMessageMetadata.getCorrelationUid();
     this.organisationIdentification = deviceMessageMetadata.getOrganisationIdentification();
@@ -76,6 +80,7 @@ public abstract class AbstractScheduledTask extends AbstractEntity {
     this.domain = domain;
     this.domainVersion = domainVersion;
     this.scheduledTime = (Timestamp) scheduledTime.clone();
+    this.maxScheduledTime = (Timestamp) maxScheduledTime.clone();
     this.status = ScheduledTaskStatusType.NEW;
     this.retry = 0;
   }
@@ -110,6 +115,10 @@ public abstract class AbstractScheduledTask extends AbstractEntity {
 
   public Timestamp getscheduledTime() {
     return (Timestamp) this.scheduledTime.clone();
+  }
+
+  public Timestamp getMaxScheduledTime() {
+    return (Timestamp) this.maxScheduledTime.clone();
   }
 
   public Integer getMessagePriority() {

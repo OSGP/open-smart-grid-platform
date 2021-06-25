@@ -20,9 +20,10 @@ public class ProtocolRequestMessage extends RequestMessage {
   private final String messageType;
   private final Serializable messageData;
   private final boolean scheduled;
+  private final Long maxScheduleTime;
   private final int retryCount;
   private int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
-  private boolean bypassRetry;
+  private final boolean bypassRetry;
 
   private ProtocolRequestMessage(final Builder builder) {
     super(

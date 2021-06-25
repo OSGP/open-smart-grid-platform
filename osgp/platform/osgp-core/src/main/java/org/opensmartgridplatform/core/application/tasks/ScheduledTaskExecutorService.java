@@ -74,7 +74,7 @@ public class ScheduledTaskExecutorService {
    * are set to PENDING, so they will not be fetched by this method.
    *
    * @param type ScheduledTaskStatusType (NEW, PENDING, COMPLETE, FAILED, RETRY)
-   * @return
+   * @return List of ScheduledTasks, paged
    */
   private List<ScheduledTask> getScheduledTasks(final ScheduledTaskStatusType type) {
     final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
@@ -97,7 +97,10 @@ public class ScheduledTaskExecutorService {
             scheduledTask.getOrganisationIdentification(),
             scheduledTask.getCorrelationId(),
             scheduledTask.getMessageType(),
-            scheduledTask.getMessagePriority());
+            scheduledTask.getMessagePriority(),
+            scheduledTask.getscheduledTime().getTime(),
+            scheduledTask.getMaxScheduledTime().getTime(),
+            false);
 
     final String ipAddress;
     if (device.getNetworkAddress() == null) {

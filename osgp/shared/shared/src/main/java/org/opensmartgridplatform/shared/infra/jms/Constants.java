@@ -104,6 +104,9 @@ public class Constants {
   /** JMS constant for message field: ScheduleTime. */
   public static final String SCHEDULE_TIME = "ScheduleTime";
 
+  /** JMS constant for message field: MaxScheduleTime. */
+  public static final String MAX_SCHEDULE_TIME = "MaxScheduleTime";
+
   /** JMS constant for message field: ScheduleTime. */
   public static final String IS_SCHEDULED = "Scheduled";
 

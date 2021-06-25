@@ -193,6 +193,7 @@ public abstract class DlmsConnectionMessageProcessor {
             .retryCount(messageMetadata.getRetryCount())
             .retryHeader(retryHeader)
             .scheduled(messageMetadata.isScheduled())
+            .maxScheduleTime(messageMetadata.getMaxScheduleTime())
             .build();
 
     responseMessageSender.send(responseMessage);

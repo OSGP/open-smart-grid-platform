@@ -78,13 +78,18 @@ public class DomainRequestMessageListener implements MessageListener {
         new Timestamp(message.getLongProperty(Constants.SCHEDULE_TIME));
 
     final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(message);
+    final Timestamp maxScheduleTime =
+        deviceMessageMetadata.getMaxScheduleTime() != null
+            ? new Timestamp(deviceMessageMetadata.getMaxScheduleTime())
+            : null;
 
     return new ScheduledTask(
         deviceMessageMetadata,
         this.domainInfo.getDomain(),
         this.domainInfo.getDomainVersion(),
         messageData,
-        scheduleTimeStamp);
+        scheduleTimeStamp,
+        maxScheduleTime);
   }
 
   public ProtocolRequestMessage createProtocolRequestMessage(final Message message)

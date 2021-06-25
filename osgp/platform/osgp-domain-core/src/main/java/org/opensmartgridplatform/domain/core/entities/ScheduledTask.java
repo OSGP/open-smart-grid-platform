@@ -34,8 +34,18 @@ public class ScheduledTask extends AbstractScheduledTask {
       final String domainVersion,
       final Serializable messageData,
       final Timestamp scheduledTime) {
+    this(deviceMessageMetadata, domain, domainVersion, messageData, scheduledTime, null);
+  }
 
-    super(deviceMessageMetadata, domain, domainVersion, scheduledTime);
+  public ScheduledTask(
+      final DeviceMessageMetadata deviceMessageMetadata,
+      final String domain,
+      final String domainVersion,
+      final Serializable messageData,
+      final Timestamp scheduledTime,
+      final Timestamp maxScheduledTime) {
+
+    super(deviceMessageMetadata, domain, domainVersion, scheduledTime, maxScheduledTime);
     this.messageData = messageData;
   }
 

@@ -12,6 +12,7 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.BypassRetry;
+import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MaxScheduleTime;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.ResponseUrl;
@@ -68,6 +69,7 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
       @MessagePriority final String messagePriority,
       @ResponseUrl final String responseUrl,
       @ScheduleTime final String scheduleTime,
+      @MaxScheduleTime final String maxScheduleTime,
       @BypassRetry final String bypassRetry,
       @RequestPayload final BundleRequest request)
       throws OsgpException {
@@ -87,6 +89,7 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
             .withMessageType(MessageType.HANDLE_BUNDLED_ACTIONS)
             .withMessagePriority(messagePriority)
             .withScheduleTime(scheduleTime)
+            .withMaxScheduleTime(maxScheduleTime)
             .withBypassRetry(bypassRetry)
             .build();
 

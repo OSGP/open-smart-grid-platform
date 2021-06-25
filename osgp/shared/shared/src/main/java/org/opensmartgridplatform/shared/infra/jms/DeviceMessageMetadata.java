@@ -10,7 +10,11 @@ package org.opensmartgridplatform.shared.infra.jms;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
+import lombok.Getter;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
+@Getter
 public class DeviceMessageMetadata {
 
   private static final int EMPTY_MESSAGE_PRIORITY = 0;
@@ -21,6 +25,7 @@ public class DeviceMessageMetadata {
   private final String messageType;
   private final int messagePriority;
   private final Long scheduleTime;
+  private final Long maxScheduleTime;
   private boolean bypassRetry;
 
   public DeviceMessageMetadata(final MessageMetadata metadata) {
@@ -30,6 +35,7 @@ public class DeviceMessageMetadata {
     this.messageType = metadata.getMessageType();
     this.messagePriority = metadata.getMessagePriority();
     this.scheduleTime = metadata.getScheduleTime();
+    this.maxScheduleTime = metadata.getMaxScheduleTime();
     this.bypassRetry = metadata.isBypassRetry();
   }
 
@@ -69,6 +75,7 @@ public class DeviceMessageMetadata {
       final String messageType,
       final int messagePriority,
       final Long scheduleTime,
+      final Long maxScheduleTime,
       final boolean bypassRetry) {
 
     this(
@@ -79,6 +86,7 @@ public class DeviceMessageMetadata {
             .withMessageType(messageType)
             .withMessagePriority(messagePriority)
             .withScheduleTime(scheduleTime)
+            .withMaxScheduleTime(maxScheduleTime)
             .withBypassRetry(bypassRetry));
   }
 
@@ -137,6 +145,7 @@ public class DeviceMessageMetadata {
     this.messageType = builder.messageType;
     this.messagePriority = builder.messagePriority;
     this.scheduleTime = builder.scheduleTime;
+    this.maxScheduleTime = builder.maxScheduleTime;
     this.bypassRetry = builder.bypassRetry;
   }
 
@@ -148,6 +157,7 @@ public class DeviceMessageMetadata {
     private String messageType = null;
     private int messagePriority = 0;
     private Long scheduleTime = null;
+    private Long maxScheduleTime = null;
     private boolean bypassRetry = false;
 
     public DeviceMessageMetadata build() {
@@ -184,6 +194,11 @@ public class DeviceMessageMetadata {
       return this;
     }
 
+    public Builder withMaxScheduleTime(final Long maxScheduleTime) {
+      this.maxScheduleTime = maxScheduleTime;
+      return this;
+    }
+
     public Builder withBypassRetry(final boolean bypassRetry) {
       this.bypassRetry = bypassRetry;
       return this;
@@ -192,31 +207,6 @@ public class DeviceMessageMetadata {
 
   public static Builder newBuilder() {
     return new Builder();
-  }
-
-  public String getDeviceIdentification() {
-    return this.deviceIdentification;
-  }
-
-  public String getOrganisationIdentification() {
-    return this.organisationIdentification;
-  }
-
-  public String getCorrelationUid() {
-    return this.correlationUid;
-  }
-
-  public String getMessageType() {
-    return this.messageType;
-  }
-
-  public int getMessagePriority() {
-    return this.messagePriority;
-  }
-
-  /** @return the scheduling time or null if not applicable */
-  public Long getScheduleTime() {
-    return this.scheduleTime;
   }
 
   public void setBypassRetry(final boolean bypassRetry) {
@@ -233,20 +223,6 @@ public class DeviceMessageMetadata {
 
   @Override
   public String toString() {
-    return "DeviceMessageMetadata [deviceIdentification="
-        + this.deviceIdentification
-        + ", organisationIdentification="
-        + this.organisationIdentification
-        + ", correlationUid="
-        + this.correlationUid
-        + ", messageType="
-        + this.messageType
-        + ", messagePriority="
-        + this.messagePriority
-        + ", scheduleTime="
-        + this.scheduleTime
-        + ", bypassRetry="
-        + this.bypassRetry
-        + "]";
+    return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
   }
 }

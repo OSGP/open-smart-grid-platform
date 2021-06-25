@@ -14,6 +14,7 @@ import java.util.Properties;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.BypassRetry;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.CertificateAndSoapHeaderAuthorizationEndpointInterceptor;
+import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MaxScheduleTime;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.ResponseUrl;
@@ -78,6 +79,7 @@ public class WebServiceConfig extends AbstractConfig {
 
   private static final String MESSAGE_PRIORITY_HEADER = "MessagePriority";
   private static final String MESSAGE_SCHEDULETIME_HEADER = "ScheduleTime";
+  private static final String MESSAGE_MAXSCHEDULETIME_HEADER = "MaxScheduleTime";
   private static final String MESSAGE_RESPONSE_URL_HEADER = "ResponseUrl";
   private static final String BYPASS_RETRY_HEADER = "BypassRetry";
 
@@ -269,6 +271,9 @@ public class WebServiceConfig extends AbstractConfig {
         new AnnotationMethodArgumentResolver(MESSAGE_PRIORITY_HEADER, MessagePriority.class));
     methodArgumentResolvers.add(
         new AnnotationMethodArgumentResolver(MESSAGE_SCHEDULETIME_HEADER, ScheduleTime.class));
+    methodArgumentResolvers.add(
+        new AnnotationMethodArgumentResolver(
+            MESSAGE_MAXSCHEDULETIME_HEADER, MaxScheduleTime.class));
     methodArgumentResolvers.add(
         new AnnotationMethodArgumentResolver(MESSAGE_RESPONSE_URL_HEADER, ResponseUrl.class));
     methodArgumentResolvers.add(

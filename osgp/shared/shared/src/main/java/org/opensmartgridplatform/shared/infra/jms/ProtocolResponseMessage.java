@@ -77,6 +77,11 @@ public class ProtocolResponseMessage extends ResponseMessage {
       return this;
     }
 
+    public Builder maxScheduleTime(final Long maxScheduleTime) {
+      this.superBuilder.withMaxScheduleTime(maxScheduleTime);
+      return this;
+    }
+
     public Builder retryCount(final int retryCount) {
       this.retryCount = retryCount;
       return this;
