@@ -197,6 +197,8 @@ public abstract class DlmsConnectionMessageProcessor {
     responseMessageSender.send(responseMessage);
   }
 
+  /* suppress unused parameter warning, because we need it in override method */
+  @SuppressWarnings("java:S1172")
   protected boolean shouldRetry(
       final ResponseMessageResultType result,
       final Exception exception,
