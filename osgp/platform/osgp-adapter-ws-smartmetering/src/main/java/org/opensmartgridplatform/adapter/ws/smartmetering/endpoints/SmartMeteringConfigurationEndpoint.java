@@ -107,6 +107,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.S
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareResponse;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.services.RequestService;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
@@ -121,7 +122,6 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushNoti
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -367,12 +367,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         organisationIdentification,
         request.getDeviceIdentification());
 
-    final org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration
-            .UpdateFirmwareResponse
-        response =
-            new org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration
-                .UpdateFirmwareResponse();
-
+    UpdateFirmwareResponse response = null;
     try {
       final ResponseData responseData =
           this.responseDataService.dequeue(
@@ -380,20 +375,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
       this.throwExceptionIfResultNotOk(responseData, "updating firmware");
 
-      if (responseData != null) {
-        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
-
-        if (responseData.getMessageData() != null) {
-          final List<FirmwareVersion> target = response.getFirmwareVersion();
-          final UpdateFirmwareResponse updateFirmwareResponse =
-              (UpdateFirmwareResponse) responseData.getMessageData();
-          target.addAll(
-              this.configurationMapper.mapAsList(
-                  updateFirmwareResponse.getFirmwareVersions(), FirmwareVersion.class));
-        } else {
-          log.info("Update Firmware response is null");
-        }
-      }
+      response = new UpdateFirmwareResponse();
+      response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
     } catch (final Exception e) {
       this.handleException(e);
     }

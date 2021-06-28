@@ -87,9 +87,6 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"/>
-        <xsd:sequence>
-          <xsd:element name="FirmwareVersion" type="tns:FirmwareVersion" maxOccurs="unbounded"/>
-        </xsd:sequence>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -126,7 +123,7 @@
 
   <xsd:complexType name="UpdateFirmwareResponseData">
     <xsd:complexContent>
-      <xsd:extension base="tns:GetFirmwareVersionResponseData">
+      <xsd:extension base="common:Response">
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>

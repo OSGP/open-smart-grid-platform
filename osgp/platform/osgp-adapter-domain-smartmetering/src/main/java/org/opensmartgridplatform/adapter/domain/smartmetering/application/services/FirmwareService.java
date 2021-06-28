@@ -158,7 +158,7 @@ public class FirmwareService {
         moduleVersionsWithFirmwareFile.entrySet()) {
       final String moduleDescription = versionByModule.getKey().getDescription();
       final String moduleVersion = versionByModule.getValue();
-      String filterVersion;
+      final String filterVersion;
       switch (moduleDescription) {
         case MODULE_DESCRIPTION_ACTIVE_FIRMWARE:
           filterVersion = firmwareVersionByModuleType.get(FirmwareModuleType.ACTIVE_FIRMWARE);
@@ -258,46 +258,6 @@ public class FirmwareService {
 
     return this.firmwareFileRepository.findFirmwareFilesForDeviceModelContainingModuleWithVersion(
         deviceModel, moduleDescription, moduleVersion);
-  }
-
-  public SmartMeter storeFirmware(
-      final SmartMeter smartMeter,
-      final String firmwareIdentification,
-      final List<FirmwareVersion> firmwareVersions,
-      final String organisationIdentification)
-      throws FunctionalException {
-
-    this.saveFirmwareVersionsReturnedFromDevice(smartMeter, firmwareVersions);
-
-    final Map<FirmwareModuleType, String> firmwareVersionByModuleType =
-        this.getFirmwareVersionByModuleType(firmwareVersions);
-
-    final FirmwareFile firmwareFile =
-        this.firmwareFileRepository.findByIdentification(firmwareIdentification);
-    final Map<FirmwareModule, String> moduleVersionsInFirmwareFile =
-        firmwareFile.getModuleVersions();
-
-    this.checkFirmwareIsUpdated(
-        firmwareVersionByModuleType,
-        FirmwareModuleType.COMMUNICATION,
-        moduleVersionsInFirmwareFile,
-        MODULE_DESCRIPTION_COMMUNICATION_MODULE_ACTIVE_FIRMWARE,
-        smartMeter.getDeviceIdentification());
-    this.checkFirmwareIsUpdated(
-        firmwareVersionByModuleType,
-        FirmwareModuleType.MODULE_ACTIVE,
-        moduleVersionsInFirmwareFile,
-        MODULE_DESCRIPTION_MODULE_ACTIVE_FIRMWARE,
-        smartMeter.getDeviceIdentification());
-    this.checkFirmwareIsUpdated(
-        firmwareVersionByModuleType,
-        FirmwareModuleType.ACTIVE_FIRMWARE,
-        moduleVersionsInFirmwareFile,
-        MODULE_DESCRIPTION_ACTIVE_FIRMWARE,
-        smartMeter.getDeviceIdentification());
-
-    smartMeter.addFirmwareFile(firmwareFile, organisationIdentification);
-    return this.smartMeterRepository.save(smartMeter);
   }
 
   public void saveFirmwareVersionsReturnedFromDevice(

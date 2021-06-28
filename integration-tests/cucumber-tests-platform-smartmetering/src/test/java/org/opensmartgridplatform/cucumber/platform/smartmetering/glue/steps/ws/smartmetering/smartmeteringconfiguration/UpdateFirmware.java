@@ -13,12 +13,10 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.FirmwareVersion;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareRequest;
@@ -81,46 +79,6 @@ public class UpdateFirmware {
     final UpdateFirmwareResponse response = this.client.getUpdateFirmwareResponse(asyncRequest);
 
     assertThat(response.getResult()).as("result").isEqualTo(OsgpResultType.OK);
-
-    final List<FirmwareVersion> expectedFirmareVersions =
-        UpdateFirmwareRequestFactory.firmwareVersionsFromParameters(settings);
-
-    final List<FirmwareVersion> actualFirmwareVersions = response.getFirmwareVersion();
-
-    assertThat(actualFirmwareVersions.size())
-        .as("number of firmware versions")
-        .isEqualTo(expectedFirmareVersions.size());
-
-    for (final FirmwareVersion expected : expectedFirmareVersions) {
-      assertThat(this.firmwareVersionListContains(actualFirmwareVersions, expected))
-          .as(
-              "Firmware version not returned: "
-                  + expected.getFirmwareModuleType()
-                  + " => "
-                  + expected.getVersion())
-          .isTrue();
-    }
-  }
-
-  private boolean firmwareVersionListContains(
-      final List<FirmwareVersion> firmwareVersions, final FirmwareVersion expectedFirmwareVersion) {
-    for (final FirmwareVersion firmwareVersion : firmwareVersions) {
-      if (this.firmwareVersionEquals(firmwareVersion, expectedFirmwareVersion)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private boolean firmwareVersionEquals(final FirmwareVersion a, final FirmwareVersion b) {
-    if (a == b) {
-      return true;
-    }
-    if (a == null || b == null) {
-      return false;
-    }
-    return a.getFirmwareModuleType().equals(b.getFirmwareModuleType())
-        && a.getVersion().equals(b.getVersion());
   }
 
   @Then("^the database should be updated with the new device firmware$")

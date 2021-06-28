@@ -89,8 +89,8 @@ public class UpdateFirmwareCommandExecutor
       this.prepare(transfer);
       this.transfer(transfer);
       this.verify(transfer);
-      final List<FirmwareVersionDto> firmwareVersions = this.activate(conn, device, transfer);
-      return new UpdateFirmwareResponseDto(firmwareIdentification, firmwareVersions);
+      this.activate(transfer);
+      return new UpdateFirmwareResponseDto(firmwareIdentification);
     } catch (final ImageTransferException | ProtocolAdapterException e) {
       throw new ProtocolAdapterException(EXCEPTION_MSG_UPDATE_FAILED, e);
     } finally {
@@ -121,12 +121,9 @@ public class UpdateFirmwareCommandExecutor
     }
   }
 
-  private List<FirmwareVersionDto> activate(
-      final DlmsConnectionManager conn, final DlmsDevice device, final ImageTransfer transfer)
-      throws OsgpException {
+  private void activate(final ImageTransfer transfer) throws OsgpException {
     if (transfer.imageIsVerified() && transfer.imageToActivateOk()) {
       transfer.activateImage();
-      return this.getFirmwareVersionsCommandExecutor.execute(conn, device, null);
     } else {
       throw new ProtocolAdapterException("An unknown error occurred while updating firmware.");
     }
