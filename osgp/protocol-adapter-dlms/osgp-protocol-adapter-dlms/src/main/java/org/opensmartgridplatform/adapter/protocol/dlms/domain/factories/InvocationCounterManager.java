@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
 import java.io.IOException;
+import java.util.Objects;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
@@ -58,12 +59,24 @@ public class InvocationCounterManager {
       throws OsgpException {
     try (final DlmsConnectionManager connectionManager =
         this.connectionFactory.getPublicClientConnection(device, null)) {
-      device.setInvocationCounter(this.getInvocationCounter(connectionManager));
-      LOGGER.info(
-          "Property invocationCounter of device {} initialized to the value of the invocation counter "
-              + "stored on the device: {}",
-          device.getDeviceIdentification(),
-          device.getInvocationCounter());
+      final Long previousKnownInvocationCounter = device.getInvocationCounter();
+      final Long invocationCounterFromDevice = this.getInvocationCounter(connectionManager);
+      if (Objects.equals(previousKnownInvocationCounter, invocationCounterFromDevice)) {
+        LOGGER.warn(
+            "Initializing invocationCounter of device {} with the value that was already known: {}",
+            device.getDeviceIdentification(),
+            previousKnownInvocationCounter);
+      } else {
+        device.setInvocationCounter(invocationCounterFromDevice);
+        LOGGER.info(
+            "Property invocationCounter of device {} initialized to the value of the invocation counter "
+                + "stored on the device: {}{}",
+            device.getDeviceIdentification(),
+            device.getInvocationCounter(),
+            previousKnownInvocationCounter == null
+                ? ""
+                : " (previous known value: " + previousKnownInvocationCounter + ")");
+      }
       try {
         /*
          * Call disconnect on the connectionManager instead of depending on the try-with-resources

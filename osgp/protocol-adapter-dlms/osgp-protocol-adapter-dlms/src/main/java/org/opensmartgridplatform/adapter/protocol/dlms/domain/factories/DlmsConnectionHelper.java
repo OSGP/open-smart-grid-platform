@@ -79,7 +79,8 @@ public class DlmsConnectionHelper {
       if ((device.needsInvocationCounter() && this.indicatesInvocationCounterOutOfSync(e))
           && !initializeInvocationCounter) {
         LOGGER.warn(
-            "Invocation counter appears to be out of sync for {}, retry initializing the counter",
+            "Invocation counter (stored value: {}) appears to be out of sync for {}, retry initializing the counter",
+            device.getInvocationCounter(),
             device.getDeviceIdentification());
         /*
          * The connection exception is likely caused by an already initialized invocation counter
