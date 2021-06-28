@@ -73,7 +73,7 @@ class FirmwareConverter
           break;
         case org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData
             .MODULE_DESCRIPTION_FUNC_SMART_METERING:
-          firmwareModuleData.setModuleVersionFunc(moduleVersion.getValue());
+          firmwareModuleData.setModuleVersionActive(moduleVersion.getValue());
           break;
         case org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData
             .MODULE_DESCRIPTION_MA:
