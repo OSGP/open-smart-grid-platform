@@ -15,6 +15,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NonRetryableException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -174,7 +175,7 @@ public abstract class DlmsConnectionMessageProcessor {
     }
 
     final RetryHeader retryHeader;
-    if (result == ResponseMessageResultType.NOT_OK) {
+    if (this.shouldRetry(result, exception, responseObject)) {
       retryHeader = this.retryHeaderFactory.createRetryHeader(messageMetadata.getRetryCount());
     } else {
       retryHeader = this.retryHeaderFactory.createEmtpyRetryHeader();
@@ -194,5 +195,15 @@ public abstract class DlmsConnectionMessageProcessor {
             .build();
 
     responseMessageSender.send(responseMessage);
+  }
+
+  /* suppress unused parameter warning, because we need it in override method */
+  @SuppressWarnings("java:S1172")
+  protected boolean shouldRetry(
+      final ResponseMessageResultType result,
+      final Exception exception,
+      final Serializable responseObject) {
+    return result == ResponseMessageResultType.NOT_OK
+        && !(exception instanceof NonRetryableException);
   }
 }
