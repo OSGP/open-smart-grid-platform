@@ -10,8 +10,6 @@ public class FirmwareModuleDataConverter
         org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FirmwareModuleData,
         FirmwareModuleData> {
 
-  private boolean isForSmartMeter = true;
-
   @Override
   public FirmwareModuleData convert(
       final org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.FirmwareModuleData
@@ -19,8 +17,10 @@ public class FirmwareModuleDataConverter
       final Type<? extends FirmwareModuleData> destinationType,
       final MappingContext mappingContext) {
 
+    // The Func(tional) ModuleVersionType is reused for the Active ModuleVersionType in use with
+    // SmartMetering. SmartMetering is not using the Func type so they will not coexist.
     String moduleVersionFunc = source.getModuleVersionFunc();
-    if (this.isForSmartMeter) {
+    if (source.getModuleVersionActive() != null) {
       moduleVersionFunc = source.getModuleVersionActive();
     }
 
@@ -35,9 +35,5 @@ public class FirmwareModuleDataConverter
             source.getModuleVersionSimple());
 
     return output;
-  }
-
-  public void setForSmartMeter(final boolean isForSmartMeter) {
-    this.isForSmartMeter = isForSmartMeter;
   }
 }
