@@ -119,7 +119,8 @@ public class MessagingTestConfiguration extends AbstractConfig {
     return new DlmsConnectionHelper(
         this.invocationCounterManager(dlmsDeviceRepository),
         this.dlmsConnectionFactory(),
-        devicePingConfig);
+        devicePingConfig,
+        0);
   }
 
   @Bean

@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
+import java.time.Duration;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.DevicePingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
@@ -16,6 +17,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -27,20 +29,27 @@ import org.springframework.util.StringUtils;
 public class DlmsConnectionHelper {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DlmsConnectionHelper.class);
+  private static final Duration NO_DELAY = Duration.ZERO;
 
   private final InvocationCounterManager invocationCounterManager;
   private final DlmsConnectionFactory connectionFactory;
   private final DevicePingConfig devicePingConfig;
+  private final Duration delayBetweenDlmsConnections;
 
   @Autowired
   public DlmsConnectionHelper(
       final InvocationCounterManager invocationCounterManager,
       final DlmsConnectionFactory connectionFactory,
-      final DevicePingConfig devicePingConfig) {
+      final DevicePingConfig devicePingConfig,
+      @Value("${dlms.connections.delay.seconds:30}") final int secondsBetweenDlmsConnections) {
 
     this.invocationCounterManager = invocationCounterManager;
     this.connectionFactory = connectionFactory;
     this.devicePingConfig = devicePingConfig;
+    this.delayBetweenDlmsConnections =
+        secondsBetweenDlmsConnections < 1
+            ? NO_DELAY
+            : Duration.ofSeconds(secondsBetweenDlmsConnections);
   }
 
   /**
@@ -54,15 +63,38 @@ public class DlmsConnectionHelper {
         this.devicePingConfig.pingingEnabled() && StringUtils.hasText(device.getIpAddress());
     final boolean initializeInvocationCounter =
         device.needsInvocationCounter() && !device.isInvocationCounterInitialized();
+    final Duration waitBeforeInitializingInvocationCounter = NO_DELAY;
+    final Duration waitBeforeCreatingTheConnection =
+        initializeInvocationCounter ? this.delayBetweenDlmsConnections : NO_DELAY;
+
     return this.createConnectionForDevice(
-        device, messageListener, pingDevice, initializeInvocationCounter);
+        device,
+        messageListener,
+        pingDevice,
+        initializeInvocationCounter,
+        waitBeforeInitializingInvocationCounter,
+        waitBeforeCreatingTheConnection);
+  }
+
+  private void delay(final Duration duration) {
+    if (duration == NO_DELAY) {
+      return;
+    }
+    try {
+      Thread.sleep(duration.toMillis());
+    } catch (final InterruptedException e) {
+      LOGGER.warn("Sleeping to achieve a delay of {} was interrupted", duration, e);
+      Thread.currentThread().interrupt();
+    }
   }
 
   private DlmsConnectionManager createConnectionForDevice(
       final DlmsDevice device,
       final DlmsMessageListener messageListener,
       final boolean pingDevice,
-      final boolean initializeInvocationCounter)
+      final boolean initializeInvocationCounter,
+      final Duration waitBeforeInitializingInvocationCounter,
+      final Duration waitBeforeCreatingTheConnection)
       throws OsgpException {
 
     if (pingDevice) {
@@ -70,10 +102,12 @@ public class DlmsConnectionHelper {
     }
 
     if (initializeInvocationCounter) {
+      this.delay(waitBeforeInitializingInvocationCounter);
       this.invocationCounterManager.initializeInvocationCounter(device);
     }
 
     try {
+      this.delay(waitBeforeCreatingTheConnection);
       return this.connectionFactory.getConnection(device, messageListener);
     } catch (final ConnectionException e) {
       if ((device.needsInvocationCounter() && this.indicatesInvocationCounterOutOfSync(e))
@@ -89,7 +123,13 @@ public class DlmsConnectionHelper {
          * been pinged if that was appropriate. Make sure the invocation counter is initialized,
          * regardless of whether it has already been initialized before or not.
          */
-        return this.createConnectionForDevice(device, messageListener, false, true);
+        return this.createConnectionForDevice(
+            device,
+            messageListener,
+            false,
+            true,
+            this.delayBetweenDlmsConnections,
+            this.delayBetweenDlmsConnections);
       }
       /*
        * The connection exception is assumed not to be related to the invocation counter, or has

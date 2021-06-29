@@ -47,7 +47,7 @@ class DlmsConnectionHelperTest {
   void setUp() {
     this.helper =
         new DlmsConnectionHelper(
-            this.invocationCounterManager, this.connectionFactory, this.devicePingConfig);
+            this.invocationCounterManager, this.connectionFactory, this.devicePingConfig, 0);
   }
 
   @Test

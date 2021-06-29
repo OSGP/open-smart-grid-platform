@@ -8,7 +8,6 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
-import java.io.IOException;
 import java.util.Objects;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
@@ -76,20 +75,6 @@ public class InvocationCounterManager {
             previousKnownInvocationCounter == null
                 ? ""
                 : " (previous known value: " + previousKnownInvocationCounter + ")");
-      }
-      try {
-        /*
-         * Call disconnect on the connectionManager instead of depending on the try-with-resources
-         * handling calling close. Calling disconnect terminates the connection more gracefully
-         * allowing connections to be set up on the management client after the invocation counter
-         * has been retrieved utilizing the public client.
-         */
-        connectionManager.disconnect();
-      } catch (final IOException e) {
-        LOGGER.warn(
-            "Failure disconnecting from the public client connection to {}",
-            device.getDeviceIdentification(),
-            e);
       }
     }
   }
