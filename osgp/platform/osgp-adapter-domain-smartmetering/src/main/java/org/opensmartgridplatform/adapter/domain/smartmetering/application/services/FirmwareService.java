@@ -283,6 +283,12 @@ public class FirmwareService {
             firmwareVersion.getFirmwareModuleType().getDescription());
         continue;
       }
+
+      /*
+       * The DeviceFirmwareModule has a id, that prevents duplicates in the database
+       * The id of DeviceFirmwareModule is made with a combination of deviceId and firmwareModuleId
+       * There for we can just add a new object to the database here
+       */
       final DeviceFirmwareModule deviceFirmwareModule =
           new DeviceFirmwareModule(device, firmwareModule, firmwareVersion.getVersion());
       this.deviceFirmwareModuleRepository.save(deviceFirmwareModule);
