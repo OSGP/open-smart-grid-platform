@@ -24,16 +24,13 @@ public class FirmwareModuleDataConverter
       moduleVersionFunc = source.getModuleVersionActive();
     }
 
-    final FirmwareModuleData output =
-        new FirmwareModuleData(
-            source.getModuleVersionComm(),
-            moduleVersionFunc,
-            source.getModuleVersionMa(),
-            source.getModuleVersionMbus(),
-            source.getModuleVersionSec(),
-            source.getModuleVersionMBusDriverActive(),
-            source.getModuleVersionSimple());
-
-    return output;
+    return new FirmwareModuleData(
+        source.getModuleVersionComm(),
+        moduleVersionFunc,
+        source.getModuleVersionMa(),
+        source.getModuleVersionMbus(),
+        source.getModuleVersionSec(),
+        source.getModuleVersionMBusDriverActive(),
+        source.getModuleVersionSimple());
   }
 }
