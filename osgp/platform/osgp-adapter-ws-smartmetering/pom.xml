@@ -26,7 +26,8 @@
   </parent>
 
   <properties>
-    <display.version>${project.version}-${BUILD_TAG}</display.version>
+      <display.version>${project.version}-${BUILD_TAG}</display.version>
+    <metrics.version>4.2.2</metrics.version>
   </properties>
 
   <build>
@@ -73,6 +74,23 @@
   </build>
 
   <dependencies>
+    <dependency>
+      <groupId>io.dropwizard.metrics</groupId>
+      <artifactId>metrics-core</artifactId>
+      <version>${metrics.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.dropwizard.metrics</groupId>
+      <artifactId>metrics-servlets</artifactId>
+      <version>${metrics.version}</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-metrics</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
     <!-- Open Smart Grid Platform -->
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
