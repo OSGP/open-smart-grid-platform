@@ -44,17 +44,17 @@ class ImageTransfer {
   private static final String EXCEPTION_MSG_IMAGE_BLOCK_SIZE_NOT_READ =
       "Image block size could not be read.";
   private static final String EXCEPTION_MSG_IMAGE_TRANSFER_ENABLED_NOT_READ =
-      "Image transfer enabled could not be " + "read.";
+      "Image transfer enabled could not be read.";
   private static final String EXCEPTION_MSG_IMAGE_TRANSFER_STATUS_NOT_READ =
-      "Image transfer status could not be " + "read.";
+      "Image transfer status could not be read.";
   private static final String EXCEPTION_MSG_IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER_NOT_READ =
-      "Image first not " + "transferred block number could not be read.";
+      "Image first not transferred block number could not be read.";
   private static final String EXCEPTION_MSG_IMAGE_TRANSFER_NOT_INITIATED =
       "Image transfer has not been initiated.";
   private static final String EXCEPTION_MSG_IMAGE_ACTIVATE_NOT_CALLED =
       "Image activate could not be called.";
   private static final String EXCEPTION_MSG_IMAGE_TO_ACTIVATE_NOT_OK =
-      "Properties of image to activate are not as " + "excepted.";
+      "Properties of image to activate are not as excepted.";
 
   private static final int CLASS_ID = 18;
   private static final ObisCode OBIS_CODE = new ObisCode("0.0.44.0.0.255");

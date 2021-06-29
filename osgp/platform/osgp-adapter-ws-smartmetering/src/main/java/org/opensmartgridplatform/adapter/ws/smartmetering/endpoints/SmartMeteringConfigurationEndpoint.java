@@ -136,7 +136,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
   private static final String SMARTMETER_CONFIGURATION_NAMESPACE =
-      "http://www.opensmartgridplatform" + ".org/schemas/smartmetering/sm-configuration/2014/10";
+      "http://www.opensmartgridplatform.org/schemas/smartmetering/sm-configuration/2014/10";
 
   @Autowired private RequestService requestService;
 
