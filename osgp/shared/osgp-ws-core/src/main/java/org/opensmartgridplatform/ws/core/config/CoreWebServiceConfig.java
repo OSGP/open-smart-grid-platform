@@ -79,7 +79,7 @@ public class CoreWebServiceConfig {
     return new SimpleXsdSchema(new ClassPathResource(CONFIGURATION_MANAGEMENT_XSD_PATH));
   }
 
-  @Bean(name = "DeviceInstallation")
+  @Bean(name = "CoreDeviceInstallation")
   public WsdlDefinition deviceInstallationWsdl() {
     return new SimpleWsdl11Definition(new ClassPathResource(DEVICE_INSTALLATION_WSDL_PATH));
   }
