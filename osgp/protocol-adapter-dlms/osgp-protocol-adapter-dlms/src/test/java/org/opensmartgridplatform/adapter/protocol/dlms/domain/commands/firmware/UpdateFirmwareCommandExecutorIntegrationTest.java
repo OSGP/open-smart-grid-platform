@@ -45,7 +45,7 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
   private DlmsConnectionStub connectionStub;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     this.commandExecutor =
         new UpdateFirmwareCommandExecutor(
             this.firmwareFileCachingRepository,

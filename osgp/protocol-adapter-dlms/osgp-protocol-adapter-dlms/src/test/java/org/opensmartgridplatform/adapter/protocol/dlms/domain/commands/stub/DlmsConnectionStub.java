@@ -179,9 +179,7 @@ public class DlmsConnectionStub implements DlmsConnection {
       final DataObject dataObject,
       final int nrOfInvocations) {
     for (int i = 0; i < nrOfInvocations; i++) {
-      if (!this.returnValues.containsKey(this.getKey(attributeAddress))) {
-        this.returnValues.put(this.getKey(attributeAddress), new ArrayList<>());
-      }
+      this.returnValues.putIfAbsent(this.getKey(attributeAddress), new ArrayList<>());
       this.returnValues.get(this.getKey(attributeAddress)).add(dataObject);
     }
   }
