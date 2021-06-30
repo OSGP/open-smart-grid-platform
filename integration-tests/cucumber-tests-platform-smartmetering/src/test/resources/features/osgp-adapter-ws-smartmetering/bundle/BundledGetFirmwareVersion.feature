@@ -22,11 +22,11 @@ Feature: SmartMetering Bundle - GetFirmwareVersion
       | FirmwareModuleVersionFunc | M57 4836               |
       | FirmwareIsForSmartMeters  | true                   |
 
-  Scenario: Retrieve the firmware version is updated of a device in a bundle request
+  Scenario: Retrieve the firmware version is updated of a device in a bundle request, when a device already has a firmware
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-    Given a device firmware version
+    And a device firmware version
       | DeviceIdentification      | TEST1024000000001      |
       | FirmwareModuleVersionComm | Telit 12.34.567        |
       | FirmwareModuleVersionMa   | xxxxxxxxxxxxxxxxxxxxxx |
@@ -71,7 +71,7 @@ Feature: SmartMetering Bundle - GetFirmwareVersion
       | DeviceIdentification | TEST1027000000002 |
       | SimpleVersionInfo    |          19180706 |
 
-  Scenario: Retrieve the firmware version is updated of a mbus device in a bundle request
+  Scenario: Retrieve the firmware version is updated of a mbus device in a bundle request, when a device already has a firmware
     Given a dlms device
       | DeviceIdentification | TEST1027000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -84,7 +84,7 @@ Feature: SmartMetering Bundle - GetFirmwareVersion
       | GatewayDeviceIdentification | TEST1027000000001 |
       | Channel                     |                 2 |
       | MbusPrimaryAddress          |                 2 |
-    Given a device firmware version
+    And a device firmware version
       | DeviceIdentification | TEST1027000000002 |
       | SimpleVersionInfo    |          12345567 |
     And a bundle request

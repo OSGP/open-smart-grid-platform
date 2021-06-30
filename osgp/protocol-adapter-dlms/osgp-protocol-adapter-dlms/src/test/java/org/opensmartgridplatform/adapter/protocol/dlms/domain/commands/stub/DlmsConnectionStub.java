@@ -33,7 +33,6 @@ public class DlmsConnectionStub implements DlmsConnection {
   private final List<MethodParameter> methodsInvoked = new ArrayList<>();
 
   private final Map<String, List<DataObject>> returnValues = new HashMap<>();
-  private final Map<MethodParameter, MethodResult> returnMethodResults = new HashMap<>();
 
   private DataObject defaultReturnValue = DataObject.newNullData();
   private MethodResult defaultMethodResult = null;
@@ -102,11 +101,7 @@ public class DlmsConnectionStub implements DlmsConnection {
   public MethodResult action(final MethodParameter methodParameter) {
     this.methodsInvoked.add(methodParameter);
 
-    if (this.returnMethodResults.containsKey(methodParameter)) {
-      return this.returnMethodResults.get(methodParameter);
-    } else {
-      return this.defaultMethodResult;
-    }
+    return this.defaultMethodResult;
   }
 
   @Override
@@ -198,11 +193,6 @@ public class DlmsConnectionStub implements DlmsConnection {
 
   private String getKey(final AttributeAddress attributeAddress) {
     return attributeAddress.getInstanceId() + "-" + attributeAddress.getId();
-  }
-
-  public void addMethodResul(
-      final MethodParameter methodParameter, final MethodResult methodResult) {
-    this.returnMethodResults.put(methodParameter, methodResult);
   }
 
   public void setDefaultMethodResult(final MethodResult methodResult) {
