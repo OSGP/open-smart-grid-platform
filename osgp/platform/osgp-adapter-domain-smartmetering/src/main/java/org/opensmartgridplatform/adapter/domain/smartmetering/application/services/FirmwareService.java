@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceFirmwareModule;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
@@ -313,58 +312,12 @@ public class FirmwareService {
           break;
         default:
           LOGGER.error(
-              "Cannot handle firmware version type: {}",
-              firmwareVersion.getFirmwareModuleType().name());
+              "Cannot handle firmware version type: {}", firmwareVersion.getFirmwareModuleType());
           throw new FunctionalException(
               FunctionalExceptionType.UNKNOWN_FIRMWARE, ComponentType.DOMAIN_SMART_METERING);
       }
     }
 
     return firmwareVersionByModuleType;
-  }
-
-  private void checkFirmwareIsUpdated(
-      final Map<FirmwareModuleType, String> firmwareVersionsByModuleType,
-      final FirmwareModuleType firmwareModuleType,
-      final Map<FirmwareModule, String> moduleVersionsInFirmwareFile,
-      final String moduleDescription,
-      final String deviceIdentification)
-      throws FunctionalException {
-
-    final String versionToBeInstalled =
-        moduleVersionsInFirmwareFile.get(
-            this.firmwareModuleRepository.findByDescriptionIgnoreCase(moduleDescription));
-
-    if (StringUtils.isBlank(versionToBeInstalled)) {
-      /*
-       * Firmware for this module type was not in the firmware file. Any
-       * version reported by the device is OK.
-       */
-      return;
-    }
-
-    final String versionReportedByDevice = firmwareVersionsByModuleType.get(firmwareModuleType);
-    if (!versionToBeInstalled.equals(versionReportedByDevice)) {
-      LOGGER.error(
-          "Firmware version \"{}\" of type {} not installed on device {}, "
-              + "which reported \"{}\" (all versions returned: {})",
-          versionToBeInstalled,
-          firmwareModuleType,
-          deviceIdentification,
-          versionReportedByDevice,
-          firmwareVersionsByModuleType);
-      throw new FunctionalException(
-          FunctionalExceptionType.VALIDATION_ERROR,
-          ComponentType.DOMAIN_SMART_METERING,
-          new OsgpException(
-              ComponentType.DOMAIN_SMART_METERING,
-              "Expected "
-                  + firmwareModuleType.getDescription()
-                  + " version \""
-                  + versionToBeInstalled
-                  + "\", device has \""
-                  + versionReportedByDevice
-                  + "\""));
-    }
   }
 }
