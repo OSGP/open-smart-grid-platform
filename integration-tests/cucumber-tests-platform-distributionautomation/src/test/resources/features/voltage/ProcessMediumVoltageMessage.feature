@@ -1,5 +1,5 @@
 @DistributionAutomation @Platform @MediumVoltageMessage
-Feature: Medium voltage message processing
+Feature: DistributionAutomation Medium voltage message processing
 
   Scenario: Process a medium voltage message from MQTT device
     Given an MQTT device

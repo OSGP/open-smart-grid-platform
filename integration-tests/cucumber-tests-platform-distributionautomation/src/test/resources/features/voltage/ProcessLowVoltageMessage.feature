@@ -1,5 +1,5 @@
 @DistributionAutomation @Platform @LowVoltageMessage
-Feature: Low voltage message processing
+Feature: DistributionAutomation Low voltage message processing
 
   Scenario: Process a low voltage message from MQTT device
     Given an MQTT device
