@@ -8,7 +8,6 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware;
 
-import javax.annotation.PostConstruct;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -22,7 +21,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRe
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -37,39 +35,28 @@ public class UpdateFirmwareCommandExecutor
   private static final String EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE =
       "Firmware file is not available.";
 
-  @Autowired private FirmwareFileCachingRepository firmwareFileCachingRepository;
+  private final FirmwareFileCachingRepository firmwareFileCachingRepository;
+  private final ImageTransfer.ImageTranferProperties imageTransferProperties;
 
-  @Value("${command.updatefirmware.verificationstatuscheck.interval}")
-  private int verificationStatusCheckInterval;
-
-  @Value("${command.updatefirmware.verificationstatuscheck.timeout}")
-  private int verificationStatusCheckTimeout;
-
-  @Value("${command.updatefirmware.initiationstatuscheck.interval}")
-  private int initiationStatusCheckInterval;
-
-  @Value("${command.updatefirmware.initiationstatuscheck.timeout}")
-  private int initiationStatusCheckTimeout;
-
-  private ImageTransfer.ImageTranferProperties imageTransferProperties;
-
-  public UpdateFirmwareCommandExecutor() {
+  public UpdateFirmwareCommandExecutor(
+      final FirmwareFileCachingRepository firmwareFileCachingRepository,
+      @Value("${command.updatefirmware.verificationstatuscheck.interval}")
+          final int verificationStatusCheckInterval,
+      @Value("${command.updatefirmware.verificationstatuscheck.timeout}")
+          final int verificationStatusCheckTimeout,
+      @Value("${command.updatefirmware.initiationstatuscheck.interval}")
+          final int initiationStatusCheckInterval,
+      @Value("${command.updatefirmware.initiationstatuscheck.timeout}")
+          final int initiationStatusCheckTimeout) {
     super(UpdateFirmwareRequestDto.class);
-  }
+    this.firmwareFileCachingRepository = firmwareFileCachingRepository;
 
-  @PostConstruct
-  @Override
-  public void init() {
     this.imageTransferProperties = new ImageTransfer.ImageTranferProperties();
     this.imageTransferProperties.setVerificationStatusCheckInterval(
-        this.verificationStatusCheckInterval);
-    this.imageTransferProperties.setVerificationStatusCheckTimeout(
-        this.verificationStatusCheckTimeout);
-    this.imageTransferProperties.setInitiationStatusCheckInterval(
-        this.initiationStatusCheckInterval);
-    this.imageTransferProperties.setInitiationStatusCheckTimeout(this.initiationStatusCheckTimeout);
-
-    super.init();
+        verificationStatusCheckInterval);
+    this.imageTransferProperties.setVerificationStatusCheckTimeout(verificationStatusCheckTimeout);
+    this.imageTransferProperties.setInitiationStatusCheckInterval(initiationStatusCheckInterval);
+    this.imageTransferProperties.setInitiationStatusCheckTimeout(initiationStatusCheckTimeout);
   }
 
   @Override
