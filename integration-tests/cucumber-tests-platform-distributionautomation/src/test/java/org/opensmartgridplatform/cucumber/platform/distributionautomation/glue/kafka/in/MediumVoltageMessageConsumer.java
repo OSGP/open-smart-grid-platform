@@ -17,20 +17,21 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 @Component
-public class LowVoltageMessageConsumer extends AbstractMessageConsumer {
+public class MediumVoltageMessageConsumer extends AbstractMessageConsumer {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(LowVoltageMessageConsumer.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MediumVoltageMessageConsumer.class);
 
-  protected LowVoltageMessageConsumer(
-      @Value("${low.voltage.kafka.consumer.wait.fail.duration:90000}") final long waitFailMillis) {
+  public MediumVoltageMessageConsumer(
+      @Value("${medium.voltage.kafka.consumer.wait.fail.duration:90000}")
+          final long waitFailMillis) {
     super(waitFailMillis);
   }
 
   @KafkaListener(
-      containerFactory = "lowVoltageMessageKafkaListenerContainerFactory",
-      topics = "${low.voltage.kafka.topic}")
+      containerFactory = "mediumVoltageMessageKafkaListenerContainerFactory",
+      topics = "${medium.voltage.kafka.topic}")
   public void listen(final ConsumerRecord<String, Message> consumerRecord) {
-    LOGGER.info("received consumerRecord");
+    LOGGER.info("Received consumerRecord");
     this.consumerRecord = consumerRecord;
   }
 }

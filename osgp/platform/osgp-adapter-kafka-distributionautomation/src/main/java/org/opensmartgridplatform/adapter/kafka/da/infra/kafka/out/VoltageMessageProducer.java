@@ -67,7 +67,7 @@ public class VoltageMessageProducer {
 
   public void send(final String measurement) {
 
-    LOGGER.info("LowVoltageMessageProducer.send is called with measurement {}", measurement);
+    LOGGER.info("VoltageMessageProducer.send is called with measurement {}", measurement);
 
     final ObjectMapper objectMapper = new ObjectMapper();
     objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -103,8 +103,10 @@ public class VoltageMessageProducer {
          * logs errors and does nothing when the send is successful.
          */
         if (MV_MEASUREMENT_FEEDER == feeder) {
+          LOGGER.debug("Sending medium voltage message: {}", message);
           this.mediumVoltageKafkaTemplate.sendDefault(message);
         } else {
+          LOGGER.debug("Sending low voltage message: {}", message);
           this.messageSigner.sign(message);
           this.lowVoltageKafkaTemplate.sendDefault(message);
         }
