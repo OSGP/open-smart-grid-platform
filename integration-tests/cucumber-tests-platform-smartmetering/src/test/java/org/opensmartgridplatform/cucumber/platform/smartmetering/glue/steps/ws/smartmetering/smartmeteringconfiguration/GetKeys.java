@@ -62,19 +62,21 @@ public class GetKeys {
         .as(OPERATION + ", Checking result:")
         .isEqualTo(OsgpResultType.OK);
 
+    final List<SecretType> expectedSecretTypes = getSecretTypesFromParameterMap(expectedValues);
+
     final List<GetKeysResponseData> responseDataList = response.getGetKeysResponseData();
-    assertThat(responseDataList).hasSize(2);
+    assertThat(responseDataList).hasSameSizeAs(expectedSecretTypes);
 
-    final byte[] key1 = responseDataList.get(0).getSecretValue();
-    final SecretType key1Type = responseDataList.get(0).getSecretType();
-    final byte[] key2 = responseDataList.get(1).getSecretValue();
-    final SecretType key2Type = responseDataList.get(1).getSecretType();
+    responseDataList.forEach(
+        responseData -> this.checkResponseData(responseData, expectedSecretTypes));
+  }
 
-    final List<SecretType> secretTypes = getSecretTypesFromParameterMap(expectedValues);
+  private void checkResponseData(
+      final GetKeysResponseData responseData, final List<SecretType> expectedSecretTypes) {
+    final byte[] key = responseData.getSecretValue();
+    final SecretType keyType = responseData.getSecretType();
 
-    assertThat(key1Type).isEqualTo(secretTypes.get(0));
-    assertThat(key1).isNotEmpty();
-    assertThat(key2Type).isEqualTo(secretTypes.get(1));
-    assertThat(key2).isNotEmpty();
+    assertThat(key).isNotEmpty();
+    assertThat(keyType).isIn(expectedSecretTypes);
   }
 }
