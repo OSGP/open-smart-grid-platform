@@ -72,8 +72,7 @@ class MediumVoltageMessageProducerTest {
   @Autowired
   private KafkaTemplate<String, Message> distributionAutomationMediumVoltageKafkaTemplate;
 
-  @Autowired(required = false)
-  private MessageSigner messageSigner;
+  @Autowired private MessageSigner messageSigner;
 
   private VoltageMessageProducer producer;
 
@@ -118,6 +117,7 @@ class MediumVoltageMessageProducerTest {
     final Message actualMessage = received.value();
     assertThat(actualMessage.getMessageId()).isNotNull();
     assertThat(actualMessage.getProducerId()).hasToString("GXF");
+    assertThat(this.messageSigner.verify(actualMessage)).isTrue();
   }
 
   private ScadaMeasurementPublishedEvent createEvent() {
