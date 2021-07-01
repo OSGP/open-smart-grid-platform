@@ -66,7 +66,7 @@ public class KafkaPublishingSteps {
 
     LOGGER.debug("Then a {} message is published to Kafka.", kafkaMessageType);
 
-    final ScadaMeasurementPublishedEvent expectedMessage = getEvent(parameters);
+    final ScadaMeasurementPublishedEvent expectedMessage = createExpectedMessage(parameters);
 
     switch (kafkaMessageType) {
       case LOW_VOLTAGE:
@@ -78,7 +78,8 @@ public class KafkaPublishingSteps {
     }
   }
 
-  private static ScadaMeasurementPublishedEvent getEvent(final Map<String, String> parameters) {
+  private static ScadaMeasurementPublishedEvent createExpectedMessage(
+      final Map<String, String> parameters) {
     final Voltage voltage = new Voltage(UnitMultiplier.k, UnitSymbol.V, LOW_VOLTAGE_NOMINAL);
 
     final ConductingEquipment powerSystemResource =
@@ -130,7 +131,9 @@ public class KafkaPublishingSteps {
     names.add(new Name(new NameType("msr naam"), substationName));
     names.add(new Name(new NameType("bay positie"), bayPosition));
     names.add(new Name(new NameType("bay identificatie"), bayIdentification));
-    names.add(new Name(new NameType("functieplaatslabel"), assetLabel));
+    if (assetLabel != null) {
+      names.add(new Name(new NameType("functieplaatslabel"), assetLabel));
+    }
     return names;
   }
 

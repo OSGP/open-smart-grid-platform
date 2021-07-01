@@ -11,7 +11,7 @@ Feature: DistributionAutomation Medium voltage message processing
       | substation name           | substation-1 |
     And a feeder
       | substation identification | sub-1   |
-      | feeder number             |     1   |
+      | feeder number             |     200 |
       | feeder name               | fdr-200 |
     When MQTT device "TST-01" sends a measurement report
       | payload | [{"gisnr":"sub-1", "versie":"2", "feeder":"200", "D": "02/10/2020 16:03:38", "uts":"1601647418", "data": [20000,20000,20000,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1,3.2,3.3,3.4,3.5,3.6,3.7,3.8,3.9,4.0,4.1,5,6,7,8,9,0,1,2,3,4]}] |
@@ -19,7 +19,7 @@ Feature: DistributionAutomation Medium voltage message processing
       | substation identification    | sub-1        |
       | version                      |            2 |
       | substation name              | substation-1 |
-      | bay position                 |            1 |
+      | bay position                 |          200 |
       | bay identification           | fdr-200      |
       | numberOfElements             |           51 |
       | measurement1_description     | U-L1-E       |
