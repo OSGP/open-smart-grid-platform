@@ -54,7 +54,7 @@ class ImageTransfer {
   private static final String EXCEPTION_MSG_IMAGE_ACTIVATE_NOT_CALLED =
       "Image activate could not be called.";
   private static final String EXCEPTION_MSG_IMAGE_TO_ACTIVATE_NOT_OK =
-      "Properties of image to activate are not as excepted.";
+      "Properties of image to activate are not as expected.";
 
   private static final int CLASS_ID = 18;
   private static final ObisCode OBIS_CODE = new ObisCode("0.0.44.0.0.255");
