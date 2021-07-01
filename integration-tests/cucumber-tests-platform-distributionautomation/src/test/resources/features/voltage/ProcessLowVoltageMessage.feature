@@ -1,5 +1,5 @@
 @DistributionAutomation @Platform @LowVoltageMessage
-Feature: Low voltage message processing
+Feature: DistributionAutomation Low voltage message processing
 
   Scenario: Process a low voltage message from MQTT device
     Given an MQTT device
@@ -16,7 +16,7 @@ Feature: Low voltage message processing
       | asset label               | lbl-1 |
     When MQTT device "TST-01" sends a measurement report
       | payload | [{"gisnr":"sub-1", "versie":"2", "feeder":"1", "D": "02/10/2020 16:03:38", "uts":"1601647418", "data": [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1,3.2,3.3,3.4,3.5,3.6,3.7,3.8,3.9,4.0,4.1,5,6,7,8,9,0,1,2,3,4]}] |
-    Then a message is published to Kafka
+    Then a LOW_VOLTAGE message is published to Kafka
       | substation identification    | sub-1        |
       | version                      |            2 |
       | substation name              | substation-1 |

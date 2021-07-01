@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.opensmartgridplatform.adapter.kafka.da.application.config.LowVoltageMessageProducerConfig;
+import org.opensmartgridplatform.adapter.kafka.da.application.config.MediumVoltageMessageProducerConfig;
 import org.opensmartgridplatform.adapter.kafka.da.application.mapping.DistributionAutomationMapper;
 import org.opensmartgridplatform.adapter.kafka.da.application.services.LocationService;
 import org.opensmartgridplatform.adapter.kafka.da.infra.mqtt.in.ScadaMeasurementPayload;
@@ -47,20 +47,20 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-@SpringJUnitConfig({LowVoltageMessageProducerConfig.class})
+@SpringJUnitConfig({MediumVoltageMessageProducerConfig.class})
 @TestPropertySource("classpath:osgp-adapter-kafka-distributionautomation-test.properties")
 @ExtendWith(MockitoExtension.class)
 @EmbeddedKafka(
     partitions = 1,
-    topics = {"${distributionautomation.kafka.topic.low.voltage}"},
+    topics = {"${distributionautomation.kafka.topic.medium.voltage}"},
     brokerProperties = {
       "listeners=PLAINTEXT://localhost:9092",
       "log.dirs=../kafka-logs/",
       "auto.create.topics.enable=true"
     })
-class LowVoltageMessageProducerTest {
+class MediumVoltageMessageProducerTest {
 
-  @Value("${distributionautomation.kafka.topic.low.voltage}")
+  @Value("${distributionautomation.kafka.topic.medium.voltage}")
   private String topic;
 
   @Autowired private EmbeddedKafkaBroker embeddedKafka;
@@ -69,15 +69,16 @@ class LowVoltageMessageProducerTest {
 
   @Mock private DistributionAutomationMapper mapper;
 
-  @Autowired private KafkaTemplate<String, Message> distributionAutomationLowVoltageKafkaTemplate;
+  @Autowired
+  private KafkaTemplate<String, Message> distributionAutomationMediumVoltageKafkaTemplate;
 
   @Autowired private MessageSigner messageSigner;
 
   private VoltageMessageProducer producer;
 
   private static final String PAYLOAD =
-      "[{\"gisnr\":\"TST-01-L-1V1\", \"feeder\":\"8\", \"D\": \"02/10/2020 16:03:38\", "
-          + "\"uts\":\"1601647418\", \"data\": [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,"
+      "[{\"gisnr\":\"TST-01-L-1V1\", \"feeder\":\"200\", \"D\": \"02/10/2020 16:03:38\", "
+          + "\"uts\":\"1601647418\", \"data\": [20000,20000,20000,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,"
           + "1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1,3.2,3.3,3.4,3.5,3.6,3.7,3.8,3.9,4.0,4.1]}]";
 
   @BeforeEach
@@ -87,8 +88,8 @@ class LowVoltageMessageProducerTest {
         .thenReturn(this.createEvent());
     this.producer =
         new VoltageMessageProducer(
-            this.distributionAutomationLowVoltageKafkaTemplate,
             null,
+            this.distributionAutomationMediumVoltageKafkaTemplate,
             this.messageSigner,
             this.mapper,
             this.locationService);

@@ -1,8 +1,9 @@
 /*
- * Copyright 2020 Smart Society Services B.V.
+ * Copyright 2021 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -20,18 +21,19 @@ import org.springframework.kafka.core.KafkaTemplate;
 
 @Configuration
 @Import(MessageSignerConfig.class)
-public class LowVoltageMessageProducerConfig extends AbstractKafkaProducerConfig<String, Message> {
+public class MediumVoltageMessageProducerConfig
+    extends AbstractKafkaProducerConfig<String, Message> {
 
   @Autowired
-  public LowVoltageMessageProducerConfig(
+  public MediumVoltageMessageProducerConfig(
       final Environment environment,
       @Value("${distributionautomation.kafka.common.properties.prefix}")
           final String propertiesPrefix,
-      @Value("${distributionautomation.kafka.topic.low.voltage}") final String topic) {
+      @Value("${distributionautomation.kafka.topic.medium.voltage}") final String topic) {
     super(environment, propertiesPrefix, topic);
   }
 
-  @Bean("distributionAutomationLowVoltageKafkaTemplate")
+  @Bean("distributionAutomationMediumVoltageKafkaTemplate")
   @Override
   public KafkaTemplate<String, Message> kafkaTemplate() {
     return this.getKafkaTemplate();

@@ -30,36 +30,44 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
-public class LowVoltageMessageProducer {
+public class VoltageMessageProducer {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(LowVoltageMessageProducer.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(VoltageMessageProducer.class);
 
   private static final int META_MEASUREMENT_FEEDER = 100;
 
-  private final KafkaTemplate<String, Message> kafkaTemplate;
-
-  private final MessageSigner messageSigner;
+  private static final int MV_MEASUREMENT_FEEDER = 200;
 
   private final DistributionAutomationMapper mapper;
+
+  private final KafkaTemplate<String, Message> lowVoltageKafkaTemplate;
+
+  private final KafkaTemplate<String, Message> mediumVoltageKafkaTemplate;
+
+  private final MessageSigner messageSigner;
 
   private final LocationService locationService;
 
   @Autowired
-  public LowVoltageMessageProducer(
-      @Qualifier("distributionAutomationKafkaTemplate")
-          final KafkaTemplate<String, Message> kafkaTemplate,
+  public VoltageMessageProducer(
+      @Qualifier("distributionAutomationLowVoltageKafkaTemplate")
+          final KafkaTemplate<String, Message> distributionAutomationLowVoltageKafkaTemplate,
+      @Qualifier("distributionAutomationMediumVoltageKafkaTemplate")
+          final KafkaTemplate<String, Message> distributionAutomationMediumVoltageKafkaTemplate,
       final MessageSigner messageSigner,
       final DistributionAutomationMapper mapper,
       final LocationService locationService) {
-    this.kafkaTemplate = kafkaTemplate;
-    this.messageSigner = messageSigner;
+
+    this.lowVoltageKafkaTemplate = distributionAutomationLowVoltageKafkaTemplate;
+    this.mediumVoltageKafkaTemplate = distributionAutomationMediumVoltageKafkaTemplate;
     this.mapper = mapper;
+    this.messageSigner = messageSigner;
     this.locationService = locationService;
   }
 
   public void send(final String measurement) {
 
-    LOGGER.info("LowVoltageMessageProducer.send is called with measurement {}", measurement);
+    LOGGER.info("VoltageMessageProducer.send is called with measurement {}", measurement);
 
     final ObjectMapper objectMapper = new ObjectMapper();
     objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -77,6 +85,7 @@ public class LowVoltageMessageProducer {
       }
 
       final ScadaMeasurementPayload payload = this.addLocationData(payloads);
+      final int feeder = Integer.parseInt(payload.getFeeder());
 
       final ScadaMeasurementPublishedEvent event =
           this.mapper.map(payload, ScadaMeasurementPublishedEvent.class);
@@ -87,13 +96,21 @@ public class LowVoltageMessageProducer {
         final MessageId messageId = new MessageId(UuidUtil.getBytesFromRandomUuid());
         final Message message =
             new Message(messageId, System.currentTimeMillis(), "GXF", null, event);
+
         this.messageSigner.sign(message);
+
         /*
          * No need for callback functionality now; by default, the
          * template is configured with a LoggingProducerListener, which
          * logs errors and does nothing when the send is successful.
          */
-        this.kafkaTemplate.sendDefault(message);
+        if (MV_MEASUREMENT_FEEDER == feeder) {
+          LOGGER.debug("Sending medium voltage message: {}", message);
+          this.mediumVoltageKafkaTemplate.sendDefault(message);
+        } else {
+          LOGGER.debug("Sending low voltage message: {}", message);
+          this.lowVoltageKafkaTemplate.sendDefault(message);
+        }
       }
     } catch (final JsonProcessingException e) {
       LOGGER.error("Error while converting measurement to Json", e);
