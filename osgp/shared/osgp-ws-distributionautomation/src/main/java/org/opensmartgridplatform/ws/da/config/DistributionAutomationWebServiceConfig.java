@@ -20,7 +20,7 @@ import org.springframework.xml.xsd.SimpleXsdSchema;
 @Configuration
 public class DistributionAutomationWebServiceConfig {
 
-  private static final String COMMON_XSD_PATH = "schemas/common.xsd";
+  private static final String COMMON_XSD_PATH = "schemas/common-ws-distributionautomation.xsd";
   private static final String DISTRIBUTION_AUTOMATION_XSD_PATH =
       "schemas/distributionautomation.xsd";
 
@@ -43,7 +43,7 @@ public class DistributionAutomationWebServiceConfig {
     return payloadValidatingInterceptor;
   }
 
-  @Bean(name = "common")
+  @Bean(name = "common-ws-distributionautomation")
   public SimpleXsdSchema commonXsd() {
     return new SimpleXsdSchema(new ClassPathResource(COMMON_XSD_PATH));
   }

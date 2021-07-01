@@ -14,7 +14,7 @@
       xmlns:xsd="http://www.w3.org/2001/XMLSchema">
       <xsd:import
         namespace="http://www.opensmartgridplatform.org/schemas/deviceinstallation/2014/10"
-        schemaLocation="schemas/deviceinstallation.xsd" />
+        schemaLocation="schemas/deviceinstallation-ws-core.xsd" />
     </xsd:schema>
   </wsdl:types>
 

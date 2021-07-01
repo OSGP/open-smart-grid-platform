@@ -15,7 +15,7 @@
 
       <xsd:import
         namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-adhoc/2014/10"
-        schemaLocation="schemas/sm-adhoc.xsd" />
+        schemaLocation="schemas/adhoc-ws-smartmetering.xsd" />
     </xsd:schema>
   </wsdl:types>
 

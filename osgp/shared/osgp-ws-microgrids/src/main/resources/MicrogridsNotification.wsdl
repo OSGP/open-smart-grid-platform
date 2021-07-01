@@ -15,7 +15,7 @@
 
       <xsd:import
         namespace="http://www.opensmartgridplatform.org/schemas/microgrids/notification/2016/06"
-        schemaLocation="schemas/notification.xsd" />
+        schemaLocation="schemas/notification-ws-microgrids.xsd" />
     </xsd:schema>
   </wsdl:types>
 

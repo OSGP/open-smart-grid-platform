@@ -12,22 +12,22 @@
 
   <xsd:import
     namespace="http://www.opensmartgridplatform.org/schemas/common/2014/10"
-    schemaLocation="common.xsd" />
+    schemaLocation="common-ws-smartmetering.xsd" />
   <xsd:import
     namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-management/2014/10"
-    schemaLocation="sm-management.xsd" />
+    schemaLocation="management-ws-smartmetering.xsd" />
   <xsd:import
     namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-configuration/2014/10"
-    schemaLocation="sm-configuration.xsd" />
+    schemaLocation="configuration-ws-smartmetering.xsd" />
   <xsd:import
     namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-monitoring/2014/10"
-    schemaLocation="sm-monitoring.xsd" />
+    schemaLocation="monitoring-ws-smartmetering.xsd" />
   <xsd:import
     namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-adhoc/2014/10"
-    schemaLocation="sm-adhoc.xsd" />
+    schemaLocation="adhoc-ws-smartmetering.xsd" />
   <xsd:import
     namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-installation/2014/10"
-    schemaLocation="sm-installation.xsd" />
+    schemaLocation="installation-ws-smartmetering.xsd" />
 
   <!-- Requests and Responses -->
   <xsd:element name="GetOutagesRequest">
