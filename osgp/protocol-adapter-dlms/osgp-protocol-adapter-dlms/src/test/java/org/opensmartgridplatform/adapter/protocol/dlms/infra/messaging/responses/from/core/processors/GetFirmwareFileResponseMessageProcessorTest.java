@@ -16,7 +16,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.LinkedList;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 import org.junit.jupiter.api.BeforeEach;
@@ -90,8 +89,7 @@ public class GetFirmwareFileResponseMessageProcessorTest {
             .withObject(responseMessage)
             .build();
     final UpdateFirmwareResponseDto updateFirmwareResponseDto =
-        new UpdateFirmwareResponseDto(
-            firmwareFileDto.getFirmwareIdentification(), new LinkedList<>());
+        new UpdateFirmwareResponseDto(firmwareFileDto.getFirmwareIdentification());
 
     final ArgumentCaptor<ResponseMessage> responseMessageArgumentCaptor =
         ArgumentCaptor.forClass(ResponseMessage.class);
