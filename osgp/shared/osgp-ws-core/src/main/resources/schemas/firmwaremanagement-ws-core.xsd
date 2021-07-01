@@ -531,6 +531,7 @@
     <xsd:sequence>
       <xsd:element name="ModuleVersionComm" type="xsd:string" minOccurs="0" />
       <xsd:element name="ModuleVersionFunc" type="xsd:string" minOccurs="0" />
+      <xsd:element name="ModuleVersionActive" type="xsd:string" minOccurs="0" />
       <xsd:element name="ModuleVersionMa" type="xsd:string" minOccurs="0" />
       <xsd:element name="ModuleVersionMbus" type="xsd:string" minOccurs="0" />
       <xsd:element name="ModuleVersionSec" type="xsd:string" minOccurs="0" />
