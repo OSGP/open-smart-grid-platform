@@ -22,7 +22,7 @@ Feature: SmartMetering Bundle - GetFirmwareVersion
       | FirmwareModuleVersionFunc | M57 4836               |
       | FirmwareIsForSmartMeters  | true                   |
 
-  Scenario: Retrieve the firmware version is updated of a device in a bundle request, when a device already has a firmware
+  Scenario: Retrieve an updated firmware version of a device in a bundle request, when a device already has a firmware
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -71,7 +71,7 @@ Feature: SmartMetering Bundle - GetFirmwareVersion
       | DeviceIdentification | TEST1027000000002 |
       | SimpleVersionInfo    |          19180706 |
 
-  Scenario: Retrieve the firmware version is updated of a mbus device in a bundle request, when a device already has a firmware
+  Scenario: Retrieve an updated firmware version of a mbus device in a bundle request, when a device already has a firmware
     Given a dlms device
       | DeviceIdentification | TEST1027000000001 |
       | DeviceType           | SMART_METER_E     |
