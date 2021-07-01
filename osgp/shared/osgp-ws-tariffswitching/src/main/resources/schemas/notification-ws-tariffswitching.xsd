@@ -8,13 +8,13 @@
   http://www.apache.org/licenses/LICENSE-2.0
 -->
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-  xmlns:tns="http://www.opensmartgridplatform.org/schemas/netmanagement/osgp-notification/public-lighting/2019/01"
+  xmlns:tns="http://www.opensmartgridplatform.org/schemas/netmanagement/osgp-notification/tariff-switching/2019/01"
   xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
   attributeFormDefault="unqualified" elementFormDefault="qualified"
-  targetNamespace="http://www.opensmartgridplatform.org/schemas/netmanagement/osgp-notification/public-lighting/2019/01">
+  targetNamespace="http://www.opensmartgridplatform.org/schemas/netmanagement/osgp-notification/tariff-switching/2019/01">
 
   <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/common/2014/10"
-    schemaLocation="common.xsd" />
+    schemaLocation="common-ws-tariffswitching.xsd" />
 
   <xsd:element name="SendNotificationRequest">
     <xsd:complexType>
@@ -40,7 +40,7 @@
 
   <xsd:simpleType name="NotificationType">
     <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="SET_LIGHT_SCHEDULE" />
+      <xsd:enumeration value="SET_TARIFF_SCHEDULE" />
     </xsd:restriction>
   </xsd:simpleType>
 

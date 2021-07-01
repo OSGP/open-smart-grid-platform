@@ -20,10 +20,10 @@ import org.springframework.xml.xsd.SimpleXsdSchema;
 @Configuration
 public class AdminWebServiceConfig {
 
-  private static final String COMMON_XSD_PATH = "schemas/common.xsd";
-  private static final String DEVICE_MANAGEMENT_XSD_PATH = "schemas/devicemanagement.xsd";
+  private static final String COMMON_XSD_PATH = "schemas/common-ws-admin.xsd";
+  private static final String DEVICE_MANAGEMENT_XSD_PATH = "schemas/devicemanagement-ws-admin.xsd";
 
-  private static final String DEVICE_MANAGEMENT_WSDL_PATH = "DeviceManagement.wsdl";
+  private static final String DEVICE_MANAGEMENT_WSDL_PATH = "AdminDeviceManagement.wsdl";
 
   @Bean
   public PayloadValidatingInterceptor payloadValidatingInterceptor() {
@@ -37,17 +37,17 @@ public class AdminWebServiceConfig {
     return payloadValidatingInterceptor;
   }
 
-  @Bean(name = "common")
+  @Bean(name = "common-ws-admin")
   public SimpleXsdSchema commonXsd() {
     return new SimpleXsdSchema(new ClassPathResource(COMMON_XSD_PATH));
   }
 
-  @Bean(name = "DeviceManagement")
+  @Bean(name = "AdminDeviceManagement")
   public WsdlDefinition deviceManagementWsdl() {
     return new SimpleWsdl11Definition(new ClassPathResource(DEVICE_MANAGEMENT_WSDL_PATH));
   }
 
-  @Bean(name = "devicemanagement")
+  @Bean(name = "devicemanagement-ws-admin")
   public SimpleXsdSchema deviceManagementXsd() {
     return new SimpleXsdSchema(new ClassPathResource(DEVICE_MANAGEMENT_XSD_PATH));
   }

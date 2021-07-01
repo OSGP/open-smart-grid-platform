@@ -24,7 +24,7 @@ public class NotificationWebServiceConfig {
 
   private static final String NOTIFICATION_XSD_PATH = "schemas/notification-ws-core.xsd";
 
-  private static final String NOTIFICATION_WSDL_PATH = "Notification.wsdl";
+  private static final String NOTIFICATION_WSDL_PATH = "CoreNotification.wsdl";
 
   @Bean
   public PayloadValidatingInterceptor payloadValidatingInterceptor() {
@@ -46,7 +46,7 @@ public class NotificationWebServiceConfig {
     return new SimpleXsdSchema(new ClassPathResource(COMMON_XSD_PATH));
   }
 
-  @Bean(name = "Notification")
+  @Bean(name = "CoreNotification")
   public WsdlDefinition notificationWsdl() {
     return new SimpleWsdl11Definition(new ClassPathResource(NOTIFICATION_WSDL_PATH));
   }

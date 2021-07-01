@@ -11,16 +11,16 @@
             targetNamespace="http://www.opensmartgridplatform.org/schemas/smartmetering/external-interface">
 
   <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-bundle/2014/10"
-              schemaLocation="sm-bundle.xsd"/>
+              schemaLocation="bundle-ws-smartmetering.xsd"/>
 
   <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-configuration/2014/10"
-              schemaLocation="sm-configuration.xsd"/>
+              schemaLocation="configuration-ws-smartmetering.xsd"/>
 
   <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-installation/2014/10"
-              schemaLocation="sm-installation.xsd"/>
+              schemaLocation="installation-ws-smartmetering.xsd"/>
 
   <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-administration"
-              schemaLocation="sm-administration.xsd"/>
+              schemaLocation="administration-ws-smartmetering.xsd"/>
   
   <xsd:element name="ExternalInterfaceRequestMessage">
     <xsd:complexType>

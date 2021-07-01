@@ -14,7 +14,7 @@
       xmlns:xsd="http://www.w3.org/2001/XMLSchema">
       <xsd:import
         namespace="http://www.opensmartgridplatform.org/schemas/common/firmwaremanagement/2014/10"
-        schemaLocation="schemas/firmwaremanagement.xsd" />
+        schemaLocation="schemas/firmwaremanagement-ws-core.xsd" />
     </xsd:schema>
   </wsdl:types>
 

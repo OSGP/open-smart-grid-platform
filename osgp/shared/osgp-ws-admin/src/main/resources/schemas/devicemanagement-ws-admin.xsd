@@ -14,7 +14,7 @@
   targetNamespace="http://www.opensmartgridplatform.org/schemas/admin/devicemanagement/2014/10">
 
   <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/common/2014/10"
-    schemaLocation="common.xsd" />
+    schemaLocation="common-ws-admin.xsd" />
 
   <xsd:element name="CreateOrganisationRequest">
     <xsd:complexType>

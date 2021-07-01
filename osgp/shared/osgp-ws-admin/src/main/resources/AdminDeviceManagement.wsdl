@@ -15,7 +15,7 @@
 
       <xsd:import
         namespace="http://www.opensmartgridplatform.org/schemas/admin/devicemanagement/2014/10"
-        schemaLocation="schemas/devicemanagement.xsd" />
+        schemaLocation="schemas/devicemanagement-ws-admin.xsd" />
     </xsd:schema>
   </wsdl:types>
   <wsdl:message name="SoapHeaders">
