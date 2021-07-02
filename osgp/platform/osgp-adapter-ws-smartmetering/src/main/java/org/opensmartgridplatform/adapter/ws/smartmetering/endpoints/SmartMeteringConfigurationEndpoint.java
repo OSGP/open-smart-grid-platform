@@ -8,11 +8,15 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.endpoints;
 
-import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationKeyConfiguration;
+import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationKeyLookupKey;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.ApplicationKeyConfigurationRepository;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.BypassRetry;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
@@ -114,6 +118,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.S
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareRequest;
+import org.opensmartgridplatform.adapter.ws.smartmetering.application.ApplicationConstants;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.services.RequestService;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
@@ -136,6 +141,8 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.security.RsaEncrypter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
@@ -151,6 +158,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
   @Autowired private RequestService requestService;
 
   @Autowired private ConfigurationMapper configurationMapper;
+
+  @Autowired private ApplicationKeyConfigurationRepository applicationKeyConfigurationRepository;
 
   @Autowired
   @Qualifier("gxfDecrypter")
@@ -1656,16 +1665,15 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             getKeysResponse =
                 (org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetKeysResponse)
                     responseData.getMessageData();
-        final List<GetKeysResponseData> keysEncryptedWithOsgpKey =
+
+        final List<GetKeysResponseData> keysEncryptedWithGxfKey =
             this.configurationMapper.mapAsList(
                 getKeysResponse.getKeys(), GetKeysResponseData.class);
+
         final List<GetKeysResponseData> keysEncryptedForApplication =
-            keysEncryptedWithOsgpKey.stream()
-                .map(
-                    key ->
-                        this.reencryptKeyInGetKeysResponse(
-                            key, responseData.getOrganisationIdentification()))
-                .collect(Collectors.toList());
+            this.reencryptKeysInGetKeysResponse(
+                keysEncryptedWithGxfKey, responseData.getOrganisationIdentification());
+
         response.getGetKeysResponseData().addAll(keysEncryptedForApplication);
       } else {
         log.info("Get keys response is null");
@@ -1676,16 +1684,58 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     return response;
   }
 
+  private List<GetKeysResponseData> reencryptKeysInGetKeysResponse(
+      final List<GetKeysResponseData> keysEncryptedWithGxfKey,
+      final String organisationIdentification)
+      throws OsgpException {
+    final RsaEncrypter applicationRsaEncrypter =
+        this.getRsaEncrypterForApplication(organisationIdentification);
+
+    return keysEncryptedWithGxfKey.stream()
+        .map(key -> this.reencryptKeyInGetKeysResponse(key, applicationRsaEncrypter))
+        .collect(Collectors.toList());
+  }
+
   private GetKeysResponseData reencryptKeyInGetKeysResponse(
-      final GetKeysResponseData data, final String organisationIdentification) {
+      final GetKeysResponseData data, final RsaEncrypter applicationRsaEncrypter) {
+
     final byte[] decryptedKey = this.gxfRsaDecrypter.decrypt(data.getSecretValue());
 
-    final RsaEncrypter applicationRsaEncrypter = new RsaEncrypter();
-    // TODO: Get key from configuration based on organisationIdentification
-    final File publicRsaKeyFile = null;
-    applicationRsaEncrypter.setPublicKeyStore(publicRsaKeyFile);
-
     data.setSecretValue(applicationRsaEncrypter.encrypt(decryptedKey));
+
     return data;
+  }
+
+  private RsaEncrypter getRsaEncrypterForApplication(final String organisationIdentification)
+      throws OsgpException {
+    final Optional<ApplicationKeyConfiguration> applicationKeyConfiguration =
+        this.applicationKeyConfigurationRepository.findById(
+            new ApplicationKeyLookupKey(
+                organisationIdentification, ApplicationConstants.APPLICATION_NAME));
+
+    if (!applicationKeyConfiguration.isPresent()) {
+      throw new OsgpException(
+          ComponentType.WS_SMART_METERING,
+          "No public key found for application "
+              + ApplicationConstants.APPLICATION_NAME
+              + " and organisation "
+              + organisationIdentification);
+    }
+
+    final String publicKeyLocation = applicationKeyConfiguration.get().getPublicKeyLocation();
+
+    try {
+      final Resource keyResource = new FileSystemResource(publicKeyLocation);
+      final RsaEncrypter applicationRsaEncrypter = new RsaEncrypter();
+      applicationRsaEncrypter.setPublicKeyStore(keyResource.getFile());
+      return applicationRsaEncrypter;
+    } catch (final IOException e) {
+      throw new OsgpException(
+          ComponentType.WS_SMART_METERING,
+          "Could not get public key file for application "
+              + ApplicationConstants.APPLICATION_NAME
+              + " and organisation "
+              + organisationIdentification);
+    }
   }
 }
