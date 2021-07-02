@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.endpoints;
 
+import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -152,12 +153,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
   @Autowired private ConfigurationMapper configurationMapper;
 
   @Autowired
-  @Qualifier("osgpDecrypter")
-  private RsaEncrypter osgpRsaDecrypter;
-
-  @Autowired
-  @Qualifier("smartMeteringEncrypter")
-  private RsaEncrypter smartMeteringRsaEncrypter;
+  @Qualifier("gxfDecrypter")
+  private RsaEncrypter gxfRsaDecrypter;
 
   public SmartMeteringConfigurationEndpoint() {
     // Default constructor
@@ -1655,7 +1652,6 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
 
       if (responseData.getMessageData() != null) {
-        final List<GetKeysResponseData> target = response.getGetKeysResponseData();
         final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetKeysResponse
             getKeysResponse =
                 (org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetKeysResponse)
@@ -1663,9 +1659,14 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         final List<GetKeysResponseData> keysEncryptedWithOsgpKey =
             this.configurationMapper.mapAsList(
                 getKeysResponse.getKeys(), GetKeysResponseData.class);
-        final List<GetKeysResponseData> keysEncryptedWithSmartMeteringKey =
-            keysEncryptedWithOsgpKey.stream().map(this::reencryptKey).collect(Collectors.toList());
-        target.addAll(keysEncryptedWithSmartMeteringKey);
+        final List<GetKeysResponseData> keysEncryptedForApplication =
+            keysEncryptedWithOsgpKey.stream()
+                .map(
+                    key ->
+                        this.reencryptKeyInGetKeysResponse(
+                            key, responseData.getOrganisationIdentification()))
+                .collect(Collectors.toList());
+        response.getGetKeysResponseData().addAll(keysEncryptedForApplication);
       } else {
         log.info("Get keys response is null");
       }
@@ -1675,9 +1676,16 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     return response;
   }
 
-  private GetKeysResponseData reencryptKey(final GetKeysResponseData data) {
-    final byte[] decryptedKey = this.osgpRsaDecrypter.decrypt(data.getSecretValue());
-    data.setSecretValue(this.smartMeteringRsaEncrypter.encrypt(decryptedKey));
+  private GetKeysResponseData reencryptKeyInGetKeysResponse(
+      final GetKeysResponseData data, final String organisationIdentification) {
+    final byte[] decryptedKey = this.gxfRsaDecrypter.decrypt(data.getSecretValue());
+
+    final RsaEncrypter applicationRsaEncrypter = new RsaEncrypter();
+    // TODO: Get key from configuration based on organisationIdentification
+    final File publicRsaKeyFile = null;
+    applicationRsaEncrypter.setPublicKeyStore(publicRsaKeyFile);
+
+    data.setSecretValue(applicationRsaEncrypter.encrypt(decryptedKey));
     return data;
   }
 }

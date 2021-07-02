@@ -27,34 +27,19 @@ import org.springframework.core.io.Resource;
 public class SecurityConfig extends AbstractConfig {
 
   @Value("${osgp.rsa.private.key.resource}")
-  private Resource osgpRsaPrivateKeyResource;
+  private Resource gxfRsaPrivateKeyResource;
 
-  @Value("${smartmetering.rsa.public.key.resource}")
-  private Resource smartmeteringRsaPublicKeyResource;
-
-  /** Decrypter for content coming from osgp */
-  @Bean(name = "osgpDecrypter")
-  public RsaEncrypter osgpRsaDecrypter() {
+  @Bean(name = "gxfDecrypter")
+  public RsaEncrypter gxfRsaDecrypter() {
     try {
-      final File privateRsaKeyFile = this.osgpRsaPrivateKeyResource.getFile();
+      final File privateRsaKeyFile = this.gxfRsaPrivateKeyResource.getFile();
       final RsaEncrypter rsaEncrypter = new RsaEncrypter();
       rsaEncrypter.setPrivateKeyStore(privateRsaKeyFile);
       return rsaEncrypter;
     } catch (final IOException e) {
-      throw new IllegalStateException("Could not initialize RsaEncrypter for decryption", e);
-    }
-  }
-
-  /** Encrypter for content going to smart metering application */
-  @Bean(name = "smartMeteringEncrypter")
-  public RsaEncrypter smartMeteringRsaEncrypter() {
-    try {
-      final File publicRsaKeyFile = this.smartmeteringRsaPublicKeyResource.getFile();
-      final RsaEncrypter rsaEncrypter = new RsaEncrypter();
-      rsaEncrypter.setPublicKeyStore(publicRsaKeyFile);
-      return rsaEncrypter;
-    } catch (final IOException e) {
-      throw new IllegalStateException("Could not initialize RsaEncrypter for encryption", e);
+      throw new IllegalStateException(
+          "Could not initialize RsaEncrypter for decryption with the private key from the GXF RSA key pair",
+          e);
     }
   }
 }

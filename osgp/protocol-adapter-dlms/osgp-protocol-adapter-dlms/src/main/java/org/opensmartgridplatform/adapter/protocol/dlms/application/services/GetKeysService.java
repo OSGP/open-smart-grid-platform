@@ -10,8 +10,9 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysRequestDto;
@@ -27,55 +28,51 @@ import org.springframework.stereotype.Component;
 public class GetKeysService {
 
   private final SecretManagementService secretManagementService;
-  private final RsaEncrypter rsaEncrypter;
+  private final RsaEncrypter keyEncrypter;
 
   @Autowired
   public GetKeysService(
-      final SecretManagementService secretManagementService, final RsaEncrypter rsaEncrypter) {
+      final SecretManagementService secretManagementService, final RsaEncrypter keyEncrypter) {
     this.secretManagementService = secretManagementService;
-    this.rsaEncrypter = rsaEncrypter;
+    this.keyEncrypter = keyEncrypter;
   }
 
   public GetKeysResponseDto getKeys(
       final DlmsDevice device, final GetKeysRequestDto getKeysRequestDto) {
 
-    final List<KeyDto> keys =
-        this.getEncryptedKeys(device.getDeviceIdentification(), getKeysRequestDto.getsecretTypes());
+    final List<SecurityKeyType> securityKeyTypes =
+        getKeysRequestDto.getSecretTypes().stream()
+            .map(this::convertToSecurityKeyType)
+            .collect(Collectors.toList());
 
-    return new GetKeysResponseDto(keys);
+    final Map<SecurityKeyType, byte[]> unencryptedKeys =
+        this.secretManagementService.getKeys(device.getDeviceIdentification(), securityKeyTypes);
+
+    final List<KeyDto> encryptedKeys = this.convertToKeyDtosWithEncryptedKeys(unencryptedKeys);
+
+    return new GetKeysResponseDto(encryptedKeys);
   }
 
-  private List<KeyDto> getEncryptedKeys(
-      final String deviceIdentification, final List<SecretTypeDto> secretTypes) {
-
-    final List<KeyDto> encryptedKeys = new ArrayList<>();
-
-    for (final SecretTypeDto keyType : secretTypes) {
-      final KeyDto encryptedKey = this.getEncryptedKey(deviceIdentification, keyType);
-      encryptedKeys.add(encryptedKey);
-    }
-
-    return encryptedKeys;
+  private List<KeyDto> convertToKeyDtosWithEncryptedKeys(
+      final Map<SecurityKeyType, byte[]> unencryptedKeys) {
+    return unencryptedKeys.entrySet().stream()
+        .map(entry -> this.convertToKeyDtoWithEncryptedKey(entry.getKey(), entry.getValue()))
+        .collect(Collectors.toList());
   }
 
-  private KeyDto getEncryptedKey(
-      final String deviceIdentification, final SecretTypeDto secretTypeDto) {
-    final SecurityKeyType securityKeyType = this.convertToSecurityKeyType(secretTypeDto);
+  private KeyDto convertToKeyDtoWithEncryptedKey(
+      final SecurityKeyType securityKeyType, final byte[] unencryptedKey) {
 
-    final byte[] unencryptedKey =
-        this.secretManagementService.getKey(deviceIdentification, securityKeyType);
+    final byte[] encryptedKey = this.keyEncrypter.encrypt(unencryptedKey);
 
-    if (unencryptedKey == null) {
-      // return null to indicate the key is not found
-      return new KeyDto(secretTypeDto, null);
-    }
-
-    final byte[] encryptedKey = this.rsaEncrypter.encrypt(unencryptedKey);
-
-    return new KeyDto(secretTypeDto, encryptedKey);
+    return new KeyDto(this.convertToSecretTypeDto(securityKeyType), encryptedKey);
   }
 
   private SecurityKeyType convertToSecurityKeyType(final SecretTypeDto secretTypeDto) {
     return SecurityKeyType.fromSecretType(SecretType.fromValue(secretTypeDto.name()));
+  }
+
+  private SecretTypeDto convertToSecretTypeDto(final SecurityKeyType securityKeyType) {
+    return SecretTypeDto.valueOf(securityKeyType.toSecretType().name());
   }
 }

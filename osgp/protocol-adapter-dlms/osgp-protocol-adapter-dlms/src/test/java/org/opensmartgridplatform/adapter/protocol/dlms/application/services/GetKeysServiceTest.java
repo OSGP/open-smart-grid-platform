@@ -15,6 +15,8 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumMap;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -51,10 +53,13 @@ class GetKeysServiceTest {
 
   @Test
   void getKeys() {
-    when(this.secretManagementService.getKey(DEVICE_ID, SecurityKeyType.E_METER_MASTER))
-        .thenReturn(KEY_1_UNENCRYPTED);
-    when(this.secretManagementService.getKey(DEVICE_ID, SecurityKeyType.E_METER_AUTHENTICATION))
-        .thenReturn(KEY_2_UNENCRYPTED);
+    final Map<SecurityKeyType, byte[]> keys = new EnumMap<>(SecurityKeyType.class);
+    keys.put(SecurityKeyType.E_METER_MASTER, KEY_1_UNENCRYPTED);
+    keys.put(SecurityKeyType.E_METER_AUTHENTICATION, KEY_2_UNENCRYPTED);
+    when(this.secretManagementService.getKeys(
+            DEVICE_ID,
+            Arrays.asList(SecurityKeyType.E_METER_MASTER, SecurityKeyType.E_METER_AUTHENTICATION)))
+        .thenReturn(keys);
     when(this.rsaEncrypter.encrypt(KEY_1_UNENCRYPTED)).thenReturn(KEY_1_ENCRYPTED);
     when(this.rsaEncrypter.encrypt(KEY_2_UNENCRYPTED)).thenReturn(KEY_2_ENCRYPTED);
     final GetKeysResponseDto response = this.getKeysService.getKeys(DEVICE, REQUEST);
@@ -79,10 +84,13 @@ class GetKeysServiceTest {
 
   @Test
   void getKeysWhenKeyNotFound() {
-    when(this.secretManagementService.getKey(DEVICE_ID, SecurityKeyType.E_METER_MASTER))
-        .thenReturn(KEY_1_UNENCRYPTED);
-    when(this.secretManagementService.getKey(DEVICE_ID, SecurityKeyType.E_METER_AUTHENTICATION))
-        .thenReturn(null);
+    final Map<SecurityKeyType, byte[]> keys = new EnumMap<>(SecurityKeyType.class);
+    keys.put(SecurityKeyType.E_METER_MASTER, KEY_1_UNENCRYPTED);
+    keys.put(SecurityKeyType.E_METER_AUTHENTICATION, null);
+    when(this.secretManagementService.getKeys(
+            DEVICE_ID,
+            Arrays.asList(SecurityKeyType.E_METER_MASTER, SecurityKeyType.E_METER_AUTHENTICATION)))
+        .thenReturn(keys);
     when(this.rsaEncrypter.encrypt(KEY_1_UNENCRYPTED)).thenReturn(KEY_1_ENCRYPTED);
 
     final GetKeysResponseDto response = this.getKeysService.getKeys(DEVICE, REQUEST);

@@ -21,7 +21,7 @@ public class GetKeysRequestDto implements ActionRequestDto {
     this.secretTypes = secretTypes;
   }
 
-  public List<SecretTypeDto> getsecretTypes() {
+  public List<SecretTypeDto> getSecretTypes() {
     return this.secretTypes;
   }
 }
