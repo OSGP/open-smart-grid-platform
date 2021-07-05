@@ -13,7 +13,7 @@ import org.apache.commons.lang3.EnumUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
-import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
+import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationDataLookupKey;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericNotification;
@@ -218,8 +218,8 @@ public abstract class AbstractResendNotificationService<T extends Enum<T>> {
       return;
     }
 
-    final NotificationWebServiceLookupKey notificationWebServiceLookupKey =
-        new NotificationWebServiceLookupKey(
+    final ApplicationDataLookupKey notificationWebServiceLookupKey =
+        new ApplicationDataLookupKey(
             responseData.getOrganisationIdentification(), this.applicationName);
     final String notificationMessage = this.getNotificationMessage(responseData.getMessageType());
     final GenericNotification genericNotification =

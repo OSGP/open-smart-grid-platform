@@ -12,7 +12,7 @@ import java.io.Serializable;
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
-import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
+import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationDataLookupKey;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.schema.microgrids.notification.NotificationType;
 import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericNotification;
@@ -80,11 +80,11 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
     String organisationIdentification = null;
     String deviceIdentification = null;
 
-    String notificationMessage;
-    NotificationType notificationType;
-    ResponseMessageResultType resultType;
-    String resultDescription;
-    Serializable dataObject;
+    final String notificationMessage;
+    final NotificationType notificationType;
+    final ResponseMessageResultType resultType;
+    final String resultDescription;
+    final Serializable dataObject;
 
     try {
       correlationUid = message.getJMSCorrelationID();
@@ -145,7 +145,7 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
       final Serializable dataObject) {
 
     final short numberOfNotificationsSent = 0;
-    Serializable responseDataObject;
+    final Serializable responseDataObject;
     if (dataObject == null) {
       responseDataObject = resultDescription;
     } else {
@@ -202,7 +202,7 @@ public abstract class AbstractDomainResponseMessageProcessor implements MessageP
 
     try {
       this.notificationService.sendNotification(
-          new NotificationWebServiceLookupKey(organisationIdentification, "ZownStream"),
+          new ApplicationDataLookupKey(organisationIdentification, "ZownStream"),
           new GenericNotification(
               message, result, deviceIdentification, correlationUid, notificationType.name()));
     } catch (final RuntimeException e) {

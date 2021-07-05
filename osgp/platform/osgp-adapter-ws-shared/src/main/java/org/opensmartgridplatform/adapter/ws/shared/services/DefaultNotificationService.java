@@ -11,7 +11,7 @@ package org.opensmartgridplatform.adapter.ws.shared.services;
 import java.util.Objects;
 import ma.glasnost.orika.MapperFacade;
 import org.opensmartgridplatform.adapter.ws.clients.NotificationWebServiceTemplateFactory;
-import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
+import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationDataLookupKey;
 import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericNotification;
 import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericSendNotificationRequest;
 import org.slf4j.Logger;
@@ -88,7 +88,7 @@ public class DefaultNotificationService<T> implements NotificationService {
       final Object notificationType) {
 
     this.sendNotification(
-        new NotificationWebServiceLookupKey(organisationIdentification, this.applicationName),
+        new ApplicationDataLookupKey(organisationIdentification, this.applicationName),
         new GenericNotification(
             message,
             result,
@@ -99,8 +99,7 @@ public class DefaultNotificationService<T> implements NotificationService {
 
   @Override
   public void sendNotification(
-      final NotificationWebServiceLookupKey endpointLookupKey,
-      final GenericNotification notification) {
+      final ApplicationDataLookupKey endpointLookupKey, final GenericNotification notification) {
 
     Objects.requireNonNull(endpointLookupKey, "endpointLookupKey must not be null");
     Objects.requireNonNull(notification, "notification must not be null");

@@ -10,11 +10,10 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.endpoints;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationDataLookupKey;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationKeyConfiguration;
-import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationKeyLookupKey;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ApplicationKeyConfigurationRepository;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.BypassRetry;
@@ -1691,21 +1690,22 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
   private RsaEncrypter getRsaEncrypterForApplication(final String organisationIdentification)
       throws OsgpException {
-    final Optional<ApplicationKeyConfiguration> applicationKeyConfiguration =
-        this.applicationKeyConfigurationRepository.findById(
-            new ApplicationKeyLookupKey(
-                organisationIdentification, ApplicationConstants.APPLICATION_NAME));
 
-    if (!applicationKeyConfiguration.isPresent()) {
-      throw new OsgpException(
-          ComponentType.WS_SMART_METERING,
-          "No public key found for application "
-              + ApplicationConstants.APPLICATION_NAME
-              + " and organisation "
-              + organisationIdentification);
-    }
+    final ApplicationKeyConfiguration applicationKeyConfiguration =
+        this.applicationKeyConfigurationRepository
+            .findById(
+                new ApplicationDataLookupKey(
+                    organisationIdentification, ApplicationConstants.APPLICATION_NAME))
+            .orElseThrow(
+                () ->
+                    new OsgpException(
+                        ComponentType.WS_SMART_METERING,
+                        "No public key found for application "
+                            + ApplicationConstants.APPLICATION_NAME
+                            + " and organisation "
+                            + organisationIdentification));
 
-    final String publicKeyLocation = applicationKeyConfiguration.get().getPublicKeyLocation();
+    final String publicKeyLocation = applicationKeyConfiguration.getPublicKeyLocation();
 
     try {
       final Resource keyResource = new FileSystemResource(publicKeyLocation);

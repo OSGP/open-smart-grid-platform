@@ -16,6 +16,8 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import org.apache.commons.lang3.ArrayUtils;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysAsyncResponse;
@@ -62,21 +64,18 @@ public class GetKeys {
         .as(OPERATION + ", Checking result:")
         .isEqualTo(OsgpResultType.OK);
 
+    final List<GetKeysResponseData> responseDataList = response.getGetKeysResponseData();
+
+    assertThat(responseDataList)
+        .noneMatch(getKeysResponseData -> ArrayUtils.isEmpty(getKeysResponseData.getSecretValue()));
+
+    final List<SecretType> secretTypesInResponse =
+        responseDataList.stream()
+            .map(GetKeysResponseData::getSecretType)
+            .collect(Collectors.toList());
+
     final List<SecretType> expectedSecretTypes = getSecretTypesFromParameterMap(expectedValues);
 
-    final List<GetKeysResponseData> responseDataList = response.getGetKeysResponseData();
-    assertThat(responseDataList).hasSameSizeAs(expectedSecretTypes);
-
-    responseDataList.forEach(
-        responseData -> this.checkResponseData(responseData, expectedSecretTypes));
-  }
-
-  private void checkResponseData(
-      final GetKeysResponseData responseData, final List<SecretType> expectedSecretTypes) {
-    final byte[] key = responseData.getSecretValue();
-    final SecretType keyType = responseData.getSecretType();
-
-    assertThat(key).isNotEmpty();
-    assertThat(keyType).isIn(expectedSecretTypes);
+    assertThat(secretTypesInResponse).containsExactlyInAnyOrderElementsOf(expectedSecretTypes);
   }
 }

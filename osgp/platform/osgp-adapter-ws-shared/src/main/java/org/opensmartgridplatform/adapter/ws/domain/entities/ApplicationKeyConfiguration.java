@@ -14,22 +14,30 @@ import java.io.Serializable;
 import java.util.Objects;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import org.apache.commons.lang3.StringUtils;
 
 @Entity
 public class ApplicationKeyConfiguration implements Serializable {
 
   private static final long serialVersionUID = 7556366049796795779L;
 
-  @EmbeddedId private ApplicationKeyLookupKey id;
+  @EmbeddedId private ApplicationDataLookupKey id;
   private String publicKeyLocation;
 
   protected ApplicationKeyConfiguration() {
     // No-argument constructor, required for JPA entity classes.
   }
 
-  public ApplicationKeyConfiguration(final ApplicationKeyLookupKey id) {
+  public ApplicationKeyConfiguration(
+      final ApplicationDataLookupKey id, final String publicKeyLocation) {
 
     this.id = Objects.requireNonNull(id, "id must not be null");
+
+    if (StringUtils.isBlank(publicKeyLocation)) {
+      throw new IllegalArgumentException("publicKeyLocation must not be null, empty or blank");
+    } else {
+      this.publicKeyLocation = publicKeyLocation;
+    }
   }
 
   @Override
@@ -56,12 +64,12 @@ public class ApplicationKeyConfiguration implements Serializable {
         this.getClass().getSimpleName(), this.getId(), this.getPublicKeyLocation());
   }
 
-  public ApplicationKeyLookupKey getId() {
+  public ApplicationDataLookupKey getId() {
     return this.id;
   }
 
-  public void setId(final ApplicationKeyLookupKey id) {
-    this.id = id;
+  public void setId(final ApplicationDataLookupKey id) {
+    this.id = Objects.requireNonNull(id, "id must not be null");
   }
 
   public String getPublicKeyLocation() {
@@ -69,6 +77,10 @@ public class ApplicationKeyConfiguration implements Serializable {
   }
 
   public void setPublicKeyLocation(final String publicKeyLocation) {
-    this.publicKeyLocation = publicKeyLocation;
+    if (StringUtils.isBlank(publicKeyLocation)) {
+      throw new IllegalArgumentException("publicKeyLocation must not be null, empty or blank");
+    } else {
+      this.publicKeyLocation = publicKeyLocation;
+    }
   }
 }
