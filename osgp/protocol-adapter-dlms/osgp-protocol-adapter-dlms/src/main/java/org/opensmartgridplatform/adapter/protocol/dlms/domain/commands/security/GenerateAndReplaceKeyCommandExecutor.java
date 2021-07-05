@@ -1,10 +1,10 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.security;
 
@@ -37,47 +37,57 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class GenerateAndReplaceKeyCommandExecutor
-        extends AbstractCommandExecutor<CorrelatedObject<ActionRequestDto>, ActionResponseDto> {
+    extends AbstractCommandExecutor<CorrelatedObject<ActionRequestDto>, ActionResponseDto> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GenerateAndReplaceKeyCommandExecutor.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(GenerateAndReplaceKeyCommandExecutor.class);
 
-    @Autowired
-    private ReplaceKeyCommandExecutor replaceKeyCommandExecutor;
+  @Autowired private ReplaceKeyCommandExecutor replaceKeyCommandExecutor;
 
-    @Autowired
-    private SecretManagementService secretManagementService;
+  @Autowired private SecretManagementService secretManagementService;
 
-    public GenerateAndReplaceKeyCommandExecutor() {
-        super(GenerateAndReplaceKeysRequestDataDto.class);
+  public GenerateAndReplaceKeyCommandExecutor() {
+    super(GenerateAndReplaceKeysRequestDataDto.class);
+  }
+
+  @Override
+  public ActionResponseDto executeBundleAction(
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final ActionRequestDto actionRequestDto)
+      throws OsgpException {
+    return this.execute(conn, device, (CorrelatedObject<ActionRequestDto>) actionRequestDto);
+  }
+
+  @Override
+  public ActionResponseDto execute(
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final CorrelatedObject<ActionRequestDto> actionRequestDto)
+      throws OsgpException {
+    LOGGER.info("Generate new keys for device {}", device.getDeviceIdentification());
+    final SetKeysRequestDto setKeysRequest =
+        this.generateSetKeysRequest(
+            actionRequestDto.getCorrelationUid(), device.getDeviceIdentification());
+    return this.replaceKeyCommandExecutor.executeBundleAction(conn, device, setKeysRequest);
+  }
+
+  private SetKeysRequestDto generateSetKeysRequest(
+      final String correlationUid, final String deviceIdentification) throws FunctionalException {
+    try {
+      final List<SecurityKeyType> keyTypes =
+          Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION);
+      final Map<SecurityKeyType, byte[]> generatedKeys =
+          this.secretManagementService.generate128BitsKeysAndStoreAsNewKeys(
+              correlationUid, deviceIdentification, keyTypes);
+      final SetKeysRequestDto setKeysRequest =
+          new SetKeysRequestDto(
+              generatedKeys.get(E_METER_AUTHENTICATION), generatedKeys.get(E_METER_ENCRYPTION));
+      setKeysRequest.setGeneratedKeys(true);
+      return setKeysRequest;
+    } catch (final EncrypterException e) {
+      throw new FunctionalException(
+          FunctionalExceptionType.ENCRYPTION_EXCEPTION, ComponentType.PROTOCOL_DLMS, e);
     }
-
-    @Override
-    public ActionResponseDto executeBundleAction(final DlmsConnectionManager conn, final DlmsDevice device,
-            final ActionRequestDto actionRequestDto) throws OsgpException {
-        return this.execute(conn, device, (CorrelatedObject<ActionRequestDto>) actionRequestDto);
-    }
-
-    @Override
-    public ActionResponseDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
-            final CorrelatedObject<ActionRequestDto> actionRequestDto) throws OsgpException {
-        LOGGER.info("Generate new keys for device {}", device.getDeviceIdentification());
-        final SetKeysRequestDto setKeysRequest = this.generateSetKeysRequest(actionRequestDto.getCorrelationUid(),
-                device.getDeviceIdentification());
-        return this.replaceKeyCommandExecutor.executeBundleAction(conn, device, setKeysRequest);
-    }
-
-    private SetKeysRequestDto generateSetKeysRequest(final String correlationUid, final String deviceIdentification)
-            throws FunctionalException {
-        try {
-            final List<SecurityKeyType> keyTypes = Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION);
-            final Map<SecurityKeyType, byte[]> generatedKeys = this.secretManagementService
-                    .generate128BitsKeysAndStoreAsNewKeys(correlationUid, deviceIdentification, keyTypes);
-            final SetKeysRequestDto setKeysRequest = new SetKeysRequestDto(generatedKeys.get(E_METER_AUTHENTICATION),
-                    generatedKeys.get(E_METER_ENCRYPTION));
-            setKeysRequest.setGeneratedKeys(true);
-            return setKeysRequest;
-        } catch (final EncrypterException e) {
-            throw new FunctionalException(FunctionalExceptionType.ENCRYPTION_EXCEPTION, ComponentType.PROTOCOL_DLMS, e);
-        }
-    }
+  }
 }

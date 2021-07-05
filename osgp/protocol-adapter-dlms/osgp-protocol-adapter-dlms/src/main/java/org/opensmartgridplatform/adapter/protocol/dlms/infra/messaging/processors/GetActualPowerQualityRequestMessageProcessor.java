@@ -1,9 +1,10 @@
 /**
  * Copyright 2021 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors;
 
@@ -22,18 +23,21 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class GetActualPowerQualityRequestMessageProcessor
-        extends DeviceRequestMessageProcessor<ActualPowerQualityRequestDto> {
+    extends DeviceRequestMessageProcessor<ActualPowerQualityRequestDto> {
 
-    @Autowired
-    private MonitoringService monitoringService;
+  @Autowired private MonitoringService monitoringService;
 
-    protected GetActualPowerQualityRequestMessageProcessor() {
-        super(MessageType.GET_ACTUAL_POWER_QUALITY);
-    }
+  protected GetActualPowerQualityRequestMessageProcessor() {
+    super(MessageType.GET_ACTUAL_POWER_QUALITY);
+  }
 
-    @Override
-    protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
-            final RequestWithMetadata<ActualPowerQualityRequestDto> request) throws OsgpException {
-        return this.monitoringService.requestActualPowerQuality(conn, device, request.getRequestObject());
-    }
+  @Override
+  protected Serializable handleMessage(
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final RequestWithMetadata<ActualPowerQualityRequestDto> request)
+      throws OsgpException {
+    return this.monitoringService.requestActualPowerQuality(
+        conn, device, request.getRequestObject());
+  }
 }

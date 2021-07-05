@@ -1,10 +1,10 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors;
 
@@ -22,18 +22,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CoupleMbusDeviceRequestMessageProcessor extends DeviceRequestMessageProcessor<MbusChannelElementsDto> {
+public class CoupleMbusDeviceRequestMessageProcessor
+    extends DeviceRequestMessageProcessor<MbusChannelElementsDto> {
 
-    @Autowired
-    private InstallationService installationService;
+  @Autowired private InstallationService installationService;
 
-    protected CoupleMbusDeviceRequestMessageProcessor() {
-        super(MessageType.COUPLE_MBUS_DEVICE);
-    }
+  protected CoupleMbusDeviceRequestMessageProcessor() {
+    super(MessageType.COUPLE_MBUS_DEVICE);
+  }
 
-    @Override
-    protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
-            final RequestWithMetadata<MbusChannelElementsDto> request) throws OsgpException {
-        return this.installationService.coupleMbusDevice(conn, device, request.getRequestObject());
-    }
+  @Override
+  protected Serializable handleMessage(
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final RequestWithMetadata<MbusChannelElementsDto> request)
+      throws OsgpException {
+    return this.installationService.coupleMbusDevice(conn, device, request.getRequestObject());
+  }
 }

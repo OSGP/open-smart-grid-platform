@@ -1,10 +1,10 @@
 /**
  * Copyright 2020 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.secretmanagement.application.domain;
 
@@ -28,18 +28,23 @@ import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 @Getter
 @Setter
 public class DbEncryptionKeyReference {
-    @Id
-    @SequenceGenerator(name = "encryption_key_seq_gen", sequenceName = "encryption_key_reference_id_seq",
-            allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "encryption_key_seq_gen")
-    private Long id;
-    private Date creationTime;
-    private Date modificationTime;
-    private Long version; //for optimistic locking
-    @Enumerated(EnumType.STRING)
-    private EncryptionProviderType encryptionProviderType;
-    private String reference;
-    private Date validFrom;
-    private Date validTo;
-    private String modifiedBy;
+  @Id
+  @SequenceGenerator(
+      name = "encryption_key_seq_gen",
+      sequenceName = "encryption_key_reference_id_seq",
+      allocationSize = 1)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "encryption_key_seq_gen")
+  private Long id;
+
+  private Date creationTime;
+  private Date modificationTime;
+  private Long version; // for optimistic locking
+
+  @Enumerated(EnumType.STRING)
+  private EncryptionProviderType encryptionProviderType;
+
+  private String reference;
+  private Date validFrom;
+  private Date validTo;
+  private String modifiedBy;
 }

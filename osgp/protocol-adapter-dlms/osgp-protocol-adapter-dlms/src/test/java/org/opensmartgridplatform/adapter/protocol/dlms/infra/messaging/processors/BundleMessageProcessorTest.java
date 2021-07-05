@@ -1,10 +1,10 @@
 /**
  * Copyright 2020 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors;
 
@@ -41,82 +41,73 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 @ExtendWith(MockitoExtension.class)
 class BundleMessageProcessorTest {
 
-    @Mock
-    private ObjectMessage message;
+  @Mock private ObjectMessage message;
 
-    @Mock
-    private OsgpExceptionConverter osgpExceptionConverter;
+  @Mock private OsgpExceptionConverter osgpExceptionConverter;
 
-    @Mock
-    private RetryHeaderFactory retryHeaderFactory;
+  @Mock private RetryHeaderFactory retryHeaderFactory;
 
-    @Mock
-    private DeviceResponseMessageSender responseMessageSender;
+  @Mock private DeviceResponseMessageSender responseMessageSender;
 
-    @Mock
-    private DomainHelperService domainHelperService;
+  @Mock private DomainHelperService domainHelperService;
 
-    @Mock
-    private ThrottlingService throttlingService;
+  @Mock private ThrottlingService throttlingService;
 
-    @Mock
-    private DlmsConnectionHelper dlmsConnectionHelper;
+  @Mock private DlmsConnectionHelper dlmsConnectionHelper;
 
-    @Mock
-    private BundleService bundleService;
+  @Mock private BundleService bundleService;
 
-    @Mock
-    private DlmsConnectionManager dlmsConnectionManager;
+  @Mock private DlmsConnectionManager dlmsConnectionManager;
 
-    @Mock
-    private DlmsMessageListener messageListener;
+  @Mock private DlmsMessageListener messageListener;
 
-    private DlmsDevice dlmsDevice;
-    private BundleMessagesRequestDto requestDto;
+  private DlmsDevice dlmsDevice;
+  private BundleMessagesRequestDto requestDto;
 
-    @InjectMocks
-    private BundleMessageProcessor messageProcessor;
+  @InjectMocks private BundleMessageProcessor messageProcessor;
 
-    @BeforeEach
-    public void setUp() throws JMSException, OsgpException {
-        this.dlmsDevice = new DlmsDeviceBuilder().withHls5Active(true).build();
-        this.requestDto = new BundleMessagesRequestDto(null);
+  @BeforeEach
+  public void setUp() throws JMSException, OsgpException {
+    this.dlmsDevice = new DlmsDeviceBuilder().withHls5Active(true).build();
+    this.requestDto = new BundleMessagesRequestDto(null);
 
-        when(this.message.getJMSType()).thenReturn(MessageType.FIND_EVENTS.name());
-        when(this.message.getObject()).thenReturn(this.requestDto);
-        when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class))).thenReturn(this.dlmsDevice);
-    }
+    when(this.message.getJMSType()).thenReturn(MessageType.FIND_EVENTS.name());
+    when(this.message.getObject()).thenReturn(this.requestDto);
+    when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class)))
+        .thenReturn(this.dlmsDevice);
+  }
 
-    @Test
-    public void shouldSetEmptyHeaderOnSuccessfulOperation() throws OsgpException, JMSException {
-        // when(this.dlmsConnectionManager.getDlmsMessageListener()).thenReturn(this.messageListener);
-        when(this.bundleService.callExecutors(this.dlmsConnectionManager, this.dlmsDevice, this.requestDto))
-                .thenReturn(this.requestDto);
-        when(this.dlmsConnectionHelper.createConnectionForDevice(null, this.dlmsDevice, null))
-                .thenReturn(this.dlmsConnectionManager);
+  @Test
+  public void shouldSetEmptyHeaderOnSuccessfulOperation() throws OsgpException, JMSException {
+    // when(this.dlmsConnectionManager.getDlmsMessageListener()).thenReturn(this.messageListener);
+    when(this.bundleService.callExecutors(
+            this.dlmsConnectionManager, this.dlmsDevice, this.requestDto))
+        .thenReturn(this.requestDto);
+    when(this.dlmsConnectionHelper.createConnectionForDevice(null, this.dlmsDevice, null))
+        .thenReturn(this.dlmsConnectionManager);
 
-        this.messageProcessor.processMessage(this.message);
+    this.messageProcessor.processMessage(this.message);
 
-        verify(this.retryHeaderFactory).createEmtpyRetryHeader();
-    }
+    verify(this.retryHeaderFactory).createEmtpyRetryHeader();
+  }
 
-    @Test
-    public void shouldSetRetryHeaderOnRuntimeException() throws OsgpException, JMSException {
-        when(this.dlmsConnectionHelper.createConnectionForDevice(null, this.dlmsDevice, null))
-                .thenThrow(new RuntimeException());
+  @Test
+  public void shouldSetRetryHeaderOnRuntimeException() throws OsgpException, JMSException {
+    when(this.dlmsConnectionHelper.createConnectionForDevice(null, this.dlmsDevice, null))
+        .thenThrow(new RuntimeException());
 
-        this.messageProcessor.processMessage(this.message);
+    this.messageProcessor.processMessage(this.message);
 
-        verify(this.retryHeaderFactory).createRetryHeader(0);
-    }
+    verify(this.retryHeaderFactory).createRetryHeader(0);
+  }
 
-    @Test
-    public void shouldSetRetryHeaderOnOsgpException() throws OsgpException, JMSException {
-        when(this.dlmsConnectionHelper.createConnectionForDevice(null, this.dlmsDevice, null))
-                .thenThrow(new OsgpException(ComponentType.PROTOCOL_DLMS, ""));
+  @Test
+  public void shouldSetRetryHeaderOnOsgpException() throws OsgpException, JMSException {
+    when(this.dlmsConnectionHelper.createConnectionForDevice(null, this.dlmsDevice, null))
+        .thenThrow(new OsgpException(ComponentType.PROTOCOL_DLMS, ""));
 
-        this.messageProcessor.processMessage(this.message);
+    this.messageProcessor.processMessage(this.message);
 
-        verify(this.retryHeaderFactory).createRetryHeader(0);
-    }
+    verify(this.retryHeaderFactory).createRetryHeader(0);
+  }
 }

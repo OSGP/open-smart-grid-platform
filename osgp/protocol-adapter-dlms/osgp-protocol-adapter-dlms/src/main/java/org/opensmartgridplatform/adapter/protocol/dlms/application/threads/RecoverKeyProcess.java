@@ -1,10 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.threads;
 
@@ -42,143 +42,150 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RecoverKeyProcess implements Runnable {
 
-    private final DomainHelperService domainHelperService;
+  private final DomainHelperService domainHelperService;
 
-    private final int responseTimeout;
+  private final int responseTimeout;
 
-    private final int logicalDeviceAddress;
+  private final int logicalDeviceAddress;
 
-    private final int clientId;
-    private DlmsDevice device;
-    @Setter
-    private String deviceIdentification;
-    @Setter
-    private String ipAddress;
-    @Setter
-    private String correlationUid;
+  private final int clientId;
+  private DlmsDevice device;
+  @Setter private String deviceIdentification;
+  @Setter private String ipAddress;
+  @Setter private String correlationUid;
 
-    @Autowired
-    private SecretManagementService secretManagementService;
+  @Autowired private SecretManagementService secretManagementService;
 
-    public RecoverKeyProcess(final DomainHelperService domainHelperService, final int responseTimeout,
-            final int logicalDeviceAddress, final DlmsDeviceAssociation deviceAssociation) {
-        this.domainHelperService = domainHelperService;
-        this.responseTimeout = responseTimeout;
-        this.logicalDeviceAddress = logicalDeviceAddress;
-        this.clientId = deviceAssociation.getClientId();
+  public RecoverKeyProcess(
+      final DomainHelperService domainHelperService,
+      final int responseTimeout,
+      final int logicalDeviceAddress,
+      final DlmsDeviceAssociation deviceAssociation) {
+    this.domainHelperService = domainHelperService;
+    this.responseTimeout = responseTimeout;
+    this.logicalDeviceAddress = logicalDeviceAddress;
+    this.clientId = deviceAssociation.getClientId();
+  }
+
+  @Override
+  public void run() {
+    this.checkState();
+
+    log.info(
+        "[{}] Attempting key recovery for device {}",
+        this.correlationUid,
+        this.deviceIdentification);
+
+    try {
+      this.findDevice();
+    } catch (final Exception e) {
+      log.error("[{}] Could not find device", this.correlationUid, e);
     }
 
-    @Override
-    public void run() {
-        this.checkState();
+    if (!this.secretManagementService.hasNewSecretOfType(
+        this.correlationUid, this.deviceIdentification, E_METER_AUTHENTICATION)) {
+      log.warn(
+          "[{}] Could not recover keys: device has no new authorisation key registered in secret-mgmt module",
+          this.correlationUid);
+      return;
+    }
 
-        log.info("[{}] Attempting key recovery for device {}", this.correlationUid, this.deviceIdentification);
+    if (this.canConnectUsingNewKeys()) {
+      final List<SecurityKeyType> keyTypesToActivate =
+          Arrays.asList(E_METER_ENCRYPTION, E_METER_AUTHENTICATION);
+      try {
+        this.secretManagementService.activateNewKeys(
+            this.correlationUid, this.deviceIdentification, keyTypesToActivate);
+      } catch (final Exception e) {
+        throw new RecoverKeyException(e);
+      }
+    } else {
+      log.warn(
+          "[{}] Could not recover keys: could not connect to device using new keys",
+          this.correlationUid);
+    }
+  }
 
+  private void findDevice() throws OsgpException {
+    try {
+      this.device =
+          this.domainHelperService.findDlmsDevice(this.deviceIdentification, this.ipAddress);
+    } catch (final ProtocolAdapterException e) { // Thread can not recover
+      // from these exceptions.
+      throw new RecoverKeyException(e);
+    }
+  }
+
+  private void checkState() {
+    if (this.deviceIdentification == null) {
+      throw new IllegalStateException("DeviceIdentification not set.");
+    }
+    if (this.ipAddress == null) {
+      throw new IllegalStateException("IP address not set.");
+    }
+  }
+
+  private boolean canConnectUsingNewKeys() {
+    DlmsConnection connection = null;
+    try {
+      connection = this.createConnectionUsingNewKeys();
+      return true;
+    } catch (final Exception e) {
+      log.warn("Connection exception: {}", e.getMessage(), e);
+      return false;
+    } finally {
+      if (connection != null) {
         try {
-            this.findDevice();
-        } catch (final Exception e) {
-            log.error("[{}] Could not find device", this.correlationUid, e);
+          connection.close();
+        } catch (final IOException e) {
+          log.warn("Connection exception: {}", e.getMessage(), e);
         }
+      }
+    }
+  }
 
-        if (!this.secretManagementService.hasNewSecretOfType(this.correlationUid, this.deviceIdentification,
-                E_METER_AUTHENTICATION)) {
-            log.warn(
-                    "[{}] Could not recover keys: device has no new authorisation key registered in secret-mgmt module",
-                    this.correlationUid);
-            return;
-        }
+  /**
+   * Create a connection with the device.
+   *
+   * @return The connection.
+   * @throws IOException When there are problems in connecting to or communicating with the device.
+   */
+  private DlmsConnection createConnectionUsingNewKeys() throws IOException, FunctionalException {
+    final Map<SecurityKeyType, byte[]> keys =
+        this.secretManagementService.getNewKeys(
+            this.correlationUid,
+            this.deviceIdentification,
+            Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION));
+    final byte[] authenticationKey = Hex.decode(keys.get(E_METER_AUTHENTICATION));
+    final byte[] encryptionKey = Hex.decode(keys.get(E_METER_ENCRYPTION));
 
-        if (this.canConnectUsingNewKeys()) {
-            final List<SecurityKeyType> keyTypesToActivate = Arrays.asList(E_METER_ENCRYPTION, E_METER_AUTHENTICATION);
-            try {
-                this.secretManagementService.activateNewKeys(this.correlationUid, this.deviceIdentification,
-                        keyTypesToActivate);
-            } catch (final Exception e) {
-                throw new RecoverKeyException(e);
-            }
-        } else {
-            log.warn("[{}] Could not recover keys: could not connect to device using new keys", this.correlationUid);
-        }
+    final SecuritySuite securitySuite =
+        SecuritySuite.builder()
+            .setAuthenticationKey(authenticationKey)
+            .setAuthenticationMechanism(AuthenticationMechanism.HLS5_GMAC)
+            .setGlobalUnicastEncryptionKey(encryptionKey)
+            .setEncryptionMechanism(EncryptionMechanism.AES_GCM_128)
+            .build();
+
+    final TcpConnectionBuilder tcpConnectionBuilder =
+        new TcpConnectionBuilder(InetAddress.getByName(this.device.getIpAddress()))
+            .setSecuritySuite(securitySuite)
+            .setResponseTimeout(this.responseTimeout)
+            .setLogicalDeviceId(this.logicalDeviceAddress)
+            .setClientId(this.clientId);
+
+    final Integer challengeLength = this.device.getChallengeLength();
+
+    try {
+      if (challengeLength != null) {
+        tcpConnectionBuilder.setChallengeLength(challengeLength);
+      }
+    } catch (final IllegalArgumentException e) {
+      log.error("Exception occurred: Invalid key format");
+      throw new FunctionalException(
+          FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);
     }
 
-    private void findDevice() throws OsgpException {
-        try {
-            this.device = this.domainHelperService.findDlmsDevice(this.deviceIdentification, this.ipAddress);
-        } catch (final ProtocolAdapterException e) { // Thread can not recover
-                                                     // from these exceptions.
-            throw new RecoverKeyException(e);
-        }
-    }
-
-    private void checkState() {
-        if (this.deviceIdentification == null) {
-            throw new IllegalStateException("DeviceIdentification not set.");
-        }
-        if (this.ipAddress == null) {
-            throw new IllegalStateException("IP address not set.");
-        }
-    }
-
-    private boolean canConnectUsingNewKeys() {
-        DlmsConnection connection = null;
-        try {
-            connection = this.createConnectionUsingNewKeys();
-            return true;
-        } catch (final Exception e) {
-            log.warn("Connection exception: {}", e.getMessage(), e);
-            return false;
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (final IOException e) {
-                    log.warn("Connection exception: {}", e.getMessage(), e);
-                }
-            }
-        }
-    }
-
-    /**
-     * Create a connection with the device.
-     *
-     * @return The connection.
-     *
-     * @throws IOException
-     *             When there are problems in connecting to or communicating
-     *             with the device.
-     */
-    private DlmsConnection createConnectionUsingNewKeys() throws IOException, FunctionalException {
-        final Map<SecurityKeyType, byte[]> keys = this.secretManagementService.getNewKeys(this.correlationUid,
-                this.deviceIdentification, Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION));
-        final byte[] authenticationKey = Hex.decode(keys.get(E_METER_AUTHENTICATION));
-        final byte[] encryptionKey = Hex.decode(keys.get(E_METER_ENCRYPTION));
-
-        final SecuritySuite securitySuite = SecuritySuite.builder()
-                .setAuthenticationKey(authenticationKey)
-                .setAuthenticationMechanism(AuthenticationMechanism.HLS5_GMAC)
-                .setGlobalUnicastEncryptionKey(encryptionKey)
-                .setEncryptionMechanism(EncryptionMechanism.AES_GCM_128)
-                .build();
-
-        final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(
-                InetAddress.getByName(this.device.getIpAddress())).setSecuritySuite(securitySuite)
-                        .setResponseTimeout(this.responseTimeout)
-                        .setLogicalDeviceId(this.logicalDeviceAddress)
-                        .setClientId(this.clientId);
-
-        final Integer challengeLength = this.device.getChallengeLength();
-
-        try {
-            if (challengeLength != null) {
-                tcpConnectionBuilder.setChallengeLength(challengeLength);
-            }
-        } catch (final IllegalArgumentException e) {
-            log.error("Exception occurred: Invalid key format");
-            throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT, ComponentType.PROTOCOL_DLMS,
-                    e);
-        }
-
-        return tcpConnectionBuilder.build();
-    }
-
+    return tcpConnectionBuilder.build();
+  }
 }

@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors;
 
@@ -21,18 +22,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ActualMeterReadsRequestMessageProcessor extends DeviceRequestMessageProcessor<ActualMeterReadsQueryDto> {
+public class ActualMeterReadsRequestMessageProcessor
+    extends DeviceRequestMessageProcessor<ActualMeterReadsQueryDto> {
 
-    @Autowired
-    private MonitoringService monitoringService;
+  @Autowired private MonitoringService monitoringService;
 
-    protected ActualMeterReadsRequestMessageProcessor() {
-        super(MessageType.REQUEST_ACTUAL_METER_DATA);
-    }
+  protected ActualMeterReadsRequestMessageProcessor() {
+    super(MessageType.REQUEST_ACTUAL_METER_DATA);
+  }
 
-    @Override
-    protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
-            final RequestWithMetadata<ActualMeterReadsQueryDto> request) throws OsgpException {
-        return this.monitoringService.requestActualMeterReads(conn, device, request.getRequestObject());
-    }
+  @Override
+  protected Serializable handleMessage(
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final RequestWithMetadata<ActualMeterReadsQueryDto> request)
+      throws OsgpException {
+    return this.monitoringService.requestActualMeterReads(conn, device, request.getRequestObject());
+  }
 }

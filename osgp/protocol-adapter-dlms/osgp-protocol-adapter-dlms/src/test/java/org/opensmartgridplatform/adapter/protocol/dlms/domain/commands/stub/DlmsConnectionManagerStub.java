@@ -5,21 +5,21 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 
 public class DlmsConnectionManagerStub extends DlmsConnectionManager {
 
-    private final DlmsConnectionStub dlmsConnectionStub;
+  private final DlmsConnectionStub dlmsConnectionStub;
 
-    public DlmsConnectionManagerStub(final DlmsConnectionStub dlmsConnectionStub) {
-        super(null, null, null, null, null);
+  public DlmsConnectionManagerStub(final DlmsConnectionStub dlmsConnectionStub) {
+    super(null, null, null, null, null);
 
-        this.dlmsConnectionStub = dlmsConnectionStub;
-    }
+    this.dlmsConnectionStub = dlmsConnectionStub;
+  }
 
-    @Override
-    public DlmsConnection getConnection() {
-        return this.dlmsConnectionStub;
-    }
+  @Override
+  public DlmsConnection getConnection() {
+    return this.dlmsConnectionStub;
+  }
 
-    @Override
-    public void close() {
-        this.dlmsConnectionStub.close();
-    }
+  @Override
+  public void close() {
+    this.dlmsConnectionStub.close();
+  }
 }
