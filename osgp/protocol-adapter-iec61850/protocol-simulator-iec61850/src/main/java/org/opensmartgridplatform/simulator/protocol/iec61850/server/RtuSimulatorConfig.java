@@ -15,7 +15,6 @@ import java.io.InputStream;
 import org.opensmartgridplatform.simulator.protocol.iec61850.server.eventproducers.ServerSapEventProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,10 +25,6 @@ public class RtuSimulatorConfig {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RtuSimulatorConfig.class);
 
-  @Autowired private ResourceLoader resourceLoader;
-
-  @Autowired private ServerSapEventProducer serverSapEventProducer;
-
   @Bean
   public RtuSimulator rtuSimulator(
       @Value("${rtu.icd}") final String icdFilename,
@@ -37,7 +32,9 @@ public class RtuSimulatorConfig {
       @Value("${rtu.serverName}") final String serverName,
       @Value("${rtu.stopGeneratingValues}") final Boolean stopGeneratingValues,
       @Value("${rtu.updateValuesDelay}") final Long updateValuesDelay,
-      @Value("${rtu.updateValuesPeriod}") final Long updateValuesPeriod)
+      @Value("${rtu.updateValuesPeriod}") final Long updateValuesPeriod,
+      final ResourceLoader resourceLoader,
+      final ServerSapEventProducer serverSapEventProducer)
       throws IOException {
     LOGGER.info(
         "Start simulator with icdFilename={}, port={}, serverName={}, stopGeneratingValues={}, updateValuesDelay={}, updateValuesPeriod={}",
@@ -48,15 +45,15 @@ public class RtuSimulatorConfig {
         updateValuesDelay,
         updateValuesPeriod);
 
-    InputStream icdInputStream;
+    final InputStream icdInputStream;
     final File icdFile = new File(icdFilename);
     if (icdFile.exists()) {
       LOGGER.info("Simulator icd {} found as external file", icdFilename);
-      icdInputStream = this.resourceLoader.getResource("file:" + icdFilename).getInputStream();
+      icdInputStream = resourceLoader.getResource("file:" + icdFilename).getInputStream();
     } else {
       LOGGER.info(
           "Simulator icd {} not found as external file, load it from the classpath", icdFilename);
-      icdInputStream = this.resourceLoader.getResource("classpath:" + icdFilename).getInputStream();
+      icdInputStream = resourceLoader.getResource("classpath:" + icdFilename).getInputStream();
     }
     LOGGER.info("Simulator icd file loaded");
 
@@ -66,10 +63,10 @@ public class RtuSimulatorConfig {
               port,
               icdInputStream,
               serverName,
-              this.serverSapEventProducer,
+              serverSapEventProducer,
               updateValuesDelay,
               updateValuesPeriod);
-      if (stopGeneratingValues) {
+      if (Boolean.TRUE.equals(stopGeneratingValues)) {
         rtuSimulator.ensurePeriodicDataGenerationIsStopped();
       }
       rtuSimulator.start();
