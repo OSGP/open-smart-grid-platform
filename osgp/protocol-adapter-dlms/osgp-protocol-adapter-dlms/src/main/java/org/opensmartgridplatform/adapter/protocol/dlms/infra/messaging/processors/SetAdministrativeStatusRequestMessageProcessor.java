@@ -1,9 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors;
 
@@ -20,25 +21,25 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-/**
- * Class for processing the Set Administrative Status request message
- */
+/** Class for processing the Set Administrative Status request message */
 @Component
 public class SetAdministrativeStatusRequestMessageProcessor
-        extends DeviceRequestMessageProcessor<AdministrativeStatusTypeDto> {
+    extends DeviceRequestMessageProcessor<AdministrativeStatusTypeDto> {
 
-    @Autowired
-    private ConfigurationService configurationService;
+  @Autowired private ConfigurationService configurationService;
 
-    public SetAdministrativeStatusRequestMessageProcessor() {
-        super(MessageType.SET_ADMINISTRATIVE_STATUS);
-    }
+  public SetAdministrativeStatusRequestMessageProcessor() {
+    super(MessageType.SET_ADMINISTRATIVE_STATUS);
+  }
 
-    @Override
-    protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
-            final RequestWithMetadata<AdministrativeStatusTypeDto> request) throws OsgpException {
-        this.configurationService.requestSetAdministrativeStatus(conn, device, request.getRequestObject());
-        return null;
-    }
-
+  @Override
+  protected Serializable handleMessage(
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final RequestWithMetadata<AdministrativeStatusTypeDto> request)
+      throws OsgpException {
+    this.configurationService.requestSetAdministrativeStatus(
+        conn, device, request.getRequestObject());
+    return null;
+  }
 }

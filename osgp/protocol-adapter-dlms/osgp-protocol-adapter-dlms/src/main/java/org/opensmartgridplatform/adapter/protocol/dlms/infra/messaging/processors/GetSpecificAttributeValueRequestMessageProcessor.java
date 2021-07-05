@@ -1,10 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors;
 
@@ -24,19 +24,20 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class GetSpecificAttributeValueRequestMessageProcessor
-        extends DeviceRequestMessageProcessor<SpecificAttributeValueRequestDto> {
+    extends DeviceRequestMessageProcessor<SpecificAttributeValueRequestDto> {
 
-    @Autowired
-    private AdhocService adhocService;
+  @Autowired private AdhocService adhocService;
 
-    protected GetSpecificAttributeValueRequestMessageProcessor() {
-        super(MessageType.GET_SPECIFIC_ATTRIBUTE_VALUE);
-    }
+  protected GetSpecificAttributeValueRequestMessageProcessor() {
+    super(MessageType.GET_SPECIFIC_ATTRIBUTE_VALUE);
+  }
 
-    @Override
-    protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
-            final RequestWithMetadata<SpecificAttributeValueRequestDto> request)
-            throws ProtocolAdapterException, FunctionalException {
-        return this.adhocService.getSpecificAttributeValue(conn, device, request.getRequestObject());
-    }
+  @Override
+  protected Serializable handleMessage(
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final RequestWithMetadata<SpecificAttributeValueRequestDto> request)
+      throws ProtocolAdapterException, FunctionalException {
+    return this.adhocService.getSpecificAttributeValue(conn, device, request.getRequestObject());
+  }
 }

@@ -1,9 +1,10 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors;
 
@@ -20,22 +21,23 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-/**
- * Class for processing find events request messages
- */
+/** Class for processing find events request messages */
 @Component
-public class BundleMessageProcessor extends DeviceRequestMessageProcessor<BundleMessagesRequestDto> {
+public class BundleMessageProcessor
+    extends DeviceRequestMessageProcessor<BundleMessagesRequestDto> {
 
-    @Autowired
-    private BundleService bundleService;
+  @Autowired private BundleService bundleService;
 
-    public BundleMessageProcessor() {
-        super(MessageType.HANDLE_BUNDLED_ACTIONS);
-    }
+  public BundleMessageProcessor() {
+    super(MessageType.HANDLE_BUNDLED_ACTIONS);
+  }
 
-    @Override
-    protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
-            final RequestWithMetadata<BundleMessagesRequestDto> request) throws ProtocolAdapterException {
-        return this.bundleService.callExecutors(conn, device, request.getRequestObject());
-    }
+  @Override
+  protected Serializable handleMessage(
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final RequestWithMetadata<BundleMessagesRequestDto> request)
+      throws ProtocolAdapterException {
+    return this.bundleService.callExecutors(conn, device, request.getRequestObject());
+  }
 }

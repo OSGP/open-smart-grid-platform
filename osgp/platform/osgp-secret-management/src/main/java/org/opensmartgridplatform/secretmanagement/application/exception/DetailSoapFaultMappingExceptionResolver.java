@@ -1,17 +1,16 @@
 /**
  * Copyright 2020 Smart Society Services B.V.
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
+ *
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.secretmanagement.application.exception;
 
 import java.util.Iterator;
-
 import javax.xml.namespace.QName;
-
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.soap.SoapFault;
@@ -20,46 +19,46 @@ import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.springframework.ws.soap.server.endpoint.SoapFaultMappingExceptionResolver;
 
-import lombok.extern.slf4j.Slf4j;
-
 @Slf4j
 public class DetailSoapFaultMappingExceptionResolver extends SoapFaultMappingExceptionResolver {
-    private static final QName MESSAGE = new QName("Message");
-    private static final QName COMPONENT = new QName("Component");
+  private static final QName MESSAGE = new QName("Message");
+  private static final QName COMPONENT = new QName("Component");
 
-    @Override
-    protected void customizeFault(final Object endpoint, final Exception ex, final SoapFault fault) {
-        final SoapFaultDetail detail = fault.addFaultDetail();
-        if (ex instanceof ExceptionWrapper) {
-            this.customizeFault(endpoint, (Exception) ex.getCause(), fault);
-            return;
-        }
-
-        if (ex.getMessage() != null) {
-            String messageText = ex.getMessage();
-            if (ex.getCause() != null) {
-                messageText += ": " + ex.getCause().toString();
-            }
-            detail.addFaultDetailElement(MESSAGE).addText(messageText);
-        }
-
-        if (ex instanceof TechnicalException) {
-            detail.addFaultDetailElement(COMPONENT).addText(((TechnicalException) ex).getComponentType().name());
-        }
+  @Override
+  protected void customizeFault(final Object endpoint, final Exception ex, final SoapFault fault) {
+    final SoapFaultDetail detail = fault.addFaultDetail();
+    if (ex instanceof ExceptionWrapper) {
+      this.customizeFault(endpoint, (Exception) ex.getCause(), fault);
+      return;
     }
 
-    @Override
-    protected void logException(final Exception ex, final MessageContext messageContext) {
-        log.error("[{}] Exception occurred during SOAP request processing", this.getCorrelationUid(messageContext), ex);
+    if (ex.getMessage() != null) {
+      String messageText = ex.getMessage();
+      if (ex.getCause() != null) {
+        messageText += ": " + ex.getCause().toString();
+      }
+      detail.addFaultDetailElement(MESSAGE).addText(messageText);
     }
 
-    private String getCorrelationUid(final MessageContext messageContext) {
-        final SaajSoapMessage request = (SaajSoapMessage) messageContext.getRequest();
-        final Iterator<SoapHeaderElement> iter = request.getEnvelope()
-                .getHeader()
-                .examineHeaderElements(new QName("correlationUid"));
-        return iter.hasNext() ? iter.next().getText() : null;
-
+    if (ex instanceof TechnicalException) {
+      detail
+          .addFaultDetailElement(COMPONENT)
+          .addText(((TechnicalException) ex).getComponentType().name());
     }
+  }
 
+  @Override
+  protected void logException(final Exception ex, final MessageContext messageContext) {
+    log.error(
+        "[{}] Exception occurred during SOAP request processing",
+        this.getCorrelationUid(messageContext),
+        ex);
+  }
+
+  private String getCorrelationUid(final MessageContext messageContext) {
+    final SaajSoapMessage request = (SaajSoapMessage) messageContext.getRequest();
+    final Iterator<SoapHeaderElement> iter =
+        request.getEnvelope().getHeader().examineHeaderElements(new QName("correlationUid"));
+    return iter.hasNext() ? iter.next().getText() : null;
+  }
 }

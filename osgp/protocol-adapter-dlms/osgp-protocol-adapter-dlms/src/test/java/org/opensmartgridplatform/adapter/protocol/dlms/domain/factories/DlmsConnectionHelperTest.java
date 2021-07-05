@@ -1,10 +1,10 @@
 /**
  * Copyright 2019 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
@@ -29,133 +29,152 @@ import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.Invocatio
 
 @ExtendWith(MockitoExtension.class)
 public class DlmsConnectionHelperTest {
-    private DlmsConnectionHelper helper;
+  private DlmsConnectionHelper helper;
 
-    @Mock
-    private InvocationCounterManager invocationCounterManager;
+  @Mock private InvocationCounterManager invocationCounterManager;
 
-    @Mock
-    private DlmsConnectionFactory connectionFactory;
+  @Mock private DlmsConnectionFactory connectionFactory;
 
-    @BeforeEach
-    public void setUp() {
-        this.helper = new DlmsConnectionHelper(this.invocationCounterManager, this.connectionFactory);
-    }
+  @BeforeEach
+  public void setUp() {
+    this.helper = new DlmsConnectionHelper(this.invocationCounterManager, this.connectionFactory);
+  }
 
-    @Test
-    public void createsConnectionForDeviceThatDoesNotNeedInvocationCounter() throws Exception {
-        final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(false).build();
-        final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
+  @Test
+  public void createsConnectionForDeviceThatDoesNotNeedInvocationCounter() throws Exception {
+    final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(false).build();
+    final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
-        final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
-        when(this.connectionFactory.getConnection("test", device, listener)).thenReturn(connectionManager);
+    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+    when(this.connectionFactory.getConnection("test", device, listener))
+        .thenReturn(connectionManager);
 
-        final DlmsConnectionManager result = this.helper.createConnectionForDevice("test", device, listener);
-
-        assertThat(result).isSameAs(connectionManager);
-    }
-
-    @Test
-    public void initializesInvocationCounterForDeviceThatNeedsInvocationCounterWithInvocationCounterUninitialized()
-            throws Exception {
-        final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true)
-                .withProtocol("SMR")
-                .withInvocationCounter(null)
-                .build();
-        final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
-
-        final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
-        when(this.connectionFactory.getConnection("test", device, listener)).thenReturn(connectionManager);
-
+    final DlmsConnectionManager result =
         this.helper.createConnectionForDevice("test", device, listener);
 
-        verify(this.invocationCounterManager).initializeInvocationCounter("test", device);
+    assertThat(result).isSameAs(connectionManager);
+  }
+
+  @Test
+  public void
+      initializesInvocationCounterForDeviceThatNeedsInvocationCounterWithInvocationCounterUninitialized()
+          throws Exception {
+    final DlmsDevice device =
+        new DlmsDeviceBuilder()
+            .withHls5Active(true)
+            .withProtocol("SMR")
+            .withInvocationCounter(null)
+            .build();
+    final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
+
+    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+    when(this.connectionFactory.getConnection("test", device, listener))
+        .thenReturn(connectionManager);
+
+    this.helper.createConnectionForDevice("test", device, listener);
+
+    verify(this.invocationCounterManager).initializeInvocationCounter("test", device);
+  }
+
+  @Test
+  public void createsConnectionForDeviceThatNeedsInvocationCounterWithInvocationCounterInitialized()
+      throws Exception {
+    final DlmsDevice device =
+        new DlmsDeviceBuilder().withHls5Active(true).withInvocationCounter(123L).build();
+    final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
+
+    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+    when(this.connectionFactory.getConnection("test", device, listener))
+        .thenReturn(connectionManager);
+
+    final DlmsConnectionManager result =
+        this.helper.createConnectionForDevice("test", device, listener);
+
+    assertThat(result).isSameAs(connectionManager);
+
+    verifyNoMoreInteractions(this.invocationCounterManager);
+  }
+
+  @Test
+  public void resetsInvocationCounterWhenInvocationCounterIsOutOfSyncForIskraDevice()
+      throws Exception {
+    final DlmsDevice device =
+        new DlmsDeviceBuilder()
+            .withHls5Active(true)
+            .withProtocol("SMR")
+            .withInvocationCounter(123L)
+            .build();
+    final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
+
+    final ConnectionException exception =
+        new ConnectionException(
+            "Error creating connection for device E0033006878667817 with Ip address:62.133.86.119 Port:4059 "
+                + "UseHdlc:false UseSn:false Message:UNKNOWN: Received an association response (AARE) with an"
+                + " error message. Result name REJECTED_PERMANENT. Assumed fault: user.");
+    doThrow(exception).when(this.connectionFactory).getConnection("test", device, listener);
+
+    try {
+      this.helper.createConnectionForDevice("test", device, listener);
+      fail("Expected ConnectionException");
+    } catch (final ConnectionException e) {
+      // expected
     }
 
-    @Test
-    public void createsConnectionForDeviceThatNeedsInvocationCounterWithInvocationCounterInitialized()
-            throws Exception {
-        final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true).withInvocationCounter(123L).build();
-        final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
+    verify(this.invocationCounterManager).resetInvocationCounter(device);
+  }
 
-        final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
-        when(this.connectionFactory.getConnection("test", device, listener)).thenReturn(connectionManager);
+  @Test
+  public void resetsInvocationCounterWhenInvocationCounterIsOutOfSyncForLAndGDevice()
+      throws Exception {
+    final DlmsDevice device =
+        new DlmsDeviceBuilder()
+            .withHls5Active(true)
+            .withProtocol("SMR")
+            .withInvocationCounter(123L)
+            .build();
+    final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
-        final DlmsConnectionManager result = this.helper.createConnectionForDevice("test", device, listener);
+    final ConnectionException exception =
+        new ConnectionException(
+            "Error creating connection for device E0051004228715518 with Ip address:62.133.88.34 Port:null "
+                + "UseHdlc:false UseSn:false Message:Socket was closed by remote host.");
+    doThrow(exception).when(this.connectionFactory).getConnection("test", device, listener);
 
-        assertThat(result).isSameAs(connectionManager);
-
-        verifyNoMoreInteractions(this.invocationCounterManager);
+    try {
+      this.helper.createConnectionForDevice("test", device, listener);
+      fail("Expected ConnectionException");
+    } catch (final ConnectionException e) {
+      // expected
     }
 
-    @Test
-    public void resetsInvocationCounterWhenInvocationCounterIsOutOfSyncForIskraDevice() throws Exception {
-        final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true)
-                .withProtocol("SMR")
-                .withInvocationCounter(123L)
-                .build();
-        final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
+    verify(this.invocationCounterManager).resetInvocationCounter(device);
+  }
 
-        final ConnectionException exception = new ConnectionException(
-                "Error creating connection for device E0033006878667817 with Ip address:62.133.86.119 Port:4059 "
-                        + "UseHdlc:false UseSn:false Message:UNKNOWN: Received an association response (AARE) with an"
-                        + " error message. Result name REJECTED_PERMANENT. Assumed fault: user.");
-        doThrow(exception).when(this.connectionFactory).getConnection("test", device, listener);
+  @Test
+  public void
+      doesNotResetInvocationCounterWhenInvocationCounterIsOutOfSyncForDeviceThatNeedsNoInvocationCounter()
+          throws Exception {
+    final DlmsDevice device =
+        new DlmsDeviceBuilder()
+            .withHls5Active(true)
+            .withProtocol("DSMR")
+            .withInvocationCounter(123L)
+            .build();
+    final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
-        try {
-            this.helper.createConnectionForDevice("test", device, listener);
-            fail("Expected ConnectionException");
-        } catch (final ConnectionException e) {
-            // expected
-        }
+    final ConnectionException exception =
+        new ConnectionException(
+            "Error creating connection for device E0051004228715518 with Ip address:62.133.88.34 Port:null "
+                + "UseHdlc:false UseSn:false Message:Socket was closed by remote host.");
+    doThrow(exception).when(this.connectionFactory).getConnection("test", device, listener);
 
-        verify(this.invocationCounterManager).resetInvocationCounter(device);
+    try {
+      this.helper.createConnectionForDevice("test", device, listener);
+      fail("Expected ConnectionException");
+    } catch (final ConnectionException e) {
+      // expected
     }
 
-    @Test
-    public void resetsInvocationCounterWhenInvocationCounterIsOutOfSyncForLAndGDevice() throws Exception {
-        final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true)
-                .withProtocol("SMR")
-                .withInvocationCounter(123L)
-                .build();
-        final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
-
-        final ConnectionException exception = new ConnectionException(
-                "Error creating connection for device E0051004228715518 with Ip address:62.133.88.34 Port:null "
-                        + "UseHdlc:false UseSn:false Message:Socket was closed by remote host.");
-        doThrow(exception).when(this.connectionFactory).getConnection("test", device, listener);
-
-        try {
-            this.helper.createConnectionForDevice("test", device, listener);
-            fail("Expected ConnectionException");
-        } catch (final ConnectionException e) {
-            // expected
-        }
-
-        verify(this.invocationCounterManager).resetInvocationCounter(device);
-    }
-
-    @Test
-    public void doesNotResetInvocationCounterWhenInvocationCounterIsOutOfSyncForDeviceThatNeedsNoInvocationCounter()
-            throws Exception {
-        final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true)
-                .withProtocol("DSMR")
-                .withInvocationCounter(123L)
-                .build();
-        final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
-
-        final ConnectionException exception = new ConnectionException(
-                "Error creating connection for device E0051004228715518 with Ip address:62.133.88.34 Port:null "
-                        + "UseHdlc:false UseSn:false Message:Socket was closed by remote host.");
-        doThrow(exception).when(this.connectionFactory).getConnection("test", device, listener);
-
-        try {
-            this.helper.createConnectionForDevice("test", device, listener);
-            fail("Expected ConnectionException");
-        } catch (final ConnectionException e) {
-            // expected
-        }
-
-        verifyNoMoreInteractions(this.invocationCounterManager);
-    }
+    verifyNoMoreInteractions(this.invocationCounterManager);
+  }
 }

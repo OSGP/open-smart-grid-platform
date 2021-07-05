@@ -1,10 +1,10 @@
 /**
  * Copyright 2021 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
@@ -34,58 +34,61 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDevice
 @ExtendWith(MockitoExtension.class)
 public class CoupleMbusDeviceByChannelCommandExecutorTest {
 
-    @Mock
-    private DeviceChannelsHelper deviceChannelsHelper;
+  @Mock private DeviceChannelsHelper deviceChannelsHelper;
 
-    @Mock
-    private DlmsConnectionManager conn;
+  @Mock private DlmsConnectionManager conn;
 
-    @Mock
-    private DlmsDevice device;
+  @Mock private DlmsDevice device;
 
-    @Mock
-    private CoupleMbusDeviceByChannelRequestDataDto coupleMbusDeviceByChannelRequestDataDto;
+  @Mock private CoupleMbusDeviceByChannelRequestDataDto coupleMbusDeviceByChannelRequestDataDto;
 
-    @InjectMocks
-    private CoupleMbusDeviceByChannelCommandExecutor commandExecutor = new CoupleMbusDeviceByChannelCommandExecutor();
+  @InjectMocks
+  private CoupleMbusDeviceByChannelCommandExecutor commandExecutor =
+      new CoupleMbusDeviceByChannelCommandExecutor();
 
-    @Test
-    public void testHappyFlow() throws ProtocolAdapterException {
+  @Test
+  public void testHappyFlow() throws ProtocolAdapterException {
 
-        final short channel = (short) 1;
-        final Short primaryAddress = 9;
-        final String manufacturerIdentification = "manufacturerIdentification";
-        final short version = 123;
-        final short deviceTypeIdentification = 456;
-        final String identificationNumber = "identificationNumber";
-        final List<GetResult> resultList = new ArrayList<>();
+    final short channel = (short) 1;
+    final Short primaryAddress = 9;
+    final String manufacturerIdentification = "manufacturerIdentification";
+    final short version = 123;
+    final short deviceTypeIdentification = 456;
+    final String identificationNumber = "identificationNumber";
+    final List<GetResult> resultList = new ArrayList<>();
 
-        final ChannelElementValuesDto dto = new ChannelElementValuesDto(channel, primaryAddress, identificationNumber,
-                manufacturerIdentification, version, deviceTypeIdentification);
+    final ChannelElementValuesDto dto =
+        new ChannelElementValuesDto(
+            channel,
+            primaryAddress,
+            identificationNumber,
+            manufacturerIdentification,
+            version,
+            deviceTypeIdentification);
 
-        when(this.coupleMbusDeviceByChannelRequestDataDto.getChannel()).thenReturn(channel);
-        when(this.deviceChannelsHelper.getMBusClientAttributeValues(this.conn, this.device, channel))
-                .thenReturn(resultList);
-        when(this.deviceChannelsHelper.makeChannelElementValues(channel, resultList)).thenReturn(dto);
+    when(this.coupleMbusDeviceByChannelRequestDataDto.getChannel()).thenReturn(channel);
+    when(this.deviceChannelsHelper.getMBusClientAttributeValues(this.conn, this.device, channel))
+        .thenReturn(resultList);
+    when(this.deviceChannelsHelper.makeChannelElementValues(channel, resultList)).thenReturn(dto);
 
-        final CoupleMbusDeviceByChannelResponseDto responseDto = this.commandExecutor.execute(this.conn, this.device,
-                this.coupleMbusDeviceByChannelRequestDataDto);
+    final CoupleMbusDeviceByChannelResponseDto responseDto =
+        this.commandExecutor.execute(
+            this.conn, this.device, this.coupleMbusDeviceByChannelRequestDataDto);
 
-        assertThat(responseDto).isNotNull();
-        assertThat(responseDto.getChannelElementValues()).isNotNull();
-        assertThat(responseDto.getChannelElementValues().getChannel()).isEqualTo(channel);
-        assertThat(responseDto.getChannelElementValues().getDeviceTypeIdentification())
-                .isEqualTo(deviceTypeIdentification);
-        assertThat(responseDto.getChannelElementValues().getIdentificationNumber()).isEqualTo(identificationNumber);
-        assertThat(responseDto.getChannelElementValues().getManufacturerIdentification())
-                .isEqualTo(manufacturerIdentification);
-        assertThat(responseDto.getChannelElementValues().getPrimaryAddress()).isEqualTo(primaryAddress);
-        assertThat(responseDto.getChannelElementValues().getVersion()).isEqualTo(version);
+    assertThat(responseDto).isNotNull();
+    assertThat(responseDto.getChannelElementValues()).isNotNull();
+    assertThat(responseDto.getChannelElementValues().getChannel()).isEqualTo(channel);
+    assertThat(responseDto.getChannelElementValues().getDeviceTypeIdentification())
+        .isEqualTo(deviceTypeIdentification);
+    assertThat(responseDto.getChannelElementValues().getIdentificationNumber())
+        .isEqualTo(identificationNumber);
+    assertThat(responseDto.getChannelElementValues().getManufacturerIdentification())
+        .isEqualTo(manufacturerIdentification);
+    assertThat(responseDto.getChannelElementValues().getPrimaryAddress()).isEqualTo(primaryAddress);
+    assertThat(responseDto.getChannelElementValues().getVersion()).isEqualTo(version);
 
-        verify(this.deviceChannelsHelper, times(1)).getMBusClientAttributeValues(eq(this.conn), eq(this.device),
-                any(Short.class));
-        verify(this.deviceChannelsHelper, times(1)).makeChannelElementValues(channel, resultList);
-
-    }
-
+    verify(this.deviceChannelsHelper, times(1))
+        .getMBusClientAttributeValues(eq(this.conn), eq(this.device), any(Short.class));
+    verify(this.deviceChannelsHelper, times(1)).makeChannelElementValues(channel, resultList);
+  }
 }

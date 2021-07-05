@@ -1,10 +1,10 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.monitoring;
 
@@ -21,36 +21,43 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ProfileEntryValu
 import org.springframework.stereotype.Component;
 
 @Component
-public class GetPowerQualityProfileNoSelectiveAccessHandler extends AbstractGetPowerQualityProfileHandler {
+public class GetPowerQualityProfileNoSelectiveAccessHandler
+    extends AbstractGetPowerQualityProfileHandler {
 
-    public GetPowerQualityProfileNoSelectiveAccessHandler(final DlmsHelper dlmsHelper) {
-        super(dlmsHelper);
+  public GetPowerQualityProfileNoSelectiveAccessHandler(final DlmsHelper dlmsHelper) {
+    super(dlmsHelper);
+  }
+
+  @Override
+  protected List<ProfileEntryValueDto> createProfileEntryValueDto(
+      final DataObject profileEntryDataObject,
+      final List<ScalerUnitInfo> scalerUnitInfos,
+      ProfileEntryDto previousProfileEntryDto,
+      final Map<Integer, CaptureObjectDefinitionDto> selectableCaptureObjects,
+      int timeInterval) {
+
+    final List<ProfileEntryValueDto> result = new ArrayList<>();
+    final List<DataObject> dataObjects = profileEntryDataObject.getValue();
+
+    for (int i = 0; i < dataObjects.size(); i++) {
+
+      if (selectableCaptureObjects.containsKey(i)) {
+        ProfileEntryValueDto currentProfileEntryValueDto =
+            this.makeProfileEntryValueDto(
+                dataObjects.get(i),
+                scalerUnitInfos.get(result.size()),
+                previousProfileEntryDto,
+                timeInterval);
+        result.add(currentProfileEntryValueDto);
+      }
     }
 
-    @Override
-    protected List<ProfileEntryValueDto> createProfileEntryValueDto(final DataObject profileEntryDataObject,
-            final List<ScalerUnitInfo> scalerUnitInfos, ProfileEntryDto previousProfileEntryDto,
-            final Map<Integer, CaptureObjectDefinitionDto> selectableCaptureObjects, int timeInterval) {
+    return result;
+  }
 
-        final List<ProfileEntryValueDto> result = new ArrayList<>();
-        final List<DataObject> dataObjects = profileEntryDataObject.getValue();
-
-        for (int i = 0; i < dataObjects.size(); i++) {
-
-            if (selectableCaptureObjects.containsKey(i)) {
-                ProfileEntryValueDto currentProfileEntryValueDto = this
-                        .makeProfileEntryValueDto(dataObjects.get(i), scalerUnitInfos.get(result.size()),
-                                previousProfileEntryDto, timeInterval);
-                result.add(currentProfileEntryValueDto);
-            }
-        }
-
-        return result;
-    }
-
-    @Override
-    protected DataObject convertSelectableCaptureObjects(List<CaptureObjectDefinitionDto> selectableCaptureObjects) {
-        return DataObject.newArrayData(new ArrayList<>());
-    }
-
+  @Override
+  protected DataObject convertSelectableCaptureObjects(
+      List<CaptureObjectDefinitionDto> selectableCaptureObjects) {
+    return DataObject.newArrayData(new ArrayList<>());
+  }
 }
