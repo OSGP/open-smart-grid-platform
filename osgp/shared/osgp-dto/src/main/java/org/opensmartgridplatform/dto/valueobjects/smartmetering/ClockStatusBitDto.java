@@ -16,12 +16,13 @@ public enum ClockStatusBitDto {
   DOUBTFUL_VALUE("doubtful value"),
   DIFFERENT_CLOCK_BASE("different clock base"),
   INVALID_CLOCK_STATUS("invalid clock status"),
-  RESERVED_1("reserved"),
-  RESERVED_2("reserved"),
-  RESERVED_3("reserved"),
+  RESERVED_1(ClockStatusBitDto.RESERVED),
+  RESERVED_2(ClockStatusBitDto.RESERVED),
+  RESERVED_3(ClockStatusBitDto.RESERVED),
   DAYLIGHT_SAVING_ACTIVE("daylight saving active");
 
   private final String description;
+  private static final String RESERVED = "reserved";
 
   ClockStatusBitDto(final String description) {
     this.description = description;
