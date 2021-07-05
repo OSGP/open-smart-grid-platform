@@ -15,15 +15,15 @@
 
       <xsd:import
           namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-configuration/2014/10"
-          schemaLocation="schemas/sm-configuration.xsd" />
+          schemaLocation="schemas/sm-configuration.xsd"/>
     </xsd:schema>
   </wsdl:types>
 
   <wsdl:message name="ActionHeader">
     <wsdl:part element="common:OrganisationIdentification"
-               name="OrganisationIdentification" />
-    <wsdl:part element="common:UserName" name="UserName" />
-    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+               name="OrganisationIdentification"/>
+    <wsdl:part element="common:UserName" name="UserName"/>
+    <wsdl:part element="common:ApplicationName" name="ApplicationName"/>
   </wsdl:message>
 
   <wsdl:message name="GetFirmwareVersionRequest">
@@ -110,7 +110,7 @@
   </wsdl:message>
   <wsdl:message name="SetAlarmNotificationsAsyncRequest">
     <wsdl:part element="smconf:SetAlarmNotificationsAsyncRequest"
-              name="SetAlarmNotificationsAsyncRequest">
+               name="SetAlarmNotificationsAsyncRequest">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="SetAlarmNotificationsResponse">
@@ -197,11 +197,11 @@
   </wsdl:message>
   <wsdl:message name="SetActivityCalendarAsyncRequest">
     <wsdl:part element="smconf:SetActivityCalendarAsyncRequest"
-               name="SetActivityCalendarAsyncRequest" />
+               name="SetActivityCalendarAsyncRequest"/>
   </wsdl:message>
   <wsdl:message name="SetActivityCalendarResponse">
     <wsdl:part element="smconf:SetActivityCalendarResponse"
-               name="SetActivityCalendarResponse" />
+               name="SetActivityCalendarResponse"/>
   </wsdl:message>
 
   <wsdl:message name="SetConfigurationObjectRequest">
@@ -294,7 +294,7 @@
   </wsdl:message>
   <wsdl:message name="SetPushSetupSmsAsyncResponse">
     <wsdl:part element="smconf:SetPushSetupSmsAsyncResponse"
-              name="SetPushSetupSmsAsyncResponse">
+               name="SetPushSetupSmsAsyncResponse">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="SetPushSetupSmsAsyncRequest">
@@ -331,11 +331,11 @@
 
   <wsdl:message name="GetAdministrativeStatusRequest">
     <wsdl:part element="smconf:GetAdministrativeStatusRequest"
-               name="GetAdministrativeStatusRequest" />
+               name="GetAdministrativeStatusRequest"/>
   </wsdl:message>
   <wsdl:message name="GetAdministrativeStatusAsyncResponse">
     <wsdl:part element="smconf:GetAdministrativeStatusAsyncResponse"
-               name="GetAdministrativeStatusAsyncResponse" />
+               name="GetAdministrativeStatusAsyncResponse"/>
   </wsdl:message>
 
   <wsdl:message name="GetAdministrativeStatusAsyncRequest">
@@ -350,10 +350,10 @@
   </wsdl:message>
 
   <wsdl:message name="ReplaceKeysRequest">
-    <wsdl:part element="smconf:ReplaceKeysRequest" name="ReplaceKeysRequest" />
+    <wsdl:part element="smconf:ReplaceKeysRequest" name="ReplaceKeysRequest"/>
   </wsdl:message>
   <wsdl:message name="ReplaceKeysAsyncResponse">
-    <wsdl:part element="smconf:ReplaceKeysAsyncResponse" name="ReplaceKeysAsyncResponse" />
+    <wsdl:part element="smconf:ReplaceKeysAsyncResponse" name="ReplaceKeysAsyncResponse"/>
   </wsdl:message>
   <wsdl:message name="ReplaceKeysAsyncRequest">
     <wsdl:part element="smconf:ReplaceKeysAsyncRequest" name="ReplaceKeysAsyncRequest">
@@ -365,11 +365,11 @@
   </wsdl:message>
   <wsdl:message name="GenerateAndReplaceKeysRequest">
     <wsdl:part element="smconf:GenerateAndReplaceKeysRequest"
-               name="GenerateAndReplaceKeysRequest" />
+               name="GenerateAndReplaceKeysRequest"/>
   </wsdl:message>
   <wsdl:message name="GenerateAndReplaceKeysAsyncResponse">
     <wsdl:part element="smconf:GenerateAndReplaceKeysAsyncResponse"
-               name="GenerateAndReplaceKeysAsyncResponse" />
+               name="GenerateAndReplaceKeysAsyncResponse"/>
   </wsdl:message>
   <wsdl:message name="GenerateAndReplaceKeysAsyncRequest">
     <wsdl:part element="smconf:GenerateAndReplaceKeysAsyncRequest"
@@ -383,11 +383,11 @@
   </wsdl:message>
   <wsdl:message name="SetClockConfigurationRequest">
     <wsdl:part element="smconf:SetClockConfigurationRequest"
-               name="SetClockConfigurationRequest" />
+               name="SetClockConfigurationRequest"/>
   </wsdl:message>
   <wsdl:message name="SetClockConfigurationAsyncResponse">
     <wsdl:part element="smconf:SetClockConfigurationAsyncResponse"
-               name="SetClockConfigurationAsyncResponse" />
+               name="SetClockConfigurationAsyncResponse"/>
   </wsdl:message>
   <wsdl:message name="SetClockConfigurationAsyncRequest">
     <wsdl:part element="smconf:SetClockConfigurationAsyncRequest"
@@ -401,11 +401,11 @@
   </wsdl:message>
   <wsdl:message name="ConfigureDefinableLoadProfileRequest">
     <wsdl:part element="smconf:ConfigureDefinableLoadProfileRequest"
-               name="ConfigureDefinableLoadProfileRequest" />
+               name="ConfigureDefinableLoadProfileRequest"/>
   </wsdl:message>
   <wsdl:message name="ConfigureDefinableLoadProfileAsyncResponse">
     <wsdl:part element="smconf:ConfigureDefinableLoadProfileAsyncResponse"
-               name="ConfigureDefinableLoadProfileAsyncResponse" />
+               name="ConfigureDefinableLoadProfileAsyncResponse"/>
   </wsdl:message>
   <wsdl:message name="ConfigureDefinableLoadProfileAsyncRequest">
     <wsdl:part element="smconf:ConfigureDefinableLoadProfileAsyncRequest"
@@ -823,647 +823,647 @@
   <wsdl:binding name="SmartMeteringConfigurationPortSoap11"
                 type="tns:SmartMeteringConfigurationPort">
     <soap:binding style="document"
-                  transport="http://schemas.xmlsoap.org/soap/http" />
+                  transport="http://schemas.xmlsoap.org/soap/http"/>
 
     <wsdl:operation name="GetGetFirmwareVersionResponse">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="GetFirmwareVersionAsyncRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="GetFirmwareVersionResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="GetFirmwareVersion">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="GetFirmwareVersionRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="GetFirmwareVersionAsyncResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="UpdateFirmware">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="UpdateFirmwareRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="UpdateFirmwareAsyncResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="GetPushNotificationAlarm">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="GetPushNotificationAlarmAsyncRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="GetPushNotificationAlarmResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="GetUpdateFirmwareResponse">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="UpdateFirmwareAsyncRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="UpdateFirmwareResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="SetSpecialDays">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="SetSpecialDaysRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="SetSpecialDaysAsyncResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="GetSetSpecialDaysResponse">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="SetSpecialDaysAsyncRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="SetSpecialDaysResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="SetConfigurationObject">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="SetConfigurationObjectRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="SetConfigurationObjectAsyncResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="GetSetConfigurationObjectResponse">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="SetConfigurationObjectAsyncRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="SetConfigurationObjectResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="GetConfigurationObject">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="GetConfigurationObjectRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="GetConfigurationObjectAsyncResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="GetGetConfigurationObjectResponse">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="GetConfigurationObjectAsyncRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="GetConfigurationObjectResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="SetPushSetupAlarm">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="SetPushSetupAlarmRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="SetPushSetupAlarmAsyncResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="GetSetPushSetupAlarmResponse">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="SetPushSetupAlarmAsyncRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="SetPushSetupAlarmResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="SetPushSetupSms">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="SetPushSetupSmsRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="SetPushSetupSmsAsyncResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="GetSetPushSetupSmsResponse">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="SetPushSetupSmsAsyncRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="SetPushSetupSmsResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="SetAlarmNotifications">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="SetAlarmNotificationsRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="SetAlarmNotificationsAsyncResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetSetAlarmNotificationsResponse">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="SetAlarmNotificationsAsyncRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="SetAlarmNotificationsResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="SetEncryptionKeyExchangeOnGMeter">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="SetEncryptionKeyExchangeOnGMeterRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="SetEncryptionKeyExchangeOnGMeterAsyncResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="GetSetEncryptionKeyExchangeOnGMeterResponse">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="SetEncryptionKeyExchangeOnGMeterAsyncRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
+                     use="literal"/>
       </wsdl:input>
       <wsdl:output name="SetEncryptionKeyExchangeOnGMeterResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="GetMbusEncryptionKeyStatus">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="GetMbusEncryptionKeyStatusRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="GetMbusEncryptionKeyStatusAsyncResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="GetGetMbusEncryptionKeyStatusResponse">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="GetMbusEncryptionKeyStatusAsyncRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
+                     use="literal"/>
       </wsdl:input>
       <wsdl:output name="GetMbusEncryptionKeyStatusResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="GetMbusEncryptionKeyStatusByChannel">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="GetMbusEncryptionKeyStatusByChannelRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="GetMbusEncryptionKeyStatusByChannelAsyncResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="GetGetMbusEncryptionKeyStatusByChannelResponse">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="GetMbusEncryptionKeyStatusByChannelAsyncRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
+                     use="literal"/>
       </wsdl:input>
       <wsdl:output name="GetMbusEncryptionKeyStatusByChannelResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="SetActivityCalendar">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="SetActivityCalendarRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="SetActivityCalendarAsyncResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="GetSetActivityCalendarResponse">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="SetActivityCalendarAsyncRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
+                     use="literal"/>
       </wsdl:input>
       <wsdl:output name="SetActivityCalendarResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="SetAdministrativeStatus">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="SetAdministrativeStatusRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="SetAdministrativeStatusAsyncResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="GetSetAdministrativeStatusResponse">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="SetAdministrativeStatusAsyncRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="SetAdministrativeStatusResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="GetAdministrativeStatus">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="GetAdministrativeStatusRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="GetAdministrativeStatusAsyncResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="GetGetAdministrativeStatusResponse">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="GetAdministrativeStatusAsyncRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="GetAdministrativeStatusResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="ReplaceKeys">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="ReplaceKeysRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="ReplaceKeysAsyncResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetReplaceKeysResponse">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="ReplaceKeysAsyncRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="ReplaceKeysResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GenerateAndReplaceKeys">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="GenerateAndReplaceKeysRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="GenerateAndReplaceKeysAsyncResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetGenerateAndReplaceKeysResponse">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="GenerateAndReplaceKeysAsyncRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="GenerateAndReplaceKeysResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="SetClockConfiguration">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="SetClockConfigurationRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="SetClockConfigurationAsyncResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetSetClockConfigurationResponse">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="SetClockConfigurationAsyncRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="SetClockConfigurationResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ConfigureDefinableLoadProfile">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="ConfigureDefinableLoadProfileRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="ConfigureDefinableLoadProfileAsyncResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetConfigureDefinableLoadProfileResponse">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="ConfigureDefinableLoadProfileAsyncRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="ConfigureDefinableLoadProfileResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="SetMbusUserKeyByChannel">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="SetMbusUserKeyByChannelRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="SetMbusUserKeyByChannelAsyncResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="GetSetMbusUserKeyByChannelResponse">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="SetMbusUserKeyByChannelAsyncRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
+                     use="literal"/>
       </wsdl:input>
       <wsdl:output name="SetMbusUserKeyByChannelResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
     <wsdl:operation name="GetKeys">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="GetKeysRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="GetKeysAsyncResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetGetKeysResponse">
-      <soap:operation soapAction="" />
+      <soap:operation soapAction=""/>
       <wsdl:input name="GetKeysAsyncRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="UserName"
-                     use="literal" />
+                     use="literal"/>
         <soap:header message="tns:ActionHeader" part="ApplicationName"
-                     use="literal" />
-        <soap:body use="literal" />
+                     use="literal"/>
+        <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="GetKeysResponse">
-        <soap:body use="literal" />
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
@@ -1473,7 +1473,7 @@
     <wsdl:port binding="tns:SmartMeteringConfigurationPortSoap11"
                name="SmartMeteringConfigurationPortSoap11">
       <soap:address
-          location="http://localhost:8080/osgp-adapter-ws-smartmetering/smartMetering/configurationService/" />
+          location="http://localhost:8080/osgp-adapter-ws-smartmetering/smartMetering/configurationService/"/>
     </wsdl:port>
   </wsdl:service>
 
