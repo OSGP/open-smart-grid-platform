@@ -382,7 +382,7 @@
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"/>
         <xsd:element name="Description" type="xsd:string"
-          minOccurs="0"/>
+                     minOccurs="0"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
