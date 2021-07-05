@@ -15,10 +15,10 @@
 
       <xsd:import
         namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-bundle/2014/10"
-        schemaLocation="schemas/sm-bundle.xsd" />
+        schemaLocation="schemas/bundle-ws-smartmetering.xsd" />
       <xsd:import
         namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-management/2014/10"
-        schemaLocation="schemas/sm-management.xsd" />
+        schemaLocation="schemas/management-ws-smartmetering.xsd" />
     </xsd:schema>
   </wsdl:types>
 
