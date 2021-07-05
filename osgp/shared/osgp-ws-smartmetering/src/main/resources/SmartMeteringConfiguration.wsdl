@@ -468,7 +468,7 @@
                   name="GetFirmwareVersionAsyncRequest">
       </wsdl:input>
       <wsdl:output message="tns:GetFirmwareVersionResponse"
-                  name="GetFirmwareVersionResponse">
+                   name="GetFirmwareVersionResponse">
       </wsdl:output>
     </wsdl:operation>
 
@@ -477,7 +477,7 @@
                   name="GetFirmwareVersionRequest">
       </wsdl:input>
       <wsdl:output message="tns:GetFirmwareVersionAsyncResponse"
-                  name="GetFirmwareVersionAsyncResponse">
+                   name="GetFirmwareVersionAsyncResponse">
       </wsdl:output>
     </wsdl:operation>
 
