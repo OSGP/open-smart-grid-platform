@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class BeanUtil implements ApplicationContextAware {
 
-  private static ApplicationContext context;
+  private static ApplicationContext context; // todo: should this be static?
 
   @Override
   public void setApplicationContext(final ApplicationContext applicationContext) {
