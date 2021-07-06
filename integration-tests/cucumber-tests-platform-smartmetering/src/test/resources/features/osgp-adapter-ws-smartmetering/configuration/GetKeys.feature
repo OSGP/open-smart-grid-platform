@@ -8,7 +8,6 @@ Feature: SmartMetering - Configuration - Get Keys
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-    And the public key of the application is configured
     When a get keys request is received
       | DeviceIdentification | TEST1024000000001                             |
       | SecretTypes          | E_METER_MASTER_KEY,E_METER_AUTHENTICATION_KEY |
