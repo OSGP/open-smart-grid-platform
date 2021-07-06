@@ -18,7 +18,7 @@ public class GetPowerQualityProfileRequestDataDto implements ActionRequestDto {
   protected final String profileType;
   protected final Date beginDate;
   protected final Date endDate;
-  protected final ArrayList<CaptureObjectDefinitionDto> selectedValues = new ArrayList<>();
+  private final ArrayList<CaptureObjectDefinitionDto> selectedValues = new ArrayList<>();
 
   private static final long serialVersionUID = -2483665562035897062L;
 

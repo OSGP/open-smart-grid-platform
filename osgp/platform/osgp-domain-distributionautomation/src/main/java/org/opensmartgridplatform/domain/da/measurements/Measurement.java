@@ -18,7 +18,9 @@ public class Measurement implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private List<MeasurementElement> measurementElements = new ArrayList<>();
+  // why doesn't this fix Sonar issue "Fields in a "Serializable" class should either be transient
+  // or serializable"?
+  private final ArrayList<MeasurementElement> measurementElements;
 
   public Measurement(final List<MeasurementElement> measurementElements) {
     this.measurementElements = new ArrayList<>(measurementElements);
