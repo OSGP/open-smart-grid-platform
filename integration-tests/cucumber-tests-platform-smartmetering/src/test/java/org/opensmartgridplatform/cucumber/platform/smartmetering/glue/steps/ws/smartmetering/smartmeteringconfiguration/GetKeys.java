@@ -12,12 +12,16 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.GetKeysRequestFactory.getSecretTypesFromParameterMap;
 
+import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.ArrayUtils;
+import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationDataLookupKey;
+import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationKeyConfiguration;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.ApplicationKeyConfigurationRepository;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysAsyncResponse;
@@ -30,12 +34,30 @@ import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.GetKeysRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 public class GetKeys {
 
   private static final String OPERATION = "Get keys";
 
+  @Value("${application.public.key.resource}")
+  private String applicationPublicKeyLocation;
+
   @Autowired private SmartMeteringConfigurationClient smartMeteringConfigurationClient;
+
+  @Autowired private ApplicationKeyConfigurationRepository applicationKeyConfigurationRepository;
+
+  @Given("^the public key of the application is configured$")
+  public void anApplicationIsConfigured() {
+
+    final ApplicationDataLookupKey applicationDataLookupKey =
+        new ApplicationDataLookupKey("test-org", "SMART_METERS");
+    final ApplicationKeyConfiguration applicationKeyConfiguration =
+        new ApplicationKeyConfiguration(
+            applicationDataLookupKey, this.applicationPublicKeyLocation);
+
+    this.applicationKeyConfigurationRepository.save(applicationKeyConfiguration);
+  }
 
   @When("^a get keys request is received$")
   public void aGetKeysRequestIsReceived(final Map<String, String> settings) throws Throwable {
