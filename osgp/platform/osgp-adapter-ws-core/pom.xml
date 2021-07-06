@@ -84,10 +84,6 @@
     </dependency>
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
-      <artifactId>osgp-domain-logging</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-adapter-ws-shared</artifactId>
     </dependency>
     <dependency>
@@ -227,7 +223,7 @@
       <groupId>ma.glasnost.orika</groupId>
       <artifactId>orika-core</artifactId>
     </dependency>
-    
+
     <!-- Lombok -->
     <dependency>
       <groupId>org.projectlombok</groupId>
