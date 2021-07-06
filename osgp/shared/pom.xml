@@ -94,15 +94,14 @@
     <module>parent-shared</module>
     <module>shared</module>
     <module>osgp-dto</module>
-    <module>osgp-ws-secret-management</module>
     <module>osgp-ws-core</module>
     <module>osgp-ws-admin</module>
-    <module>osgp-ws-microgrids</module>
   </modules>
 
   <profiles>
     <profile>
-      <id>flexovl</id>
+      <!-- Public Lighting -->
+      <id>pl</id>
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
@@ -113,16 +112,19 @@
     </profile>
 
     <profile>
-      <id>smhe</id>
+      <!-- Smart meter -->
+      <id>sm</id>
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
         <module>osgp-ws-smartmetering</module>
+        <module>osgp-ws-secret-management</module>
       </modules>
     </profile>
 
     <profile>
+      <!-- Distribution Automation -->
       <id>da</id>
       <activation>
         <activeByDefault>true</activeByDefault>
@@ -132,6 +134,22 @@
         <module>osgp-kafka-logger</module>
         <module>osgp-ws-distributionautomation</module>
       </modules>
+    </profile>
+
+    <profile>
+      <!-- MicroGrids -->
+      <id>mg</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>osgp-ws-microgrids</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <!-- Grid eXchange Fabric -->
+      <id>gxf</id>
     </profile>
   </profiles>
 </project>

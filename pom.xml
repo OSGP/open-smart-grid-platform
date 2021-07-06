@@ -37,6 +37,37 @@
     <module>integration-tests</module>
   </modules>
 
+  <profiles>
+    <profile>
+      <id>pl</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>public-lighting-demo-app</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <!-- Smart meter -->
+      <id>sm</id>
+    </profile>
+
+    <profile>
+      <!-- Distribution Automation -->
+      <id>da</id>
+    </profile>
+
+    <profile>
+      <id>mg</id>
+    </profile>
+
+    <profile>
+      <!-- Grid eXchange Fabric -->
+      <id>gxf</id>
+    </profile>
+  </profiles>
+
   <distributionManagement>
     <site>
       <id>platform</id>

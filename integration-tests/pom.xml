@@ -82,7 +82,8 @@
 
   <profiles>
     <profile>
-      <id>flexovl</id>
+      <!-- Public Lighting -->
+      <id>pl</id>
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
@@ -92,7 +93,8 @@
     </profile>
 
     <profile>
-      <id>smhe</id>
+      <!-- Smart meter -->
+      <id>sm</id>
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
@@ -102,6 +104,7 @@
     </profile>
 
     <profile>
+      <!-- Distribution Automation -->
       <id>da</id>
       <activation>
         <activeByDefault>true</activeByDefault>
@@ -112,6 +115,7 @@
     </profile>
 
     <profile>
+      <!-- MicroGrids -->
       <id>mg</id>
       <activation>
         <activeByDefault>true</activeByDefault>
@@ -119,6 +123,11 @@
       <modules>
         <module>cucumber-tests-platform-microgrids</module>
       </modules>
+    </profile>
+
+    <profile>
+      <!-- Grid eXchange Fabric -->
+      <id>gxf</id>
     </profile>
   </profiles>
 </project>

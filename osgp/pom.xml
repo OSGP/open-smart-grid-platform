@@ -14,30 +14,60 @@
   <modules>
     <module>platform</module>
     <module>shared</module>
-    <module>protocol-adapter-iec60870</module>
-    <module>protocol-adapter-iec61850</module>
-    <module>protocol-adapter-mqtt</module>
   </modules>
 
   <profiles>
     <profile>
-      <id>flexovl</id>
+      <!-- Public Lighting -->
+      <id>pl</id>
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
         <module>protocol-adapter-oslp</module>
+        <module>protocol-adapter-iec60870</module>
+        <module>protocol-adapter-iec61850</module>
       </modules>
     </profile>
 
     <profile>
-      <id>smhe</id>
+      <!-- Smart meter -->
+      <id>sm</id>
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
         <module>protocol-adapter-dlms</module>
       </modules>
+    </profile>
+
+    <profile>
+      <!-- Distrubution Automation -->
+      <id>da</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>protocol-adapter-iec60870</module>
+        <module>protocol-adapter-iec61850</module>
+        <module>protocol-adapter-mqtt</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <!-- MicroGrids -->
+      <id>mg</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>protocol-adapter-iec61850</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <!-- Grid eXchange Fabric -->
+      <id>gxf</id>
     </profile>
 
     <profile>
