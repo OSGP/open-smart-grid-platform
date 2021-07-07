@@ -1,10 +1,10 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * <p>http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 
@@ -30,80 +30,68 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ClearAlarmRegisterCommandExecutor
-    extends AbstractCommandExecutor<ClearAlarmRegisterRequestDto, AccessResultCode> {
+        extends AbstractCommandExecutor<ClearAlarmRegisterRequestDto, AccessResultCode> {
 
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(ClearAlarmRegisterCommandExecutor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClearAlarmRegisterCommandExecutor.class);
 
-  private static final int CLASS_ID = 1;
-  private static final ObisCode OBIS_CODE = new ObisCode("0.0.97.98.0.255");
-  private static final int ATTRIBUTE_ID = 2;
+    private static final int CLASS_ID = 1;
+    private static final ObisCode OBIS_CODE = new ObisCode("0.0.97.98.0.255");
+    private static final int ATTRIBUTE_ID = 2;
 
-  private static final int ALARM_CODE = 0;
+    private static final int ALARM_CODE = 0;
 
-  public ClearAlarmRegisterCommandExecutor() {
-    super(ClearAlarmRegisterRequestDto.class);
-  }
-
-  @Override
-  public ActionResponseDto asBundleResponse(final AccessResultCode executionResult)
-      throws ProtocolAdapterException {
-
-    this.checkAccessResultCode(executionResult);
-
-    return new ActionResponseDto("Clear alarm register was successful");
-  }
-
-  @Override
-  public ClearAlarmRegisterRequestDto fromBundleRequestInput(final ActionRequestDto bundleInput)
-      throws ProtocolAdapterException {
-
-    this.checkActionRequestType(bundleInput);
-
-    return (ClearAlarmRegisterRequestDto) bundleInput;
-  }
-
-  @Override
-  public AccessResultCode execute(
-      final DlmsConnectionManager conn,
-      final DlmsDevice device,
-      final ClearAlarmRegisterRequestDto clearAlarmRegisterRequestDto)
-      throws ProtocolAdapterException {
-
-    LOGGER.info(
-        "Clear alarm register by request for class id: {}, obis code: {}, attribute id: {}",
-        CLASS_ID,
-        OBIS_CODE,
-        ATTRIBUTE_ID);
-
-    final SetParameter setParameter = this.getSetParameter();
-
-    conn.getDlmsMessageListener()
-        .setDescription(
-            "ClearAlarmRegister, with alarm code = "
-                + ALARM_CODE
-                + "and set attribute: "
-                + JdlmsObjectToStringUtil.describeAttributes(
-                    new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID)));
-
-    final AccessResultCode resultCode;
-    try {
-      resultCode = conn.getConnection().set(setParameter);
-    } catch (final IOException e) {
-      throw new ConnectionException(e);
+    public ClearAlarmRegisterCommandExecutor() {
+        super(ClearAlarmRegisterRequestDto.class);
     }
-    if (resultCode != null) {
-      return resultCode;
-    } else {
-      throw new ProtocolAdapterException("Error occurred for clear alarm register.");
+
+    @Override
+    public ActionResponseDto asBundleResponse(final AccessResultCode executionResult) throws ProtocolAdapterException {
+
+        this.checkAccessResultCode(executionResult);
+
+        return new ActionResponseDto("Clear alarm register was successful");
     }
-  }
 
-  private SetParameter getSetParameter() {
-    final AttributeAddress alarmRegisterValue =
-        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
-    final DataObject data = DataObject.newUInteger32Data(ALARM_CODE);
+    @Override
+    public ClearAlarmRegisterRequestDto fromBundleRequestInput(final ActionRequestDto bundleInput)
+            throws ProtocolAdapterException {
 
-    return new SetParameter(alarmRegisterValue, data);
-  }
+        this.checkActionRequestType(bundleInput);
+
+        return (ClearAlarmRegisterRequestDto) bundleInput;
+    }
+
+    @Override
+    public AccessResultCode execute(final DlmsConnectionManager conn, final DlmsDevice device,
+            final ClearAlarmRegisterRequestDto clearAlarmRegisterRequestDto) throws ProtocolAdapterException {
+
+        LOGGER.info("Clear alarm register by request for class id: {}, obis code: {}, attribute id: {}", CLASS_ID,
+                OBIS_CODE, ATTRIBUTE_ID);
+
+        final SetParameter setParameter = this.getSetParameter();
+
+        conn.getDlmsMessageListener().setDescription(
+                "ClearAlarmRegister, with alarm code = " + ALARM_CODE + "and set attribute: " + JdlmsObjectToStringUtil
+                        .describeAttributes(new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID)));
+
+        final AccessResultCode resultCode;
+        try {
+            resultCode = conn.getConnection().set(setParameter);
+        } catch (final IOException e) {
+            throw new ConnectionException(e);
+        }
+        if (resultCode != null) {
+            return resultCode;
+        } else {
+            throw new ProtocolAdapterException("Error occurred for clear alarm register.");
+        }
+    }
+
+    private SetParameter getSetParameter() {
+        final AttributeAddress alarmRegisterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
+        final DataObject data = DataObject.newUInteger32Data(ALARM_CODE);
+
+        return new SetParameter(alarmRegisterValue, data);
+    }
+
 }

@@ -1,10 +1,9 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- * <p>http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors;
 
@@ -22,28 +21,28 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SetDeviceCommunicationSettingsRequestMessageProcessor
-    extends DeviceRequestMessageProcessor<SetDeviceCommunicationSettingsRequestDto> {
+        extends DeviceRequestMessageProcessor<SetDeviceCommunicationSettingsRequestDto> {
 
-  @Autowired private ManagementService managementService;
+    @Autowired
+    private ManagementService managementService;
 
-  public SetDeviceCommunicationSettingsRequestMessageProcessor() {
-    super(MessageType.SET_DEVICE_COMMUNICATION_SETTINGS);
-  }
+    public SetDeviceCommunicationSettingsRequestMessageProcessor() {
+        super(MessageType.SET_DEVICE_COMMUNICATION_SETTINGS);
+    }
 
-  @Override
-  protected boolean usesDeviceConnection() {
-    return false;
-  }
+    @Override
+    protected boolean usesDeviceConnection() {
+        return false;
+    }
 
-  @Override
-  protected Serializable handleMessage(
-      final DlmsDevice device,
-      final RequestWithMetadata<SetDeviceCommunicationSettingsRequestDto> request)
-      throws OsgpException {
+    @Override
+    protected Serializable handleMessage(final DlmsDevice device,
+            final RequestWithMetadata<SetDeviceCommunicationSettingsRequestDto> request) throws OsgpException {
 
-    this.managementService.setDeviceCommunicationSettings(device, request.getRequestObject());
+        this.managementService.setDeviceCommunicationSettings(device, request.getRequestObject());
 
-    // No response data
-    return null;
-  }
+        // No response data
+        return null;
+    }
+
 }

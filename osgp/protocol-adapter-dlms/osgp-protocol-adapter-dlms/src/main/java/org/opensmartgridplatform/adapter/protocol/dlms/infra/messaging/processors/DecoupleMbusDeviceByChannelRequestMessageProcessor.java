@@ -1,10 +1,11 @@
 /**
  * Copyright 2021 Alliander N.V.
  *
- * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- * <p>http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors;
 
@@ -23,20 +24,18 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DecoupleMbusDeviceByChannelRequestMessageProcessor
-    extends DeviceRequestMessageProcessor<DecoupleMbusDeviceDto> {
+        extends DeviceRequestMessageProcessor<DecoupleMbusDeviceDto> {
 
-  @Autowired private InstallationService installationService;
+    @Autowired
+    private InstallationService installationService;
 
-  protected DecoupleMbusDeviceByChannelRequestMessageProcessor() {
-    super(MessageType.DECOUPLE_MBUS_DEVICE_BY_CHANNEL);
-  }
+    protected DecoupleMbusDeviceByChannelRequestMessageProcessor() {
+        super(MessageType.DECOUPLE_MBUS_DEVICE_BY_CHANNEL);
+    }
 
-  @Override
-  protected Serializable handleMessage(
-      final DlmsConnectionManager conn,
-      final DlmsDevice device,
-      final RequestWithMetadata<DecoupleMbusDeviceDto> request)
-      throws OsgpException {
-    return this.installationService.decoupleMbusDevice(conn, device, request.getRequestObject());
-  }
+    @Override
+    protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
+            final RequestWithMetadata<DecoupleMbusDeviceDto> request) throws OsgpException {
+        return this.installationService.decoupleMbusDevice(conn, device, request.getRequestObject());
+    }
 }

@@ -1,10 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * <p>http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils;
 
@@ -18,36 +18,33 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.AmrProfileStatus
 
 public class AmrProfileStatusCodeHelperTest {
 
-  private final AmrProfileStatusCodeHelper helperService = new AmrProfileStatusCodeHelper();
+    private final AmrProfileStatusCodeHelper helperService = new AmrProfileStatusCodeHelper();
 
-  @Test
-  public void testConvertToLong() {
-    final Set<AmrProfileStatusCodeFlagDto> amrStatusCodeFlags = new HashSet<>();
+    @Test
+    public void testConvertToLong() {
+        final Set<AmrProfileStatusCodeFlagDto> amrStatusCodeFlags = new HashSet<>();
 
-    amrStatusCodeFlags.add(AmrProfileStatusCodeFlagDto.DATA_NOT_VALID);
-    amrStatusCodeFlags.add(AmrProfileStatusCodeFlagDto.POWER_DOWN);
+        amrStatusCodeFlags.add(AmrProfileStatusCodeFlagDto.DATA_NOT_VALID);
+        amrStatusCodeFlags.add(AmrProfileStatusCodeFlagDto.POWER_DOWN);
 
-    assertThat((short) this.helperService.toValue(amrStatusCodeFlags)).isEqualTo((short) 132);
-  }
+        assertThat((short) this.helperService.toValue(amrStatusCodeFlags)).isEqualTo((short) 132);
+    }
 
-  @Test
-  public void testConvertToAmrProfileStatusCodeFlags() {
-    final short registerValue = Short.parseShort("00100100", 2);
+    @Test
+    public void testConvertToAmrProfileStatusCodeFlags() {
+        final short registerValue = Short.parseShort("00100100", 2);
 
-    final Set<AmrProfileStatusCodeFlagDto> amrStatusCodeFlags =
-        this.helperService.toAmrProfileStatusCodeFlags(registerValue);
+        final Set<AmrProfileStatusCodeFlagDto> amrStatusCodeFlags = this.helperService
+                .toAmrProfileStatusCodeFlags(registerValue);
 
-    assertThat(amrStatusCodeFlags.contains(AmrProfileStatusCodeFlagDto.DATA_NOT_VALID)).isTrue();
-    assertThat(amrStatusCodeFlags.contains(AmrProfileStatusCodeFlagDto.CLOCK_ADJUSTED)).isTrue();
-  }
+        assertThat(amrStatusCodeFlags.contains(AmrProfileStatusCodeFlagDto.DATA_NOT_VALID)).isTrue();
+        assertThat(amrStatusCodeFlags.contains(AmrProfileStatusCodeFlagDto.CLOCK_ADJUSTED)).isTrue();
+    }
 
-  @Test
-  public void testBitPositions() {
-    assertThat((int) this.helperService.toBitPosition(AmrProfileStatusCodeFlagDto.CLOCK_INVALID))
-        .isEqualTo(1);
-    assertThat((int) this.helperService.toBitPosition(AmrProfileStatusCodeFlagDto.DAYLIGHT_SAVING))
-        .isEqualTo(3);
-    assertThat((int) this.helperService.toBitPosition(AmrProfileStatusCodeFlagDto.POWER_DOWN))
-        .isEqualTo(7);
-  }
+    @Test
+    public void testBitPositions() {
+        assertThat((int) this.helperService.toBitPosition(AmrProfileStatusCodeFlagDto.CLOCK_INVALID)).isEqualTo(1);
+        assertThat((int) this.helperService.toBitPosition(AmrProfileStatusCodeFlagDto.DAYLIGHT_SAVING)).isEqualTo(3);
+        assertThat((int) this.helperService.toBitPosition(AmrProfileStatusCodeFlagDto.POWER_DOWN)).isEqualTo(7);
+    }
 }

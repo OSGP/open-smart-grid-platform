@@ -1,10 +1,9 @@
 /**
  * Copyright 2016 Smart Society Services B.V.
  *
- * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- * <p>http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 
@@ -20,42 +19,39 @@ import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
 @Component
 public class RetryHeaderFactory {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(RetryHeaderFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RetryHeaderFactory.class);
 
-  @Value("${schedule.retry.dlms.delay}")
-  private int retryDelay;
+    @Value("${schedule.retry.dlms.delay}")
+    private int retryDelay;
 
-  @Value("${schedule.retry.dlms.retries}")
-  private int maximumRetries;
+    @Value("${schedule.retry.dlms.retries}")
+    private int maximumRetries;
 
-  @Value("${schedule.retry.dlms.backoff.multiplier}")
-  private int backoffMultiplier;
+    @Value("${schedule.retry.dlms.backoff.multiplier}")
+    private int backoffMultiplier;
 
-  @Value("${schedule.retry.dlms.backoff.exponential}")
-  private boolean exponentialBackoff;
+    @Value("${schedule.retry.dlms.backoff.exponential}")
+    private boolean exponentialBackoff;
 
-  public RetryHeader createRetryHeader(final int retry) {
-    final Calendar retryTime = Calendar.getInstance();
-    retryTime.add(Calendar.MILLISECOND, this.calculateDelay(retry));
+    public RetryHeader createRetryHeader(final int retry) {
+        final Calendar retryTime = Calendar.getInstance();
+        retryTime.add(Calendar.MILLISECOND, this.calculateDelay(retry));
 
-    LOGGER.info(
-        "Creating retry header for retryCount: {}, maximumRetries: {}, scheduledRetryTime: {}.",
-        retry,
-        this.maximumRetries,
-        retryTime.getTime());
-    return new RetryHeader(retry, this.maximumRetries, retryTime.getTime());
-  }
-
-  public RetryHeader createEmtpyRetryHeader() {
-    return new RetryHeader();
-  }
-
-  private int calculateDelay(final int retry) {
-    int delay = this.retryDelay;
-    if (this.exponentialBackoff) {
-      final double factor = Math.pow(this.backoffMultiplier, retry);
-      delay *= factor;
+        LOGGER.info("Creating retry header for retryCount: {}, maximumRetries: {}, scheduledRetryTime: {}.", retry,
+                this.maximumRetries, retryTime.getTime());
+        return new RetryHeader(retry, this.maximumRetries, retryTime.getTime());
     }
-    return delay;
-  }
+
+    public RetryHeader createEmtpyRetryHeader() {
+        return new RetryHeader();
+    }
+
+    private int calculateDelay(final int retry) {
+        int delay = this.retryDelay;
+        if (this.exponentialBackoff) {
+            final double factor = Math.pow(this.backoffMultiplier, retry);
+            delay *= factor;
+        }
+        return delay;
+    }
 }

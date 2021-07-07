@@ -1,10 +1,10 @@
 /**
  * Copyright 2018 Smart Society Services B.V.
  *
- * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * <p>http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
@@ -25,54 +25,48 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SetDeviceLifecycleStatusByChannelCommandExecutor
-    extends AbstractCommandExecutor<
-        SetDeviceLifecycleStatusByChannelRequestDataDto,
-        SetDeviceLifecycleStatusByChannelResponseDto> {
+public class SetDeviceLifecycleStatusByChannelCommandExecutor extends
+        AbstractCommandExecutor<SetDeviceLifecycleStatusByChannelRequestDataDto,
+                SetDeviceLifecycleStatusByChannelResponseDto> {
 
-  @Autowired private GetMBusDeviceOnChannelCommandExecutor getMBusDeviceOnChannelCommandExecutor;
+    @Autowired
+    private GetMBusDeviceOnChannelCommandExecutor getMBusDeviceOnChannelCommandExecutor;
 
-  @Autowired private DlmsDeviceRepository dlmsDeviceRepository;
+    @Autowired
+    private DlmsDeviceRepository dlmsDeviceRepository;
 
-  public SetDeviceLifecycleStatusByChannelCommandExecutor() {
-    super(SetDeviceLifecycleStatusByChannelRequestDataDto.class);
-  }
-
-  @Override
-  public SetDeviceLifecycleStatusByChannelResponseDto execute(
-      final DlmsConnectionManager conn,
-      final DlmsDevice gatewayDevice,
-      final SetDeviceLifecycleStatusByChannelRequestDataDto request)
-      throws OsgpException {
-
-    final GetMBusDeviceOnChannelRequestDataDto mbusDeviceOnChannelRequest =
-        new GetMBusDeviceOnChannelRequestDataDto(
-            gatewayDevice.getDeviceIdentification(), request.getChannel());
-    final ChannelElementValuesDto channelElementValues =
-        this.getMBusDeviceOnChannelCommandExecutor.execute(
-            conn, gatewayDevice, mbusDeviceOnChannelRequest);
-
-    if (!channelElementValues.hasChannel()
-        || !channelElementValues.hasDeviceTypeIdentification()
-        || !channelElementValues.hasManufacturerIdentification()) {
-      throw new FunctionalException(
-          FunctionalExceptionType.NO_DEVICE_FOUND_ON_CHANNEL, ComponentType.PROTOCOL_DLMS);
+    public SetDeviceLifecycleStatusByChannelCommandExecutor() {
+        super(SetDeviceLifecycleStatusByChannelRequestDataDto.class);
     }
 
-    final DlmsDevice mbusDevice =
-        this.dlmsDeviceRepository.findByMbusIdentificationNumberAndMbusManufacturerIdentification(
-            Long.valueOf(channelElementValues.getIdentificationNumber()),
-            channelElementValues.getManufacturerIdentification());
+    @Override
+    public SetDeviceLifecycleStatusByChannelResponseDto execute(final DlmsConnectionManager conn,
+            final DlmsDevice gatewayDevice, final SetDeviceLifecycleStatusByChannelRequestDataDto request)
+            throws OsgpException {
 
-    if (mbusDevice == null) {
-      throw new FunctionalException(
-          FunctionalExceptionType.NO_MATCHING_MBUS_DEVICE_FOUND, ComponentType.PROTOCOL_DLMS);
+        final GetMBusDeviceOnChannelRequestDataDto mbusDeviceOnChannelRequest =
+                new GetMBusDeviceOnChannelRequestDataDto(
+                gatewayDevice.getDeviceIdentification(), request.getChannel());
+        final ChannelElementValuesDto channelElementValues = this.getMBusDeviceOnChannelCommandExecutor
+                .execute(conn, gatewayDevice, mbusDeviceOnChannelRequest);
+
+        if (!channelElementValues.hasChannel() || !channelElementValues.hasDeviceTypeIdentification()
+                || !channelElementValues.hasManufacturerIdentification()) {
+            throw new FunctionalException(FunctionalExceptionType.NO_DEVICE_FOUND_ON_CHANNEL,
+                    ComponentType.PROTOCOL_DLMS);
+        }
+
+        final DlmsDevice mbusDevice = this.dlmsDeviceRepository
+                .findByMbusIdentificationNumberAndMbusManufacturerIdentification(
+                        Long.valueOf(channelElementValues.getIdentificationNumber()),
+                        channelElementValues.getManufacturerIdentification());
+
+        if (mbusDevice == null) {
+            throw new FunctionalException(FunctionalExceptionType.NO_MATCHING_MBUS_DEVICE_FOUND,
+                    ComponentType.PROTOCOL_DLMS);
+        }
+
+        return new SetDeviceLifecycleStatusByChannelResponseDto(gatewayDevice.getDeviceIdentification(),
+                request.getChannel(), mbusDevice.getDeviceIdentification(), request.getDeviceLifecycleStatus());
     }
-
-    return new SetDeviceLifecycleStatusByChannelResponseDto(
-        gatewayDevice.getDeviceIdentification(),
-        request.getChannel(),
-        mbusDevice.getDeviceIdentification(),
-        request.getDeviceLifecycleStatus());
-  }
 }

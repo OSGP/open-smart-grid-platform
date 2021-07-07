@@ -1,10 +1,10 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * <p>http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
@@ -33,109 +33,87 @@ import org.springframework.stereotype.Service;
 @Service(value = "dlmsDeviceMonitoringService")
 public class MonitoringService {
 
-  private final GetPeriodicMeterReadsCommandExecutor getPeriodicMeterReadsCommandExecutor;
-  private final GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor;
-  private final GetActualMeterReadsCommandExecutor actualMeterReadsCommandExecutor;
-  private final GetActualMeterReadsGasCommandExecutor actualMeterReadsGasCommandExecutor;
-  private final GetActualPowerQualityCommandExecutor getActualPowerQualityCommandExecutor;
-  private final ReadAlarmRegisterCommandExecutor readAlarmRegisterCommandExecutor;
-  private final GetPowerQualityProfileCommandExecutor getPowerQualityProfileCommandExecutor;
-  private final ClearAlarmRegisterCommandExecutor clearAlarmRegisterCommandExecutor;
+    private final GetPeriodicMeterReadsCommandExecutor getPeriodicMeterReadsCommandExecutor;
+    private final GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor;
+    private final GetActualMeterReadsCommandExecutor actualMeterReadsCommandExecutor;
+    private final GetActualMeterReadsGasCommandExecutor actualMeterReadsGasCommandExecutor;
+    private final GetActualPowerQualityCommandExecutor getActualPowerQualityCommandExecutor;
+    private final ReadAlarmRegisterCommandExecutor readAlarmRegisterCommandExecutor;
+    private final GetPowerQualityProfileCommandExecutor getPowerQualityProfileCommandExecutor;
+    private final ClearAlarmRegisterCommandExecutor clearAlarmRegisterCommandExecutor;
 
-  public MonitoringService(
-      GetPeriodicMeterReadsCommandExecutor getPeriodicMeterReadsCommandExecutor,
-      GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor,
-      GetActualMeterReadsCommandExecutor actualMeterReadsCommandExecutor,
-      GetActualMeterReadsGasCommandExecutor actualMeterReadsGasCommandExecutor,
-      GetActualPowerQualityCommandExecutor getActualPowerQualityCommandExecutor,
-      ReadAlarmRegisterCommandExecutor readAlarmRegisterCommandExecutor,
-      GetPowerQualityProfileCommandExecutor getPowerQualityProfileCommandExecutor,
-      ClearAlarmRegisterCommandExecutor clearAlarmRegisterCommandExecutor) {
+    public MonitoringService(GetPeriodicMeterReadsCommandExecutor getPeriodicMeterReadsCommandExecutor,
+            GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor,
+            GetActualMeterReadsCommandExecutor actualMeterReadsCommandExecutor,
+            GetActualMeterReadsGasCommandExecutor actualMeterReadsGasCommandExecutor,
+            GetActualPowerQualityCommandExecutor getActualPowerQualityCommandExecutor,
+            ReadAlarmRegisterCommandExecutor readAlarmRegisterCommandExecutor,
+            GetPowerQualityProfileCommandExecutor getPowerQualityProfileCommandExecutor,
+            ClearAlarmRegisterCommandExecutor clearAlarmRegisterCommandExecutor) {
 
-    this.getPeriodicMeterReadsCommandExecutor = getPeriodicMeterReadsCommandExecutor;
-    this.getPeriodicMeterReadsGasCommandExecutor = getPeriodicMeterReadsGasCommandExecutor;
-    this.actualMeterReadsCommandExecutor = actualMeterReadsCommandExecutor;
-    this.actualMeterReadsGasCommandExecutor = actualMeterReadsGasCommandExecutor;
-    this.getActualPowerQualityCommandExecutor = getActualPowerQualityCommandExecutor;
-    this.readAlarmRegisterCommandExecutor = readAlarmRegisterCommandExecutor;
-    this.getPowerQualityProfileCommandExecutor = getPowerQualityProfileCommandExecutor;
-    this.clearAlarmRegisterCommandExecutor = clearAlarmRegisterCommandExecutor;
-  }
+        this.getPeriodicMeterReadsCommandExecutor = getPeriodicMeterReadsCommandExecutor;
+        this.getPeriodicMeterReadsGasCommandExecutor = getPeriodicMeterReadsGasCommandExecutor;
+        this.actualMeterReadsCommandExecutor = actualMeterReadsCommandExecutor;
+        this.actualMeterReadsGasCommandExecutor = actualMeterReadsGasCommandExecutor;
+        this.getActualPowerQualityCommandExecutor = getActualPowerQualityCommandExecutor;
+        this.readAlarmRegisterCommandExecutor = readAlarmRegisterCommandExecutor;
+        this.getPowerQualityProfileCommandExecutor = getPowerQualityProfileCommandExecutor;
+        this.clearAlarmRegisterCommandExecutor = clearAlarmRegisterCommandExecutor;
 
-  // === REQUEST PERIODIC METER DATA ===
-
-  public Serializable requestPeriodicMeterReads(
-      final DlmsConnectionManager conn,
-      final DlmsDevice device,
-      final PeriodicMeterReadsRequestDto periodicMeterReadsQuery)
-      throws ProtocolAdapterException {
-
-    final Serializable response;
-    if (periodicMeterReadsQuery.isMbusQuery()) {
-      response =
-          this.getPeriodicMeterReadsGasCommandExecutor.execute(
-              conn, device, periodicMeterReadsQuery);
-    } else {
-      response =
-          this.getPeriodicMeterReadsCommandExecutor.execute(conn, device, periodicMeterReadsQuery);
     }
 
-    return response;
-  }
+    // === REQUEST PERIODIC METER DATA ===
 
-  public Serializable requestActualMeterReads(
-      final DlmsConnectionManager conn,
-      final DlmsDevice device,
-      final ActualMeterReadsQueryDto actualMeterReadsRequest)
-      throws ProtocolAdapterException {
+    public Serializable requestPeriodicMeterReads(final DlmsConnectionManager conn, final DlmsDevice device,
+            final PeriodicMeterReadsRequestDto periodicMeterReadsQuery) throws ProtocolAdapterException {
 
-    final Serializable response;
-    if (actualMeterReadsRequest.isMbusQuery()) {
-      response =
-          this.actualMeterReadsGasCommandExecutor.execute(conn, device, actualMeterReadsRequest);
-    } else {
-      response =
-          this.actualMeterReadsCommandExecutor.execute(conn, device, actualMeterReadsRequest);
+        final Serializable response;
+        if (periodicMeterReadsQuery.isMbusQuery()) {
+            response = this.getPeriodicMeterReadsGasCommandExecutor.execute(conn, device, periodicMeterReadsQuery);
+        } else {
+            response = this.getPeriodicMeterReadsCommandExecutor.execute(conn, device, periodicMeterReadsQuery);
+        }
+
+        return response;
+
     }
 
-    return response;
-  }
+    public Serializable requestActualMeterReads(final DlmsConnectionManager conn, final DlmsDevice device,
+            final ActualMeterReadsQueryDto actualMeterReadsRequest) throws ProtocolAdapterException {
 
-  public Serializable requestActualPowerQuality(
-      final DlmsConnectionManager conn,
-      final DlmsDevice device,
-      final ActualPowerQualityRequestDto actualPowerQualityRequestDto)
-      throws ProtocolAdapterException {
+        final Serializable response;
+        if (actualMeterReadsRequest.isMbusQuery()) {
+            response = this.actualMeterReadsGasCommandExecutor.execute(conn, device, actualMeterReadsRequest);
+        } else {
+            response = this.actualMeterReadsCommandExecutor.execute(conn, device, actualMeterReadsRequest);
+        }
 
-    return this.getActualPowerQualityCommandExecutor.execute(
-        conn, device, actualPowerQualityRequestDto);
-  }
+        return response;
+    }
 
-  public AlarmRegisterResponseDto requestReadAlarmRegister(
-      final DlmsConnectionManager conn,
-      final DlmsDevice device,
-      final ReadAlarmRegisterRequestDto readAlarmRegisterRequest)
-      throws ProtocolAdapterException {
+    public Serializable requestActualPowerQuality(final DlmsConnectionManager conn, final DlmsDevice device,
+            final ActualPowerQualityRequestDto actualPowerQualityRequestDto) throws ProtocolAdapterException {
 
-    return this.readAlarmRegisterCommandExecutor.execute(conn, device, readAlarmRegisterRequest);
-  }
+        return this.getActualPowerQualityCommandExecutor.execute(conn, device, actualPowerQualityRequestDto);
+    }
 
-  public Serializable requestPowerQualityProfile(
-      final DlmsConnectionManager conn,
-      final DlmsDevice device,
-      final GetPowerQualityProfileRequestDataDto powerQualityProfileRequestDataDto)
-      throws ProtocolAdapterException {
+    public AlarmRegisterResponseDto requestReadAlarmRegister(final DlmsConnectionManager conn, final DlmsDevice device,
+            final ReadAlarmRegisterRequestDto readAlarmRegisterRequest) throws ProtocolAdapterException {
 
-    return this.getPowerQualityProfileCommandExecutor.execute(
-        conn, device, powerQualityProfileRequestDataDto);
-  }
+        return this.readAlarmRegisterCommandExecutor.execute(conn, device, readAlarmRegisterRequest);
+    }
 
-  public void setClearAlarmRegister(
-      final DlmsConnectionManager conn,
-      final DlmsDevice device,
-      final ClearAlarmRegisterRequestDto clearAlarmRegisterRequestDto)
-      throws ProtocolAdapterException {
+    public Serializable requestPowerQualityProfile(final DlmsConnectionManager conn, final DlmsDevice device,
+            final GetPowerQualityProfileRequestDataDto powerQualityProfileRequestDataDto)
+            throws ProtocolAdapterException {
 
-    this.clearAlarmRegisterCommandExecutor.execute(conn, device, clearAlarmRegisterRequestDto);
-  }
+        return this.getPowerQualityProfileCommandExecutor.execute(conn, device, powerQualityProfileRequestDataDto);
+    }
+
+    public void setClearAlarmRegister(final DlmsConnectionManager conn, final DlmsDevice device,
+            final ClearAlarmRegisterRequestDto clearAlarmRegisterRequestDto) throws ProtocolAdapterException {
+
+        this.clearAlarmRegisterCommandExecutor.execute(conn, device, clearAlarmRegisterRequestDto);
+    }
+
 }

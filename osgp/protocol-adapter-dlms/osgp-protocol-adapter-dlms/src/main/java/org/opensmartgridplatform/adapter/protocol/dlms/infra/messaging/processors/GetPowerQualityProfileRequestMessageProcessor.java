@@ -1,10 +1,10 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * <p>http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors;
 
@@ -21,24 +21,23 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-/** Class for processing Power Quality Profile request messages. */
+/**
+ * Class for processing Power Quality Profile request messages.
+ */
 @Component
 public class GetPowerQualityProfileRequestMessageProcessor
-    extends DeviceRequestMessageProcessor<GetPowerQualityProfileRequestDataDto> {
+        extends DeviceRequestMessageProcessor<GetPowerQualityProfileRequestDataDto> {
 
-  @Autowired private MonitoringService monitoringService;
+    @Autowired
+    private MonitoringService monitoringService;
 
-  public GetPowerQualityProfileRequestMessageProcessor() {
-    super(MessageType.GET_PROFILE_GENERIC_DATA);
-  }
+    public GetPowerQualityProfileRequestMessageProcessor() {
+        super(MessageType.GET_PROFILE_GENERIC_DATA);
+    }
 
-  @Override
-  protected Serializable handleMessage(
-      final DlmsConnectionManager conn,
-      final DlmsDevice device,
-      final RequestWithMetadata<GetPowerQualityProfileRequestDataDto> request)
-      throws OsgpException {
-    return this.monitoringService.requestPowerQualityProfile(
-        conn, device, request.getRequestObject());
-  }
+    @Override
+    protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
+            final RequestWithMetadata<GetPowerQualityProfileRequestDataDto> request) throws OsgpException {
+        return this.monitoringService.requestPowerQualityProfile(conn, device, request.getRequestObject());
+    }
 }

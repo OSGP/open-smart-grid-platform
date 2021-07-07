@@ -1,10 +1,10 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * <p>http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.monitoring;
 
@@ -19,33 +19,28 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class GetPowerQualityProfileCommandExecutor
-    extends AbstractCommandExecutor<
-        GetPowerQualityProfileRequestDataDto, GetPowerQualityProfileResponseDto> {
+        extends AbstractCommandExecutor<GetPowerQualityProfileRequestDataDto, GetPowerQualityProfileResponseDto> {
 
-  @Autowired
-  private GetPowerQualityProfileNoSelectiveAccessHandler
-      getPowerQualityProfileNoSelectiveAccessHandler;
+    @Autowired
+    private GetPowerQualityProfileNoSelectiveAccessHandler getPowerQualityProfileNoSelectiveAccessHandler;
 
-  @Autowired
-  private GetPowerQualityProfileSelectiveAccessHandler getPowerQualityProfileSelectiveAccessHandler;
+    @Autowired
+    private GetPowerQualityProfileSelectiveAccessHandler getPowerQualityProfileSelectiveAccessHandler;
 
-  public GetPowerQualityProfileCommandExecutor() {
-    super(GetPowerQualityProfileRequestDataDto.class);
-  }
-
-  @Override
-  public GetPowerQualityProfileResponseDto execute(
-      DlmsConnectionManager conn,
-      DlmsDevice device,
-      GetPowerQualityProfileRequestDataDto getPowerQualityProfileRequestDataDto)
-      throws ProtocolAdapterException {
-
-    if (device.isSelectiveAccessSupported()) {
-      return this.getPowerQualityProfileSelectiveAccessHandler.handle(
-          conn, device, getPowerQualityProfileRequestDataDto);
-    } else {
-      return this.getPowerQualityProfileNoSelectiveAccessHandler.handle(
-          conn, device, getPowerQualityProfileRequestDataDto);
+    public GetPowerQualityProfileCommandExecutor() {
+        super(GetPowerQualityProfileRequestDataDto.class);
     }
-  }
+
+    @Override
+    public GetPowerQualityProfileResponseDto execute(DlmsConnectionManager conn, DlmsDevice device,
+            GetPowerQualityProfileRequestDataDto getPowerQualityProfileRequestDataDto) throws ProtocolAdapterException {
+
+        if (device.isSelectiveAccessSupported()) {
+            return this.getPowerQualityProfileSelectiveAccessHandler
+                    .handle(conn, device, getPowerQualityProfileRequestDataDto);
+        } else {
+            return this.getPowerQualityProfileNoSelectiveAccessHandler
+                    .handle(conn, device, getPowerQualityProfileRequestDataDto);
+        }
+    }
 }

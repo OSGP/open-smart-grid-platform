@@ -1,10 +1,9 @@
 /**
  * Copyright 2018 Smart Society Services B.V.
  *
- * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with  the License.  You may obtain a copy of the License at
  *
- * <p>http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors;
 
@@ -23,20 +22,18 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ScanMbusChannelsRequestMessageProcessor
-    extends DeviceRequestMessageProcessor<ScanMbusChannelsRequestDataDto> {
+        extends DeviceRequestMessageProcessor<ScanMbusChannelsRequestDataDto> {
 
-  @Autowired private AdhocService adhocService;
+    @Autowired
+    private AdhocService adhocService;
 
-  public ScanMbusChannelsRequestMessageProcessor() {
-    super(MessageType.SCAN_MBUS_CHANNELS);
-  }
+    public ScanMbusChannelsRequestMessageProcessor() {
+        super(MessageType.SCAN_MBUS_CHANNELS);
+    }
 
-  @Override
-  protected Serializable handleMessage(
-      final DlmsConnectionManager conn,
-      final DlmsDevice device,
-      final RequestWithMetadata<ScanMbusChannelsRequestDataDto> request)
-      throws OsgpException {
-    return this.adhocService.scanMbusChannels(conn, device);
-  }
+    @Override
+    protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
+            final RequestWithMetadata<ScanMbusChannelsRequestDataDto> request) throws OsgpException {
+        return this.adhocService.scanMbusChannels(conn, device);
+    }
 }

@@ -19,27 +19,32 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObj
 @ExtendWith(MockitoExtension.class)
 public class GetConfigurationObjectCommandExecutorTest {
 
-  @InjectMocks private GetConfigurationObjectCommandExecutor instance;
-  @Mock private ProtocolServiceLookup protocolServiceLookup;
-  @Mock private DlmsConnectionManager conn;
-  @Mock private ConfigurationObjectDto configurationObjectDto;
-  @Mock private GetConfigurationObjectService getService;
+    @InjectMocks
+    private GetConfigurationObjectCommandExecutor instance;
+    @Mock
+    private ProtocolServiceLookup protocolServiceLookup;
+    @Mock
+    private DlmsConnectionManager conn;
+    @Mock
+    private ConfigurationObjectDto configurationObjectDto;
+    @Mock
+    private GetConfigurationObjectService getService;
 
-  @Test
-  public void execute() throws ProtocolAdapterException {
+    @Test
+    public void execute() throws ProtocolAdapterException {
 
-    // SETUP
-    final DlmsDevice device = new DlmsDevice();
-    final Protocol protocol = Protocol.DSMR_4_2_2;
-    device.setProtocol(protocol);
+        // SETUP
+        final DlmsDevice device = new DlmsDevice();
+        final Protocol protocol = Protocol.DSMR_4_2_2;
+        device.setProtocol(protocol);
 
-    when(this.protocolServiceLookup.lookupGetService(protocol)).thenReturn(this.getService);
-    when(this.getService.getConfigurationObject(this.conn)).thenReturn(this.configurationObjectDto);
+        when(this.protocolServiceLookup.lookupGetService(protocol)).thenReturn(this.getService);
+        when(this.getService.getConfigurationObject(this.conn)).thenReturn(this.configurationObjectDto);
 
-    // CALL
-    final ConfigurationObjectDto result = this.instance.execute(this.conn, device, null);
+        // CALL
+        final ConfigurationObjectDto result = this.instance.execute(this.conn, device, null);
 
-    // VERIFY
-    assertThat(result).isSameAs(this.configurationObjectDto);
-  }
+        // VERIFY
+        assertThat(result).isSameAs(this.configurationObjectDto);
+    }
 }

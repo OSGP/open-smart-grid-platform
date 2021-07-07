@@ -1,10 +1,9 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- * <p>http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors;
 
@@ -21,24 +20,23 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-/** Class for processing the get M-Bus encryption keys status request message */
+/**
+ * Class for processing the get M-Bus encryption keys status request message
+ */
 @Component
 public class GetMbusEncryptionKeyStatusRequestMessageProcessor
-    extends DeviceRequestMessageProcessor<GetMbusEncryptionKeyStatusRequestDto> {
+        extends DeviceRequestMessageProcessor<GetMbusEncryptionKeyStatusRequestDto> {
 
-  @Autowired private ConfigurationService configurationService;
+    @Autowired
+    private ConfigurationService configurationService;
 
-  public GetMbusEncryptionKeyStatusRequestMessageProcessor() {
-    super(MessageType.GET_MBUS_ENCRYPTION_KEY_STATUS);
-  }
+    public GetMbusEncryptionKeyStatusRequestMessageProcessor() {
+        super(MessageType.GET_MBUS_ENCRYPTION_KEY_STATUS);
+    }
 
-  @Override
-  protected Serializable handleMessage(
-      final DlmsConnectionManager conn,
-      final DlmsDevice device,
-      final RequestWithMetadata<GetMbusEncryptionKeyStatusRequestDto> request)
-      throws OsgpException {
-    return this.configurationService.requestGetMbusEncryptionKeyStatus(
-        conn, device, request.getRequestObject());
-  }
+    @Override
+    protected Serializable handleMessage(final DlmsConnectionManager conn, final DlmsDevice device,
+            final RequestWithMetadata<GetMbusEncryptionKeyStatusRequestDto> request) throws OsgpException {
+        return this.configurationService.requestGetMbusEncryptionKeyStatus(conn, device, request.getRequestObject());
+    }
 }

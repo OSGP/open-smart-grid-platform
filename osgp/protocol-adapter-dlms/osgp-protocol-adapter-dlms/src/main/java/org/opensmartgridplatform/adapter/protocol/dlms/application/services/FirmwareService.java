@@ -1,10 +1,10 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * <p>http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
@@ -29,72 +29,58 @@ import org.springframework.stereotype.Service;
 @Service(value = "dlmsFirmwareService")
 public class FirmwareService {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(FirmwareService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FirmwareService.class);
 
-  private static final String EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE =
-      "Firmware file %s is not available.";
+    private static final String EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE = "Firmware file %s is not available.";
 
-  @Autowired private FirmwareFileCachingRepository firmwareRepository;
+    @Autowired
+    private FirmwareFileCachingRepository firmwareRepository;
 
-  @Autowired private GetFirmwareVersionsCommandExecutor getFirmwareVersionsCommandExecutor;
+    @Autowired
+    private GetFirmwareVersionsCommandExecutor getFirmwareVersionsCommandExecutor;
 
-  @Autowired private UpdateFirmwareCommandExecutor updateFirmwareCommandExecutor;
+    @Autowired
+    private UpdateFirmwareCommandExecutor updateFirmwareCommandExecutor;
 
-  public List<FirmwareVersionDto> getFirmwareVersions(
-      final DlmsConnectionManager conn, final DlmsDevice device) throws ProtocolAdapterException {
+    public List<FirmwareVersionDto> getFirmwareVersions(final DlmsConnectionManager conn, final DlmsDevice device)
+            throws ProtocolAdapterException {
 
-    return this.getFirmwareVersionsCommandExecutor.execute(conn, device, null);
-  }
-
-  public UpdateFirmwareResponseDto updateFirmware(
-      final DlmsConnectionManager conn,
-      final DlmsDevice device,
-      final String firmwareIdentification)
-      throws OsgpException {
-    LOGGER.info(
-        "Updating firmware of device {} to firmware with identification {}",
-        device,
-        firmwareIdentification);
-
-    return this.executeFirmwareUpdate(conn, device, firmwareIdentification);
-  }
-
-  public UpdateFirmwareResponseDto updateFirmware(
-      final DlmsConnectionManager conn,
-      final DlmsDevice device,
-      final FirmwareFileDto firmwareFileDto)
-      throws OsgpException {
-    LOGGER.info(
-        "Updating firmware of device {} to firmware with identification {} using included firmware file",
-        device,
-        firmwareFileDto.getFirmwareIdentification());
-
-    if (ArrayUtils.isEmpty(firmwareFileDto.getFirmwareFile())) {
-      throw new ProtocolAdapterException(
-          String.format(
-              EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE,
-              firmwareFileDto.getFirmwareIdentification()));
+        return this.getFirmwareVersionsCommandExecutor.execute(conn, device, null);
     }
-    this.firmwareRepository.store(
-        firmwareFileDto.getFirmwareIdentification(), firmwareFileDto.getFirmwareFile());
 
-    return this.executeFirmwareUpdate(conn, device, firmwareFileDto.getFirmwareIdentification());
-  }
+    public UpdateFirmwareResponseDto updateFirmware(final DlmsConnectionManager conn, final DlmsDevice device,
+            final String firmwareIdentification) throws OsgpException {
+        LOGGER.info("Updating firmware of device {} to firmware with identification {}", device,
+                firmwareIdentification);
 
-  public boolean isFirmwareFileAvailable(final String firmwareIdentification) {
-    return this.firmwareRepository.isAvailable(firmwareIdentification);
-  }
-
-  private UpdateFirmwareResponseDto executeFirmwareUpdate(
-      final DlmsConnectionManager conn,
-      final DlmsDevice device,
-      final String firmwareIdentification)
-      throws OsgpException {
-    if (this.firmwareRepository.isAvailable(firmwareIdentification)) {
-      return this.updateFirmwareCommandExecutor.execute(conn, device, firmwareIdentification);
-    } else {
-      throw new ProtocolAdapterException(
-          String.format(EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE, firmwareIdentification));
+        return this.executeFirmwareUpdate(conn, device, firmwareIdentification);
     }
-  }
+
+    public UpdateFirmwareResponseDto updateFirmware(final DlmsConnectionManager conn, final DlmsDevice device,
+            final FirmwareFileDto firmwareFileDto) throws OsgpException {
+        LOGGER.info("Updating firmware of device {} to firmware with identification {} using included firmware file",
+                device, firmwareFileDto.getFirmwareIdentification());
+
+        if (ArrayUtils.isEmpty(firmwareFileDto.getFirmwareFile())) {
+            throw new ProtocolAdapterException(String.format(EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE,
+                    firmwareFileDto.getFirmwareIdentification()));
+        }
+        this.firmwareRepository.store(firmwareFileDto.getFirmwareIdentification(), firmwareFileDto.getFirmwareFile());
+
+        return this.executeFirmwareUpdate(conn, device, firmwareFileDto.getFirmwareIdentification());
+    }
+
+    public boolean isFirmwareFileAvailable(final String firmwareIdentification) {
+        return this.firmwareRepository.isAvailable(firmwareIdentification);
+    }
+
+    private UpdateFirmwareResponseDto executeFirmwareUpdate(final DlmsConnectionManager conn, final DlmsDevice device,
+            final String firmwareIdentification) throws OsgpException {
+        if (this.firmwareRepository.isAvailable(firmwareIdentification)) {
+            return this.updateFirmwareCommandExecutor.execute(conn, device, firmwareIdentification);
+        } else {
+            throw new ProtocolAdapterException(
+                    String.format(EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE, firmwareIdentification));
+        }
+    }
 }

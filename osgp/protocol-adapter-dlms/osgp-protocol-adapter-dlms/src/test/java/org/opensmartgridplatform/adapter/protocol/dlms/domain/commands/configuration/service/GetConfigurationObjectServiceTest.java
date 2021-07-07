@@ -27,77 +27,74 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObj
 @ExtendWith(MockitoExtension.class)
 public class GetConfigurationObjectServiceTest {
 
-  private final GetConfigurationObjectService instance =
-      new GetConfigurationObjectService() {
+    private final GetConfigurationObjectService instance = new GetConfigurationObjectService() {
         @Override
         ConfigurationObjectDto getConfigurationObject(final GetResult result) {
-          return null;
+            return null;
         }
 
         @Override
         Optional<ConfigurationFlagTypeDto> getFlagType(final int bitPosition) {
-          return Optional.empty();
+            return Optional.empty();
         }
 
         @Override
         public boolean handles(final Protocol protocol) {
-          return true;
+            return true;
         }
-      };
+    };
 
-  @Mock private DlmsConnectionManager conn;
-  @Mock private DlmsMessageListener dlmsMessageListener;
-  @Mock private DlmsConnection dlmsConnection;
-  @Mock private GetResult getResult;
+    @Mock
+    private DlmsConnectionManager conn;
+    @Mock
+    private DlmsMessageListener dlmsMessageListener;
+    @Mock
+    private DlmsConnection dlmsConnection;
+    @Mock
+    private GetResult getResult;
 
-  @BeforeEach
-  public void setUp() {
-    when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
-    when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
-  }
+    @BeforeEach
+    public void setUp() {
+        when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
+        when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
+    }
 
-  @Test
-  public void getConfigurationObjectIOException() throws Exception {
+    @Test
+    public void getConfigurationObjectIOException() throws Exception {
 
-    // SETUP
-    when(this.dlmsConnection.get(any(AttributeAddress.class))).thenThrow(new IOException());
+        // SETUP
+        when(this.dlmsConnection.get(any(AttributeAddress.class))).thenThrow(new IOException());
 
-    // CALL
-    assertThatExceptionOfType(ConnectionException.class)
-        .isThrownBy(
-            () -> {
-              this.instance.getConfigurationObject(this.conn);
-            });
-  }
+        // CALL
+        assertThatExceptionOfType(ConnectionException.class).isThrownBy(() -> {
+            this.instance.getConfigurationObject(this.conn);
+        });
+    }
 
-  @Test
-  public void getConfigurationObjectGetResultNull() throws Exception {
+    @Test
+    public void getConfigurationObjectGetResultNull() throws Exception {
 
-    // SETUP
-    when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(null);
+        // SETUP
+        when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(null);
 
-    // CALL
-    assertThatExceptionOfType(ProtocolAdapterException.class)
-        .isThrownBy(
-            () -> {
-              this.instance.getConfigurationObject(this.conn);
-            });
-  }
+        // CALL
+        assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {
+            this.instance.getConfigurationObject(this.conn);
+        });
+    }
 
-  @Test
-  public void getConfigurationObjectGetResultUnsuccessful() throws Exception {
+    @Test
+    public void getConfigurationObjectGetResultUnsuccessful() throws Exception {
 
-    // SETUP
-    when(this.getResult.getResultCode()).thenReturn(AccessResultCode.READ_WRITE_DENIED);
-    when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(this.getResult);
+        // SETUP
+        when(this.getResult.getResultCode()).thenReturn(AccessResultCode.READ_WRITE_DENIED);
+        when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(this.getResult);
 
-    // CALL
-    assertThatExceptionOfType(ProtocolAdapterException.class)
-        .isThrownBy(
-            () -> {
-              this.instance.getConfigurationObject(this.conn);
-            });
-  }
+        // CALL
+        assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {
+            this.instance.getConfigurationObject(this.conn);
+        });
+    }
 
-  // happy flows covered in IT's
+    // happy flows covered in IT's
 }

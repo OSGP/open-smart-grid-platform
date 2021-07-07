@@ -1,10 +1,9 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- * <p>http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.responses.from.core;
 
@@ -25,37 +24,30 @@ import org.springframework.stereotype.Component;
 @Component(value = "protocolDlmsInboundOsgpCoreResponsesMessageListener")
 public class OsgpResponseMessageListener implements MessageListener {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(OsgpResponseMessageListener.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OsgpResponseMessageListener.class);
 
-  @Autowired
-  @Qualifier("protocolDlmsInboundOsgpResponsesMessageProcessorMap")
-  private MessageProcessorMap messageProcessorMap;
+    @Autowired
+    @Qualifier("protocolDlmsInboundOsgpResponsesMessageProcessorMap")
+    private MessageProcessorMap messageProcessorMap;
 
-  @Override
-  public void onMessage(final Message message) {
-    try {
-      LOGGER.info(
-          "[{}] - Received message of type: {}",
-          message.getJMSCorrelationID(),
-          message.getJMSType());
+    @Override
+    public void onMessage(final Message message) {
+        try {
+            LOGGER.info("[{}] - Received message of type: {}", message.getJMSCorrelationID(), message.getJMSType());
 
-      final MessageMetadata metadata = MessageMetadata.fromMessage(message);
+            final MessageMetadata metadata = MessageMetadata.fromMessage(message);
 
-      final ObjectMessage objectMessage = (ObjectMessage) message;
-      final MessageProcessor messageProcessor =
-          this.messageProcessorMap.getMessageProcessor(objectMessage);
+            final ObjectMessage objectMessage = (ObjectMessage) message;
+            final MessageProcessor messageProcessor = this.messageProcessorMap.getMessageProcessor(objectMessage);
 
-      if (messageProcessor != null) {
-        messageProcessor.processMessage(objectMessage);
-      } else {
-        LOGGER.error(
-            "[{}] - Unknown messagetype {}",
-            metadata.getCorrelationUid(),
-            metadata.getMessageType());
-      }
+            if (messageProcessor != null) {
+                messageProcessor.processMessage(objectMessage);
+            } else {
+                LOGGER.error("[{}] - Unknown messagetype {}", metadata.getCorrelationUid(), metadata.getMessageType());
+            }
 
-    } catch (final JMSException ex) {
-      LOGGER.error("Exception: {} ", ex.getMessage(), ex);
+        } catch (final JMSException ex) {
+            LOGGER.error("Exception: {} ", ex.getMessage(), ex);
+        }
     }
-  }
 }

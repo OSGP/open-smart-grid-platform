@@ -42,130 +42,128 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.FindEventsReques
 /**
  * Copyright 2019 Smart Society Services B.V.
  *
- * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- * <p>http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class FindEventsCommandExecutorTest {
 
-  @Mock private DlmsHelper dlmsHelper;
+    @Mock
+    private DlmsHelper dlmsHelper;
 
-  @Mock private DlmsDevice dlmsDevice;
+    @Mock
+    private DlmsDevice dlmsDevice;
 
-  @Mock private DlmsConnectionManager conn;
+    @Mock
+    private DlmsConnectionManager conn;
 
-  @Mock private DlmsMessageListener dlmsMessageListener;
+    @Mock
+    private DlmsMessageListener dlmsMessageListener;
 
-  @Mock private DlmsConnection dlmsConnection;
+    @Mock
+    private DlmsConnection dlmsConnection;
 
-  @Mock private DataObject resultData;
+    @Mock
+    private DataObject resultData;
 
-  @Mock private GetResult getResult;
+    @Mock
+    private GetResult getResult;
 
-  private FindEventsRequestDto findEventsRequestDto;
-  private DataObjectToEventListConverter dataObjectToEventListConverter;
+    private FindEventsRequestDto findEventsRequestDto;
+    private DataObjectToEventListConverter dataObjectToEventListConverter;
 
-  @BeforeEach
-  public void before() throws ProtocolAdapterException, IOException {
+    @BeforeEach
+    public void before() throws ProtocolAdapterException, IOException {
 
-    final DataObject fromDate = mock(DataObject.class);
-    final DataObject toDate = mock(DataObject.class);
+        final DataObject fromDate = mock(DataObject.class);
+        final DataObject toDate = mock(DataObject.class);
 
-    this.findEventsRequestDto =
-        new FindEventsRequestDto(
-            EventLogCategoryDto.POWER_QUALITY_EVENT_LOG,
-            DateTime.now().minusDays(70),
-            DateTime.now());
+        this.findEventsRequestDto = new FindEventsRequestDto(EventLogCategoryDto.POWER_QUALITY_EVENT_LOG,
+                DateTime.now().minusDays(70), DateTime.now());
 
-    this.dataObjectToEventListConverter = new DataObjectToEventListConverter(this.dlmsHelper);
+        this.dataObjectToEventListConverter = new DataObjectToEventListConverter(this.dlmsHelper);
 
-    when(this.dlmsHelper.asDataObject(this.findEventsRequestDto.getFrom())).thenReturn(fromDate);
-    when(this.dlmsHelper.asDataObject(this.findEventsRequestDto.getUntil())).thenReturn(toDate);
-    when(this.dlmsHelper.convertDataObjectToDateTime(any(DataObject.class)))
-        .thenReturn(new CosemDateTimeDto());
-    when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
-    when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
-    when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(this.getResult);
-  }
-
-  @AfterEach
-  public void after() throws ProtocolAdapterException, IOException {
-    verify(this.dlmsHelper).asDataObject(this.findEventsRequestDto.getFrom());
-    verify(this.dlmsHelper).asDataObject(this.findEventsRequestDto.getUntil());
-    verify(this.conn).getDlmsMessageListener();
-    verify(this.conn).getConnection();
-    verify(this.dlmsConnection).get(any(AttributeAddress.class));
-  }
-
-  @Test
-  public void testRetrievalOfPowerQualityEvents() throws ProtocolAdapterException {
-
-    when(this.getResult.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
-    when(this.getResult.getResultData()).thenReturn(this.resultData);
-    when(this.resultData.getValue()).thenReturn(this.generateDataObjects());
-
-    final FindEventsCommandExecutor executor =
-        new FindEventsCommandExecutor(this.dlmsHelper, this.dataObjectToEventListConverter);
-
-    final List<EventDto> events =
-        executor.execute(this.conn, this.dlmsDevice, this.findEventsRequestDto);
-
-    assertThat(events.size()).isEqualTo(13);
-
-    int firstEventCode = 77;
-    for (final EventDto event : events) {
-      assertThat(event.getEventCode()).isEqualTo(firstEventCode++);
+        when(this.dlmsHelper.asDataObject(this.findEventsRequestDto.getFrom())).thenReturn(fromDate);
+        when(this.dlmsHelper.asDataObject(this.findEventsRequestDto.getUntil())).thenReturn(toDate);
+        when(this.dlmsHelper.convertDataObjectToDateTime(any(DataObject.class))).thenReturn(new CosemDateTimeDto());
+        when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
+        when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
+        when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(this.getResult);
     }
 
-    verify(this.dlmsHelper, times(events.size()))
-        .convertDataObjectToDateTime(any(DataObject.class));
-  }
+    @AfterEach
+    public void after() throws ProtocolAdapterException, IOException {
+        verify(this.dlmsHelper).asDataObject(this.findEventsRequestDto.getFrom());
+        verify(this.dlmsHelper).asDataObject(this.findEventsRequestDto.getUntil());
+        verify(this.conn).getDlmsMessageListener();
+        verify(this.conn).getConnection();
+        verify(this.dlmsConnection).get(any(AttributeAddress.class));
+    }
 
-  @Test
-  public void testOtherReasonResult() throws ProtocolAdapterException {
+    @Test
+    public void testRetrievalOfPowerQualityEvents() throws ProtocolAdapterException {
 
-    when(this.getResult.getResultCode()).thenReturn(AccessResultCode.OTHER_REASON);
+        when(this.getResult.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
+        when(this.getResult.getResultData()).thenReturn(this.resultData);
+        when(this.resultData.getValue()).thenReturn(this.generateDataObjects());
 
-    assertThatExceptionOfType(ProtocolAdapterException.class)
-        .isThrownBy(
-            () -> {
-              new FindEventsCommandExecutor(this.dlmsHelper, this.dataObjectToEventListConverter)
-                  .execute(this.conn, this.dlmsDevice, this.findEventsRequestDto);
-            });
-  }
+        final FindEventsCommandExecutor executor = new FindEventsCommandExecutor(this.dlmsHelper,
+                this.dataObjectToEventListConverter);
 
-  @Test
-  public void testEmptyGetResult() throws ProtocolAdapterException, IOException {
+        final List<EventDto> events = executor.execute(this.conn, this.dlmsDevice, this.findEventsRequestDto);
 
-    when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(null);
+        assertThat(events.size()).isEqualTo(13);
 
-    assertThatExceptionOfType(ProtocolAdapterException.class)
-        .isThrownBy(
-            () -> {
-              new FindEventsCommandExecutor(this.dlmsHelper, this.dataObjectToEventListConverter)
-                  .execute(this.conn, this.dlmsDevice, this.findEventsRequestDto);
-            });
-  }
+        int firstEventCode = 77;
+        for (final EventDto event : events) {
+            assertThat(event.getEventCode()).isEqualTo(firstEventCode++);
+        }
 
-  private List<DataObject> generateDataObjects() {
+        verify(this.dlmsHelper, times(events.size())).convertDataObjectToDateTime(any(DataObject.class));
+    }
 
-    final List<DataObject> dataObjects = new ArrayList<>();
+    @Test
+    public void testOtherReasonResult() throws ProtocolAdapterException {
 
-    IntStream.rangeClosed(77, 89)
-        .forEach(
-            code -> {
-              final DataObject eventCode = DataObject.newInteger16Data((short) code);
-              final DataObject eventTime =
-                  DataObject.newDateTimeData(new CosemDateTime(2018, 12, 31, 23, code - 60, 0, 0));
+        when(this.getResult.getResultCode()).thenReturn(AccessResultCode.OTHER_REASON);
 
-              final DataObject struct = DataObject.newStructureData(eventTime, eventCode);
+        assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {
+            new FindEventsCommandExecutor(this.dlmsHelper, this.dataObjectToEventListConverter).execute(this.conn,
+                    this.dlmsDevice, this.findEventsRequestDto);
+        });
+    }
 
-              dataObjects.add(struct);
-            });
+    @Test
+    public void testEmptyGetResult() throws ProtocolAdapterException, IOException {
 
-    return dataObjects;
-  }
+        when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(null);
+
+        assertThatExceptionOfType(ProtocolAdapterException.class).isThrownBy(() -> {
+            new FindEventsCommandExecutor(this.dlmsHelper, this.dataObjectToEventListConverter).execute(this.conn,
+                    this.dlmsDevice, this.findEventsRequestDto);
+        });
+    }
+
+    private List<DataObject> generateDataObjects() {
+
+        final List<DataObject> dataObjects = new ArrayList<>();
+
+        IntStream.rangeClosed(77, 89).forEach(code -> {
+            final DataObject eventCode = DataObject.newInteger16Data((short) code);
+            final DataObject eventTime = DataObject
+                    .newDateTimeData(new CosemDateTime(2018, 12, 31, 23, code - 60, 0, 0));
+
+            final DataObject struct = DataObject.newStructureData(eventTime, eventCode);
+
+            dataObjects.add(struct);
+
+        });
+
+        return dataObjects;
+    }
+
 }
