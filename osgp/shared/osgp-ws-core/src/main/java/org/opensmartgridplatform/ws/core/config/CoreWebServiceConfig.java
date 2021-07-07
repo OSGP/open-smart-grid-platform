@@ -23,16 +23,19 @@ public class CoreWebServiceConfig {
   private static final String COMMON_XSD_PATH = "schemas/common-ws-core.xsd";
   private static final String ADHOC_MANAGEMENT_XSD_PATH = "schemas/adhocmanagement-ws-core.xsd";
   private static final String CONFIGURATION_MANAGEMENT_XSD_PATH =
-      "schemas/configurationmanagement.xsd";
-  private static final String DEVICE_INSTALLATION_XSD_PATH = "schemas/deviceinstallation.xsd";
+      "schemas/configurationmanagement-ws-core.xsd";
+  private static final String DEVICE_INSTALLATION_XSD_PATH =
+      "schemas/deviceinstallation-ws-core.xsd";
   private static final String DEVICE_MANAGEMENT_XSD_PATH = "schemas/devicemanagement-ws-core.xsd";
-  private static final String FIRMWARE_MANAGEMENT_XSD_PATH = "schemas/firmwaremanagement.xsd";
+  private static final String FIRMWARE_MANAGEMENT_XSD_PATH =
+      "schemas/firmwaremanagement-ws-core.xsd";
 
-  private static final String ADHOC_MANAGEMENT_WSDL_PATH = "AdHocManagement.wsdl";
-  private static final String CONFIGURATION_MANAGEMENT_WSDL_PATH = "ConfigurationManagement.wsdl";
-  private static final String DEVICE_INSTALLATION_WSDL_PATH = "DeviceInstallation.wsdl";
-  private static final String DEVICE_MANAGEMENT_WSDL_PATH = "DeviceManagement.wsdl";
-  private static final String FIRMWARE_MANAGEMENT_WSDL_PATH = "FirmwareManagement.wsdl";
+  private static final String ADHOC_MANAGEMENT_WSDL_PATH = "CoreAdHocManagement.wsdl";
+  private static final String CONFIGURATION_MANAGEMENT_WSDL_PATH =
+      "CoreConfigurationManagement.wsdl";
+  private static final String DEVICE_INSTALLATION_WSDL_PATH = "CoreDeviceInstallation.wsdl";
+  private static final String DEVICE_MANAGEMENT_WSDL_PATH = "CoreDeviceManagement.wsdl";
+  private static final String FIRMWARE_MANAGEMENT_WSDL_PATH = "CoreFirmwareManagement.wsdl";
 
   @Bean
   public PayloadValidatingInterceptor payloadValidatingInterceptor() {
@@ -56,7 +59,7 @@ public class CoreWebServiceConfig {
     return new SimpleXsdSchema(new ClassPathResource(COMMON_XSD_PATH));
   }
 
-  @Bean(name = "AdHocManagement")
+  @Bean(name = "CoreAdHocManagement")
   public WsdlDefinition adHocManagementWsdl() {
     return new SimpleWsdl11Definition(new ClassPathResource(ADHOC_MANAGEMENT_WSDL_PATH));
   }
@@ -66,27 +69,27 @@ public class CoreWebServiceConfig {
     return new SimpleXsdSchema(new ClassPathResource(ADHOC_MANAGEMENT_XSD_PATH));
   }
 
-  @Bean(name = "ConfigurationManagement")
+  @Bean(name = "CoreConfigurationManagement")
   public WsdlDefinition configurationManagementWsdl() {
     return new SimpleWsdl11Definition(new ClassPathResource(CONFIGURATION_MANAGEMENT_WSDL_PATH));
   }
 
-  @Bean(name = "configurationmanagement")
+  @Bean(name = "configurationmanagement-ws-core")
   public SimpleXsdSchema configurationManagementXsd() {
     return new SimpleXsdSchema(new ClassPathResource(CONFIGURATION_MANAGEMENT_XSD_PATH));
   }
 
-  @Bean(name = "DeviceInstallation")
+  @Bean(name = "CoreDeviceInstallation")
   public WsdlDefinition deviceInstallationWsdl() {
     return new SimpleWsdl11Definition(new ClassPathResource(DEVICE_INSTALLATION_WSDL_PATH));
   }
 
-  @Bean(name = "deviceinstallation")
+  @Bean(name = "deviceinstallation-ws-core")
   public SimpleXsdSchema deviceInstallationXsd() {
     return new SimpleXsdSchema(new ClassPathResource(DEVICE_INSTALLATION_XSD_PATH));
   }
 
-  @Bean(name = "DeviceManagement")
+  @Bean(name = "CoreDeviceManagement")
   public WsdlDefinition deviceManagementWsdl() {
     return new SimpleWsdl11Definition(new ClassPathResource(DEVICE_MANAGEMENT_WSDL_PATH));
   }
@@ -96,12 +99,12 @@ public class CoreWebServiceConfig {
     return new SimpleXsdSchema(new ClassPathResource(DEVICE_MANAGEMENT_XSD_PATH));
   }
 
-  @Bean(name = "FirmwareManagement")
+  @Bean(name = "CoreFirmwareManagement")
   public WsdlDefinition firmwareManagementWsdl() {
     return new SimpleWsdl11Definition(new ClassPathResource(FIRMWARE_MANAGEMENT_WSDL_PATH));
   }
 
-  @Bean(name = "firmwaremanagement")
+  @Bean(name = "firmwaremanagement-ws-core")
   public SimpleXsdSchema firmwareManagementXsd() {
     return new SimpleXsdSchema(new ClassPathResource(FIRMWARE_MANAGEMENT_XSD_PATH));
   }

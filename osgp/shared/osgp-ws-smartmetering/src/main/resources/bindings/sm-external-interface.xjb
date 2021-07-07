@@ -12,7 +12,7 @@
   xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
   <jxb:bindings
-    schemaLocation="../schemas/sm-external-interface.xsd">
+    schemaLocation="../schemas/external-interface-ws-smartmetering.xsd">
     <jxb:schemaBindings>
       <jxb:package
         name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.external_interface" />

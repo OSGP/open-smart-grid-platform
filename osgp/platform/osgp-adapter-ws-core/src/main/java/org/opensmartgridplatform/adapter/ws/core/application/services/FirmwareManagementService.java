@@ -723,7 +723,7 @@ public class FirmwareManagementService {
     }
 
     final Map<FirmwareModule, String> firmwareVersionsByModule =
-        firmwareModuleData.getVersionsByModule(this.firmwareModuleRepository, false);
+        firmwareModuleData.getVersionsByModule(this.firmwareModuleRepository, true);
 
     final FirmwareFile firmwareFile = this.insertOrUdateDatabase(firmwareFileRequest, file);
 

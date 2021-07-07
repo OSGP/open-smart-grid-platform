@@ -12,6 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -46,7 +47,7 @@ class DlmsConnectionHelperTest {
   void setUp() {
     this.helper =
         new DlmsConnectionHelper(
-            this.invocationCounterManager, this.connectionFactory, this.devicePingConfig);
+            this.invocationCounterManager, this.connectionFactory, this.devicePingConfig, 0);
   }
 
   @Test
@@ -143,7 +144,8 @@ class DlmsConnectionHelperTest {
   }
 
   @Test
-  void resetsInvocationCounterWhenInvocationCounterIsOutOfSyncForIskraDevice() throws Exception {
+  void initializesInvocationCounterWhenInvocationCounterIsOutOfSyncForIskraDevice()
+      throws Exception {
     final DlmsDevice device =
         new DlmsDeviceBuilder()
             .withHls5Active(true)
@@ -166,11 +168,13 @@ class DlmsConnectionHelperTest {
       // expected
     }
 
-    verify(this.invocationCounterManager).resetInvocationCounter(device);
+    verify(this.invocationCounterManager).initializeInvocationCounter(device);
+    verify(this.connectionFactory, times(2)).getConnection(device, listener);
   }
 
   @Test
-  void resetsInvocationCounterWhenInvocationCounterIsOutOfSyncForLAndGDevice() throws Exception {
+  void initializesInvocationCounterWhenInvocationCounterIsOutOfSyncForLAndGDevice()
+      throws Exception {
     final DlmsDevice device =
         new DlmsDeviceBuilder()
             .withHls5Active(true)
@@ -192,7 +196,8 @@ class DlmsConnectionHelperTest {
       // expected
     }
 
-    verify(this.invocationCounterManager).resetInvocationCounter(device);
+    verify(this.invocationCounterManager).initializeInvocationCounter(device);
+    verify(this.connectionFactory, times(2)).getConnection(device, listener);
   }
 
   @Test

@@ -17,7 +17,6 @@ import org.opensmartgridplatform.adapter.ws.shared.db.application.config.Writabl
 import org.opensmartgridplatform.domain.core.specifications.DeviceSpecifications;
 import org.opensmartgridplatform.domain.core.specifications.EventSpecifications;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareLocation;
-import org.opensmartgridplatform.logging.domain.config.ReadOnlyLoggingConfig;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.application.config.PagingSettings;
 import org.opensmartgridplatform.ws.core.config.CoreWebServiceConfig;
@@ -45,7 +44,6 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 @Import({
   PersistenceConfig.class,
   WritablePersistenceConfig.class,
-  ReadOnlyLoggingConfig.class,
   WebServiceConfig.class,
   CoreWebServiceConfig.class
 })

@@ -15,11 +15,9 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FaultResponseDto;
-import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,34 +45,27 @@ public class BundleMessageProcessor extends DeviceRequestMessageProcessor {
   }
 
   /*
-   * Overriding sendResponseMessage to check OK message for retryable FaultResponses.
+   * Overriding shouldRetry to check OK message for retryable FaultResponses.
    */
   @Override
-  protected void sendResponseMessage(
-      final MessageMetadata messageMetadata,
+  protected boolean shouldRetry(
       final ResponseMessageResultType result,
       final Exception exception,
-      final DeviceResponseMessageSender responseMessageSender,
       final Serializable responseObject) {
+    return super.shouldRetry(result, exception, responseObject)
+        || this.shouldRetryBasedOnRetryableFaultResponses(result, responseObject);
+  }
 
-    ResponseMessageResultType checkedResult = result;
-
+  private boolean shouldRetryBasedOnRetryableFaultResponses(
+      final ResponseMessageResultType result, final Serializable responseObject) {
     if (result.equals(ResponseMessageResultType.OK)) {
-
       final BundleMessagesRequestDto response = (BundleMessagesRequestDto) responseObject;
-      final boolean shouldRetry =
-          response.getActionList().stream()
-              .map(ActionDto::getResponse)
-              .filter(Objects::nonNull)
-              .filter(r -> r instanceof FaultResponseDto)
-              .anyMatch(f -> ((FaultResponseDto) f).isRetryable());
-
-      if (shouldRetry) {
-        checkedResult = ResponseMessageResultType.NOT_OK;
-      }
+      return response.getActionList().stream()
+          .map(ActionDto::getResponse)
+          .filter(Objects::nonNull)
+          .filter(FaultResponseDto.class::isInstance)
+          .anyMatch(f -> ((FaultResponseDto) f).isRetryable());
     }
-
-    super.sendResponseMessage(
-        messageMetadata, checkedResult, exception, responseMessageSender, responseObject);
+    return false;
   }
 }
