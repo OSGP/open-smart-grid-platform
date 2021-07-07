@@ -1003,8 +1003,7 @@ public class ConfigurationService {
       final DeviceMessageMetadata deviceMessageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception,
-      final UpdateFirmwareResponseDto updateFirmwareResponseDto)
-      throws FunctionalException {
+      final UpdateFirmwareResponseDto updateFirmwareResponseDto) {
 
     LOGGER.info(
         "handleUpdateFirmwareResponse for MessageType: {}", deviceMessageMetadata.getMessageType());
@@ -1015,20 +1014,8 @@ public class ConfigurationService {
       result = ResponseMessageResultType.NOT_OK;
     }
 
-    final List<FirmwareVersion> firmwareVersions =
-        this.configurationMapper.mapAsList(
-            updateFirmwareResponseDto.getFirmwareVersions(), FirmwareVersion.class);
-    final SmartMeter smartMeter =
-        this.domainHelperService.findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
-
-    this.firmwareService.storeFirmware(
-        smartMeter,
-        updateFirmwareResponseDto.getFirmwareIdentification(),
-        firmwareVersions,
-        deviceMessageMetadata.getOrganisationIdentification());
-
     final UpdateFirmwareResponse updateFirmwareResponse =
-        new UpdateFirmwareResponse(firmwareVersions);
+        this.configurationMapper.map(updateFirmwareResponseDto, UpdateFirmwareResponse.class);
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()

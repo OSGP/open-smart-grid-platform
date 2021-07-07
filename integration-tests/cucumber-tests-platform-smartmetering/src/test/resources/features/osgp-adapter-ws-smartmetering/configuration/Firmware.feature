@@ -118,14 +118,11 @@ Feature: SmartMetering Configuration - Firmware
       | FirmwareModuleVersionFunc | M57 4836               |
     Then the update firmware result should be returned
       | DeviceIdentification      | TEST1024000000002      |
-      | FirmwareModuleVersionComm | Telit 10.00.154        |
-      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
-      | FirmwareModuleVersionFunc | M57 4836               |
-    And the database should be updated with the new device firmware
+    And the database should not be updated with the new device firmware
       | DeviceIdentification      | TEST1024000000002      |
-      | FirmwareModuleVersionComm | Telit 10.00.154        |
-      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
-      | FirmwareModuleVersionFunc | M57 4836               |
+      | FirmwareModuleVersionComm |                        |
+      | FirmwareModuleVersionMa   |                        |
+      | FirmwareModuleVersionFunc |                        |
 
   @NightlyBuildOnly
   Scenario: successful upgrade of a single firmware module
@@ -153,15 +150,12 @@ Feature: SmartMetering Configuration - Firmware
       | DeviceIdentification      | TEST1024000000002 |
       | FirmwareModuleVersionFunc | M57 4836          |
     Then the update firmware result should be returned
-      | DeviceIdentification      | TEST1024000000002      |
-      | FirmwareModuleVersionComm | Telit 10.00.154        |
-      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
-      | FirmwareModuleVersionFunc | M57 4836               |
-    And the database should be updated with the new device firmware
-      | DeviceIdentification      | TEST1024000000002      |
-      | FirmwareModuleVersionComm | Telit 10.00.154        |
-      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
-      | FirmwareModuleVersionFunc | M57 4836               |
+      | DeviceIdentification      | TEST1024000000002 |
+    And the database should not be updated with the new device firmware
+      | DeviceIdentification      | TEST1024000000002 |
+      | FirmwareModuleVersionComm |                   |
+      | FirmwareModuleVersionMa   |                   |
+      | FirmwareModuleVersionFunc |                   |
 
   @NightlyBuildOnly
   Scenario: upgrade of firmware, installation file not available

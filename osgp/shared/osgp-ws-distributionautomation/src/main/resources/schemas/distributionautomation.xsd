@@ -13,7 +13,7 @@
     targetNamespace="http://www.opensmartgridplatform.org/schemas/distributionautomation/defs/2017/04">
 
     <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/common/2014/10"
-        schemaLocation="common.xsd"/>
+        schemaLocation="common-ws-distributionautomation.xsd"/>
 
     <!--
     ##################################################################################

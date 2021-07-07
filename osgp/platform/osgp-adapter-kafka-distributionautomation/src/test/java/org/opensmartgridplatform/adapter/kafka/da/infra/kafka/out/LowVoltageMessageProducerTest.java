@@ -24,6 +24,7 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,12 +47,12 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-@SpringJUnitConfig(LowVoltageMessageProducerConfig.class)
+@SpringJUnitConfig({LowVoltageMessageProducerConfig.class})
 @TestPropertySource("classpath:osgp-adapter-kafka-distributionautomation-test.properties")
 @ExtendWith(MockitoExtension.class)
 @EmbeddedKafka(
     partitions = 1,
-    topics = {"${distributionautomation.kafka.topic}"},
+    topics = {"${distributionautomation.kafka.topic.low.voltage}"},
     brokerProperties = {
       "listeners=PLAINTEXT://localhost:9092",
       "log.dirs=../kafka-logs/",
@@ -59,7 +60,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
     })
 class LowVoltageMessageProducerTest {
 
-  @Value("${distributionautomation.kafka.topic}")
+  @Value("${distributionautomation.kafka.topic.low.voltage}")
   private String topic;
 
   @Autowired private EmbeddedKafkaBroker embeddedKafka;
@@ -68,11 +69,11 @@ class LowVoltageMessageProducerTest {
 
   @Mock private DistributionAutomationMapper mapper;
 
-  @Autowired private KafkaTemplate<String, Message> template;
+  @Autowired private KafkaTemplate<String, Message> distributionAutomationLowVoltageKafkaTemplate;
 
   @Autowired private MessageSigner messageSigner;
 
-  private LowVoltageMessageProducer producer;
+  private VoltageMessageProducer producer;
 
   private static final String PAYLOAD =
       "[{\"gisnr\":\"TST-01-L-1V1\", \"feeder\":\"8\", \"D\": \"02/10/2020 16:03:38\", "
@@ -85,8 +86,12 @@ class LowVoltageMessageProducerTest {
     when(this.mapper.map(any(ScadaMeasurementPayload.class), any(Class.class)))
         .thenReturn(this.createEvent());
     this.producer =
-        new LowVoltageMessageProducer(
-            this.template, this.messageSigner, this.mapper, this.locationService);
+        new VoltageMessageProducer(
+            this.distributionAutomationLowVoltageKafkaTemplate,
+            null,
+            this.messageSigner,
+            this.mapper,
+            this.locationService);
   }
 
   @Test
@@ -123,5 +128,10 @@ class LowVoltageMessageProducerTest {
         new ConductingEquipment(new BaseVoltage(description, null), new ArrayList<>());
     return new ScadaMeasurementPublishedEvent(
         measurements, powerSystemResource, createdDateTime, description, mRid);
+  }
+
+  @AfterEach
+  public void destroy() {
+    this.embeddedKafka.destroy();
   }
 }
