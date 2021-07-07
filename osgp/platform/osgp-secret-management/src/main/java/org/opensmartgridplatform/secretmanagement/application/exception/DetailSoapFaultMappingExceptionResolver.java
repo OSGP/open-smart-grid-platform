@@ -8,6 +8,9 @@
  */
 package org.opensmartgridplatform.secretmanagement.application.exception;
 
+import static org.opensmartgridplatform.secretmanagement.application.endpoints.SecretManagementEndpoint.CORRELATION_UID;
+import static org.opensmartgridplatform.secretmanagement.application.endpoints.SecretManagementEndpoint.NAMESPACE_URI;
+
 import java.util.Iterator;
 import javax.xml.namespace.QName;
 import lombok.extern.slf4j.Slf4j;
@@ -60,7 +63,10 @@ public class DetailSoapFaultMappingExceptionResolver extends SoapFaultMappingExc
   private String getCorrelationUid(final MessageContext messageContext) {
     final SaajSoapMessage request = (SaajSoapMessage) messageContext.getRequest();
     final Iterator<SoapHeaderElement> iter =
-        request.getEnvelope().getHeader().examineHeaderElements(new QName("correlationUid"));
+        request
+            .getEnvelope()
+            .getHeader()
+            .examineHeaderElements(new QName(NAMESPACE_URI, CORRELATION_UID));
     return iter.hasNext() ? iter.next().getText() : null;
   }
 }

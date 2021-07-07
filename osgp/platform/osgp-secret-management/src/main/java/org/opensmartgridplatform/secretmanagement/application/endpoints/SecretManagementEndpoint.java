@@ -16,9 +16,7 @@ import java.util.stream.Collectors;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.secretmanagement.application.domain.SecretType;
 import org.opensmartgridplatform.secretmanagement.application.domain.TypedSecret;
@@ -60,9 +58,9 @@ public class SecretManagementEndpoint {
     S processRequest(R request) throws OsgpException;
   }
 
-  private static final String NAMESPACE_URI =
+  public static final String NAMESPACE_URI =
       "http://www.opensmartgridplatform.org/schemas/security/secretmanagement";
-  private static final String CORRELATION_UID = "correlationUid";
+  public static final String CORRELATION_UID = "correlationUid";
   private static final String CORRELATION_HEADER = "{" + NAMESPACE_URI + "}" + CORRELATION_UID;
   private final SecretManagementService secretManagementService;
   private final SoapEndpointDataTypeConverter converter;
@@ -89,10 +87,7 @@ public class SecretManagementEndpoint {
     if (header != null) {
       final SaajSoapMessage soapResponse = (SaajSoapMessage) messageContext.getResponse();
       final org.springframework.ws.soap.SoapHeader responseHeader = soapResponse.getSoapHeader();
-      final TransformerFactory transformerFactory =
-          org.springframework.xml.transform.TransformerFactoryUtils.newInstance();
-      final Transformer transformer = transformerFactory.newTransformer();
-      transformer.transform(header.getSource(), responseHeader.getResult());
+      responseHeader.addHeaderElement(header.getName()).setText(header.getText());
     }
   }
 
