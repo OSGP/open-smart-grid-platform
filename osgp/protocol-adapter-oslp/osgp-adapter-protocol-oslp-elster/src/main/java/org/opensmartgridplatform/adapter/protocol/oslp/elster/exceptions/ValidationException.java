@@ -42,7 +42,8 @@ public class ValidationException extends ProtocolAdapterException {
     this.constraintViolations = constraintViolations;
   }
 
-  @SuppressWarnings("squid:S1452")
+  @SuppressWarnings(
+      "squid:S1452") // Wildcard necessary here, generic is used for very different classes
   public Set<ConstraintViolation<?>> getConstraintViolations() {
     return this.constraintViolations;
   }

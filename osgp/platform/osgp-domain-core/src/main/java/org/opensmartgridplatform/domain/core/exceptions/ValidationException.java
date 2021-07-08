@@ -45,7 +45,8 @@ public class ValidationException extends PlatformException {
     this.constraintViolations = constraintViolations;
   }
 
-  @SuppressWarnings("squid:S1452")
+  @SuppressWarnings(
+      "squid:S1452") // Wildcard necessary here, generic is used for very different classes
   public Set<ConstraintViolation<?>> getConstraintViolations() {
     return this.constraintViolations;
   }

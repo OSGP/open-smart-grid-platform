@@ -127,6 +127,8 @@ public class DeviceManagementController extends AbstractController {
 
   private final Random byteGenerator = new SecureRandom();
 
+  private static final String DEFAULT_FIRMWARE_VERSION = "R01";
+
   @Resource private DeviceManagementService deviceManagementService;
 
   @Autowired private RegisterDevice registerDevice;
@@ -339,13 +341,11 @@ public class DeviceManagementController extends AbstractController {
     return ArrayUtils.addAll(new byte[] {0, 1}, deviceUid);
   }
 
-  private String getDefaultFirmwareVersion() {
-    return "R01";
-  }
-
   @PostMapping(value = DEVICE_CREATE_URL)
   public String createDevice(
-      @SuppressWarnings("squid:S4684") @ModelAttribute(MODEL_ATTRIBUTE_DEVICE) final Device created,
+      @SuppressWarnings("squid:S4684") @ModelAttribute(MODEL_ATTRIBUTE_DEVICE)
+          final Device
+              created, // webdevicesimulator doesn't have to be as strict in this Sonar issue
       final BindingResult bindingResult,
       final RedirectAttributes attributes) {
 
@@ -354,7 +354,7 @@ public class DeviceManagementController extends AbstractController {
     }
 
     created.setDeviceUid(this.createRandomDeviceUid());
-    created.setFirmwareVersion(this.getDefaultFirmwareVersion());
+    created.setFirmwareVersion(DEFAULT_FIRMWARE_VERSION);
 
     final Device device;
     try {
@@ -378,7 +378,9 @@ public class DeviceManagementController extends AbstractController {
 
   @PostMapping(value = DEVICE_EDIT_URL)
   public String editDevice(
-      @SuppressWarnings("squid:S4684") @ModelAttribute(MODEL_ATTRIBUTE_DEVICE) final Device updated,
+      @SuppressWarnings("squid:S4684") @ModelAttribute(MODEL_ATTRIBUTE_DEVICE)
+          final Device
+              updated, // webdevicesimulator doesn't have to be as strict in this Sonar issue
       @PathVariable final Long deviceId,
       final BindingResult bindingResult,
       final RedirectAttributes attributes,
