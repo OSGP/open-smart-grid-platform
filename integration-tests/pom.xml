@@ -87,7 +87,6 @@
       </activation>
       <modules>
         <module>cucumber-tests-platform-publiclighting</module>
-        <module>cucumber-tests-protocol-iec60870</module>
       </modules>
     </profile>
 
@@ -110,7 +109,6 @@
       </activation>
       <modules>
         <module>cucumber-tests-platform-distributionautomation</module>
-        <module>cucumber-tests-protocol-iec60870</module>
       </modules>
     </profile>
 

@@ -34,7 +34,6 @@
 
   <modules>
     <module>osgp</module>
-    <module>super</module>
     <module>integration-tests</module>
   </modules>
 
