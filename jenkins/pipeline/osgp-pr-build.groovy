@@ -5,7 +5,7 @@ def servername = stream + '-at-pr-' + env.BUILD_NUMBER
 def playbook = stream + '-at.yml'
 
 // Choose the branch to use for SmartSocietyServices/release repository. Default value is 'master'.
-def branchReleaseRepo = 'master'
+def branchReleaseRepo = 'feature/SLIM-1878_Download_meter_keys'
 
 void setBuildStatus(String message, String state) {
     echo "Set status on GitHub to: " + state + " with message: " + message
