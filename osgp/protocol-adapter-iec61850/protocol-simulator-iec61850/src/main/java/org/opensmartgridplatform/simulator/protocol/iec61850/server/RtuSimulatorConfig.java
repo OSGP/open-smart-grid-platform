@@ -26,6 +26,8 @@ public class RtuSimulatorConfig {
   private static final Logger LOGGER = LoggerFactory.getLogger(RtuSimulatorConfig.class);
 
   @Bean
+  @SuppressWarnings(
+      "squid:S00107") // Large number of parameters is preferable over the alternatives.
   public RtuSimulator rtuSimulator(
       @Value("${rtu.icd}") final String icdFilename,
       @Value("${rtu.port}") final Integer port,
