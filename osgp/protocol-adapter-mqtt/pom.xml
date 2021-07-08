@@ -34,8 +34,6 @@
     <module>parent-pa-mqtt</module>
     <module>osgp-protocol-adapter-mqtt</module>
     <module>osgp-protocol-simulator-mqtt</module>
-    <module>../shared/shared</module>
-    <module>../shared/osgp-dto</module>
   </modules>
 
   <distributionManagement>
