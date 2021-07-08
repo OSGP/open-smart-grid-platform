@@ -45,6 +45,7 @@ public class ValidationException extends PlatformException {
     this.constraintViolations = constraintViolations;
   }
 
+  @SuppressWarnings("squid:S1452")
   public Set<ConstraintViolation<?>> getConstraintViolations() {
     return this.constraintViolations;
   }

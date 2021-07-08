@@ -42,6 +42,7 @@ public class ValidationException extends ProtocolAdapterException {
     this.constraintViolations = constraintViolations;
   }
 
+  @SuppressWarnings("squid:S1452")
   public Set<ConstraintViolation<?>> getConstraintViolations() {
     return this.constraintViolations;
   }
