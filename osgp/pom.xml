@@ -14,8 +14,6 @@
   <modules>
     <module>platform</module>
     <module>shared</module>
-    <module>protocol-adapter-oslp</module>
-    <module>protocol-adapter-dlms</module>
   </modules>
 
   <profiles>
