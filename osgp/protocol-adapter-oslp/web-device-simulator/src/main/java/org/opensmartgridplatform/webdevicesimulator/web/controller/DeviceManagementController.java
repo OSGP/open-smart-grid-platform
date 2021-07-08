@@ -176,7 +176,7 @@ public class DeviceManagementController extends AbstractController {
       final Integer pageNumber,
       final Integer devicesPerPage,
       final String sortDirection) {
-    int pageNr;
+    final int pageNr;
     if (pageNumber == null) {
       pageNr = 1;
     } else {
@@ -345,7 +345,7 @@ public class DeviceManagementController extends AbstractController {
 
   @PostMapping(value = DEVICE_CREATE_URL)
   public String createDevice(
-      @ModelAttribute(MODEL_ATTRIBUTE_DEVICE) final Device created,
+      @SuppressWarnings("squid:S4684") @ModelAttribute(MODEL_ATTRIBUTE_DEVICE) final Device created,
       final BindingResult bindingResult,
       final RedirectAttributes attributes) {
 
@@ -356,7 +356,7 @@ public class DeviceManagementController extends AbstractController {
     created.setDeviceUid(this.createRandomDeviceUid());
     created.setFirmwareVersion(this.getDefaultFirmwareVersion());
 
-    Device device;
+    final Device device;
     try {
       // Store device
       device = this.deviceManagementService.addDevice(created);
@@ -378,7 +378,7 @@ public class DeviceManagementController extends AbstractController {
 
   @PostMapping(value = DEVICE_EDIT_URL)
   public String editDevice(
-      @ModelAttribute(MODEL_ATTRIBUTE_DEVICE) final Device updated,
+      @SuppressWarnings("squid:S4684") @ModelAttribute(MODEL_ATTRIBUTE_DEVICE) final Device updated,
       @PathVariable final Long deviceId,
       final BindingResult bindingResult,
       final RedirectAttributes attributes,
