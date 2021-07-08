@@ -14,6 +14,8 @@
   <modules>
     <module>platform</module>
     <module>shared</module>
+    <module>protocol-adapter-oslp</module>
+    <module>protocol-adapter-dlms</module>
   </modules>
 
   <profiles>
@@ -68,18 +70,6 @@
     <profile>
       <!-- Grid eXchange Fabric -->
       <id>gxf</id>
-    </profile>
-
-    <profile>
-      <!-- backwards compatibility, deprecated -->
-      <id>build-all</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-      <modules>
-        <module>protocol-adapter-oslp</module>
-        <module>protocol-adapter-dlms</module>
-      </modules>
     </profile>
   </profiles>
 </project>
