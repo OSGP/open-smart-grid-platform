@@ -15,8 +15,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class BeanUtil implements ApplicationContextAware {
 
-  private static ApplicationContext context; // todo: should this be static?
+  private static ApplicationContext context;
 
+  @SuppressWarnings(
+      "squid:S2696") // setApplicationContext is an overriding method that cannot be made static and
+                     // context has to be a static variable to be able to use it statically in the
+                     // getBean and getBeanByName methods
   @Override
   public void setApplicationContext(final ApplicationContext applicationContext) {
     context = applicationContext;
