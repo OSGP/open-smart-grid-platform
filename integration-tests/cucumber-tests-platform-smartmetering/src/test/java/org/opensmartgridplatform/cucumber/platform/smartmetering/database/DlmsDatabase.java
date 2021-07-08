@@ -81,7 +81,7 @@ public class DlmsDatabase {
         new ApplicationDataLookupKey(DEFAULT_ORGANIZATION_IDENTIFICATION, "SMART_METERS");
     return new ApplicationKeyConfiguration(
         applicationDataLookupKey,
-        "/etc/osp/smartmetering/keys/platform/smartmetering-rsa-public.key");
+        "/etc/osp/smartmetering/keys/application/smartmetering-rsa-public.key");
   }
 
   /** Before each scenario dlms related stuff needs to be removed. */
