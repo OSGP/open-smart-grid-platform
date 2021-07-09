@@ -18,11 +18,13 @@ public enum SecurityKeyType {
   E_METER_AUTHENTICATION(SecretType.E_METER_AUTHENTICATION_KEY),
   /** DLMS global unicast encryption key */
   E_METER_ENCRYPTION(SecretType.E_METER_ENCRYPTION_KEY_UNICAST),
+  /** DLMS global broadcast encryption key */
+  E_METER_ENCRYPTION_BROADCAST(SecretType.E_METER_ENCRYPTION_KEY_BROADCAST),
   /** M-Bus Default key */
   G_METER_MASTER(SecretType.G_METER_MASTER_KEY),
   /** M-Bus User key */
   G_METER_ENCRYPTION(SecretType.G_METER_ENCRYPTION_KEY),
-  /** M-Bus Firmware Update Authentication key */
+  /** M-Bus Firmware update authentication key */
   G_METER_FIRMWARE_UPDATE_AUTHENTICATION(SecretType.G_METER_FIRMWARE_UPDATE_AUTHENTICATION_KEY),
   /** Password (e.g. used as DLMS Low Level Security secret) */
   PASSWORD(SecretType.PPP_PASSWORD);
