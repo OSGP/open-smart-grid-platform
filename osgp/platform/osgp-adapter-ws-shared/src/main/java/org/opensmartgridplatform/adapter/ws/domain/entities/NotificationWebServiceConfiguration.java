@@ -30,7 +30,7 @@ public class NotificationWebServiceConfiguration implements Serializable {
   public static final int DEFAULT_CIRCUIT_BREAKER_DURATION_MAXIMUM = 600000;
   public static final int DEFAULT_CIRCUIT_BREAKER_DURATION_MULTIPLIER = 4;
 
-  @EmbeddedId private NotificationWebServiceLookupKey id;
+  @EmbeddedId private ApplicationDataLookupKey id;
   private String marshallerContextPath;
   private String targetUri;
   private boolean useKeyStore = DEFAULT_USE_KEY_STORE;
@@ -55,7 +55,7 @@ public class NotificationWebServiceConfiguration implements Serializable {
   }
 
   public NotificationWebServiceConfiguration(
-      final NotificationWebServiceLookupKey id,
+      final ApplicationDataLookupKey id,
       final String marshallerContextPath,
       final String targetUri) {
 
@@ -135,11 +135,11 @@ public class NotificationWebServiceConfiguration implements Serializable {
         threshold > 0 && durationInitial > 0 && durationMaximum > 0 && durationMultiplier > 0);
   }
 
-  public NotificationWebServiceLookupKey getId() {
+  public ApplicationDataLookupKey getId() {
     return this.id;
   }
 
-  public void setId(final NotificationWebServiceLookupKey id) {
+  public void setId(final ApplicationDataLookupKey id) {
     this.id = id;
   }
 

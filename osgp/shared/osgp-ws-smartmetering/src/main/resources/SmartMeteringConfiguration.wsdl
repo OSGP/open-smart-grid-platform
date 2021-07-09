@@ -437,6 +437,30 @@
                name="SetMbusUserKeyByChannelResponse">
     </wsdl:part>
   </wsdl:message>
+
+  <wsdl:message name="GetKeysRequest">
+    <wsdl:part element="smconf:GetKeysRequest"
+               name="GetKeysRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetKeysAsyncResponse">
+    <wsdl:part element="smconf:GetKeysAsyncResponse"
+               name="GetKeysAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="GetKeysAsyncRequest">
+    <wsdl:part element="smconf:GetKeysAsyncRequest"
+               name="GetKeysAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetKeysResponse">
+    <wsdl:part element="smconf:GetKeysResponse"
+               name="GetKeysResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+
   <wsdl:portType name="SmartMeteringConfigurationPort">
 
     <wsdl:operation name="GetGetFirmwareVersionResponse">
@@ -773,6 +797,24 @@
       </wsdl:input>
       <wsdl:output message="tns:SetMbusUserKeyByChannelResponse"
                    name="SetMbusUserKeyByChannelResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetKeys">
+      <wsdl:input message="tns:GetKeysRequest"
+                  name="GetKeysRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:GetKeysAsyncResponse"
+                   name="GetKeysAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetGetKeysResponse">
+      <wsdl:input message="tns:GetKeysAsyncRequest"
+                  name="GetKeysAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:GetKeysResponse"
+                   name="GetKeysResponse">
       </wsdl:output>
     </wsdl:operation>
 
@@ -1390,6 +1432,37 @@
                      use="literal"/>
       </wsdl:input>
       <wsdl:output name="SetMbusUserKeyByChannelResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetKeys">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="GetKeysRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+                     use="literal"/>
+        <soap:header message="tns:ActionHeader" part="UserName"
+                     use="literal"/>
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+                     use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="GetKeysAsyncResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetGetKeysResponse">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="GetKeysAsyncRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+                     use="literal"/>
+        <soap:header message="tns:ActionHeader" part="UserName"
+                     use="literal"/>
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+                     use="literal"/>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="GetKeysResponse">
         <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>

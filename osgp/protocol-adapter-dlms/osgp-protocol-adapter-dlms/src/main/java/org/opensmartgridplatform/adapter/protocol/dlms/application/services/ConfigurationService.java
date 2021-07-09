@@ -44,6 +44,8 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.DefinableLoadPro
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GMeterInfoDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersionQueryDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMBusDeviceOnChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelResponseDto;
@@ -126,6 +128,8 @@ public class ConfigurationService {
 
   @Autowired
   private SetRandomisationSettingsCommandExecutor setRandomisationSettingsCommandExecutor;
+
+  @Autowired private GetKeysService getKeysService;
 
   public void setSpecialDays(
       final DlmsConnectionManager conn,
@@ -499,5 +503,11 @@ public class ConfigurationService {
       throw new ProtocolAdapterException(
           "AccessResultCode for set randomisation settings was not SUCCESS: " + accessResultCode);
     }
+  }
+
+  public GetKeysResponseDto requestGetKeys(
+      final DlmsDevice device, final GetKeysRequestDto getKeysRequestDto) {
+
+    return this.getKeysService.getKeys(device, getKeysRequestDto);
   }
 }

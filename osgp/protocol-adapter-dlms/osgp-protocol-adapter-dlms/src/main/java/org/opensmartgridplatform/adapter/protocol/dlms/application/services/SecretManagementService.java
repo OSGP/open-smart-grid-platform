@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 import static java.util.stream.Collectors.toList;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +74,8 @@ public class SecretManagementService {
     if (LOGGER.isInfoEnabled()) {
       LOGGER.info("Retrieving {} for device {}", keyType.name(), deviceIdentification);
     }
-    return this.getKeys(messageMetadata, deviceIdentification, Arrays.asList(keyType)).get(keyType);
+    return this.getKeys(messageMetadata, deviceIdentification, Collections.singletonList(keyType))
+        .get(keyType);
   }
 
   /**

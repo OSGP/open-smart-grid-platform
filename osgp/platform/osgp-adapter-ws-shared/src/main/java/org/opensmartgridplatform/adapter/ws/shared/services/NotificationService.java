@@ -8,7 +8,7 @@
  */
 package org.opensmartgridplatform.adapter.ws.shared.services;
 
-import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
+import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationDataLookupKey;
 import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericNotification;
 
 public interface NotificationService {
@@ -22,15 +22,13 @@ public interface NotificationService {
       final Object notificationType);
 
   default String getCustomTargetUri(
-      final NotificationWebServiceLookupKey endpointLookupKey,
-      final GenericNotification notification) {
+      final ApplicationDataLookupKey endpointLookupKey, final GenericNotification notification) {
 
     return null;
   }
 
   default void sendNotification(
-      final NotificationWebServiceLookupKey endpointLookupKey,
-      final GenericNotification notification) {
+      final ApplicationDataLookupKey endpointLookupKey, final GenericNotification notification) {
 
     /*
      * The sendNotification method with an application name has been added

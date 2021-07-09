@@ -10,7 +10,7 @@ package org.opensmartgridplatform.adapter.ws.shared.services;
 
 import ma.glasnost.orika.MapperFacade;
 import org.opensmartgridplatform.adapter.ws.clients.NotificationWebServiceTemplateFactory;
-import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
+import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationDataLookupKey;
 import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericNotification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +39,7 @@ public class CorrelationUidTargetedNotificationService<T> extends DefaultNotific
 
   @Override
   public String getCustomTargetUri(
-      final NotificationWebServiceLookupKey endpointLookupKey,
-      final GenericNotification notification) {
+      final ApplicationDataLookupKey endpointLookupKey, final GenericNotification notification) {
 
     final String customUri =
         this.responseUrlService.findResponseUrl(notification.getCorrelationUid());

@@ -249,7 +249,7 @@
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"/>
         <xsd:sequence>
-          <xsd:element name="FirmwareVersion" type="tns:FirmwareVersionGas" />
+          <xsd:element name="FirmwareVersion" type="tns:FirmwareVersionGas"/>
         </xsd:sequence>
       </xsd:sequence>
     </xsd:complexType>
@@ -1243,5 +1243,76 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
+
+  <xsd:element name="GetKeysRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
+        <xsd:element name="GetKeysData"
+                     type="tns:GetKeysRequestData"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="GetKeysRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Query">
+        <xsd:sequence>
+          <xsd:element type="tns:SecretType" name="secretTypes"
+                       minOccurs="1" maxOccurs="4"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="GetKeysAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="GetKeysResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType"/>
+        <xsd:element name="GetKeysResponseData"
+                     type="tns:GetKeysResponseData" maxOccurs="unbounded"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="GetKeysResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
+        <xsd:sequence>
+          <xsd:element type="tns:SecretType" name="secretType"/>
+          <xsd:element type="xsd:hexBinary" name="secretValue"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="GetKeysAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:simpleType name="SecretType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="E_METER_MASTER_KEY"/>
+      <xsd:enumeration value="E_METER_AUTHENTICATION_KEY"/>
+      <xsd:enumeration value="E_METER_ENCRYPTION_KEY_UNICAST"/>
+      <xsd:enumeration value="E_METER_ENCRYPTION_KEY_BROADCAST"/>
+      <xsd:enumeration value="G_METER_MASTER_KEY"/>
+      <xsd:enumeration value="G_METER_ENCRYPTION_KEY"/>
+      <xsd:enumeration value="G_METER_FIRMWARE_UPDATE_AUTHENTICATION_KEY"/>
+      <xsd:enumeration value="G_METER_OPTICAL_PORT_KEY"/>
+    </xsd:restriction>
+  </xsd:simpleType>
 
 </xsd:schema>

@@ -25,8 +25,8 @@ import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.SSLContexts;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationDataLookupKey;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
-import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.opensmartgridplatform.shared.infra.ws.CircuitBreaker;
@@ -47,8 +47,8 @@ public class NotificationWebServiceTemplateFactory {
       LoggerFactory.getLogger(NotificationWebServiceTemplateFactory.class);
 
   private static final String PROXY_SERVER = "proxy-server";
-  private static final Map<NotificationWebServiceLookupKey, WebServiceTemplate>
-      webServiceTemplates = new ConcurrentHashMap<>();
+  private static final Map<ApplicationDataLookupKey, WebServiceTemplate> webServiceTemplates =
+      new ConcurrentHashMap<>();
 
   private final NotificationWebServiceConfigurationRepository configRepository;
   private final WebServiceMessageFactory messageFactory;
@@ -76,7 +76,7 @@ public class NotificationWebServiceTemplateFactory {
     }
   }
 
-  public WebServiceTemplate getTemplate(final NotificationWebServiceLookupKey templateKey) {
+  public WebServiceTemplate getTemplate(final ApplicationDataLookupKey templateKey) {
 
     return webServiceTemplates.computeIfAbsent(
         templateKey,
@@ -101,7 +101,7 @@ public class NotificationWebServiceTemplateFactory {
         });
   }
 
-  private WebServiceTemplate createTemplate(final NotificationWebServiceLookupKey id)
+  private WebServiceTemplate createTemplate(final ApplicationDataLookupKey id)
       throws WebServiceSecurityException {
 
     final Optional<NotificationWebServiceConfiguration> config = this.configRepository.findById(id);

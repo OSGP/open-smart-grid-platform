@@ -17,27 +17,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Embeddable
-public final class NotificationWebServiceLookupKey implements Serializable {
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(NotificationWebServiceLookupKey.class);
+public final class ApplicationDataLookupKey implements Serializable {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationDataLookupKey.class);
 
   private static final long serialVersionUID = -6367887742782273500L;
 
   private String organisationIdentification;
   private String applicationName;
 
-  public NotificationWebServiceLookupKey() {
+  public ApplicationDataLookupKey() {
     /*
      * Public no-argument constructor, required for JPA composite primary
      * key class.
      */
   }
 
-  public NotificationWebServiceLookupKey(final String organisationIdentification) {
+  public ApplicationDataLookupKey(final String organisationIdentification) {
     this(organisationIdentification, "");
   }
 
-  public NotificationWebServiceLookupKey(
+  public ApplicationDataLookupKey(
       final String organisationIdentification, final String applicationName) {
     this.organisationIdentification =
         Objects.requireNonNull(
@@ -64,10 +63,10 @@ public final class NotificationWebServiceLookupKey implements Serializable {
     if (this == obj) {
       return true;
     }
-    if (!(obj instanceof NotificationWebServiceLookupKey)) {
+    if (!(obj instanceof ApplicationDataLookupKey)) {
       return false;
     }
-    final NotificationWebServiceLookupKey other = (NotificationWebServiceLookupKey) obj;
+    final ApplicationDataLookupKey other = (ApplicationDataLookupKey) obj;
     return Objects.equals(
             this.getOrganisationIdentification(), other.getOrganisationIdentification())
         && Objects.equals(this.getApplicationName(), other.getApplicationName());
