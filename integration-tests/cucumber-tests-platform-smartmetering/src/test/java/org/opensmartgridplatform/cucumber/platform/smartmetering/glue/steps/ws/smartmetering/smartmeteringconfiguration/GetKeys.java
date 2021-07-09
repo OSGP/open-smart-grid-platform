@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.ArrayUtils;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.ApplicationKeyConfigurationRepository;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysAsyncResponse;
@@ -37,8 +36,6 @@ public class GetKeys {
   private static final String OPERATION = "Get keys";
 
   @Autowired private SmartMeteringConfigurationClient smartMeteringConfigurationClient;
-
-  @Autowired private ApplicationKeyConfigurationRepository applicationKeyConfigurationRepository;
 
   @When("^a get keys request is received$")
   public void aGetKeysRequestIsReceived(final Map<String, String> settings) throws Throwable {
