@@ -83,6 +83,7 @@
       <xsd:enumeration value="SET_RANDOMISATION_SETTINGS" />
       <xsd:enumeration value="GET_GSM_DIAGNOSTIC" />
       <xsd:enumeration value="SET_COMMUNICATION_NETWORK_INFORMATION" />
+      <xsd:enumeration value="GET_KEYS" />
     </xsd:restriction>
   </xsd:simpleType>
 

@@ -34,6 +34,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.Firmware
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetAllAttributeValuesResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfigurationObjectResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetGsmDiagnosticResponseData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetKeysResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetOutagesResponseData;
@@ -60,6 +61,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.FirmwareVersionR
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetAllAttributeValuesResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetGsmDiagnosticResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetOutagesResponseDto;
@@ -97,7 +99,7 @@ public class ActionMapperResponseService {
   private static final Map<Class<? extends ActionResponseDto>, Class<? extends ActionResponse>>
       classMap = new HashMap<>();
 
-  /** Specifies to whi ch core value object the DTO object needs to be mapped. */
+  /** Specifies to which core value object the DTO object needs to be mapped. */
   static {
     classMap.put(EventMessageDataResponseDto.class, EventMessagesResponse.class);
     classMap.put(MeterReadsResponseDto.class, MeterReads.class);
@@ -130,6 +132,7 @@ public class ActionMapperResponseService {
     classMap.put(ScanMbusChannelsResponseDto.class, ScanMbusChannelsResponseData.class);
     classMap.put(GetOutagesResponseDto.class, GetOutagesResponseData.class);
     classMap.put(GetGsmDiagnosticResponseDto.class, GetGsmDiagnosticResponseData.class);
+    classMap.put(GetKeysResponseDto.class, GetKeysResponseData.class);
   }
 
   /** Specifies which mapper to use for the DTO class received. */
@@ -161,6 +164,7 @@ public class ActionMapperResponseService {
     classToMapperMap.put(ScanMbusChannelsResponseDto.class, this.configurationMapper);
     classToMapperMap.put(GetOutagesResponseDto.class, this.managementMapper);
     classToMapperMap.put(GetGsmDiagnosticResponseDto.class, this.managementMapper);
+    classToMapperMap.put(GetKeysResponseDto.class, this.configurationMapper);
   }
 
   public BundleMessagesResponse mapAllActions(
