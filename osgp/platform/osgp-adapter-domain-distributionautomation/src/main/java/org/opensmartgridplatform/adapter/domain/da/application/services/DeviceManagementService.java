@@ -17,7 +17,7 @@ import org.opensmartgridplatform.dto.da.GetHealthStatusRequestDto;
 import org.opensmartgridplatform.dto.da.GetHealthStatusResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -139,8 +139,7 @@ public class DeviceManagementService extends BaseService {
   }
 
   public void addDevice(
-      final DeviceMessageMetadata deviceMessageMetadata,
-      final AddRtuDeviceRequest addRtuDeviceRequest)
+      final MessageMetadata deviceMessageMetadata, final AddRtuDeviceRequest addRtuDeviceRequest)
       throws FunctionalException {
     final String organisationIdentification = deviceMessageMetadata.getOrganisationIdentification();
     final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();

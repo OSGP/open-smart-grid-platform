@@ -11,7 +11,7 @@ package org.opensmartgridplatform.domain.core.entities;
 import java.sql.Timestamp;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 /** Scheduled task without the actual data */
 @Entity
@@ -25,12 +25,12 @@ public class ScheduledTaskWithoutData extends AbstractScheduledTask {
   }
 
   public ScheduledTaskWithoutData(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata messageMetadata,
       final String domain,
       final String domainVersion,
       final Timestamp scheduledTime,
       final Timestamp maxScheduledTime) {
 
-    super(deviceMessageMetadata, domain, domainVersion, scheduledTime, maxScheduledTime);
+    super(messageMetadata, domain, domainVersion, scheduledTime, maxScheduledTime);
   }
 }

@@ -27,7 +27,8 @@ import org.opensmartgridplatform.shared.application.config.PagingSettings;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata.Builder;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.validation.Identification;
@@ -118,17 +119,18 @@ public class AdHocManagementService {
     final LightValueMessageDataContainer lightValueMessageDataContainer =
         new LightValueMessageDataContainer(lightValues);
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceIdentification,
-            organisationIdentification,
-            correlationUid,
-            MessageType.SET_LIGHT.name(),
-            messagePriority);
+    final MessageMetadata deviceMessageMetadata =
+        new MessageMetadata.Builder()
+            .withDeviceIdentification(deviceIdentification)
+            .withOrganisationIdentification(organisationIdentification)
+            .withCorrelationUid(correlationUid)
+            .withMessageType(MessageType.SET_LIGHT.name())
+            .withMessagePriority(messagePriority)
+            .build();
 
     final PublicLightingRequestMessage message =
         new PublicLightingRequestMessage.Builder()
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(deviceMessageMetadata)
             .request(lightValueMessageDataContainer)
             .build();
     this.messageSender.send(message);
@@ -162,18 +164,17 @@ public class AdHocManagementService {
         this.correlationIdProviderService.getCorrelationId(
             organisationIdentification, deviceIdentification);
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceIdentification,
-            organisationIdentification,
-            correlationUid,
-            MessageType.GET_LIGHT_STATUS.name(),
-            messagePriority);
+    final MessageMetadata deviceMessageMetadata =
+        new MessageMetadata.Builder()
+            .withDeviceIdentification(deviceIdentification)
+            .withOrganisationIdentification(organisationIdentification)
+            .withCorrelationUid(correlationUid)
+            .withMessageType(MessageType.GET_LIGHT_STATUS.name())
+            .withMessagePriority(messagePriority)
+            .build();
 
     final PublicLightingRequestMessage message =
-        new PublicLightingRequestMessage.Builder()
-            .deviceMessageMetadata(deviceMessageMetadata)
-            .build();
+        new PublicLightingRequestMessage.Builder().messageMetadata(deviceMessageMetadata).build();
 
     this.messageSender.send(message);
 
@@ -210,17 +211,18 @@ public class AdHocManagementService {
         this.correlationIdProviderService.getCorrelationId(
             organisationIdentification, deviceIdentification);
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceIdentification,
-            organisationIdentification,
-            correlationUid,
-            MessageType.RESUME_SCHEDULE.name(),
-            messagePriority);
+    final MessageMetadata deviceMessageMetadata =
+        new Builder()
+            .withDeviceIdentification(deviceIdentification)
+            .withOrganisationIdentification(organisationIdentification)
+            .withCorrelationUid(correlationUid)
+            .withMessageType(MessageType.RESUME_SCHEDULE.name())
+            .withMessagePriority(messagePriority)
+            .build();
 
     final PublicLightingRequestMessage message =
         new PublicLightingRequestMessage.Builder()
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(deviceMessageMetadata)
             .request(resumeScheduleData)
             .build();
 
@@ -257,17 +259,18 @@ public class AdHocManagementService {
         this.correlationIdProviderService.getCorrelationId(
             organisationIdentification, deviceIdentification);
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceIdentification,
-            organisationIdentification,
-            correlationUid,
-            MessageType.SET_TRANSITION.name(),
-            messagePriority);
+    final MessageMetadata deviceMessageMetadata =
+        new Builder()
+            .withDeviceIdentification(deviceIdentification)
+            .withOrganisationIdentification(organisationIdentification)
+            .withCorrelationUid(correlationUid)
+            .withMessageType(MessageType.SET_TRANSITION.name())
+            .withMessagePriority(messagePriority)
+            .build();
 
     final PublicLightingRequestMessage message =
         new PublicLightingRequestMessage.Builder()
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(deviceMessageMetadata)
             .request(transitionMessageDataContainer)
             .build();
 
@@ -314,17 +317,18 @@ public class AdHocManagementService {
         this.correlationIdProviderService.getCorrelationId(
             organisationIdentification, deviceIdentification);
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceIdentification,
-            organisationIdentification,
-            correlationUid,
-            MessageType.SET_LIGHT_MEASUREMENT_DEVICE.name(),
-            messagePriority);
+    final MessageMetadata deviceMessageMetadata =
+        new Builder()
+            .withDeviceIdentification(deviceIdentification)
+            .withOrganisationIdentification(organisationIdentification)
+            .withCorrelationUid(correlationUid)
+            .withMessageType(MessageType.SET_LIGHT_MEASUREMENT_DEVICE.name())
+            .withMessagePriority(messagePriority)
+            .build();
 
     final PublicLightingRequestMessage message =
         new PublicLightingRequestMessage.Builder()
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(deviceMessageMetadata)
             .request(lightMeasurementDeviceIdentification)
             .build();
 

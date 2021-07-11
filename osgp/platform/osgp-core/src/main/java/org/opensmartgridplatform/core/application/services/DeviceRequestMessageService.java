@@ -45,7 +45,7 @@ public class DeviceRequestMessageService {
       } else {
         protocolInfo = device.getGatewayDevice().getProtocolInfo();
       }
-      DomainRequestMessageListener
+
       if (protocolInfo == null || !this.protocolRequestService.isSupported(protocolInfo)) {
         if (protocolInfo == null) {
           LOGGER.error("Protocol unknown for device [{}]", device.getDeviceIdentification());

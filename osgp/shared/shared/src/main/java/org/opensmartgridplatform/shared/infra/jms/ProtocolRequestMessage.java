@@ -9,7 +9,6 @@
 package org.opensmartgridplatform.shared.infra.jms;
 
 import java.io.Serializable;
-import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 public class ProtocolRequestMessage extends RequestMessage {
 
@@ -22,14 +21,14 @@ public class ProtocolRequestMessage extends RequestMessage {
   private final boolean scheduled;
   private final Long maxScheduleTime;
   private final int retryCount;
-  private int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
+  private final int messagePriority;
   private final boolean bypassRetry;
 
   private ProtocolRequestMessage(final Builder builder) {
     super(
-        builder.deviceMessageMetadata.getCorrelationUid(),
-        builder.deviceMessageMetadata.getOrganisationIdentification(),
-        builder.deviceMessageMetadata.getDeviceIdentification(),
+        builder.messageMetadata.getCorrelationUid(),
+        builder.messageMetadata.getOrganisationIdentification(),
+        builder.messageMetadata.getDeviceIdentification(),
         builder.ipAddress,
         builder.request);
 
@@ -37,11 +36,12 @@ public class ProtocolRequestMessage extends RequestMessage {
     this.domainVersion = builder.domainVersion;
     this.messageData = builder.request;
     this.scheduled = builder.scheduled;
+    this.maxScheduleTime = builder.maxScheduleTime;
     this.retryCount = builder.retryCount;
 
-    this.messageType = builder.deviceMessageMetadata.getMessageType();
-    this.messagePriority = builder.deviceMessageMetadata.getMessagePriority();
-    this.bypassRetry = builder.deviceMessageMetadata.bypassRetry();
+    this.messageType = builder.messageMetadata.getMessageType();
+    this.messagePriority = builder.messageMetadata.getMessagePriority();
+    this.bypassRetry = builder.messageMetadata.isBypassRetry();
   }
 
   public static class Builder {
@@ -50,12 +50,13 @@ public class ProtocolRequestMessage extends RequestMessage {
     private String ipAddress;
     private Serializable request;
     private boolean scheduled;
+    private Long maxScheduleTime;
     private int retryCount;
 
-    private DeviceMessageMetadata deviceMessageMetadata;
+    private MessageMetadata messageMetadata;
 
-    public Builder deviceMessageMetadata(final DeviceMessageMetadata deviceMessageMetadata) {
-      this.deviceMessageMetadata = deviceMessageMetadata;
+    public Builder messageMetadata(final MessageMetadata messageMetadata) {
+      this.messageMetadata = messageMetadata;
       return this;
     }
 
@@ -81,6 +82,11 @@ public class ProtocolRequestMessage extends RequestMessage {
 
     public Builder scheduled(final boolean scheduled) {
       this.scheduled = scheduled;
+      return this;
+    }
+
+    public Builder maxScheduleTime(final Long maxScheduleTime) {
+      this.maxScheduleTime = maxScheduleTime;
       return this;
     }
 
@@ -116,6 +122,10 @@ public class ProtocolRequestMessage extends RequestMessage {
 
   public boolean isScheduled() {
     return this.scheduled;
+  }
+
+  public Long getMaxScheduleTime() {
+    return this.maxScheduleTime;
   }
 
   public int getMessagePriority() {

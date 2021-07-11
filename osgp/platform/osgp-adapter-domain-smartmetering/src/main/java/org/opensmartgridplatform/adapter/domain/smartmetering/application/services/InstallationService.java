@@ -27,7 +27,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelEleme
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -66,53 +66,51 @@ public class InstallationService {
   }
 
   public void addMeter(
-      final DeviceMessageMetadata deviceMessageMetadata,
-      final AddSmartMeterRequest addSmartMeterRequest)
+      final MessageMetadata messageMetadata, final AddSmartMeterRequest addSmartMeterRequest)
       throws FunctionalException {
-    final String organisationId = deviceMessageMetadata.getOrganisationIdentification();
-    final String deviceId = deviceMessageMetadata.getDeviceIdentification();
+    final String organisationId = messageMetadata.getOrganisationIdentification();
+    final String deviceId = messageMetadata.getDeviceIdentification();
     LOGGER.debug(
         "addMeter for organisationIdentification: {} for deviceIdentification: {}",
         organisationId,
         deviceId);
     final SmartMeteringDevice smartMeteringDevice = addSmartMeterRequest.getDevice();
 
-    final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
+    final String deviceIdentification = messageMetadata.getDeviceIdentification();
 
     this.smartMeterService.validateSmartMeterDoesNotExist(deviceIdentification);
 
     final SmartMeter smartMeter = this.smartMeterService.convertSmartMeter(smartMeteringDevice);
     this.smartMeterService.storeMeter(organisationId, addSmartMeterRequest, smartMeter);
     this.osgpCoreRequestMessageSender.send(
-        this.getRequestMessage(deviceMessageMetadata, smartMeteringDevice),
-        deviceMessageMetadata.getMessageType(),
-        deviceMessageMetadata.getMessagePriority(),
-        deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        this.getRequestMessage(messageMetadata, smartMeteringDevice),
+        messageMetadata.getMessageType(),
+        messageMetadata.getMessagePriority(),
+        messageMetadata.getScheduleTime(),
+        messageMetadata.isBypassRetry());
   }
 
   /**
    * In case of errors that prevented adding the meter to the protocol database, the meter should be
    * removed from the core database as well.
    */
-  public void removeMeter(final DeviceMessageMetadata deviceMessageMetadata) {
+  public void removeMeter(final MessageMetadata messageMetadata) {
     LOGGER.warn(
         "Removing meter {} for organization {}, because adding it to the protocol database failed with "
             + "correlation UID {}",
-        deviceMessageMetadata.getDeviceIdentification(),
-        deviceMessageMetadata.getOrganisationIdentification(),
-        deviceMessageMetadata.getCorrelationUid());
+        messageMetadata.getDeviceIdentification(),
+        messageMetadata.getOrganisationIdentification(),
+        messageMetadata.getCorrelationUid());
 
-    this.smartMeterService.removeMeter(deviceMessageMetadata);
+    this.smartMeterService.removeMeter(messageMetadata);
   }
 
   private RequestMessage getRequestMessage(
-      final DeviceMessageMetadata deviceMessageMetadata,
-      final SmartMeteringDevice smartMeteringDevice) {
+      final MessageMetadata messageMetadata, final SmartMeteringDevice smartMeteringDevice) {
     return new RequestMessage(
-        deviceMessageMetadata.getCorrelationUid(),
-        deviceMessageMetadata.getOrganisationIdentification(),
-        deviceMessageMetadata.getDeviceIdentification(),
+        messageMetadata.getCorrelationUid(),
+        messageMetadata.getOrganisationIdentification(),
+        messageMetadata.getDeviceIdentification(),
         this.mapperFactory
             .getMapperFacade()
             .map(smartMeteringDevice, SmartMeteringDeviceDto.class));
@@ -120,74 +118,70 @@ public class InstallationService {
 
   @Transactional(value = "transactionManager")
   public void handleAddMeterResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata messageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception) {
-    this.handleResponse(
-        "handleDefaultDeviceResponse", deviceMessageMetadata, deviceResult, exception);
+    this.handleResponse("handleDefaultDeviceResponse", messageMetadata, deviceResult, exception);
   }
 
   public void coupleMbusDevice(
-      final DeviceMessageMetadata deviceMessageMetadata,
-      final CoupleMbusDeviceRequestData requestData)
+      final MessageMetadata messageMetadata, final CoupleMbusDeviceRequestData requestData)
       throws FunctionalException {
-    this.mBusGatewayService.coupleMbusDevice(deviceMessageMetadata, requestData);
+    this.mBusGatewayService.coupleMbusDevice(messageMetadata, requestData);
   }
 
   @Transactional(value = "transactionManager")
   public void decoupleMbusDevice(
-      final DeviceMessageMetadata deviceMessageMetadata,
-      final DecoupleMbusDeviceRequestData requestData)
+      final MessageMetadata messageMetadata, final DecoupleMbusDeviceRequestData requestData)
       throws FunctionalException {
-    this.mBusGatewayService.decoupleMbusDevice(deviceMessageMetadata, requestData);
+    this.mBusGatewayService.decoupleMbusDevice(messageMetadata, requestData);
   }
 
   @Transactional(value = "transactionManager")
   public void coupleMbusDeviceByChannel(
-      final DeviceMessageMetadata deviceMessageMetadata,
-      final CoupleMbusDeviceByChannelRequestData requestData)
+      final MessageMetadata messageMetadata, final CoupleMbusDeviceByChannelRequestData requestData)
       throws FunctionalException {
-    this.mBusGatewayService.coupleMbusDeviceByChannel(deviceMessageMetadata, requestData);
+    this.mBusGatewayService.coupleMbusDeviceByChannel(messageMetadata, requestData);
   }
 
   @Transactional(value = "transactionManager")
   public void handleCoupleMbusDeviceResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata messageMetadata,
       final ResponseMessageResultType result,
       final OsgpException exception,
       final MbusChannelElementsResponseDto dataObject)
       throws FunctionalException {
     if (exception == null) {
-      this.mBusGatewayService.handleCoupleMbusDeviceResponse(deviceMessageMetadata, dataObject);
+      this.mBusGatewayService.handleCoupleMbusDeviceResponse(messageMetadata, dataObject);
     }
-    this.handleResponse("coupleMbusDevice", deviceMessageMetadata, result, exception);
+    this.handleResponse("coupleMbusDevice", messageMetadata, result, exception);
   }
 
   @Transactional(value = "transactionManager")
   public void decoupleMbusDeviceByChannel(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata messageMetadata,
       final DecoupleMbusDeviceByChannelRequestData requestData)
       throws FunctionalException {
-    this.mBusGatewayService.decoupleMbusDeviceByChannel(deviceMessageMetadata, requestData);
+    this.mBusGatewayService.decoupleMbusDeviceByChannel(messageMetadata, requestData);
   }
 
   @Transactional(value = "transactionManager")
   public void handleDecoupleMbusDeviceResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata messageMetadata,
       final ResponseMessageResultType result,
       final OsgpException exception,
       final DecoupleMbusDeviceResponseDto decoupleMbusDeviceResponseDto)
       throws FunctionalException {
     if (exception == null) {
       this.mBusGatewayService.handleDecoupleMbusDeviceResponse(
-          deviceMessageMetadata, decoupleMbusDeviceResponseDto);
+          messageMetadata, decoupleMbusDeviceResponseDto);
     }
-    this.handleResponse("decoupleMbusDevice", deviceMessageMetadata, result, exception);
+    this.handleResponse("decoupleMbusDevice", messageMetadata, result, exception);
   }
 
   @Transactional(value = "transactionManager")
   public void handleDecoupleMbusDeviceByChannelResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata messageMetadata,
       final ResponseMessageResultType responseMessageResultType,
       final OsgpException osgpException,
       final DecoupleMbusDeviceResponseDto decoupleMbusDeviceResponseDto)
@@ -195,7 +189,7 @@ public class InstallationService {
 
     if (osgpException == null) {
       this.mBusGatewayService.handleDecoupleMbusDeviceResponse(
-          deviceMessageMetadata, decoupleMbusDeviceResponseDto);
+          messageMetadata, decoupleMbusDeviceResponseDto);
     }
 
     final DecoupleMbusDeviceByChannelResponse response =
@@ -205,67 +199,63 @@ public class InstallationService {
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-            .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-            .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+            .withCorrelationUid(messageMetadata.getCorrelationUid())
+            .withOrganisationIdentification(messageMetadata.getOrganisationIdentification())
+            .withDeviceIdentification(messageMetadata.getDeviceIdentification())
             .withResult(responseMessageResultType)
             .withOsgpException(osgpException)
             .withDataObject(response)
-            .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+            .withMessagePriority(messageMetadata.getMessagePriority())
             .build();
 
-    this.webServiceResponseMessageSender.send(
-        responseMessage, deviceMessageMetadata.getMessageType());
+    this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
 
   @Transactional(value = "transactionManager")
   public void handleCoupleMbusDeviceByChannelResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata messageMetadata,
       final ResponseMessageResultType responseMessageResultType,
       final OsgpException osgpException,
       final CoupleMbusDeviceByChannelResponseDto dataObject)
       throws FunctionalException {
 
-    this.mBusGatewayService.handleCoupleMbusDeviceByChannelResponse(
-        deviceMessageMetadata, dataObject);
+    this.mBusGatewayService.handleCoupleMbusDeviceByChannelResponse(messageMetadata, dataObject);
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-            .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-            .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+            .withCorrelationUid(messageMetadata.getCorrelationUid())
+            .withOrganisationIdentification(messageMetadata.getOrganisationIdentification())
+            .withDeviceIdentification(messageMetadata.getDeviceIdentification())
             .withResult(responseMessageResultType)
             .withOsgpException(osgpException)
             .withDataObject(
                 this.commonMapper.map(dataObject, CoupleMbusDeviceByChannelResponse.class))
-            .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+            .withMessagePriority(messageMetadata.getMessagePriority())
             .build();
 
-    this.webServiceResponseMessageSender.send(
-        responseMessage, deviceMessageMetadata.getMessageType());
+    this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
 
   @Transactional(value = "transactionManager")
   public void handleResponse(
       final String methodName,
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata messageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception) {
 
-    LOGGER.debug("{} for MessageType: {}", methodName, deviceMessageMetadata.getMessageType());
+    LOGGER.debug("{} for MessageType: {}", methodName, messageMetadata.getMessageType());
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-            .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-            .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+            .withCorrelationUid(messageMetadata.getCorrelationUid())
+            .withOrganisationIdentification(messageMetadata.getOrganisationIdentification())
+            .withDeviceIdentification(messageMetadata.getDeviceIdentification())
             .withResult(this.getResponseMessageResultType(deviceResult, exception))
             .withOsgpException(exception)
-            .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+            .withMessagePriority(messageMetadata.getMessagePriority())
             .build();
 
-    this.webServiceResponseMessageSender.send(
-        responseMessage, deviceMessageMetadata.getMessageType());
+    this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
 
   private ResponseMessageResultType getResponseMessageResultType(
