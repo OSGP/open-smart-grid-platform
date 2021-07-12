@@ -30,7 +30,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventMessageData
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventTypeDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
 public class EventServiceTest {
@@ -38,7 +38,7 @@ public class EventServiceTest {
   @Mock private DomainHelperService domainHelperService;
 
   private EventService eventService;
-  private DeviceMessageMetadata deviceMessageMetadata;
+  private MessageMetadata deviceMessageMetadata;
   @Mock private SmartMeter smartMeter;
 
   @BeforeEach
@@ -46,7 +46,7 @@ public class EventServiceTest {
     this.eventService = new EventService(this.domainHelperService);
 
     this.deviceMessageMetadata =
-        DeviceMessageMetadata.newBuilder()
+        new MessageMetadata.Builder()
             .withCorrelationUid(RandomStringUtils.randomAlphabetic(10))
             .withDeviceIdentification(RandomStringUtils.randomAlphabetic(10))
             .withOrganisationIdentification(RandomStringUtils.randomAlphabetic(10))

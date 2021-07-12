@@ -13,7 +13,7 @@ import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.Osg
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
@@ -53,7 +53,7 @@ public class AddMeterResponseMessageProcessor extends OsgpCoreResponseMessagePro
 
   @Override
   protected void handleMessage(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessage responseMessage,
       final OsgpException osgpException) {
 
@@ -62,7 +62,7 @@ public class AddMeterResponseMessageProcessor extends OsgpCoreResponseMessagePro
   }
 
   @Override
-  protected void handleError(final Exception e, final DeviceMessageMetadata deviceMessageMetadata) {
+  protected void handleError(final Exception e, final MessageMetadata deviceMessageMetadata) {
     try {
       this.installationService.removeMeter(deviceMessageMetadata);
     } catch (final Exception ex) {

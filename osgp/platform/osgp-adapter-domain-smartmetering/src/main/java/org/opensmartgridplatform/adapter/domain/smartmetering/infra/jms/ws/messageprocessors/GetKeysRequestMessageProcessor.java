@@ -13,7 +13,7 @@ import org.opensmartgridplatform.adapter.domain.smartmetering.application.servic
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.BaseRequestMessageProcessor;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetKeysRequestData;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,12 +35,11 @@ public class GetKeysRequestMessageProcessor extends BaseRequestMessageProcessor 
   }
 
   @Override
-  protected void handleMessage(
-      final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
+  protected void handleMessage(final MessageMetadata messageMetadata, final Object dataObject)
       throws FunctionalException {
 
     final GetKeysRequestData getKeysRequestData = (GetKeysRequestData) dataObject;
 
-    this.configurationService.getKeys(deviceMessageMetadata, getKeysRequestData);
+    this.configurationService.getKeys(messageMetadata, getKeysRequestData);
   }
 }

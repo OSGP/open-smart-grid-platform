@@ -13,7 +13,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -37,15 +37,14 @@ public abstract class AbstractRequestMessageProcessor {
     this.componentType = ComponentType.DOMAIN_SMART_METERING;
   }
 
-  protected void handleMessage(
-      final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
+  protected void handleMessage(final MessageMetadata deviceMessageMetadata, final Object dataObject)
       throws FunctionalException {
     throw new UnsupportedOperationException(
         String.format(
             ERROR_MSG_UNSUPPORTED_OPERATION, "handleMessage(deviceMessageMetadata, dataObject)"));
   }
 
-  protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata)
+  protected void handleMessage(final MessageMetadata deviceMessageMetadata)
       throws FunctionalException {
     throw new UnsupportedOperationException(
         String.format(ERROR_MSG_UNSUPPORTED_OPERATION, "handleMessage(deviceMessageMetadata)"));

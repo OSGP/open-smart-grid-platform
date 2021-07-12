@@ -16,7 +16,7 @@ import javax.persistence.MappedSuperclass;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.domain.core.valueobjects.ScheduledTaskStatusType;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 /** Abstract scheduled task used for mapping fields used by subclasses. */
 @MappedSuperclass
@@ -63,7 +63,7 @@ public abstract class AbstractScheduledTask extends AbstractEntity {
   }
 
   protected AbstractScheduledTask(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final String domain,
       final String domainVersion,
       final Timestamp scheduledTime) {

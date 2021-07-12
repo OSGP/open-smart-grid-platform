@@ -28,7 +28,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SmartMet
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,11 +64,11 @@ public class SmartMeterService {
     this.storeAuthorization(organisationIdentification, smartMeter);
   }
 
-  public void removeMeter(final DeviceMessageMetadata deviceMessageMetadata) {
+  public void removeMeter(final MessageMetadata messageMetadata) {
 
     final SmartMeter device =
         this.smartMeterRepository.findByDeviceIdentification(
-            deviceMessageMetadata.getDeviceIdentification());
+            messageMetadata.getDeviceIdentification());
 
     this.deviceAuthorizationRepository.deleteAll(device.getAuthorizations());
     this.smartMeterRepository.delete(device);

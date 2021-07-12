@@ -27,7 +27,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.validation.Identification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -81,8 +81,8 @@ public class ManagementService {
             requestMessageMetadata.getOrganisationIdentification(),
             requestMessageMetadata.getDeviceIdentification());
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        requestMessageMetadata.newDeviceMessageMetadata(correlationUid);
+    final MessageMetadata deviceMessageMetadata =
+        requestMessageMetadata.newMessageMetadata(correlationUid);
 
     this.findMessageLogsSyncRequestExecutor.execute(
         requestMessageMetadata.getOrganisationIdentification(),

@@ -22,7 +22,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.Schedule;
 import org.opensmartgridplatform.domain.core.valueobjects.ScheduleEntry;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.validation.Identification;
 import org.slf4j.Logger;
@@ -75,18 +75,19 @@ public class ScheduleManagementService {
 
     final Schedule schedule = new Schedule(mapAsList);
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceIdentification,
-            organisationIdentification,
-            correlationUid,
-            MessageType.SET_TARIFF_SCHEDULE.name(),
-            messagePriority,
-            scheduledTime == null ? null : scheduledTime.getMillis());
+    final MessageMetadata deviceMessageMetadata =
+        new MessageMetadata.Builder()
+            .withDeviceIdentification(deviceIdentification)
+            .withOrganisationIdentification(organisationIdentification)
+            .withCorrelationUid(correlationUid)
+            .withMessageType(MessageType.SET_TARIFF_SCHEDULE.name())
+            .withMessagePriority(messagePriority)
+            .withScheduleTime(scheduledTime == null ? null : scheduledTime.getMillis())
+            .build();
 
     final TariffSwitchingRequestMessage message =
         new TariffSwitchingRequestMessage.Builder()
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(deviceMessageMetadata)
             .request(schedule)
             .build();
 

@@ -26,7 +26,7 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.matchers.Me
 import org.opensmartgridplatform.adapter.protocol.iec60870.testutils.matchers.ProtocolResponseMessageMatcher;
 import org.opensmartgridplatform.dto.valueobjects.LightSensorStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.LightSensorStatusTypeDto;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
@@ -88,13 +88,13 @@ public class OsgpCoreResponseSteps {
     final String deviceIdentification = map.get("device_identification");
     final Iec60870Device device = this.deviceSteps.getDevice(deviceIdentification).orElse(null);
     final DomainInfo domainInfo = DomainInfoFactory.forDeviceType(device.getDeviceType());
-    final DeviceMessageMetadata deviceMessageMetadata =
-        DeviceMessageMetadata.newBuilder()
+    final MessageMetadata deviceMessageMetadata =
+        new MessageMetadata.Builder()
             .withDeviceIdentification(deviceIdentification)
             .withMessageType(MessageType.CONNECT.name())
             .build();
     return ProtocolResponseMessage.newBuilder()
-        .deviceMessageMetadata(deviceMessageMetadata)
+        .messageMetadata(deviceMessageMetadata)
         .domain(domainInfo.getDomain())
         .domainVersion(domainInfo.getDomainVersion())
         .result(ResponseMessageResultType.OK)
@@ -105,13 +105,13 @@ public class OsgpCoreResponseSteps {
     final String deviceIdentification = map.get("device_identification");
     final Iec60870Device device = this.deviceSteps.getDevice(deviceIdentification).orElse(null);
     final DomainInfo domainInfo = DomainInfoFactory.forDeviceType(device.getDeviceType());
-    final DeviceMessageMetadata deviceMessageMetadata =
-        DeviceMessageMetadata.newBuilder()
+    final MessageMetadata deviceMessageMetadata =
+        new MessageMetadata.Builder()
             .withDeviceIdentification(deviceIdentification)
             .withMessageType(MessageType.GET_LIGHT_SENSOR_STATUS.name())
             .build();
     return ProtocolResponseMessage.newBuilder()
-        .deviceMessageMetadata(deviceMessageMetadata)
+        .messageMetadata(deviceMessageMetadata)
         .domain(domainInfo.getDomain())
         .domainVersion(domainInfo.getDomainVersion())
         .dataObject(new LightSensorStatusDto(LightSensorStatusTypeDto.valueOf(map.get("status"))))

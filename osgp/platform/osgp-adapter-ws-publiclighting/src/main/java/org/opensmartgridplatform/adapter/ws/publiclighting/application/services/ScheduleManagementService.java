@@ -18,7 +18,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.Schedule;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.validation.Identification;
 import org.slf4j.Logger;
@@ -72,18 +72,19 @@ public class ScheduleManagementService {
         this.correlationIdProviderService.getCorrelationId(
             organisationIdentification, deviceIdentification);
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceIdentification,
-            organisationIdentification,
-            correlationUid,
-            MessageType.SET_LIGHT_SCHEDULE.name(),
-            messagePriority,
-            scheduledTime == null ? null : scheduledTime.getMillis());
+    final MessageMetadata messageMetadata =
+        new MessageMetadata.Builder()
+            .withDeviceIdentification(deviceIdentification)
+            .withOrganisationIdentification(organisationIdentification)
+            .withCorrelationUid(correlationUid)
+            .withMessageType(MessageType.SET_LIGHT_SCHEDULE.name())
+            .withMessagePriority(messagePriority)
+            .withScheduleTime(scheduledTime == null ? null : scheduledTime.getMillis())
+            .build();
 
     final PublicLightingRequestMessage message =
         new PublicLightingRequestMessage.Builder()
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(messageMetadata)
             .request(schedule)
             .build();
 

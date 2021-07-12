@@ -38,7 +38,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SmartMet
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
@@ -62,7 +62,7 @@ public class InstallationServiceTest {
   @Mock private DeviceAuthorizationRepository deviceAuthorizationRepository;
   @Mock private OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
 
-  @Mock private DeviceMessageMetadata deviceMessageMetadata;
+  @Mock private MessageMetadata deviceMessageMetadata;
   @Mock private AddSmartMeterRequest addSmartMeterRequest;
   @Mock private SmartMeteringDevice smartMeteringDevice;
   @Mock private SmartMeter smartMeter;

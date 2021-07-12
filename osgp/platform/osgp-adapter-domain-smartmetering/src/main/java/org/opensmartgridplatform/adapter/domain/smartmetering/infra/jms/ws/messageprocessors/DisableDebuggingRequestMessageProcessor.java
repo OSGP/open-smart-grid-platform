@@ -11,7 +11,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.mess
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.ManagementService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.BaseRequestMessageProcessor;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,7 @@ public class DisableDebuggingRequestMessageProcessor extends BaseRequestMessageP
   }
 
   @Override
-  protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata)
+  protected void handleMessage(final MessageMetadata deviceMessageMetadata)
       throws FunctionalException {
 
     this.managementService.disableDebugging(deviceMessageMetadata);

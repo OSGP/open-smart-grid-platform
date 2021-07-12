@@ -37,7 +37,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.validation.Identification;
@@ -356,16 +356,17 @@ public class DeviceInstallationService {
         this.correlationIdProviderService.getCorrelationId(
             organisationIdentification, deviceIdentification);
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceIdentification,
-            organisationIdentification,
-            correlationUid,
-            MessageType.GET_STATUS.name(),
-            messagePriority);
+    final MessageMetadata messageMetadata =
+        new MessageMetadata.Builder()
+            .withDeviceIdentification(deviceIdentification)
+            .withOrganisationIdentification(organisationIdentification)
+            .withCorrelationUid(correlationUid)
+            .withMessageType(MessageType.GET_STATUS.name())
+            .withMessagePriority(messagePriority)
+            .build();
 
     final CommonRequestMessage message =
-        new CommonRequestMessage.Builder().deviceMessageMetadata(deviceMessageMetadata).build();
+        new CommonRequestMessage.Builder().messageMetadata(messageMetadata).build();
 
     this.commonRequestMessageSender.send(message);
 
@@ -404,16 +405,17 @@ public class DeviceInstallationService {
         this.correlationIdProviderService.getCorrelationId(
             organisationIdentification, deviceIdentification);
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceIdentification,
-            organisationIdentification,
-            correlationUid,
-            MessageType.START_SELF_TEST.name(),
-            messagePriority);
+    final MessageMetadata messageMetadata =
+        new MessageMetadata.Builder()
+            .withDeviceIdentification(deviceIdentification)
+            .withOrganisationIdentification(organisationIdentification)
+            .withCorrelationUid(correlationUid)
+            .withMessageType(MessageType.START_SELF_TEST.name())
+            .withMessagePriority(messagePriority)
+            .build();
 
     final CommonRequestMessage message =
-        new CommonRequestMessage.Builder().deviceMessageMetadata(deviceMessageMetadata).build();
+        new CommonRequestMessage.Builder().messageMetadata(messageMetadata).build();
 
     this.commonRequestMessageSender.send(message);
 
@@ -454,16 +456,17 @@ public class DeviceInstallationService {
         this.correlationIdProviderService.getCorrelationId(
             organisationIdentification, deviceIdentification);
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceIdentification,
-            organisationIdentification,
-            correlationUid,
-            MessageType.STOP_SELF_TEST.name(),
-            messagePriority);
+    final MessageMetadata messageMetadata =
+        new MessageMetadata.Builder()
+            .withDeviceIdentification(deviceIdentification)
+            .withOrganisationIdentification(organisationIdentification)
+            .withCorrelationUid(correlationUid)
+            .withMessageType(MessageType.STOP_SELF_TEST.name())
+            .withMessagePriority(messagePriority)
+            .build();
 
     final CommonRequestMessage message =
-        new CommonRequestMessage.Builder().deviceMessageMetadata(deviceMessageMetadata).build();
+        new CommonRequestMessage.Builder().messageMetadata(messageMetadata).build();
 
     this.commonRequestMessageSender.send(message);
 

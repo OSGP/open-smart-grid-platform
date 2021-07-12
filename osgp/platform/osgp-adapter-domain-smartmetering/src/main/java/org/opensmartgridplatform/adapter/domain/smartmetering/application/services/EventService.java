@@ -19,7 +19,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventTypeDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -39,8 +39,7 @@ public class EventService {
   }
 
   public void addEventTypeToEvents(
-      final DeviceMessageMetadata deviceMessageMetadata,
-      final EventMessageDataResponseDto responseDto)
+      final MessageMetadata deviceMessageMetadata, final EventMessageDataResponseDto responseDto)
       throws FunctionalException {
 
     LOGGER.info(

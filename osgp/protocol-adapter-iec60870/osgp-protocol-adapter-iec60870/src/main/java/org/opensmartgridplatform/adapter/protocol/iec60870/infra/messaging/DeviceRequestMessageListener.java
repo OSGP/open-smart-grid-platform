@@ -17,7 +17,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.NotSupportedException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
@@ -96,10 +95,9 @@ public class DeviceRequestMessageListener implements MessageListener {
               ComponentType.PROTOCOL_IEC60870,
               exception);
 
-      final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(objectMessage);
       final ProtocolResponseMessage protocolResponseMessage =
           new ProtocolResponseMessage.Builder()
-              .deviceMessageMetadata(deviceMessageMetadata)
+              .messageMetadata(messageMetadata)
               .domain(messageMetadata.getDomain())
               .domainVersion(messageMetadata.getDomainVersion())
               .result(ResponseMessageResultType.NOT_OK)

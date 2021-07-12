@@ -10,7 +10,7 @@ package org.opensmartgridplatform.adapter.ws.publiclighting.infra.jms;
 
 import java.io.Serializable;
 import org.joda.time.DateTime;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 
@@ -24,21 +24,19 @@ public class PublicLightingRequestMessage extends RequestMessage {
   private final Integer messagePriority;
 
   private PublicLightingRequestMessage(
-      final DeviceMessageMetadata deviceMessageMetadata,
-      final String ipAddress,
-      final Serializable request) {
+      final MessageMetadata messageMetadata, final String ipAddress, final Serializable request) {
     super(
-        deviceMessageMetadata.getCorrelationUid(),
-        deviceMessageMetadata.getOrganisationIdentification(),
-        deviceMessageMetadata.getDeviceIdentification(),
+        messageMetadata.getCorrelationUid(),
+        messageMetadata.getOrganisationIdentification(),
+        messageMetadata.getDeviceIdentification(),
         ipAddress,
         request);
-    this.messageType = MessageType.valueOf(deviceMessageMetadata.getMessageType());
-    this.messagePriority = deviceMessageMetadata.getMessagePriority();
-    if (deviceMessageMetadata.getScheduleTime() == null) {
+    this.messageType = MessageType.valueOf(messageMetadata.getMessageType());
+    this.messagePriority = messageMetadata.getMessagePriority();
+    if (messageMetadata.getScheduleTime() == null) {
       this.scheduleTime = null;
     } else {
-      this.scheduleTime = new DateTime(deviceMessageMetadata.getScheduleTime());
+      this.scheduleTime = new DateTime(messageMetadata.getScheduleTime());
     }
   }
 
@@ -55,7 +53,7 @@ public class PublicLightingRequestMessage extends RequestMessage {
   }
 
   public static class Builder {
-    private DeviceMessageMetadata deviceMessageMetadata;
+    private MessageMetadata messageMetadata;
     private String ipAddress;
     private Serializable request;
 
@@ -63,8 +61,8 @@ public class PublicLightingRequestMessage extends RequestMessage {
       // empty constructor
     }
 
-    public Builder deviceMessageMetadata(final DeviceMessageMetadata deviceMessageMetadata) {
-      this.deviceMessageMetadata = deviceMessageMetadata;
+    public Builder messageMetadata(final MessageMetadata messageMetadata) {
+      this.messageMetadata = messageMetadata;
       return this;
     }
 
@@ -79,8 +77,7 @@ public class PublicLightingRequestMessage extends RequestMessage {
     }
 
     public PublicLightingRequestMessage build() {
-      return new PublicLightingRequestMessage(
-          this.deviceMessageMetadata, this.ipAddress, this.request);
+      return new PublicLightingRequestMessage(this.messageMetadata, this.ipAddress, this.request);
     }
   }
 }

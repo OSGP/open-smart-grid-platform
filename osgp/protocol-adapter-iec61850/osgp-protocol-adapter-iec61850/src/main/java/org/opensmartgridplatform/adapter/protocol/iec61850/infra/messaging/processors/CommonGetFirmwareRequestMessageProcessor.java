@@ -23,7 +23,6 @@ import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
@@ -49,7 +48,7 @@ public class CommonGetFirmwareRequestMessageProcessor extends SsldDeviceRequestM
   public void processMessage(final ObjectMessage message) throws JMSException {
     LOGGER.debug("Processing common get firmware request message");
 
-    MessageMetadata messageMetadata;
+    final MessageMetadata messageMetadata;
     try {
       messageMetadata = MessageMetadata.fromMessage(message);
     } catch (final JMSException e) {
@@ -111,18 +110,19 @@ public class CommonGetFirmwareRequestMessageProcessor extends SsldDeviceRequestM
               ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
     }
 
-    final DeviceMessageMetadata deviceMessageMetaData =
-        new DeviceMessageMetadata(
-            deviceResponse.getDeviceIdentification(),
-            deviceResponse.getOrganisationIdentification(),
-            deviceResponse.getCorrelationUid(),
-            messageType,
-            deviceResponse.getMessagePriority());
+    final MessageMetadata deviceMessageMetadata =
+        new MessageMetadata.Builder()
+            .withDeviceIdentification(deviceResponse.getDeviceIdentification())
+            .withOrganisationIdentification(deviceResponse.getOrganisationIdentification())
+            .withCorrelationUid(deviceResponse.getCorrelationUid())
+            .withMessageType(messageType)
+            .withMessagePriority(deviceResponse.getMessagePriority())
+            .build();
     final ProtocolResponseMessage responseMessage =
         new ProtocolResponseMessage.Builder()
             .domain(domainInformation.getDomain())
             .domainVersion(domainInformation.getDomainVersion())
-            .deviceMessageMetadata(deviceMessageMetaData)
+            .messageMetadata(deviceMessageMetadata)
             .result(result)
             .osgpException(osgpException)
             .dataObject((Serializable) firmwareVersions)

@@ -207,8 +207,7 @@ class SubscriptionServiceTest {
     when(this.messageMetadata.getMessagePriority()).thenReturn(2345);
     when(this.messageMetadata.isBypassRetry()).thenReturn(true);
     // Note: messageMetadata.isScheduled is not used
-    // by DeviceMessageMetadata. It is derived from scheduleTime
-    when(this.messageMetadata.getScheduleTime()).thenReturn(null);
+    // by MessageMetadata. It is derived from scheduleTime
     when(this.messageMetadata.getDomain()).thenReturn("test-device-id");
     when(this.messageMetadata.getDomainVersion()).thenReturn("test-device-id");
 

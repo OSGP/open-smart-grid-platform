@@ -23,7 +23,6 @@ import org.opensmartgridplatform.dto.valueobjects.microgrids.GetDataResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
@@ -49,8 +48,8 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
   public void processMessage(final ObjectMessage message) throws JMSException {
     LOGGER.debug("Processing microgrids get data request message");
 
-    MessageMetadata messageMetadata;
-    GetDataRequestDto getDataRequest;
+    final MessageMetadata messageMetadata;
+    final GetDataRequestDto getDataRequest;
     try {
       messageMetadata = MessageMetadata.fromMessage(message);
       getDataRequest = (GetDataRequestDto) message.getObject();
@@ -118,18 +117,19 @@ public class MicrogridsGetDataRequestMessageProcessor extends RtuDeviceRequestMe
               e);
     }
 
-    final DeviceMessageMetadata deviceMessageMetaData =
-        new DeviceMessageMetadata(
-            deviceResponse.getDeviceIdentification(),
-            deviceResponse.getOrganisationIdentification(),
-            deviceResponse.getCorrelationUid(),
-            messageType,
-            deviceResponse.getMessagePriority());
+    final MessageMetadata messageMetadata =
+        new MessageMetadata.Builder()
+            .withDeviceIdentification(deviceResponse.getDeviceIdentification())
+            .withOrganisationIdentification(deviceResponse.getOrganisationIdentification())
+            .withCorrelationUid(deviceResponse.getCorrelationUid())
+            .withMessageType(messageType)
+            .withMessagePriority(deviceResponse.getMessagePriority())
+            .build();
     final ProtocolResponseMessage responseMessage =
         new ProtocolResponseMessage.Builder()
             .domain(domainInformation.getDomain())
             .domainVersion(domainInformation.getDomainVersion())
-            .deviceMessageMetadata(deviceMessageMetaData)
+            .messageMetadata(messageMetadata)
             .result(result)
             .osgpException(osgpException)
             .dataObject(dataResponse)

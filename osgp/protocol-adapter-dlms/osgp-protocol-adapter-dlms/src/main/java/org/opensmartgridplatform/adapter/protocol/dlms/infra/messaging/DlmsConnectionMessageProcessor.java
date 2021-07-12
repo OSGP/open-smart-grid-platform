@@ -19,7 +19,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NonRetryableEx
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -139,7 +138,7 @@ public abstract class DlmsConnectionMessageProcessor {
   /**
    * @param logger the logger from the calling subClass
    * @param exception the exception to be logged
-   * @param messageMetadata a DlmsDeviceMessageMetadata containing debug info to be logged
+   * @param messageMetadata a DlmsMessageMetadata containing debug info to be logged
    */
   protected void logJmsException(
       final Logger logger, final JMSException exception, final MessageMetadata messageMetadata) {
@@ -184,7 +183,7 @@ public abstract class DlmsConnectionMessageProcessor {
 
     final ProtocolResponseMessage responseMessage =
         new ProtocolResponseMessage.Builder()
-            .deviceMessageMetadata(new DeviceMessageMetadata(messageMetadata))
+            .messageMetadata(messageMetadata)
             .domain(messageMetadata.getDomain())
             .domainVersion(messageMetadata.getDomainVersion())
             .result(result)

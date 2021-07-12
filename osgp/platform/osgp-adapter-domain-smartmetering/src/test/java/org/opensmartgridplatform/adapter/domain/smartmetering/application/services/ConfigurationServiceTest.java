@@ -36,7 +36,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysResponseD
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.KeyDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SecretTypeDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -53,15 +53,16 @@ class ConfigurationServiceTest {
   private static final boolean BYPASS_RETRY = true;
   private static final byte[] KEY_1 = new byte[] {1, 2, 3};
   private static final byte[] KEY_2 = new byte[] {4, 5, 6};
-  private static final DeviceMessageMetadata deviceMessageMetadata =
-      new DeviceMessageMetadata(
-          DEVICE_IDENTIFICATION,
-          ORGANISATION_IDENTIFICATION,
-          CORRELATION_UID,
-          MESSAGE_TYPE,
-          PRIORITY,
-          SCHEDULE_TIME,
-          BYPASS_RETRY);
+  private static final MessageMetadata deviceMessageMetadata =
+      new MessageMetadata.Builder()
+          .withDeviceIdentification(DEVICE_IDENTIFICATION)
+          .withOrganisationIdentification(ORGANISATION_IDENTIFICATION)
+          .withCorrelationUid(CORRELATION_UID)
+          .withMessageType(MESSAGE_TYPE)
+          .withMessagePriority(PRIORITY)
+          .withScheduleTime(SCHEDULE_TIME)
+          .withBypassRetry(BYPASS_RETRY)
+          .build();
   private static final SmartMeter device =
       new SmartMeter(DEVICE_IDENTIFICATION, "Alias", new Address(), new GpsCoordinates(10f, 15f));
   private static final GetKeysRequestData getKeysRequestData =
