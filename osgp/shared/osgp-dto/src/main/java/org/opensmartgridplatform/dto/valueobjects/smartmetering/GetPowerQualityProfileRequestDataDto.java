@@ -15,9 +15,9 @@ import java.util.Objects;
 
 public class GetPowerQualityProfileRequestDataDto implements ActionRequestDto {
 
-  protected final String profileType;
-  protected final Date beginDate;
-  protected final Date endDate;
+  private final String profileType;
+  private final Date beginDate;
+  private final Date endDate;
   private final ArrayList<CaptureObjectDefinitionDto> selectedValues = new ArrayList<>();
 
   private static final long serialVersionUID = -2483665562035897062L;
