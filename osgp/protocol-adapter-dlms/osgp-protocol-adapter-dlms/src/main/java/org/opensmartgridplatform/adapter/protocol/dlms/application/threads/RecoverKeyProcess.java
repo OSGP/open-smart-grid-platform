@@ -100,7 +100,7 @@ public class RecoverKeyProcess implements Runnable {
     try {
       connection =
           this.hls5Connector.connectUnchecked(
-              device, null, this.secretManagementService::getNewKey);
+              device, null, this.secretManagementService::getNewKeys);
       return connection != null;
     } catch (final Exception e) {
       log.error("Connection exception: {}", e.getMessage(), e);

@@ -44,6 +44,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
+import org.opensmartgridplatform.cucumber.core.Wait;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.DeviceFirmwareModuleSteps;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.DeviceSteps;
@@ -733,7 +734,7 @@ public class DlmsDeviceSteps {
         secretTypesToCreate.stream().map(this::getKeyTypeInputName).collect(Collectors.toList());
     if (Collections.disjoint(inputSettings.keySet(), keyTypeInputNames)) {
       throw new IllegalArgumentException(
-          "None of the following keys provided: " + keyTypeInputNames.toString());
+          "None of the following keys provided: " + keyTypeInputNames);
     }
     final DbEncryptionKeyReference encryptionKeyRef =
         this.encryptionKeyRepository
@@ -744,21 +745,20 @@ public class DlmsDeviceSteps {
       if (inputSettings.containsKey(keyTypeInputNames.get(i))) {
         final DbEncryptedSecret secret =
             new SecretBuilder()
-                .withDlmsDevice(new DlmsDevice(deviceIdentification))
+                .withDeviceIdentification(deviceIdentification)
                 .withSecretType(secretTypesToCreate.get(i))
                 .withKey(inputSettings.get(keyTypeInputNames.get(i)))
                 .withSecretStatus(SecretStatus.NEW)
+                .withEncryptionKeyReference(encryptionKeyRef)
                 .build();
-        secret.setEncryptionKeyReference(encryptionKeyRef);
         this.encryptedSecretRepository.save(secret);
       }
     }
   }
 
-  @Then("after 15 seconds, the new keys are recovered")
-  public void newKeysAreRecovered(final Map<String, String> inputSettings)
-      throws InterruptedException {
-    final long waitTimeInMillis = 15 * 1000;
+  @Then("after {int} seconds, the new keys are recovered")
+  public void newKeysAreRecovered(
+      final int maxSecondsToWait, final Map<String, String> inputSettings) {
     if (!inputSettings.containsKey(PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION)) {
       throw new IllegalArgumentException("No device identification provided");
     }
@@ -768,31 +768,34 @@ public class DlmsDeviceSteps {
         && !inputSettings.containsKey(KEY_DEVICE_ENCRYPTIONKEY)) {
       throw new IllegalArgumentException("No authentication or encryption key provided");
     }
-    Thread.sleep(waitTimeInMillis);
-    // final DbEncryptionKeyReference encryptionKeyRef = this.encryptionKeyRepository
-    //        .findByTypeAndValid(EncryptionProviderType.JRE, new Date()).iterator().next();
     final List<SecretType> keyTypesToCheck =
         Arrays.asList(E_METER_AUTHENTICATION_KEY, E_METER_ENCRYPTION_KEY_UNICAST);
-    for (final SecretType secretType : keyTypesToCheck) {
-      final String keyInputName = this.getKeyTypeInputName(secretType);
-      if (inputSettings.containsKey(keyInputName)) {
-        final Map<SecretStatus, Integer> expectedNrOfKeysByStatus = new HashMap<>();
-        expectedNrOfKeysByStatus.put(SecretStatus.NEW, 0);
-        expectedNrOfKeysByStatus.put(SecretStatus.ACTIVE, 1);
-        expectedNrOfKeysByStatus.put(SecretStatus.EXPIRED, 1);
-        for (final SecretStatus secretStatus : expectedNrOfKeysByStatus.keySet()) {
-          final int nrOfKeys =
-              this.encryptedSecretRepository.getSecretCount(
-                  deviceIdentification, secretType, secretStatus);
-          assertThat(nrOfKeys).isEqualTo(expectedNrOfKeysByStatus.get(secretStatus));
-        }
-        final List<DbEncryptedSecret> activeSecretList =
-            this.encryptedSecretRepository.findSecrets(
-                deviceIdentification, secretType, SecretStatus.ACTIVE);
-        assertThat(activeSecretList.get(0).getEncodedSecret())
-            .isEqualTo(inputSettings.get(keyInputName));
-      }
-    }
+    final Map<SecretStatus, Integer> expectedNrOfKeysByStatus = new HashMap<>();
+    expectedNrOfKeysByStatus.put(SecretStatus.NEW, 0);
+    expectedNrOfKeysByStatus.put(SecretStatus.ACTIVE, 1);
+    expectedNrOfKeysByStatus.put(SecretStatus.EXPIRED, 1);
+
+    final Runnable task =
+        () -> {
+          for (final SecretType secretType : keyTypesToCheck) {
+            final String keyInputName = this.getKeyTypeInputName(secretType);
+            if (inputSettings.containsKey(keyInputName)) {
+              for (final SecretStatus secretStatus : expectedNrOfKeysByStatus.keySet()) {
+                final int nrOfKeys =
+                    this.encryptedSecretRepository.getSecretCount(
+                        deviceIdentification, secretType, secretStatus);
+                assertThat(nrOfKeys).isEqualTo(expectedNrOfKeysByStatus.get(secretStatus));
+              }
+              final List<DbEncryptedSecret> activeSecretList =
+                  this.encryptedSecretRepository.findSecrets(
+                      deviceIdentification, secretType, SecretStatus.ACTIVE);
+              assertThat(activeSecretList.get(0).getEncodedSecret())
+                  .isEqualTo(inputSettings.get(keyInputName));
+            }
+          }
+        };
+
+    Wait.until(task, maxSecondsToWait, 1000);
   }
 
   public String getKeyTypeInputName(final SecretType secretType) {

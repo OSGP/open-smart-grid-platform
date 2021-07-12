@@ -13,6 +13,8 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Se
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.openmuc.jdlms.AuthenticationMechanism;
 import org.openmuc.jdlms.DlmsConnection;
@@ -22,6 +24,7 @@ import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -66,7 +69,7 @@ public class Hls5Connector extends SecureDlmsConnector {
 
     try {
       return this.createConnection(
-          device, dlmsMessageListener, this.secretManagementService::getKey);
+          device, dlmsMessageListener, this.secretManagementService::getKeys);
     } catch (final UnknownHostException e) { // Unknown IP, unrecoverable.
       LOGGER.error("The IP address is not found: {}", device.getIpAddress(), e);
       throw new TechnicalException(
@@ -124,10 +127,12 @@ public class Hls5Connector extends SecureDlmsConnector {
       final TcpConnectionBuilder tcpConnectionBuilder)
       throws FunctionalException {
 
-    final byte[] dlmsAuthenticationKey =
-        provider.getKey(device.getDeviceIdentification(), E_METER_AUTHENTICATION);
-    final byte[] dlmsEncryptionKey =
-        provider.getKey(device.getDeviceIdentification(), E_METER_ENCRYPTION);
+    final Map<SecurityKeyType, byte[]> encryptedKeys =
+        provider.getKeys(
+            device.getDeviceIdentification(),
+            Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION));
+    final byte[] dlmsAuthenticationKey = encryptedKeys.get(E_METER_AUTHENTICATION);
+    final byte[] dlmsEncryptionKey = encryptedKeys.get(E_METER_ENCRYPTION);
 
     // Validate keys before JDLMS does and throw a FunctionalException if
     // necessary

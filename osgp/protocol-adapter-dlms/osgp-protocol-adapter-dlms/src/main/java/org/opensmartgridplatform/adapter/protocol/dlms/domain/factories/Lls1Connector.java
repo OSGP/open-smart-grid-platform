@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.Collections;
 import org.openmuc.jdlms.AuthenticationMechanism;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.SecuritySuite;
@@ -53,7 +54,7 @@ public class Lls1Connector extends SecureDlmsConnector {
 
     try {
       return this.createConnection(
-          device, dlmsMessageListener, this.secretManagementService::getKey);
+          device, dlmsMessageListener, this.secretManagementService::getKeys);
     } catch (final UnknownHostException e) {
       LOGGER.warn("The IP address is not found: {}", device.getIpAddress(), e);
       // Unknown IP, unrecoverable.
@@ -79,7 +80,12 @@ public class Lls1Connector extends SecureDlmsConnector {
 
     final byte[] password;
     try {
-      password = keyProvider.getKey(device.getDeviceIdentification(), SecurityKeyType.PASSWORD);
+      password =
+          keyProvider
+              .getKeys(
+                  device.getDeviceIdentification(),
+                  Collections.singletonList(SecurityKeyType.PASSWORD))
+              .get(SecurityKeyType.PASSWORD);
     } catch (final EncrypterException e) {
       LOGGER.error("Error determining DLMS password setting up LLS1 connection", e);
       throw new FunctionalException(
