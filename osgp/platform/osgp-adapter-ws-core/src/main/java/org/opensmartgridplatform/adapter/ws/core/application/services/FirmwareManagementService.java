@@ -52,7 +52,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.validation.Identification;
@@ -124,18 +124,19 @@ public class FirmwareManagementService {
         this.correlationIdProviderService.getCorrelationId(
             organisationIdentification, deviceIdentification);
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceIdentification,
-            organisationIdentification,
-            correlationUid,
-            MessageType.UPDATE_FIRMWARE.name(),
-            messagePriority,
-            scheduledTime == null ? null : scheduledTime.getMillis());
+    final MessageMetadata messageMetadata =
+        new MessageMetadata.Builder()
+            .withDeviceIdentification(deviceIdentification)
+            .withOrganisationIdentification(organisationIdentification)
+            .withCorrelationUid(correlationUid)
+            .withMessageType(MessageType.UPDATE_FIRMWARE.name())
+            .withMessagePriority(messagePriority)
+            .withScheduleTime(scheduledTime == null ? null : scheduledTime.getMillis())
+            .build();
 
     final CommonRequestMessage message =
         new CommonRequestMessage.Builder()
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(messageMetadata)
             .request(firmwareUpdateMessageDataContainer)
             .build();
 
@@ -172,16 +173,17 @@ public class FirmwareManagementService {
         this.correlationIdProviderService.getCorrelationId(
             organisationIdentification, deviceIdentification);
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceIdentification,
-            organisationIdentification,
-            correlationUid,
-            MessageType.GET_FIRMWARE_VERSION.name(),
-            messagePriority);
+    final MessageMetadata messageMetadata =
+        new MessageMetadata.Builder()
+            .withDeviceIdentification(deviceIdentification)
+            .withOrganisationIdentification(organisationIdentification)
+            .withCorrelationUid(correlationUid)
+            .withMessageType(MessageType.GET_FIRMWARE_VERSION.name())
+            .withMessagePriority(messagePriority)
+            .build();
 
     final CommonRequestMessage message =
-        new CommonRequestMessage.Builder().deviceMessageMetadata(deviceMessageMetadata).build();
+        new CommonRequestMessage.Builder().messageMetadata(messageMetadata).build();
 
     this.commonRequestMessageSender.send(message);
 
@@ -747,7 +749,7 @@ public class FirmwareManagementService {
     final String identification = firmwareFileRequest.getIdentification();
     final FirmwareFile existingFirmwareFile =
         this.firmwareFileRepository.findByIdentification(identification);
-    FirmwareFile savedFirmwareFile;
+    final FirmwareFile savedFirmwareFile;
     if (existingFirmwareFile == null) {
       final FirmwareFile newFirmwareFile = this.createNewFirmwareFile(firmwareFileRequest, file);
       savedFirmwareFile = this.firmwareFileRepository.save(newFirmwareFile);
@@ -1012,17 +1014,18 @@ public class FirmwareManagementService {
         this.correlationIdProviderService.getCorrelationId(
             organisationIdentification, deviceIdentification);
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceIdentification,
-            organisationIdentification,
-            correlationUid,
-            MessageType.SWITCH_FIRMWARE.name(),
-            messagePriority);
+    final MessageMetadata messageMetadata =
+        new MessageMetadata.Builder()
+            .withDeviceIdentification(deviceIdentification)
+            .withOrganisationIdentification(organisationIdentification)
+            .withCorrelationUid(correlationUid)
+            .withMessageType(MessageType.SWITCH_FIRMWARE.name())
+            .withMessagePriority(messagePriority)
+            .build();
 
     final CommonRequestMessage message =
         new CommonRequestMessage.Builder()
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(messageMetadata)
             .request(version)
             .build();
 

@@ -35,7 +35,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.ScheduledTaskStatusTyp
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolRequestMessage;
 import org.quartz.JobExecutionException;
 import org.springframework.data.domain.Pageable;
@@ -44,8 +44,14 @@ import org.springframework.data.domain.Pageable;
 @ExtendWith(MockitoExtension.class)
 public class ScheduledTaskExecutorServiceTest {
 
-  private static final DeviceMessageMetadata DEVICE_MESSAGE_DATA =
-      new DeviceMessageMetadata("deviceId", "organisationId", "correlationId", "messageType", 4);
+  private static final MessageMetadata MESSAGE_METADATA =
+      new MessageMetadata.Builder()
+          .withDeviceIdentification("deviceId")
+          .withOrganisationIdentification("organisationId")
+          .withCorrelationUid("correlationId")
+          .withMessageType("messageType")
+          .withMessagePriority(4)
+          .build();
 
   private static final String DOMAIN = "Domain";
 
@@ -74,7 +80,7 @@ public class ScheduledTaskExecutorServiceTest {
       throws FunctionalException, UnknownHostException, JobExecutionException {
     final List<ScheduledTask> scheduledTasks = new ArrayList<>();
     final ScheduledTask scheduledTask =
-        new ScheduledTask(DEVICE_MESSAGE_DATA, DOMAIN, DOMAIN, DATA_OBJECT, SCHEDULED_TIME);
+        new ScheduledTask(MESSAGE_METADATA, DOMAIN, DOMAIN, DATA_OBJECT, SCHEDULED_TIME);
     scheduledTasks.add(scheduledTask);
 
     when(this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(

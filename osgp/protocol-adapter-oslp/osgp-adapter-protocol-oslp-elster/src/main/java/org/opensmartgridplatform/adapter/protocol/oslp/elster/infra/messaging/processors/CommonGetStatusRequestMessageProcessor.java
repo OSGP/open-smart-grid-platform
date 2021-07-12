@@ -17,6 +17,7 @@ import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.DeviceRespo
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.requests.GetStatusDeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.device.responses.GetStatusDeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.MessageMetadataFactory;
 import org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.messaging.OslpEnvelopeProcessor;
 import org.opensmartgridplatform.dto.valueobjects.DeviceStatusDto;
 import org.opensmartgridplatform.oslp.OslpEnvelope;
@@ -25,7 +26,6 @@ import org.opensmartgridplatform.oslp.UnsignedOslpEnvelopeDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
@@ -51,7 +51,7 @@ public class CommonGetStatusRequestMessageProcessor extends DeviceRequestMessage
   public void processMessage(final ObjectMessage message) {
     LOGGER.info("Processing common get status request message");
 
-    MessageMetadata messageMetadata;
+    final MessageMetadata messageMetadata;
     try {
       messageMetadata = MessageMetadata.fromMessage(message);
     } catch (final JMSException e) {
@@ -157,18 +157,11 @@ public class CommonGetStatusRequestMessageProcessor extends DeviceRequestMessage
               ComponentType.UNKNOWN, "Exception occurred while getting device status", e);
     }
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceResponse.getDeviceIdentification(),
-            deviceResponse.getOrganisationIdentification(),
-            deviceResponse.getCorrelationUid(),
-            messageType,
-            deviceResponse.getMessagePriority());
     final ProtocolResponseMessage responseMessage =
         ProtocolResponseMessage.newBuilder()
             .domain(domain)
             .domainVersion(domainVersion)
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(MessageMetadataFactory.from(deviceResponse, messageType))
             .result(result)
             .osgpException(osgpException)
             .dataObject(status)

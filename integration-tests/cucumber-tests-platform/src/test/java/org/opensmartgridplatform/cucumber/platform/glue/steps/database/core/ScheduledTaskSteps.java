@@ -29,7 +29,7 @@ import org.opensmartgridplatform.domain.core.entities.ScheduledTask;
 import org.opensmartgridplatform.domain.core.repositories.ScheduledTaskRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareUpdateMessageDataContainer;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -60,21 +60,22 @@ public class ScheduledTaskSteps extends BaseDeviceSteps {
         DateTimeHelper.getDateTime(
                 ReadSettingsHelper.getString(settings, KEY_SCHEDULED_TIME, DEFAULT_SCHEDULED_TIME))
             .getMillis();
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceIdentification,
-            organisationIdentification,
-            correlationUid,
-            messageType,
-            messagePriority,
-            scheduleTime);
+    final MessageMetadata messageMetadata =
+        new MessageMetadata.Builder()
+            .withDeviceIdentification(deviceIdentification)
+            .withOrganisationIdentification(organisationIdentification)
+            .withCorrelationUid(correlationUid)
+            .withMessageType(messageType)
+            .withMessagePriority(messagePriority)
+            .withScheduleTime(scheduleTime)
+            .build();
     final FirmwareModuleData firmwareModuleData =
         new FirmwareModuleData(null, "FW-01", null, null, null, null, null);
     final String firmwareUrl = "firmware-url";
     final Serializable messageData =
         new FirmwareUpdateMessageDataContainer(firmwareModuleData, firmwareUrl);
     return new ScheduledTask(
-        deviceMessageMetadata, "CORE", "1.0", messageData, new Timestamp(scheduleTime));
+        messageMetadata, "CORE", "1.0", messageData, new Timestamp(scheduleTime));
   }
 
   @Given("a scheduled {string} task")
