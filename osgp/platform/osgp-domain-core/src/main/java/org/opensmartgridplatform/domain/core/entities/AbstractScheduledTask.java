@@ -80,7 +80,8 @@ public abstract class AbstractScheduledTask extends AbstractEntity {
     this.domain = domain;
     this.domainVersion = domainVersion;
     this.scheduledTime = (Timestamp) scheduledTime.clone();
-    this.maxScheduledTime = (Timestamp) maxScheduledTime.clone();
+    this.maxScheduledTime =
+        (maxScheduledTime == null) ? null : (Timestamp) maxScheduledTime.clone();
     this.status = ScheduledTaskStatusType.NEW;
     this.retry = 0;
   }
@@ -118,7 +119,11 @@ public abstract class AbstractScheduledTask extends AbstractEntity {
   }
 
   public Timestamp getMaxScheduledTime() {
-    return (Timestamp) this.maxScheduledTime.clone();
+    return (this.maxScheduledTime == null) ? null : (Timestamp) this.maxScheduledTime.clone();
+  }
+
+  public Long getMaxScheduledTimeLong() {
+    return (this.maxScheduledTime == null) ? null : this.maxScheduledTime.getTime();
   }
 
   public Integer getMessagePriority() {

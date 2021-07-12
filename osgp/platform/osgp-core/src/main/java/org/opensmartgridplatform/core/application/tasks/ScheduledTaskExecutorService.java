@@ -99,7 +99,7 @@ public class ScheduledTaskExecutorService {
             .withMessageType(scheduledTask.getMessageType())
             .withMessagePriority(scheduledTask.getMessagePriority())
             .withScheduleTime(scheduledTask.getscheduledTime().getTime())
-            .withMaxScheduleTime(scheduledTask.getMaxScheduledTime().getTime())
+            .withMaxScheduleTime(scheduledTask.getMaxScheduledTimeLong())
             .withBypassRetry(false)
             .build();
 
