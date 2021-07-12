@@ -89,7 +89,6 @@
   <modules>
     <!-- Shared Libs -->
     <module>parent-platform</module>
-    <module>osgp-adapter-kafka-logging</module>
 
     <!-- Domain -->
     <module>osgp-domain-core</module>
@@ -151,6 +150,7 @@
         <module>osgp-adapter-kafka-distributionautomation</module>
         <module>osgp-adapter-ws-distributionautomation</module>
         <module>osgp-secret-management</module>
+        <module>osgp-adapter-kafka-logging</module>
       </modules>
     </profile>
 
