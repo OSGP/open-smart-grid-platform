@@ -1397,8 +1397,7 @@ public class ConfigurationService {
   }
 
   public void getKeys(
-      final DeviceMessageMetadata deviceMessageMetadata,
-      final GetKeysRequestData getKeysRequestData)
+      final MessageMetadata deviceMessageMetadata, final GetKeysRequestData getKeysRequestData)
       throws FunctionalException {
 
     log.info(
@@ -1424,11 +1423,11 @@ public class ConfigurationService {
         deviceMessageMetadata.getMessageType(),
         deviceMessageMetadata.getMessagePriority(),
         deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        deviceMessageMetadata.isBypassRetry());
   }
 
   public void handleGetKeysResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessageResultType resultType,
       final OsgpException exception,
       final GetKeysResponseDto getKeysResponseDto) {
