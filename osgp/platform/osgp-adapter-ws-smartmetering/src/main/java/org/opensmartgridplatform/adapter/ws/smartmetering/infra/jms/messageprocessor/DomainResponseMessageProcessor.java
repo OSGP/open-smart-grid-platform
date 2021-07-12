@@ -12,7 +12,7 @@ import java.io.Serializable;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 import lombok.extern.slf4j.Slf4j;
-import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceLookupKey;
+import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationDataLookupKey;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.schema.shared.notification.GenericNotification;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.NotificationType;
@@ -87,7 +87,7 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
 
       // Send notification indicating data is available.
       this.notificationService.sendNotification(
-          new NotificationWebServiceLookupKey(
+          new ApplicationDataLookupKey(
               organisationIdentification, ApplicationConstants.APPLICATION_NAME),
           new GenericNotification(
               notificationMessage,

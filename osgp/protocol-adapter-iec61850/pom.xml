@@ -88,8 +88,6 @@
   <modules>
     <!-- Shared Libs -->
     <module>parent-pa-iec61850</module>
-    <module>../shared/shared</module>
-    <module>../shared/osgp-dto</module>
 
     <!-- Protocol Adapter IEC61850 -->
     <module>osgp-iec61850</module>

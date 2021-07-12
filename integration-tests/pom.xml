@@ -69,75 +69,6 @@
   <modules>
     <!-- Shared -->
     <module>parent-integration-tests</module>
-    <module>../osgp/shared/parent-shared</module>
-    <module>../osgp/shared/shared</module>
-    <module>../osgp/shared/osgp-dto</module>
-    <module>../osgp/shared/osgp-ws-core</module>
-    <module>../osgp/shared/osgp-ws-admin</module>
-    <module>../osgp/shared/osgp-ws-distributionautomation</module>
-    <module>../osgp/shared/osgp-ws-microgrids</module>
-    <module>../osgp/shared/osgp-ws-publiclighting</module>
-    <module>../osgp/shared/osgp-ws-tariffswitching</module>
-    <module>../osgp/shared/osgp-ws-smartmetering</module>
-
-    <!-- Protocol-Adapter-IEC60870 -->
-    <module>../osgp/protocol-adapter-iec60870/parent-pa-iec60870</module>
-    <module>../osgp/protocol-adapter-iec60870/osgp-iec60870</module>
-    <module>../osgp/protocol-adapter-iec60870/osgp-protocol-adapter-iec60870</module>
-    <module>../osgp/protocol-adapter-iec60870/osgp-protocol-simulator-iec60870/</module>
-
-    <!-- Protocol-Adapter-IEC61850 -->
-    <module>../osgp/protocol-adapter-iec61850/parent-pa-iec61850</module>
-    <module>../osgp/protocol-adapter-iec61850/osgp-iec61850</module>
-    <module>../osgp/protocol-adapter-iec61850/osgp-protocol-adapter-iec61850</module>
-    <module>../osgp/protocol-adapter-iec61850/protocol-simulator-iec61850</module>
-    <module>../osgp/protocol-adapter-iec61850/osgp-core-db-api-iec61850</module>
-
-    <!-- Protocol-Adapter-OSLP -->
-    <module>../osgp/protocol-adapter-oslp/parent-pa-oslp</module>
-    <module>../osgp/protocol-adapter-oslp/oslp</module>
-    <module>../osgp/protocol-adapter-oslp/web-device-simulator</module>
-    <module>../osgp/protocol-adapter-oslp/osgp-core-db-api</module>
-    <module>../osgp/protocol-adapter-oslp/osgp-adapter-protocol-oslp-elster</module>
-    <module>../osgp/protocol-adapter-oslp/signing-server</module>
-
-    <!-- Protocol-Adapter-DLMS -->
-    <module>../osgp/protocol-adapter-dlms/parent-pa-dlms</module>
-    <module>../osgp/protocol-adapter-dlms/osgp-dlms</module>
-    <module>../osgp/protocol-adapter-dlms/osgp-protocol-adapter-dlms</module>
-    <module>../osgp/protocol-adapter-dlms/osgp-jasper-interface</module>
-
-    <!-- Platform -->
-    <module>../osgp/platform/parent-platform</module>
-    <module>../osgp/platform/osgp-domain-core</module>
-    <module>../osgp/platform/osgp-domain-distributionautomation</module>
-    <module>../osgp/platform/osgp-domain-logging</module>
-    <module>../osgp/platform/osgp-domain-microgrids</module>
-
-    <module>../osgp/platform/osgp-adapter-domain-shared</module>
-
-    <module>../osgp/platform/osgp-adapter-domain-admin</module>
-    <module>../osgp/platform/osgp-adapter-domain-core</module>
-    <module>../osgp/platform/osgp-adapter-domain-distributionautomation</module>
-    <module>../osgp/platform/osgp-adapter-domain-microgrids</module>
-    <module>../osgp/platform/osgp-adapter-domain-publiclighting</module>
-    <module>../osgp/platform/osgp-adapter-domain-tariffswitching</module>
-    <module>../osgp/platform/osgp-adapter-domain-smartmetering</module>
-
-    <module>../osgp/platform/osgp-adapter-ws-shared</module>
-    <module>../osgp/platform/osgp-adapter-ws-shared-db</module>
-
-    <module>../osgp/platform/osgp-adapter-ws-core</module>
-    <module>../osgp/platform/osgp-adapter-ws-admin</module>
-    <module>../osgp/platform/osgp-adapter-ws-distributionautomation</module>
-    <module>../osgp/platform/osgp-adapter-ws-publiclighting</module>
-    <module>../osgp/platform/osgp-adapter-ws-tariffswitching</module>
-    <module>../osgp/platform/osgp-adapter-ws-smartmetering</module>
-    <module>../osgp/platform/osgp-adapter-ws-microgrids</module>
-
-    <module>../osgp/platform/osgp-core</module>
-    <module>../osgp/platform/osgp-logging</module>
-    <module>../osgp/platform/osgp-secret-management</module>
 
     <!-- Automatic tests project -->
     <module>cucumber-tests-core</module>
@@ -147,10 +78,56 @@
     <module>cucumber-tests-protocol-iec60870</module>
 
     <module>cucumber-tests-platform-common</module>
-    <module>cucumber-tests-platform-distributionautomation</module>
-    <module>cucumber-tests-platform-publiclighting</module>
-    <module>cucumber-tests-platform-smartmetering</module>
-    <module>cucumber-tests-platform-microgrids</module>
-
   </modules>
+
+  <profiles>
+    <profile>
+      <!-- Public Lighting -->
+      <id>pl</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>cucumber-tests-platform-publiclighting</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <!-- Smart meter -->
+      <id>sm</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>cucumber-tests-platform-smartmetering</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <!-- Distribution Automation -->
+      <id>da</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>cucumber-tests-platform-distributionautomation</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <!-- MicroGrids -->
+      <id>mg</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>cucumber-tests-platform-microgrids</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <!-- Grid eXchange Fabric -->
+      <id>gxf</id>
+    </profile>
+  </profiles>
 </project>

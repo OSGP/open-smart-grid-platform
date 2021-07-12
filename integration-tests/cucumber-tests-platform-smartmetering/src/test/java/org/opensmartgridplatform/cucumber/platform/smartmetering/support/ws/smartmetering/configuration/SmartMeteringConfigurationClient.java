@@ -28,6 +28,10 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.G
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionGasResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusByChannelAsyncRequest;
@@ -436,5 +440,19 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
 
     return (SetRandomisationSettingsResponse)
         this.getTemplate().marshalSendAndReceive(asyncRequest);
+  }
+
+  public GetKeysAsyncResponse getKeys(final GetKeysRequest request)
+      throws WebServiceSecurityException {
+    return (GetKeysAsyncResponse) this.getTemplate().marshalSendAndReceive(request);
+  }
+
+  public GetKeysResponse retrieveGetKeysResponse(final GetKeysAsyncRequest asyncRequest)
+      throws WebServiceSecurityException {
+
+    final String correlationUid = asyncRequest.getCorrelationUid();
+    this.waitForNotification(correlationUid);
+
+    return (GetKeysResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
   }
 }
