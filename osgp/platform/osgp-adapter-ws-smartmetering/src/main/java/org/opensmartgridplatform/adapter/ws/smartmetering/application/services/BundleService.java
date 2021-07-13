@@ -19,7 +19,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActionRe
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.BundleMessageRequest;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,12 +57,12 @@ public class BundleService {
         this.correlationIdProviderService.getCorrelationId(
             organisationIdentification, deviceIdentification);
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        requestMessageMetadata.newDeviceMessageMetadata(correlationUid);
+    final MessageMetadata deviceMessageMetadata =
+        requestMessageMetadata.newMessageMetadata(correlationUid);
 
     final SmartMeteringRequestMessage message =
         new SmartMeteringRequestMessage.Builder()
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(deviceMessageMetadata)
             .request(new BundleMessageRequest(actionList))
             .build();
 

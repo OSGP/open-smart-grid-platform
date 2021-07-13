@@ -20,7 +20,7 @@ import org.opensmartgridplatform.domain.core.entities.ScheduledTask;
 import org.opensmartgridplatform.domain.core.repositories.ScheduledTaskRepository;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolRequestMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,7 +77,7 @@ public class DomainRequestMessageListener implements MessageListener {
     final Timestamp scheduleTimeStamp =
         new Timestamp(message.getLongProperty(Constants.SCHEDULE_TIME));
 
-    final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(message);
+    final MessageMetadata deviceMessageMetadata = MessageMetadata.fromMessage(message);
 
     return new ScheduledTask(
         deviceMessageMetadata,
@@ -90,12 +90,12 @@ public class DomainRequestMessageListener implements MessageListener {
   public ProtocolRequestMessage createProtocolRequestMessage(final Message message)
       throws JMSException {
 
-    final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(message);
+    final MessageMetadata messageMetadata = MessageMetadata.fromMessage(message);
     final String ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
     final Serializable messageData = ((ObjectMessage) message).getObject();
 
     return new ProtocolRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata)
+        .messageMetadata(messageMetadata)
         .domain(this.domainInfo.getDomain())
         .domainVersion(this.domainInfo.getDomainVersion())
         .ipAddress(ipAddress)

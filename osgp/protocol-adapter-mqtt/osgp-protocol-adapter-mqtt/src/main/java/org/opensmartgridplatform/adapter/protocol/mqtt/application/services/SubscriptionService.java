@@ -16,7 +16,6 @@ import org.opensmartgridplatform.adapter.protocol.mqtt.application.messaging.Out
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.entities.MqttDevice;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.repositories.MqttDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.valueobjects.MqttClientDefaults;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
@@ -136,7 +135,7 @@ public class SubscriptionService implements MqttClientEventHandler {
         payload);
     final ResponseMessage responseMessage =
         new ProtocolResponseMessage.Builder()
-            .deviceMessageMetadata(new DeviceMessageMetadata(messageMetadata))
+            .messageMetadata(messageMetadata)
             .domain(messageMetadata.getDomain())
             .domainVersion(messageMetadata.getDomainVersion())
             .dataObject(payload)

@@ -18,7 +18,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.NotSupportedException;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
@@ -46,7 +46,7 @@ public class DeviceRequestMessageListener implements MessageListener {
     final ObjectMessage objectMessage = (ObjectMessage) message;
     String correlationUid = null;
     String messageType = null;
-    int messagePriority;
+    final int messagePriority;
     try {
       correlationUid = message.getJMSCorrelationID();
       messageType = message.getJMSType();
@@ -82,10 +82,10 @@ public class DeviceRequestMessageListener implements MessageListener {
               exception);
       final Serializable dataObject = objectMessage.getObject();
 
-      final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(objectMessage);
+      final MessageMetadata messageMetadata = MessageMetadata.fromMessage(objectMessage);
       final ProtocolResponseMessage protocolResponseMessage =
           new ProtocolResponseMessage.Builder()
-              .deviceMessageMetadata(deviceMessageMetadata)
+              .messageMetadata(messageMetadata)
               .domain(domain)
               .domainVersion(domainVersion)
               .result(result)

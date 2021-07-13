@@ -17,7 +17,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.NotSupportedException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
@@ -44,7 +44,7 @@ public class DeviceRequestMessageListener implements MessageListener {
   public void onMessage(final Message message) {
     final ObjectMessage objectMessage = (ObjectMessage) message;
     String messageType = null;
-    int messagePriority;
+    final int messagePriority;
 
     try {
       messageType = message.getJMSType();
@@ -76,10 +76,10 @@ public class DeviceRequestMessageListener implements MessageListener {
           new OsgpException(ComponentType.PROTOCOL_OSLP, errorMessage, exception);
       final Serializable dataObject = objectMessage.getObject();
 
-      final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(objectMessage);
+      final MessageMetadata messageMetadata = MessageMetadata.fromMessage(objectMessage);
       final ProtocolResponseMessage protocolResponseMessage =
           new ProtocolResponseMessage.Builder()
-              .deviceMessageMetadata(deviceMessageMetadata)
+              .messageMetadata(messageMetadata)
               .domain(domain)
               .domainVersion(domainVersion)
               .result(result)

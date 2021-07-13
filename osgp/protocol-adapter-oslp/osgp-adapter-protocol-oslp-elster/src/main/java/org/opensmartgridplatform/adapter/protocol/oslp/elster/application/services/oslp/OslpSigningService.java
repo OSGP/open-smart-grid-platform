@@ -19,7 +19,7 @@ import org.opensmartgridplatform.oslp.Oslp;
 import org.opensmartgridplatform.oslp.OslpEnvelope;
 import org.opensmartgridplatform.oslp.SignedOslpEnvelopeDto;
 import org.opensmartgridplatform.oslp.UnsignedOslpEnvelopeDto;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
@@ -233,18 +233,19 @@ public class OslpSigningService {
 
     final UnsignedOslpEnvelopeDto unsignedOslpEnvelopeDto =
         (UnsignedOslpEnvelopeDto) responseMessage.getDataObject();
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceIdentification,
-            unsignedOslpEnvelopeDto.getOrganisationIdentification(),
-            unsignedOslpEnvelopeDto.getCorrelationUid(),
-            unsignedOslpEnvelopeDto.getMessageType(),
-            responseMessage.getMessagePriority());
+    final MessageMetadata messageMetadata =
+        new MessageMetadata.Builder()
+            .withDeviceIdentification(deviceIdentification)
+            .withOrganisationIdentification(unsignedOslpEnvelopeDto.getOrganisationIdentification())
+            .withCorrelationUid(unsignedOslpEnvelopeDto.getCorrelationUid())
+            .withMessageType(unsignedOslpEnvelopeDto.getMessageType())
+            .withMessagePriority(responseMessage.getMessagePriority())
+            .build();
     final ProtocolResponseMessage protocolResponseMessage =
         ProtocolResponseMessage.newBuilder()
             .domain(unsignedOslpEnvelopeDto.getDomain())
             .domainVersion(unsignedOslpEnvelopeDto.getDomainVersion())
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(messageMetadata)
             .result(responseMessage.getResult())
             .osgpException(responseMessage.getOsgpException())
             .scheduled(unsignedOslpEnvelopeDto.isScheduled())

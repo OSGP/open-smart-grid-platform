@@ -19,7 +19,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
@@ -100,18 +99,13 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
       ex = e;
     }
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceResponse.getDeviceIdentification(),
-            deviceResponse.getOrganisationIdentification(),
-            deviceResponse.getCorrelationUid(),
-            messageType,
-            deviceResponse.getMessagePriority());
+    final MessageMetadata messageMetadata =
+        MessageMetadataFactory.from(deviceResponse, messageType);
     final ProtocolResponseMessage responseMessage =
         ProtocolResponseMessage.newBuilder()
             .domain(domain)
             .domainVersion(domainVersion)
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(messageMetadata)
             .result(result)
             .osgpException(ex)
             .retryCount(retryCount)
@@ -141,18 +135,13 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
       ex = e;
     }
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceResponse.getDeviceIdentification(),
-            deviceResponse.getOrganisationIdentification(),
-            deviceResponse.getCorrelationUid(),
-            messageType,
-            deviceResponse.getMessagePriority());
+    final MessageMetadata messageMetadata =
+        MessageMetadataFactory.from(deviceResponse, messageType);
     final ProtocolResponseMessage responseMessage =
         ProtocolResponseMessage.newBuilder()
             .domain(domain)
             .domainVersion(domainVersion)
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(messageMetadata)
             .result(result)
             .osgpException(ex)
             .scheduled(isScheduled)
@@ -177,18 +166,19 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
     final TechnicalException ex =
         new TechnicalException(ComponentType.PROTOCOL_OSLP, UNEXPECTED_EXCEPTION);
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceIdentification,
-            organisationIdentification,
-            correlationUid,
-            messageType,
-            messagePriority);
+    final MessageMetadata messageMetadata =
+        new MessageMetadata.Builder()
+            .withDeviceIdentification(deviceIdentification)
+            .withOrganisationIdentification(organisationIdentification)
+            .withCorrelationUid(correlationUid)
+            .withMessageType(messageType)
+            .withMessagePriority(messagePriority)
+            .build();
     final ProtocolResponseMessage protocolResponseMessage =
         ProtocolResponseMessage.newBuilder()
             .domain(domain)
             .domainVersion(domainVersion)
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(messageMetadata)
             .result(ResponseMessageResultType.NOT_OK)
             .osgpException(ex)
             .retryCount(retryCount)
@@ -222,11 +212,10 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
   private ProtocolResponseMessage createProtocolResponseMessage(
       final MessageMetadata messageMetadata, final OsgpException ex) {
-    final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(messageMetadata);
     return ProtocolResponseMessage.newBuilder()
         .domain(messageMetadata.getDomain())
         .domainVersion(messageMetadata.getDomainVersion())
-        .deviceMessageMetadata(deviceMessageMetadata)
+        .messageMetadata(messageMetadata)
         .result(ResponseMessageResultType.NOT_OK)
         .osgpException(ex)
         .retryCount(messageMetadata.getRetryCount())
@@ -251,18 +240,13 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             ComponentType.PROTOCOL_OSLP,
             StringUtils.isBlank(t.getMessage()) ? UNEXPECTED_EXCEPTION : t.getMessage());
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceResponse.getDeviceIdentification(),
-            deviceResponse.getOrganisationIdentification(),
-            deviceResponse.getCorrelationUid(),
-            messageType,
-            deviceResponse.getMessagePriority());
+    final MessageMetadata messageMetadata =
+        MessageMetadataFactory.from(deviceResponse, messageType);
     final ProtocolResponseMessage responseMessage =
         ProtocolResponseMessage.newBuilder()
             .domain(domain)
             .domainVersion(domainVersion)
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(messageMetadata)
             .result(result)
             .osgpException(ex)
             .scheduled(isScheduled)

@@ -9,7 +9,7 @@
 package org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms;
 
 import java.io.Serializable;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 
 public class SmartMeteringRequestMessage extends RequestMessage {
@@ -22,7 +22,7 @@ public class SmartMeteringRequestMessage extends RequestMessage {
   private final boolean bypassRetry;
 
   private SmartMeteringRequestMessage(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final String ipAddress,
       final Serializable request) {
     super(
@@ -34,11 +34,11 @@ public class SmartMeteringRequestMessage extends RequestMessage {
     this.messageType = deviceMessageMetadata.getMessageType();
     this.messagePriority = deviceMessageMetadata.getMessagePriority();
     this.scheduleTime = deviceMessageMetadata.getScheduleTime();
-    this.bypassRetry = deviceMessageMetadata.bypassRetry();
+    this.bypassRetry = deviceMessageMetadata.isBypassRetry();
   }
 
   public static class Builder {
-    private DeviceMessageMetadata deviceMessageMetadata;
+    private MessageMetadata messageMetadata;
     private String ipAddress;
     private Serializable request;
 
@@ -46,8 +46,8 @@ public class SmartMeteringRequestMessage extends RequestMessage {
       // empty constructor
     }
 
-    public Builder deviceMessageMetadata(final DeviceMessageMetadata deviceMessageMetadata) {
-      this.deviceMessageMetadata = deviceMessageMetadata;
+    public Builder messageMetadata(final MessageMetadata messageMetadata) {
+      this.messageMetadata = messageMetadata;
       return this;
     }
 
@@ -62,8 +62,7 @@ public class SmartMeteringRequestMessage extends RequestMessage {
     }
 
     public SmartMeteringRequestMessage build() {
-      return new SmartMeteringRequestMessage(
-          this.deviceMessageMetadata, this.ipAddress, this.request);
+      return new SmartMeteringRequestMessage(this.messageMetadata, this.ipAddress, this.request);
     }
   }
 

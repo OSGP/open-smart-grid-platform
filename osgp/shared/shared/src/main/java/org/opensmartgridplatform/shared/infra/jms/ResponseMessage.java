@@ -143,14 +143,14 @@ public class ResponseMessage implements Serializable {
       return this;
     }
 
-    public Builder withDeviceMessageMetadata(final DeviceMessageMetadata deviceMessageMetadata) {
-      this.messageType = deviceMessageMetadata.getMessageType();
-      this.correlationUid = deviceMessageMetadata.getCorrelationUid();
-      this.organisationIdentification = deviceMessageMetadata.getOrganisationIdentification();
-      this.deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
-      this.messagePriority = deviceMessageMetadata.getMessagePriority();
-      this.bypassRetry = deviceMessageMetadata.bypassRetry();
-      this.scheduled = deviceMessageMetadata.isScheduled();
+    public Builder withMessageMetadata(final MessageMetadata messageMetadata) {
+      this.messageType = messageMetadata.getMessageType();
+      this.correlationUid = messageMetadata.getCorrelationUid();
+      this.organisationIdentification = messageMetadata.getOrganisationIdentification();
+      this.deviceIdentification = messageMetadata.getDeviceIdentification();
+      this.messagePriority = messageMetadata.getMessagePriority();
+      this.bypassRetry = messageMetadata.isBypassRetry();
+      this.scheduled = messageMetadata.isScheduled();
       this.retryHeader = new RetryHeader();
       return this;
     }
