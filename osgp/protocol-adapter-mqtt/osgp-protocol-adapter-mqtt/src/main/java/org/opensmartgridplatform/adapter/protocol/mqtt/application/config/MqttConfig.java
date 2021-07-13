@@ -9,10 +9,12 @@
 package org.opensmartgridplatform.adapter.protocol.mqtt.application.config;
 
 import com.hivemq.client.mqtt.MqttClientSslConfig;
+import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import java.util.List;
 import java.util.UUID;
+import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.protocol.mqtt.application.services.MqttClientAdapter;
 import org.opensmartgridplatform.adapter.protocol.mqtt.application.services.SubscriptionService;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.entities.MqttDevice;
@@ -47,7 +49,8 @@ public class MqttConfig extends AbstractConfig {
   @Bean
   public MqttClientDefaults mqttClientDefaults(
       @Value("${mqtt.default.connect.to.broker:true}") final Boolean connectToBroker,
-      @Value("${mqtt.default.connect.to.devices:true}") final Boolean connectToDevices,
+      @Value("${mqtt.default.subscribe.to.topics.for.devices:true}")
+          final Boolean subscribeToTopicsForDevices,
       @Value("${mqtt.default.host:localhost}") final String defaultHost,
       @Value("${mqtt.default.port:1883}") final int defaultPort,
       @Value("${mqtt.default.qos:AT_LEAST_ONCE}") final String defaultQos,
@@ -57,8 +60,8 @@ public class MqttConfig extends AbstractConfig {
       this.connectToBroker(defaultHost, defaultPort);
     }
 
-    if (connectToDevices) {
-      this.connectToDevices(defaultQos, defaultTopics);
+    if (subscribeToTopicsForDevices) {
+      this.subscribeToTopicsForDevices(defaultQos, defaultTopics);
     }
 
     return new MqttClientDefaults(defaultHost, defaultPort, defaultQos, defaultTopics);
@@ -76,19 +79,52 @@ public class MqttConfig extends AbstractConfig {
     this.client.connectWith().send();
   }
 
-  private void connectToDevices(final String defaultQos, final String defaultTopics) {
+  private void subscribeToTopicsForDevices(final String defaultQos, final String defaultTopics) {
 
     final List<MqttDevice> devices = this.mqttDeviceRepository.findAll();
     for (final MqttDevice device : devices) {
-      LOGGER.info("Connecting to MQTT device: {}", device.getDeviceIdentification());
+
+      final String topics = this.getTopics(defaultTopics, device);
+      final MqttQos qos = this.getQos(defaultQos, device);
+
+      LOGGER.info(
+          "Subscribing to topic(s): {} using QOS: {} for MQTT device: {}",
+          topics,
+          qos.toString(),
+          device.getDeviceIdentification());
 
       try {
         final MqttClientAdapter adapter =
             new MqttClientAdapter(device, null, this.mqttClientSslConfig, this.subscriptionService);
-        adapter.connect();
+        adapter.subscribe(topics, qos);
       } catch (final Exception e) {
-        LOGGER.error("Unable to connect to MQTT device: {}", device.getDeviceIdentification(), e);
+        LOGGER.error(
+            "Unable to subscribe to topic(s): {} using QOS: {} for MQTT device: {}",
+            topics,
+            qos.toString(),
+            device.getDeviceIdentification(),
+            e);
       }
     }
+  }
+
+  private String getTopics(final String defaultTopics, final MqttDevice device) {
+    String topics;
+    if (StringUtils.isEmpty(device.getTopics())) {
+      topics = defaultTopics;
+    } else {
+      topics = device.getTopics();
+    }
+    return topics;
+  }
+
+  private MqttQos getQos(final String defaultQos, final MqttDevice device) {
+    MqttQos qos;
+    if (StringUtils.isEmpty(device.getQos())) {
+      qos = MqttQos.valueOf(defaultQos);
+    } else {
+      qos = MqttQos.valueOf(device.getQos());
+    }
+    return qos;
   }
 }
