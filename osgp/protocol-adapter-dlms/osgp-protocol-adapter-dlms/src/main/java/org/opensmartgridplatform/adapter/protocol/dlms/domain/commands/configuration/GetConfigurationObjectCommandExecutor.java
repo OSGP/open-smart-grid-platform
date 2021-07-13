@@ -19,6 +19,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDt
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfigurationObjectRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfigurationObjectResponseDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -47,7 +48,10 @@ public class GetConfigurationObjectCommandExecutor
 
   @Override
   public ConfigurationObjectDto execute(
-      final DlmsConnectionManager conn, final DlmsDevice device, final Void object)
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final Void object,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
     return this.protocolServiceLookup
         .lookupGetService(Protocol.forDevice(device))

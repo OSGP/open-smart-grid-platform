@@ -38,6 +38,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDev
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -59,7 +60,8 @@ public class InstallationService {
   @Autowired
   private CoupleMbusDeviceByChannelCommandExecutor coupleMbusDeviceByChannelCommandExecutor;
 
-  public void addMeter(final SmartMeteringDeviceDto smartMeteringDevice)
+  public void addMeter(
+      final MessageMetadata messageMetadata, final SmartMeteringDeviceDto smartMeteringDevice)
       throws FunctionalException {
     if (smartMeteringDevice.getDeviceIdentification() == null) {
       throw new FunctionalException(
@@ -67,13 +69,14 @@ public class InstallationService {
           ComponentType.PROTOCOL_DLMS,
           new IllegalArgumentException("Provided device does not contain device identification"));
     }
-    this.storeAndActivateKeys(smartMeteringDevice);
+    this.storeAndActivateKeys(messageMetadata, smartMeteringDevice);
     final DlmsDevice dlmsDevice =
         this.installationMapper.map(smartMeteringDevice, DlmsDevice.class);
     this.dlmsDeviceRepository.save(dlmsDevice);
   }
 
-  private void storeAndActivateKeys(final SmartMeteringDeviceDto deviceDto)
+  private void storeAndActivateKeys(
+      final MessageMetadata messageMetadata, final SmartMeteringDeviceDto deviceDto)
       throws FunctionalException {
     final Map<SecurityKeyType, byte[]> keysByType = new EnumMap<>(SecurityKeyType.class);
     final List<SecurityKeyType> keyTypesToStore = this.determineKeyTypesToStore(deviceDto);
@@ -87,9 +90,10 @@ public class InstallationService {
             FunctionalExceptionType.KEY_NOT_PRESENT, ComponentType.PROTOCOL_DLMS, rootCause);
       }
     }
-    this.secretManagementService.storeNewKeys(deviceDto.getDeviceIdentification(), keysByType);
+    this.secretManagementService.storeNewKeys(
+        messageMetadata, deviceDto.getDeviceIdentification(), keysByType);
     this.secretManagementService.activateNewKeys(
-        deviceDto.getDeviceIdentification(), keyTypesToStore);
+        messageMetadata, deviceDto.getDeviceIdentification(), keyTypesToStore);
   }
 
   private List<SecurityKeyType> determineKeyTypesToStore(final SmartMeteringDeviceDto deviceDto)
@@ -133,24 +137,30 @@ public class InstallationService {
   public MbusChannelElementsResponseDto coupleMbusDevice(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final MbusChannelElementsDto mbusChannelElements)
+      final MbusChannelElementsDto mbusChannelElements,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
-    return this.coupleMBusDeviceCommandExecutor.execute(conn, device, mbusChannelElements);
+    return this.coupleMBusDeviceCommandExecutor.execute(
+        conn, device, mbusChannelElements, messageMetadata);
   }
 
   public CoupleMbusDeviceByChannelResponseDto coupleMbusDeviceByChannel(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final CoupleMbusDeviceByChannelRequestDataDto requestDto)
+      final CoupleMbusDeviceByChannelRequestDataDto requestDto,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
-    return this.coupleMbusDeviceByChannelCommandExecutor.execute(conn, device, requestDto);
+    return this.coupleMbusDeviceByChannelCommandExecutor.execute(
+        conn, device, requestDto, messageMetadata);
   }
 
   public DecoupleMbusDeviceResponseDto decoupleMbusDevice(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final DecoupleMbusDeviceDto decoupleMbusDeviceDto)
+      final DecoupleMbusDeviceDto decoupleMbusDeviceDto,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
-    return this.decoupleMBusDeviceCommandExecutor.execute(conn, device, decoupleMbusDeviceDto);
+    return this.decoupleMBusDeviceCommandExecutor.execute(
+        conn, device, decoupleMbusDeviceDto, messageMetadata);
   }
 }

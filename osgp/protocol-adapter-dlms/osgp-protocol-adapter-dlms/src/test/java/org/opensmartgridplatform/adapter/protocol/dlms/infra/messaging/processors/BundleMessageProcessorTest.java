@@ -66,12 +66,15 @@ class BundleMessageProcessorTest {
   @Mock private DlmsMessageListener messageListener;
 
   private DlmsDevice dlmsDevice;
+  private MessageMetadata messageMetadata;
 
   @InjectMocks private BundleMessageProcessor messageProcessor;
 
   @BeforeEach
   public void setUp() throws JMSException, OsgpException {
     this.dlmsDevice = new DlmsDeviceBuilder().withHls5Active(true).build();
+    this.messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
     when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class)))
         .thenReturn(this.dlmsDevice);
   }
@@ -80,7 +83,8 @@ class BundleMessageProcessorTest {
   public void shouldSetEmptyHeaderOnSuccessfulOperation() throws OsgpException, JMSException {
     this.prepareBundleServiceMockWithRequestAndResponse(new ActionResponseDto());
     when(this.dlmsConnectionManager.getDlmsMessageListener()).thenReturn(this.messageListener);
-    when(this.dlmsConnectionHelper.createConnectionForDevice(this.dlmsDevice, null))
+    when(this.dlmsConnectionHelper.createConnectionForDevice(
+            this.messageMetadata, this.dlmsDevice, null))
         .thenReturn(this.dlmsConnectionManager);
 
     this.messageProcessor.processMessage(this.message);
@@ -90,7 +94,8 @@ class BundleMessageProcessorTest {
 
   @Test
   public void shouldSetRetryHeaderOnRuntimeException() throws OsgpException, JMSException {
-    when(this.dlmsConnectionHelper.createConnectionForDevice(this.dlmsDevice, null))
+    when(this.dlmsConnectionHelper.createConnectionForDevice(
+            this.messageMetadata, this.dlmsDevice, null))
         .thenThrow(new RuntimeException());
 
     this.messageProcessor.processMessage(this.message);
@@ -100,7 +105,8 @@ class BundleMessageProcessorTest {
 
   @Test
   public void shouldSetRetryHeaderOnOsgpException() throws OsgpException, JMSException {
-    when(this.dlmsConnectionHelper.createConnectionForDevice(this.dlmsDevice, null))
+    when(this.dlmsConnectionHelper.createConnectionForDevice(
+            this.messageMetadata, this.dlmsDevice, null))
         .thenThrow(new OsgpException(ComponentType.PROTOCOL_DLMS, ""));
 
     this.messageProcessor.processMessage(this.message);
@@ -112,7 +118,8 @@ class BundleMessageProcessorTest {
   public void shouldSetRetryHeaderOnSuccessfulOperationWithRetryableFaultResponse()
       throws OsgpException, JMSException {
     when(this.dlmsConnectionManager.getDlmsMessageListener()).thenReturn(this.messageListener);
-    when(this.dlmsConnectionHelper.createConnectionForDevice(this.dlmsDevice, null))
+    when(this.dlmsConnectionHelper.createConnectionForDevice(
+            this.messageMetadata, this.dlmsDevice, null))
         .thenReturn(this.dlmsConnectionManager);
 
     this.prepareBundleServiceMockWithRequestAndResponse(
@@ -127,7 +134,8 @@ class BundleMessageProcessorTest {
   public void shouldSetEmptyHeaderOnSuccessfulOperationWithNonRetryableFaultResponse()
       throws OsgpException, JMSException {
     when(this.dlmsConnectionManager.getDlmsMessageListener()).thenReturn(this.messageListener);
-    when(this.dlmsConnectionHelper.createConnectionForDevice(this.dlmsDevice, null))
+    when(this.dlmsConnectionHelper.createConnectionForDevice(
+            this.messageMetadata, this.dlmsDevice, null))
         .thenReturn(this.dlmsConnectionManager);
 
     this.prepareBundleServiceMockWithRequestAndResponse(
@@ -147,7 +155,8 @@ class BundleMessageProcessorTest {
     when(this.message.getJMSType()).thenReturn(MessageType.CLEAR_ALARM_REGISTER.name());
     when(this.message.getObject()).thenReturn(request);
 
-    when(this.bundleService.callExecutors(this.dlmsConnectionManager, this.dlmsDevice, request))
+    when(this.bundleService.callExecutors(
+            this.dlmsConnectionManager, this.dlmsDevice, request, this.messageMetadata))
         .thenReturn(request);
   }
 }

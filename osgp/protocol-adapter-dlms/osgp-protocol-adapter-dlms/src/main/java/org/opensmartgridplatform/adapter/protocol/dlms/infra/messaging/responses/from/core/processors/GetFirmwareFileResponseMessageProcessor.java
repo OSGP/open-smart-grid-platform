@@ -125,7 +125,13 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
 
     if (ResponseMessageResultType.OK.equals(responseMessage.getResult())) {
       final FirmwareFileDto firmwareFileDto = (FirmwareFileDto) responseMessage.getDataObject();
-      return this.firmwareService.updateFirmware(conn, device, firmwareFileDto);
+      // TODO No MessageMetadata available here. Problem?
+      final MessageMetadata messageMetadata =
+          MessageMetadata.newMessageMetadataBuilder()
+              .withCorrelationUid(responseMessage.getCorrelationUid())
+              .build();
+
+      return this.firmwareService.updateFirmware(conn, device, firmwareFileDto, messageMetadata);
     } else {
       throw new ProtocolAdapterException(
           "Get Firmware File failed.", responseMessage.getOsgpException());

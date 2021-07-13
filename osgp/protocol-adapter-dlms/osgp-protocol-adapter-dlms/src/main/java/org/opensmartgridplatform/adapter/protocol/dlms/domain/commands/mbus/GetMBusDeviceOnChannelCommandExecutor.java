@@ -16,6 +16,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMBusDeviceOnChannelRequestDataDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,8 @@ public class GetMBusDeviceOnChannelCommandExecutor
   public ChannelElementValuesDto execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final GetMBusDeviceOnChannelRequestDataDto requestDto)
+      final GetMBusDeviceOnChannelRequestDataDto requestDto,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     LOGGER.info(

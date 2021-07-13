@@ -33,6 +33,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventLogCategoryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FindEventsRequestDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,7 +92,8 @@ public class FindEventsCommandExecutor
   public List<EventDto> execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final FindEventsRequestDto findEventsQuery)
+      final FindEventsRequestDto findEventsQuery,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     final SelectiveAccessDescription selectiveAccessDescription =

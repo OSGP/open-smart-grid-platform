@@ -24,9 +24,14 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
 public class InstallationServiceTest {
+
+  private final MessageMetadata messageMetadata =
+      MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+
   @InjectMocks InstallationService testService;
   @Mock SecretManagementService secretManagementService;
   @Mock DlmsDeviceRepository dlmsDeviceRepository;
@@ -46,10 +51,10 @@ public class InstallationServiceTest {
     when(this.dlmsDeviceRepository.save(dlmsDevice)).thenReturn(dlmsDevice);
     when(this.encryptionHelperService.rsaDecrypt(any())).thenReturn(new byte[16]);
     // WHEN
-    this.testService.addMeter(deviceDto);
+    this.testService.addMeter(this.messageMetadata, deviceDto);
     // THEN
-    verify(this.secretManagementService, times(1)).storeNewKeys(any(), any());
-    verify(this.secretManagementService, times(1)).activateNewKeys(any(), any());
+    verify(this.secretManagementService, times(1)).storeNewKeys(any(), any(), any());
+    verify(this.secretManagementService, times(1)).activateNewKeys(any(), any(), any());
   }
 
   @Test
@@ -63,10 +68,10 @@ public class InstallationServiceTest {
     when(this.dlmsDeviceRepository.save(dlmsDevice)).thenReturn(dlmsDevice);
     when(this.encryptionHelperService.rsaDecrypt(any())).thenReturn(new byte[16]);
     // WHEN
-    this.testService.addMeter(deviceDto);
+    this.testService.addMeter(this.messageMetadata, deviceDto);
     // THEN
-    verify(this.secretManagementService, times(1)).storeNewKeys(any(), any());
-    verify(this.secretManagementService, times(1)).activateNewKeys(any(), any());
+    verify(this.secretManagementService, times(1)).storeNewKeys(any(), any(), any());
+    verify(this.secretManagementService, times(1)).activateNewKeys(any(), any(), any());
   }
 
   @Test
@@ -76,7 +81,7 @@ public class InstallationServiceTest {
     deviceDto.setDeviceIdentification("Test");
     // WHEN
     Assertions.assertThatExceptionOfType(FunctionalException.class)
-        .isThrownBy(() -> this.testService.addMeter(deviceDto));
+        .isThrownBy(() -> this.testService.addMeter(this.messageMetadata, deviceDto));
   }
 
   @Test
@@ -90,7 +95,7 @@ public class InstallationServiceTest {
     deviceDto.setMbusDefaultKey(new byte[16]);
     // WHEN
     Assertions.assertThatExceptionOfType(FunctionalException.class)
-        .isThrownBy(() -> this.testService.addMeter(deviceDto));
+        .isThrownBy(() -> this.testService.addMeter(this.messageMetadata, deviceDto));
   }
 
   @Test
@@ -100,6 +105,6 @@ public class InstallationServiceTest {
     deviceDto.setMbusDefaultKey(new byte[16]);
     // WHEN
     Assertions.assertThatExceptionOfType(FunctionalException.class)
-        .isThrownBy(() -> this.testService.addMeter(deviceDto));
+        .isThrownBy(() -> this.testService.addMeter(this.messageMetadata, deviceDto));
   }
 }

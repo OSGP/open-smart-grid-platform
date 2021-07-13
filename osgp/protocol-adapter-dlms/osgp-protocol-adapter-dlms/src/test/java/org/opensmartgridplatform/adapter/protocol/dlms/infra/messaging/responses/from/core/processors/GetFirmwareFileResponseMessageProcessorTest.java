@@ -68,6 +68,7 @@ public class GetFirmwareFileResponseMessageProcessorTest {
   @Mock private OsgpExceptionConverter osgpExceptionConverter;
 
   private DlmsDevice dlmsDevice;
+  private MessageMetadata messageMetadata;
 
   @InjectMocks
   private GetFirmwareFileResponseMessageProcessor getFirmwareFileResponseMessageProcessor;
@@ -75,6 +76,8 @@ public class GetFirmwareFileResponseMessageProcessorTest {
   @BeforeEach
   public void setUp() {
     this.dlmsDevice = new DlmsDeviceBuilder().withHls5Active(true).build();
+    this.messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("corr-uid-1").build();
   }
 
   @Test
@@ -99,10 +102,10 @@ public class GetFirmwareFileResponseMessageProcessorTest {
     when(this.dlmsConnectionManagerMock.getDlmsMessageListener())
         .thenReturn(this.dlmsMessageListenerMock);
     when(this.connectionHelper.createConnectionForDevice(
-            same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
+            same(this.messageMetadata), same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
         .thenReturn(this.dlmsConnectionManagerMock);
     when(this.firmwareService.updateFirmware(
-            this.dlmsConnectionManagerMock, this.dlmsDevice, firmwareFileDto))
+            this.dlmsConnectionManagerMock, this.dlmsDevice, firmwareFileDto, this.messageMetadata))
         .thenReturn(updateFirmwareResponseDto);
 
     // act
@@ -129,7 +132,11 @@ public class GetFirmwareFileResponseMessageProcessorTest {
 
     // assert
     verify(this.firmwareService, times(1))
-        .updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDevice, firmwareFileDto);
+        .updateFirmware(
+            same(this.dlmsConnectionManagerMock),
+            same(this.dlmsDevice),
+            same(firmwareFileDto),
+            any(MessageMetadata.class));
   }
 
   @Test
@@ -152,10 +159,10 @@ public class GetFirmwareFileResponseMessageProcessorTest {
     when(this.dlmsConnectionManagerMock.getDlmsMessageListener())
         .thenReturn(this.dlmsMessageListenerMock);
     when(this.connectionHelper.createConnectionForDevice(
-            same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
+            same(this.messageMetadata), same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
         .thenReturn(this.dlmsConnectionManagerMock);
     when(this.firmwareService.updateFirmware(
-            this.dlmsConnectionManagerMock, this.dlmsDevice, firmwareFileDto))
+            this.dlmsConnectionManagerMock, this.dlmsDevice, firmwareFileDto, this.messageMetadata))
         .thenThrow(new ProtocolAdapterException("Firmware file fw is not available."));
 
     // act

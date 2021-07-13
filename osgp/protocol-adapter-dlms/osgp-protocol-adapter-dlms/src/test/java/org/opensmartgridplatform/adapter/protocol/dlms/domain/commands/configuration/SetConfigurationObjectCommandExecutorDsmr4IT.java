@@ -87,7 +87,8 @@ public class SetConfigurationObjectCommandExecutorDsmr4IT
     device.setProtocol(Protocol.DSMR_4_2_2);
 
     // CALL
-    final AccessResultCode result = this.instance.execute(this.conn, device, configurationToSet);
+    final AccessResultCode result =
+        this.instance.execute(this.conn, device, configurationToSet, this.messageMetadata);
 
     // VERIFY
     assertThat(result).isEqualTo(AccessResultCode.SUCCESS);

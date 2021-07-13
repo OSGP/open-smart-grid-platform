@@ -58,7 +58,8 @@ public abstract class DlmsConnectionMessageProcessor {
         this.createMessageListenerForDeviceConnection(device, messageMetadata);
 
     try {
-      return this.dlmsConnectionHelper.createConnectionForDevice(device, dlmsMessageListener);
+      return this.dlmsConnectionHelper.createConnectionForDevice(
+          messageMetadata, device, dlmsMessageListener);
     } catch (final Exception e) {
       this.throttlingService.closeConnection();
       throw e;

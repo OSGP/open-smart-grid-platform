@@ -15,6 +15,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Dlm
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,14 +45,15 @@ public class InvocationCounterManager {
    * Updates the device instance with the invocation counter value on the actual device. Should only
    * be called for a device that actually has an invocation counter stored on the device itself.
    */
-  public void initializeInvocationCounter(final DlmsDevice device) throws OsgpException {
-    this.initializeWithInvocationCounterStoredOnDevice(device);
+  public void initializeInvocationCounter(
+      final MessageMetadata messageMetadata, final DlmsDevice device) throws OsgpException {
+    this.initializeWithInvocationCounterStoredOnDevice(messageMetadata, device);
   }
 
-  private void initializeWithInvocationCounterStoredOnDevice(final DlmsDevice device)
-      throws OsgpException {
+  private void initializeWithInvocationCounterStoredOnDevice(
+      final MessageMetadata messageMetadata, final DlmsDevice device) throws OsgpException {
     try (final DlmsConnectionManager connectionManager =
-        this.connectionFactory.getPublicClientConnection(device, null)) {
+        this.connectionFactory.getPublicClientConnection(messageMetadata, device, null)) {
       final Long previousKnownInvocationCounter = device.getInvocationCounter();
       final Long invocationCounterFromDevice = this.getInvocationCounter(connectionManager);
       if (Objects.equals(previousKnownInvocationCounter, invocationCounterFromDevice)) {

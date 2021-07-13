@@ -14,6 +14,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 /**
  * Interface for executing a command on a smart meter over a client connection, taking input of type
@@ -24,7 +25,9 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
  */
 public interface CommandExecutor<T, R> {
 
-  R execute(DlmsConnectionManager conn, DlmsDevice device, T object) throws OsgpException;
+  R execute(
+      DlmsConnectionManager conn, DlmsDevice device, T object, MessageMetadata messageMetadata)
+      throws OsgpException;
 
   /**
    * If a CommandExecutor gets called from an action that is part of a bundle, the result should
@@ -35,7 +38,10 @@ public interface CommandExecutor<T, R> {
    * @see #asBundleResponse(Object)
    */
   ActionResponseDto executeBundleAction(
-      DlmsConnectionManager conn, DlmsDevice device, ActionRequestDto actionRequestDto)
+      DlmsConnectionManager conn,
+      DlmsDevice device,
+      ActionRequestDto actionRequestDto,
+      MessageMetadata messageMetadata)
       throws OsgpException;
 
   T fromBundleRequestInput(ActionRequestDto bundleInput) throws ProtocolAdapterException;

@@ -36,17 +36,21 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmNotificatio
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmNotificationsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 public class SetAlarmNotificationsCommandExecutorTest {
   private DlmsDevice device;
   private CommandExecutor<AlarmNotificationsDto, AccessResultCode> executor;
   private List<SetParameter> setParametersReceived;
   private DlmsConnectionManager connMgr;
+  private MessageMetadata messageMetadata;
 
   @BeforeEach
   public void setUp() {
     this.setParametersReceived = new ArrayList<>();
     this.device = new DlmsDevice("SuperAwesomeHeroicRockstarDevice");
+    this.messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
 
     final DlmsObjectConfigConfiguration dlmsObjectConfigConfiguration =
         new DlmsObjectConfigConfiguration();
@@ -122,6 +126,7 @@ public class SetAlarmNotificationsCommandExecutorTest {
         new HashSet<>(Arrays.asList(alarmNotificationDtos));
     final AlarmNotificationsDto alarmNotificationsDto =
         new AlarmNotificationsDto(alarmNotificationDtoSet);
-    return this.executor.execute(this.connMgr, this.device, alarmNotificationsDto);
+    return this.executor.execute(
+        this.connMgr, this.device, alarmNotificationsDto, this.messageMetadata);
   }
 }
