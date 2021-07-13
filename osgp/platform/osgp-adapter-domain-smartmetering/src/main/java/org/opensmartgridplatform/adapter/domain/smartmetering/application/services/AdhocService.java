@@ -26,7 +26,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecificAttribut
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -65,7 +65,7 @@ public class AdhocService {
   }
 
   public void synchronizeTime(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final org.opensmartgridplatform.domain.core.valueobjects.smartmetering
               .SynchronizeTimeRequestData
           synchronizeTimeRequestDataValueObject)
@@ -94,11 +94,11 @@ public class AdhocService {
         deviceMessageMetadata.getMessageType(),
         deviceMessageMetadata.getMessagePriority(),
         deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        deviceMessageMetadata.isBypassRetry());
   }
 
   public void handleSynchronizeTimeResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception) {
 
@@ -125,7 +125,7 @@ public class AdhocService {
         responseMessage, deviceMessageMetadata.getMessageType());
   }
 
-  public void getAllAttributeValues(final DeviceMessageMetadata deviceMessageMetadata)
+  public void getAllAttributeValues(final MessageMetadata deviceMessageMetadata)
       throws FunctionalException {
 
     LOGGER.debug(
@@ -148,11 +148,11 @@ public class AdhocService {
         deviceMessageMetadata.getMessageType(),
         deviceMessageMetadata.getMessagePriority(),
         deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        deviceMessageMetadata.isBypassRetry());
   }
 
   public void handleGetAllAttributeValuesResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception,
       final String resultData) {
@@ -181,7 +181,7 @@ public class AdhocService {
         responseMessage, deviceMessageMetadata.getMessageType());
   }
 
-  public void getAssociationLnObjects(final DeviceMessageMetadata deviceMessageMetadata)
+  public void getAssociationLnObjects(final MessageMetadata deviceMessageMetadata)
       throws FunctionalException {
     LOGGER.debug(
         "getAssociationLnObjects for organisationIdentification: {} for deviceIdentification: {}",
@@ -203,11 +203,11 @@ public class AdhocService {
         deviceMessageMetadata.getMessageType(),
         deviceMessageMetadata.getMessagePriority(),
         deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        deviceMessageMetadata.isBypassRetry());
   }
 
   public void handleGetAssocationLnObjectsResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception,
       final AssociationLnListTypeDto resultData) {
@@ -236,8 +236,7 @@ public class AdhocService {
   }
 
   public void getSpecificAttributeValue(
-      final DeviceMessageMetadata deviceMessageMetadata,
-      final SpecificAttributeValueRequest request)
+      final MessageMetadata deviceMessageMetadata, final SpecificAttributeValueRequest request)
       throws FunctionalException {
 
     LOGGER.debug(
@@ -266,11 +265,11 @@ public class AdhocService {
         deviceMessageMetadata.getMessageType(),
         deviceMessageMetadata.getMessagePriority(),
         deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        deviceMessageMetadata.isBypassRetry());
   }
 
   public void handleGetSpecificAttributeValueResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception,
       final String resultData) {
@@ -298,7 +297,7 @@ public class AdhocService {
         responseMessage, deviceMessageMetadata.getMessageType());
   }
 
-  public void scanMbusChannels(final DeviceMessageMetadata deviceMessageMetadata)
+  public void scanMbusChannels(final MessageMetadata deviceMessageMetadata)
       throws FunctionalException {
 
     LOGGER.debug(
@@ -321,11 +320,11 @@ public class AdhocService {
         deviceMessageMetadata.getMessageType(),
         deviceMessageMetadata.getMessagePriority(),
         deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        deviceMessageMetadata.isBypassRetry());
   }
 
   public void handleScanMbusChannelsResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception,
       final ScanMbusChannelsResponseDto resultData) {

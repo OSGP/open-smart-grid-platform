@@ -14,7 +14,7 @@ import org.opensmartgridplatform.adapter.domain.da.application.services.DeviceMa
 import org.opensmartgridplatform.domain.core.valueobjects.AddRtuDeviceRequest;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.BaseNotificationMessageProcessor;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.NotificationResponseMessageSender;
@@ -41,7 +41,7 @@ public class AddDeviceRequestMessageProcessor extends BaseNotificationMessagePro
   @Override
   public void processMessage(final ObjectMessage message) throws JMSException {
 
-    final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(message);
+    final MessageMetadata deviceMessageMetadata = MessageMetadata.fromMessage(message);
 
     final AddRtuDeviceRequest addRtuDeviceRequest = (AddRtuDeviceRequest) message.getObject();
 

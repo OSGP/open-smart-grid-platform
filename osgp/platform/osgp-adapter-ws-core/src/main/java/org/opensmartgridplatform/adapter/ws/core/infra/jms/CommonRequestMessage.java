@@ -10,7 +10,7 @@ package org.opensmartgridplatform.adapter.ws.core.infra.jms;
 
 import java.io.Serializable;
 import org.joda.time.DateTime;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 
@@ -23,7 +23,7 @@ public class CommonRequestMessage extends RequestMessage {
   private final Integer messagePriority;
 
   private CommonRequestMessage(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final String ipAddress,
       final Serializable request) {
     super(
@@ -54,7 +54,7 @@ public class CommonRequestMessage extends RequestMessage {
   }
 
   public static class Builder {
-    private DeviceMessageMetadata deviceMessageMetadata;
+    private MessageMetadata messageMetadata;
     private String ipAddress;
     private Serializable request;
 
@@ -62,8 +62,8 @@ public class CommonRequestMessage extends RequestMessage {
       // empty constructor
     }
 
-    public Builder deviceMessageMetadata(final DeviceMessageMetadata deviceMessageMetadata) {
-      this.deviceMessageMetadata = deviceMessageMetadata;
+    public Builder messageMetadata(final MessageMetadata messageMetadata) {
+      this.messageMetadata = messageMetadata;
       return this;
     }
 
@@ -78,7 +78,7 @@ public class CommonRequestMessage extends RequestMessage {
     }
 
     public CommonRequestMessage build() {
-      return new CommonRequestMessage(this.deviceMessageMetadata, this.ipAddress, this.request);
+      return new CommonRequestMessage(this.messageMetadata, this.ipAddress, this.request);
     }
   }
 }

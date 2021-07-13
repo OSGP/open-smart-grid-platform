@@ -27,7 +27,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.FirmwareVersionR
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -75,7 +75,7 @@ public class BundleService {
 
   @Transactional(value = "transactionManager")
   public void handleBundle(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final BundleMessageRequest bundleMessageDataContainer)
       throws FunctionalException {
 
@@ -103,12 +103,12 @@ public class BundleService {
         deviceMessageMetadata.getMessageType(),
         deviceMessageMetadata.getMessagePriority(),
         deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        deviceMessageMetadata.isBypassRetry());
   }
 
   @Transactional(value = "transactionManager")
   public void handleBundleResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessageResultType responseMessageResultType,
       final OsgpException osgpException,
       final BundleMessagesRequestDto bundleResponseMessageDataContainerDto)
@@ -147,7 +147,7 @@ public class BundleService {
   }
 
   private void checkIfAdditionalActionIsNeeded(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final BundleMessagesRequestDto bundleResponseMessageDataContainerDto)
       throws FunctionalException {
 

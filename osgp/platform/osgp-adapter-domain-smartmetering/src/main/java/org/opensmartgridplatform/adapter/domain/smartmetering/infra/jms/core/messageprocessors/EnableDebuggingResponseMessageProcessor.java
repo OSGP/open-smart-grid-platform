@@ -13,7 +13,7 @@ import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.Osg
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
@@ -47,7 +47,7 @@ public class EnableDebuggingResponseMessageProcessor extends OsgpCoreResponseMes
 
   @Override
   protected void handleMessage(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final ResponseMessage responseMessage,
       final OsgpException osgpException) {
 
