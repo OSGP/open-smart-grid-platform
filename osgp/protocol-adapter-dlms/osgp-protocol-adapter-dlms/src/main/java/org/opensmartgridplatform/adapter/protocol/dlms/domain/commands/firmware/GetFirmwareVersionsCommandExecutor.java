@@ -31,6 +31,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDt
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FirmwareVersionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersionQueryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -95,7 +96,8 @@ public class GetFirmwareVersionsCommandExecutor
   public List<FirmwareVersionDto> execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final GetFirmwareVersionQueryDto queryDto)
+      final GetFirmwareVersionQueryDto queryDto,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
     if (queryDto != null && queryDto.isMbusQuery()) {
       throw new IllegalArgumentException(

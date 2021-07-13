@@ -67,6 +67,7 @@ public class UpdateFirmwareRequestMessageProcessorTest {
   @Mock private ThrottlingService throttlingService;
 
   private DlmsDevice device;
+  private MessageMetadata messageMetadata;
 
   @InjectMocks private UpdateFirmwareRequestMessageProcessor processor;
 
@@ -75,12 +76,15 @@ public class UpdateFirmwareRequestMessageProcessorTest {
     MockitoAnnotations.initMocks(this);
 
     this.device = new DlmsDeviceBuilder().withHls5Active(true).build();
+    this.messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+
     when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class)))
         .thenReturn(this.device);
     when(this.dlmsConnectionManagerMock.getDlmsMessageListener())
         .thenReturn(this.messageListenerMock);
     when(this.connectionHelper.createConnectionForDevice(
-            same(this.device), any(DlmsMessageListener.class)))
+            any(), same(this.device), any(DlmsMessageListener.class)))
         .thenReturn(this.dlmsConnectionManagerMock);
   }
 
@@ -90,7 +94,10 @@ public class UpdateFirmwareRequestMessageProcessorTest {
     // Arrange
     final String firmwareIdentification = "unavailable";
     final ObjectMessage message =
-        new ObjectMessageBuilder().withObject(firmwareIdentification).build();
+        new ObjectMessageBuilder()
+            .withObject(firmwareIdentification)
+            .withCorrelationUid("123456")
+            .build();
     when(this.firmwareService.isFirmwareFileAvailable(firmwareIdentification)).thenReturn(false);
 
     // Act
@@ -107,7 +114,10 @@ public class UpdateFirmwareRequestMessageProcessorTest {
     // Arrange
     final String firmwareIdentification = "unavailable";
     final ObjectMessage message =
-        new ObjectMessageBuilder().withObject(firmwareIdentification).build();
+        new ObjectMessageBuilder()
+            .withObject(firmwareIdentification)
+            .withCorrelationUid("123456")
+            .build();
     when(this.firmwareService.isFirmwareFileAvailable(firmwareIdentification)).thenReturn(true);
 
     // Act
@@ -124,7 +134,10 @@ public class UpdateFirmwareRequestMessageProcessorTest {
     // Arrange
     final String firmwareIdentification = "available";
     final ObjectMessage message =
-        new ObjectMessageBuilder().withObject(firmwareIdentification).build();
+        new ObjectMessageBuilder()
+            .withObject(firmwareIdentification)
+            .withCorrelationUid("123456")
+            .build();
     when(this.firmwareService.isFirmwareFileAvailable(firmwareIdentification)).thenReturn(true);
 
     // Act
@@ -132,7 +145,7 @@ public class UpdateFirmwareRequestMessageProcessorTest {
 
     // Assert
     verify(this.configurationService, times(1))
-        .updateFirmware(null, this.device, firmwareIdentification);
+        .updateFirmware(null, this.device, firmwareIdentification, this.messageMetadata);
   }
 
   @Test
@@ -141,7 +154,10 @@ public class UpdateFirmwareRequestMessageProcessorTest {
     // Arrange
     final String firmwareIdentification = "unavailable";
     final ObjectMessage message =
-        new ObjectMessageBuilder().withObject(firmwareIdentification).build();
+        new ObjectMessageBuilder()
+            .withObject(firmwareIdentification)
+            .withCorrelationUid("123456")
+            .build();
     when(this.firmwareService.isFirmwareFileAvailable(firmwareIdentification)).thenReturn(false);
 
     // Act
@@ -149,6 +165,10 @@ public class UpdateFirmwareRequestMessageProcessorTest {
 
     // Assert
     verify(this.firmwareService, times(0))
-        .updateFirmware(this.dlmsConnectionManagerMock, this.device, firmwareIdentification);
+        .updateFirmware(
+            this.dlmsConnectionManagerMock,
+            this.device,
+            firmwareIdentification,
+            this.messageMetadata);
   }
 }

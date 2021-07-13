@@ -34,6 +34,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFla
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisationSettingsRequestDataDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,7 +77,8 @@ public class SetRandomisationSettingsCommandExecutor
   public AccessResultCode execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final SetRandomisationSettingsRequestDataDto setRandomisationSettingsRequestDataDto)
+      final SetRandomisationSettingsRequestDataDto setRandomisationSettingsRequestDataDto,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     LOGGER.info(

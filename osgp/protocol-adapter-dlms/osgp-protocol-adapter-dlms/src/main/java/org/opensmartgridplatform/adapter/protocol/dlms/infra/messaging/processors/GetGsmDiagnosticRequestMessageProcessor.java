@@ -16,6 +16,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetGsmDiagnosticRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -31,12 +32,15 @@ public class GetGsmDiagnosticRequestMessageProcessor extends DeviceRequestMessag
 
   @Override
   protected Serializable handleMessage(
-      final DlmsConnectionManager conn, final DlmsDevice device, final Serializable requestObject)
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final Serializable requestObject,
+      final MessageMetadata messageMetadata)
       throws OsgpException {
 
     this.assertRequestObjectType(GetGsmDiagnosticRequestDto.class, requestObject);
 
     final GetGsmDiagnosticRequestDto requestDto = (GetGsmDiagnosticRequestDto) requestObject;
-    return this.managementService.getGsmDiagnostic(conn, device, requestDto);
+    return this.managementService.getGsmDiagnostic(conn, device, requestDto, messageMetadata);
   }
 }

@@ -39,6 +39,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterRea
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsGasRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsGasResponseItemDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,7 +92,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor
   public PeriodicMeterReadGasResponseDto execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final PeriodicMeterReadsRequestDto periodicMeterReadsQuery)
+      final PeriodicMeterReadsRequestDto periodicMeterReadsQuery,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     if (periodicMeterReadsQuery == null) {

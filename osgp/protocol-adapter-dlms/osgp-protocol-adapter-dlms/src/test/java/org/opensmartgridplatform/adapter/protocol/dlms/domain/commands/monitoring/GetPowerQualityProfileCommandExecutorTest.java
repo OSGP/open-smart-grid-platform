@@ -20,6 +20,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
 public class GetPowerQualityProfileCommandExecutorTest {
@@ -42,8 +43,11 @@ public class GetPowerQualityProfileCommandExecutorTest {
 
     final DlmsDevice dlmsDevice = new DlmsDevice();
     dlmsDevice.setSelectiveAccessSupported(true);
+    final MessageMetadata messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
 
-    this.executor.execute(this.conn, dlmsDevice, this.getPowerQualityProfileRequestDataDto);
+    this.executor.execute(
+        this.conn, dlmsDevice, this.getPowerQualityProfileRequestDataDto, messageMetadata);
 
     verify(this.getPowerQualityProfileSelectiveAccessHandler)
         .handle(
@@ -57,8 +61,11 @@ public class GetPowerQualityProfileCommandExecutorTest {
 
     final DlmsDevice dlmsDevice = new DlmsDevice();
     dlmsDevice.setSelectiveAccessSupported(false);
+    final MessageMetadata messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
 
-    this.executor.execute(this.conn, dlmsDevice, this.getPowerQualityProfileRequestDataDto);
+    this.executor.execute(
+        this.conn, dlmsDevice, this.getPowerQualityProfileRequestDataDto, messageMetadata);
 
     verify(this.getPowerQualityProfileNoSelectiveAccessHandler)
         .handle(

@@ -18,6 +18,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceReq
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FaultResponseDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,13 +36,16 @@ public class BundleMessageProcessor extends DeviceRequestMessageProcessor {
 
   @Override
   protected Serializable handleMessage(
-      final DlmsConnectionManager conn, final DlmsDevice device, final Serializable requestObject)
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final Serializable requestObject,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     this.assertRequestObjectType(BundleMessagesRequestDto.class, requestObject);
     final BundleMessagesRequestDto bundleMessagesRequest = (BundleMessagesRequestDto) requestObject;
 
-    return this.bundleService.callExecutors(conn, device, bundleMessagesRequest);
+    return this.bundleService.callExecutors(conn, device, bundleMessagesRequest, messageMetadata);
   }
 
   /*

@@ -31,6 +31,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceResponseDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
 public class DecoupleMBusDeviceCommandExecutorTest {
@@ -52,6 +53,8 @@ public class DecoupleMBusDeviceCommandExecutorTest {
 
     final short channel = (short) 1;
     final ChannelElementValuesDto channelElementValuesDto = mock(ChannelElementValuesDto.class);
+    final MessageMetadata messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
 
     when(this.deviceChannelsHelper.getObisCode(channel)).thenReturn(new ObisCode("0.1.24.1.0.255"));
     when(this.decoupleMbusDto.getChannel()).thenReturn(channel);
@@ -62,7 +65,7 @@ public class DecoupleMBusDeviceCommandExecutorTest {
         .thenReturn(channelElementValuesDto);
 
     final DecoupleMbusDeviceResponseDto responseDto =
-        this.commandExecutor.execute(this.conn, this.device, this.decoupleMbusDto);
+        this.commandExecutor.execute(this.conn, this.device, this.decoupleMbusDto, messageMetadata);
 
     assertThat(responseDto).isNotNull();
     assertThat(responseDto.getChannelElementValues()).isEqualTo(channelElementValuesDto);

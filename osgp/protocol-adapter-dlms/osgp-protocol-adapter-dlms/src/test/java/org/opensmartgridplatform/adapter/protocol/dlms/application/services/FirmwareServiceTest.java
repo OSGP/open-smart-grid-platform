@@ -31,6 +31,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.Firmw
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareFileDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -53,14 +54,16 @@ public class FirmwareServiceTest {
   @Test
   public void getFirmwareVersionsShouldCallExecutor() throws ProtocolAdapterException {
     // Arrange
-    // Nothing to do
+    final MessageMetadata messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
 
     // Act
-    this.firmwareService.getFirmwareVersions(this.dlmsConnectionManagerMock, this.dlmsDeviceMock);
+    this.firmwareService.getFirmwareVersions(
+        this.dlmsConnectionManagerMock, this.dlmsDeviceMock, messageMetadata);
 
     // Assert
     verify(this.getFirmwareVersionsCommandExecutor, times(1))
-        .execute(this.dlmsConnectionManagerMock, this.dlmsDeviceMock, null);
+        .execute(this.dlmsConnectionManagerMock, this.dlmsDeviceMock, null, messageMetadata);
   }
 
   @Test
@@ -69,6 +72,9 @@ public class FirmwareServiceTest {
     final String firmwareIdentification = "fw";
     final byte[] firmwareFile = firmwareIdentification.getBytes();
     final byte[] firmwareImageIdentifier = new byte[10];
+    final MessageMetadata messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+
     when(this.firmwareFileCachingRepository.isAvailable(firmwareIdentification)).thenReturn(true);
     when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification))
         .thenReturn(firmwareFile);
@@ -79,17 +85,27 @@ public class FirmwareServiceTest {
 
     // Act
     this.firmwareService.updateFirmware(
-        this.dlmsConnectionManagerMock, this.dlmsDeviceMock, firmwareIdentification);
+        this.dlmsConnectionManagerMock,
+        this.dlmsDeviceMock,
+        firmwareIdentification,
+        messageMetadata);
 
     // Assert
     verify(this.updateFirmwareCommandExecutor, times(1))
-        .execute(this.dlmsConnectionManagerMock, this.dlmsDeviceMock, firmwareIdentification);
+        .execute(
+            this.dlmsConnectionManagerMock,
+            this.dlmsDeviceMock,
+            firmwareIdentification,
+            messageMetadata);
   }
 
   @Test
   public void updateFirmwareShouldThrowExceptionWhenFirmwareFileNotInCache() throws OsgpException {
     // Arrange
     final String firmwareIdentification = "fw";
+    final MessageMetadata messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+
     when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification)).thenReturn(null);
 
     // Act
@@ -97,7 +113,10 @@ public class FirmwareServiceTest {
         .isThrownBy(
             () -> {
               this.firmwareService.updateFirmware(
-                  this.dlmsConnectionManagerMock, this.dlmsDeviceMock, firmwareIdentification);
+                  this.dlmsConnectionManagerMock,
+                  this.dlmsDeviceMock,
+                  firmwareIdentification,
+                  messageMetadata);
 
               // Assert
               // Nothing to do, as exception will be thrown;
@@ -108,19 +127,29 @@ public class FirmwareServiceTest {
   public void updateFirmwareShouldNotCallExecutorWhenFirmwareFileNotInCache() throws OsgpException {
     // Arrange
     final String firmwareIdentification = "fw";
+    final MessageMetadata messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+
     when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification)).thenReturn(null);
 
     // Act
     try {
       this.firmwareService.updateFirmware(
-          this.dlmsConnectionManagerMock, this.dlmsDeviceMock, firmwareIdentification);
+          this.dlmsConnectionManagerMock,
+          this.dlmsDeviceMock,
+          firmwareIdentification,
+          messageMetadata);
     } catch (final ProtocolAdapterException e) {
       // Ignore exception.
     }
 
     // Assert
     verify(this.updateFirmwareCommandExecutor, never())
-        .execute(this.dlmsConnectionManagerMock, this.dlmsDeviceMock, firmwareIdentification);
+        .execute(
+            this.dlmsConnectionManagerMock,
+            this.dlmsDeviceMock,
+            firmwareIdentification,
+            messageMetadata);
   }
 
   @Test
@@ -133,6 +162,9 @@ public class FirmwareServiceTest {
 
     final FirmwareFileDto firmwareFileDto =
         new FirmwareFileDto(firmwareIdentification, firmwareFile, firmwareImageIdentifier);
+    final MessageMetadata messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+
     when(this.firmwareFileCachingRepository.isAvailable(firmwareIdentification)).thenReturn(true);
     when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification))
         .thenReturn(firmwareFile);
@@ -143,7 +175,7 @@ public class FirmwareServiceTest {
 
     // Act
     this.firmwareService.updateFirmware(
-        this.dlmsConnectionManagerMock, this.dlmsDeviceMock, firmwareFileDto);
+        this.dlmsConnectionManagerMock, this.dlmsDeviceMock, firmwareFileDto, messageMetadata);
 
     // Assert
     verify(this.firmwareFileCachingRepository, times(1))
@@ -151,7 +183,11 @@ public class FirmwareServiceTest {
     verify(this.firmwareImageIdentifierCachingRepository, times(1))
         .store(firmwareIdentification, firmwareImageIdentifier);
     verify(this.updateFirmwareCommandExecutor, times(1))
-        .execute(this.dlmsConnectionManagerMock, this.dlmsDeviceMock, firmwareIdentification);
+        .execute(
+            this.dlmsConnectionManagerMock,
+            this.dlmsDeviceMock,
+            firmwareIdentification,
+            messageMetadata);
   }
 
   @Test
