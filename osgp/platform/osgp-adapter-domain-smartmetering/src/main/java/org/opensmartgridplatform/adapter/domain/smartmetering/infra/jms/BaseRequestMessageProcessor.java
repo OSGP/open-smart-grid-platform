@@ -11,7 +11,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms;
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -34,7 +34,7 @@ public abstract class BaseRequestMessageProcessor extends AbstractRequestMessage
   protected MessageProcessorMap messageProcessorMap;
 
   /** The message type that a message processor implementation can handle. */
-  private MessageType messageType;
+  private final MessageType messageType;
 
   /**
    * Construct a message processor instance by passing in the message type.
@@ -72,7 +72,7 @@ public abstract class BaseRequestMessageProcessor extends AbstractRequestMessage
   public void processMessage(final ObjectMessage message) throws JMSException {
     Object dataObject = null;
 
-    final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(message);
+    final MessageMetadata deviceMessageMetadata = MessageMetadata.fromMessage(message);
 
     try {
       dataObject = message.getObject();

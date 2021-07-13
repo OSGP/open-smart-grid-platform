@@ -22,7 +22,6 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareFileDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
@@ -94,7 +93,7 @@ public class GetFirmwareFileMessageProcessor extends AbstractProtocolRequestMess
 
     final ProtocolResponseMessage responseMessage =
         new ProtocolResponseMessage.Builder()
-            .deviceMessageMetadata(new DeviceMessageMetadata(metadata))
+            .messageMetadata(metadata)
             .domain(metadata.getDomain())
             .domainVersion(metadata.getDomainVersion())
             .result(ResponseMessageResultType.OK)
@@ -115,7 +114,7 @@ public class GetFirmwareFileMessageProcessor extends AbstractProtocolRequestMess
 
     final ProtocolResponseMessage responseMessage =
         new ProtocolResponseMessage.Builder()
-            .deviceMessageMetadata(new DeviceMessageMetadata(metadata))
+            .messageMetadata(metadata)
             .domain(metadata.getDomain())
             .domainVersion(metadata.getDomainVersion())
             .result(ResponseMessageResultType.NOT_OK)

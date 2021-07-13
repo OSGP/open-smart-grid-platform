@@ -17,7 +17,7 @@ import org.opensmartgridplatform.domain.core.entities.ScheduledTask;
 import org.opensmartgridplatform.domain.core.valueobjects.ScheduledTaskStatusType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolRequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -213,10 +213,17 @@ public class DeviceResponseMessageService {
 
     final Serializable messageData = message.getDataObject();
 
-    final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(message);
+    final MessageMetadata messageMetadata =
+        new MessageMetadata.Builder()
+            .withDeviceIdentification(message.getDeviceIdentification())
+            .withOrganisationIdentification(message.getOrganisationIdentification())
+            .withCorrelationUid(message.getCorrelationUid())
+            .withMessageType(message.getMessageType())
+            .withMessagePriority(message.getMessagePriority())
+            .build();
 
     return new ProtocolRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata)
+        .messageMetadata(messageMetadata)
         .domain(message.getDomain())
         .domainVersion(message.getDomainVersion())
         .ipAddress(getIpAddress(device))
@@ -239,11 +246,18 @@ public class DeviceResponseMessageService {
     final Timestamp scheduleTimeStamp =
         new Timestamp(message.getRetryHeader().getScheduledRetryTime().getTime());
 
-    final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(message);
+    final MessageMetadata messageMetadata =
+        new MessageMetadata.Builder()
+            .withDeviceIdentification(message.getDeviceIdentification())
+            .withOrganisationIdentification(message.getOrganisationIdentification())
+            .withCorrelationUid(message.getCorrelationUid())
+            .withMessageType(message.getMessageType())
+            .withMessagePriority(message.getMessagePriority())
+            .build();
 
     final ScheduledTask task =
         new ScheduledTask(
-            deviceMessageMetadata,
+            messageMetadata,
             message.getDomain(),
             message.getDomainVersion(),
             messageData,

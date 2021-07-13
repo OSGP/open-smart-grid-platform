@@ -72,8 +72,7 @@ public class ClientConnectionEventListener implements ConnectionEventListener {
 
   @Override
   public void connectionClosed(final IOException e) {
-    LOGGER.info("Connection with device {} closed.", this.deviceIdentification);
-    LOGGER.debug("Exception: ", e);
+    LOGGER.info("Connection with device {} closed.", this.deviceIdentification, e);
 
     this.connectionCache.removeConnection(this.deviceIdentification);
   }

@@ -27,9 +27,9 @@ public class ProtocolRequestMessage extends RequestMessage {
 
   private ProtocolRequestMessage(final Builder builder) {
     super(
-        builder.deviceMessageMetadata.getCorrelationUid(),
-        builder.deviceMessageMetadata.getOrganisationIdentification(),
-        builder.deviceMessageMetadata.getDeviceIdentification(),
+        builder.messageMetadata.getCorrelationUid(),
+        builder.messageMetadata.getOrganisationIdentification(),
+        builder.messageMetadata.getDeviceIdentification(),
         builder.ipAddress,
         builder.request);
 
@@ -39,9 +39,9 @@ public class ProtocolRequestMessage extends RequestMessage {
     this.scheduled = builder.scheduled;
     this.retryCount = builder.retryCount;
 
-    this.messageType = builder.deviceMessageMetadata.getMessageType();
-    this.messagePriority = builder.deviceMessageMetadata.getMessagePriority();
-    this.bypassRetry = builder.deviceMessageMetadata.bypassRetry();
+    this.messageType = builder.messageMetadata.getMessageType();
+    this.messagePriority = builder.messageMetadata.getMessagePriority();
+    this.bypassRetry = builder.messageMetadata.isBypassRetry();
   }
 
   public static class Builder {
@@ -52,10 +52,10 @@ public class ProtocolRequestMessage extends RequestMessage {
     private boolean scheduled;
     private int retryCount;
 
-    private DeviceMessageMetadata deviceMessageMetadata;
+    private MessageMetadata messageMetadata;
 
-    public Builder deviceMessageMetadata(final DeviceMessageMetadata deviceMessageMetadata) {
-      this.deviceMessageMetadata = deviceMessageMetadata;
+    public Builder messageMetadata(final MessageMetadata messageMetadata) {
+      this.messageMetadata = messageMetadata;
       return this;
     }
 

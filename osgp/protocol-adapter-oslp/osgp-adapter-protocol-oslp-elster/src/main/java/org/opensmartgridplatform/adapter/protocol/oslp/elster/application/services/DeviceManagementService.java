@@ -34,7 +34,6 @@ import org.opensmartgridplatform.oslp.Oslp;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
@@ -238,12 +237,11 @@ public class DeviceManagementService {
       final OsgpException osgpException,
       final DeviceResponseMessageSender responseMessageSender) {
 
-    final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(messageMetadata);
     final ProtocolResponseMessage responseMessage =
         ProtocolResponseMessage.newBuilder()
             .domain(messageMetadata.getDomain())
             .domainVersion(messageMetadata.getDomainVersion())
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(messageMetadata)
             .result(result)
             .osgpException(osgpException)
             .build();

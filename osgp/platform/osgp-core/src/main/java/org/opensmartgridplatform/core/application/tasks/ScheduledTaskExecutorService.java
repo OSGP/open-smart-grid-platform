@@ -18,7 +18,7 @@ import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.ScheduledTaskRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.ScheduledTaskStatusType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolRequestMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,16 +91,15 @@ public class ScheduledTaskExecutorService {
     final Device device =
         this.deviceRepository.findByDeviceIdentification(scheduledTask.getDeviceIdentification());
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            scheduledTask.getDeviceIdentification(),
-            scheduledTask.getOrganisationIdentification(),
-            scheduledTask.getCorrelationId(),
-            scheduledTask.getMessageType(),
-            scheduledTask.getMessagePriority(),
-            scheduledTask.getscheduledTime().getTime(),
-            scheduledTask.getMaxScheduledTime().getTime(),
-            false);
+    final MessageMetadata messageMetadata =
+        new MessageMetadata.Builder()
+            .withDeviceIdentification(scheduledTask.getDeviceIdentification())
+            .withOrganisationIdentification(scheduledTask.getOrganisationIdentification())
+            .withCorrelationUid(scheduledTask.getCorrelationId())
+            .withMessageType(scheduledTask.getMessageType())
+            .withMessagePriority(scheduledTask.getMessagePriority())
+            // TODO MaxScheduledTime
+            .build();
 
     final String ipAddress;
     if (device.getNetworkAddress() == null) {
@@ -110,7 +109,7 @@ public class ScheduledTaskExecutorService {
     }
 
     return new ProtocolRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata)
+        .messageMetadata(messageMetadata)
         .domain(scheduledTask.getDomain())
         .domainVersion(scheduledTask.getDomainVersion())
         .ipAddress(ipAddress)

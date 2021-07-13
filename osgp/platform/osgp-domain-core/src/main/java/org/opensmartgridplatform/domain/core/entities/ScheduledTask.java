@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import org.hibernate.annotations.Type;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @Entity
 @Table(name = "scheduled_task")
@@ -29,7 +29,7 @@ public class ScheduledTask extends AbstractScheduledTask {
   }
 
   public ScheduledTask(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final String domain,
       final String domainVersion,
       final Serializable messageData,
