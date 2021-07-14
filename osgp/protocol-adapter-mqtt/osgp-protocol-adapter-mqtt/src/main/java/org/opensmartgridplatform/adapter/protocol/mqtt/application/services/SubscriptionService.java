@@ -9,7 +9,6 @@
 package org.opensmartgridplatform.adapter.protocol.mqtt.application.services;
 
 import com.hivemq.client.mqtt.datatypes.MqttQos;
-import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAck;
 import com.hivemq.client.mqtt.mqtt3.message.subscribe.suback.Mqtt3SubAck;
 import java.util.Arrays;
@@ -25,6 +24,7 @@ import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 @Service(value = "mqttSubcriptionService")
@@ -38,7 +38,7 @@ public class SubscriptionService implements MqttClientEventHandler {
 
   private final MqttClientDefaults mqttClientDefaults;
 
-  @Autowired private Mqtt3AsyncClient mqttClient;
+  @Autowired @Nullable private MqttClient mqttClient;
 
   public SubscriptionService(
       final MqttDeviceRepository mqttDeviceRepository,
@@ -49,6 +49,10 @@ public class SubscriptionService implements MqttClientEventHandler {
     this.mqttClientAdapterFactory = mqttClientAdapterFactory;
     this.outboundOsgpCoreResponseMessageSender = outboundOsgpCoreResponseMessageSender;
     this.mqttClientDefaults = mqttClientDefaults;
+  }
+
+  public void setMqttClient(final MqttClient mqttClient) {
+    this.mqttClient = mqttClient;
   }
 
   public void subscribe(final MessageMetadata messageMetadata) {
@@ -83,7 +87,9 @@ public class SubscriptionService implements MqttClientEventHandler {
     final MqttQos qos = this.getQosOrDefault(device);
     final String[] topics = this.getTopicsForDevice(device);
     Arrays.stream(topics)
-        .forEach(topic -> mqttClientAdapter.subscribe(this.mqttClient, topic, qos));
+        .forEach(
+            topic ->
+                mqttClientAdapter.subscribe(this.mqttClient.getMqtt3AsyncClient(), topic, qos));
   }
 
   @Override
