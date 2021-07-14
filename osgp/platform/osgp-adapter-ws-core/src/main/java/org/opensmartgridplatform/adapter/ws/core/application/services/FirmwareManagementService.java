@@ -1045,24 +1045,27 @@ public class FirmwareManagementService {
       final byte[] file, final String fileName, final DeviceModel deviceModel)
       throws TechnicalException {
 
-    final File path = this.createFirmwarePath(deviceModel, fileName);
+    // Replacing spaces by SPACE_REPLACER
+    final String newFileName = fileName.replace(" ", SPACE_REPLACER);
+
+    final File path = this.createFirmwarePath(deviceModel, newFileName);
 
     // Creating the dir, if needed
     this.createModelDirectory(path.getParentFile(), deviceModel.getModelCode());
 
-    // Replacing spaces by SPACE_REPLACER
-    fileName.replaceAll(" ", SPACE_REPLACER);
-
     try (final FileOutputStream fos = new FileOutputStream(path)) {
       fos.write(file);
     } catch (final IOException e) {
-      LOGGER.error("Could not write firmware to system", e);
       throw new TechnicalException(
-          ComponentType.WS_CORE, "Could not write firmware file to system".concat(e.getMessage()));
+          ComponentType.WS_CORE,
+          "Could not write firmware file to system".concat(e.getMessage()),
+          e);
     }
 
     // Setting the file to readable to be downloadable
-    path.setReadable(true, false);
+    if (!path.setReadable(true, false)) {
+      LOGGER.warn("Unable to set the file {} to readable", path.getName());
+    }
   }
 
   private void removePhysicalFirmwareFile(final File file) throws TechnicalException {
@@ -1077,10 +1080,10 @@ public class FirmwareManagementService {
       }
 
     } catch (final IOException e) {
-      LOGGER.error("Could not remove firmware file from directory", e);
       throw new TechnicalException(
           ComponentType.WS_CORE,
-          "Could not remove firmware file from directory: ".concat(e.getMessage()));
+          "Could not remove firmware file from directory: ".concat(e.getMessage()),
+          e);
     }
   }
 
@@ -1098,10 +1101,19 @@ public class FirmwareManagementService {
       }
       // Setting the correct permissions so that the directory can be read
       // and displayed
-      file.setReadable(true, false);
-      file.setExecutable(true, false);
-      file.getParentFile().setReadable(true, false);
-      file.getParentFile().setExecutable(true, false);
+      if (!file.setReadable(true, false)) {
+        LOGGER.warn("Unable to set the file {} to readable", file.getName());
+      }
+      if (!file.setExecutable(true, false)) {
+        LOGGER.warn("Unable to set the file {} to executable", file.getName());
+      }
+      if (!file.getParentFile().setReadable(true, false)) {
+        LOGGER.warn("Unable to set the parent file {} to readable", file.getParentFile().getName());
+      }
+      if (!file.getParentFile().setExecutable(true, false)) {
+        LOGGER.warn(
+            "Unable to set the parent file {} to executable", file.getParentFile().getName());
+      }
     }
   }
 
@@ -1109,9 +1121,9 @@ public class FirmwareManagementService {
     return new File(
         this.firmwareDirectory
             .concat(File.separator)
-            .concat(deviceModel.getManufacturer().getCode().replaceAll(" ", SPACE_REPLACER))
+            .concat(deviceModel.getManufacturer().getCode().replace(" ", SPACE_REPLACER))
             .concat(File.separator)
-            .concat(deviceModel.getModelCode().replaceAll(" ", SPACE_REPLACER))
+            .concat(deviceModel.getModelCode().replace(" ", SPACE_REPLACER))
             .concat(File.separator)
             .concat(fileName));
   }

@@ -17,16 +17,20 @@ public class BeanUtil implements ApplicationContextAware {
 
   private static ApplicationContext context;
 
-  @Override
-  public void setApplicationContext(final ApplicationContext applicationContext) {
-    context = applicationContext;
-  }
-
   public static <T> T getBean(final Class<T> beanClass) {
     return context.getBean(beanClass);
   }
 
   public static <T> T getBeanByName(final String beanName, final Class<T> beanClass) {
     return context.getBean(beanName, beanClass);
+  }
+
+  @SuppressWarnings(
+      "squid:S2696") // setApplicationContext is an overriding method that cannot be made static and
+  // context has to be a static variable to be able to use it statically in the
+  // getBean and getBeanByName methods
+  @Override
+  public void setApplicationContext(final ApplicationContext applicationContext) {
+    context = applicationContext;
   }
 }

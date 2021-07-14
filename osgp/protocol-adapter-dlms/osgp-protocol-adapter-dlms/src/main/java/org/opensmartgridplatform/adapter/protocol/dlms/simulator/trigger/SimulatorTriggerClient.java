@@ -30,12 +30,8 @@ import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.shared.usermanagement.AbstractClient;
 import org.opensmartgridplatform.shared.usermanagement.ResponseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class SimulatorTriggerClient extends AbstractClient {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(SimulatorTriggerClient.class);
 
   private static final String CONSTRUCTION_FAILED = "SimulatorTriggerClient construction failed";
   private static final String TRIGGERPATH = "/trigger";
@@ -58,15 +54,10 @@ public class SimulatorTriggerClient extends AbstractClient {
       final String baseAddress)
       throws SimulatorTriggerClientException {
 
-    InputStream stream = null;
-    boolean isClosed = false;
-    Exception exception = null;
-
-    try {
+    try (final InputStream stream = new FileInputStream(truststoreLocation)) {
       // Create the KeyStore.
       final KeyStore truststore = KeyStore.getInstance(truststoreType.toUpperCase());
 
-      stream = new FileInputStream(truststoreLocation);
       truststore.load(stream, truststorePassword.toCharArray());
 
       // Create TrustManagerFactory and initialize it using the KeyStore.
@@ -90,20 +81,7 @@ public class SimulatorTriggerClient extends AbstractClient {
       conduit.setTlsClientParameters(new TLSClientParameters());
       conduit.getTlsClientParameters().setTrustManagers(tmf.getTrustManagers());
     } catch (final Exception e) {
-      LOGGER.error(CONSTRUCTION_FAILED, e);
       throw new SimulatorTriggerClientException(CONSTRUCTION_FAILED, e);
-    } finally {
-      try {
-        stream.close();
-        isClosed = true;
-      } catch (final Exception streamCloseException) {
-        LOGGER.error(CONSTRUCTION_FAILED, streamCloseException);
-        exception = streamCloseException;
-      }
-    }
-
-    if (!isClosed) {
-      throw new SimulatorTriggerClientException(CONSTRUCTION_FAILED, exception);
     }
   }
 

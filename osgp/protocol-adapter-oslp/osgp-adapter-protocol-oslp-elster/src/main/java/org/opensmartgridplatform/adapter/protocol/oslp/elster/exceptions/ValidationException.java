@@ -19,7 +19,7 @@ public class ValidationException extends ProtocolAdapterException {
 
   private static final String DEFAULT_MESSAGE = "Validation Exception";
 
-  private final transient Set<? extends ConstraintViolation<?>> constraintViolations;
+  private final transient Set<ConstraintViolation<?>> constraintViolations;
 
   public ValidationException() {
     super(DEFAULT_MESSAGE);
@@ -31,18 +31,20 @@ public class ValidationException extends ProtocolAdapterException {
     this.constraintViolations = null;
   }
 
-  public ValidationException(final Set<? extends ConstraintViolation<?>> constraintViolations) {
+  public ValidationException(final Set<ConstraintViolation<?>> constraintViolations) {
     super(DEFAULT_MESSAGE + ", violations: " + convertToString(constraintViolations));
     this.constraintViolations = constraintViolations;
   }
 
   public ValidationException(
-      final String message, final Set<? extends ConstraintViolation<?>> constraintViolations) {
+      final String message, final Set<ConstraintViolation<?>> constraintViolations) {
     super(message);
     this.constraintViolations = constraintViolations;
   }
 
-  public Set<? extends ConstraintViolation<?>> getConstraintViolations() {
+  @SuppressWarnings(
+      "squid:S1452") // Wildcard necessary here, generic is used for very different classes
+  public Set<ConstraintViolation<?>> getConstraintViolations() {
     return this.constraintViolations;
   }
 
