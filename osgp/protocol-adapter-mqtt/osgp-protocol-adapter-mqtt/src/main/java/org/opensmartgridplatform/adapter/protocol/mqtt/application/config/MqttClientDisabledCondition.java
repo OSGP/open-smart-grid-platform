@@ -19,8 +19,7 @@ public class MqttClientDisabledCondition implements Condition {
 
   @Override
   public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
-    return "false"
-        .equalsIgnoreCase(
-            context.getEnvironment().getProperty("mqtt.default.connect.to.broker", FALSE));
+    return FALSE.equalsIgnoreCase(
+        context.getEnvironment().getProperty("mqtt.default.connect.to.broker", FALSE));
   }
 }

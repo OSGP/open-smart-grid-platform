@@ -33,19 +33,14 @@ public class MqttClient {
             .serverPort(port)
             .sslConfig(mqttClientSslConfig)
             .buildAsync();
-    this.client
-        .connectWith()
-        .send()
-        .whenComplete((ack, throwable) -> this.onConnect(ack, throwable));
+    this.client.connectWith().send().whenComplete(MqttClient::onConnect);
 
     return this.client;
   }
 
   public void disconnect() {
     if (this.client != null) {
-      this.client
-          .disconnect()
-          .whenComplete((nothing, throwable) -> this.onDisconnect(nothing, throwable));
+      this.client.disconnect().whenComplete(MqttClient::onDisconnect);
       this.client = null;
     }
   }
@@ -54,7 +49,7 @@ public class MqttClient {
     return this.client;
   }
 
-  private void onConnect(final Mqtt3ConnAck ack, final Throwable throwable) {
+  private static void onConnect(final Mqtt3ConnAck ack, final Throwable throwable) {
     if (throwable != null) {
       LOGGER.error(
           "MQTT connection to broker not successful, error: {}", throwable.getMessage(), throwable);
@@ -65,11 +60,12 @@ public class MqttClient {
     }
   }
 
-  private void onDisconnect(final Void nothing, final Throwable throwable) {
+  private static void onDisconnect(final Void nothing, final Throwable throwable) {
     if (throwable != null) {
       LOGGER.error(
-          "MQTT connection might not be disconnected, error: {}",
+          "MQTT connection might not be disconnected, error: {} {}",
           throwable.getMessage(),
+          nothing,
           throwable);
     } else {
       LOGGER.info("MQTT connection disconnected.");
