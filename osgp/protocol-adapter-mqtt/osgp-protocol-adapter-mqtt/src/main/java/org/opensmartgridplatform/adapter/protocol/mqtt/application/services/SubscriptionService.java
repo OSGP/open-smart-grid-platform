@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.mqtt.application.services;
 
 import com.hivemq.client.mqtt.datatypes.MqttQos;
+import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAck;
 import com.hivemq.client.mqtt.mqtt3.message.subscribe.suback.Mqtt3SubAck;
 import java.util.Arrays;
@@ -23,6 +24,7 @@ import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service(value = "mqttSubcriptionService")
@@ -35,6 +37,8 @@ public class SubscriptionService implements MqttClientEventHandler {
   private final MqttClientAdapterFactory mqttClientAdapterFactory;
 
   private final MqttClientDefaults mqttClientDefaults;
+
+  @Autowired private Mqtt3AsyncClient mqttClient;
 
   public SubscriptionService(
       final MqttDeviceRepository mqttDeviceRepository,
@@ -51,7 +55,12 @@ public class SubscriptionService implements MqttClientEventHandler {
     final MqttDevice device = this.getOrCreateDevice(messageMetadata);
     final MqttClientAdapter mqttClientAdapter =
         this.mqttClientAdapterFactory.create(device, messageMetadata, this);
-    mqttClientAdapter.connect();
+
+    if (this.mqttClient == null) {
+      mqttClientAdapter.connect();
+    } else {
+      this.subscribeUsingExistingConnection(device, mqttClientAdapter);
+    }
   }
 
   private MqttDevice getOrCreateDevice(final MessageMetadata messageMetadata) {
@@ -67,6 +76,14 @@ public class SubscriptionService implements MqttClientEventHandler {
       this.mqttDeviceRepository.save(device);
     }
     return device;
+  }
+
+  private void subscribeUsingExistingConnection(
+      final MqttDevice device, final MqttClientAdapter mqttClientAdapter) {
+    final MqttQos qos = this.getQosOrDefault(device);
+    final String[] topics = this.getTopicsForDevice(device);
+    Arrays.stream(topics)
+        .forEach(topic -> mqttClientAdapter.subscribe(this.mqttClient, topic, qos));
   }
 
   @Override
@@ -91,8 +108,12 @@ public class SubscriptionService implements MqttClientEventHandler {
         ack.getType());
     final MqttDevice device = mqttClientAdapter.getDevice();
     final MqttQos qos = this.getQosOrDefault(device);
-    final String[] topics = device.getTopics().split(",");
+    final String[] topics = this.getTopicsForDevice(device);
     Arrays.stream(topics).forEach(topic -> mqttClientAdapter.subscribe(topic, qos));
+  }
+
+  private String[] getTopicsForDevice(final MqttDevice device) {
+    return device.getTopics().split(",");
   }
 
   private MqttQos getQosOrDefault(final MqttDevice device) {

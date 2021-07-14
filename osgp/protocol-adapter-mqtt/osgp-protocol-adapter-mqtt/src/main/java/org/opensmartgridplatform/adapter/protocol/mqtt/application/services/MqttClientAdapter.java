@@ -53,7 +53,12 @@ public class MqttClientAdapter {
   }
 
   public void subscribe(final String topic, final MqttQos qos) {
-    this.client
+    this.subscribe(this.client, topic, qos);
+  }
+
+  public void subscribe(final Mqtt3AsyncClient client, final String topic, final MqttQos qos) {
+
+    client
         .subscribeWith()
         .topicFilter(topic)
         .qos(qos)
