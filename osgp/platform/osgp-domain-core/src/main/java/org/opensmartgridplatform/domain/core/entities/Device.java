@@ -276,6 +276,10 @@ public class Device extends AbstractEntity {
         return this.gpsCoordinates;
     }
 
+    public void setGpsCoordinates(final GpsCoordinates gpsCoordinates) {
+        this.gpsCoordinates = gpsCoordinates;
+    }
+
     public String getDeviceType() {
         return this.deviceType;
     }
