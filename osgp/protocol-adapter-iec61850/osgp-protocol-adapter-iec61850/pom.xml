@@ -20,7 +20,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-pa-iec61850</artifactId>
-    <version>5.9.2</version>
+    <version>5.9.3</version>
     <relativePath>../parent-pa-iec61850/pom.xml</relativePath>
   </parent>
 

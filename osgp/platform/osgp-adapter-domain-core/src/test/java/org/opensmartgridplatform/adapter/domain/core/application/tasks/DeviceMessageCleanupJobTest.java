@@ -47,6 +47,7 @@ public class DeviceMessageCleanupJobTest {
     public void initMocksAndSetProperties() {
         MockitoAnnotations.initMocks(this);
 
+        ReflectionTestUtils.setField(this.deviceMessageCleanupJob, "deviceMessageCleanupEnabled", true);
         ReflectionTestUtils.setField(this.deviceMessageCleanupJob, "deviceMessageRetentionPeriodInMonths", 1);
         ReflectionTestUtils.setField(this.deviceMessageCleanupJob, "csvFileLocation",
                 this.folder.resolve(JUST_A_FILE).getParent().toString());
