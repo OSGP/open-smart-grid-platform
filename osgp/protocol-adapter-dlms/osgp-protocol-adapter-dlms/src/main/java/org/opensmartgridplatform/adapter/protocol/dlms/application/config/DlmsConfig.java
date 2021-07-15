@@ -23,6 +23,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import javax.inject.Provider;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcess;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsDeviceAssociation;
@@ -160,8 +161,10 @@ public class DlmsConfig extends AbstractConfig {
   public RecoverKeyProcess recoverKeyProcess(
       final DomainHelperService domainHelperService,
       final Hls5Connector hls5Connector,
-      final SecretManagementService secretManagementService) {
-    return new RecoverKeyProcess(domainHelperService, hls5Connector, secretManagementService);
+      final SecretManagementService secretManagementService,
+      final ThrottlingService throttlingService) {
+    return new RecoverKeyProcess(
+        domainHelperService, hls5Connector, secretManagementService, throttlingService);
   }
 
   @Bean

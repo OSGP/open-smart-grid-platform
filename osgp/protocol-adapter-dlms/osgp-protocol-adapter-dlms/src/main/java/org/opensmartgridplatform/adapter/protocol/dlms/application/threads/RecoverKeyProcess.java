@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.DlmsConnection;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Hls5Connector;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.RecoverKeyException;
@@ -34,13 +35,17 @@ public class RecoverKeyProcess implements Runnable {
 
   private final SecretManagementService secretManagementService;
 
+  private final ThrottlingService throttlingService;
+
   public RecoverKeyProcess(
       final DomainHelperService domainHelperService,
       final Hls5Connector hls5Connector,
-      final SecretManagementService secretManagementService) {
+      final SecretManagementService secretManagementService,
+      final ThrottlingService throttlingService) {
     this.domainHelperService = domainHelperService;
     this.hls5Connector = hls5Connector;
     this.secretManagementService = secretManagementService;
+    this.throttlingService = throttlingService;
   }
 
   public void setDeviceIdentification(final String deviceIdentification) {
@@ -98,6 +103,8 @@ public class RecoverKeyProcess implements Runnable {
   private boolean canConnectUsingNewKeys(final DlmsDevice device) {
     DlmsConnection connection = null;
     try {
+      this.throttlingService.openConnection();
+
       connection =
           this.hls5Connector.connectUnchecked(
               device, null, this.secretManagementService::getNewKeys);
@@ -106,6 +113,8 @@ public class RecoverKeyProcess implements Runnable {
       log.error("Connection exception: {}", e.getMessage(), e);
       return false;
     } finally {
+      this.throttlingService.closeConnection();
+
       if (connection != null) {
         try {
           connection.close();
