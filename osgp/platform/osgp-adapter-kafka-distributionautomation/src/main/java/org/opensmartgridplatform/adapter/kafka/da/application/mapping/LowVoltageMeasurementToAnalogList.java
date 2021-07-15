@@ -29,7 +29,10 @@ public class LowVoltageMeasurementToAnalogList implements StringArrayToAnalogLis
   private static <T extends Enum<T> & LowVoltageMeasurementDefinition> Class<T> implementation(
       final int length) {
     return (Class<T>)
-        Stream.of(LowVoltageMeasurementType.class, LowVoltageMetaMeasurementType.class)
+        Stream.of(
+                LowVoltageMeasurementTypeVersion1.class,
+                LowVoltageMeasurementTypeVersion2.class,
+                LowVoltageMetaMeasurementType.class)
             .filter(clazz -> clazz.getEnumConstants().length == length)
             .findFirst()
             .orElseThrow(

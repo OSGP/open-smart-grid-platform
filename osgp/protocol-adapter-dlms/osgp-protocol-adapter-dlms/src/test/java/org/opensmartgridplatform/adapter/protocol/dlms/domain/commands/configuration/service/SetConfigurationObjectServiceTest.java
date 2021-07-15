@@ -9,6 +9,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configuration.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -25,6 +26,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.SetParameter;
+import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
@@ -39,7 +41,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObj
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class SetConfigurationObjectServiceTest {
+class SetConfigurationObjectServiceTest {
 
   private SetConfigurationObjectService instance;
 
@@ -51,7 +53,7 @@ public class SetConfigurationObjectServiceTest {
   @Mock private ConfigurationObjectDto configurationOnDevice;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
 
@@ -78,7 +80,7 @@ public class SetConfigurationObjectServiceTest {
   }
 
   @Test
-  public void setConfigurationObjectIOException() throws Exception {
+  void setConfigurationObjectIOException() throws Exception {
 
     // SETUP
     when(this.dlmsConnection.set(any(SetParameter.class))).thenThrow(new IOException());
@@ -92,7 +94,7 @@ public class SetConfigurationObjectServiceTest {
   }
 
   @Test
-  public void getFlagsCannotFindBitPosition() throws Exception {
+  void getFlagsCannotFindBitPosition() {
 
     // SETUP
     final ArrayList<ConfigurationFlagDto> flags = new ArrayList<>();
@@ -110,17 +112,18 @@ public class SetConfigurationObjectServiceTest {
   }
 
   @Test
-  public void getFlagsNullConfigurationFlags() throws Exception {
+  void getFlagsNullConfigurationFlags() throws Exception {
 
     // SETUP
     when(this.configurationToSet.getConfigurationFlags()).thenReturn(null);
     when(this.configurationOnDevice.getConfigurationFlags()).thenReturn(null);
 
     // CALL
-    this.instance.getFlags(this.configurationToSet, this.configurationOnDevice);
+    final BitString flags =
+        this.instance.getFlags(this.configurationToSet, this.configurationOnDevice);
 
     // VERIFY
-    // no exception occurs
+    assertThat(flags).isNotNull();
   }
 
   private ConfigurationFlagsDto emptyFlags() {

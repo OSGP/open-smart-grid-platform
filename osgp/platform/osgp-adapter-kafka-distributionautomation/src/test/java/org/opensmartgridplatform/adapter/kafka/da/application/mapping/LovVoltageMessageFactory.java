@@ -15,7 +15,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LovVoltageMessageFactory extends MessageFactory {
-  public static List<Analog> expectedMeasurements() {
+
+  public enum Version {
+    VERSION_1,
+    VERSION_2;
+  }
+
+  public static List<Analog> expectedMeasurements(final Version version) {
     final List<Analog> measurements = new ArrayList<>();
     measurements.add(createAnalog("U-L1-E", 0.1f, UnitSymbol.V));
     measurements.add(createAnalog("U-L2-E", 0.2f, UnitSymbol.V));
@@ -58,6 +64,18 @@ public class LovVoltageMessageFactory extends MessageFactory {
     measurements.add(createAnalog("I1-H15", 3.9f, UnitSymbol.A));
     measurements.add(createAnalog("I2-H15", 4.0f, UnitSymbol.A));
     measurements.add(createAnalog("I3-H15", 4.1f, UnitSymbol.A));
+    if (Version.VERSION_2 == version) {
+      measurements.add(createAnalog("INULL", 5.0f, UnitSymbol.A));
+      measurements.add(createAnalog("Pplus", 6.0f, UnitSymbol.none));
+      measurements.add(createAnalog("Pmin", 7.0f, UnitSymbol.none));
+      measurements.add(createAnalog("Qplus", 8.0f, UnitSymbol.none));
+      measurements.add(createAnalog("Qmin", 9.0f, UnitSymbol.none));
+      measurements.add(createAnalog("U-L1-E", 0.0f, UnitSymbol.V));
+      measurements.add(createAnalog("U-L2-E", 1.0f, UnitSymbol.V));
+      measurements.add(createAnalog("U-L3-E", 2.0f, UnitSymbol.V));
+      measurements.add(createAnalog("T", 3.0f, UnitSymbol.C));
+      measurements.add(createAnalog("F", 4.0f, UnitSymbol.Hz));
+    }
     return measurements;
   }
 

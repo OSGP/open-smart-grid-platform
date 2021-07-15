@@ -11,7 +11,6 @@ package org.opensmartgridplatform.adapter.ws.admin.application.config;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import javax.annotation.Resource;
 import org.opensmartgridplatform.adapter.ws.admin.application.exceptionhandling.DetailSoapFaultMappingExceptionResolver;
 import org.opensmartgridplatform.adapter.ws.admin.application.exceptionhandling.SoapFaultMapper;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
@@ -27,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.server.endpoint.adapter.DefaultMethodEndpointAdapter;
 import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
@@ -60,8 +58,6 @@ public class WebServiceConfig extends AbstractConfig {
   private static final String X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME = "CommonNameSet";
 
   private static final String SERVER = "SERVER";
-
-  @Resource private Environment environment;
 
   /** Method for creating the Marshaller for device management. */
   @Bean

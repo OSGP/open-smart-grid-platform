@@ -8,7 +8,6 @@
  */
 package org.opensmartgridplatform.adapter.ws.core.application.config;
 
-import javax.annotation.Resource;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
@@ -29,7 +28,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
@@ -79,8 +77,6 @@ public class ApplicationContext extends AbstractConfig {
       "net.management.organisation";
 
   private static final String PROPERTY_NAME_SCHEDULING_TASK_PAGE_SIZE = "scheduling.task.page.size";
-
-  @Resource private Environment environment;
 
   @Bean
   public String defaultProtocol() {

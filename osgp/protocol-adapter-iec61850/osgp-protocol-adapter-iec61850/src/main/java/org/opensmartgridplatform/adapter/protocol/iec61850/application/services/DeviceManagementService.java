@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.application.services
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.entities.Iec61850DeviceReportGroup;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.repositories.Iec61850DeviceReportGroupRepository;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
@@ -17,8 +18,10 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.Devic
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.OsgpRequestMessageSender;
 import org.opensmartgridplatform.core.db.api.iec61850.entities.DeviceOutputSetting;
 import org.opensmartgridplatform.core.db.api.iec61850.entities.LightMeasurementDevice;
+import org.opensmartgridplatform.core.db.api.iec61850.entities.ProtocolInfo;
 import org.opensmartgridplatform.core.db.api.iec61850.entities.Ssld;
 import org.opensmartgridplatform.core.db.api.iec61850.repositories.LmdDataRepository;
+import org.opensmartgridplatform.core.db.api.iec61850.repositories.ProtocolInfoRepository;
 import org.opensmartgridplatform.core.db.api.iec61850.repositories.SsldDataRepository;
 import org.opensmartgridplatform.dto.da.GetPQValuesResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.EventNotificationDto;
@@ -46,14 +49,24 @@ public class DeviceManagementService {
 
   @Autowired private LmdDataRepository lmdDataRepository;
 
+  @Autowired private ProtocolInfoRepository protocolInfoRepository;
+
   @Autowired private Iec61850DeviceReportGroupRepository deviceReportGroupRepository;
 
   @Autowired private OsgpRequestMessageSender osgpRequestMessageSender;
 
   @Autowired private DeviceResponseMessageSender responseSender;
 
+  private ProtocolInfo protocolInfo;
+
   public DeviceManagementService() {
     // Parameterless constructor required for transactions...
+  }
+
+  @PostConstruct
+  public void init() {
+    this.protocolInfo =
+        this.protocolInfoRepository.findByProtocolAndProtocolVersion("IEC61850", "1.0");
   }
 
   @Transactional(value = "iec61850OsgpCoreDbApiTransactionManager", readOnly = true)
@@ -62,7 +75,8 @@ public class DeviceManagementService {
   }
 
   /**
-   * Find the 4 real light measurement devices. These devices are using digital input 1, 2, 3 and 4.
+   * Find the 4 real IEC61850 light measurement devices. These devices are using digital input 1, 2,
+   * 3 and 4.
    *
    * @return List of 4 {@link LightMeasurementDevice}.
    */
@@ -70,7 +84,9 @@ public class DeviceManagementService {
   public List<LightMeasurementDevice> findRealLightMeasurementDevices() {
     final short start = 1;
     final short end = 4;
-    return this.lmdDataRepository.findByDigitalInputBetween(start, end);
+
+    return this.lmdDataRepository.findByProtocolInfoAndDigitalInputBetween(
+        this.protocolInfo, start, end);
   }
 
   public LightMeasurementDevice findLightMeasurementDevice(final String deviceIdentification) {

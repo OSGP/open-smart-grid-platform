@@ -22,6 +22,8 @@ public enum SecurityKeyType {
   G_METER_MASTER(SecretType.G_METER_MASTER_KEY),
   /** M-Bus User key */
   G_METER_ENCRYPTION(SecretType.G_METER_ENCRYPTION_KEY),
+  /** M-Bus Firmware Update Authentication key */
+  G_METER_FIRMWARE_UPDATE_AUTHENTICATION(SecretType.G_METER_FIRMWARE_UPDATE_AUTHENTICATION_KEY),
   /** Password (e.g. used as DLMS Low Level Security secret) */
   PASSWORD(SecretType.PPP_PASSWORD);
 

@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.util.Optionals;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -103,15 +104,22 @@ public class LowVoltageMessageProducer {
     final ScadaMeasurementPayload payload = payloads[0];
     final String substationIdentification = payload.getSubstationIdentification();
 
-    final Location location =
-        this.locationService.getLocation(substationIdentification).orElse(null);
-    if (location == null) {
-      payload.setBayIdentification("");
-      payload.setSubstationName("");
-    } else {
-      addLocationData(payload, location);
-    }
+    Optionals.ifPresentOrElse(
+        this.locationService.getLocation(substationIdentification),
+        location -> addLocationData(payload, location),
+        () -> configureWithoutLocation(payload));
+
     return payload;
+  }
+
+  private static void configureWithoutLocation(final ScadaMeasurementPayload payload) {
+    payload.setSubstationName("");
+    configureWithoutFeeder(payload);
+  }
+
+  private static void configureWithoutFeeder(final ScadaMeasurementPayload payload) {
+    payload.setBayIdentification("");
+    payload.setAssetLabel(null);
   }
 
   private static void addLocationData(
@@ -121,12 +129,18 @@ public class LowVoltageMessageProducer {
     try {
       final int feederNumber = Integer.parseInt(payload.getFeeder());
       if (feederNumber != META_MEASUREMENT_FEEDER) {
-        final String bayIdentification =
-            location.getFeeder(feederNumber).map(Feeder::getName).orElse("");
-        payload.setBayIdentification(bayIdentification);
+        Optionals.ifPresentOrElse(
+            location.getFeeder(feederNumber),
+            feeder -> addFeederData(payload, feeder),
+            () -> configureWithoutFeeder(payload));
       }
     } catch (final NumberFormatException e) {
       LOGGER.error("Payload contains a non-numeric value for feeder", e);
     }
+  }
+
+  private static void addFeederData(final ScadaMeasurementPayload payload, final Feeder feeder) {
+    payload.setBayIdentification(feeder.getName());
+    payload.setAssetLabel(feeder.getAssetLabel());
   }
 }

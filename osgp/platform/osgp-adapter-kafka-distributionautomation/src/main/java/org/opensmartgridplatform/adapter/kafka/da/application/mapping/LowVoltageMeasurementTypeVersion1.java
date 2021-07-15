@@ -11,7 +11,7 @@ package org.opensmartgridplatform.adapter.kafka.da.application.mapping;
 import com.alliander.data.scadameasurementpublishedevent.UnitMultiplier;
 import com.alliander.data.scadameasurementpublishedevent.UnitSymbol;
 
-public enum LowVoltageMeasurementType implements LowVoltageMeasurementDefinition {
+public enum LowVoltageMeasurementTypeVersion1 implements LowVoltageMeasurementDefinition {
   VOLTAGE_L1(0, "U-L1-E", UnitSymbol.V),
   VOLTAGE_L2(1, "U-L2-E", UnitSymbol.V),
   VOLTAGE_L3(2, "U-L3-E", UnitSymbol.V),
@@ -59,12 +59,12 @@ public enum LowVoltageMeasurementType implements LowVoltageMeasurementDefinition
   private UnitSymbol unitSymbol;
   private UnitMultiplier unitMultiplier;
 
-  LowVoltageMeasurementType(
+  LowVoltageMeasurementTypeVersion1(
       final int index, final String description, final UnitSymbol unitSymbol) {
     this(index, description, unitSymbol, UnitMultiplier.none);
   }
 
-  LowVoltageMeasurementType(
+  LowVoltageMeasurementTypeVersion1(
       final int index,
       final String description,
       final UnitSymbol unitSymbol,

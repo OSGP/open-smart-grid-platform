@@ -15,7 +15,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
  * Handles creation and validation of @{@link IdentificationNumber} based on either the String
  * representation or the Number representation.
  */
-class IdentificationNumberFactory {
+public class IdentificationNumberFactory {
 
   private static final int HEX_RADIX = 16;
   private static final String IDENTIFICATION_NUMBER_REGEX_DSMR4 = "\\d{1,8}";
@@ -54,7 +54,7 @@ class IdentificationNumberFactory {
     return new IdentificationNumber(last8Digits);
   }
 
-  IdentificationNumber fromLast8Digits(final String digits) {
+  public IdentificationNumber fromLast8Digits(final String digits) {
     final String last8Digits = this.fromString(digits);
     this.validateLast8Digits(last8Digits);
 

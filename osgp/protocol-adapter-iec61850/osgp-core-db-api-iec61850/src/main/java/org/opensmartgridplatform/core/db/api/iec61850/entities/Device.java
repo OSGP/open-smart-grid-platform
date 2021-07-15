@@ -18,6 +18,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Version;
@@ -59,6 +61,11 @@ public class Device implements Serializable {
 
   /** Indicates the type of the device. Example { @see Ssld.SSLD_TYPE } */
   @Column() protected String deviceType;
+
+  /** Protocol information indicates which protocol this device is using. */
+  @ManyToOne()
+  @JoinColumn(name = "protocol_info_id")
+  protected ProtocolInfo protocolInfo;
 
   public Device() {
     // Default constructor

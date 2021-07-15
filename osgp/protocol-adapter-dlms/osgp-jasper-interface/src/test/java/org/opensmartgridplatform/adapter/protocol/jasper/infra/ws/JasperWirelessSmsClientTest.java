@@ -40,9 +40,9 @@ import org.springframework.xml.transform.StringSource;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(
-    classes = JasperWirelessConfigTest.class,
+    classes = JasperWirelessTestConfig.class,
     initializers = JasperWirelessSmsClientTest.PropertyMockingApplicationContextInitializer.class)
-public class JasperWirelessSmsClientTest {
+class JasperWirelessSmsClientTest {
 
   private static final String WKAEWUPSMS_CORRID = "wkaewupsms123";
   private static final String LICENSEKEY = "a-combination-of-characters";
@@ -52,7 +52,7 @@ public class JasperWirelessSmsClientTest {
   private static final String MODEM_STATUS = "DeliverAckReceivedStatusSuccessful";
   private static final String API_VERSION = "1234";
 
-  public static class PropertyMockingApplicationContextInitializer
+  static class PropertyMockingApplicationContextInitializer
       implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
     @Override
@@ -77,13 +77,13 @@ public class JasperWirelessSmsClientTest {
   @InjectMocks @Autowired private JasperWirelessSmsClient wsClientService;
 
   @BeforeEach
-  public void createServer() throws Exception {
-    MockitoAnnotations.initMocks(this);
+  void createServer() {
+    MockitoAnnotations.openMocks(this);
     this.mockServer = MockWebServiceServer.createServer(this.webServiceTemplate);
   }
 
   @Test
-  public void testSendWakeUpSms() throws Exception {
+  void testSendWakeUpSms() {
     // given
     final Source requestPayload =
         new StringSource(
@@ -135,7 +135,7 @@ public class JasperWirelessSmsClientTest {
   }
 
   @Test
-  public void testSendWakeUpSmsResult() throws Exception {
+  void testSendWakeUpSmsResult() {
     // given
     final Source requestPayload =
         new StringSource(

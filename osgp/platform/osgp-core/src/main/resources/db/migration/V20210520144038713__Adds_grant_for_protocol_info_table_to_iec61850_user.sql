@@ -1,0 +1,1 @@
+GRANT SELECT ON public.protocol_info TO osgp_core_db_api_iec61850_user;

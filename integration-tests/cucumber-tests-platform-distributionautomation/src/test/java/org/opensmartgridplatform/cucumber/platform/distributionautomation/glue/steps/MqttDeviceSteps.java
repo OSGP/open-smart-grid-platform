@@ -118,18 +118,23 @@ public class MqttDeviceSteps {
   private ArrayList<Name> getNames(final Map<String, String> parameters) {
     final String substationIdentification =
         getString(parameters, PlatformDistributionAutomationKeys.SUBSTATION_IDENTIFICATION);
+    final String version = getString(parameters, PlatformDistributionAutomationKeys.VERSION);
     final String substationName =
         getString(parameters, PlatformDistributionAutomationKeys.SUBSTATION_NAME);
     final String bayPosition =
         getString(parameters, PlatformDistributionAutomationKeys.BAY_POSITION);
     final String bayIdentification =
         getString(parameters, PlatformDistributionAutomationKeys.BAY_IDENTIFICATION);
+    final String assetLabel =
+        getString(parameters, PlatformDistributionAutomationKeys.FEEDER_ASSET_LABEL);
 
     final ArrayList<Name> names = new ArrayList<>();
     names.add(new Name(new NameType("gisbehuizingnummer"), substationIdentification));
+    names.add(new Name(new NameType("versie"), version));
     names.add(new Name(new NameType("msr naam"), substationName));
     names.add(new Name(new NameType("bay positie"), bayPosition));
     names.add(new Name(new NameType("bay identificatie"), bayIdentification));
+    names.add(new Name(new NameType("functieplaatslabel"), assetLabel));
     return names;
   }
 

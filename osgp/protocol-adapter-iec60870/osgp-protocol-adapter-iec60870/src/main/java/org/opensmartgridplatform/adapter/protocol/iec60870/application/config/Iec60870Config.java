@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.application.config;
 
+import java.util.TimeZone;
 import ma.glasnost.orika.MapperFacade;
 import org.opensmartgridplatform.adapter.protocol.iec60870.application.mapping.Iec60870Mapper;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
@@ -29,6 +30,8 @@ public class Iec60870Config extends AbstractConfig {
       "connection.response.timeout";
   private static final String PROPERTY_NAME_IEC60870_TIMEOUT_CONNECT = "iec60870.timeout.connect";
 
+  private static final String PROPERTY_NAME_IEC60870_TIME_ZONE = "iec60870.time.zone";
+
   /**
    * The amount of time, in milliseconds, the library will wait for a response after sending a
    * request.
@@ -47,6 +50,7 @@ public class Iec60870Config extends AbstractConfig {
 
   @Bean
   public MapperFacade iec60870Mapper() {
-    return new Iec60870Mapper();
+    final String timeZone = this.environment.getRequiredProperty(PROPERTY_NAME_IEC60870_TIME_ZONE);
+    return new Iec60870Mapper(TimeZone.getTimeZone(timeZone));
   }
 }

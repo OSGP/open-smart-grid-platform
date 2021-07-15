@@ -44,6 +44,9 @@ public class FeederSteps {
             settings,
             PlatformDistributionAutomationKeys.FEEDER_NAME,
             PlatformDistributionAutomationDefaults.FEEDER_NAME));
+    feeder.setAssetLabel(
+        ReadSettingsHelper.getString(
+            settings, PlatformDistributionAutomationKeys.FEEDER_ASSET_LABEL));
 
     this.feederRepository.save(feeder);
   }

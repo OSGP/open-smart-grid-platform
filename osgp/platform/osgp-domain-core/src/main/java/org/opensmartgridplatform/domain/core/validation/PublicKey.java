@@ -18,8 +18,6 @@ import javax.validation.ReportAsSingleViolation;
 import javax.validation.constraints.Pattern;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import org.hibernate.validator.constraints.NotEmpty;
-
 @NotEmpty
 @Pattern(regexp = "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$")
 @ReportAsSingleViolation

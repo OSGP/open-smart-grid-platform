@@ -24,9 +24,13 @@ public class ScadaMeasurementPayload {
   @JsonProperty("gisnr")
   private String substationIdentification;
 
+  @JsonProperty("versie")
+  private String version;
+
   private String substationName;
   private String feeder;
   private String bayIdentification;
+  private String assetLabel;
 
   @JsonProperty("D")
   private String date;

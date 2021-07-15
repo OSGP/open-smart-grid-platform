@@ -31,4 +31,7 @@ public class Feeder extends AbstractEntity {
 
   @Column(length = 32, nullable = false)
   private String name;
+
+  @Column(length = 255)
+  private String assetLabel;
 }

@@ -46,7 +46,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class DlmsObjectConfigServiceTest {
+class DlmsObjectConfigServiceTest {
 
   private DlmsObjectConfigService service;
 
@@ -58,7 +58,7 @@ public class DlmsObjectConfigServiceTest {
   private final DlmsDevice device51 = new DlmsDevice();
 
   private final DlmsClock clock1 = new DlmsClock("0.0.1.0.0.255");
-  private final DlmsClock clock2 = new DlmsClock("0.0.2.0.0.255");
+
   private final DlmsRegister register =
       new DlmsRegister(
           DlmsObjectType.ACTIVE_ENERGY_IMPORT,
@@ -104,7 +104,7 @@ public class DlmsObjectConfigServiceTest {
   @Mock private DlmsObjectConfig config50;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     when(this.config422.contains(Protocol.DSMR_4_2_2)).thenReturn(true);
     when(this.config422.findObject(DlmsObjectType.CLOCK, null))
         .thenReturn(Optional.of(this.clock1));
@@ -147,27 +147,27 @@ public class DlmsObjectConfigServiceTest {
   }
 
   @Test
-  public void testNoMatchingObject() throws Exception {
+  void testNoMatchingObject() {
     // CALL
     final Optional<AttributeAddress> attributeAddress =
         this.service.findAttributeAddress(this.device51, DlmsObjectType.AMR_STATUS, null);
 
     // VERIFY
-    assertThat(attributeAddress.isPresent()).isFalse();
+    assertThat(attributeAddress).isNotPresent();
   }
 
   @Test
-  public void testNoMatchingObjectForProtocol() throws Exception {
+  void testNoMatchingObjectForProtocol() {
     // CALL
     final Optional<AttributeAddress> attributeAddress =
         this.service.findAttributeAddress(this.device51, DlmsObjectType.INTERVAL_VALUES, null);
 
     // VERIFY
-    assertThat(attributeAddress.isPresent()).isFalse();
+    assertThat(attributeAddress).isNotPresent();
   }
 
   @Test
-  public void testOneMatchingObject() throws Exception {
+  void testOneMatchingObject() {
     // SETUP
     final AttributeAddress expectedAddress =
         new AttributeAddress(
@@ -182,11 +182,12 @@ public class DlmsObjectConfigServiceTest {
             this.device422, DlmsObjectType.ACTIVE_ENERGY_IMPORT, null);
 
     // VERIFY
+    assertThat(attributeAddress).isPresent();
     AttributeAddressAssert.is(attributeAddress.get(), expectedAddress);
   }
 
   @Test
-  public void testOneMatchingObjectWithChannel() throws Exception {
+  void testOneMatchingObjectWithChannel() {
     // SETUP
     final Integer channel = 1;
     final AttributeAddress expectedAddress =
@@ -202,11 +203,12 @@ public class DlmsObjectConfigServiceTest {
             this.device422, DlmsObjectType.MBUS_MASTER_VALUE, channel);
 
     // VERIFY
+    assertThat(attributeAddress).isPresent();
     AttributeAddressAssert.is(attributeAddress.get(), expectedAddress);
   }
 
   @Test
-  public void testProfileWithOneMedium() throws Exception {
+  void testProfileWithOneMedium() {
     // SETUP
     final Integer channel = null;
     final Medium filterMedium = Medium.ELECTRICITY;
@@ -235,6 +237,7 @@ public class DlmsObjectConfigServiceTest {
             filterMedium);
 
     // VERIFY
+    assertThat(attributeAddressForProfile).isPresent();
     AttributeAddressAssert.is(
         attributeAddressForProfile.get().getAttributeAddress(), expectedAddress);
     assertThat(attributeAddressForProfile.get().getSelectedObjects())
@@ -242,7 +245,7 @@ public class DlmsObjectConfigServiceTest {
   }
 
   @Test
-  public void testProfileWithMediumCombinedAndFilterMedium() throws Exception {
+  void testProfileWithMediumCombinedAndFilterMedium() {
     // SETUP
     final Integer channel = null;
     final Medium filterMedium = Medium.ELECTRICITY;
@@ -283,6 +286,7 @@ public class DlmsObjectConfigServiceTest {
             filterMedium);
 
     // VERIFY
+    assertThat(attributeAddressForProfile).isPresent();
     AttributeAddressAssert.is(
         attributeAddressForProfile.get().getAttributeAddress(), expectedAddress);
     assertThat(attributeAddressForProfile.get().getSelectedObjects())
@@ -290,7 +294,7 @@ public class DlmsObjectConfigServiceTest {
   }
 
   @Test
-  public void testProfileWithMediumCombinedAndNoFilterMedium() throws Exception {
+  void testProfileWithMediumCombinedAndNoFilterMedium() {
     // SETUP
     final Integer channel = 1;
     final Medium filterMedium = null;
@@ -319,6 +323,7 @@ public class DlmsObjectConfigServiceTest {
             filterMedium);
 
     // VERIFY
+    assertThat(attributeAddressForProfile).isPresent();
     AttributeAddressAssert.is(
         attributeAddressForProfile.get().getAttributeAddress(), expectedAddress);
     assertThat(attributeAddressForProfile.get().getSelectedObjects())
