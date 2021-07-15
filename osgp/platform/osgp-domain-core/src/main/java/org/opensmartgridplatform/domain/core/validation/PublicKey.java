@@ -15,8 +15,8 @@ import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import javax.validation.ReportAsSingleViolation;
-import org.hibernate.validator.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
