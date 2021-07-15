@@ -27,6 +27,7 @@ Feature: SmartMetering short names - Load profile 1
       | DeviceIdentification | TEST1024000000005 |
       | Result               | OK                |
       | ResponsePart         | 0-0:96.240.12.255 |
+    And the response data record should not be deleted
 
   Scenario: Get load profile1 buffer from L+G E650
     Given a dlms device

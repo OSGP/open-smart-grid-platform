@@ -14,5 +14,5 @@ Feature: SmartMetering Bundle - GetActualMeterReads
     And the bundle request contains a get actual meter reads action
     When the bundle request is received
     Then the bundle response should contain a get actual meter reads response
-    And the bundle response data record should not be deleted
+    And the response data record should not be deleted
 

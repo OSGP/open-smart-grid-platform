@@ -14,3 +14,4 @@ Feature: SmartMetering Bundle - GetAdministrativeStatus
     And the bundle request contains a get administrative status action
     When the bundle request is received
     Then the bundle response should contain a get administrative status response
+    And the response data record should not be deleted

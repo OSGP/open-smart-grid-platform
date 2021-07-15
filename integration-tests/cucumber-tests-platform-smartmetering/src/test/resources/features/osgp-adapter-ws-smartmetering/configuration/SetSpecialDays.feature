@@ -12,3 +12,4 @@ Feature: SmartMetering Configuration - Set Special Days
       | DeviceIdentification | TEST1024000000001 |
     Then the special days should be set on the device
       | DeviceIdentification | TEST1024000000001 |
+    And the response data record should not be deleted

@@ -17,3 +17,4 @@ Feature: SmartMetering Bundle - SetPushSetupAlarm
     When the bundle request is received
     Then the bundle response should contain a set push setup alarm response with values
       | Result | OK |
+    And the response data record should not be deleted

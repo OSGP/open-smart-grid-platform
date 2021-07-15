@@ -67,3 +67,4 @@ Feature: SmartMetering Configuration - Exchange User Key on M-Bus Device
       | Result               | OK                |
     And a valid m-bus user key is stored
       | DeviceIdentification | TESTG101205673117 |
+    And the response data record should not be deleted

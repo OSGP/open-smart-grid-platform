@@ -46,3 +46,4 @@ Feature: SmartMetering Bundle - GetPowerQualityProfile
       | CaptureObject_DataIndex_4      |                 0 |
       | CaptureObject_Unit_4           | KWH               |
       | NumberOfProfileEntries         |               960 |
+    And the response data record should not be deleted

@@ -68,6 +68,8 @@ Feature: SmartMetering Configuration
       | ConfigurationFlagEnabled_9  | false                  |
       | ConfigurationFlagType_10    | HLS_5_ON_PO_ENABLE     |
       | ConfigurationFlagEnabled_10 | false                  |
+    And the response data record should not be deleted
+
   @NightlyBuildOnly
   Scenario: Set configuration object on a device without GPRS operation mode
     When the set configuration object request is received

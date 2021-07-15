@@ -16,6 +16,8 @@ Feature: SmartMetering Configuration - Set Alarm Notifications
       | AlarmTypeEnabled     | TRUE              |
     Then the specified alarm notifications should be set on the device
       | DeviceIdentification | TEST1024000000001 |
+    And the response data record should not be deleted
+
   @NightlyBuildOnly
   Scenario: Set all alarm notifications disabled on a device
     When the set alarm notifications request is received

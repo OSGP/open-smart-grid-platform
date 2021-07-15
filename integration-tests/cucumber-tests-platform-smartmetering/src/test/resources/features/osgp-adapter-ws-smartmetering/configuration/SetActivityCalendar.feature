@@ -12,3 +12,4 @@ Feature: SmartMetering Configuration - Set Activity Calendar
       | DeviceIdentification | TEST1024000000001 |
     Then the activity calendar profiles are set on the device
       | DeviceIdentification | TEST1024000000001 |
+    And the response data record should not be deleted

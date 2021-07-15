@@ -23,6 +23,7 @@ Feature: SmartMetering Monitoring - Get Periodic Meter Reads
       | EndDate              | <EndDate>         |
     Then the "<PeriodType>" meter reads result should be returned
       | DeviceIdentification | TEST1024000000001 |
+    And the response data record should not be deleted
 
     Examples:
       | PeriodType | BeginDate                | EndDate                  |
@@ -37,6 +38,7 @@ Feature: SmartMetering Monitoring - Get Periodic Meter Reads
       | EndDate              | <EndDate>         |
     Then the "<PeriodType>" meter reads gas result should be returned
       | DeviceIdentification | TESTG102400000001 |
+    And the response data record should not be deleted
 
     Examples:
       | PeriodType | BeginDate                | EndDate                  |

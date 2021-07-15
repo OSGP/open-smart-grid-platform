@@ -14,4 +14,4 @@ Feature: SmartMetering Bundle - ReadAlarmRegister
     And the bundle request contains a read alarm register action
     When the bundle request is received
     Then the bundle response should contain a read alarm register response
-    And the bundle response data record should not be deleted
+    And the response data record should not be deleted

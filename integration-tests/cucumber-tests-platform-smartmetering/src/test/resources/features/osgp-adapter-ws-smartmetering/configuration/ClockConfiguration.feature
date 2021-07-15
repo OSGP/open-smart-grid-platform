@@ -19,6 +19,7 @@ Feature: SmartMetering Configuration - Clock configuration
     Then the set clock configuration response should be returned
       | DeviceIdentification | TEST1024000000001 |
       | Result               | OK                |
+    And the response data record should not be deleted
   @NightlyBuildOnly
   Scenario: Set clock configuration and synchronize time with incorrect timezone
     Given a bundle request

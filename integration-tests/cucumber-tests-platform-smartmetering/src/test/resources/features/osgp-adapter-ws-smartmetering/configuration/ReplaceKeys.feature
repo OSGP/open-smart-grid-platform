@@ -19,6 +19,7 @@ Feature: SmartMetering Configuration - Replace Keys
       | Result               | OK                |
     And the new keys are stored in the osgp_adapter_protocol_dlms database security_key table
     And the stored keys are not equal to the received keys
+    And the response data record should not be deleted
 
   @ResetKeysOnDevice
   Scenario: Replace keys with generated ones on a device

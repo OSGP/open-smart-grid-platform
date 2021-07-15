@@ -14,3 +14,4 @@ Feature: SmartMetering Bundle - GetAssociationLnObjects
     And the bundle request contains a get association ln objects action
     When the bundle request is received
     Then the bundle response should contain a get association ln objects response
+    And the response data record should not be deleted

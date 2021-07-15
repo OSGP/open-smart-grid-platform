@@ -18,3 +18,4 @@ Feature: SmartMetering Bundle - GetOutages
       | 2015-09-01T12:00:00.000Z | 360 |
       | 2015-08-31T12:00:00.000Z | 540 |
       | 2015-08-30T12:00:00.000Z | 720 |
+    And the response data record should not be deleted

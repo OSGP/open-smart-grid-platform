@@ -20,12 +20,14 @@ Feature: SmartMetering Monitoring - Get Actual Meter Reads
       | DeviceIdentification | TEST1024000000001 |
     Then the actual meter reads result should be returned
       | DeviceIdentification | TEST1024000000001 |
+    And the response data record should not be deleted
 
   Scenario: Get the actual meter reads from a gas device
     When the get actual meter reads gas request is received
       | DeviceIdentification | TESTG102400000001 |
     Then the actual meter reads gas result should be returned
       | DeviceIdentification | TESTG102400000001 |
+    And the response data record should not be deleted
   @NightlyBuildOnly
   Scenario: Do not refuse an operation with an inactive device
     Given a dlms device

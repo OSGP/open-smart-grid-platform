@@ -20,3 +20,4 @@ Feature: SmartMetering Bundle - SetAlarmNotifications
     When the bundle request is received
     Then the bundle response should contain a set alarm notifications response with values
       | Result | OK |
+    And the response data record should not be deleted

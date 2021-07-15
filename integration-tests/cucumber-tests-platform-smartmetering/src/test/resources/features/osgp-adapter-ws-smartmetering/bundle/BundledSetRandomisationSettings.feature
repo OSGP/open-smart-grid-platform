@@ -19,6 +19,7 @@ Feature: SmartMetering Bundle - SetRandomisationSettings
       | numberOfRetries          | 1 |
     When the bundle request is received
     Then the bundle response should be OK
+    And the response data record should not be deleted
 
   Scenario: Set randomisation settings on a SMR5 device in a bundle request
     Given a bundle request

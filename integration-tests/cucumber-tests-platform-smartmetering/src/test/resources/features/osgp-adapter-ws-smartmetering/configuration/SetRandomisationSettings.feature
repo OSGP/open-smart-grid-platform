@@ -17,6 +17,7 @@ Feature: SmartMetering Configuration - SetRandomisationSettings
       | multiplicationFactor     | 1                 |
       | numberOfRetries          | 1                 |
     Then the randomisation settings should be set on the device
+    And the response data record should not be deleted
 
   Scenario: Set randomisation settings on a SMR5 device
     Given a dlms device
