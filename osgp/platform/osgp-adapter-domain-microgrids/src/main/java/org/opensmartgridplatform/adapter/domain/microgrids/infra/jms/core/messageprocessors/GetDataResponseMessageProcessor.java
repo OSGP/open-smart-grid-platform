@@ -1,15 +1,15 @@
-/**
+/*
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.microgrids.infra.jms.core.messageprocessors;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
-
 import org.opensmartgridplatform.adapter.domain.microgrids.application.services.AdHocManagementService;
 import org.opensmartgridplatform.dto.valueobjects.microgrids.GetDataResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -27,74 +27,74 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-/**
- * Class for processing microgrids get data response messages
- */
+/** Class for processing microgrids get data response messages */
 @Component("domainMicrogridsGetDataResponseMessageProcessor")
 public class GetDataResponseMessageProcessor extends BaseNotificationMessageProcessor {
-    /**
-     * Logger for this class
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetDataResponseMessageProcessor.class);
+  /** Logger for this class */
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(GetDataResponseMessageProcessor.class);
 
-    @Autowired
-    @Qualifier("domainMicrogridsAdHocManagementService")
-    private AdHocManagementService adHocManagementService;
+  @Autowired
+  @Qualifier("domainMicrogridsAdHocManagementService")
+  private AdHocManagementService adHocManagementService;
 
-    @Autowired
-    protected GetDataResponseMessageProcessor(final NotificationResponseMessageSender responseMessageSender,
-            @Qualifier("domainMicrogridsInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
-        super(responseMessageSender, messageProcessorMap, MessageType.GET_DATA);
+  @Autowired
+  protected GetDataResponseMessageProcessor(
+      final NotificationResponseMessageSender responseMessageSender,
+      @Qualifier("domainMicrogridsInboundOsgpCoreResponsesMessageProcessorMap")
+          final MessageProcessorMap messageProcessorMap) {
+    super(responseMessageSender, messageProcessorMap, MessageType.GET_DATA);
+  }
+
+  @Override
+  public void processMessage(final ObjectMessage message) throws JMSException {
+    LOGGER.debug("Processing microgrids get data response message");
+
+    String correlationUid = null;
+    String messageType = null;
+    String organisationIdentification = null;
+    String deviceIdentification = null;
+
+    ResponseMessage responseMessage;
+    ResponseMessageResultType responseMessageResultType = null;
+    OsgpException osgpException = null;
+    Object dataObject;
+
+    try {
+      correlationUid = message.getJMSCorrelationID();
+      messageType = message.getJMSType();
+      organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
+      deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
+
+      responseMessage = (ResponseMessage) message.getObject();
+      responseMessageResultType = responseMessage.getResult();
+      osgpException = responseMessage.getOsgpException();
+      dataObject = responseMessage.getDataObject();
+    } catch (final JMSException e) {
+      LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
+      LOGGER.debug("correlationUid: {}", correlationUid);
+      LOGGER.debug("messageType: {}", messageType);
+      LOGGER.debug("organisationIdentification: {}", organisationIdentification);
+      LOGGER.debug("deviceIdentification: {}", deviceIdentification);
+      LOGGER.debug("responseMessageResultType: {}", responseMessageResultType);
+      LOGGER.debug("deviceIdentification: {}", deviceIdentification);
+      LOGGER.debug("osgpException", osgpException);
+      return;
     }
 
-    @Override
-    public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing microgrids get data response message");
+    try {
+      LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-        String correlationUid = null;
-        String messageType = null;
-        String organisationIdentification = null;
-        String deviceIdentification = null;
+      final GetDataResponseDto dataResponse = (GetDataResponseDto) dataObject;
 
-        ResponseMessage responseMessage;
-        ResponseMessageResultType responseMessageResultType = null;
-        OsgpException osgpException = null;
-        Object dataObject;
+      final CorrelationIds ids =
+          new CorrelationIds(organisationIdentification, deviceIdentification, correlationUid);
+      this.adHocManagementService.handleGetDataResponse(
+          dataResponse, ids, messageType, responseMessageResultType, osgpException);
 
-        try {
-            correlationUid = message.getJMSCorrelationID();
-            messageType = message.getJMSType();
-            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-
-            responseMessage = (ResponseMessage) message.getObject();
-            responseMessageResultType = responseMessage.getResult();
-            osgpException = responseMessage.getOsgpException();
-            dataObject = responseMessage.getDataObject();
-        } catch (final JMSException e) {
-            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            LOGGER.debug("correlationUid: {}", correlationUid);
-            LOGGER.debug("messageType: {}", messageType);
-            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("responseMessageResultType: {}", responseMessageResultType);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("osgpException", osgpException);
-            return;
-        }
-
-        try {
-            LOGGER.info("Calling application service function to handle response: {}", messageType);
-
-            final GetDataResponseDto dataResponse = (GetDataResponseDto) dataObject;
-
-            final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
-                    correlationUid);
-            this.adHocManagementService.handleGetDataResponse(dataResponse, ids, messageType, responseMessageResultType,
-                    osgpException);
-
-        } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
-        }
+    } catch (final Exception e) {
+      this.handleError(
+          e, correlationUid, organisationIdentification, deviceIdentification, messageType);
     }
+  }
 }

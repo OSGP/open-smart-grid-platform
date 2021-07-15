@@ -1,15 +1,16 @@
-/**
+/*
  * Copyright 2018 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.iec61850.application.services;
 
+import com.beanit.openiec61850.Report;
 import java.util.Date;
 import java.util.Objects;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.entities.Iec61850ReportEntry;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.repositories.Iec61850ReportEntryRepository;
 import org.slf4j.Logger;
@@ -19,47 +20,54 @@ import org.springframework.orm.jpa.JpaOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.beanit.openiec61850.Report;
-
 @Service(value = "iec61850ReportingService")
 public class ReportingService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ReportingService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ReportingService.class);
 
-    @Autowired
-    private Iec61850ReportEntryRepository iec61850ReportEntryRepository;
+  @Autowired private Iec61850ReportEntryRepository iec61850ReportEntryRepository;
 
-    @Transactional(value = "transactionManager", readOnly = true)
-    public Iec61850ReportEntry retrieveReportEntry(final String deviceIdentification, final String reportId) {
-        return this.iec61850ReportEntryRepository.findByDeviceIdentificationAndReportId(deviceIdentification, reportId);
+  @Transactional(value = "transactionManager", readOnly = true)
+  public Iec61850ReportEntry retrieveReportEntry(
+      final String deviceIdentification, final String reportId) {
+    return this.iec61850ReportEntryRepository.findByDeviceIdentificationAndReportId(
+        deviceIdentification, reportId);
+  }
+
+  @Transactional(value = "transactionManager")
+  public void storeLastReportEntry(final Report report, final String deviceIdentification) {
+    if (Objects.isNull(report.getEntryId()) || Objects.isNull(report.getTimeOfEntry())) {
+      LOGGER.warn(
+          "Not all report entry data availabe for report id {} and device identification {}, skip storing last report entry",
+          report.getRptId(),
+          deviceIdentification);
+      return;
     }
-
-    @Transactional(value = "transactionManager")
-    public void storeLastReportEntry(final Report report, final String deviceIdentification) {
-        if (Objects.isNull(report.getEntryId()) || Objects.isNull(report.getTimeOfEntry())) {
-            LOGGER.warn(
-                    "Not all report entry data availabe for report id {} and device identification {}, skip storing last report entry",
-                    report.getRptId(), deviceIdentification);
-            return;
-        }
-        Iec61850ReportEntry reportEntry = this.iec61850ReportEntryRepository
-                .findByDeviceIdentificationAndReportId(deviceIdentification, report.getRptId());
-        if (reportEntry == null) {
-            reportEntry = new Iec61850ReportEntry(deviceIdentification, report.getRptId(),
-                    report.getEntryId().getValue(), new Date(report.getTimeOfEntry().getTimestampValue()));
-            LOGGER.info("Store new last report entry: {}", reportEntry);
-        } else {
-            reportEntry.updateLastReportEntry(report.getEntryId().getValue(),
-                    new Date(report.getTimeOfEntry().getTimestampValue()));
-            LOGGER.info("Store updated last report entry: {}", reportEntry);
-        }
-        try {
-            this.iec61850ReportEntryRepository.saveAndFlush(reportEntry);
-        } catch (final JpaOptimisticLockingFailureException e) {
-            LOGGER.debug("JpaOptimisticLockingFailureException", e);
-            LOGGER.warn(
-                    "JPA optimistic locking failure exception while saving last report entry: {} with id {} and version {}",
-                    reportEntry, reportEntry.getId(), reportEntry.getVersion());
-        }
+    Iec61850ReportEntry reportEntry =
+        this.iec61850ReportEntryRepository.findByDeviceIdentificationAndReportId(
+            deviceIdentification, report.getRptId());
+    if (reportEntry == null) {
+      reportEntry =
+          new Iec61850ReportEntry(
+              deviceIdentification,
+              report.getRptId(),
+              report.getEntryId().getValue(),
+              new Date(report.getTimeOfEntry().getTimestampValue()));
+      LOGGER.info("Store new last report entry: {}", reportEntry);
+    } else {
+      reportEntry.updateLastReportEntry(
+          report.getEntryId().getValue(), new Date(report.getTimeOfEntry().getTimestampValue()));
+      LOGGER.info("Store updated last report entry: {}", reportEntry);
     }
+    try {
+      this.iec61850ReportEntryRepository.saveAndFlush(reportEntry);
+    } catch (final JpaOptimisticLockingFailureException e) {
+      LOGGER.debug("JpaOptimisticLockingFailureException", e);
+      LOGGER.warn(
+          "JPA optimistic locking failure exception while saving last report entry: {} with id {} and version {}",
+          reportEntry,
+          reportEntry.getId(),
+          reportEntry.getVersion());
+    }
+  }
 }

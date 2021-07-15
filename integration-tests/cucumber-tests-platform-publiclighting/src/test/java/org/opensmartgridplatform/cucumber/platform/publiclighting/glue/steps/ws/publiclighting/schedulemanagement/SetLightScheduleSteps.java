@@ -1,9 +1,8 @@
-/**
+/*
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -16,11 +15,11 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShor
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 import static org.opensmartgridplatform.cucumber.platform.core.CorrelationUidHelper.saveCorrelationUidInScenarioContext;
 
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import java.util.Map;
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -48,264 +47,311 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
-
-/**
- * Class with all the set light requests steps
- */
+/** Class with all the set light requests steps */
 public class SetLightScheduleSteps {
 
-    @Autowired
-    private PublicLightingScheduleManagementClient client;
+  @Autowired private PublicLightingScheduleManagementClient client;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetLightScheduleSteps.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SetLightScheduleSteps.class);
 
-    /**
-     * Sends a Set Schedule request to the platform for a given device
-     * identification.
-     *
-     * @param requestParameters
-     *            The table with the request parameters.
-     * @throws Throwable
-     */
-    @When("^receiving a set light schedule request$")
-    public void receivingASetLightScheduleRequest(final Map<String, String> requestParameters) throws Throwable {
+  /**
+   * Sends a Set Schedule request to the platform for a given device identification.
+   *
+   * @param requestParameters The table with the request parameters.
+   * @throws Throwable
+   */
+  @When("^receiving a set light schedule request$")
+  public void receivingASetLightScheduleRequest(final Map<String, String> requestParameters)
+      throws Throwable {
 
-        this.callAddSchedule(requestParameters, 1);
+    this.callAddSchedule(requestParameters, 1);
+  }
+
+  /**
+   * Sends a Set Schedule request to the platform for a given device identification.
+   *
+   * @param requestParameters The table with the request parameters.
+   * @throws Throwable
+   */
+  @When("^receiving a set light schedule request with astronomical offsets$")
+  public void receivingASetLightScheduleRequestWithAstronomicalOffsets(
+      final Map<String, String> requestParameters) throws Throwable {
+    final SetScheduleRequest request = new SetScheduleRequest();
+
+    request.setDeviceIdentification(
+        getString(
+            requestParameters,
+            PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
+            PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+    request.setAstronomicalSunriseOffset(
+        getShort(
+            requestParameters,
+            PlatformPubliclightingKeys.KEY_ASTRONOMICAL_SUNRISE_OFFSET,
+            PlatformPubliclightingDefaults.DEFAULT_ASTRONOMICAL_SUNRISE_OFFSET));
+    request.setAstronomicalSunsetOffset(
+        getShort(
+            requestParameters,
+            PlatformPubliclightingKeys.KEY_ASTRONOMICAL_SUNSET_OFFSET,
+            PlatformPubliclightingDefaults.DEFAULT_ASTRONOMICAL_SUNSET_OFFSET));
+
+    this.addScheduleForRequest(
+        request,
+        WeekDayType.ALL,
+        null,
+        null,
+        ActionTimeType.SUNRISE,
+        null,
+        "0,false",
+        TriggerType.ASTRONOMICAL.name(),
+        null);
+
+    try {
+      ScenarioContext.current()
+          .put(PlatformPubliclightingKeys.RESPONSE, this.client.setSchedule(request));
+    } catch (final SoapFaultClientException ex) {
+      ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE, ex);
+    }
+  }
+
+  /**
+   * Sends a Set Schedule request to the platform for a given device identification.
+   *
+   * @param requestParameters The table with the request parameters.
+   * @throws Throwable
+   */
+  @When("^receiving a set light schedule request for (\\d+) schedules?$")
+  public void receivingASetLightScheduleRequestForSchedules(
+      final Integer countSchedules, final Map<String, String> requestParameters) throws Throwable {
+
+    this.callAddSchedule(requestParameters, countSchedules);
+  }
+
+  private void callAddSchedule(
+      final Map<String, String> requestParameters, final Integer countSchedules) throws Throwable {
+
+    final SetScheduleRequest request = new SetScheduleRequest();
+    request.setDeviceIdentification(
+        getString(
+            requestParameters,
+            PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
+            PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
+    if (requestParameters.containsKey(PlatformPubliclightingKeys.SCHEDULE_SCHEDULEDTIME)) {
+      request.setScheduledTime(
+          DatatypeFactory.newInstance()
+              .newXMLGregorianCalendar(
+                  ((requestParameters
+                              .get(PlatformPubliclightingKeys.SCHEDULE_SCHEDULEDTIME)
+                              .isEmpty())
+                          ? DateTime.now()
+                          : getDate(
+                              requestParameters, PlatformPubliclightingKeys.SCHEDULE_SCHEDULEDTIME))
+                      .toDateTime(DateTimeZone.UTC)
+                      .toGregorianCalendar()));
     }
 
-    /**
-     * Sends a Set Schedule request to the platform for a given device
-     * identification.
-     *
-     * @param requestParameters
-     *            The table with the request parameters.
-     * @throws Throwable
-     */
-    @When("^receiving a set light schedule request with astronomical offsets$")
-    public void receivingASetLightScheduleRequestWithAstronomicalOffsets(final Map<String, String> requestParameters)
-            throws Throwable {
-        final SetScheduleRequest request = new SetScheduleRequest();
+    for (int i = 0; i < countSchedules; i++) {
+      this.addScheduleForRequest(
+          request,
+          getEnum(
+              requestParameters, PlatformPubliclightingKeys.SCHEDULE_WEEKDAY, WeekDayType.class),
+          getString(requestParameters, PlatformPubliclightingKeys.SCHEDULE_STARTDAY),
+          getString(requestParameters, PlatformPubliclightingKeys.SCHEDULE_ENDDAY),
+          getEnum(
+              requestParameters,
+              PlatformPubliclightingKeys.SCHEDULE_ACTIONTIME,
+              ActionTimeType.class),
+          getString(requestParameters, PlatformPubliclightingKeys.SCHEDULE_TIME),
+          getString(requestParameters, PlatformPubliclightingKeys.SCHEDULE_LIGHTVALUES),
+          getString(requestParameters, PlatformPubliclightingKeys.SCHEDULE_TRIGGERTYPE),
+          getString(requestParameters, PlatformPubliclightingKeys.SCHEDULE_TRIGGERWINDOW));
+    }
+    try {
+      ScenarioContext.current()
+          .put(PlatformPubliclightingKeys.RESPONSE, this.client.setSchedule(request));
+    } catch (final SoapFaultClientException ex) {
+      ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE, ex);
+    }
+  }
 
-        request.setDeviceIdentification(
-                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
-                        PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        request.setAstronomicalSunriseOffset(
-                getShort(requestParameters, PlatformPubliclightingKeys.KEY_ASTRONOMICAL_SUNRISE_OFFSET,
-                        PlatformPubliclightingDefaults.DEFAULT_ASTRONOMICAL_SUNRISE_OFFSET));
-        request.setAstronomicalSunsetOffset(
-                getShort(requestParameters, PlatformPubliclightingKeys.KEY_ASTRONOMICAL_SUNSET_OFFSET,
-                        PlatformPubliclightingDefaults.DEFAULT_ASTRONOMICAL_SUNSET_OFFSET));
+  private void addScheduleForRequest(
+      final SetScheduleRequest request,
+      final WeekDayType weekDay,
+      final String startDay,
+      final String endDay,
+      final ActionTimeType actionTime,
+      final String time,
+      final String scheduleLightValue,
+      final String triggerType,
+      final String triggerWindow)
+      throws DatatypeConfigurationException {
+    final Schedule schedule = new Schedule();
+    schedule.setWeekDay(weekDay);
+    if (StringUtils.isNotBlank(startDay)) {
+      schedule.setStartDay(
+          DatatypeFactory.newInstance()
+              .newXMLGregorianCalendar(
+                  DateTime.parse(startDay).toDateTime(DateTimeZone.UTC).toGregorianCalendar()));
+    }
+    if (StringUtils.isNotBlank(endDay)) {
+      schedule.setEndDay(
+          DatatypeFactory.newInstance()
+              .newXMLGregorianCalendar(
+                  DateTime.parse(endDay).toDateTime(DateTimeZone.UTC).toGregorianCalendar()));
+    }
+    schedule.setActionTime(actionTime);
+    schedule.setTime(time);
 
-        this.addScheduleForRequest(request, WeekDayType.ALL, null, null, ActionTimeType.SUNRISE, null, "0,false",
-                TriggerType.ASTRONOMICAL.name(), null);
+    for (final String lightValue : scheduleLightValue.split(";")) {
+      final LightValue lv = new LightValue();
+      final String[] lightValues = lightValue.split(",");
+      lv.setIndex(Integer.parseInt(lightValues[0]));
+      lv.setOn(Boolean.parseBoolean(lightValues[1]));
+      if (lightValues.length > 2) {
+        lv.setDimValue(Integer.parseInt(lightValues[2]));
+      }
 
-        try {
-            ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE, this.client.setSchedule(request));
-        } catch (final SoapFaultClientException ex) {
-            ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE, ex);
-        }
+      schedule.getLightValue().add(lv);
     }
 
-    /**
-     * Sends a Set Schedule request to the platform for a given device
-     * identification.
-     *
-     * @param requestParameters
-     *            The table with the request parameters.
-     * @throws Throwable
-     */
-    @When("^receiving a set light schedule request for (\\d+) schedules?$")
-    public void receivingASetLightScheduleRequestForSchedules(final Integer countSchedules,
-            final Map<String, String> requestParameters) throws Throwable {
-
-        this.callAddSchedule(requestParameters, countSchedules);
+    if (!triggerType.isEmpty()) {
+      schedule.setTriggerType(TriggerType.valueOf(triggerType));
     }
 
-    private void callAddSchedule(final Map<String, String> requestParameters, final Integer countSchedules)
-            throws Throwable {
+    if (StringUtils.isNotBlank(triggerWindow)) {
+      final String[] windowTypeValues = triggerWindow.split(",");
+      if (windowTypeValues.length == 2) {
+        final WindowType windowType = new WindowType();
+        windowType.setMinutesBefore(Integer.parseInt(windowTypeValues[0]));
+        windowType.setMinutesAfter(Integer.parseInt(windowTypeValues[1]));
 
-        final SetScheduleRequest request = new SetScheduleRequest();
-        request.setDeviceIdentification(
-                getString(requestParameters, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION,
-                        PlatformPubliclightingDefaults.DEFAULT_DEVICE_IDENTIFICATION));
-        if (requestParameters.containsKey(PlatformPubliclightingKeys.SCHEDULE_SCHEDULEDTIME)) {
-            request.setScheduledTime(DatatypeFactory.newInstance().newXMLGregorianCalendar(
-                    ((requestParameters.get(PlatformPubliclightingKeys.SCHEDULE_SCHEDULEDTIME).isEmpty())
-                            ? DateTime.now()
-                            : getDate(requestParameters, PlatformPubliclightingKeys.SCHEDULE_SCHEDULEDTIME))
-                                    .toDateTime(DateTimeZone.UTC).toGregorianCalendar()));
-        }
-
-        for (int i = 0; i < countSchedules; i++) {
-            this.addScheduleForRequest(request,
-                    getEnum(requestParameters, PlatformPubliclightingKeys.SCHEDULE_WEEKDAY, WeekDayType.class),
-                    getString(requestParameters, PlatformPubliclightingKeys.SCHEDULE_STARTDAY),
-                    getString(requestParameters, PlatformPubliclightingKeys.SCHEDULE_ENDDAY),
-                    getEnum(requestParameters, PlatformPubliclightingKeys.SCHEDULE_ACTIONTIME, ActionTimeType.class),
-                    getString(requestParameters, PlatformPubliclightingKeys.SCHEDULE_TIME),
-                    getString(requestParameters, PlatformPubliclightingKeys.SCHEDULE_LIGHTVALUES),
-                    getString(requestParameters, PlatformPubliclightingKeys.SCHEDULE_TRIGGERTYPE),
-                    getString(requestParameters, PlatformPubliclightingKeys.SCHEDULE_TRIGGERWINDOW));
-        }
-        try {
-            ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE, this.client.setSchedule(request));
-        } catch (final SoapFaultClientException ex) {
-            ScenarioContext.current().put(PlatformPubliclightingKeys.RESPONSE, ex);
-        }
+        schedule.setTriggerWindow(windowType);
+      }
     }
 
-    private void addScheduleForRequest(final SetScheduleRequest request, final WeekDayType weekDay,
-            final String startDay, final String endDay, final ActionTimeType actionTime, final String time,
-            final String scheduleLightValue, final String triggerType, final String triggerWindow)
-            throws DatatypeConfigurationException {
-        final Schedule schedule = new Schedule();
-        schedule.setWeekDay(weekDay);
-        if (StringUtils.isNotBlank(startDay)) {
-            schedule.setStartDay(DatatypeFactory.newInstance().newXMLGregorianCalendar(
-                    DateTime.parse(startDay).toDateTime(DateTimeZone.UTC).toGregorianCalendar()));
-        }
-        if (StringUtils.isNotBlank(endDay)) {
-            schedule.setEndDay(DatatypeFactory.newInstance().newXMLGregorianCalendar(
-                    DateTime.parse(endDay).toDateTime(DateTimeZone.UTC).toGregorianCalendar()));
-        }
-        schedule.setActionTime(actionTime);
-        schedule.setTime(time);
+    request.getSchedules().add(schedule);
+  }
 
-        for (final String lightValue : scheduleLightValue.split(";")) {
-            final LightValue lv = new LightValue();
-            final String[] lightValues = lightValue.split(",");
-            lv.setIndex(Integer.parseInt(lightValues[0]));
-            lv.setOn(Boolean.parseBoolean(lightValues[1]));
-            if (lightValues.length > 2) {
-                lv.setDimValue(Integer.parseInt(lightValues[2]));
-            }
+  @When("^receiving a set light schedule request by an unknown organization$")
+  public void receivingASetLightScheduleRequestByAnUnknownOrganization(
+      final Map<String, String> requestParameters) throws Throwable {
+    // Force the request being send to the platform as a given organization.
+    ScenarioContext.current()
+        .put(PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION, "unknown-organization");
 
-            schedule.getLightValue().add(lv);
-        }
+    this.receivingASetLightScheduleRequest(requestParameters);
+  }
 
-        if (!triggerType.isEmpty()) {
-            schedule.setTriggerType(TriggerType.valueOf(triggerType));
-        }
+  /**
+   * The check for the response from the Platform.
+   *
+   * @param expectedResponseData The table with the expected fields in the response.
+   * @apiNote The response will contain the correlation uid, so store that in the current scenario
+   *     context for later use.
+   * @throws Throwable
+   */
+  @Then("^the set light schedule async response contains$")
+  public void theSetLightScheduleAsyncResponseContains(
+      final Map<String, String> expectedResponseData) throws Throwable {
 
-        if (StringUtils.isNotBlank(triggerWindow)) {
-            final String[] windowTypeValues = triggerWindow.split(",");
-            if (windowTypeValues.length == 2) {
-                final WindowType windowType = new WindowType();
-                windowType.setMinutesBefore(Integer.parseInt(windowTypeValues[0]));
-                windowType.setMinutesAfter(Integer.parseInt(windowTypeValues[1]));
+    final SetScheduleAsyncResponse asyncResponse =
+        (SetScheduleAsyncResponse)
+            ScenarioContext.current().get(PlatformPubliclightingKeys.RESPONSE);
 
-                schedule.setTriggerWindow(windowType);
-            }
-        }
+    assertThat(asyncResponse.getAsyncResponse().getCorrelationUid()).isNotNull();
+    assertThat(asyncResponse.getAsyncResponse().getDeviceId())
+        .isEqualTo(
+            getString(expectedResponseData, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION));
 
-        request.getSchedules().add(schedule);
-    }
+    // Save the returned CorrelationUid in the Scenario related context for
+    // further use.
+    saveCorrelationUidInScenarioContext(
+        asyncResponse.getAsyncResponse().getCorrelationUid(),
+        getString(
+            expectedResponseData,
+            PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION,
+            PlatformPubliclightingDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
 
-    @When("^receiving a set light schedule request by an unknown organization$")
-    public void receivingASetLightScheduleRequestByAnUnknownOrganization(final Map<String, String> requestParameters)
-            throws Throwable {
-        // Force the request being send to the platform as a given organization.
-        ScenarioContext.current().put(PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION,
-                "unknown-organization");
+    LOGGER.info(
+        "Got CorrelationUid: ["
+            + ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID)
+            + "]");
+  }
 
-        this.receivingASetLightScheduleRequest(requestParameters);
-    }
+  @Then("^the set light schedule response contains soap fault$")
+  public void theSetLightScheduleResponseContainsSoapFault(
+      final Map<String, String> expectedResponseData) {
+    GenericResponseSteps.verifySoapFault(expectedResponseData);
+  }
 
-    /**
-     * The check for the response from the Platform.
-     *
-     * @param expectedResponseData
-     *            The table with the expected fields in the response.
-     * @apiNote The response will contain the correlation uid, so store that in
-     *          the current scenario context for later use.
-     * @throws Throwable
-     */
-    @Then("^the set light schedule async response contains$")
-    public void theSetLightScheduleAsyncResponseContains(final Map<String, String> expectedResponseData)
-            throws Throwable {
+  @Then("^the platform buffers a set light schedule response message for device \"([^\"]*)\"$")
+  public void thePlatformBuffersASetLightScheduleResponseMessageForDevice(
+      final String deviceIdentification, final Map<String, String> expectedResult)
+      throws Throwable {
+    final SetScheduleAsyncRequest request = new SetScheduleAsyncRequest();
+    final AsyncRequest asyncRequest = new AsyncRequest();
+    asyncRequest.setDeviceId(deviceIdentification);
+    asyncRequest.setCorrelationUid(
+        (String) ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID));
+    request.setAsyncRequest(asyncRequest);
 
-        final SetScheduleAsyncResponse asyncResponse = (SetScheduleAsyncResponse) ScenarioContext.current()
-                .get(PlatformPubliclightingKeys.RESPONSE);
-
-        assertThat(asyncResponse.getAsyncResponse().getCorrelationUid()).isNotNull();
-        assertThat(asyncResponse.getAsyncResponse().getDeviceId())
-                .isEqualTo(getString(expectedResponseData, PlatformPubliclightingKeys.KEY_DEVICE_IDENTIFICATION));
-
-        // Save the returned CorrelationUid in the Scenario related context for
-        // further use.
-        saveCorrelationUidInScenarioContext(asyncResponse.getAsyncResponse().getCorrelationUid(),
-                getString(expectedResponseData, PlatformPubliclightingKeys.KEY_ORGANIZATION_IDENTIFICATION,
-                        PlatformPubliclightingDefaults.DEFAULT_ORGANIZATION_IDENTIFICATION));
-
-        LOGGER.info("Got CorrelationUid: ["
-                + ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID) + "]");
-    }
-
-    @Then("^the set light schedule response contains soap fault$")
-    public void theSetLightScheduleResponseContainsSoapFault(final Map<String, String> expectedResponseData) {
-        GenericResponseSteps.verifySoapFault(expectedResponseData);
-    }
-
-    @Then("^the platform buffers a set light schedule response message for device \"([^\"]*)\"$")
-    public void thePlatformBuffersASetLightScheduleResponseMessageForDevice(final String deviceIdentification,
-            final Map<String, String> expectedResult) throws Throwable {
-        final SetScheduleAsyncRequest request = new SetScheduleAsyncRequest();
-        final AsyncRequest asyncRequest = new AsyncRequest();
-        asyncRequest.setDeviceId(deviceIdentification);
-        asyncRequest.setCorrelationUid(
-                (String) ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID));
-        request.setAsyncRequest(asyncRequest);
-
-        final SetScheduleResponse response = Wait.untilAndReturn(() -> {
-            try {
+    final SetScheduleResponse response =
+        Wait.untilAndReturn(
+            () -> {
+              try {
                 return this.client.getSetSchedule(request);
-            } catch (final SoapFaultClientException ex) {
+              } catch (final SoapFaultClientException ex) {
                 LOGGER.info("Received a SOAP fault on setSchedule");
                 if ("CorrelationUid is unknown.".equals(ex.getFaultStringOrReason())) {
-                    throw new Exception("Received a SOAP fault on setSchedule that could be rejected because the CorrelationUid is unknown");
+                  throw new Exception(
+                      "Received a SOAP fault on setSchedule that could be rejected because the CorrelationUid is unknown");
                 }
                 return null;
+              }
+            });
+
+    assertThat(response).isNotNull();
+    assertThat(response.getResult())
+        .isEqualTo(getEnum(expectedResult, PlatformKeys.KEY_RESULT, OsgpResultType.class));
+
+    if (expectedResult.containsKey(PlatformPubliclightingKeys.KEY_DESCRIPTION)) {
+      assertThat(response.getDescription())
+          .isEqualTo(
+              getString(
+                  expectedResult,
+                  PlatformPubliclightingKeys.KEY_DESCRIPTION,
+                  PlatformPubliclightingDefaults.DEFAULT_PUBLICLIGHTING_DESCRIPTION));
+    }
+  }
+
+  @Then(
+      "^the platform buffers a set light schedule response message for device \"([^\"]*)\" that contains a soap fault$")
+  public void thePlatformBuffersASetLightScheduleResponseMessageForDeviceContainsSoapFault(
+      final String deviceIdentification, final Map<String, String> expectedResponseData)
+      throws Throwable {
+    final SetScheduleAsyncRequest request = new SetScheduleAsyncRequest();
+    final AsyncRequest asyncRequest = new AsyncRequest();
+    asyncRequest.setDeviceId(deviceIdentification);
+    asyncRequest.setCorrelationUid(
+        (String) ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID));
+    request.setAsyncRequest(asyncRequest);
+
+    Wait.untilAndReturn(
+        () -> {
+          try {
+            this.client.getSetSchedule(request);
+          } catch (final SoapFaultClientException ex) {
+            LOGGER.info("Received a SOAP fault on setSchedule");
+            final String faultString = ex.getFaultStringOrReason();
+            if ("CorrelationUid is unknown.".equals(faultString)) {
+              throw new Exception(
+                  "Received a SOAP fault on setSchedule that could be rejected because the CorrelationUid is unknown");
             }
+            ScenarioContext.current().put(PlatformKeys.RESPONSE, ex);
+            return null;
+          }
+          throw new Exception("Received a setSchedule message without a SOAP fault");
         });
 
-        assertThat(response).isNotNull();
-        assertThat(response.getResult())
-                .isEqualTo(getEnum(expectedResult, PlatformKeys.KEY_RESULT, OsgpResultType.class));
-
-        if (expectedResult.containsKey(PlatformPubliclightingKeys.KEY_DESCRIPTION)) {
-            assertThat(response.getDescription())
-                    .isEqualTo(getString(expectedResult, PlatformPubliclightingKeys.KEY_DESCRIPTION,
-                            PlatformPubliclightingDefaults.DEFAULT_PUBLICLIGHTING_DESCRIPTION));
-        }
-    }
-
-    @Then("^the platform buffers a set light schedule response message for device \"([^\"]*)\" that contains a soap fault$")
-    public void thePlatformBuffersASetLightScheduleResponseMessageForDeviceContainsSoapFault(
-            final String deviceIdentification, final Map<String, String> expectedResponseData) throws Throwable {
-        final SetScheduleAsyncRequest request = new SetScheduleAsyncRequest();
-        final AsyncRequest asyncRequest = new AsyncRequest();
-        asyncRequest.setDeviceId(deviceIdentification);
-        asyncRequest.setCorrelationUid(
-                (String) ScenarioContext.current().get(PlatformPubliclightingKeys.KEY_CORRELATION_UID));
-        request.setAsyncRequest(asyncRequest);
-
-        Wait.untilAndReturn(() -> {
-            try {
-                this.client.getSetSchedule(request);
-            } catch (final SoapFaultClientException ex) {
-                LOGGER.info("Received a SOAP fault on setSchedule");
-                final String faultString = ex.getFaultStringOrReason();
-                if ("CorrelationUid is unknown.".equals(faultString)) {
-                    throw new Exception("Received a SOAP fault on setSchedule that could be rejected because the CorrelationUid is unknown");
-                }
-                ScenarioContext.current().put(PlatformKeys.RESPONSE, ex);
-                return null;
-            }
-            throw new Exception("Received a setSchedule message without a SOAP fault");
-        });
-
-        GenericResponseSteps.verifySoapFault(expectedResponseData);
-    }
+    GenericResponseSteps.verifySoapFault(expectedResponseData);
+  }
 }

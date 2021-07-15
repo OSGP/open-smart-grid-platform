@@ -1,9 +1,8 @@
-/**
+/*
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -27,27 +26,36 @@ import org.springframework.stereotype.Component;
 @Component
 public class CoupleMbusDeviceResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
-    @Autowired
-    private InstallationService installationService;
+  @Autowired private InstallationService installationService;
 
-    @Autowired
-    protected CoupleMbusDeviceResponseMessageProcessor(
-            WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
-        super(responseMessageSender, messageProcessorMap, MessageType.COUPLE_MBUS_DEVICE,
-                ComponentType.DOMAIN_SMART_METERING);
-    }
+  @Autowired
+  protected CoupleMbusDeviceResponseMessageProcessor(
+      final WebServiceResponseMessageSender responseMessageSender,
+      @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
+          final MessageProcessorMap messageProcessorMap) {
+    super(
+        responseMessageSender,
+        messageProcessorMap,
+        MessageType.COUPLE_MBUS_DEVICE,
+        ComponentType.DOMAIN_SMART_METERING);
+  }
 
-    @Override
-    protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
-        return responseMessage.getDataObject() instanceof MbusChannelElementsResponseDto;
-    }
+  @Override
+  protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
+    return responseMessage.getDataObject() instanceof MbusChannelElementsResponseDto;
+  }
 
-    @Override
-    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
-            final ResponseMessage responseMessage, final OsgpException osgpException) throws FunctionalException {
+  @Override
+  protected void handleMessage(
+      final DeviceMessageMetadata deviceMessageMetadata,
+      final ResponseMessage responseMessage,
+      final OsgpException osgpException)
+      throws FunctionalException {
 
-        this.installationService.handleCoupleMbusDeviceResponse(deviceMessageMetadata, responseMessage.getResult(),
-                responseMessage.getOsgpException(), (MbusChannelElementsResponseDto) responseMessage.getDataObject());
-    }
+    this.installationService.handleCoupleMbusDeviceResponse(
+        deviceMessageMetadata,
+        responseMessage.getResult(),
+        responseMessage.getOsgpException(),
+        (MbusChannelElementsResponseDto) responseMessage.getDataObject());
+  }
 }

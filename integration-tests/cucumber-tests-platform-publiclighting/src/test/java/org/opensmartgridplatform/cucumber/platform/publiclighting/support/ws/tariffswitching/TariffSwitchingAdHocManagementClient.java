@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform.publiclighting.support.ws.tariffswitching;
 
@@ -21,20 +22,21 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 @Component
 public class TariffSwitchingAdHocManagementClient extends BaseClient {
 
-    @Autowired
-    private DefaultWebServiceTemplateFactory tariffSwitchingAdHocManagementWstf;
+  @Autowired private DefaultWebServiceTemplateFactory tariffSwitchingAdHocManagementWstf;
 
-    public GetStatusAsyncResponse getStatus(final GetStatusRequest request) throws WebServiceSecurityException {
-        final WebServiceTemplate webServiceTemplate = this.tariffSwitchingAdHocManagementWstf
-                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
-        return (GetStatusAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
-    }
+  public GetStatusAsyncResponse getStatus(final GetStatusRequest request)
+      throws WebServiceSecurityException {
+    final WebServiceTemplate webServiceTemplate =
+        this.tariffSwitchingAdHocManagementWstf.getTemplate(
+            this.getOrganizationIdentification(), this.getUserName());
+    return (GetStatusAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
+  }
 
-    public GetStatusResponse getGetStatusResponse(final GetStatusAsyncRequest request)
-            throws WebServiceSecurityException {
-        final WebServiceTemplate webServiceTemplate = this.tariffSwitchingAdHocManagementWstf
-                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
-        return (GetStatusResponse) webServiceTemplate.marshalSendAndReceive(request);
-    }
-
+  public GetStatusResponse getGetStatusResponse(final GetStatusAsyncRequest request)
+      throws WebServiceSecurityException {
+    final WebServiceTemplate webServiceTemplate =
+        this.tariffSwitchingAdHocManagementWstf.getTemplate(
+            this.getOrganizationIdentification(), this.getUserName());
+    return (GetStatusResponse) webServiceTemplate.marshalSendAndReceive(request);
+  }
 }

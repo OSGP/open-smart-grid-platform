@@ -1,17 +1,18 @@
-/**
+/*
  * Copyright 2020 Alliander N.V.
  * Copyright 2012-20 Fraunhofer ISE
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * This file was originally part of jDLMS, where it was part of a group of classes residing in packages
- * org.openmuc.jdlms.interfaceclass, org.openmuc.jdlms.interfaceclass.attribute and org.openmuc.jdlms.interfaceclass.method
- * that have been deprecated for jDLMS since version 1.5.1.
+ * This file was originally part of jDLMS, where it was part of a group of classes residing in
+ * packages org.openmuc.jdlms.interfaceclass, org.openmuc.jdlms.interfaceclass.attribute and
+ * org.openmuc.jdlms.interfaceclass.method that have been deprecated for jDLMS since version 1.5.1.
  *
- * It has been copied to the GXF code base under the Apache License, Version 2.0 with the permission of Fraunhofer ISE.
- * For more information about jDLMS visit
+ * It has been copied to the GXF code base under the Apache License, Version 2.0 with the
+ * permission of Fraunhofer ISE. For more information about jDLMS visit
  *
  * http://www.openmuc.org
  */
@@ -19,87 +20,86 @@ package org.opensmartgridplatform.dlms.interfaceclass.attribute;
 
 import java.util.EnumMap;
 import java.util.Map;
-
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 
-/**
- * This class maps AttributeClass to an InterfaceClass.
- */
+/** This class maps AttributeClass to an InterfaceClass. */
 public class AttributeDirectory {
 
-    private static final Map<InterfaceClass, Class<? extends AttributeClass>> classes = new EnumMap<>(
-            InterfaceClass.class);
+  private static final Map<InterfaceClass, Class<? extends AttributeClass>> classes =
+      new EnumMap<>(InterfaceClass.class);
 
-    private AttributeDirectory() {
-        throw new AssertionError("Utility class");
+  private AttributeDirectory() {
+    throw new AssertionError("Utility class");
+  }
+
+  static {
+    classes.put(DataAttribute.INTERFACE_CLASS, DataAttribute.class);
+    classes.put(RegisterAttribute.INTERFACE_CLASS, RegisterAttribute.class);
+    classes.put(ExtendedRegisterAttribute.INTERFACE_CLASS, ExtendedRegisterAttribute.class);
+    classes.put(DemandRegisterAttribute.INTERFACE_CLASS, DemandRegisterAttribute.class);
+    classes.put(RegisterActivationAttribute.INTERFACE_CLASS, RegisterActivationAttribute.class);
+    classes.put(ProfileGenericAttribute.INTERFACE_CLASS, ProfileGenericAttribute.class);
+    classes.put(ClockAttribute.INTERFACE_CLASS, ClockAttribute.class);
+    classes.put(ScriptTableAttribute.INTERFACE_CLASS, ScriptTableAttribute.class);
+    classes.put(ScheduleAttribute.INTERFACE_CLASS, ScheduleAttribute.class);
+    classes.put(SpecialDaysTableAttribute.INTERFACE_CLASS, SpecialDaysTableAttribute.class);
+    classes.put(ActivityCalendarAttribute.INTERFACE_CLASS, ActivityCalendarAttribute.class);
+    classes.put(AssociationLnAttribute.INTERFACE_CLASS, AssociationLnAttribute.class);
+    classes.put(AssociationSnAttribute.INTERFACE_CLASS, AssociationSnAttribute.class);
+    classes.put(SapAssignmentAttribute.INTERFACE_CLASS, SapAssignmentAttribute.class);
+    classes.put(ImageTransferAttribute.INTERFACE_CLASS, ImageTransferAttribute.class);
+    classes.put(RegisterMonitorAttribute.INTERFACE_CLASS, RegisterMonitorAttribute.class);
+    classes.put(UtilityTablesAttribute.INTERFACE_CLASS, UtilityTablesAttribute.class);
+    classes.put(SingleActionScheduleAttribute.INTERFACE_CLASS, SingleActionScheduleAttribute.class);
+    classes.put(RegisterTableAttribute.INTERFACE_CLASS, RegisterTableAttribute.class);
+    classes.put(StatusMappingAttribute.INTERFACE_CLASS, StatusMappingAttribute.class);
+    classes.put(DisconnectControlAttribute.INTERFACE_CLASS, DisconnectControlAttribute.class);
+    classes.put(MbusClientAttribute.INTERFACE_CLASS, MbusClientAttribute.class);
+
+    // Protocol related interface classes
+    classes.put(IecLocalPortSetupAttribute.INTERFACE_CLASS, IecLocalPortSetupAttribute.class);
+    classes.put(ModemConfigurationAttribute.INTERFACE_CLASS, ModemConfigurationAttribute.class);
+    classes.put(AutoAnswerAttribute.INTERFACE_CLASS, AutoAnswerAttribute.class);
+    classes.put(AutoConnectAttribute.INTERFACE_CLASS, AutoConnectAttribute.class);
+    classes.put(IecHdlcSetupClassAttribute.INTERFACE_CLASS, IecHdlcSetupClassAttribute.class);
+    classes.put(IecTwistedPairAttribute.INTERFACE_CLASS, IecTwistedPairAttribute.class);
+    classes.put(TcpUdpSetupAttribute.INTERFACE_CLASS, TcpUdpSetupAttribute.class);
+    classes.put(Ipv4SetupAttribute.INTERFACE_CLASS, Ipv4SetupAttribute.class);
+    classes.put(EthernetSetupAttribute.INTERFACE_CLASS, EthernetSetupAttribute.class);
+    classes.put(PppSetupAttribute.INTERFACE_CLASS, PppSetupAttribute.class);
+    classes.put(GprsModemSetupAttribute.INTERFACE_CLASS, GprsModemSetupAttribute.class);
+    classes.put(SmtpSetupAttribute.INTERFACE_CLASS, SmtpSetupAttribute.class);
+    classes.put(SecuritySetupAttribute.INTERFACE_CLASS, SecuritySetupAttribute.class);
+  }
+
+  public static AttributeClass attributeClassFor(
+      final InterfaceClass interfaceClass, final int attributeId)
+      throws AttributeNotFoundException {
+
+    if (interfaceClass == InterfaceClass.UNKNOWN) {
+      throw new AttributeNotFoundException("Interfaceclass is UNKNOWN");
     }
 
-    static {
-        classes.put(DataAttribute.INTERFACE_CLASS, DataAttribute.class);
-        classes.put(RegisterAttribute.INTERFACE_CLASS, RegisterAttribute.class);
-        classes.put(ExtendedRegisterAttribute.INTERFACE_CLASS, ExtendedRegisterAttribute.class);
-        classes.put(DemandRegisterAttribute.INTERFACE_CLASS, DemandRegisterAttribute.class);
-        classes.put(RegisterActivationAttribute.INTERFACE_CLASS, RegisterActivationAttribute.class);
-        classes.put(ProfileGenericAttribute.INTERFACE_CLASS, ProfileGenericAttribute.class);
-        classes.put(ClockAttribute.INTERFACE_CLASS, ClockAttribute.class);
-        classes.put(ScriptTableAttribute.INTERFACE_CLASS, ScriptTableAttribute.class);
-        classes.put(ScheduleAttribute.INTERFACE_CLASS, ScheduleAttribute.class);
-        classes.put(SpecialDaysTableAttribute.INTERFACE_CLASS, SpecialDaysTableAttribute.class);
-        classes.put(ActivityCalendarAttribute.INTERFACE_CLASS, ActivityCalendarAttribute.class);
-        classes.put(AssociationLnAttribute.INTERFACE_CLASS, AssociationLnAttribute.class);
-        classes.put(AssociationSnAttribute.INTERFACE_CLASS, AssociationSnAttribute.class);
-        classes.put(SapAssignmentAttribute.INTERFACE_CLASS, SapAssignmentAttribute.class);
-        classes.put(ImageTransferAttribute.INTERFACE_CLASS, ImageTransferAttribute.class);
-        classes.put(RegisterMonitorAttribute.INTERFACE_CLASS, RegisterMonitorAttribute.class);
-        classes.put(UtilityTablesAttribute.INTERFACE_CLASS, UtilityTablesAttribute.class);
-        classes.put(SingleActionScheduleAttribute.INTERFACE_CLASS, SingleActionScheduleAttribute.class);
-        classes.put(RegisterTableAttribute.INTERFACE_CLASS, RegisterTableAttribute.class);
-        classes.put(StatusMappingAttribute.INTERFACE_CLASS, StatusMappingAttribute.class);
-        classes.put(DisconnectControlAttribute.INTERFACE_CLASS, DisconnectControlAttribute.class);
-        classes.put(MbusClientAttribute.INTERFACE_CLASS, MbusClientAttribute.class);
+    final Class<? extends AttributeClass> attributeClassClass = classes.get(interfaceClass);
 
-        // Protocol related interface classes
-        classes.put(IecLocalPortSetupAttribute.INTERFACE_CLASS, IecLocalPortSetupAttribute.class);
-        classes.put(ModemConfigurationAttribute.INTERFACE_CLASS, ModemConfigurationAttribute.class);
-        classes.put(AutoAnswerAttribute.INTERFACE_CLASS, AutoAnswerAttribute.class);
-        classes.put(AutoConnectAttribute.INTERFACE_CLASS, AutoConnectAttribute.class);
-        classes.put(IecHdlcSetupClassAttribute.INTERFACE_CLASS, IecHdlcSetupClassAttribute.class);
-        classes.put(IecTwistedPairAttribute.INTERFACE_CLASS, IecTwistedPairAttribute.class);
-        classes.put(TcpUdpSetupAttribute.INTERFACE_CLASS, TcpUdpSetupAttribute.class);
-        classes.put(Ipv4SetupAttribute.INTERFACE_CLASS, Ipv4SetupAttribute.class);
-        classes.put(EthernetSetupAttribute.INTERFACE_CLASS, EthernetSetupAttribute.class);
-        classes.put(PppSetupAttribute.INTERFACE_CLASS, PppSetupAttribute.class);
-        classes.put(GprsModemSetupAttribute.INTERFACE_CLASS, GprsModemSetupAttribute.class);
-        classes.put(SmtpSetupAttribute.INTERFACE_CLASS, SmtpSetupAttribute.class);
-        classes.put(SecuritySetupAttribute.INTERFACE_CLASS, SecuritySetupAttribute.class);
-
+    for (final AttributeClass attributeClass : attributeClassClass.getEnumConstants()) {
+      if (attributeClass.attributeId() == attributeId) {
+        return attributeClass;
+      }
     }
 
-    public static AttributeClass attributeClassFor(final InterfaceClass interfaceClass, final int attributeId)
-            throws AttributeNotFoundException {
+    throw new AttributeNotFoundException(
+        String.format(
+            "Attribute with ID %d not found in interfaceclass %s.",
+            attributeId, interfaceClass.name()));
+  }
 
-        if (interfaceClass == InterfaceClass.UNKNOWN) {
-            throw new AttributeNotFoundException("Interfaceclass is UNKNOWN");
-        }
+  public static class AttributeNotFoundException extends Exception {
 
-        final Class<? extends AttributeClass> attributeClassClass = classes.get(interfaceClass);
+    private static final long serialVersionUID = 5973793893150244347L;
 
-        for (final AttributeClass attributeClass : attributeClassClass.getEnumConstants()) {
-            if (attributeClass.attributeId() == attributeId) {
-                return attributeClass;
-            }
-        }
-
-        throw new AttributeNotFoundException(String.format("Attribute with ID %d not found in interfaceclass %s.",
-                attributeId, interfaceClass.name()));
+    public AttributeNotFoundException(final String message) {
+      super(message);
     }
-
-    public static class AttributeNotFoundException extends Exception {
-
-        private static final long serialVersionUID = 5973793893150244347L;
-
-        public AttributeNotFoundException(final String message) {
-            super(message);
-        }
-    }
+  }
 }

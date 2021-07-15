@@ -4,6 +4,7 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:bun="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-bundle/2014/10"
             xmlns:con="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-configuration/2014/10"
+            xmlns:ins="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-installation/2014/10"
             xmlns:adm="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-administration"
             xmlns:tns="http://www.opensmartgridplatform.org/schemas/smartmetering/external-interface"
             attributeFormDefault="qualified" elementFormDefault="qualified"
@@ -14,6 +15,9 @@
 
   <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-configuration/2014/10"
               schemaLocation="sm-configuration.xsd"/>
+
+  <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-installation/2014/10"
+              schemaLocation="sm-installation.xsd"/>
 
   <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-administration"
               schemaLocation="sm-administration.xsd"/>
@@ -27,11 +31,13 @@
           <!-- requests from P4/P5 -->
           <xsd:element ref="bun:GetPeriodicMeterReadsRequest"/>
           <xsd:element ref="bun:GetPowerQualityProfileRequest"/>
+          <xsd:element ref="bun:GetActualPowerQualityRequest"/>
           <xsd:element ref="bun:GetOutagesRequest"/>
           <xsd:element ref="bun:GetActualMeterReadsRequest"/>
           <xsd:element ref="bun:GetActualMeterReadsGasRequest"/>
           <xsd:element ref="adm:SetMaintenanceStateRequest"/>
           <xsd:element ref="bun:SynchronizeTimeRequest"/>
+          <xsd:element ref="ins:DecoupleMbusDeviceByChannelRequest"/>
         </xsd:choice>
       </xsd:sequence>
     </xsd:complexType>
@@ -47,11 +53,13 @@
           <!-- responses to P4/P5 -->
           <xsd:element ref="bun:PeriodicMeterReadsResponse"/>
           <xsd:element ref="bun:GetPowerQualityProfileResponse"/>
+          <xsd:element ref="bun:ActualPowerQualityResponse"/>
           <xsd:element ref="bun:GetOutagesResponse"/>
           <xsd:element ref="bun:ActualMeterReadsResponse"/>
           <xsd:element ref="bun:ActualMeterReadsGasResponse"/>
           <xsd:element ref="con:GetPushNotificationAlarmResponse"/>
           <xsd:element ref="bun:FindEventsResponse"/>
+          <xsd:element ref="ins:DecoupleMbusDeviceByChannelResponse"/>
           <xsd:element ref="bun:ActionResponse"/>
           <xsd:element ref="bun:FaultResponse"/>
         </xsd:choice>

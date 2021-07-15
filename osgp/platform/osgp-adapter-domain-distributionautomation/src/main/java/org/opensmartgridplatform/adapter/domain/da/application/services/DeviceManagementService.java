@@ -1,9 +1,8 @@
-/**
+/*
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -30,106 +29,125 @@ import org.springframework.stereotype.Service;
 @Service(value = "domainDistributionAutomationDeviceManagementService")
 public class DeviceManagementService extends BaseService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
 
-    @Autowired
-    private DomainDistributionAutomationMapper mapper;
+  @Autowired private DomainDistributionAutomationMapper mapper;
 
-    @Autowired
-    private RtuDeviceService rtuDeviceService;
+  @Autowired private RtuDeviceService rtuDeviceService;
 
-    @Autowired
-    private RtuResponseService rtuResponseService;
+  @Autowired private RtuResponseService rtuResponseService;
 
-    /**
-     * Constructor
-     */
-    public DeviceManagementService() {
-        // Parameterless constructor required for transactions...
+  /** Constructor */
+  public DeviceManagementService() {
+    // Parameterless constructor required for transactions...
+  }
+
+  public void getHealthStatus(
+      final String organisationIdentification,
+      final String deviceIdentification,
+      final String correlationUid,
+      final String messageType,
+      final GetHealthStatusRequest getHealthStatusRequest)
+      throws FunctionalException {
+
+    LOGGER.info(
+        "Get Health Status for device [{}] with correlation id [{}]",
+        deviceIdentification,
+        correlationUid);
+
+    this.findOrganisation(organisationIdentification);
+    final Device device = this.findActiveDevice(deviceIdentification);
+
+    final GetHealthStatusRequestDto dto =
+        this.mapper.map(getHealthStatusRequest, GetHealthStatusRequestDto.class);
+
+    this.osgpCoreRequestMessageSender.send(
+        new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, dto),
+        messageType,
+        device.getIpAddress());
+  }
+
+  public void handleInternalHealthStatusResponse(
+      final GetHealthStatusResponseDto getHealthStatusResponseDto,
+      final String deviceIdentification,
+      final String organisationIdentification,
+      final String correlationUid,
+      final String messageType) {
+
+    LOGGER.info("handleResponse for MessageType: {}", messageType);
+
+    final GetHealthStatusResponse getHealthStatusResponse =
+        this.mapper.map(getHealthStatusResponseDto, GetHealthStatusResponse.class);
+
+    final ResponseMessage responseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withCorrelationUid(correlationUid)
+            .withOrganisationIdentification(organisationIdentification)
+            .withDeviceIdentification(deviceIdentification)
+            .withMessageType(messageType)
+            .withResult(ResponseMessageResultType.OK)
+            .withDataObject(getHealthStatusResponse)
+            .build();
+    this.responseMessageRouter.send(responseMessage, messageType);
+  }
+
+  public void handleHealthStatusResponse(
+      final GetHealthStatusResponseDto getHealthStatusResponseDto,
+      final String deviceIdentification,
+      final String organisationIdentification,
+      final String correlationUid,
+      final String messageType,
+      final ResponseMessageResultType responseMessageResultType,
+      final OsgpException osgpException) {
+
+    LOGGER.info("handleResponse for MessageType: {}", messageType);
+
+    ResponseMessageResultType result = ResponseMessageResultType.OK;
+    GetHealthStatusResponse getHealthStatusResponse = null;
+    OsgpException exception = null;
+
+    try {
+      if (responseMessageResultType == ResponseMessageResultType.NOT_OK || osgpException != null) {
+        LOGGER.error("Device Response not ok.", osgpException);
+        throw osgpException;
+      }
+
+      this.rtuResponseService.handleResponseMessageReceived(LOGGER, deviceIdentification);
+
+      getHealthStatusResponse =
+          this.mapper.map(getHealthStatusResponseDto, GetHealthStatusResponse.class);
+
+    } catch (final Exception e) {
+      LOGGER.error("Unexpected Exception", e);
+      result = ResponseMessageResultType.NOT_OK;
+      exception =
+          this.ensureOsgpException(
+              e, "Exception occurred while getting Health Status Response Data");
     }
 
-    public void getHealthStatus(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final String messageType, final GetHealthStatusRequest getHealthStatusRequest)
-            throws FunctionalException {
+    final ResponseMessage responseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withCorrelationUid(correlationUid)
+            .withOrganisationIdentification(organisationIdentification)
+            .withDeviceIdentification(deviceIdentification)
+            .withMessageType(messageType)
+            .withResult(result)
+            .withOsgpException(exception)
+            .withDataObject(getHealthStatusResponse)
+            .build();
+    this.responseMessageRouter.send(responseMessage, messageType);
+  }
 
-        LOGGER.info("Get Health Status for device [{}] with correlation id [{}]", deviceIdentification, correlationUid);
-
-        this.findOrganisation(organisationIdentification);
-        final Device device = this.findActiveDevice(deviceIdentification);
-
-        final GetHealthStatusRequestDto dto = this.mapper.map(getHealthStatusRequest, GetHealthStatusRequestDto.class);
-
-        this.osgpCoreRequestMessageSender.send(
-                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, dto), messageType,
-                device.getIpAddress());
-    }
-
-    public void handleInternalHealthStatusResponse(final GetHealthStatusResponseDto getHealthStatusResponseDto,
-            final String deviceIdentification, final String organisationIdentification, final String correlationUid,
-            final String messageType) {
-
-        LOGGER.info("handleResponse for MessageType: {}", messageType);
-
-        final GetHealthStatusResponse getHealthStatusResponse = this.mapper.map(getHealthStatusResponseDto,
-                GetHealthStatusResponse.class);
-
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(correlationUid)
-                .withOrganisationIdentification(organisationIdentification)
-                .withDeviceIdentification(deviceIdentification)
-                .withMessageType(messageType)
-                .withResult(ResponseMessageResultType.OK)
-                .withDataObject(getHealthStatusResponse)
-                .build();
-        this.responseMessageRouter.send(responseMessage, messageType);
-    }
-
-    public void handleHealthStatusResponse(final GetHealthStatusResponseDto getHealthStatusResponseDto,
-            final String deviceIdentification, final String organisationIdentification, final String correlationUid,
-            final String messageType, final ResponseMessageResultType responseMessageResultType,
-            final OsgpException osgpException) {
-
-        LOGGER.info("handleResponse for MessageType: {}", messageType);
-
-        ResponseMessageResultType result = ResponseMessageResultType.OK;
-        GetHealthStatusResponse getHealthStatusResponse = null;
-        OsgpException exception = null;
-
-        try {
-            if (responseMessageResultType == ResponseMessageResultType.NOT_OK || osgpException != null) {
-                LOGGER.error("Device Response not ok.", osgpException);
-                throw osgpException;
-            }
-
-            this.rtuResponseService.handleResponseMessageReceived(LOGGER, deviceIdentification);
-
-            getHealthStatusResponse = this.mapper.map(getHealthStatusResponseDto, GetHealthStatusResponse.class);
-
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected Exception", e);
-            result = ResponseMessageResultType.NOT_OK;
-            exception = this.ensureOsgpException(e, "Exception occurred while getting Health Status Response Data");
-        }
-
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(correlationUid)
-                .withOrganisationIdentification(organisationIdentification)
-                .withDeviceIdentification(deviceIdentification)
-                .withMessageType(messageType)
-                .withResult(result)
-                .withOsgpException(exception)
-                .withDataObject(getHealthStatusResponse)
-                .build();
-        this.responseMessageRouter.send(responseMessage, messageType);
-    }
-
-    public void addDevice(final DeviceMessageMetadata deviceMessageMetadata,
-            final AddRtuDeviceRequest addRtuDeviceRequest) throws FunctionalException {
-        final String organisationIdentification = deviceMessageMetadata.getOrganisationIdentification();
-        final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
-        LOGGER.debug("addDevice for organisationIdentification: {} for deviceIdentification: {}",
-                organisationIdentification, deviceIdentification);
-        this.rtuDeviceService.storeRtuDevice(organisationIdentification, addRtuDeviceRequest);
-    }
-
+  public void addDevice(
+      final DeviceMessageMetadata deviceMessageMetadata,
+      final AddRtuDeviceRequest addRtuDeviceRequest)
+      throws FunctionalException {
+    final String organisationIdentification = deviceMessageMetadata.getOrganisationIdentification();
+    final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
+    LOGGER.debug(
+        "addDevice for organisationIdentification: {} for deviceIdentification: {}",
+        organisationIdentification,
+        deviceIdentification);
+    this.rtuDeviceService.storeRtuDevice(organisationIdentification, addRtuDeviceRequest);
+  }
 }

@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.config;
 
@@ -27,58 +28,71 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
-/**
- * An application context Java configuration class.
- */
+/** An application context Java configuration class. */
 @Configuration
-@ComponentScan(basePackages = { "org.opensmartgridplatform.shared.domain.services",
-        "org.opensmartgridplatform.domain.core", "org.opensmartgridplatform.adapter.ws.smartmetering",
-        "org.opensmartgridplatform.logging.domain", "org.opensmartgridplatform.adapter.ws.shared.services",
-        "org.opensmartgridplatform.adapter.ws.mapping", "org.opensmartgridplatform.shared.application.config" })
+@ComponentScan(
+    basePackages = {
+      "org.opensmartgridplatform.shared.domain.services",
+      "org.opensmartgridplatform.domain.core",
+      "org.opensmartgridplatform.adapter.ws.smartmetering",
+      "org.opensmartgridplatform.logging.domain",
+      "org.opensmartgridplatform.adapter.ws.shared.services",
+      "org.opensmartgridplatform.adapter.ws.mapping",
+      "org.opensmartgridplatform.shared.application.config"
+    })
 @EnableTransactionManagement()
 @ImportResource("classpath:applicationContext.xml")
-@Import({ PersistenceConfigWs.class, PersistenceConfigCore.class, MessagingConfig.class, WebServiceConfig.class,
-        SmartmeteringWebServiceConfig.class })
+@Import({
+  PersistenceConfigWs.class,
+  PersistenceConfigCore.class,
+  MessagingConfig.class,
+  WebServiceConfig.class,
+  SmartmeteringWebServiceConfig.class
+})
 @PropertySource("classpath:osgp-adapter-ws-smartmetering.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true)
 public class ApplicationContext extends AbstractConfig {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
 
-    @Bean
-    public LocalValidatorFactoryBean validator() {
-        LOGGER.debug("Initializing Local Validator Factory Bean");
-        final LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
-        final org.springframework.core.io.Resource[] resources = { new ClassPathResource("constraint-mappings.xml") };
-        localValidatorFactoryBean.setMappingLocations(resources);
-        return localValidatorFactoryBean;
-    }
+  @Bean
+  public LocalValidatorFactoryBean validator() {
+    LOGGER.debug("Initializing Local Validator Factory Bean");
+    final LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
+    final org.springframework.core.io.Resource[] resources = {
+      new ClassPathResource("constraint-mappings.xml")
+    };
+    localValidatorFactoryBean.setMappingLocations(resources);
+    return localValidatorFactoryBean;
+  }
 
-    @Bean
-    public MethodValidationPostProcessor methodValidationPostProcessor() {
-        LOGGER.debug("Initializing Method Validation Post Processor Bean");
+  @Bean
+  public MethodValidationPostProcessor methodValidationPostProcessor() {
+    LOGGER.debug("Initializing Method Validation Post Processor Bean");
 
-        final MethodValidationPostProcessor m = new MethodValidationPostProcessor();
-        m.setValidatorFactory(this.validator());
-        return m;
-    }
+    final MethodValidationPostProcessor m = new MethodValidationPostProcessor();
+    m.setValidatorFactory(this.validator());
+    return m;
+  }
 
-    @Bean
-    public EventSpecifications eventSpecifications() {
-        return new JpaEventSpecifications();
-    }
+  @Bean
+  public EventSpecifications eventSpecifications() {
+    return new JpaEventSpecifications();
+  }
 
-    @Bean
-    public static PropertySourcesPlaceholderConfigurer placeholderConfigurer() {
-        final PropertySourcesPlaceholderConfigurer propertySource = new PropertySourcesPlaceholderConfigurer();
-        propertySource.setIgnoreUnresolvablePlaceholders(true);
-        return propertySource;
-    }
+  @Bean
+  public static PropertySourcesPlaceholderConfigurer placeholderConfigurer() {
+    final PropertySourcesPlaceholderConfigurer propertySource =
+        new PropertySourcesPlaceholderConfigurer();
+    propertySource.setIgnoreUnresolvablePlaceholders(true);
+    return propertySource;
+  }
 
-    @Bean
-    public PagingSettings pagingSettings(@Value("${paging.maximum.pagesize}") final int maximumPageSize,
-            @Value("${paging.default.pagesize}") final int defaultPageSize) {
-        return new PagingSettings(maximumPageSize, defaultPageSize);
-    }
+  @Bean
+  public PagingSettings pagingSettings(
+      @Value("${paging.maximum.pagesize}") final int maximumPageSize,
+      @Value("${paging.default.pagesize}") final int defaultPageSize) {
+    return new PagingSettings(maximumPageSize, defaultPageSize);
+  }
 }

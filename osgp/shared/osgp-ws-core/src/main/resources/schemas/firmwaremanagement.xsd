@@ -529,6 +529,7 @@
       <xsd:element name="ModuleVersionMbus" type="xsd:string" minOccurs="0" />
       <xsd:element name="ModuleVersionSec" type="xsd:string" minOccurs="0" />
       <xsd:element name="ModuleVersionMBusDriverActive" type="xsd:string" minOccurs="0" />
+      <xsd:element name="ModuleVersionSimple" type="xsd:string" minOccurs="0"/>
     </xsd:sequence>
   </xsd:complexType>
 
@@ -541,6 +542,7 @@
       <xsd:enumeration value="MODULE_ACTIVE" />
       <xsd:enumeration value="ACTIVE_FIRMWARE" />
       <xsd:enumeration value="M_BUS_DRIVER_ACTIVE" />
+      <xsd:enumeration value="SIMPLE_VERSION_INFO"/>
     </xsd:restriction>
   </xsd:simpleType>
 

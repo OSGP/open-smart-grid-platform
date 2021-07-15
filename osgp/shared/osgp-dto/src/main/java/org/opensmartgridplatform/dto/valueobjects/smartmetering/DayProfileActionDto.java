@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
@@ -11,66 +12,69 @@ import java.io.Serializable;
 
 public class DayProfileActionDto implements Comparable<DayProfileActionDto>, Serializable {
 
-    private static final long serialVersionUID = 3913348299915167189L;
+  private static final long serialVersionUID = 3913348299915167189L;
 
-    private Integer scriptSelector;
+  private Integer scriptSelector;
 
-    private CosemTimeDto startTime;
+  private CosemTimeDto startTime;
 
-    public DayProfileActionDto(final Integer scriptSelector, final CosemTimeDto startTime) {
-        this.scriptSelector = scriptSelector;
-        this.startTime = new CosemTimeDto(startTime);
+  public DayProfileActionDto(final Integer scriptSelector, final CosemTimeDto startTime) {
+    this.scriptSelector = scriptSelector;
+    this.startTime = new CosemTimeDto(startTime);
+  }
+
+  public Integer getScriptSelector() {
+    return this.scriptSelector;
+  }
+
+  public CosemTimeDto getStartTime() {
+    return new CosemTimeDto(this.startTime);
+  }
+
+  @Override
+  public String toString() {
+    return "DayProfileAction [scriptSelector="
+        + this.scriptSelector
+        + ", startTime="
+        + this.startTime
+        + "]";
+  }
+
+  @Override
+  public int compareTo(final DayProfileActionDto other) {
+    final int rank = this.scriptSelector.compareTo(other.scriptSelector);
+    if (rank != 0) {
+      return rank;
     }
+    return this.startTime.compareTo(other.startTime);
+  }
 
-    public Integer getScriptSelector() {
-        return this.scriptSelector;
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + this.startTime.hashCode();
+    return result;
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (this == obj) {
+      return true;
     }
-
-    public CosemTimeDto getStartTime() {
-        return new CosemTimeDto(this.startTime);
+    if (obj == null) {
+      return false;
     }
-
-    @Override
-    public String toString() {
-        return "DayProfileAction [scriptSelector=" + this.scriptSelector + ", startTime=" + this.startTime + "]";
+    if (this.getClass() != obj.getClass()) {
+      return false;
     }
-
-    @Override
-    public int compareTo(final DayProfileActionDto other) {
-        final int rank = this.scriptSelector.compareTo(other.scriptSelector);
-        if (rank != 0) {
-            return rank;
-        }
-        return this.startTime.compareTo(other.startTime);
+    final DayProfileActionDto other = (DayProfileActionDto) obj;
+    if (!this.scriptSelector.equals(other.scriptSelector)) {
+      return false;
     }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + this.startTime.hashCode();
-        return result;
+    if (!this.startTime.equals(other.startTime)) {
+      return false;
     }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (this.getClass() != obj.getClass()) {
-            return false;
-        }
-        final DayProfileActionDto other = (DayProfileActionDto) obj;
-        if (!this.scriptSelector.equals(other.scriptSelector)) {
-            return false;
-        }
-        if (!this.startTime.equals(other.startTime)) {
-            return false;
-        }
-        return true;
-    }
-
+    return true;
+  }
 }

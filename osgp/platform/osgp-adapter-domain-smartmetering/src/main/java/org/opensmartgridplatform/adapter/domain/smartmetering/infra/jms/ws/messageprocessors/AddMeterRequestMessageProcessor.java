@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.messageprocessors;
 
@@ -21,22 +22,24 @@ import org.springframework.stereotype.Component;
 @Component
 public class AddMeterRequestMessageProcessor extends BaseRequestMessageProcessor {
 
-    @Autowired
-    @Qualifier("domainSmartMeteringInstallationService")
-    private InstallationService installationService;
+  @Autowired
+  @Qualifier("domainSmartMeteringInstallationService")
+  private InstallationService installationService;
 
-    @Autowired
-    protected AddMeterRequestMessageProcessor(
-            @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
-        super(messageProcessorMap, MessageType.ADD_METER);
-    }
+  @Autowired
+  protected AddMeterRequestMessageProcessor(
+      @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
+          final MessageProcessorMap messageProcessorMap) {
+    super(messageProcessorMap, MessageType.ADD_METER);
+  }
 
-    @Override
-    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
-            throws FunctionalException {
+  @Override
+  protected void handleMessage(
+      final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
+      throws FunctionalException {
 
-        final AddSmartMeterRequest addSmartMeterRequest = (AddSmartMeterRequest) dataObject;
+    final AddSmartMeterRequest addSmartMeterRequest = (AddSmartMeterRequest) dataObject;
 
-        this.installationService.addMeter(deviceMessageMetadata, addSmartMeterRequest);
-    }
+    this.installationService.addMeter(deviceMessageMetadata, addSmartMeterRequest);
+  }
 }

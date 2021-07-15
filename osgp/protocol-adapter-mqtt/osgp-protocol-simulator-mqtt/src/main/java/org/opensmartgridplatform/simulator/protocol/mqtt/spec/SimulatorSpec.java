@@ -10,41 +10,41 @@ package org.opensmartgridplatform.simulator.protocol.mqtt.spec;
 
 public class SimulatorSpec {
 
-    private String brokerHost;
-    private int brokerPort;
-    private int startupPauseMillis;
-    private Message[] messages;
+  private String brokerHost;
+  private int brokerPort;
+  private int startupPauseMillis;
+  private Message[] messages;
 
-    public SimulatorSpec() {
-        // when instantiated from JSON
-    }
+  public SimulatorSpec() {
+    // when instantiated from JSON
+  }
 
-    public SimulatorSpec(final String brokerHost, final int brokerPort) {
-        this.brokerHost = brokerHost;
-        this.brokerPort = brokerPort;
-    }
+  public SimulatorSpec(final String brokerHost, final int brokerPort) {
+    this.brokerHost = brokerHost;
+    this.brokerPort = brokerPort;
+  }
 
-    public void setStartupPauseMillis(final int startupPauseMillis) {
-        this.startupPauseMillis = startupPauseMillis;
-    }
+  public void setStartupPauseMillis(final int startupPauseMillis) {
+    this.startupPauseMillis = startupPauseMillis;
+  }
 
-    public void setMessages(final Message[] messages) {
-        this.messages = messages;
-    }
+  public void setMessages(final Message[] messages) {
+    this.messages = messages;
+  }
 
-    public String getBrokerHost() {
-        return this.brokerHost;
-    }
+  public String getBrokerHost() {
+    return this.brokerHost;
+  }
 
-    public int getBrokerPort() {
-        return this.brokerPort;
-    }
+  public int getBrokerPort() {
+    return this.brokerPort;
+  }
 
-    public int getStartupPauseMillis() {
-        return this.startupPauseMillis;
-    }
+  public int getStartupPauseMillis() {
+    return this.startupPauseMillis;
+  }
 
-    public Message[] getMessages() {
-        return this.messages;
-    }
+  public Message[] getMessages() {
+    return this.messages;
+  }
 }

@@ -1,11 +1,11 @@
-/**
+/*
  * Copyright 2020 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
-
 package org.opensmartgridplatform.adapter.domain.core.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,121 +27,125 @@ import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 
 public class DefaultDeviceResponseServiceTest {
 
-    @Mock
-    private WebServiceResponseMessageSender webServiceResponseMessageSender;
+  @Mock private WebServiceResponseMessageSender webServiceResponseMessageSender;
 
-    @InjectMocks
-    private DefaultDeviceResponseService defaultDeviceResponseService;
+  @InjectMocks private DefaultDeviceResponseService defaultDeviceResponseService;
 
-    private static final CorrelationIds IDS = new CorrelationIds("orginazationTestId", "deviceIdTest",
-            "correlationUid");
-    private static final String MESSAGE_TYPE = "Warning";
-    private static final int MESSAGE_PRIORITY = 3;
+  private static final CorrelationIds IDS =
+      new CorrelationIds("orginazationTestId", "deviceIdTest", "correlationUid");
+  private static final String MESSAGE_TYPE = "Warning";
+  private static final int MESSAGE_PRIORITY = 3;
 
-    @BeforeEach
-    public void initMocks() {
-        MockitoAnnotations.initMocks(this);
-    }
+  @BeforeEach
+  public void initMocks() {
+    MockitoAnnotations.initMocks(this);
+  }
 
-    @Test
-    public void testDefaultDeviceResponseWithNotOkTypeAndException() {
+  @Test
+  public void testDefaultDeviceResponseWithNotOkTypeAndException() {
 
-        // Arrange
-        final ResponseMessageResultType deviceResult = ResponseMessageResultType.NOT_OK;
-        final OsgpException exception = new OsgpException(ComponentType.DOMAIN_CORE, "There was an exception");
+    // Arrange
+    final ResponseMessageResultType deviceResult = ResponseMessageResultType.NOT_OK;
+    final OsgpException exception =
+        new OsgpException(ComponentType.DOMAIN_CORE, "There was an exception");
 
-        final ResponseMessage expectedResponseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withIds(IDS)
-                .withResult(ResponseMessageResultType.NOT_OK)
-                .withOsgpException(exception)
-                .withMessagePriority(MESSAGE_PRIORITY)
-                .build();
+    final ResponseMessage expectedResponseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withIds(IDS)
+            .withResult(ResponseMessageResultType.NOT_OK)
+            .withOsgpException(exception)
+            .withMessagePriority(MESSAGE_PRIORITY)
+            .build();
 
-        // Act
-        this.defaultDeviceResponseService.handleDefaultDeviceResponse(IDS, MESSAGE_TYPE, MESSAGE_PRIORITY, deviceResult,
-                exception);
+    // Act
+    this.defaultDeviceResponseService.handleDefaultDeviceResponse(
+        IDS, MESSAGE_TYPE, MESSAGE_PRIORITY, deviceResult, exception);
 
-        final ArgumentCaptor<ResponseMessage> argument = ArgumentCaptor.forClass(ResponseMessage.class);
-        verify(this.webServiceResponseMessageSender).send(argument.capture());
+    final ArgumentCaptor<ResponseMessage> argument = ArgumentCaptor.forClass(ResponseMessage.class);
+    verify(this.webServiceResponseMessageSender).send(argument.capture());
 
-        // Assert
-        assertThat(argument.getValue()).usingRecursiveComparison().isEqualTo(expectedResponseMessage);
-    }
+    // Assert
+    assertThat(argument.getValue()).usingRecursiveComparison().isEqualTo(expectedResponseMessage);
+  }
 
-    @Test
-    public void testDefaultDeviceResponseWithNotOkTypeAndNoException() {
+  @Test
+  public void testDefaultDeviceResponseWithNotOkTypeAndNoException() {
 
-        // Arrange
-        final ResponseMessageResultType deviceResult = ResponseMessageResultType.NOT_OK;
-        final OsgpException exception = null;
-        final OsgpException osgpException = new TechnicalException(ComponentType.DOMAIN_CORE,
-                "An unknown error occurred");
+    // Arrange
+    final ResponseMessageResultType deviceResult = ResponseMessageResultType.NOT_OK;
+    final OsgpException exception = null;
+    final OsgpException osgpException =
+        new TechnicalException(ComponentType.DOMAIN_CORE, "An unknown error occurred");
 
-        final ResponseMessage expectedResponseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withIds(IDS)
-                .withResult(ResponseMessageResultType.NOT_OK)
-                .withOsgpException(osgpException)
-                .withMessagePriority(MESSAGE_PRIORITY)
-                .build();
+    final ResponseMessage expectedResponseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withIds(IDS)
+            .withResult(ResponseMessageResultType.NOT_OK)
+            .withOsgpException(osgpException)
+            .withMessagePriority(MESSAGE_PRIORITY)
+            .build();
 
-        this.defaultDeviceResponseService.handleDefaultDeviceResponse(IDS, MESSAGE_TYPE, MESSAGE_PRIORITY, deviceResult,
-                exception);
+    this.defaultDeviceResponseService.handleDefaultDeviceResponse(
+        IDS, MESSAGE_TYPE, MESSAGE_PRIORITY, deviceResult, exception);
 
-        // Act
-        final ArgumentCaptor<ResponseMessage> argument = ArgumentCaptor.forClass(ResponseMessage.class);
-        verify(this.webServiceResponseMessageSender).send(argument.capture());
+    // Act
+    final ArgumentCaptor<ResponseMessage> argument = ArgumentCaptor.forClass(ResponseMessage.class);
+    verify(this.webServiceResponseMessageSender).send(argument.capture());
 
-        // Assert
-        assertThat(argument.getValue()).usingRecursiveComparison().isEqualTo(expectedResponseMessage);
-    }
+    // Assert
+    assertThat(argument.getValue()).usingRecursiveComparison().isEqualTo(expectedResponseMessage);
+  }
 
-    @Test
-    public void testDefaultDeviceResponseWithOkTypeAndException() {
+  @Test
+  public void testDefaultDeviceResponseWithOkTypeAndException() {
 
-        // Arrange
-        final ResponseMessageResultType deviceResult = ResponseMessageResultType.OK;
-        final OsgpException exception = new OsgpException(ComponentType.DOMAIN_CORE, "There was an exception");
+    // Arrange
+    final ResponseMessageResultType deviceResult = ResponseMessageResultType.OK;
+    final OsgpException exception =
+        new OsgpException(ComponentType.DOMAIN_CORE, "There was an exception");
 
-        final ResponseMessage expectedResponseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withIds(IDS)
-                .withResult(ResponseMessageResultType.NOT_OK)
-                .withOsgpException(exception)
-                .withMessagePriority(MESSAGE_PRIORITY)
-                .build();
+    final ResponseMessage expectedResponseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withIds(IDS)
+            .withResult(ResponseMessageResultType.NOT_OK)
+            .withOsgpException(exception)
+            .withMessagePriority(MESSAGE_PRIORITY)
+            .build();
 
-        // Act
-        this.defaultDeviceResponseService.handleDefaultDeviceResponse(IDS, MESSAGE_TYPE, MESSAGE_PRIORITY, deviceResult,
-                exception);
+    // Act
+    this.defaultDeviceResponseService.handleDefaultDeviceResponse(
+        IDS, MESSAGE_TYPE, MESSAGE_PRIORITY, deviceResult, exception);
 
-        final ArgumentCaptor<ResponseMessage> argument = ArgumentCaptor.forClass(ResponseMessage.class);
-        verify(this.webServiceResponseMessageSender).send(argument.capture());
+    final ArgumentCaptor<ResponseMessage> argument = ArgumentCaptor.forClass(ResponseMessage.class);
+    verify(this.webServiceResponseMessageSender).send(argument.capture());
 
-        // Assert
-        assertThat(argument.getValue()).usingRecursiveComparison().isEqualTo(expectedResponseMessage);
-    }
+    // Assert
+    assertThat(argument.getValue()).usingRecursiveComparison().isEqualTo(expectedResponseMessage);
+  }
 
-    @Test
-    public void testDefaultDeviceResponseWithOkTypeAndNoException() {
+  @Test
+  public void testDefaultDeviceResponseWithOkTypeAndNoException() {
 
-        // Arrange
-        final ResponseMessageResultType deviceResult = ResponseMessageResultType.OK;
-        final OsgpException exception = null;
+    // Arrange
+    final ResponseMessageResultType deviceResult = ResponseMessageResultType.OK;
+    final OsgpException exception = null;
 
-        final ResponseMessage expectedResponseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withIds(IDS)
-                .withResult(ResponseMessageResultType.OK)
-                .withOsgpException(exception)
-                .withMessagePriority(MESSAGE_PRIORITY)
-                .build();
+    final ResponseMessage expectedResponseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withIds(IDS)
+            .withResult(ResponseMessageResultType.OK)
+            .withOsgpException(exception)
+            .withMessagePriority(MESSAGE_PRIORITY)
+            .build();
 
-        // Act
-        this.defaultDeviceResponseService.handleDefaultDeviceResponse(IDS, MESSAGE_TYPE, MESSAGE_PRIORITY, deviceResult,
-                exception);
+    // Act
+    this.defaultDeviceResponseService.handleDefaultDeviceResponse(
+        IDS, MESSAGE_TYPE, MESSAGE_PRIORITY, deviceResult, exception);
 
-        final ArgumentCaptor<ResponseMessage> argument = ArgumentCaptor.forClass(ResponseMessage.class);
-        verify(this.webServiceResponseMessageSender).send(argument.capture());
+    final ArgumentCaptor<ResponseMessage> argument = ArgumentCaptor.forClass(ResponseMessage.class);
+    verify(this.webServiceResponseMessageSender).send(argument.capture());
 
-        // Assert
-        assertThat(argument.getValue()).usingRecursiveComparison().isEqualTo(expectedResponseMessage);
-    }
+    // Assert
+    assertThat(argument.getValue()).usingRecursiveComparison().isEqualTo(expectedResponseMessage);
+  }
 }

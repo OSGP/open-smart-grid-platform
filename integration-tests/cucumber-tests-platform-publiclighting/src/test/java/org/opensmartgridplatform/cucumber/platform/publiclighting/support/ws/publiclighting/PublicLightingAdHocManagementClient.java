@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform.publiclighting.support.ws.publiclighting;
 
@@ -35,66 +36,77 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 @Component
 public class PublicLightingAdHocManagementClient extends BaseClient {
 
-    @Autowired
-    private DefaultWebServiceTemplateFactory publicLightingAdHocManagementWstf;
+  @Autowired private DefaultWebServiceTemplateFactory publicLightingAdHocManagementWstf;
 
-    public GetStatusResponse getGetStatusResponse(final GetStatusAsyncRequest request)
-            throws WebServiceSecurityException {
-        final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
-                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
-        return (GetStatusResponse) webServiceTemplate.marshalSendAndReceive(request);
-    }
+  public GetStatusResponse getGetStatusResponse(final GetStatusAsyncRequest request)
+      throws WebServiceSecurityException {
+    final WebServiceTemplate webServiceTemplate =
+        this.publicLightingAdHocManagementWstf.getTemplate(
+            this.getOrganizationIdentification(), this.getUserName());
+    return (GetStatusResponse) webServiceTemplate.marshalSendAndReceive(request);
+  }
 
-    public ResumeScheduleResponse getResumeScheduleResponse(final ResumeScheduleAsyncRequest request)
-            throws WebServiceSecurityException {
-        final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
-                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
-        return (ResumeScheduleResponse) webServiceTemplate.marshalSendAndReceive(request);
-    }
+  public ResumeScheduleResponse getResumeScheduleResponse(final ResumeScheduleAsyncRequest request)
+      throws WebServiceSecurityException {
+    final WebServiceTemplate webServiceTemplate =
+        this.publicLightingAdHocManagementWstf.getTemplate(
+            this.getOrganizationIdentification(), this.getUserName());
+    return (ResumeScheduleResponse) webServiceTemplate.marshalSendAndReceive(request);
+  }
 
-    public SetLightResponse getSetLightResponse(final SetLightAsyncRequest request) throws WebServiceSecurityException {
-        final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
-                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
-        return (SetLightResponse) webServiceTemplate.marshalSendAndReceive(request);
-    }
+  public SetLightResponse getSetLightResponse(final SetLightAsyncRequest request)
+      throws WebServiceSecurityException {
+    final WebServiceTemplate webServiceTemplate =
+        this.publicLightingAdHocManagementWstf.getTemplate(
+            this.getOrganizationIdentification(), this.getUserName());
+    return (SetLightResponse) webServiceTemplate.marshalSendAndReceive(request);
+  }
 
-    public SetTransitionResponse getSetTransitionResponse(final SetTransitionAsyncRequest request)
-            throws WebServiceSecurityException {
-        final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
-                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
-        return (SetTransitionResponse) webServiceTemplate.marshalSendAndReceive(request);
-    }
+  public SetTransitionResponse getSetTransitionResponse(final SetTransitionAsyncRequest request)
+      throws WebServiceSecurityException {
+    final WebServiceTemplate webServiceTemplate =
+        this.publicLightingAdHocManagementWstf.getTemplate(
+            this.getOrganizationIdentification(), this.getUserName());
+    return (SetTransitionResponse) webServiceTemplate.marshalSendAndReceive(request);
+  }
 
-    public GetStatusAsyncResponse getStatus(final GetStatusRequest request) throws WebServiceSecurityException {
-        final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
-                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
-        return (GetStatusAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
-    }
+  public GetStatusAsyncResponse getStatus(final GetStatusRequest request)
+      throws WebServiceSecurityException {
+    final WebServiceTemplate webServiceTemplate =
+        this.publicLightingAdHocManagementWstf.getTemplate(
+            this.getOrganizationIdentification(), this.getUserName());
+    return (GetStatusAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
+  }
 
-    public ResumeScheduleAsyncResponse resumeSchedule(final ResumeScheduleRequest request)
-            throws WebServiceSecurityException {
-        final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
-                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
-        return (ResumeScheduleAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
-    }
+  public ResumeScheduleAsyncResponse resumeSchedule(final ResumeScheduleRequest request)
+      throws WebServiceSecurityException {
+    final WebServiceTemplate webServiceTemplate =
+        this.publicLightingAdHocManagementWstf.getTemplate(
+            this.getOrganizationIdentification(), this.getUserName());
+    return (ResumeScheduleAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
+  }
 
-    public SetLightAsyncResponse setLight(final SetLightRequest request) throws WebServiceSecurityException {
-        final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
-                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
-        return (SetLightAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
-    }
+  public SetLightAsyncResponse setLight(final SetLightRequest request)
+      throws WebServiceSecurityException {
+    final WebServiceTemplate webServiceTemplate =
+        this.publicLightingAdHocManagementWstf.getTemplate(
+            this.getOrganizationIdentification(), this.getUserName());
+    return (SetLightAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
+  }
 
-    public SetTransitionAsyncResponse setTransition(final SetTransitionRequest request)
-            throws WebServiceSecurityException {
-        final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
-                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
-        return (SetTransitionAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
-    }
+  public SetTransitionAsyncResponse setTransition(final SetTransitionRequest request)
+      throws WebServiceSecurityException {
+    final WebServiceTemplate webServiceTemplate =
+        this.publicLightingAdHocManagementWstf.getTemplate(
+            this.getOrganizationIdentification(), this.getUserName());
+    return (SetTransitionAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
+  }
 
-    public FindAllDevicesResponse findAllDevices(final FindAllDevicesRequest request)
-            throws WebServiceSecurityException {
-        final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
-                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
-        return (FindAllDevicesResponse) webServiceTemplate.marshalSendAndReceive(request);
-    }
+  public FindAllDevicesResponse findAllDevices(final FindAllDevicesRequest request)
+      throws WebServiceSecurityException {
+    final WebServiceTemplate webServiceTemplate =
+        this.publicLightingAdHocManagementWstf.getTemplate(
+            this.getOrganizationIdentification(), this.getUserName());
+    return (FindAllDevicesResponse) webServiceTemplate.marshalSendAndReceive(request);
+  }
 }

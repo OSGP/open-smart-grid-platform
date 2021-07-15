@@ -1,9 +1,8 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -42,235 +41,318 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(value = "transactionManager")
 public class AdhocService {
 
-    private static final String DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION = "Device Response not ok. Unexpected "
-            + "Exception";
+  private static final String DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION =
+      "Device Response not ok. Unexpected " + "Exception";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AdhocService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AdhocService.class);
 
-    @Autowired
-    @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
-    private OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
+  @Autowired
+  @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
+  private OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
 
-    @Autowired
-    @Qualifier(value = "domainSmartMeteringOutboundWebServiceResponsesMessageSender")
-    private WebServiceResponseMessageSender webServiceResponseMessageSender;
+  @Autowired
+  @Qualifier(value = "domainSmartMeteringOutboundWebServiceResponsesMessageSender")
+  private WebServiceResponseMessageSender webServiceResponseMessageSender;
 
-    @Autowired
-    private DomainHelperService domainHelperService;
+  @Autowired private DomainHelperService domainHelperService;
 
-    @Autowired
-    private MapperFactory mapperFactory;
+  @Autowired private MapperFactory mapperFactory;
 
-    @Autowired
-    private ConfigurationMapper configurationMapper;
+  @Autowired private ConfigurationMapper configurationMapper;
 
-    public AdhocService() {
-        // Parameterless constructor required for transactions...
+  public AdhocService() {
+    // Parameterless constructor required for transactions...
+  }
+
+  public void synchronizeTime(
+      final DeviceMessageMetadata deviceMessageMetadata,
+      final org.opensmartgridplatform.domain.core.valueobjects.smartmetering
+              .SynchronizeTimeRequestData
+          synchronizeTimeRequestDataValueObject)
+      throws FunctionalException {
+
+    LOGGER.debug(
+        "synchronizeTime for organisationIdentification: {} for deviceIdentification: {}",
+        deviceMessageMetadata.getOrganisationIdentification(),
+        deviceMessageMetadata.getDeviceIdentification());
+
+    final SmartMeter smartMeteringDevice =
+        this.domainHelperService.findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+
+    final SynchronizeTimeRequestDto synchronizeTimeRequestDto =
+        this.mapperFactory
+            .getMapperFacade()
+            .map(synchronizeTimeRequestDataValueObject, SynchronizeTimeRequestDto.class);
+
+    this.osgpCoreRequestMessageSender.send(
+        new RequestMessage(
+            deviceMessageMetadata.getCorrelationUid(),
+            deviceMessageMetadata.getOrganisationIdentification(),
+            deviceMessageMetadata.getDeviceIdentification(),
+            smartMeteringDevice.getIpAddress(),
+            synchronizeTimeRequestDto),
+        deviceMessageMetadata.getMessageType(),
+        deviceMessageMetadata.getMessagePriority(),
+        deviceMessageMetadata.getScheduleTime(),
+        deviceMessageMetadata.bypassRetry());
+  }
+
+  public void handleSynchronizeTimeResponse(
+      final DeviceMessageMetadata deviceMessageMetadata,
+      final ResponseMessageResultType deviceResult,
+      final OsgpException exception) {
+
+    LOGGER.debug(
+        "handleSynchronizeTimeResponse for MessageType: {}",
+        deviceMessageMetadata.getMessageType());
+
+    ResponseMessageResultType result = deviceResult;
+    if (exception != null) {
+      LOGGER.error(DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION, exception);
+      result = ResponseMessageResultType.NOT_OK;
     }
 
-    public void synchronizeTime(final DeviceMessageMetadata deviceMessageMetadata,
-            final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SynchronizeTimeRequestData synchronizeTimeRequestDataValueObject)
-            throws FunctionalException {
+    final ResponseMessage responseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+            .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+            .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+            .withResult(result)
+            .withOsgpException(exception)
+            .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+            .build();
+    this.webServiceResponseMessageSender.send(
+        responseMessage, deviceMessageMetadata.getMessageType());
+  }
 
-        LOGGER.debug("synchronizeTime for organisationIdentification: {} for deviceIdentification: {}",
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
+  public void getAllAttributeValues(final DeviceMessageMetadata deviceMessageMetadata)
+      throws FunctionalException {
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+    LOGGER.debug(
+        "retrieveAllAttributeValues for organisationIdentification: {} for deviceIdentification: {}",
+        deviceMessageMetadata.getOrganisationIdentification(),
+        deviceMessageMetadata.getDeviceIdentification());
 
-        final SynchronizeTimeRequestDto synchronizeTimeRequestDto = this.mapperFactory.getMapperFacade()
-                                                                                      .map(synchronizeTimeRequestDataValueObject,
-                                                                                              SynchronizeTimeRequestDto.class);
+    final SmartMeter smartMeteringDevice =
+        this.domainHelperService.findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                        deviceMessageMetadata.getOrganisationIdentification(),
-                        deviceMessageMetadata.getDeviceIdentification(),
-                        smartMeteringDevice.getIpAddress(), synchronizeTimeRequestDto),
-                deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+    final GetAllAttributeValuesRequestDto requestDto = new GetAllAttributeValuesRequestDto();
+
+    this.osgpCoreRequestMessageSender.send(
+        new RequestMessage(
+            deviceMessageMetadata.getCorrelationUid(),
+            deviceMessageMetadata.getOrganisationIdentification(),
+            deviceMessageMetadata.getDeviceIdentification(),
+            smartMeteringDevice.getIpAddress(),
+            requestDto),
+        deviceMessageMetadata.getMessageType(),
+        deviceMessageMetadata.getMessagePriority(),
+        deviceMessageMetadata.getScheduleTime(),
+        deviceMessageMetadata.bypassRetry());
+  }
+
+  public void handleGetAllAttributeValuesResponse(
+      final DeviceMessageMetadata deviceMessageMetadata,
+      final ResponseMessageResultType deviceResult,
+      final OsgpException exception,
+      final String resultData) {
+
+    LOGGER.debug(
+        "handleGetAllAttributeValuesResponse for MessageType: {}",
+        deviceMessageMetadata.getMessageType());
+
+    ResponseMessageResultType result = deviceResult;
+    if (exception != null) {
+      LOGGER.error(DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION, exception);
+      result = ResponseMessageResultType.NOT_OK;
     }
 
-    public void handleSynchronizeTimeResponse(final DeviceMessageMetadata deviceMessageMetadata,
-            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+    final ResponseMessage responseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+            .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+            .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+            .withResult(result)
+            .withOsgpException(exception)
+            .withDataObject(resultData)
+            .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+            .build();
+    this.webServiceResponseMessageSender.send(
+        responseMessage, deviceMessageMetadata.getMessageType());
+  }
 
-        LOGGER.debug("handleSynchronizeTimeResponse for MessageType: {}", deviceMessageMetadata.getMessageType());
+  public void getAssociationLnObjects(final DeviceMessageMetadata deviceMessageMetadata)
+      throws FunctionalException {
+    LOGGER.debug(
+        "getAssociationLnObjects for organisationIdentification: {} for deviceIdentification: {}",
+        deviceMessageMetadata.getOrganisationIdentification(),
+        deviceMessageMetadata.getDeviceIdentification());
 
-        ResponseMessageResultType result = deviceResult;
-        if (exception != null) {
-            LOGGER.error(DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION, exception);
-            result = ResponseMessageResultType.NOT_OK;
-        }
+    final SmartMeter smartMeteringDevice =
+        this.domainHelperService.findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
 
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
-                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
-                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
-                deviceMessageMetadata.getDeviceIdentification()).withResult(result).withOsgpException(exception)
-                                                               .withMessagePriority(
-                                                                       deviceMessageMetadata.getMessagePriority())
-                                                               .build();
-        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
+    final GetAssociationLnObjectsRequestDto requestDto = new GetAssociationLnObjectsRequestDto();
+
+    this.osgpCoreRequestMessageSender.send(
+        new RequestMessage(
+            deviceMessageMetadata.getCorrelationUid(),
+            deviceMessageMetadata.getOrganisationIdentification(),
+            deviceMessageMetadata.getDeviceIdentification(),
+            smartMeteringDevice.getIpAddress(),
+            requestDto),
+        deviceMessageMetadata.getMessageType(),
+        deviceMessageMetadata.getMessagePriority(),
+        deviceMessageMetadata.getScheduleTime(),
+        deviceMessageMetadata.bypassRetry());
+  }
+
+  public void handleGetAssocationLnObjectsResponse(
+      final DeviceMessageMetadata deviceMessageMetadata,
+      final ResponseMessageResultType deviceResult,
+      final OsgpException exception,
+      final AssociationLnListTypeDto resultData) {
+
+    ResponseMessageResultType result = deviceResult;
+    if (exception != null) {
+      LOGGER.error(DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION, exception);
+      result = ResponseMessageResultType.NOT_OK;
     }
 
-    public void getAllAttributeValues(final DeviceMessageMetadata deviceMessageMetadata) throws FunctionalException {
+    final AssociationLnListType associationLnListValueDomain =
+        this.configurationMapper.map(resultData, AssociationLnListType.class);
 
-        LOGGER.debug("retrieveAllAttributeValues for organisationIdentification: {} for deviceIdentification: {}",
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
+    final ResponseMessage responseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+            .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+            .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+            .withResult(result)
+            .withOsgpException(exception)
+            .withDataObject(associationLnListValueDomain)
+            .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+            .build();
+    this.webServiceResponseMessageSender.send(
+        responseMessage, deviceMessageMetadata.getMessageType());
+  }
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+  public void getSpecificAttributeValue(
+      final DeviceMessageMetadata deviceMessageMetadata,
+      final SpecificAttributeValueRequest request)
+      throws FunctionalException {
 
-        final GetAllAttributeValuesRequestDto requestDto = new GetAllAttributeValuesRequestDto();
+    LOGGER.debug(
+        "getSpecificAttributeValue for organisationIdentification: {} for deviceIdentification: {}",
+        deviceMessageMetadata.getOrganisationIdentification(),
+        deviceMessageMetadata.getDeviceIdentification());
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                        deviceMessageMetadata.getOrganisationIdentification(),
-                        deviceMessageMetadata.getDeviceIdentification(),
-                        smartMeteringDevice.getIpAddress(), requestDto), deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+    final SmartMeter smartMeteringDevice =
+        this.domainHelperService.findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
 
+    final SpecificAttributeValueRequestDto requestDto =
+        new SpecificAttributeValueRequestDto(
+            request.getClassId(),
+            request.getAttribute(),
+            this.mapperFactory
+                .getMapperFacade()
+                .map(request.getObisCode(), ObisCodeValuesDto.class));
+
+    this.osgpCoreRequestMessageSender.send(
+        new RequestMessage(
+            deviceMessageMetadata.getCorrelationUid(),
+            deviceMessageMetadata.getOrganisationIdentification(),
+            deviceMessageMetadata.getDeviceIdentification(),
+            smartMeteringDevice.getIpAddress(),
+            requestDto),
+        deviceMessageMetadata.getMessageType(),
+        deviceMessageMetadata.getMessagePriority(),
+        deviceMessageMetadata.getScheduleTime(),
+        deviceMessageMetadata.bypassRetry());
+  }
+
+  public void handleGetSpecificAttributeValueResponse(
+      final DeviceMessageMetadata deviceMessageMetadata,
+      final ResponseMessageResultType deviceResult,
+      final OsgpException exception,
+      final String resultData) {
+    LOGGER.debug(
+        "handleGetSpecificAttributeValueResponse for MessageType: {}",
+        deviceMessageMetadata.getMessageType());
+
+    ResponseMessageResultType result = deviceResult;
+    if (exception != null) {
+      LOGGER.error(DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION, exception);
+      result = ResponseMessageResultType.NOT_OK;
     }
 
-    public void handleGetAllAttributeValuesResponse(final DeviceMessageMetadata deviceMessageMetadata,
-            final ResponseMessageResultType deviceResult, final OsgpException exception, final String resultData) {
+    final ResponseMessage responseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+            .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+            .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+            .withResult(result)
+            .withOsgpException(exception)
+            .withDataObject(resultData)
+            .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+            .build();
+    this.webServiceResponseMessageSender.send(
+        responseMessage, deviceMessageMetadata.getMessageType());
+  }
 
-        LOGGER.debug("handleGetAllAttributeValuesResponse for MessageType: {}", deviceMessageMetadata.getMessageType());
+  public void scanMbusChannels(final DeviceMessageMetadata deviceMessageMetadata)
+      throws FunctionalException {
 
-        ResponseMessageResultType result = deviceResult;
-        if (exception != null) {
-            LOGGER.error(DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION, exception);
-            result = ResponseMessageResultType.NOT_OK;
-        }
+    LOGGER.debug(
+        "ScanMbusChannels for organisationIdentification: {} for deviceIdentification: {}",
+        deviceMessageMetadata.getOrganisationIdentification(),
+        deviceMessageMetadata.getDeviceIdentification());
 
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
-                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
-                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
-                deviceMessageMetadata.getDeviceIdentification()).withResult(result).withOsgpException(exception)
-                                                               .withDataObject(resultData).withMessagePriority(
-                        deviceMessageMetadata.getMessagePriority()).build();
-        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
+    final SmartMeter smartMeteringDevice =
+        this.domainHelperService.findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+
+    final ScanMbusChannelsRequestDataDto requestDto = new ScanMbusChannelsRequestDataDto();
+
+    this.osgpCoreRequestMessageSender.send(
+        new RequestMessage(
+            deviceMessageMetadata.getCorrelationUid(),
+            deviceMessageMetadata.getOrganisationIdentification(),
+            deviceMessageMetadata.getDeviceIdentification(),
+            smartMeteringDevice.getIpAddress(),
+            requestDto),
+        deviceMessageMetadata.getMessageType(),
+        deviceMessageMetadata.getMessagePriority(),
+        deviceMessageMetadata.getScheduleTime(),
+        deviceMessageMetadata.bypassRetry());
+  }
+
+  public void handleScanMbusChannelsResponse(
+      final DeviceMessageMetadata deviceMessageMetadata,
+      final ResponseMessageResultType deviceResult,
+      final OsgpException exception,
+      final ScanMbusChannelsResponseDto resultData) {
+    LOGGER.debug(
+        "handleScanMbusChannelsResponse for MessageType: {}",
+        deviceMessageMetadata.getMessageType());
+
+    ResponseMessageResultType result = deviceResult;
+    if (exception != null) {
+      LOGGER.error(DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION, exception);
+      result = ResponseMessageResultType.NOT_OK;
     }
 
-    public void getAssociationLnObjects(final DeviceMessageMetadata deviceMessageMetadata) throws FunctionalException {
-        LOGGER.debug("getAssociationLnObjects for organisationIdentification: {} for deviceIdentification: {}",
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
+    final ScanMbusChannelsResponseData scanMbusChannelsResponseData =
+        this.mapperFactory.getMapperFacade().map(resultData, ScanMbusChannelsResponseData.class);
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
-
-        final GetAssociationLnObjectsRequestDto requestDto = new GetAssociationLnObjectsRequestDto();
-
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                        deviceMessageMetadata.getOrganisationIdentification(),
-                        deviceMessageMetadata.getDeviceIdentification(),
-                        smartMeteringDevice.getIpAddress(), requestDto), deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
-    }
-
-    public void handleGetAssocationLnObjectsResponse(final DeviceMessageMetadata deviceMessageMetadata,
-            final ResponseMessageResultType deviceResult, final OsgpException exception,
-            final AssociationLnListTypeDto resultData) {
-
-        ResponseMessageResultType result = deviceResult;
-        if (exception != null) {
-            LOGGER.error(DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION, exception);
-            result = ResponseMessageResultType.NOT_OK;
-        }
-
-        final AssociationLnListType associationLnListValueDomain = this.configurationMapper
-                .map(resultData, AssociationLnListType.class);
-
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
-                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
-                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
-                deviceMessageMetadata.getDeviceIdentification()).withResult(result).withOsgpException(exception)
-                                                               .withDataObject(associationLnListValueDomain)
-                                                               .withMessagePriority(
-                                                                       deviceMessageMetadata.getMessagePriority())
-                                                               .build();
-        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
-    }
-
-    public void getSpecificAttributeValue(final DeviceMessageMetadata deviceMessageMetadata,
-            final SpecificAttributeValueRequest request) throws FunctionalException {
-
-        LOGGER.debug("getSpecificAttributeValue for organisationIdentification: {} for deviceIdentification: {}",
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
-
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
-
-        final SpecificAttributeValueRequestDto requestDto = new SpecificAttributeValueRequestDto(request.getClassId(),
-                request.getAttribute(),
-                this.mapperFactory.getMapperFacade().map(request.getObisCode(), ObisCodeValuesDto.class));
-
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                        deviceMessageMetadata.getOrganisationIdentification(),
-                        deviceMessageMetadata.getDeviceIdentification(),
-                        smartMeteringDevice.getIpAddress(), requestDto), deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
-
-    }
-
-    public void handleGetSpecificAttributeValueResponse(final DeviceMessageMetadata deviceMessageMetadata,
-            final ResponseMessageResultType deviceResult, final OsgpException exception, final String resultData) {
-        LOGGER.debug("handleGetSpecificAttributeValueResponse for MessageType: {}",
-                deviceMessageMetadata.getMessageType());
-
-        ResponseMessageResultType result = deviceResult;
-        if (exception != null) {
-            LOGGER.error(DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION, exception);
-            result = ResponseMessageResultType.NOT_OK;
-        }
-
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
-                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
-                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
-                deviceMessageMetadata.getDeviceIdentification()).withResult(result).withOsgpException(exception)
-                                                               .withDataObject(resultData).withMessagePriority(
-                        deviceMessageMetadata.getMessagePriority()).build();
-        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
-    }
-
-    public void scanMbusChannels(final DeviceMessageMetadata deviceMessageMetadata) throws FunctionalException {
-
-        LOGGER.debug("ScanMbusChannels for organisationIdentification: {} for deviceIdentification: {}",
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
-
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
-
-        final ScanMbusChannelsRequestDataDto requestDto = new ScanMbusChannelsRequestDataDto();
-
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                        deviceMessageMetadata.getOrganisationIdentification(),
-                        deviceMessageMetadata.getDeviceIdentification(),
-                        smartMeteringDevice.getIpAddress(), requestDto), deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
-
-    }
-
-    public void handleScanMbusChannelsResponse(final DeviceMessageMetadata deviceMessageMetadata,
-            final ResponseMessageResultType deviceResult, final OsgpException exception,
-            final ScanMbusChannelsResponseDto resultData) {
-        LOGGER.debug("handleScanMbusChannelsResponse for MessageType: {}", deviceMessageMetadata.getMessageType());
-
-        ResponseMessageResultType result = deviceResult;
-        if (exception != null) {
-            LOGGER.error(DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION, exception);
-            result = ResponseMessageResultType.NOT_OK;
-        }
-
-        final ScanMbusChannelsResponseData scanMbusChannelsResponseData = this.mapperFactory.getMapperFacade()
-                                                                                            .map(resultData,
-                                                                                                    ScanMbusChannelsResponseData.class);
-
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder().withCorrelationUid(
-                deviceMessageMetadata.getCorrelationUid()).withOrganisationIdentification(
-                deviceMessageMetadata.getOrganisationIdentification()).withDeviceIdentification(
-                deviceMessageMetadata.getDeviceIdentification()).withResult(result).withOsgpException(exception)
-                                                               .withDataObject(scanMbusChannelsResponseData)
-                                                               .withMessagePriority(
-                                                                       deviceMessageMetadata.getMessagePriority())
-                                                               .build();
-        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
-    }
+    final ResponseMessage responseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
+            .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
+            .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+            .withResult(result)
+            .withOsgpException(exception)
+            .withDataObject(scanMbusChannelsResponseData)
+            .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+            .build();
+    this.webServiceResponseMessageSender.send(
+        responseMessage, deviceMessageMetadata.getMessageType());
+  }
 }

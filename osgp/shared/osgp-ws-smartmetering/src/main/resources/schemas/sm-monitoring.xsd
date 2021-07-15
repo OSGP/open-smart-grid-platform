@@ -3,7 +3,6 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:tns="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-monitoring/2014/10"
             xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
-            attributeFormDefault="unqualified"
             elementFormDefault="qualified"
             targetNamespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-monitoring/2014/10">
 
@@ -13,7 +12,7 @@
   <xsd:element name="PeriodicMeterReadsRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="tns:PeriodicReadsRequest"></xsd:extension>
+        <xsd:extension base="tns:PeriodicReadsRequest"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -21,7 +20,7 @@
   <xsd:element name="PeriodicMeterReadsAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncResponse"></xsd:extension>
+        <xsd:extension base="common:AsyncResponse"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -29,7 +28,7 @@
   <xsd:element name="PeriodicMeterReadsAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncRequest"></xsd:extension>
+        <xsd:extension base="common:AsyncRequest"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -58,7 +57,7 @@
   <xsd:element name="PeriodicMeterReadsGasRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="tns:PeriodicReadsRequest"></xsd:extension>
+        <xsd:extension base="tns:PeriodicReadsRequest"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -66,7 +65,7 @@
   <xsd:element name="PeriodicMeterReadsGasAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncResponse"></xsd:extension>
+        <xsd:extension base="common:AsyncResponse"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -74,7 +73,7 @@
   <xsd:element name="PeriodicMeterReadsGasAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncRequest"></xsd:extension>
+        <xsd:extension base="common:AsyncRequest"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -104,7 +103,7 @@
   <xsd:element name="ActualMeterReadsRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"></xsd:element>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -122,7 +121,7 @@
   <xsd:element name="ActualMeterReadsAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncResponse"></xsd:extension>
+        <xsd:extension base="common:AsyncResponse"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -130,7 +129,7 @@
   <xsd:element name="ActualMeterReadsAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncRequest"></xsd:extension>
+        <xsd:extension base="common:AsyncRequest"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -169,7 +168,7 @@
   <xsd:element name="ActualMeterReadsGasRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"></xsd:element>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -179,7 +178,7 @@
     <xsd:complexContent>
       <xsd:extension base="common:Query">
         <xsd:sequence>
-          <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"></xsd:element>
+          <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -188,7 +187,7 @@
   <xsd:element name="ActualMeterReadsGasAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncResponse"></xsd:extension>
+        <xsd:extension base="common:AsyncResponse"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -196,7 +195,7 @@
   <xsd:element name="ActualMeterReadsGasAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncRequest"></xsd:extension>
+        <xsd:extension base="common:AsyncRequest"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -226,7 +225,7 @@
   <xsd:element name="ReadAlarmRegisterRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"></xsd:element>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -244,7 +243,7 @@
   <xsd:element name="ReadAlarmRegisterAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncResponse"></xsd:extension>
+        <xsd:extension base="common:AsyncResponse"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -252,7 +251,7 @@
   <xsd:element name="ReadAlarmRegisterAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncRequest"></xsd:extension>
+        <xsd:extension base="common:AsyncRequest"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -303,7 +302,7 @@
   <xsd:element name="ClearAlarmRegisterAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncResponse"></xsd:extension>
+        <xsd:extension base="common:AsyncResponse"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -320,7 +319,7 @@
   <xsd:element name="ClearAlarmRegisterAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncRequest"></xsd:extension>
+        <xsd:extension base="common:AsyncRequest"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -328,8 +327,7 @@
   <xsd:element name="ClearAlarmRegisterResponse">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="Result" type="common:OsgpResultType"
-                     minOccurs="1"/>
+        <xsd:element name="Result" type="common:OsgpResultType"/>
         <xsd:element name="Description" type="xsd:string" minOccurs="0"/>
       </xsd:sequence>
     </xsd:complexType>
@@ -499,7 +497,7 @@
   <xsd:element name="GetPowerQualityProfileAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncResponse"></xsd:extension>
+        <xsd:extension base="common:AsyncResponse"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -507,7 +505,7 @@
   <xsd:element name="GetPowerQualityProfileAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncRequest"></xsd:extension>
+        <xsd:extension base="common:AsyncRequest"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -515,7 +513,7 @@
   <xsd:element name="GetPowerQualityProfileResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="tns:PowerQualityProfileResponseData"></xsd:extension>
+        <xsd:extension base="tns:PowerQualityProfileResponseData"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -524,9 +522,7 @@
     <xsd:complexContent>
       <xsd:extension base="common:Response">
         <xsd:sequence>
-          <xsd:element name="PowerQualityProfileDatas" type="tns:PowerQualityProfileData"
-                       minOccurs="1"
-                       maxOccurs="2"/>
+          <xsd:element name="PowerQualityProfileDatas" type="tns:PowerQualityProfileData" maxOccurs="2"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -535,9 +531,106 @@
   <xsd:complexType name="PowerQualityProfileData">
     <xsd:sequence>
       <xsd:element name="LogicalName" type="common:ObisCodeValues"/>
-      <xsd:element name="CaptureObjects" type="common:CaptureObjects" minOccurs="1" maxOccurs="1"/>
-      <xsd:element name="ProfileEntries" type="common:ProfileEntries" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="CaptureObjects" type="common:CaptureObjects"/>
+      <xsd:element name="ProfileEntries" type="common:ProfileEntries"/>
     </xsd:sequence>
   </xsd:complexType>
+
+  <!-- ActualPowerQuality -->
+
+  <xsd:element name="ActualPowerQualityRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="tns:ActualPowerQualityRequestData">
+          <xsd:sequence>
+            <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="ActualPowerQualityRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Query">
+        <xsd:sequence>
+          <xsd:element name="ProfileType" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="ActualPowerQualityResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="tns:ActualPowerQualityResponseData" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="ActualPowerQualityResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
+        <xsd:sequence>
+          <xsd:element name="ActualPowerQualityData" type="tns:ActualPowerQualityData"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="ActualPowerQualityData">
+    <xsd:sequence>
+      <xsd:sequence>
+        <xsd:element name="PowerQualityObjects" type="tns:PowerQualityObjects"/>
+        <xsd:element name="PowerQualityValues" type="tns:PowerQualityValues"/>
+      </xsd:sequence>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="PowerQualityObjects">
+    <xsd:sequence>
+      <xsd:element type="tns:PowerQualityObject" name="PowerQualityObject"
+                   minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="PowerQualityObject">
+    <xsd:sequence>
+      <xsd:element type="xsd:string" name="Name" />
+      <xsd:element type="common:OsgpUnitType" name="unit" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="PowerQualityValues">
+    <xsd:sequence>
+      <xsd:element type="tns:PowerQualityValue" name="PowerQualityValue"
+                   minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="PowerQualityValue">
+    <xsd:choice maxOccurs="1">
+      <xsd:element name="StringValue" type="xsd:string" />
+      <xsd:element name="DateValue" type="xsd:dateTime" />
+      <xsd:element name="FloatValue" type="xsd:decimal" />
+      <xsd:element name="LongValue" type="xsd:long" />
+    </xsd:choice>
+  </xsd:complexType>
+
+  <xsd:element name="ActualPowerQualityAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="ActualPowerQualityAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
 
 </xsd:schema>

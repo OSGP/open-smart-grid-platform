@@ -1,28 +1,28 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.mapping;
-
-import org.springframework.stereotype.Component;
 
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.converter.ConverterFactory;
 import ma.glasnost.orika.impl.ConfigurableMapper;
+import org.springframework.stereotype.Component;
 
 @Component
 public class DomainPublicLightingMapper extends ConfigurableMapper {
 
-    @Override
-    protected void configure(final MapperFactory factory) {
-        final ConverterFactory converterFactory = factory.getConverterFactory();
+  @Override
+  protected void configure(final MapperFactory factory) {
+    final ConverterFactory converterFactory = factory.getConverterFactory();
 
-        converterFactory.registerConverter(new LightTypeConverter());
-        converterFactory.registerConverter(new LinkTypeConverter());
-        converterFactory.registerConverter(new ScheduleConverter());
-        converterFactory.registerConverter(new ScheduleEntryConverter());
-    }
+    converterFactory.registerConverter(new LightTypeConverter());
+    converterFactory.registerConverter(new LinkTypeConverter());
+    converterFactory.registerConverter(new ScheduleConverter());
+    converterFactory.registerConverter(new ScheduleEntryConverter());
+  }
 }

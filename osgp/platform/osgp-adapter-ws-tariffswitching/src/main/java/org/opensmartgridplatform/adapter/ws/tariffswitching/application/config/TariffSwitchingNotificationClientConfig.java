@@ -1,14 +1,14 @@
-/**
+/*
  * Copyright 2019 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.tariffswitching.application.config;
 
 import java.util.Arrays;
-
 import org.opensmartgridplatform.adapter.ws.clients.NotificationWebServiceTemplateFactory;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
 import org.opensmartgridplatform.adapter.ws.mapping.NotificationMapper;
@@ -29,49 +29,58 @@ import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 @Configuration
 @PropertySource("classpath:osgp-adapter-ws-tariffswitching.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
-@PropertySource(value = "file:${osgp/AdapterWsTariffSwitching/config}", ignoreResourceNotFound = true)
+@PropertySource(
+    value = "file:${osgp/AdapterWsTariffSwitching/config}",
+    ignoreResourceNotFound = true)
 public class TariffSwitchingNotificationClientConfig extends AbstractConfig {
 
-    @Value("${web.service.notification.enabled:false}")
-    private boolean webserviceNotificationEnabled;
+  @Value("${web.service.notification.enabled:false}")
+  private boolean webserviceNotificationEnabled;
 
-    @Value("${web.service.notification.username:OSGP}")
-    private String webserviceNotificationUsername;
+  @Value("${web.service.notification.username:OSGP}")
+  private String webserviceNotificationUsername;
 
-    @Value("${web.service.notification.organisation:OSGP}")
-    private String webserviceNotificationOrganisation;
+  @Value("${web.service.notification.organisation:OSGP}")
+  private String webserviceNotificationOrganisation;
 
-    @Value("${web.service.notification.application.name:OSGP}")
-    private String webserviceNotificationApplicationName;
+  @Value("${web.service.notification.application.name:OSGP}")
+  private String webserviceNotificationApplicationName;
 
-    @Bean
-    public NotificationService tariffSwitchingNotificationService(
-            final NotificationWebServiceTemplateFactory templateFactory, final NotificationMapper mapper,
-            final ResponseUrlService responseUrlService) {
+  @Bean
+  public NotificationService tariffSwitchingNotificationService(
+      final NotificationWebServiceTemplateFactory templateFactory,
+      final NotificationMapper mapper,
+      final ResponseUrlService responseUrlService) {
 
-        if (!this.webserviceNotificationEnabled) {
-            return new NotificationServiceBlackHole();
-        }
-        final Class<SendNotificationRequest> notificationRequestType = SendNotificationRequest.class;
-        return new CorrelationUidTargetedNotificationService<>(templateFactory, notificationRequestType, mapper,
-                responseUrlService, this.webserviceNotificationApplicationName);
+    if (!this.webserviceNotificationEnabled) {
+      return new NotificationServiceBlackHole();
     }
+    final Class<SendNotificationRequest> notificationRequestType = SendNotificationRequest.class;
+    return new CorrelationUidTargetedNotificationService<>(
+        templateFactory,
+        notificationRequestType,
+        mapper,
+        responseUrlService,
+        this.webserviceNotificationApplicationName);
+  }
 
-    @Bean
-    public NotificationWebServiceTemplateFactory notificationWebServiceTemplateFactory(
-            final NotificationWebServiceConfigurationRepository configRepository) {
+  @Bean
+  public NotificationWebServiceTemplateFactory notificationWebServiceTemplateFactory(
+      final NotificationWebServiceConfigurationRepository configRepository) {
 
-        final ClientInterceptor addOsgpHeadersInterceptor = OrganisationIdentificationClientInterceptor.newBuilder()
-                .withOrganisationIdentification(this.webserviceNotificationOrganisation)
-                .withUserName(this.webserviceNotificationUsername)
-                .withApplicationName(this.webserviceNotificationApplicationName).build();
+    final ClientInterceptor addOsgpHeadersInterceptor =
+        OrganisationIdentificationClientInterceptor.newBuilder()
+            .withOrganisationIdentification(this.webserviceNotificationOrganisation)
+            .withUserName(this.webserviceNotificationUsername)
+            .withApplicationName(this.webserviceNotificationApplicationName)
+            .build();
 
-        return new NotificationWebServiceTemplateFactory(configRepository, this.messageFactory(),
-                Arrays.asList(addOsgpHeadersInterceptor));
-    }
+    return new NotificationWebServiceTemplateFactory(
+        configRepository, this.messageFactory(), Arrays.asList(addOsgpHeadersInterceptor));
+  }
 
-    @Bean
-    public SaajSoapMessageFactory messageFactory() {
-        return new SaajSoapMessageFactory();
-    }
+  @Bean
+  public SaajSoapMessageFactory messageFactory() {
+    return new SaajSoapMessageFactory();
+  }
 }

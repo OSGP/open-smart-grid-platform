@@ -1,17 +1,16 @@
-/**
+/*
  * Copyright 2019 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform.distributionautomation.database;
 
 import java.util.Arrays;
 import java.util.List;
-
 import org.opensmartgridplatform.adapter.kafka.da.domain.repositories.LocationRepository;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.repositories.Iec60870DeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.repositories.MqttDeviceRepository;
 import org.opensmartgridplatform.adapter.ws.domain.entities.NotificationWebServiceConfiguration;
 import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebServiceConfigurationRepository;
@@ -24,59 +23,51 @@ import org.springframework.stereotype.Component;
 @Component
 public class Database {
 
-    @Autowired
-    private Iec60870DeviceRepository iec60870DeviceRepository;
+  @Autowired private MqttDeviceRepository mqttDeviceRepository;
 
-    @Autowired
-    private MqttDeviceRepository mqttDeviceRepository;
+  @Autowired private ResponseDataRepository responseDataRepository;
 
-    @Autowired
-    private ResponseDataRepository responseDataRepository;
+  @Autowired
+  private NotificationWebServiceConfigurationRepository
+      notificationWebServiceConfigurationRepository;
 
-    @Autowired
-    private NotificationWebServiceConfigurationRepository notificationWebServiceConfigurationRepository;
+  @Autowired private RtuDeviceRepository rtuDeviceRepository;
 
-    @Autowired
-    private RtuDeviceRepository rtuDeviceRepository;
+  @Autowired private LocationRepository locationRepository;
 
-    @Autowired
-    private LocationRepository locationRepository;
+  private void insertDefaultData() {
+    this.notificationWebServiceConfigurationRepository.saveAll(
+        this.notificationEndpointConfigurations());
+  }
 
-    private void insertDefaultData() {
-        this.notificationWebServiceConfigurationRepository.saveAll(this.notificationEndpointConfigurations());
-    }
+  private List<NotificationWebServiceConfiguration> notificationEndpointConfigurations() {
+    final NotificationWebServiceConfigurationBuilder builder =
+        new NotificationWebServiceConfigurationBuilder()
+            .withApplicationName("DISTRIBUTION_AUTOMATION")
+            .withMarshallerContextPath(
+                "org.opensmartgridplatform.adapter.ws.schema.distributionautomation.notification");
 
-    private List<NotificationWebServiceConfiguration> notificationEndpointConfigurations() {
-        final NotificationWebServiceConfigurationBuilder builder = new NotificationWebServiceConfigurationBuilder()
-                .withApplicationName("DISTRIBUTION_AUTOMATION")
-                .withMarshallerContextPath(
-                        "org.opensmartgridplatform.adapter.ws.schema.distributionautomation.notification");
+    final NotificationWebServiceConfiguration osgpOrganizationConfig =
+        builder.withOrganisationIdentification("OSGP").build();
 
-        final NotificationWebServiceConfiguration osgpOrganizationConfig = builder
-                .withOrganisationIdentification("OSGP")
-                .build();
+    return Arrays.asList(osgpOrganizationConfig);
+  }
 
-        return Arrays.asList(osgpOrganizationConfig);
-    }
+  public void prepareDatabaseForScenario() {
+    // Removes all test related data from the various databases
 
-    public void prepareDatabaseForScenario() {
-        // Removes all test related data from the various databases
+    // Remove from osgp_adapter_protocol_mqtt
+    this.mqttDeviceRepository.deleteAll();
 
-        // Remove from osgp_adapter_protocol_iec60870
-        this.iec60870DeviceRepository.deleteAll();
+    // Remove from osgp_adapter_ws_distributionautomation
+    this.responseDataRepository.deleteAll();
 
-        // Remove from osgp_adapter_protocol_mqtt
-        this.mqttDeviceRepository.deleteAll();
+    // Remove from osgp_core
+    this.rtuDeviceRepository.deleteAll();
 
-        // Remove from osgp_adapter_ws_distributionautomation
-        this.responseDataRepository.deleteAll();
+    // Remove from osgp_adapter_kafka_distributionautomation
+    this.locationRepository.deleteAll();
 
-        // Remove from osgp_core
-        this.rtuDeviceRepository.deleteAll();
-
-        // Remove from osgp_adapter_kafka_distributionautomation
-        this.locationRepository.deleteAll();
-
-        this.insertDefaultData();
-    }
+    this.insertDefaultData();
+  }
 }

@@ -39,7 +39,7 @@ http://www.apache.org/licenses/LICENSE-2.0
       <url>${maven.site.distributionManagement.site.url}</url>
     </site>
   </distributionManagement>
-  <version>5.9.3</version>
+  <version>5.11.0</version>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -66,8 +66,12 @@ http://www.apache.org/licenses/LICENSE-2.0
       <artifactId>spring-boot-starter</artifactId>
       <exclusions>
         <exclusion>
-          <groupId>ch.qos.logback</groupId>
-          <artifactId>logback-classic</artifactId>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-log4j12</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -87,6 +91,16 @@ http://www.apache.org/licenses/LICENSE-2.0
       <groupId>io.moquette</groupId>
       <artifactId>moquette-broker</artifactId>
       <version>${moquette-broker.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-log4j12</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>

@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2014-2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.commands;
 
@@ -25,51 +26,71 @@ import org.slf4j.LoggerFactory;
 
 public class Iec61850RebootCommand {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850RebootCommand.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850RebootCommand.class);
 
-    private DeviceMessageLoggingService loggingService;
+  private DeviceMessageLoggingService loggingService;
 
-    public Iec61850RebootCommand(final DeviceMessageLoggingService loggingService) {
-        this.loggingService = loggingService;
-    }
+  public Iec61850RebootCommand(final DeviceMessageLoggingService loggingService) {
+    this.loggingService = loggingService;
+  }
 
-    public void rebootDevice(final Iec61850Client iec61850Client, final DeviceConnection deviceConnection)
-            throws ProtocolAdapterException {
-        final Function<Void> function = new Function<Void>() {
+  public void rebootDevice(
+      final Iec61850Client iec61850Client, final DeviceConnection deviceConnection)
+      throws ProtocolAdapterException {
+    final Function<Void> function =
+        new Function<Void>() {
 
-            @Override
-            public Void apply(final DeviceMessageLog deviceMessageLog) throws ProtocolAdapterException {
-                final NodeContainer rebootOperationNode = deviceConnection.getFcModelNode(LogicalDevice.LIGHTING,
-                        LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.REBOOT_OPERATION, Fc.CO);
-                iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
-                        rebootOperationNode.getFcmodelNode());
-                LOGGER.info("device: {}, rebootOperationNode: {}", deviceConnection.getDeviceIdentification(),
-                        rebootOperationNode);
+          @Override
+          public Void apply(final DeviceMessageLog deviceMessageLog)
+              throws ProtocolAdapterException {
+            final NodeContainer rebootOperationNode =
+                deviceConnection.getFcModelNode(
+                    LogicalDevice.LIGHTING,
+                    LogicalNode.STREET_LIGHT_CONFIGURATION,
+                    DataAttribute.REBOOT_OPERATION,
+                    Fc.CO);
+            iec61850Client.readNodeDataValues(
+                deviceConnection.getConnection().getClientAssociation(),
+                rebootOperationNode.getFcmodelNode());
+            LOGGER.info(
+                "device: {}, rebootOperationNode: {}",
+                deviceConnection.getDeviceIdentification(),
+                rebootOperationNode);
 
-                final NodeContainer oper = rebootOperationNode.getChild(SubDataAttribute.OPERATION);
-                iec61850Client.readNodeDataValues(deviceConnection.getConnection().getClientAssociation(),
-                        oper.getFcmodelNode());
-                LOGGER.info("device: {}, oper: {}", deviceConnection.getDeviceIdentification(), oper);
+            final NodeContainer oper = rebootOperationNode.getChild(SubDataAttribute.OPERATION);
+            iec61850Client.readNodeDataValues(
+                deviceConnection.getConnection().getClientAssociation(), oper.getFcmodelNode());
+            LOGGER.info("device: {}, oper: {}", deviceConnection.getDeviceIdentification(), oper);
 
-                final BdaBoolean ctlVal = oper.getBoolean(SubDataAttribute.CONTROL_VALUE);
-                LOGGER.info("device: {}, ctlVal: {}", deviceConnection.getDeviceIdentification(), ctlVal);
+            final BdaBoolean ctlVal = oper.getBoolean(SubDataAttribute.CONTROL_VALUE);
+            LOGGER.info(
+                "device: {}, ctlVal: {}", deviceConnection.getDeviceIdentification(), ctlVal);
 
-                ctlVal.setValue(true);
-                LOGGER.info("device: {}, set ctlVal to true in order to reboot the device",
-                        deviceConnection.getDeviceIdentification());
-                oper.write();
+            ctlVal.setValue(true);
+            LOGGER.info(
+                "device: {}, set ctlVal to true in order to reboot the device",
+                deviceConnection.getDeviceIdentification());
+            oper.write();
 
-                deviceMessageLog.addVariable(LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.REBOOT_OPERATION,
-                        Fc.ST, SubDataAttribute.OPERATION, SubDataAttribute.CONTROL_VALUE, Boolean.toString(true));
+            deviceMessageLog.addVariable(
+                LogicalNode.STREET_LIGHT_CONFIGURATION,
+                DataAttribute.REBOOT_OPERATION,
+                Fc.ST,
+                SubDataAttribute.OPERATION,
+                SubDataAttribute.CONTROL_VALUE,
+                Boolean.toString(true));
 
-                Iec61850RebootCommand.this.loggingService.logMessage(deviceMessageLog,
-                        deviceConnection.getDeviceIdentification(), deviceConnection.getOrganisationIdentification(),
-                        false);
+            Iec61850RebootCommand.this.loggingService.logMessage(
+                deviceMessageLog,
+                deviceConnection.getDeviceIdentification(),
+                deviceConnection.getOrganisationIdentification(),
+                false);
 
-                return null;
-            }
+            return null;
+          }
         };
 
-        iec61850Client.sendCommandWithRetry(function, "Reboot", deviceConnection.getDeviceIdentification());
-    }
+    iec61850Client.sendCommandWithRetry(
+        function, "Reboot", deviceConnection.getDeviceIdentification());
+  }
 }

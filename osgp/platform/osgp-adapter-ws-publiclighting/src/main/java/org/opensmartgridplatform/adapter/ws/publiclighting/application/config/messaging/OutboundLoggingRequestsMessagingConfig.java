@@ -1,15 +1,15 @@
-/**
+/*
  * Copyright 2019 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.publiclighting.application.config.messaging;
 
 import javax.jms.ConnectionFactory;
 import javax.net.ssl.SSLException;
-
 import org.opensmartgridplatform.adapter.ws.infra.jms.LoggingMessageSender;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
@@ -22,33 +22,33 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.jms.core.JmsTemplate;
 
-/**
- * Configuration class for outbound messages to OSGP Logging.
- *
- */
+/** Configuration class for outbound messages to OSGP Logging. */
 @Configuration
 @ComponentScan(basePackageClasses = LoggingMessageSender.class)
 public class OutboundLoggingRequestsMessagingConfig {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OutboundLoggingRequestsMessagingConfig.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(OutboundLoggingRequestsMessagingConfig.class);
 
-    private JmsConfigurationFactory jmsConfigurationFactory;
+  private JmsConfigurationFactory jmsConfigurationFactory;
 
-    public OutboundLoggingRequestsMessagingConfig(final Environment environment,
-            final DefaultJmsConfiguration defaultJmsConfiguration) throws SSLException {
-        this.jmsConfigurationFactory = new JmsConfigurationFactory(environment, defaultJmsConfiguration,
-                JmsConfigurationNames.JMS_PUBLICLIGHTING_LOGGING);
-    }
+  public OutboundLoggingRequestsMessagingConfig(
+      final Environment environment, final DefaultJmsConfiguration defaultJmsConfiguration)
+      throws SSLException {
+    this.jmsConfigurationFactory =
+        new JmsConfigurationFactory(
+            environment, defaultJmsConfiguration, JmsConfigurationNames.JMS_PUBLICLIGHTING_LOGGING);
+  }
 
-    @Bean(destroyMethod = "stop", name = "wsPublicLightingOutboundLoggingRequestsConnectionFactory")
-    public ConnectionFactory connectionFactory() {
-        LOGGER.info("Initializing wsPublicLightingOutboundLoggingRequestsConnectionFactory bean.");
-        return this.jmsConfigurationFactory.getPooledConnectionFactory();
-    }
+  @Bean(destroyMethod = "stop", name = "wsPublicLightingOutboundLoggingRequestsConnectionFactory")
+  public ConnectionFactory connectionFactory() {
+    LOGGER.info("Initializing wsPublicLightingOutboundLoggingRequestsConnectionFactory bean.");
+    return this.jmsConfigurationFactory.getPooledConnectionFactory();
+  }
 
-    @Bean(name = "loggingJmsTemplate")
-    public JmsTemplate jmsTemplate() {
-        LOGGER.info("Initializing loggingJmsTemplate bean.");
-        return this.jmsConfigurationFactory.initJmsTemplate();
-    }
+  @Bean(name = "loggingJmsTemplate")
+  public JmsTemplate jmsTemplate() {
+    LOGGER.info("Initializing loggingJmsTemplate bean.");
+    return this.jmsConfigurationFactory.initJmsTemplate();
+  }
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2020 Alliander N.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
@@ -10,7 +10,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.mapping;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
@@ -24,67 +23,69 @@ import org.springframework.stereotype.Component;
 @Component(value = "dataObjectToOutageListConverter")
 public class DataObjectToOutageListConverter {
 
-    private static final String EVENT_DATA_VALUE_IS_NOT_A_NUMBER = "eventData value is not a number";
-    private static final int NUMBER_OF_ELEMENTS = 2;
-    private final DlmsHelper dlmsHelper;
+  private static final String EVENT_DATA_VALUE_IS_NOT_A_NUMBER = "eventData value is not a number";
+  private static final int NUMBER_OF_ELEMENTS = 2;
+  private final DlmsHelper dlmsHelper;
 
-    @Autowired
-    public DataObjectToOutageListConverter(final DlmsHelper dlmsHelper) {
-        this.dlmsHelper = dlmsHelper;
+  @Autowired
+  public DataObjectToOutageListConverter(final DlmsHelper dlmsHelper) {
+    this.dlmsHelper = dlmsHelper;
+  }
+
+  public List<OutageDto> convert(final DataObject source) throws ProtocolAdapterException {
+    final List<OutageDto> eventList = new ArrayList<>();
+    if (source == null) {
+      throw new ProtocolAdapterException("DataObject should not be null");
     }
 
-    public List<OutageDto> convert(final DataObject source) throws ProtocolAdapterException {
-        final List<OutageDto> eventList = new ArrayList<>();
-        if (source == null) {
-            throw new ProtocolAdapterException("DataObject should not be null");
-        }
-
-        final List<DataObject> dataObjects = source.getValue();
-        for (final DataObject dataObject : dataObjects) {
-            eventList.add(this.getOutageDto(dataObject));
-        }
-
-        return eventList;
-
+    final List<DataObject> dataObjects = source.getValue();
+    for (final DataObject dataObject : dataObjects) {
+      eventList.add(this.getOutageDto(dataObject));
     }
 
-    private OutageDto getOutageDto(final DataObject outageDataObject) throws ProtocolAdapterException {
+    return eventList;
+  }
 
-        final List<DataObject> outageData = outageDataObject.getValue();
+  private OutageDto getOutageDto(final DataObject outageDataObject)
+      throws ProtocolAdapterException {
 
-        if (outageData == null) {
-            throw new ProtocolAdapterException("outageData DataObject should not be null");
-        }
+    final List<DataObject> outageData = outageDataObject.getValue();
 
-        if (outageData.size() != NUMBER_OF_ELEMENTS) {
-            throw new ProtocolAdapterException("outageData size should be " + NUMBER_OF_ELEMENTS);
-        }
-
-        final DateTime endTime = this.extractDateTime(outageData);
-        final Long duration = this.extractEventDuration(outageData);
-
-        OutageDto outage = new OutageDto(endTime, duration);
-
-        log.info("Converted dataObject to outage: {}", outage);
-        return outage;
+    if (outageData == null) {
+      throw new ProtocolAdapterException("outageData DataObject should not be null");
     }
 
-    private DateTime extractDateTime(final List<DataObject> eventData) throws ProtocolAdapterException {
-        final DateTime dateTime = this.dlmsHelper.convertDataObjectToDateTime(eventData.get(0)).asDateTime();
-
-        if (dateTime == null) {
-            throw new ProtocolAdapterException("eventData time is null/unspecified");
-        }
-
-        return dateTime;
+    if (outageData.size() != NUMBER_OF_ELEMENTS) {
+      throw new ProtocolAdapterException("outageData size should be " + NUMBER_OF_ELEMENTS);
     }
 
-    private Long extractEventDuration(final List<DataObject> eventData) throws ProtocolAdapterException {
-        if (!eventData.get(1).isNumber()) {
-            throw new ProtocolAdapterException(EVENT_DATA_VALUE_IS_NOT_A_NUMBER);
-        }
+    final DateTime endTime = this.extractDateTime(outageData);
+    final Long duration = this.extractEventDuration(outageData);
 
-        return eventData.get(1).getValue();
+    final OutageDto outage = new OutageDto(endTime, duration);
+
+    log.info("Converted dataObject to outage: {}", outage);
+    return outage;
+  }
+
+  private DateTime extractDateTime(final List<DataObject> eventData)
+      throws ProtocolAdapterException {
+    final DateTime dateTime =
+        this.dlmsHelper.convertDataObjectToDateTime(eventData.get(0)).asDateTime();
+
+    if (dateTime == null) {
+      throw new ProtocolAdapterException("eventData time is null/unspecified");
     }
 
+    return dateTime;
+  }
+
+  private Long extractEventDuration(final List<DataObject> eventData)
+      throws ProtocolAdapterException {
+    if (!eventData.get(1).isNumber()) {
+      throw new ProtocolAdapterException(EVENT_DATA_VALUE_IS_NOT_A_NUMBER);
+    }
+
+    return eventData.get(1).getValue();
+  }
 }

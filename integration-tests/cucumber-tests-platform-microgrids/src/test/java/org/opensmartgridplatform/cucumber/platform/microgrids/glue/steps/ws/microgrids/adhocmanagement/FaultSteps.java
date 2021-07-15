@@ -1,14 +1,15 @@
-/**
+/*
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform.microgrids.glue.steps.ws.microgrids.adhocmanagement;
 
+import io.cucumber.java.en.Then;
 import java.util.Map;
-
 import org.junit.jupiter.api.Assertions;
 import org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.GetDataAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.GetDataResponse;
@@ -21,30 +22,33 @@ import org.opensmartgridplatform.cucumber.platform.microgrids.support.ws.microgr
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import io.cucumber.java.en.Then;
-
 public class FaultSteps {
 
-    @Autowired
-    private AdHocManagementClient client;
+  @Autowired private AdHocManagementClient client;
 
-    @Then("^a SOAP fault should be returned$")
-    public void aSoapFaultShouldBeReturned(final Map<String, String> responseParameters) throws Throwable {
+  @Then("^a SOAP fault should be returned$")
+  public void aSoapFaultShouldBeReturned(final Map<String, String> responseParameters)
+      throws Throwable {
 
-        final String correlationUid = (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
-        final Map<String, String> extendedParameters = SettingsHelper.addDefault(responseParameters,
-                PlatformKeys.KEY_CORRELATION_UID, correlationUid);
+    final String correlationUid =
+        (String) ScenarioContext.current().get(PlatformKeys.KEY_CORRELATION_UID);
+    final Map<String, String> extendedParameters =
+        SettingsHelper.addDefault(
+            responseParameters, PlatformKeys.KEY_CORRELATION_UID, correlationUid);
 
-        final GetDataAsyncRequest getDataAsyncRequest = GetDataRequestBuilder.fromParameterMapAsync(extendedParameters);
+    final GetDataAsyncRequest getDataAsyncRequest =
+        GetDataRequestBuilder.fromParameterMapAsync(extendedParameters);
 
-        try {
-            final GetDataResponse response = this.client.getData(getDataAsyncRequest);
-            Assertions.fail("Expected a SOAP fault, but got a GetDataResponse with result "
-                    + response.getResult().value() + ".");
-        } catch (final SoapFaultClientException e) {
-            ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
-        }
-
-        GenericResponseSteps.verifySoapFault(responseParameters);
+    try {
+      final GetDataResponse response = this.client.getData(getDataAsyncRequest);
+      Assertions.fail(
+          "Expected a SOAP fault, but got a GetDataResponse with result "
+              + response.getResult().value()
+              + ".");
+    } catch (final SoapFaultClientException e) {
+      ScenarioContext.current().put(PlatformKeys.RESPONSE, e);
     }
+
+    GenericResponseSteps.verifySoapFault(responseParameters);
+  }
 }

@@ -1,10 +1,10 @@
-/**
+/*
  * Copyright 2021 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.messageprocessor;
 
@@ -17,7 +17,6 @@ import static org.mockito.Mockito.when;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,57 +29,55 @@ import org.opensmartgridplatform.adapter.ws.shared.services.ResponseDataService;
 @ExtendWith(MockitoExtension.class)
 public class DomainResponseMessageProcessorTest {
 
-    @Mock
-    private NotificationService notificationService;
+  @Mock private NotificationService notificationService;
 
-    @Mock
-    private ResponseDataService responseDataService;
+  @Mock private ResponseDataService responseDataService;
 
-    @Mock
-    private ObjectMessage message;
+  @Mock private ObjectMessage message;
 
-    @InjectMocks
-    private BundleResponseMessageProcessor messageProcessor;
+  @InjectMocks private DomainResponseMessageProcessor messageProcessor;
 
-    @BeforeEach
-    void init() throws JMSException {
-        when(this.message.getJMSType()).thenReturn("HANDLE_BUNDLED_ACTIONS");
-        when(this.message.getStringProperty("Result")).thenReturn("OK");
-        when(this.message.getStringProperty("OrganisationIdentification")).thenReturn("some-organisation");
-        when(this.message.getJMSCorrelationID()).thenReturn(null);
-        when(this.message.getStringProperty("DeviceIdentification")).thenReturn(null);
-        when(this.message.getStringProperty("Description")).thenReturn(null);
-        when(this.message.getObject()).thenReturn(null);
-    }
+  @BeforeEach
+  void init() throws JMSException {
+    when(this.message.getJMSType()).thenReturn("HANDLE_BUNDLED_ACTIONS");
+    when(this.message.getStringProperty("Result")).thenReturn("OK");
+    when(this.message.getStringProperty("OrganisationIdentification"))
+        .thenReturn("some-organisation");
+    when(this.message.getJMSCorrelationID()).thenReturn(null);
+    when(this.message.getStringProperty("DeviceIdentification")).thenReturn(null);
+    when(this.message.getStringProperty("Description")).thenReturn(null);
+    when(this.message.getObject()).thenReturn(null);
+  }
 
-    @Test
-    void processMessageSuccessfully() throws JMSException {
-        this.messageProcessor.processMessage(this.message);
+  @Test
+  void processMessageSuccessfully() throws JMSException {
+    this.messageProcessor.processMessage(this.message);
 
-        verify(this.responseDataService).enqueue(any());
-        verify(this.notificationService).sendNotification(any(), any());
-    }
+    verify(this.responseDataService).enqueue(any());
+    verify(this.notificationService).sendNotification(any(), any());
+  }
 
-    @Test
-    void processMessageErrorInHandleMessage() throws JMSException {
+  @Test
+  void processMessageErrorInHandleMessage() throws JMSException {
 
-        doThrow(new NullPointerException("Some runtime exception")).when(this.responseDataService).enqueue(any());
+    doThrow(new NullPointerException("Some runtime exception"))
+        .when(this.responseDataService)
+        .enqueue(any());
 
-        assertThatThrownBy(() -> this.messageProcessor.processMessage(this.message))
-                .isInstanceOf(RuntimeException.class);
-        verifyNoInteractions(this.notificationService);
-    }
+    assertThatThrownBy(() -> this.messageProcessor.processMessage(this.message))
+        .isInstanceOf(RuntimeException.class);
+    verifyNoInteractions(this.notificationService);
+  }
 
-    @Test
-    void processMessageErrorInSendNotification() throws JMSException {
+  @Test
+  void processMessageErrorInSendNotification() throws JMSException {
 
-        doThrow(new NullPointerException("Some runtime exception while sending the notification"))
-                .when(this.notificationService)
-                .sendNotification(any(), any(), any(), any(), any(), any());
+    doThrow(new NullPointerException("Some runtime exception while sending the notification"))
+        .when(this.notificationService)
+        .sendNotification(any(), any(), any(), any(), any(), any());
 
-        this.messageProcessor.processMessage(this.message);
+    this.messageProcessor.processMessage(this.message);
 
-        verify(this.responseDataService).enqueue(any());
-    }
-
+    verify(this.responseDataService).enqueue(any());
+  }
 }

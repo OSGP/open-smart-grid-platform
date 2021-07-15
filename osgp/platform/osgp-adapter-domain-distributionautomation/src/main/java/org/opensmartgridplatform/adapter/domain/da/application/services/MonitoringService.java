@@ -1,11 +1,10 @@
-/**
+/*
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.da.application.services;
 
@@ -33,129 +32,148 @@ import org.springframework.stereotype.Service;
 @Service(value = "domainDistributionAutomationMonitoringService")
 public class MonitoringService extends BaseService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MonitoringService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MonitoringService.class);
 
-    @Autowired
-    private DomainDistributionAutomationMapper mapper;
+  @Autowired private DomainDistributionAutomationMapper mapper;
 
-    @Autowired
-    private RtuResponseService rtuResponseService;
+  @Autowired private RtuResponseService rtuResponseService;
 
-    /**
-     * Constructor
-     */
-    public MonitoringService() {
-        // Parameterless constructor required for transactions...
+  /** Constructor */
+  public MonitoringService() {
+    // Parameterless constructor required for transactions...
+  }
+
+  public void getPQValues(
+      final CorrelationIds ids,
+      final String messageType,
+      final GetPQValuesRequest getPQValuesRequest)
+      throws FunctionalException {
+
+    LOGGER.info(
+        "Get PQ Values for device [{}] with correlation id [{}]",
+        ids.getDeviceIdentification(),
+        ids.getCorrelationUid());
+
+    this.findOrganisation(ids.getOrganisationIdentification());
+    final Device device = this.findActiveDevice(ids.getDeviceIdentification());
+
+    final GetPQValuesRequestDto dto =
+        this.mapper.map(getPQValuesRequest, GetPQValuesRequestDto.class);
+
+    this.osgpCoreRequestMessageSender.send(
+        new RequestMessage(ids, dto), messageType, device.getIpAddress());
+  }
+
+  public void getPQValuesPeriodic(
+      final CorrelationIds ids,
+      final String messageType,
+      final GetPQValuesPeriodicRequest getPQValuesPeriodicRequest)
+      throws FunctionalException {
+
+    LOGGER.info(
+        "Get PQ Values periodic for device [{}] with correlation id [{}]",
+        ids.getDeviceIdentification(),
+        ids.getCorrelationUid());
+
+    this.findOrganisation(ids.getOrganisationIdentification());
+    final Device device = this.findActiveDevice(ids.getDeviceIdentification());
+
+    final GetPQValuesPeriodicRequestDto dto =
+        this.mapper.map(getPQValuesPeriodicRequest, GetPQValuesPeriodicRequestDto.class);
+
+    this.osgpCoreRequestMessageSender.send(
+        new RequestMessage(ids, dto), messageType, device.getIpAddress());
+  }
+
+  public void handleGetPQValuesResponse(
+      final GetPQValuesResponseDto getPQValuesResponseDto,
+      final CorrelationIds ids,
+      final String messageType,
+      final ResponseMessageResultType responseMessageResultType,
+      final OsgpException osgpException) {
+
+    LOGGER.info("handleResponse for MessageType: {}", messageType);
+
+    final String deviceIdentification = ids.getDeviceIdentification();
+    final String organisationIdentification = ids.getOrganisationIdentification();
+
+    ResponseMessageResultType result = ResponseMessageResultType.OK;
+    GetPQValuesResponse getPQValuesResponse = null;
+    OsgpException exception = osgpException;
+
+    try {
+      if (responseMessageResultType == ResponseMessageResultType.NOT_OK || osgpException != null) {
+        LOGGER.error("Device Response not ok.", osgpException);
+        throw osgpException;
+      }
+
+      this.rtuResponseService.handleResponseMessageReceived(LOGGER, deviceIdentification);
+
+      getPQValuesResponse = this.mapper.map(getPQValuesResponseDto, GetPQValuesResponse.class);
+
+    } catch (final Exception e) {
+      LOGGER.error("Unexpected Exception", e);
+      result = ResponseMessageResultType.NOT_OK;
+      exception =
+          this.ensureOsgpException(e, "Exception occurred while getting PQ Values Response Data");
     }
 
-    public void getPQValues(final CorrelationIds ids, final String messageType,
-            final GetPQValuesRequest getPQValuesRequest) throws FunctionalException {
-
-        LOGGER.info("Get PQ Values for device [{}] with correlation id [{}]", ids.getDeviceIdentification(),
-                ids.getCorrelationUid());
-
-        this.findOrganisation(ids.getOrganisationIdentification());
-        final Device device = this.findActiveDevice(ids.getDeviceIdentification());
-
-        final GetPQValuesRequestDto dto = this.mapper.map(getPQValuesRequest, GetPQValuesRequestDto.class);
-
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(ids, dto), messageType, device.getIpAddress());
+    // Support for Push messages, generate correlationUid
+    String actualCorrelationUid = ids.getCorrelationUid();
+    if ("no-correlationUid".equals(actualCorrelationUid)) {
+      actualCorrelationUid = getCorrelationId("DeviceGenerated", deviceIdentification);
     }
 
-    public void getPQValuesPeriodic(final CorrelationIds ids, final String messageType,
-            final GetPQValuesPeriodicRequest getPQValuesPeriodicRequest) throws FunctionalException {
+    final CorrelationIds actualIds =
+        new CorrelationIds(organisationIdentification, deviceIdentification, actualCorrelationUid);
 
-        LOGGER.info("Get PQ Values periodic for device [{}] with correlation id [{}]", ids.getDeviceIdentification(),
-                ids.getCorrelationUid());
+    final ResponseMessage responseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withIds(actualIds)
+            .withResult(result)
+            .withOsgpException(exception)
+            .withDataObject(getPQValuesResponse)
+            .build();
+    this.responseMessageRouter.send(responseMessage, messageType);
+  }
 
-        this.findOrganisation(ids.getOrganisationIdentification());
-        final Device device = this.findActiveDevice(ids.getDeviceIdentification());
+  public void handleGetMeasurementReportResponse(
+      final MeasurementReportDto measurementReportDto,
+      final CorrelationIds ids,
+      final String messageType,
+      final ResponseMessageResultType responseMessageResultType,
+      final OsgpException osgpException) {
 
-        final GetPQValuesPeriodicRequestDto dto = this.mapper.map(getPQValuesPeriodicRequest,
-                GetPQValuesPeriodicRequestDto.class);
+    LOGGER.info("handleResponse for MessageType: {}", messageType);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(ids, dto), messageType, device.getIpAddress());
+    ResponseMessageResultType result = ResponseMessageResultType.OK;
+    MeasurementReport measurementReport = null;
+    OsgpException exception = osgpException;
+
+    try {
+      if (responseMessageResultType == ResponseMessageResultType.NOT_OK || osgpException != null) {
+        LOGGER.error("Device Response not ok.", osgpException);
+        throw osgpException;
+      }
+
+      this.rtuResponseService.handleResponseMessageReceived(LOGGER, ids.getDeviceIdentification());
+
+      measurementReport = this.mapper.map(measurementReportDto, MeasurementReport.class);
+
+    } catch (final Exception e) {
+      LOGGER.error("Unexpected Exception", e);
+      result = ResponseMessageResultType.NOT_OK;
+      exception =
+          this.ensureOsgpException(e, "Exception occurred while receiving Measurement Report");
     }
 
-    public void handleGetPQValuesResponse(final GetPQValuesResponseDto getPQValuesResponseDto, final CorrelationIds ids,
-            final String messageType, final ResponseMessageResultType responseMessageResultType,
-            final OsgpException osgpException) {
-
-        LOGGER.info("handleResponse for MessageType: {}", messageType);
-
-        final String deviceIdentification = ids.getDeviceIdentification();
-        final String organisationIdentification = ids.getOrganisationIdentification();
-
-        ResponseMessageResultType result = ResponseMessageResultType.OK;
-        GetPQValuesResponse getPQValuesResponse = null;
-        OsgpException exception = osgpException;
-
-        try {
-            if (responseMessageResultType == ResponseMessageResultType.NOT_OK || osgpException != null) {
-                LOGGER.error("Device Response not ok.", osgpException);
-                throw osgpException;
-            }
-
-            this.rtuResponseService.handleResponseMessageReceived(LOGGER, deviceIdentification);
-
-            getPQValuesResponse = this.mapper.map(getPQValuesResponseDto, GetPQValuesResponse.class);
-
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected Exception", e);
-            result = ResponseMessageResultType.NOT_OK;
-            exception = this.ensureOsgpException(e, "Exception occurred while getting PQ Values Response Data");
-        }
-
-        // Support for Push messages, generate correlationUid
-        String actualCorrelationUid = ids.getCorrelationUid();
-        if ("no-correlationUid".equals(actualCorrelationUid)) {
-            actualCorrelationUid = getCorrelationId("DeviceGenerated", deviceIdentification);
-        }
-
-        final CorrelationIds actualIds = new CorrelationIds(organisationIdentification, deviceIdentification,
-                actualCorrelationUid);
-
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withIds(actualIds)
-                .withResult(result)
-                .withOsgpException(exception)
-                .withDataObject(getPQValuesResponse)
-                .build();
-        this.responseMessageRouter.send(responseMessage, messageType);
-    }
-
-    public void handleGetMeasurementReportResponse(final MeasurementReportDto measurementReportDto,
-            final CorrelationIds ids, final String messageType,
-            final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException) {
-
-        LOGGER.info("handleResponse for MessageType: {}", messageType);
-
-        ResponseMessageResultType result = ResponseMessageResultType.OK;
-        MeasurementReport measurementReport = null;
-        OsgpException exception = osgpException;
-
-        try {
-            if (responseMessageResultType == ResponseMessageResultType.NOT_OK || osgpException != null) {
-                LOGGER.error("Device Response not ok.", osgpException);
-                throw osgpException;
-            }
-
-            this.rtuResponseService.handleResponseMessageReceived(LOGGER, ids.getDeviceIdentification());
-
-            measurementReport = this.mapper.map(measurementReportDto, MeasurementReport.class);
-
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected Exception", e);
-            result = ResponseMessageResultType.NOT_OK;
-            exception = this.ensureOsgpException(e, "Exception occurred while receiving Measurement Report");
-        }
-
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withIds(ids)
-                .withResult(result)
-                .withOsgpException(exception)
-                .withDataObject(measurementReport)
-                .build();
-        this.responseMessageRouter.send(responseMessage, messageType);
-    }
+    final ResponseMessage responseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withIds(ids)
+            .withResult(result)
+            .withOsgpException(exception)
+            .withDataObject(measurementReport)
+            .build();
+    this.responseMessageRouter.send(responseMessage, messageType);
+  }
 }

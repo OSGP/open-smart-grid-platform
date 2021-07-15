@@ -1,15 +1,14 @@
-/**
+/*
  * Copyright 2020 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.simulator.protocol.mqtt;
 
 import java.util.TimeZone;
-
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -26,29 +25,31 @@ import org.springframework.web.context.support.StandardServletEnvironment;
 @EnableScheduling
 @SpringBootApplication
 @PropertySource(value = "file:${osgp/SimulatorProtocolMqtt/config}", ignoreResourceNotFound = true)
-@PropertySource(value = "classpath:osgp-simulator-protocol-mqtt.properties", ignoreResourceNotFound = true)
+@PropertySource(
+    value = "classpath:osgp-simulator-protocol-mqtt.properties",
+    ignoreResourceNotFound = true)
 public class SimulatorApplication extends SpringBootServletInitializer {
 
-    protected static final ConfigurableEnvironment ENVIRONMENT = new StandardServletEnvironment();
+  protected static final ConfigurableEnvironment ENVIRONMENT = new StandardServletEnvironment();
 
-    @Bean
-    public static PropertySourcesPlaceholderConfigurer propertyConfigurer() {
-        final PropertySourcesPlaceholderConfigurer ppc = new PropertySourcesPlaceholderConfigurer();
-        ppc.setEnvironment(ENVIRONMENT);
-        ppc.setIgnoreResourceNotFound(true);
-        ppc.setIgnoreUnresolvablePlaceholders(true);
-        return ppc;
-    }
+  @Bean
+  public static PropertySourcesPlaceholderConfigurer propertyConfigurer() {
+    final PropertySourcesPlaceholderConfigurer ppc = new PropertySourcesPlaceholderConfigurer();
+    ppc.setEnvironment(ENVIRONMENT);
+    ppc.setIgnoreResourceNotFound(true);
+    ppc.setIgnoreUnresolvablePlaceholders(true);
+    return ppc;
+  }
 
-    @Override
-    protected SpringApplicationBuilder configure(final SpringApplicationBuilder application) {
-        return application.sources(SimulatorApplication.class);
-    }
+  @Override
+  protected SpringApplicationBuilder configure(final SpringApplicationBuilder application) {
+    return application.sources(SimulatorApplication.class);
+  }
 
-    public static void main(final String[] args) {
-        // Force UTC timezone
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+  public static void main(final String[] args) {
+    // Force UTC timezone
+    TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
-        new SpringApplicationBuilder(SimulatorApplication.class).web(WebApplicationType.NONE).run(args);
-    }
+    new SpringApplicationBuilder(SimulatorApplication.class).web(WebApplicationType.NONE).run(args);
+  }
 }

@@ -1,8 +1,8 @@
-/**
+/*
  * Copyright 2020 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -10,7 +10,6 @@ package org.opensmartgridplatform.adapter.domain.da.application.services;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.Manufacturer;
@@ -37,98 +36,110 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(value = "transactionManager")
 public class RtuDeviceService {
 
-    @SuppressWarnings("squid:S1313")
-    private static final String LOCAL_HOST = "127.0.0.1";
+  @SuppressWarnings("squid:S1313")
+  private static final String LOCAL_HOST = "127.0.0.1";
 
-    @Autowired
-    private RtuDeviceRepository rtuDeviceRepository;
+  @Autowired private RtuDeviceRepository rtuDeviceRepository;
 
-    @Autowired
-    private DomainInfoRepository domainInfoRepository;
+  @Autowired private DomainInfoRepository domainInfoRepository;
 
-    @Autowired
-    private ManufacturerRepository manufacturerRepository;
+  @Autowired private ManufacturerRepository manufacturerRepository;
 
-    @Autowired
-    private DeviceModelRepository deviceModelRepository;
+  @Autowired private DeviceModelRepository deviceModelRepository;
 
-    @Autowired
-    private ProtocolInfoRepository protocolInfoRepository;
+  @Autowired private ProtocolInfoRepository protocolInfoRepository;
 
-    @Autowired
-    private OrganisationRepository organisationRepository;
+  @Autowired private OrganisationRepository organisationRepository;
 
-    @Autowired
-    private DeviceAuthorizationRepository deviceAuthorizationRepository;
+  @Autowired private DeviceAuthorizationRepository deviceAuthorizationRepository;
 
-    public void storeRtuDevice(final String organisationIdentification, final AddRtuDeviceRequest addRtuDeviceRequest)
-            throws FunctionalException {
-        this.throwExceptionOnExistingDevice(addRtuDeviceRequest);
-        final RtuDevice rtuDevice = addRtuDeviceRequest.getRtuDevice();
-        org.opensmartgridplatform.domain.core.entities.RtuDevice rtuDeviceEntity = new org.opensmartgridplatform.domain.core.entities.RtuDevice(
-                rtuDevice.getDeviceIdentification());
-        rtuDeviceEntity.setDomainInfo(
-                this.domainInfoRepository.findByDomainAndDomainVersion("DISTRIBUTION_AUTOMATION", "1.0"));
-        this.addProtocolInfo(rtuDevice, rtuDeviceEntity);
-        this.addRegistrationData(rtuDevice, rtuDeviceEntity);
-        this.addDeviceModel(addRtuDeviceRequest.getDeviceModel(), rtuDeviceEntity);
-        rtuDeviceEntity = this.rtuDeviceRepository.save(rtuDeviceEntity);
-        this.storeAuthorization(organisationIdentification, rtuDeviceEntity);
+  public void storeRtuDevice(
+      final String organisationIdentification, final AddRtuDeviceRequest addRtuDeviceRequest)
+      throws FunctionalException {
+    this.throwExceptionOnExistingDevice(addRtuDeviceRequest);
+    final RtuDevice rtuDevice = addRtuDeviceRequest.getRtuDevice();
+    org.opensmartgridplatform.domain.core.entities.RtuDevice rtuDeviceEntity =
+        new org.opensmartgridplatform.domain.core.entities.RtuDevice(
+            rtuDevice.getDeviceIdentification());
+    rtuDeviceEntity.setDomainInfo(
+        this.domainInfoRepository.findByDomainAndDomainVersion("DISTRIBUTION_AUTOMATION", "1.0"));
+    this.addProtocolInfo(rtuDevice, rtuDeviceEntity);
+    this.addRegistrationData(rtuDevice, rtuDeviceEntity);
+    this.addDeviceModel(addRtuDeviceRequest.getDeviceModel(), rtuDeviceEntity);
+    rtuDeviceEntity = this.rtuDeviceRepository.save(rtuDeviceEntity);
+    this.storeAuthorization(organisationIdentification, rtuDeviceEntity);
+  }
+
+  private void throwExceptionOnExistingDevice(final AddRtuDeviceRequest addRtuDeviceRequest)
+      throws FunctionalException {
+
+    final String newDeviceIdentification =
+        addRtuDeviceRequest.getRtuDevice().getDeviceIdentification();
+    if (this.rtuDeviceRepository.findByDeviceIdentification(newDeviceIdentification).isPresent()) {
+      throw new FunctionalException(
+          FunctionalExceptionType.EXISTING_DEVICE, ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION);
     }
+  }
 
-    private void throwExceptionOnExistingDevice(final AddRtuDeviceRequest addRtuDeviceRequest)
-            throws FunctionalException {
-
-        final String newDeviceIdentification = addRtuDeviceRequest.getRtuDevice().getDeviceIdentification();
-        if (this.rtuDeviceRepository.findByDeviceIdentification(newDeviceIdentification).isPresent()) {
-            throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE,
-                    ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION);
-        }
+  private void addRegistrationData(
+      final RtuDevice rtuDevice,
+      final org.opensmartgridplatform.domain.core.entities.RtuDevice rtuDeviceEntity)
+      throws FunctionalException {
+    final String networkAddress = rtuDevice.getNetworkAddress();
+    final InetAddress inetAddress;
+    try {
+      inetAddress =
+          LOCAL_HOST.equals(networkAddress)
+              ? InetAddress.getLoopbackAddress()
+              : InetAddress.getByName(networkAddress);
+    } catch (final UnknownHostException e) {
+      throw new FunctionalException(
+          FunctionalExceptionType.INVALID_IP_ADDRESS,
+          ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION,
+          e);
     }
+    rtuDeviceEntity.updateRegistrationData(inetAddress, RtuDevice.PSD_TYPE);
+  }
 
-    private void addRegistrationData(final RtuDevice rtuDevice,
-            final org.opensmartgridplatform.domain.core.entities.RtuDevice rtuDeviceEntity) throws FunctionalException {
-        final String networkAddress = rtuDevice.getNetworkAddress();
-        final InetAddress inetAddress;
-        try {
-            inetAddress = LOCAL_HOST.equals(networkAddress) ? InetAddress.getLoopbackAddress()
-                    : InetAddress.getByName(networkAddress);
-        } catch (final UnknownHostException e) {
-            throw new FunctionalException(FunctionalExceptionType.INVALID_IP_ADDRESS,
-                    ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION, e);
-        }
-        rtuDeviceEntity.updateRegistrationData(inetAddress, RtuDevice.PSD_TYPE);
+  private void addDeviceModel(
+      final org.opensmartgridplatform.domain.core.valueobjects.DeviceModel deviceModel,
+      final org.opensmartgridplatform.domain.core.entities.RtuDevice rtuDeviceEntity)
+      throws FunctionalException {
+    final Manufacturer manufacturer =
+        this.manufacturerRepository.findByCode(deviceModel.getManufacturer());
+    final DeviceModel deviceModelEntity =
+        this.deviceModelRepository.findByManufacturerAndModelCode(
+            manufacturer, deviceModel.getModelCode());
+    if (deviceModelEntity == null) {
+      throw new FunctionalException(
+          FunctionalExceptionType.UNKNOWN_DEVICEMODEL,
+          ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION);
     }
+    rtuDeviceEntity.setDeviceModel(deviceModelEntity);
+  }
 
-    private void addDeviceModel(final org.opensmartgridplatform.domain.core.valueobjects.DeviceModel deviceModel,
-            final org.opensmartgridplatform.domain.core.entities.RtuDevice rtuDeviceEntity) throws FunctionalException {
-        final Manufacturer manufacturer = this.manufacturerRepository.findByCode(deviceModel.getManufacturer());
-        final DeviceModel deviceModelEntity = this.deviceModelRepository.findByManufacturerAndModelCode(manufacturer,
-                deviceModel.getModelCode());
-        if (deviceModelEntity == null) {
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICEMODEL,
-                    ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION);
-        }
-        rtuDeviceEntity.setDeviceModel(deviceModelEntity);
+  private void addProtocolInfo(
+      final RtuDevice rtuDevice,
+      final org.opensmartgridplatform.domain.core.entities.RtuDevice rtuDeviceEntity)
+      throws FunctionalException {
+    final ProtocolInfo protocolInfo =
+        this.protocolInfoRepository.findByProtocolAndProtocolVersion(
+            rtuDevice.getProtocolName(), rtuDevice.getProtocolVersion());
+    if (protocolInfo == null) {
+      throw new FunctionalException(
+          FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION,
+          ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION);
     }
+    rtuDeviceEntity.updateProtocol(protocolInfo);
+  }
 
-    private void addProtocolInfo(final RtuDevice rtuDevice,
-            final org.opensmartgridplatform.domain.core.entities.RtuDevice rtuDeviceEntity) throws FunctionalException {
-        final ProtocolInfo protocolInfo = this.protocolInfoRepository
-                .findByProtocolAndProtocolVersion(rtuDevice.getProtocolName(), rtuDevice.getProtocolVersion());
-        if (protocolInfo == null) {
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION,
-                    ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION);
-        }
-        rtuDeviceEntity.updateProtocol(protocolInfo);
-    }
-
-    private void storeAuthorization(final String organisationIdentification,
-            final org.opensmartgridplatform.domain.core.entities.RtuDevice rtuDevice) {
-        final Organisation organisation = this.organisationRepository
-                .findByOrganisationIdentification(organisationIdentification);
-        final DeviceAuthorization authorization = rtuDevice.addAuthorization(organisation, DeviceFunctionGroup.OWNER);
-        this.deviceAuthorizationRepository.save(authorization);
-    }
-
+  private void storeAuthorization(
+      final String organisationIdentification,
+      final org.opensmartgridplatform.domain.core.entities.RtuDevice rtuDevice) {
+    final Organisation organisation =
+        this.organisationRepository.findByOrganisationIdentification(organisationIdentification);
+    final DeviceAuthorization authorization =
+        rtuDevice.addAuthorization(organisation, DeviceFunctionGroup.OWNER);
+    this.deviceAuthorizationRepository.save(authorization);
+  }
 }

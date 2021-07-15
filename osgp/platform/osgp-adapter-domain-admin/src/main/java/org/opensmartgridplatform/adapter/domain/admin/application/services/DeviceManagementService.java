@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.admin.application.services;
 
@@ -33,142 +34,183 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(value = "transactionManager")
 public class DeviceManagementService extends AbstractService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
 
-    @Autowired
-    private DeviceRepository deviceRepository;
+  @Autowired private DeviceRepository deviceRepository;
 
-    @Autowired
-    private SsldRepository ssldRepository;
+  @Autowired private SsldRepository ssldRepository;
 
-    /**
-     * Constructor
-     */
-    public DeviceManagementService() {
-        // Parameterless constructor required for transactions...
+  /** Constructor */
+  public DeviceManagementService() {
+    // Parameterless constructor required for transactions...
+  }
+
+  // === UPDATE KEY ===
+
+  public void updateKey(
+      final String organisationIdentification,
+      @Identification final String deviceIdentification,
+      final String correlationUid,
+      final String messageType,
+      @PublicKey final String publicKey)
+      throws FunctionalException {
+
+    LOGGER.info(
+        "MessageType: {}. Updating key for device [{}] on behalf of organisation [{}]",
+        messageType,
+        deviceIdentification,
+        organisationIdentification);
+
+    try {
+      this.organisationDomainService.searchOrganisation(organisationIdentification);
+    } catch (final UnknownEntityException e) {
+      throw new FunctionalException(
+          FunctionalExceptionType.UNKNOWN_ORGANISATION, ComponentType.DOMAIN_ADMIN, e);
     }
 
-    // === UPDATE KEY ===
+    this.osgpCoreRequestMessageSender.send(
+        new RequestMessage(
+            correlationUid, organisationIdentification, deviceIdentification, publicKey),
+        messageType,
+        null);
+  }
 
-    public void updateKey(final String organisationIdentification, @Identification final String deviceIdentification,
-            final String correlationUid, final String messageType, @PublicKey final String publicKey)
-            throws FunctionalException {
+  public void handleUpdateKeyResponse(
+      final String deviceIdentification,
+      final String organisationIdentification,
+      final String correlationUid,
+      final String messageType,
+      final ResponseMessageResultType deviceResult,
+      final OsgpException exception) {
 
-        LOGGER.info("MessageType: {}. Updating key for device [{}] on behalf of organisation [{}]", messageType,
-                deviceIdentification, organisationIdentification);
+    LOGGER.info(
+        "MessageType: {}. Handle update key response for device: {} for organisation: {}",
+        messageType,
+        deviceIdentification,
+        organisationIdentification);
 
-        try {
-            this.organisationDomainService.searchOrganisation(organisationIdentification);
-        } catch (final UnknownEntityException e) {
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_ORGANISATION, ComponentType.DOMAIN_ADMIN, e);
-        }
+    ResponseMessageResultType result = ResponseMessageResultType.OK;
+    OsgpException osgpException = exception;
 
-        this.osgpCoreRequestMessageSender.send(
-                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, publicKey),
-                messageType, null);
+    try {
+      if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException != null) {
+        LOGGER.error("Device Response not ok.", osgpException);
+        throw osgpException;
+      }
+
+      Ssld device = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
+      if (device == null) {
+        // Device not found, create new device
+        LOGGER.debug("Device [{}] does not exist, creating new device", deviceIdentification);
+        device = new Ssld(deviceIdentification);
+      }
+      device.setPublicKeyPresent(true);
+      this.ssldRepository.save(device);
+
+      LOGGER.info(
+          "publicKey has been set for device: {} for organisation: {}",
+          deviceIdentification,
+          organisationIdentification);
+
+    } catch (final Exception e) {
+      LOGGER.error("Unexpected Exception", e);
+      result = ResponseMessageResultType.NOT_OK;
+      osgpException =
+          new TechnicalException(ComponentType.UNKNOWN, "Exception occurred while updating key", e);
     }
 
-    public void handleUpdateKeyResponse(final String deviceIdentification, final String organisationIdentification,
-            final String correlationUid, final String messageType, final ResponseMessageResultType deviceResult,
-            final OsgpException exception) {
+    final ResponseMessage responseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withCorrelationUid(correlationUid)
+            .withOrganisationIdentification(organisationIdentification)
+            .withDeviceIdentification(deviceIdentification)
+            .withResult(result)
+            .withOsgpException(osgpException)
+            .build();
+    this.webServiceResponseMessageSender.send(responseMessage);
+  }
 
-        LOGGER.info("MessageType: {}. Handle update key response for device: {} for organisation: {}", messageType,
-                deviceIdentification, organisationIdentification);
+  // === REVOKE KEY ===
 
-        ResponseMessageResultType result = ResponseMessageResultType.OK;
-        OsgpException osgpException = exception;
+  public void revokeKey(
+      final String organisationIdentification,
+      @Identification final String deviceIdentification,
+      final String correlationUid,
+      final String messageType)
+      throws FunctionalException {
 
-        try {
-            if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException != null) {
-                LOGGER.error("Device Response not ok.", osgpException);
-                throw osgpException;
-            }
+    LOGGER.info(
+        "MessageType: {}. Revoking key for device [{}] on behalf of organisation [{}]",
+        messageType,
+        deviceIdentification,
+        organisationIdentification);
 
-            Ssld device = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
-            if (device == null) {
-                // Device not found, create new device
-                LOGGER.debug("Device [{}] does not exist, creating new device", deviceIdentification);
-                device = new Ssld(deviceIdentification);
-            }
-            device.setPublicKeyPresent(true);
-            this.ssldRepository.save(device);
-
-            LOGGER.info("publicKey has been set for device: {} for organisation: {}", deviceIdentification,
-                    organisationIdentification);
-
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected Exception", e);
-            result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.UNKNOWN, "Exception occurred while updating key", e);
-        }
-
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
-                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
-                .build();
-        this.webServiceResponseMessageSender.send(responseMessage);
+    try {
+      this.organisationDomainService.searchOrganisation(organisationIdentification);
+    } catch (final UnknownEntityException e) {
+      throw new FunctionalException(
+          FunctionalExceptionType.UNKNOWN_ORGANISATION, ComponentType.DOMAIN_ADMIN, e);
     }
 
-    // === REVOKE KEY ===
+    this.osgpCoreRequestMessageSender.send(
+        new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null),
+        messageType,
+        null);
+  }
 
-    public void revokeKey(final String organisationIdentification, @Identification final String deviceIdentification,
-            final String correlationUid, final String messageType) throws FunctionalException {
+  public void handleRevokeKeyResponse(
+      final String organisationIdentification,
+      final String deviceIdentification,
+      final String correlationUid,
+      final String messageType,
+      final ResponseMessageResultType deviceResult,
+      final OsgpException exception) {
 
-        LOGGER.info("MessageType: {}. Revoking key for device [{}] on behalf of organisation [{}]", messageType,
-                deviceIdentification, organisationIdentification);
+    LOGGER.info(
+        "MessageType: {}. Handle revoke key for device: {} for organisation: {}",
+        messageType,
+        deviceIdentification,
+        organisationIdentification);
 
-        try {
-            this.organisationDomainService.searchOrganisation(organisationIdentification);
-        } catch (final UnknownEntityException e) {
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_ORGANISATION, ComponentType.DOMAIN_ADMIN, e);
-        }
+    ResponseMessageResultType result = ResponseMessageResultType.OK;
+    OsgpException osgpException = exception;
 
-        this.osgpCoreRequestMessageSender.send(
-                new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null), messageType,
-                null);
+    try {
+      if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException != null) {
+        LOGGER.error("Device Response not ok.", osgpException);
+        throw osgpException;
+      }
 
+      final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+      if (device == null) {
+        throw new PlatformException(String.format("Device not found: %s", deviceIdentification));
+      }
+
+      final Ssld ssld = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
+
+      ssld.setPublicKeyPresent(false);
+      this.ssldRepository.save(ssld);
+
+      LOGGER.info(
+          "publicKey has been revoked for device: {} for organisation: {}",
+          deviceIdentification,
+          organisationIdentification);
+
+    } catch (final Exception e) {
+      LOGGER.error("Unexpected Exception", e);
+      result = ResponseMessageResultType.NOT_OK;
+      osgpException =
+          new TechnicalException(ComponentType.UNKNOWN, "Exception occurred while revoking key", e);
     }
 
-    public void handleRevokeKeyResponse(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final String messageType, final ResponseMessageResultType deviceResult,
-            final OsgpException exception) {
-
-        LOGGER.info("MessageType: {}. Handle revoke key for device: {} for organisation: {}", messageType,
-                deviceIdentification, organisationIdentification);
-
-        ResponseMessageResultType result = ResponseMessageResultType.OK;
-        OsgpException osgpException = exception;
-
-        try {
-            if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException != null) {
-                LOGGER.error("Device Response not ok.", osgpException);
-                throw osgpException;
-            }
-
-            final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-            if (device == null) {
-                throw new PlatformException(String.format("Device not found: %s", deviceIdentification));
-            }
-
-            final Ssld ssld = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
-
-            ssld.setPublicKeyPresent(false);
-            this.ssldRepository.save(ssld);
-
-            LOGGER.info("publicKey has been revoked for device: {} for organisation: {}", deviceIdentification,
-                    organisationIdentification);
-
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected Exception", e);
-            result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.UNKNOWN, "Exception occurred while revoking key", e);
-        }
-
-        final ResponseMessage responseMessage = ResponseMessage.newResponseMessageBuilder()
-                .withCorrelationUid(correlationUid).withOrganisationIdentification(organisationIdentification)
-                .withDeviceIdentification(deviceIdentification).withResult(result).withOsgpException(osgpException)
-                .build();
-        this.webServiceResponseMessageSender.send(responseMessage);
-    }
-
+    final ResponseMessage responseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withCorrelationUid(correlationUid)
+            .withOrganisationIdentification(organisationIdentification)
+            .withDeviceIdentification(deviceIdentification)
+            .withResult(result)
+            .withOsgpException(osgpException)
+            .build();
+    this.webServiceResponseMessageSender.send(responseMessage);
+  }
 }

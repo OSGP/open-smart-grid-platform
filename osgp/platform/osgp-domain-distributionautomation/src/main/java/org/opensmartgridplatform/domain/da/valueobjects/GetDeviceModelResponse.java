@@ -1,30 +1,28 @@
-/**
+/*
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.domain.da.valueobjects;
 
 import java.io.Serializable;
-
 import org.opensmartgridplatform.domain.da.valueobjects.iec61850.PhysicalDevice;
 
 public class GetDeviceModelResponse implements Serializable {
 
-    /**
-     * Serial Version UID.
-     */
-    private static final long serialVersionUID = 4881970943059881408L;
+  /** Serial Version UID. */
+  private static final long serialVersionUID = 4881970943059881408L;
 
-    private final PhysicalDevice physicalDevice;
+  private final PhysicalDevice physicalDevice;
 
-    public GetDeviceModelResponse(final PhysicalDevice physicalDevice) {
-        this.physicalDevice = physicalDevice;
-    }
+  public GetDeviceModelResponse(final PhysicalDevice physicalDevice) {
+    this.physicalDevice = physicalDevice;
+  }
 
-    public PhysicalDevice getPhysicalDevice() {
-        return this.physicalDevice;
-    }
+  public PhysicalDevice getPhysicalDevice() {
+    return this.physicalDevice;
+  }
 }

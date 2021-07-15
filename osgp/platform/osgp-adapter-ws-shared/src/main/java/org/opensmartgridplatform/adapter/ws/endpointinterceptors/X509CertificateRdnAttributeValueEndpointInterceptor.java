@@ -1,19 +1,19 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.endpointinterceptors;
 
 import java.security.cert.X509Certificate;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.naming.NamingException;
+import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ws.context.MessageContext;
@@ -23,91 +23,92 @@ import org.springframework.ws.transport.context.TransportContextHolder;
 import org.springframework.ws.transport.http.HttpServletConnection;
 
 /**
- * {@link EndpointInterceptorAdapter} which checks the {@link TransportContext}
- * for X509 certificates and stores RDN attribute values in the
- * {@link MessageContext}.
+ * {@link EndpointInterceptorAdapter} which checks the {@link TransportContext} for X509
+ * certificates and stores RDN attribute values in the {@link MessageContext}.
  */
-public class X509CertificateRdnAttributeValueEndpointInterceptor extends EndpointInterceptorAdapter {
+public class X509CertificateRdnAttributeValueEndpointInterceptor
+    extends EndpointInterceptorAdapter {
 
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(X509CertificateRdnAttributeValueEndpointInterceptor.class);
-    private final String attributeId;
-    private final String contextPropertyName;
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(X509CertificateRdnAttributeValueEndpointInterceptor.class);
+  private final String attributeId;
+  private final String contextPropertyName;
 
-    /**
-     * Creates an instance of
-     * {@link X509CertificateRdnAttributeValueEndpointInterceptor}.
-     * 
-     * @param attributeId
-     *            the RDN attribute ID of which the value will be stored in the
-     *            {@link MessageContext}.
-     * @param contextPropertyName
-     *            the property name in which the RDN attribute values will be
-     *            stored.
-     */
-    public X509CertificateRdnAttributeValueEndpointInterceptor(final String attributeId,
-            final String contextPropertyName) {
-        this.attributeId = attributeId;
-        this.contextPropertyName = contextPropertyName;
+  /**
+   * Creates an instance of {@link X509CertificateRdnAttributeValueEndpointInterceptor}.
+   *
+   * @param attributeId the RDN attribute ID of which the value will be stored in the {@link
+   *     MessageContext}.
+   * @param contextPropertyName the property name in which the RDN attribute values will be stored.
+   */
+  public X509CertificateRdnAttributeValueEndpointInterceptor(
+      final String attributeId, final String contextPropertyName) {
+    this.attributeId = attributeId;
+    this.contextPropertyName = contextPropertyName;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public boolean handleRequest(final MessageContext messageContext, final Object endpoint)
+      throws Exception {
+    final X509Certificate[] certificates =
+        this.getX509CertificatesFromTransportContext(TransportContextHolder.getTransportContext());
+
+    final Set<String> commonNames = new HashSet<>();
+
+    for (final X509Certificate certificate : certificates) {
+      final String commonName = this.getRdnAttributeValueFromX509Certificate(certificate);
+      commonNames.add(commonName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean handleRequest(final MessageContext messageContext, final Object endpoint) throws Exception {
-        final X509Certificate[] certificates = this.getX509CertificatesFromTransportContext(TransportContextHolder
-                .getTransportContext());
+    messageContext.setProperty(this.contextPropertyName, commonNames);
 
-        final Set<String> commonNames = new HashSet<>();
+    return true;
+  }
 
-        for (final X509Certificate certificate : certificates) {
-            final String commonName = this.getRdnAttributeValueFromX509Certificate(certificate);
-            commonNames.add(commonName);
+  /**
+   * Gets the configured RDN attribute value from the given X509 certificate.
+   *
+   * @param certificate the certificate from which to get the RDN attribute value.
+   * @return the RDN attribute value or an empty string if no value can be found or something goes
+   *     wrong.
+   */
+  private String getRdnAttributeValueFromX509Certificate(final X509Certificate certificate) {
+    try {
+      final String subjectDn = certificate.getSubjectDN().getName();
+      final LdapName ldapName = new LdapName(subjectDn);
+      for (final Rdn rdn : ldapName.getRdns()) {
+        final String rdnType = rdn.getType();
+        if (rdnType.equalsIgnoreCase(this.attributeId)) {
+          return (String) rdn.toAttributes().get(this.attributeId).get();
         }
-
-        messageContext.setProperty(this.contextPropertyName, commonNames);
-
-        return true;
+      }
+    } catch (final NamingException e) {
+      LOGGER.info("Getting CN from X509 certificate failed.", e);
     }
 
-    /**
-     * Gets the configured RDN attribute value from the given X509 certificate.
-     * 
-     * @param certificate
-     *            the certificate from which to get the RDN attribute value.
-     * @return the RDN attribute value or an empty string if no value can be
-     *         found or something goes wrong.
-     */
-    private String getRdnAttributeValueFromX509Certificate(final X509Certificate certificate) {
-        try {
-            final String subjectDn = certificate.getSubjectDN().getName();
-            final Rdn rdn = new Rdn(subjectDn);
-            return (String) rdn.toAttributes().get(this.attributeId).get();
-        } catch (final NamingException e) {
-            LOGGER.info("Getting CN from X509 certificate failed.", e);
-            return "";
-        }
-    }
+    return "";
+  }
 
-    /**
-     * Get X509 certificates from a {@link TransportContext}.
-     * 
-     * @param transportContext
-     *            the context from which to get the certificates.
-     * @return an array of certificates or an empty array if none can be found
-     *         or something goes wrong.
-     */
-    private X509Certificate[] getX509CertificatesFromTransportContext(final TransportContext transportContext) {
-        final HttpServletConnection connection = (HttpServletConnection) transportContext.getConnection();
-        final Object x509CertificateAttribute = connection.getHttpServletRequest().getAttribute(
-                "javax.servlet.request.X509Certificate");
+  /**
+   * Get X509 certificates from a {@link TransportContext}.
+   *
+   * @param transportContext the context from which to get the certificates.
+   * @return an array of certificates or an empty array if none can be found or something goes
+   *     wrong.
+   */
+  private X509Certificate[] getX509CertificatesFromTransportContext(
+      final TransportContext transportContext) {
+    final HttpServletConnection connection =
+        (HttpServletConnection) transportContext.getConnection();
+    final Object x509CertificateAttribute =
+        connection.getHttpServletRequest().getAttribute("javax.servlet.request.X509Certificate");
 
-        if (x509CertificateAttribute instanceof X509Certificate[]) {
-            return (X509Certificate[]) x509CertificateAttribute;
-        } else {
-            LOGGER.info("HTTPServletRequest's attribute was not an array of X509Certificates.");
-            return new X509Certificate[] {};
-        }
+    if (x509CertificateAttribute instanceof X509Certificate[]) {
+      return (X509Certificate[]) x509CertificateAttribute;
+    } else {
+      LOGGER.info("HTTPServletRequest's attribute was not an array of X509Certificates.");
+      return new X509Certificate[] {};
     }
+  }
 }

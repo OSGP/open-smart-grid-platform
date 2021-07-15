@@ -1,21 +1,23 @@
-/**
-  * Copyright 2017 Smart Society Services B.V.
-  *
-  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
-  *
-  *     http://www.apache.org/licenses/LICENSE-2.0
-  */
+/*
+ * Copyright 2017 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.Map;
-
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueRequest;
@@ -37,97 +39,121 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
-
 public class SetPushSetupSms {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupSms.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupSms.class);
 
-    @Autowired
-    private SmartMeteringConfigurationClient smartMeteringConfigurationClient;
+  @Autowired private SmartMeteringConfigurationClient smartMeteringConfigurationClient;
 
-    @Autowired
-    private SmartMeteringAdHocRequestClient<GetSpecificAttributeValueAsyncResponse, GetSpecificAttributeValueRequest> adHocRequestclient;
-    @Autowired
-    private SmartMeteringAdHocResponseClient<GetSpecificAttributeValueResponse, GetSpecificAttributeValueAsyncRequest> adHocResponseClient;
+  @Autowired
+  private SmartMeteringAdHocRequestClient<
+          GetSpecificAttributeValueAsyncResponse, GetSpecificAttributeValueRequest>
+      adHocRequestclient;
 
-    @When("^the set PushSetupSms request is received$")
-    public void theSetPushSetupSmsRequestIsReceived(final Map<String, String> settings) throws Throwable {
+  @Autowired
+  private SmartMeteringAdHocResponseClient<
+          GetSpecificAttributeValueResponse, GetSpecificAttributeValueAsyncRequest>
+      adHocResponseClient;
 
-        final SetPushSetupSmsRequest setPushSetupSmsRequest = SetPushSetupSmsRequestFactory.fromParameterMap(settings);
-        final SetPushSetupSmsAsyncResponse setPushSetupSmsAsyncResponse = this.smartMeteringConfigurationClient
-                .setPushSetupSms(setPushSetupSmsRequest);
+  @When("^the set PushSetupSms request is received$")
+  public void theSetPushSetupSmsRequestIsReceived(final Map<String, String> settings)
+      throws Throwable {
 
-        LOGGER.info("Set push setup sms response is received {}", setPushSetupSmsAsyncResponse);
-        assertThat(setPushSetupSmsAsyncResponse).as("Set push setup sms response should not be null").isNotNull();
+    final SetPushSetupSmsRequest setPushSetupSmsRequest =
+        SetPushSetupSmsRequestFactory.fromParameterMap(settings);
+    final SetPushSetupSmsAsyncResponse setPushSetupSmsAsyncResponse =
+        this.smartMeteringConfigurationClient.setPushSetupSms(setPushSetupSmsRequest);
 
-        ScenarioContext.current().put(PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
-                setPushSetupSmsAsyncResponse.getCorrelationUid());
-        ScenarioContext.current().put(PlatformSmartmeteringKeys.HOSTNAME,
-                settings.get(PlatformSmartmeteringKeys.HOSTNAME));
-        ScenarioContext.current().put(PlatformSmartmeteringKeys.PORT, settings.get(PlatformSmartmeteringKeys.PORT));
-    }
+    LOGGER.info("Set push setup sms response is received {}", setPushSetupSmsAsyncResponse);
+    assertThat(setPushSetupSmsAsyncResponse)
+        .as("Set push setup sms response should not be null")
+        .isNotNull();
 
-    @Then("^the PushSetupSms should be set on the device$")
-    public void thePushSetupSmsShouldBeSetOnTheDevice(final Map<String, String> settings) throws Throwable {
+    ScenarioContext.current()
+        .put(
+            PlatformSmartmeteringKeys.KEY_CORRELATION_UID,
+            setPushSetupSmsAsyncResponse.getCorrelationUid());
+    ScenarioContext.current()
+        .put(PlatformSmartmeteringKeys.HOSTNAME, settings.get(PlatformSmartmeteringKeys.HOSTNAME));
+    ScenarioContext.current()
+        .put(PlatformSmartmeteringKeys.PORT, settings.get(PlatformSmartmeteringKeys.PORT));
+  }
 
-        final SetPushSetupSmsAsyncRequest setPushSetupSmsAsyncRequest = SetPushSetupSmsRequestFactory
-                .fromScenarioContext();
-        final SetPushSetupSmsResponse setPushSetupSmsResponse = this.smartMeteringConfigurationClient
-                .getSetPushSetupSmsResponse(setPushSetupSmsAsyncRequest);
+  @Then("^the PushSetupSms should be set on the device$")
+  public void thePushSetupSmsShouldBeSetOnTheDevice(final Map<String, String> settings)
+      throws Throwable {
 
-        assertThat(setPushSetupSmsResponse).as("SetPushSetupSmsResponse was null").isNotNull();
-        assertThat(setPushSetupSmsResponse.getResult()).as("SetPushSetupSmsResponse result was null").isNotNull();
-        assertThat(setPushSetupSmsResponse.getResult()).as("SetPushSetupSmsResponse should be OK")
-                .isEqualTo(OsgpResultType.OK);
+    final SetPushSetupSmsAsyncRequest setPushSetupSmsAsyncRequest =
+        SetPushSetupSmsRequestFactory.fromScenarioContext();
+    final SetPushSetupSmsResponse setPushSetupSmsResponse =
+        this.smartMeteringConfigurationClient.getSetPushSetupSmsResponse(
+            setPushSetupSmsAsyncRequest);
 
-        final GetSpecificAttributeValueResponse specificAttributeValues = this.getSpecificAttributeValues(settings);
-        assertThat(specificAttributeValues).as("GetSpecificAttributeValuesResponse was null").isNotNull();
-        assertThat(specificAttributeValues.getResult()).as("GetSpecificAttributeValuesResponse result was null")
-                .isNotNull();
-        assertThat(specificAttributeValues.getResult()).as("GetSpecificAttributeValuesResponse should be OK")
-                .isEqualTo(OsgpResultType.OK);
+    assertThat(setPushSetupSmsResponse).as("SetPushSetupSmsResponse was null").isNotNull();
+    assertThat(setPushSetupSmsResponse.getResult())
+        .as("SetPushSetupSmsResponse result was null")
+        .isNotNull();
+    assertThat(setPushSetupSmsResponse.getResult())
+        .as("SetPushSetupSmsResponse should be OK")
+        .isEqualTo(OsgpResultType.OK);
 
-        final String hostAndPort = ScenarioContext.current().get(PlatformSmartmeteringKeys.HOSTNAME) + ":"
-                + ScenarioContext.current().get(PlatformSmartmeteringKeys.PORT);
-        final byte[] expectedBytes = (hostAndPort.getBytes(StandardCharsets.US_ASCII));
-        final String expected = Arrays.toString(expectedBytes);
-        final String actual = specificAttributeValues.getAttributeValueData();
-        assertThat(actual.contains(expected)).as("PushSetupSms was not set on device").isTrue();
-    }
+    final GetSpecificAttributeValueResponse specificAttributeValues =
+        this.getSpecificAttributeValues(settings);
+    assertThat(specificAttributeValues)
+        .as("GetSpecificAttributeValuesResponse was null")
+        .isNotNull();
+    assertThat(specificAttributeValues.getResult())
+        .as("GetSpecificAttributeValuesResponse result was null")
+        .isNotNull();
+    assertThat(specificAttributeValues.getResult())
+        .as("GetSpecificAttributeValuesResponse should be OK")
+        .isEqualTo(OsgpResultType.OK);
 
-    private GetSpecificAttributeValueResponse getSpecificAttributeValues(final Map<String, String> settings)
-            throws WebServiceSecurityException, GeneralSecurityException, IOException {
+    final String hostAndPort =
+        ScenarioContext.current().get(PlatformSmartmeteringKeys.HOSTNAME)
+            + ":"
+            + ScenarioContext.current().get(PlatformSmartmeteringKeys.PORT);
+    final byte[] expectedBytes = (hostAndPort.getBytes(StandardCharsets.US_ASCII));
+    final String expected = Arrays.toString(expectedBytes);
+    final String actual = specificAttributeValues.getAttributeValueData();
+    assertThat(actual.contains(expected)).as("PushSetupSms was not set on device").isTrue();
+  }
 
-        // Make a specificAttributeValueRequest to read out the register for
-        // pushsetupsms on the device simulator. ClassID = 40, ObisCode =
-        // 0.2.25.9.0.255 and AttributeID = 3. This is the attribute that stores
-        // 'sendDestinationAndMethod' which we sent earlier in the form of
-        // host:port
+  private GetSpecificAttributeValueResponse getSpecificAttributeValues(
+      final Map<String, String> settings)
+      throws WebServiceSecurityException, GeneralSecurityException, IOException {
 
-        final GetSpecificAttributeValueRequest request = new GetSpecificAttributeValueRequest();
-        request.setClassId(BigInteger.valueOf(40L));
-        request.setObisCode(this.getObisCodeValues());
-        request.setAttribute(BigInteger.valueOf(3L));
-        request.setDeviceIdentification(settings.get(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION));
+    // Make a specificAttributeValueRequest to read out the register for
+    // pushsetupsms on the device simulator. ClassID = 40, ObisCode =
+    // 0.2.25.9.0.255 and AttributeID = 3. This is the attribute that stores
+    // 'sendDestinationAndMethod' which we sent earlier in the form of
+    // host:port
 
-        final GetSpecificAttributeValueAsyncResponse asyncResponse = this.adHocRequestclient.doRequest(request);
-        final GetSpecificAttributeValueAsyncRequest asyncRequest = new GetSpecificAttributeValueAsyncRequest();
-        asyncRequest.setDeviceIdentification(asyncResponse.getDeviceIdentification());
-        asyncRequest.setCorrelationUid(asyncResponse.getCorrelationUid());
-        return this.adHocResponseClient.getResponse(asyncRequest);
-    }
+    final GetSpecificAttributeValueRequest request = new GetSpecificAttributeValueRequest();
+    request.setClassId(BigInteger.valueOf(40L));
+    request.setObisCode(this.getObisCodeValues());
+    request.setAttribute(BigInteger.valueOf(3L));
+    request.setDeviceIdentification(
+        settings.get(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION));
 
-    private ObisCodeValues getObisCodeValues() {
-        final ObisCodeValues values = new ObisCodeValues();
-        values.setA((short) 0);
-        values.setB((short) 2);
-        values.setC((short) 25);
-        values.setD((short) 9);
-        values.setE((short) 0);
-        values.setF((short) 255);
+    final GetSpecificAttributeValueAsyncResponse asyncResponse =
+        this.adHocRequestclient.doRequest(request);
+    final GetSpecificAttributeValueAsyncRequest asyncRequest =
+        new GetSpecificAttributeValueAsyncRequest();
+    asyncRequest.setDeviceIdentification(asyncResponse.getDeviceIdentification());
+    asyncRequest.setCorrelationUid(asyncResponse.getCorrelationUid());
+    return this.adHocResponseClient.getResponse(asyncRequest);
+  }
 
-        return values;
-    }
+  private ObisCodeValues getObisCodeValues() {
+    final ObisCodeValues values = new ObisCodeValues();
+    values.setA((short) 0);
+    values.setB((short) 2);
+    values.setC((short) 25);
+    values.setD((short) 9);
+    values.setE((short) 0);
+    values.setF((short) 255);
+
+    return values;
+  }
 }

@@ -154,6 +154,17 @@
     </wsdl:part>
   </wsdl:message>
 
+  <wsdl:message name="SetCommunicationNetworkInformationRequest">
+    <wsdl:part element="dman:SetCommunicationNetworkInformationRequest"
+      name="SetCommunicationNetworkInformationRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SetCommunicationNetworkInformationResponse">
+    <wsdl:part element="dman:SetCommunicationNetworkInformationResponse"
+      name="SetCommunicationNetworkInformationResponse">
+    </wsdl:part>
+  </wsdl:message>
+
   <wsdl:portType name="DeviceManagementPort">
     <wsdl:operation name="FindMessageLogs">
       <wsdl:input message="tns:FindMessageLogsRequest" name="FindMessageLogsRequest">
@@ -263,6 +274,15 @@
       </wsdl:input>
       <wsdl:output message="tns:UpdateDeviceProtocolResponse"
         name="UpdateDeviceProtocolResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="SetCommunicationNetworkInformation">
+      <wsdl:input message="tns:SetCommunicationNetworkInformationRequest"
+        name="SetCommunicationNetworkInformationRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:SetCommunicationNetworkInformationResponse"
+        name="SetCommunicationNetworkInformationResponse">
       </wsdl:output>
     </wsdl:operation>
 
@@ -488,6 +508,22 @@
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="UpdateDeviceProtocolResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="SetCommunicationNetworkInformation">
+      <soap:operation soapAction="" />
+      <wsdl:input name="SetCommunicationNetworkInformationRequest">
+        <soap:header message="tns:SoapHeaders" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:SoapHeaders" part="UserName"
+          use="literal" />
+        <soap:header message="tns:SoapHeaders" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="SetCommunicationNetworkInformationResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>

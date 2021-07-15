@@ -1,19 +1,18 @@
-/**
+/*
  * Copyright 2019 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.asduhandlers;
 
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.ASduType;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.LogItemFactory;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.factories.ResponseMetadataFactory;
+import org.openmuc.j60870.CauseOfTransmission;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.AbstractClientAsduHandler;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.LoggingService;
-import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.LogItem;
+import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ConnectResponseService;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,36 +21,33 @@ import org.springframework.stereotype.Component;
 
 /**
  * ASDU Handler for ASDUs with type identification C_IC_NA_1:.
+ *
  * <ul>
- * <li>Interrogation Command</li>
+ *   <li>Interrogation Command
  * </ul>
  */
 @Component
 public class InterrogationAsduHandler extends AbstractClientAsduHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(InterrogationAsduHandler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(InterrogationAsduHandler.class);
 
-    @Autowired
-    private LoggingService loggingService;
+  @Autowired private ConnectResponseService connectResponseService;
 
-    @Autowired
-    private ResponseMetadataFactory responseMetadataFactory;
+  public InterrogationAsduHandler() {
+    super(ASduType.C_IC_NA_1);
+  }
 
-    @Autowired
-    private LogItemFactory logItemFactory;
+  @Override
+  public void handleAsdu(final ASdu asdu, final ResponseMetadata responseMetadata) {
+    LOGGER.debug(
+        "Received interrogation command with cause of transmission {}.",
+        asdu.getCauseOfTransmission());
 
-    public InterrogationAsduHandler() {
-        super(ASduType.C_IC_NA_1);
+    if (asdu.getCauseOfTransmission() == CauseOfTransmission.ACTIVATION_TERMINATION) {
+      LOGGER.info(
+          "Received activation termination, call handle connect response for device {}.",
+          responseMetadata.getDeviceIdentification());
+      this.connectResponseService.handleConnectResponse(responseMetadata);
     }
-
-    @Override
-    public void handleAsdu(final ASdu asdu, final ResponseMetadata responseMetadata) {
-        LOGGER.info("Received interrogation command {}.", asdu);
-        final ResponseMetadata newResponseMetadata = this.responseMetadataFactory
-                .createWithNewCorrelationUid(responseMetadata);
-
-        // Only log item for now
-        final LogItem logItem = this.logItemFactory.create(asdu, newResponseMetadata, true);
-        this.loggingService.log(logItem);
-    }
+  }
 }

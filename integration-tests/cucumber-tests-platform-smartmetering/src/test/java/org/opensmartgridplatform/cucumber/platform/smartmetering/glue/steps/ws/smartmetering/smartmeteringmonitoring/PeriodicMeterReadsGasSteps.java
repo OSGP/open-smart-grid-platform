@@ -1,16 +1,18 @@
-/**
+/*
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmonitoring;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import java.util.Map;
-
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasAsyncResponse;
@@ -26,42 +28,49 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
-
 public class PeriodicMeterReadsGasSteps {
-    protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractFindEventsReads.class);
+  protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractFindEventsReads.class);
 
-    @Autowired
-    private SmartMeteringMonitoringRequestClient<PeriodicMeterReadsGasAsyncResponse, PeriodicMeterReadsGasRequest> requestClient;
+  @Autowired
+  private SmartMeteringMonitoringRequestClient<
+          PeriodicMeterReadsGasAsyncResponse, PeriodicMeterReadsGasRequest>
+      requestClient;
 
-    @Autowired
-    private SmartMeteringMonitoringResponseClient<PeriodicMeterReadsGasResponse, PeriodicMeterReadsGasAsyncRequest> responseClient;
+  @Autowired
+  private SmartMeteringMonitoringResponseClient<
+          PeriodicMeterReadsGasResponse, PeriodicMeterReadsGasAsyncRequest>
+      responseClient;
 
-    @When("^the get \"([^\"]*)\" meter reads gas request is received$")
-    public void theGetMeterReadsGasRequestIsReceived(final String periodType, final Map<String, String> settings)
-            throws Throwable {
+  @When("^the get \"([^\"]*)\" meter reads gas request is received$")
+  public void theGetMeterReadsGasRequestIsReceived(
+      final String periodType, final Map<String, String> settings) throws Throwable {
 
-        final PeriodicMeterReadsGasRequest request = PeriodicMeterReadsGasRequestFactory.fromParameterMap(settings);
+    final PeriodicMeterReadsGasRequest request =
+        PeriodicMeterReadsGasRequestFactory.fromParameterMap(settings);
 
-        final PeriodicMeterReadsGasAsyncResponse asyncResponse = this.requestClient.doRequest(request);
-        assertThat(asyncResponse).isNotNull();
-        ScenarioContext.current().put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
-    }
+    final PeriodicMeterReadsGasAsyncResponse asyncResponse = this.requestClient.doRequest(request);
+    assertThat(asyncResponse).isNotNull();
+    ScenarioContext.current()
+        .put(PlatformKeys.KEY_CORRELATION_UID, asyncResponse.getCorrelationUid());
+  }
 
-    @Then("^the \"([^\"]*)\" meter reads gas result should be returned$")
-    public void theMeterReadsGasResultShouldBeReturned(final String periodType, final Map<String, String> settings)
-            throws Throwable {
+  @Then("^the \"([^\"]*)\" meter reads gas result should be returned$")
+  public void theMeterReadsGasResultShouldBeReturned(
+      final String periodType, final Map<String, String> settings) throws Throwable {
 
-        final PeriodicMeterReadsGasAsyncRequest asyncRequest = PeriodicMeterReadsGasRequestFactory
-                .fromScenarioContext();
+    final PeriodicMeterReadsGasAsyncRequest asyncRequest =
+        PeriodicMeterReadsGasRequestFactory.fromScenarioContext();
 
-        LOGGER.warn("Asyncrequest: {} ", asyncRequest);
+    LOGGER.warn("Asyncrequest: {} ", asyncRequest);
 
-        final PeriodicMeterReadsGasResponse response = this.responseClient.getResponse(asyncRequest);
+    final PeriodicMeterReadsGasResponse response = this.responseClient.getResponse(asyncRequest);
 
-        assertThat(response).as("PeriodicMeterReadsGasResponse should not be null").isNotNull();
-        assertThat(response.getPeriodType()).as("PeriodType should match").isEqualTo(PeriodType.fromValue(periodType));
-        assertThat(response.getPeriodicMeterReadsGas()).as("Expected periodic meter reads gas").isNotNull();
-    }
+    assertThat(response).as("PeriodicMeterReadsGasResponse should not be null").isNotNull();
+    assertThat(response.getPeriodType())
+        .as("PeriodType should match")
+        .isEqualTo(PeriodType.fromValue(periodType));
+    assertThat(response.getPeriodicMeterReadsGas())
+        .as("Expected periodic meter reads gas")
+        .isNotNull();
+  }
 }

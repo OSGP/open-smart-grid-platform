@@ -12,7 +12,6 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
-
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.slf4j.Logger;
@@ -22,30 +21,32 @@ import org.springframework.stereotype.Component;
 @Component(value = "protocolMqttInboundOsgpCoreRequestsMessageListener")
 public class InboundOsgpCoreRequestMessageListener implements MessageListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(InboundOsgpCoreRequestMessageListener.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(InboundOsgpCoreRequestMessageListener.class);
 
-    private final MessageProcessorMap protocolMqttInboundOsgpCoreRequestsMessageProcessorMap;
+  private final MessageProcessorMap protocolMqttInboundOsgpCoreRequestsMessageProcessorMap;
 
-    public InboundOsgpCoreRequestMessageListener(final MessageProcessorMap protocolMqttInboundOsgpCoreRequestsMessageProcessorMap) {
-        this.protocolMqttInboundOsgpCoreRequestsMessageProcessorMap =
-                protocolMqttInboundOsgpCoreRequestsMessageProcessorMap;
+  public InboundOsgpCoreRequestMessageListener(
+      final MessageProcessorMap protocolMqttInboundOsgpCoreRequestsMessageProcessorMap) {
+    this.protocolMqttInboundOsgpCoreRequestsMessageProcessorMap =
+        protocolMqttInboundOsgpCoreRequestsMessageProcessorMap;
+  }
+
+  @Override
+  public void onMessage(final Message message) {
+    try {
+      LOGGER.info("Received message of type: {}", message.getJMSType());
+
+      final ObjectMessage objectMessage = (ObjectMessage) message;
+
+      final MessageProcessor processor =
+          this.protocolMqttInboundOsgpCoreRequestsMessageProcessorMap.getMessageProcessor(
+              objectMessage);
+
+      processor.processMessage(objectMessage);
+
+    } catch (final JMSException ex) {
+      LOGGER.error("Exception: {} ", ex.getMessage(), ex);
     }
-
-    @Override
-    public void onMessage(final Message message) {
-        try {
-            LOGGER.info("Received message of type: {}", message.getJMSType());
-
-            final ObjectMessage objectMessage = (ObjectMessage) message;
-
-            final MessageProcessor processor =
-                    this.protocolMqttInboundOsgpCoreRequestsMessageProcessorMap.getMessageProcessor(
-                    objectMessage);
-
-            processor.processMessage(objectMessage);
-
-        } catch (final JMSException ex) {
-            LOGGER.error("Exception: {} ", ex.getMessage(), ex);
-        }
-    }
+  }
 }

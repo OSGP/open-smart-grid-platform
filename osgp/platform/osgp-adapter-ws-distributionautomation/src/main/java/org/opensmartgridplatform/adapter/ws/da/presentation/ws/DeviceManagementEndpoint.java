@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.da.presentation.ws;
 
@@ -30,84 +31,109 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 @Endpoint
 public class DeviceManagementEndpoint extends GenericDistributionAutomationEndPoint {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementEndpoint.class);
-    protected static final String NAMESPACE = "http://www.opensmartgridplatform.org/schemas/distributionautomation/defs/2017/04";
+  private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementEndpoint.class);
+  protected static final String NAMESPACE =
+      "http://www.opensmartgridplatform.org/schemas/distributionautomation/defs/2017/04";
 
-    @PayloadRoot(localPart = "GetHealthStatusRequest",
-            namespace = NAMESPACE)
-    @ResponsePayload
-    public GetHealthStatusAsyncResponse getHealthStatus(@OrganisationIdentification final String organisationIdentification,
-                                                        @RequestPayload final GetHealthStatusRequest request) throws OsgpException {
+  @PayloadRoot(localPart = "GetHealthStatusRequest", namespace = NAMESPACE)
+  @ResponsePayload
+  public GetHealthStatusAsyncResponse getHealthStatus(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final GetHealthStatusRequest request)
+      throws OsgpException {
 
-        LOGGER.info("Get Health Status Request received from organisation: {} for device: {}.", organisationIdentification,
-                request.getDeviceIdentification());
+    LOGGER.info(
+        "Get Health Status Request received from organisation: {} for device: {}.",
+        organisationIdentification,
+        request.getDeviceIdentification());
 
-        final GetHealthStatusAsyncResponse response = new GetHealthStatusAsyncResponse();
+    final GetHealthStatusAsyncResponse response = new GetHealthStatusAsyncResponse();
 
-        try {
-            final org.opensmartgridplatform.domain.da.valueobjects.GetHealthStatusRequest getHealthStatusRequest = this.mapper.map(request, org.opensmartgridplatform.domain.da.valueobjects.GetHealthStatusRequest.class);
-            final String correlationUid = this.service
-                    .enqueueGetHealthStatusRequest(organisationIdentification, request.getDeviceIdentification(), getHealthStatusRequest);
-            final AsyncResponse asyncResponse = new AsyncResponse();
-            asyncResponse.setCorrelationUid(correlationUid);
-            asyncResponse.setDeviceId(request.getDeviceIdentification());
-            response.setAsyncResponse(asyncResponse);
-        } catch (final Exception e) {
-            this.handleException(LOGGER, e);
-        }
-        return response;
+    try {
+      final org.opensmartgridplatform.domain.da.valueobjects.GetHealthStatusRequest
+          getHealthStatusRequest =
+              this.mapper.map(
+                  request,
+                  org.opensmartgridplatform.domain.da.valueobjects.GetHealthStatusRequest.class);
+      final String correlationUid =
+          this.service.enqueueGetHealthStatusRequest(
+              organisationIdentification,
+              request.getDeviceIdentification(),
+              getHealthStatusRequest);
+      final AsyncResponse asyncResponse = new AsyncResponse();
+      asyncResponse.setCorrelationUid(correlationUid);
+      asyncResponse.setDeviceId(request.getDeviceIdentification());
+      response.setAsyncResponse(asyncResponse);
+    } catch (final Exception e) {
+      this.handleException(LOGGER, e);
     }
+    return response;
+  }
 
-    @PayloadRoot(localPart = "GetHealthStatusAsyncRequest",
-            namespace = NAMESPACE)
-    @ResponsePayload
-    public GetHealthStatusResponse getHealthStatusResponse(@OrganisationIdentification final String organisationIdentification,
-                                                           @RequestPayload final GetHealthStatusAsyncRequest request) throws OsgpException {
+  @PayloadRoot(localPart = "GetHealthStatusAsyncRequest", namespace = NAMESPACE)
+  @ResponsePayload
+  public GetHealthStatusResponse getHealthStatusResponse(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final GetHealthStatusAsyncRequest request)
+      throws OsgpException {
 
-        LOGGER.info("Get Health Status Response received from organisation: {} for correlationUid: {}.", organisationIdentification,
-                request.getAsyncRequest().getCorrelationUid());
+    LOGGER.info(
+        "Get Health Status Response received from organisation: {} for correlationUid: {}.",
+        organisationIdentification,
+        request.getAsyncRequest().getCorrelationUid());
 
-        GetHealthStatusResponse response = new GetHealthStatusResponse();
-        try {
-            final org.opensmartgridplatform.domain.da.valueobjects.GetHealthStatusResponse healthStatusResponse = this.service
-                    .dequeueGetHealthResponse(request.getAsyncRequest().getCorrelationUid());
-            if (healthStatusResponse != null) {
-                response = this.mapper.map(healthStatusResponse, GetHealthStatusResponse.class);
-                response.setResult(OsgpResultType.OK);
-            } else {
-                response.setResult(OsgpResultType.NOT_FOUND);
-            }
-        } catch (final ResponseNotFoundException e) {
-            LOGGER.warn("ResponseNotFoundException for getDeviceModel", e);
-            response.setResult(OsgpResultType.NOT_FOUND);
-        } catch (final Exception e) {
-            this.handleException(LOGGER, e);
-        }
-        response.setDeviceIdentification(request.getAsyncRequest().getDeviceId());
-        return response;
+    GetHealthStatusResponse response = new GetHealthStatusResponse();
+    try {
+      final org.opensmartgridplatform.domain.da.valueobjects.GetHealthStatusResponse
+          healthStatusResponse =
+              this.service.dequeueGetHealthResponse(request.getAsyncRequest().getCorrelationUid());
+      if (healthStatusResponse != null) {
+        response = this.mapper.map(healthStatusResponse, GetHealthStatusResponse.class);
+        response.setResult(OsgpResultType.OK);
+      } else {
+        response.setResult(OsgpResultType.NOT_FOUND);
+      }
+    } catch (final ResponseNotFoundException e) {
+      LOGGER.warn("ResponseNotFoundException for getDeviceModel", e);
+      response.setResult(OsgpResultType.NOT_FOUND);
+    } catch (final Exception e) {
+      this.handleException(LOGGER, e);
     }
+    response.setDeviceIdentification(request.getAsyncRequest().getDeviceId());
+    return response;
+  }
 
-    @PayloadRoot(localPart = "AddRtuDeviceRequest", namespace = NAMESPACE)
-    @ResponsePayload
-    public AddRtuDeviceAsyncResponse addRtuDevice(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final AddRtuDeviceRequest request) throws OsgpException {
+  @PayloadRoot(localPart = "AddRtuDeviceRequest", namespace = NAMESPACE)
+  @ResponsePayload
+  public AddRtuDeviceAsyncResponse addRtuDevice(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final AddRtuDeviceRequest request)
+      throws OsgpException {
 
-        LOGGER.info("Incoming AddRtuDeviceRequest for device: {}.", request.getRtuDevice().getDeviceIdentification());
+    LOGGER.info(
+        "Incoming AddRtuDeviceRequest for device: {}.",
+        request.getRtuDevice().getDeviceIdentification());
 
-        AddRtuDeviceAsyncResponse response = null;
-        try {
-            response = new AddRtuDeviceAsyncResponse();
-            final RtuDevice rtuDevice = this.mapper.map(request.getRtuDevice(), RtuDevice.class);
-            final DeviceModel deviceModel = new DeviceModel(request.getDeviceModel().getManufacturer(),
-                    request.getDeviceModel().getModelCode(), "");
-            final String correlationUid = this.service.enqueueAddRtuDeviceRequest(organisationIdentification,
-                    rtuDevice.getDeviceIdentification(),
-                    new org.opensmartgridplatform.domain.core.valueobjects.AddRtuDeviceRequest(rtuDevice, deviceModel));
-            response.setCorrelationUid(correlationUid);
-            response.setDeviceId(request.getRtuDevice().getDeviceIdentification());
-        } catch (final Exception e) {
-            this.handleException(LOGGER, e);
-        }
-        return response;
+    AddRtuDeviceAsyncResponse response = null;
+    try {
+      response = new AddRtuDeviceAsyncResponse();
+      final RtuDevice rtuDevice = this.mapper.map(request.getRtuDevice(), RtuDevice.class);
+      final DeviceModel deviceModel =
+          new DeviceModel(
+              request.getDeviceModel().getManufacturer(),
+              request.getDeviceModel().getModelCode(),
+              "");
+      final String correlationUid =
+          this.service.enqueueAddRtuDeviceRequest(
+              organisationIdentification,
+              rtuDevice.getDeviceIdentification(),
+              new org.opensmartgridplatform.domain.core.valueobjects.AddRtuDeviceRequest(
+                  rtuDevice, deviceModel));
+      response.setCorrelationUid(correlationUid);
+      response.setDeviceId(request.getRtuDevice().getDeviceIdentification());
+    } catch (final Exception e) {
+      this.handleException(LOGGER, e);
     }
+    return response;
+  }
 }

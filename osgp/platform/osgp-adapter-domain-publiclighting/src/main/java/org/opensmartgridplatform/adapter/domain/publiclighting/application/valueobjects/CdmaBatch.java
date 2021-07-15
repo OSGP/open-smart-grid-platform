@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2018 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.valueobjects;
 
@@ -13,63 +14,68 @@ import java.util.Set;
 
 public class CdmaBatch implements Comparable<CdmaBatch> {
 
-    public static final Short MAX_BATCH_NUMBER = (short) 99;
+  public static final Short MAX_BATCH_NUMBER = (short) 99;
 
-    private final Short batchNumber;
-    private Set<CdmaBatchDevice> cdmaBatchDevices;
+  private final Short batchNumber;
+  private Set<CdmaBatchDevice> cdmaBatchDevices;
 
-    public CdmaBatch(final Short batchNumber) {
-        if (batchNumber == null) {
-            throw new IllegalArgumentException("batchNumber is not allowed to be null");
-        }
-
-        if (batchNumber > MAX_BATCH_NUMBER) {
-            throw new IllegalArgumentException("batchNumber is not allowed to be larger than " + MAX_BATCH_NUMBER);
-        }
-
-        this.batchNumber = batchNumber;
-        this.cdmaBatchDevices = new HashSet<>();
+  public CdmaBatch(final Short batchNumber) {
+    if (batchNumber == null) {
+      throw new IllegalArgumentException("batchNumber is not allowed to be null");
     }
 
-    public void addCdmaBatchDevice(final CdmaBatchDevice cdmaBatchDevice) {
-        this.cdmaBatchDevices.add(cdmaBatchDevice);
+    if (batchNumber > MAX_BATCH_NUMBER) {
+      throw new IllegalArgumentException(
+          "batchNumber is not allowed to be larger than " + MAX_BATCH_NUMBER);
     }
 
-    public Short getBatchNumber() {
-        return this.batchNumber;
+    this.batchNumber = batchNumber;
+    this.cdmaBatchDevices = new HashSet<>();
+  }
+
+  public void addCdmaBatchDevice(final CdmaBatchDevice cdmaBatchDevice) {
+    this.cdmaBatchDevices.add(cdmaBatchDevice);
+  }
+
+  public Short getBatchNumber() {
+    return this.batchNumber;
+  }
+
+  public Set<CdmaBatchDevice> getCdmaBatchDevices() {
+    return this.cdmaBatchDevices;
+  }
+
+  @Override
+  public int hashCode() {
+    return this.batchNumber.hashCode();
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (this == obj) {
+      return true;
     }
 
-    public Set<CdmaBatchDevice> getCdmaBatchDevices() {
-        return this.cdmaBatchDevices;
+    if (!(obj instanceof CdmaBatch)) {
+      return false;
     }
 
-    @Override
-    public int hashCode() {
-        return this.batchNumber.hashCode();
-    }
+    final CdmaBatch other = (CdmaBatch) obj;
 
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
+    return Objects.equals(this.batchNumber, other.batchNumber);
+  }
 
-        if (!(obj instanceof CdmaBatch)) {
-            return false;
-        }
+  @Override
+  public String toString() {
+    return "CdmaBatch [batchNumber="
+        + this.batchNumber
+        + ", cdmaBatchDevices="
+        + this.cdmaBatchDevices
+        + "]";
+  }
 
-        final CdmaBatch other = (CdmaBatch) obj;
-
-        return Objects.equals(this.batchNumber, other.batchNumber);
-    }
-
-    @Override
-    public String toString() {
-        return "CdmaBatch [batchNumber=" + this.batchNumber + ", cdmaBatchDevices=" + this.cdmaBatchDevices + "]";
-    }
-
-    @Override
-    public int compareTo(final CdmaBatch other) {
-        return this.batchNumber.compareTo(other.batchNumber);
-    }
+  @Override
+  public int compareTo(final CdmaBatch other) {
+    return this.batchNumber.compareTo(other.batchNumber);
+  }
 }

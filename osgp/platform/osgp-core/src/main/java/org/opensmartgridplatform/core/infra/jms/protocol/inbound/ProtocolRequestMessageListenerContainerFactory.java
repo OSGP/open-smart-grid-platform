@@ -1,16 +1,15 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.core.infra.jms.protocol.inbound;
 
 import java.util.List;
-
 import javax.net.ssl.SSLException;
-
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.opensmartgridplatform.core.domain.model.domain.DomainRequestService;
 import org.opensmartgridplatform.core.infra.jms.ConnectionFactoryRegistry;
@@ -28,76 +27,83 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
-public class ProtocolRequestMessageListenerContainerFactory implements InitializingBean, DisposableBean {
+public class ProtocolRequestMessageListenerContainerFactory
+    implements InitializingBean, DisposableBean {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolRequestMessageListenerContainerFactory.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(ProtocolRequestMessageListenerContainerFactory.class);
 
-    @Autowired
-    private DomainRequestService domainRequestService;
+  @Autowired private DomainRequestService domainRequestService;
 
-    @Autowired
-    private DefaultProtocolJmsConfiguration defaultProtocolJmsConfiguration;
+  @Autowired private DefaultProtocolJmsConfiguration defaultProtocolJmsConfiguration;
 
-    private Environment environment;
-    private List<ProtocolInfo> protocolInfos;
-    private List<DomainInfo> domainInfos;
+  private Environment environment;
+  private List<ProtocolInfo> protocolInfos;
+  private List<DomainInfo> domainInfos;
 
-    private MessageProcessorMap protocolRequestMessageProcessorMap;
+  private MessageProcessorMap protocolRequestMessageProcessorMap;
 
-    private ConnectionFactoryRegistry connectionFactoryRegistry = new ConnectionFactoryRegistry();
-    private MessageListenerContainerRegistry messageListenerContainerRegistry = new MessageListenerContainerRegistry();
+  private ConnectionFactoryRegistry connectionFactoryRegistry = new ConnectionFactoryRegistry();
+  private MessageListenerContainerRegistry messageListenerContainerRegistry =
+      new MessageListenerContainerRegistry();
 
-    public ProtocolRequestMessageListenerContainerFactory(final Environment environment,
-            final List<ProtocolInfo> protocolInfos, final List<DomainInfo> domainInfos,
-            final MessageProcessorMap protocolRequestMessageProcessorMap) {
-        this.environment = environment;
-        this.protocolInfos = protocolInfos;
-        this.domainInfos = domainInfos;
-        this.protocolRequestMessageProcessorMap = protocolRequestMessageProcessorMap;
+  public ProtocolRequestMessageListenerContainerFactory(
+      final Environment environment,
+      final List<ProtocolInfo> protocolInfos,
+      final List<DomainInfo> domainInfos,
+      final MessageProcessorMap protocolRequestMessageProcessorMap) {
+    this.environment = environment;
+    this.protocolInfos = protocolInfos;
+    this.domainInfos = domainInfos;
+    this.protocolRequestMessageProcessorMap = protocolRequestMessageProcessorMap;
+  }
+
+  public DefaultMessageListenerContainer getMessageListenerContainer(final String key) {
+    return this.messageListenerContainerRegistry.getValue(key);
+  }
+
+  @Override
+  public void afterPropertiesSet() throws SSLException {
+    for (final ProtocolInfo protocolInfo : this.protocolInfos) {
+      LOGGER.info("Initializing ProtocolRequestMessageListenerContainer {}", protocolInfo.getKey());
+
+      this.init(protocolInfo);
     }
+  }
 
-    public DefaultMessageListenerContainer getMessageListenerContainer(final String key) {
-        return this.messageListenerContainerRegistry.getValue(key);
-    }
+  private void init(final ProtocolInfo protocolInfo) throws SSLException {
+    final String key = protocolInfo.getKey();
 
-    @Override
-    public void afterPropertiesSet() throws SSLException {
-        for (final ProtocolInfo protocolInfo : this.protocolInfos) {
-            LOGGER.info("Initializing ProtocolRequestMessageListenerContainer {}", protocolInfo.getKey());
+    LOGGER.debug("Initializing JmsConfigurationFactory for protocol {}", key);
+    final JmsConfigurationFactory jmsConfigurationFactory =
+        new JmsConfigurationFactory(
+            this.environment,
+            this.defaultProtocolJmsConfiguration,
+            protocolInfo.getIncomingRequestsPropertyPrefix());
 
-            this.init(protocolInfo);
-        }
-    }
+    LOGGER.debug("Initializing PooledConnectionFactory for protocol {}", key);
+    final PooledConnectionFactory connectionFactory =
+        jmsConfigurationFactory.getPooledConnectionFactory();
+    this.connectionFactoryRegistry.register(key, connectionFactory);
+    connectionFactory.start();
 
-    private void init(final ProtocolInfo protocolInfo) throws SSLException {
-        final String key = protocolInfo.getKey();
+    LOGGER.debug("Initializing MesssageListenerContainer for protocol {}", key);
+    final ProtocolRequestMessageListener messageListener =
+        new ProtocolRequestMessageListener(
+            this.domainRequestService, this.domainInfos, this.protocolRequestMessageProcessorMap);
+    final DefaultMessageListenerContainer messageListenerContainer =
+        jmsConfigurationFactory.initMessageListenerContainer(messageListener);
+    this.messageListenerContainerRegistry.register(key, messageListenerContainer);
+    messageListenerContainer.afterPropertiesSet();
+    messageListenerContainer.start();
+  }
 
-        LOGGER.debug("Initializing JmsConfigurationFactory for protocol {}", key);
-        final JmsConfigurationFactory jmsConfigurationFactory = new JmsConfigurationFactory(this.environment,
-                this.defaultProtocolJmsConfiguration, protocolInfo.getIncomingRequestsPropertyPrefix());
+  @Override
+  public void destroy() {
+    LOGGER.debug("Destroying MessageListenerContainerRegistry");
+    this.messageListenerContainerRegistry.destroy();
 
-        LOGGER.debug("Initializing PooledConnectionFactory for protocol {}", key);
-        final PooledConnectionFactory connectionFactory = jmsConfigurationFactory.getPooledConnectionFactory();
-        this.connectionFactoryRegistry.register(key, connectionFactory);
-        connectionFactory.start();
-
-        LOGGER.debug("Initializing MesssageListenerContainer for protocol {}", key);
-        final ProtocolRequestMessageListener messageListener = new ProtocolRequestMessageListener(
-                this.domainRequestService, this.domainInfos, this.protocolRequestMessageProcessorMap);
-        final DefaultMessageListenerContainer messageListenerContainer = jmsConfigurationFactory
-                .initMessageListenerContainer(messageListener);
-        this.messageListenerContainerRegistry.register(key, messageListenerContainer);
-        messageListenerContainer.afterPropertiesSet();
-        messageListenerContainer.start();
-
-    }
-
-    @Override
-    public void destroy() {
-        LOGGER.debug("Destroying MessageListenerContainerRegistry");
-        this.messageListenerContainerRegistry.destroy();
-
-        LOGGER.debug("Destroying ConnectionFactoryRegistry");
-        this.connectionFactoryRegistry.destroy();
-    }
+    LOGGER.debug("Destroying ConnectionFactoryRegistry");
+    this.connectionFactoryRegistry.destroy();
+  }
 }

@@ -19,7 +19,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>super-osgp</artifactId>
-    <version>5.9.3</version>
+    <version>5.11.0</version>
     <relativePath>../../super/pom.xml</relativePath>
   </parent>
   <distributionManagement>
@@ -102,6 +102,11 @@
         <artifactId>osgp-adapter-domain-distributionautomation</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-iec60870</artifactId>
+        <version>${osgp.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>

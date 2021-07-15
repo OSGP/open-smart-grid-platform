@@ -1,9 +1,8 @@
-/**
+/*
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -24,31 +23,40 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GetConfigurationObjectResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+public class GetConfigurationObjectResponseMessageProcessor
+    extends OsgpCoreResponseMessageProcessor {
 
-    @Autowired
-    @Qualifier("domainSmartMeteringConfigurationService")
-    private ConfigurationService configurationService;
+  @Autowired
+  @Qualifier("domainSmartMeteringConfigurationService")
+  private ConfigurationService configurationService;
 
-    @Autowired
-    protected GetConfigurationObjectResponseMessageProcessor(
-            WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
-        super(responseMessageSender, messageProcessorMap, MessageType.GET_CONFIGURATION_OBJECT,
-                ComponentType.DOMAIN_SMART_METERING);
-    }
+  @Autowired
+  protected GetConfigurationObjectResponseMessageProcessor(
+      final WebServiceResponseMessageSender responseMessageSender,
+      @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
+          final MessageProcessorMap messageProcessorMap) {
+    super(
+        responseMessageSender,
+        messageProcessorMap,
+        MessageType.GET_CONFIGURATION_OBJECT,
+        ComponentType.DOMAIN_SMART_METERING);
+  }
 
-    @Override
-    protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
-        return responseMessage.getDataObject() instanceof GetConfigurationObjectResponseDto;
-    }
+  @Override
+  protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
+    return responseMessage.getDataObject() instanceof GetConfigurationObjectResponseDto;
+  }
 
-    @Override
-    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
-            final ResponseMessage responseMessage, final OsgpException osgpException) {
+  @Override
+  protected void handleMessage(
+      final DeviceMessageMetadata deviceMessageMetadata,
+      final ResponseMessage responseMessage,
+      final OsgpException osgpException) {
 
-        this.configurationService.handleGetConfigurationObjectResponse(deviceMessageMetadata,
-                responseMessage.getResult(), osgpException,
-                (GetConfigurationObjectResponseDto) responseMessage.getDataObject());
-    }
+    this.configurationService.handleGetConfigurationObjectResponse(
+        deviceMessageMetadata,
+        responseMessage.getResult(),
+        osgpException,
+        (GetConfigurationObjectResponseDto) responseMessage.getDataObject());
+  }
 }

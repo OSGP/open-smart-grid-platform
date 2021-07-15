@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.core.application.config;
 
@@ -25,48 +26,52 @@ import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
- * An application context Java configuration class. The usage of Java
- * configuration requires Spring Framework 3.0
+ * An application context Java configuration class. The usage of Java configuration requires Spring
+ * Framework 3.0
  */
 @Configuration
-@ComponentScan(basePackages = { "org.opensmartgridplatform.shared.domain.services",
-        "org.opensmartgridplatform.domain.core", "org.opensmartgridplatform.core" })
+@ComponentScan(
+    basePackages = {
+      "org.opensmartgridplatform.shared.domain.services",
+      "org.opensmartgridplatform.domain.core",
+      "org.opensmartgridplatform.core"
+    })
 @EnableTransactionManagement()
-@Import({ MessagingConfig.class })
+@Import({MessagingConfig.class})
 public class ApplicationContext {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
 
-    public ApplicationContext() {
-        // empty constructor
-    }
+  public ApplicationContext() {
+    // empty constructor
+  }
 
-    @Bean
-    ProtocolResponseService protocolResponseMessageSender() {
-        LOGGER.debug("Creating bean: protocolResponseMessageSender");
-        return new ProtocolResponseMessageSender();
-    }
+  @Bean
+  ProtocolResponseService protocolResponseMessageSender() {
+    LOGGER.debug("Creating bean: protocolResponseMessageSender");
+    return new ProtocolResponseMessageSender();
+  }
 
-    @Bean
-    ProtocolRequestService protocolRequestMessageSender() {
-        LOGGER.debug("Creating bean: protocolRequestMessageSender");
-        return new ProtocolRequestMessageSender();
-    }
+  @Bean
+  ProtocolRequestService protocolRequestMessageSender() {
+    LOGGER.debug("Creating bean: protocolRequestMessageSender");
+    return new ProtocolRequestMessageSender();
+  }
 
-    @Bean
-    DomainResponseService domainResponseMessageSender() {
-        LOGGER.debug("Creating bean: domainResponseMessageSender");
-        return new DomainResponseMessageSender();
-    }
+  @Bean
+  DomainResponseService domainResponseMessageSender() {
+    LOGGER.debug("Creating bean: domainResponseMessageSender");
+    return new DomainResponseMessageSender();
+  }
 
-    @Bean
-    DomainRequestService domainRequestMessageSender() {
-        LOGGER.debug("Creating bean: domainRequestMessageSender");
-        return new DomainRequestMessageSender();
-    }
+  @Bean
+  DomainRequestService domainRequestMessageSender() {
+    LOGGER.debug("Creating bean: domainRequestMessageSender");
+    return new DomainRequestMessageSender();
+  }
 
-    @Bean
-    public CoreLogItemRequestMessageSender coreLogItemRequestMessageSender() {
-        return new CoreLogItemRequestMessageSender();
-    }
+  @Bean
+  public CoreLogItemRequestMessageSender coreLogItemRequestMessageSender() {
+    return new CoreLogItemRequestMessageSender();
+  }
 }

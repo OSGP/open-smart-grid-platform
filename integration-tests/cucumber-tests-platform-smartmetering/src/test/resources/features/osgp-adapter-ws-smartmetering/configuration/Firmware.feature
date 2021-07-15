@@ -10,7 +10,7 @@ Feature: SmartMetering Configuration - Firmware
       | DeviceType                | SMART_METER_E     |
       | Protocol                  | DSMR              |
       | ProtocolVersion           | 4.2.2             |
-      | Port                      | 1024              |
+      | Port                      |              1024 |
       | FirmwareModuleVersionComm | V 1.1             |
       | FirmwareModuleVersionMa   | V 1.2             |
       | FirmwareModuleVersionFunc | V 1.3             |
@@ -18,7 +18,7 @@ Feature: SmartMetering Configuration - Firmware
       | DeviceIdentification        | TESTG102400000001 |
       | DeviceType                  | SMART_METER_G     |
       | GatewayDeviceIdentification | TEST1024000000001 |
-      | Channel                     | 1                 |
+      | Channel                     |                 1 |
     When the get firmware version request is received
       | DeviceIdentification | TEST1024000000001 |
     Then the firmware version result should be returned
@@ -33,15 +33,15 @@ Feature: SmartMetering Configuration - Firmware
       | FirmwareModuleVersionFunc | M57 4836               |
       | FirmwareIsForSmartMeters  | true                   |
 
-#  TODO (RvM): to fix test: support SMR 5.1 with invocation counter in the simulator
+  #  TODO (RvM): to fix test: support SMR 5.1 with invocation counter in the simulator
   @wip @Skip
   Scenario: Get the firmware version from SMR 5.1 device
     Given a dlms device
       | DeviceIdentification      | TEST1027000000001 |
       | DeviceType                | SMART_METER_E     |
       | Protocol                  | SMR               |
-      | ProtocolVersion           | 5.1               |
-      | Port                      | 1027              |
+      | ProtocolVersion           |               5.1 |
+      | Port                      |              1027 |
       | FirmwareModuleVersionComm | V 1.1             |
       | FirmwareModuleVersionMa   | V 1.2             |
       | FirmwareModuleVersionFunc | V 1.3             |
@@ -50,7 +50,7 @@ Feature: SmartMetering Configuration - Firmware
       | DeviceIdentification        | TESTG102400000001 |
       | DeviceType                  | SMART_METER_G     |
       | GatewayDeviceIdentification | TEST1027000000001 |
-      | Channel                     | 1                 |
+      | Channel                     |                 1 |
     When the get firmware version request is received
       | DeviceIdentification | TEST1027000000001 |
     Then the firmware version result should be returned
@@ -66,6 +66,28 @@ Feature: SmartMetering Configuration - Firmware
       | FirmwareModuleVersionFunc | M57 4836               |
       | FirmwareModuleVersionMbda | M00 0000               |
       | FirmwareIsForSmartMeters  | true                   |
+
+  Scenario: Get the firmware version from SMR 5.1 gas meter
+    Given a dlms device
+      | DeviceIdentification | TEST1027000000001 |
+      | DeviceType           | SMART_METER_E     |
+      | Protocol             | SMR               |
+      | ProtocolVersion      |               5.1 |
+      | Port                 |              1027 |
+    And a dlms device
+      | DeviceIdentification        | TEST1027000000002 |
+      | DeviceType                  | SMART_METER_G     |
+      | GatewayDeviceIdentification | TEST1027000000001 |
+      | Channel                     |                 3 |
+      | FirmwareModuleVersionSimple |          19180706 |
+    When the get firmware version gas request is received
+      | DeviceIdentification | TEST1027000000002 |
+    Then the firmware version gas result should be returned
+      | DeviceIdentification | TEST1027000000002 |
+      | SimpleVersionInfo    |          00400011 |
+    And the database should be updated with the device firmware version
+      | DeviceIdentification | TEST1027000000002 |
+      | SimpleVersionInfo    |          00400011 |
 
   @NightlyBuildOnly
   Scenario: successful upgrade of firmware

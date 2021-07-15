@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.wsclient;
 
@@ -24,63 +25,65 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
-/**
- * SOAP Client for SecretManagement
- */
+/** SOAP Client for SecretManagement */
 @Component
 public class SecretManagementClient {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SecretManagementClient.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SecretManagementClient.class);
 
-    private final WebServiceTemplate webServiceTemplate;
+  private final WebServiceTemplate webServiceTemplate;
 
-    SecretManagementClient(WebServiceTemplate webServiceTemplate) {
-        this.webServiceTemplate = webServiceTemplate;
-    }
+  SecretManagementClient(final WebServiceTemplate webServiceTemplate) {
+    this.webServiceTemplate = webServiceTemplate;
+  }
 
-    public GetSecretsResponse getSecretsRequest(GetSecretsRequest request) {
+  public GetSecretsResponse getSecretsRequest(final GetSecretsRequest request) {
 
-        LOGGER.info("Calling SecretManagement.getSecretsRequest over SOAP for device {}", request.getDeviceId());
+    LOGGER.info(
+        "Calling SecretManagement.getSecretsRequest over SOAP for device {}",
+        request.getDeviceId());
 
-        return (GetSecretsResponse) this.webServiceTemplate
-                .marshalSendAndReceive(request);
-    }
+    return (GetSecretsResponse) this.webServiceTemplate.marshalSendAndReceive(request);
+  }
 
-    public GetNewSecretsResponse getNewSecretsRequest(GetNewSecretsRequest request) {
+  public GetNewSecretsResponse getNewSecretsRequest(final GetNewSecretsRequest request) {
 
-        LOGGER.info("Calling SecretManagement.getNewSecretsRequest over SOAP for device {}", request.getDeviceId());
+    LOGGER.info(
+        "Calling SecretManagement.getNewSecretsRequest over SOAP for device {}",
+        request.getDeviceId());
 
-        return (GetNewSecretsResponse) this.webServiceTemplate
-                .marshalSendAndReceive(request);
-    }
+    return (GetNewSecretsResponse) this.webServiceTemplate.marshalSendAndReceive(request);
+  }
 
-    public StoreSecretsResponse storeSecretsRequest(StoreSecretsRequest request) {
-        LOGGER.info("Calling SecretManagement.storeSecretsRequest over SOAP for device {}", request.getDeviceId());
+  public StoreSecretsResponse storeSecretsRequest(final StoreSecretsRequest request) {
+    LOGGER.info(
+        "Calling SecretManagement.storeSecretsRequest over SOAP for device {}",
+        request.getDeviceId());
 
-        return (StoreSecretsResponse) this.webServiceTemplate
-                .marshalSendAndReceive(request);
-    }
+    return (StoreSecretsResponse) this.webServiceTemplate.marshalSendAndReceive(request);
+  }
 
-    public ActivateSecretsResponse activateSecretsRequest(ActivateSecretsRequest request) {
-        LOGGER.info("Calling SecretManagement.activateSecretsRequest over SOAP for device {}",
-                request.getDeviceId());
+  public ActivateSecretsResponse activateSecretsRequest(final ActivateSecretsRequest request) {
+    LOGGER.info(
+        "Calling SecretManagement.activateSecretsRequest over SOAP for device {}",
+        request.getDeviceId());
 
-        return (ActivateSecretsResponse) this.webServiceTemplate
-                .marshalSendAndReceive(request);
-    }
+    return (ActivateSecretsResponse) this.webServiceTemplate.marshalSendAndReceive(request);
+  }
 
-    public HasNewSecretResponse hasNewSecretRequest(HasNewSecretRequest request) {
-        LOGGER.info("Calling SecretManagement.hasNewSecretsRequest over SOAP for device {}",
-                request.getDeviceId());
+  public HasNewSecretResponse hasNewSecretRequest(final HasNewSecretRequest request) {
+    LOGGER.info(
+        "Calling SecretManagement.hasNewSecretsRequest over SOAP for device {}",
+        request.getDeviceId());
 
-        return (HasNewSecretResponse) this.webServiceTemplate
-                .marshalSendAndReceive(request);
-    }
+    return (HasNewSecretResponse) this.webServiceTemplate.marshalSendAndReceive(request);
+  }
 
-    public GenerateAndStoreSecretsResponse generateAndStoreSecrets(GenerateAndStoreSecretsRequest request) {
-        LOGGER.info("Calling SecretManagement.generateAndStoreSecrets over SOAP for device {}",
-                request.getDeviceId());
+  public GenerateAndStoreSecretsResponse generateAndStoreSecrets(
+      final GenerateAndStoreSecretsRequest request) {
+    LOGGER.info(
+        "Calling SecretManagement.generateAndStoreSecrets over SOAP for device {}",
+        request.getDeviceId());
 
-        return (GenerateAndStoreSecretsResponse) this.webServiceTemplate
-                .marshalSendAndReceive(request);
-    }
+    return (GenerateAndStoreSecretsResponse) this.webServiceTemplate.marshalSendAndReceive(request);
+  }
 }

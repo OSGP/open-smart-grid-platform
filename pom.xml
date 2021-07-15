@@ -13,7 +13,7 @@
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>open-smart-grid-platform</artifactId>
-  <version>5.9.3</version>
+  <version>5.11.0</version>
   <packaging>pom</packaging>
 
   <!-- Description, Organization, Licenses, URL and Distribution Management
@@ -129,6 +129,7 @@
     <module>integration-tests/cucumber-tests-platform-microgrids</module>
     <module>integration-tests/cucumber-tests-platform-publiclighting</module>
     <module>integration-tests/cucumber-tests-platform-smartmetering</module>
+    <module>integration-tests/cucumber-tests-protocol-iec60870</module>
 
     <!-- demo client application -->
     <module>public-lighting-demo-app/parent-os-webapps</module>

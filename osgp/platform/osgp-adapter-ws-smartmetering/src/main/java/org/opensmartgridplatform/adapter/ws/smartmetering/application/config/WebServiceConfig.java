@@ -1,16 +1,16 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.config;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.BypassRetry;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.CertificateAndSoapHeaderAuthorizationEndpointInterceptor;
@@ -44,314 +44,332 @@ import org.springframework.ws.server.endpoint.adapter.method.MethodReturnValueHa
 @PropertySource(value = "file:${osgp/AdapterWsSmartMetering/config}", ignoreResourceNotFound = true)
 public class WebServiceConfig extends AbstractConfig {
 
-    private static final String SERVER = "SERVER";
+  private static final String SERVER = "SERVER";
 
-    @Value("${jaxb2.marshaller.context.path.smartmetering.adhoc}")
-    private String marshallerContextPathAdhoc;
-    @Value("${jaxb2.marshaller.context.path.smartmetering.bundle}")
-    private String marshallerContextPathBundle;
-    @Value("${jaxb2.marshaller.context.path.smartmetering.configuration}")
-    private String marshallerContextPathConfiguration;
-    @Value("${jaxb2.marshaller.context.path.smartmetering.installation}")
-    private String marshallerContextPathInstallation;
-    @Value("${jaxb2.marshaller.context.path.smartmetering.management}")
-    private String marshallerContextPathManagement;
-    @Value("${jaxb2.marshaller.context.path.smartmetering.monitoring}")
-    private String marshallerContextPathMonitoring;
+  @Value("${jaxb2.marshaller.context.path.smartmetering.adhoc}")
+  private String marshallerContextPathAdhoc;
 
-    private static final String PROPERTY_NAME_SOAP_MESSAGE_LOGGING_ENABLED = "soap.message.logging.enabled";
-    private static final String PROPERTY_NAME_SOAP_MESSAGE_PRINTING_ENABLED = "soap.message.printing.enabled";
+  @Value("${jaxb2.marshaller.context.path.smartmetering.bundle}")
+  private String marshallerContextPathBundle;
 
-    private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
-    private static final String ORGANISATION_IDENTIFICATION_CONTEXT = ORGANISATION_IDENTIFICATION_HEADER;
+  @Value("${jaxb2.marshaller.context.path.smartmetering.configuration}")
+  private String marshallerContextPathConfiguration;
 
-    private static final String USER_NAME_HEADER = "UserName";
-    private static final String APPLICATION_NAME_HEADER = "ApplicationName";
+  @Value("${jaxb2.marshaller.context.path.smartmetering.installation}")
+  private String marshallerContextPathInstallation;
 
-    private static final String MESSAGE_PRIORITY_HEADER = "MessagePriority";
-    private static final String MESSAGE_SCHEDULETIME_HEADER = "ScheduleTime";
-    private static final String MESSAGE_RESPONSE_URL_HEADER = "ResponseUrl";
-    private static final String BYPASS_RETRY_HEADER = "BypassRetry";
+  @Value("${jaxb2.marshaller.context.path.smartmetering.management}")
+  private String marshallerContextPathManagement;
 
-    private static final String X509_RDN_ATTRIBUTE_ID = "cn";
-    private static final String X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME = "CommonNameSet";
+  @Value("${jaxb2.marshaller.context.path.smartmetering.monitoring}")
+  private String marshallerContextPathMonitoring;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceConfig.class);
+  private static final String PROPERTY_NAME_SOAP_MESSAGE_LOGGING_ENABLED =
+      "soap.message.logging.enabled";
+  private static final String PROPERTY_NAME_SOAP_MESSAGE_PRINTING_ENABLED =
+      "soap.message.printing.enabled";
 
-    // Client WS code
+  private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
+  private static final String ORGANISATION_IDENTIFICATION_CONTEXT =
+      ORGANISATION_IDENTIFICATION_HEADER;
 
-    /**
-     * Method for creating the Marshaller for smart metering management.
-     *
-     * @return Jaxb2Marshaller
-     */
-    @Bean
-    public Jaxb2Marshaller smartMeteringManagementMarshaller() {
-        final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+  private static final String USER_NAME_HEADER = "UserName";
+  private static final String APPLICATION_NAME_HEADER = "ApplicationName";
 
-        marshaller.setContextPath(this.marshallerContextPathManagement);
+  private static final String MESSAGE_PRIORITY_HEADER = "MessagePriority";
+  private static final String MESSAGE_SCHEDULETIME_HEADER = "ScheduleTime";
+  private static final String MESSAGE_RESPONSE_URL_HEADER = "ResponseUrl";
+  private static final String BYPASS_RETRY_HEADER = "BypassRetry";
 
-        return marshaller;
-    }
+  private static final String X509_RDN_ATTRIBUTE_ID = "cn";
+  private static final String X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME = "CommonNameSet";
 
-    /**
-     * Method for creating the Marshalling Payload Method Processor for Smart
-     * Metering management.
-     *
-     * @return MarshallingPayloadMethodProcessor
-     */
-    @Bean
-    public MarshallingPayloadMethodProcessor smartMeteringManagementMarshallingPayloadMethodProcessor() {
-        return new MarshallingPayloadMethodProcessor(this.smartMeteringManagementMarshaller(),
-                this.smartMeteringManagementMarshaller());
-    }
+  private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceConfig.class);
 
-    /**
-     * Method for creating the Marshaller for smart metering bundle.
-     *
-     * @return Jaxb2Marshaller
-     */
-    @Bean
-    public Jaxb2Marshaller smartMeteringBundleMarshaller() {
-        final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+  // Client WS code
 
-        marshaller.setContextPath(this.marshallerContextPathBundle);
+  /**
+   * Method for creating the Marshaller for smart metering management.
+   *
+   * @return Jaxb2Marshaller
+   */
+  @Bean
+  public Jaxb2Marshaller smartMeteringManagementMarshaller() {
+    final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-        return marshaller;
-    }
+    marshaller.setContextPath(this.marshallerContextPathManagement);
 
-    /**
-     * Method for creating the Marshalling Payload Method Processor for Smart
-     * Metering bundle.
-     *
-     * @return MarshallingPayloadMethodProcessor
-     */
-    @Bean
-    public MarshallingPayloadMethodProcessor smartMeteringBundleMarshallingPayloadMethodProcessor() {
-        return new MarshallingPayloadMethodProcessor(this.smartMeteringBundleMarshaller(),
-                this.smartMeteringBundleMarshaller());
-    }
+    return marshaller;
+  }
 
-    /**
-     * Method for creating the Marshaller for smart metering installation.
-     *
-     * @return Jaxb2Marshaller
-     */
-    @Bean
-    public Jaxb2Marshaller smartMeteringInstallationMarshaller() {
-        final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+  /**
+   * Method for creating the Marshalling Payload Method Processor for Smart Metering management.
+   *
+   * @return MarshallingPayloadMethodProcessor
+   */
+  @Bean
+  public MarshallingPayloadMethodProcessor
+      smartMeteringManagementMarshallingPayloadMethodProcessor() {
+    return new MarshallingPayloadMethodProcessor(
+        this.smartMeteringManagementMarshaller(), this.smartMeteringManagementMarshaller());
+  }
 
-        marshaller.setContextPath(this.marshallerContextPathInstallation);
+  /**
+   * Method for creating the Marshaller for smart metering bundle.
+   *
+   * @return Jaxb2Marshaller
+   */
+  @Bean
+  public Jaxb2Marshaller smartMeteringBundleMarshaller() {
+    final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-        return marshaller;
-    }
+    marshaller.setContextPath(this.marshallerContextPathBundle);
 
-    /**
-     * Method for creating the Marshalling Payload Method Processor for Smart
-     * Metering installation.
-     *
-     * @return MarshallingPayloadMethodProcessor
-     */
-    @Bean
-    public MarshallingPayloadMethodProcessor smartMeteringInstallationMarshallingPayloadMethodProcessor() {
-        return new MarshallingPayloadMethodProcessor(this.smartMeteringInstallationMarshaller(),
-                this.smartMeteringInstallationMarshaller());
-    }
+    return marshaller;
+  }
 
-    /**
-     * Method for creating the Marshaller for smart metering monitoring.
-     *
-     * @return Jaxb2Marshaller
-     */
-    @Bean
-    public Jaxb2Marshaller smartMeteringMonitoringMarshaller() {
-        final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+  /**
+   * Method for creating the Marshalling Payload Method Processor for Smart Metering bundle.
+   *
+   * @return MarshallingPayloadMethodProcessor
+   */
+  @Bean
+  public MarshallingPayloadMethodProcessor smartMeteringBundleMarshallingPayloadMethodProcessor() {
+    return new MarshallingPayloadMethodProcessor(
+        this.smartMeteringBundleMarshaller(), this.smartMeteringBundleMarshaller());
+  }
 
-        marshaller.setContextPath(this.marshallerContextPathMonitoring);
+  /**
+   * Method for creating the Marshaller for smart metering installation.
+   *
+   * @return Jaxb2Marshaller
+   */
+  @Bean
+  public Jaxb2Marshaller smartMeteringInstallationMarshaller() {
+    final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-        return marshaller;
-    }
+    marshaller.setContextPath(this.marshallerContextPathInstallation);
 
-    /**
-     * Method for creating the Marshaller for smart metering adhoc.
-     *
-     * @return Jaxb2Marshaller
-     */
-    @Bean
-    public Jaxb2Marshaller smartMeteringAdhocMarshaller() {
-        final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+    return marshaller;
+  }
 
-        marshaller.setContextPath(this.marshallerContextPathAdhoc);
+  /**
+   * Method for creating the Marshalling Payload Method Processor for Smart Metering installation.
+   *
+   * @return MarshallingPayloadMethodProcessor
+   */
+  @Bean
+  public MarshallingPayloadMethodProcessor
+      smartMeteringInstallationMarshallingPayloadMethodProcessor() {
+    return new MarshallingPayloadMethodProcessor(
+        this.smartMeteringInstallationMarshaller(), this.smartMeteringInstallationMarshaller());
+  }
 
-        return marshaller;
-    }
+  /**
+   * Method for creating the Marshaller for smart metering monitoring.
+   *
+   * @return Jaxb2Marshaller
+   */
+  @Bean
+  public Jaxb2Marshaller smartMeteringMonitoringMarshaller() {
+    final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-    /**
-     * Method for creating the Marshalling Payload Method Processor for Smart
-     * Metering adhoc.
-     *
-     * @return MarshallingPayloadMethodProcessor
-     */
+    marshaller.setContextPath(this.marshallerContextPathMonitoring);
 
-    @Bean
-    public MarshallingPayloadMethodProcessor smartMeteringAdhocMarshallingPayloadMethodProcessor() {
-        return new MarshallingPayloadMethodProcessor(this.smartMeteringAdhocMarshaller(),
-                this.smartMeteringAdhocMarshaller());
-    }
+    return marshaller;
+  }
 
-    /**
-     * Method for creating the Marshaller for smart metering configuration.
-     *
-     * @return Jaxb2Marshaller
-     */
-    @Bean
-    public Jaxb2Marshaller smartMeteringConfigurationMarshaller() {
-        final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+  /**
+   * Method for creating the Marshaller for smart metering adhoc.
+   *
+   * @return Jaxb2Marshaller
+   */
+  @Bean
+  public Jaxb2Marshaller smartMeteringAdhocMarshaller() {
+    final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-        marshaller.setContextPath(this.marshallerContextPathConfiguration);
+    marshaller.setContextPath(this.marshallerContextPathAdhoc);
 
-        return marshaller;
-    }
+    return marshaller;
+  }
 
-    /**
-     * Method for creating the Marshalling Payload Method Processor for Smart
-     * Metering configuration.
-     *
-     * @return MarshallingPayloadMethodProcessor
-     */
-    @Bean
-    public MarshallingPayloadMethodProcessor smartMeteringConfigurationMarshallingPayloadMethodProcessor() {
-        return new MarshallingPayloadMethodProcessor(this.smartMeteringConfigurationMarshaller(),
-                this.smartMeteringConfigurationMarshaller());
-    }
+  /**
+   * Method for creating the Marshalling Payload Method Processor for Smart Metering adhoc.
+   *
+   * @return MarshallingPayloadMethodProcessor
+   */
+  @Bean
+  public MarshallingPayloadMethodProcessor smartMeteringAdhocMarshallingPayloadMethodProcessor() {
+    return new MarshallingPayloadMethodProcessor(
+        this.smartMeteringAdhocMarshaller(), this.smartMeteringAdhocMarshaller());
+  }
 
-    /**
-     * Method for creating the Marshalling Payload Method Processor for Smart
-     * Metering monitoring.
-     *
-     * @return MarshallingPayloadMethodProcessor
-     */
-    @Bean
-    public MarshallingPayloadMethodProcessor smartMeteringMonitoringMarshallingPayloadMethodProcessor() {
-        return new MarshallingPayloadMethodProcessor(this.smartMeteringMonitoringMarshaller(),
-                this.smartMeteringMonitoringMarshaller());
-    }
+  /**
+   * Method for creating the Marshaller for smart metering configuration.
+   *
+   * @return Jaxb2Marshaller
+   */
+  @Bean
+  public Jaxb2Marshaller smartMeteringConfigurationMarshaller() {
+    final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-    /**
-     * Method for creating the Default Method Endpoint Adapter.
-     *
-     * @return DefaultMethodEndpointAdapter
-     */
-    @Bean
-    public DefaultMethodEndpointAdapter defaultMethodEndpointAdapter() {
-        final DefaultMethodEndpointAdapter defaultMethodEndpointAdapter = new DefaultMethodEndpointAdapter();
+    marshaller.setContextPath(this.marshallerContextPathConfiguration);
 
-        final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<>();
+    return marshaller;
+  }
 
-        // SMART METERING
-        methodArgumentResolvers.add(this.smartMeteringManagementMarshallingPayloadMethodProcessor());
-        methodArgumentResolvers.add(this.smartMeteringBundleMarshallingPayloadMethodProcessor());
-        methodArgumentResolvers.add(this.smartMeteringInstallationMarshallingPayloadMethodProcessor());
-        methodArgumentResolvers.add(this.smartMeteringMonitoringMarshallingPayloadMethodProcessor());
-        methodArgumentResolvers.add(this.smartMeteringAdhocMarshallingPayloadMethodProcessor());
-        methodArgumentResolvers.add(this.smartMeteringConfigurationMarshallingPayloadMethodProcessor());
+  /**
+   * Method for creating the Marshalling Payload Method Processor for Smart Metering configuration.
+   *
+   * @return MarshallingPayloadMethodProcessor
+   */
+  @Bean
+  public MarshallingPayloadMethodProcessor
+      smartMeteringConfigurationMarshallingPayloadMethodProcessor() {
+    return new MarshallingPayloadMethodProcessor(
+        this.smartMeteringConfigurationMarshaller(), this.smartMeteringConfigurationMarshaller());
+  }
 
-        methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(ORGANISATION_IDENTIFICATION_CONTEXT,
-                OrganisationIdentification.class));
-        methodArgumentResolvers
-                .add(new AnnotationMethodArgumentResolver(MESSAGE_PRIORITY_HEADER, MessagePriority.class));
-        methodArgumentResolvers
-                .add(new AnnotationMethodArgumentResolver(MESSAGE_SCHEDULETIME_HEADER, ScheduleTime.class));
-        methodArgumentResolvers
-                .add(new AnnotationMethodArgumentResolver(MESSAGE_RESPONSE_URL_HEADER, ResponseUrl.class));
-        methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(BYPASS_RETRY_HEADER, BypassRetry.class));
-        defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
+  /**
+   * Method for creating the Marshalling Payload Method Processor for Smart Metering monitoring.
+   *
+   * @return MarshallingPayloadMethodProcessor
+   */
+  @Bean
+  public MarshallingPayloadMethodProcessor
+      smartMeteringMonitoringMarshallingPayloadMethodProcessor() {
+    return new MarshallingPayloadMethodProcessor(
+        this.smartMeteringMonitoringMarshaller(), this.smartMeteringMonitoringMarshaller());
+  }
 
-        final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<>();
+  /**
+   * Method for creating the Default Method Endpoint Adapter.
+   *
+   * @return DefaultMethodEndpointAdapter
+   */
+  @Bean
+  public DefaultMethodEndpointAdapter defaultMethodEndpointAdapter() {
+    final DefaultMethodEndpointAdapter defaultMethodEndpointAdapter =
+        new DefaultMethodEndpointAdapter();
 
-        // SMART METERING
-        methodReturnValueHandlers.add(this.smartMeteringManagementMarshallingPayloadMethodProcessor());
-        methodReturnValueHandlers.add(this.smartMeteringBundleMarshallingPayloadMethodProcessor());
-        methodReturnValueHandlers.add(this.smartMeteringInstallationMarshallingPayloadMethodProcessor());
-        methodReturnValueHandlers.add(this.smartMeteringMonitoringMarshallingPayloadMethodProcessor());
-        methodReturnValueHandlers.add(this.smartMeteringAdhocMarshallingPayloadMethodProcessor());
-        methodReturnValueHandlers.add(this.smartMeteringConfigurationMarshallingPayloadMethodProcessor());
+    final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<>();
 
-        defaultMethodEndpointAdapter.setMethodReturnValueHandlers(methodReturnValueHandlers);
+    // SMART METERING
+    methodArgumentResolvers.add(this.smartMeteringManagementMarshallingPayloadMethodProcessor());
+    methodArgumentResolvers.add(this.smartMeteringBundleMarshallingPayloadMethodProcessor());
+    methodArgumentResolvers.add(this.smartMeteringInstallationMarshallingPayloadMethodProcessor());
+    methodArgumentResolvers.add(this.smartMeteringMonitoringMarshallingPayloadMethodProcessor());
+    methodArgumentResolvers.add(this.smartMeteringAdhocMarshallingPayloadMethodProcessor());
+    methodArgumentResolvers.add(this.smartMeteringConfigurationMarshallingPayloadMethodProcessor());
 
-        return defaultMethodEndpointAdapter;
-    }
+    methodArgumentResolvers.add(
+        new AnnotationMethodArgumentResolver(
+            ORGANISATION_IDENTIFICATION_CONTEXT, OrganisationIdentification.class));
+    methodArgumentResolvers.add(
+        new AnnotationMethodArgumentResolver(MESSAGE_PRIORITY_HEADER, MessagePriority.class));
+    methodArgumentResolvers.add(
+        new AnnotationMethodArgumentResolver(MESSAGE_SCHEDULETIME_HEADER, ScheduleTime.class));
+    methodArgumentResolvers.add(
+        new AnnotationMethodArgumentResolver(MESSAGE_RESPONSE_URL_HEADER, ResponseUrl.class));
+    methodArgumentResolvers.add(
+        new AnnotationMethodArgumentResolver(BYPASS_RETRY_HEADER, BypassRetry.class));
+    defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
 
-    @Bean
-    public DetailSoapFaultMappingExceptionResolver exceptionResolver() {
+    final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<>();
 
-        LOGGER.debug("Creating Detail Soap Fault Mapping Exception Resolver Bean");
+    // SMART METERING
+    methodReturnValueHandlers.add(this.smartMeteringManagementMarshallingPayloadMethodProcessor());
+    methodReturnValueHandlers.add(this.smartMeteringBundleMarshallingPayloadMethodProcessor());
+    methodReturnValueHandlers.add(
+        this.smartMeteringInstallationMarshallingPayloadMethodProcessor());
+    methodReturnValueHandlers.add(this.smartMeteringMonitoringMarshallingPayloadMethodProcessor());
+    methodReturnValueHandlers.add(this.smartMeteringAdhocMarshallingPayloadMethodProcessor());
+    methodReturnValueHandlers.add(
+        this.smartMeteringConfigurationMarshallingPayloadMethodProcessor());
 
-        final DetailSoapFaultMappingExceptionResolver exceptionResolver = new DetailSoapFaultMappingExceptionResolver(
-                new SoapFaultMapper());
-        exceptionResolver.setOrder(1);
+    defaultMethodEndpointAdapter.setMethodReturnValueHandlers(methodReturnValueHandlers);
 
-        final Properties props = new Properties();
-        props.put("org.opensmartgridplatform.shared.exceptionhandling.OsgpException", SERVER);
-        props.put("org.opensmartgridplatform.shared.exceptionhandling.FunctionalException", SERVER);
-        props.put("org.opensmartgridplatform.shared.exceptionhandling.TechnicalException", SERVER);
-        props.put("org.opensmartgridplatform.shared.exceptionhandling.ConnectionFailureException", SERVER);
-        exceptionResolver.setExceptionMappings(props);
-        return exceptionResolver;
-    }
+    return defaultMethodEndpointAdapter;
+  }
 
-    @Bean
-    public X509CertificateRdnAttributeValueEndpointInterceptor x509CertificateSubjectCnEndpointInterceptor() {
-        return new X509CertificateRdnAttributeValueEndpointInterceptor(X509_RDN_ATTRIBUTE_ID,
-                X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME);
-    }
+  @Bean
+  public DetailSoapFaultMappingExceptionResolver exceptionResolver() {
 
-    @Bean
-    public SoapHeaderEndpointInterceptor organisationIdentificationInterceptor() {
-        return new SoapHeaderEndpointInterceptor(ORGANISATION_IDENTIFICATION_HEADER,
-                ORGANISATION_IDENTIFICATION_CONTEXT);
-    }
+    LOGGER.debug("Creating Detail Soap Fault Mapping Exception Resolver Bean");
 
-    @Bean
-    public SoapHeaderInterceptor messagePriorityInterceptor() {
-        LOGGER.debug("Creating Message Priority Interceptor Bean");
+    final DetailSoapFaultMappingExceptionResolver exceptionResolver =
+        new DetailSoapFaultMappingExceptionResolver(new SoapFaultMapper());
+    exceptionResolver.setOrder(1);
 
-        return new SoapHeaderInterceptor(MESSAGE_PRIORITY_HEADER, MESSAGE_PRIORITY_HEADER);
-    }
+    final Properties props = new Properties();
+    props.put("org.opensmartgridplatform.shared.exceptionhandling.OsgpException", SERVER);
+    props.put("org.opensmartgridplatform.shared.exceptionhandling.FunctionalException", SERVER);
+    props.put("org.opensmartgridplatform.shared.exceptionhandling.TechnicalException", SERVER);
+    props.put(
+        "org.opensmartgridplatform.shared.exceptionhandling.ConnectionFailureException", SERVER);
+    exceptionResolver.setExceptionMappings(props);
+    return exceptionResolver;
+  }
 
-    @Bean
-    public SoapHeaderInterceptor scheduleTimeInterceptor() {
-        return new SoapHeaderInterceptor(MESSAGE_SCHEDULETIME_HEADER, MESSAGE_SCHEDULETIME_HEADER);
-    }
+  @Bean
+  public X509CertificateRdnAttributeValueEndpointInterceptor
+      x509CertificateSubjectCnEndpointInterceptor() {
+    return new X509CertificateRdnAttributeValueEndpointInterceptor(
+        X509_RDN_ATTRIBUTE_ID, X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME);
+  }
 
-    @Bean
-    public SoapHeaderInterceptor responseUrlInterceptor() {
-        return new SoapHeaderInterceptor(MESSAGE_RESPONSE_URL_HEADER, MESSAGE_RESPONSE_URL_HEADER);
-    }
+  @Bean
+  public SoapHeaderEndpointInterceptor organisationIdentificationInterceptor() {
+    return new SoapHeaderEndpointInterceptor(
+        ORGANISATION_IDENTIFICATION_HEADER, ORGANISATION_IDENTIFICATION_CONTEXT);
+  }
 
-    @Bean
-    public SoapHeaderInterceptor bypassRetryInterceptor() {
-        return new SoapHeaderInterceptor(BYPASS_RETRY_HEADER, BYPASS_RETRY_HEADER);
-    }
+  @Bean
+  public SoapHeaderInterceptor messagePriorityInterceptor() {
+    LOGGER.debug("Creating Message Priority Interceptor Bean");
 
-    @Bean
-    public CertificateAndSoapHeaderAuthorizationEndpointInterceptor organisationIdentificationInCertificateCnEndpointInterceptor() {
-        return new CertificateAndSoapHeaderAuthorizationEndpointInterceptor(
-                X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME, ORGANISATION_IDENTIFICATION_CONTEXT);
-    }
+    return new SoapHeaderInterceptor(MESSAGE_PRIORITY_HEADER, MESSAGE_PRIORITY_HEADER);
+  }
 
-    @Bean
-    public WebServiceMonitorInterceptor webServiceMonitorInterceptor() {
-        final boolean soapMessageLoggingEnabled = this.environment
-                .getProperty(PROPERTY_NAME_SOAP_MESSAGE_LOGGING_ENABLED, boolean.class, false);
-        final boolean soapMessagePrintingEnabled = this.environment
-                .getProperty(PROPERTY_NAME_SOAP_MESSAGE_PRINTING_ENABLED, boolean.class, true);
+  @Bean
+  public SoapHeaderInterceptor scheduleTimeInterceptor() {
+    return new SoapHeaderInterceptor(MESSAGE_SCHEDULETIME_HEADER, MESSAGE_SCHEDULETIME_HEADER);
+  }
 
-        final WebServiceMonitorInterceptorCapabilities capabilities = new WebServiceMonitorInterceptorCapabilities(
-                soapMessageLoggingEnabled, soapMessagePrintingEnabled);
+  @Bean
+  public SoapHeaderInterceptor responseUrlInterceptor() {
+    return new SoapHeaderInterceptor(MESSAGE_RESPONSE_URL_HEADER, MESSAGE_RESPONSE_URL_HEADER);
+  }
 
-        return new WebServiceMonitorInterceptor(ORGANISATION_IDENTIFICATION_HEADER, USER_NAME_HEADER,
-                APPLICATION_NAME_HEADER, capabilities);
-    }
+  @Bean
+  public SoapHeaderInterceptor bypassRetryInterceptor() {
+    return new SoapHeaderInterceptor(BYPASS_RETRY_HEADER, BYPASS_RETRY_HEADER);
+  }
 
+  @Bean
+  public CertificateAndSoapHeaderAuthorizationEndpointInterceptor
+      organisationIdentificationInCertificateCnEndpointInterceptor() {
+    return new CertificateAndSoapHeaderAuthorizationEndpointInterceptor(
+        X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME, ORGANISATION_IDENTIFICATION_CONTEXT);
+  }
+
+  @Bean
+  public WebServiceMonitorInterceptor webServiceMonitorInterceptor() {
+    final boolean soapMessageLoggingEnabled =
+        this.environment.getProperty(
+            PROPERTY_NAME_SOAP_MESSAGE_LOGGING_ENABLED, boolean.class, false);
+    final boolean soapMessagePrintingEnabled =
+        this.environment.getProperty(
+            PROPERTY_NAME_SOAP_MESSAGE_PRINTING_ENABLED, boolean.class, true);
+
+    final WebServiceMonitorInterceptorCapabilities capabilities =
+        new WebServiceMonitorInterceptorCapabilities(
+            soapMessageLoggingEnabled, soapMessagePrintingEnabled);
+
+    return new WebServiceMonitorInterceptor(
+        ORGANISATION_IDENTIFICATION_HEADER,
+        USER_NAME_HEADER,
+        APPLICATION_NAME_HEADER,
+        capabilities);
+  }
 }

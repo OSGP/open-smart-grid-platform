@@ -1,16 +1,18 @@
-/**
+/*
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringbundle;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 import java.util.Map;
-
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActionResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetActivityCalendarRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetConfigurationObjectRequest;
@@ -26,134 +28,148 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smar
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.activitycalendar.SeasonProfile;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.activitycalendar.WeekProfile;
 
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
-
 public class BundledSetActivityCalendarSteps extends BaseBundleSteps {
 
-    @Given("^an activity calendar$")
-    public void anActivityCalendar(final Map<String, String> parameters) throws Throwable {
-        final String name = parameters.get(PlatformSmartmeteringKeys.ACTIVITY_CALENDAR_NAME);
-        final String activatePassiveCalendarTime = parameters
-                .get(PlatformSmartmeteringKeys.ACTIVITY_CALENDAR_ACTIVATE_PASSIVE_CALENDAR_TIME);
+  @Given("^an activity calendar$")
+  public void anActivityCalendar(final Map<String, String> parameters) throws Throwable {
+    final String name = parameters.get(PlatformSmartmeteringKeys.ACTIVITY_CALENDAR_NAME);
+    final String activatePassiveCalendarTime =
+        parameters.get(PlatformSmartmeteringKeys.ACTIVITY_CALENDAR_ACTIVATE_PASSIVE_CALENDAR_TIME);
 
-        final ActivityCalendar activityCalendar = new ActivityCalendar(name, activatePassiveCalendarTime);
+    final ActivityCalendar activityCalendar =
+        new ActivityCalendar(name, activatePassiveCalendarTime);
 
-        ScenarioContext.current().put(PlatformSmartmeteringKeys.ACTIVITY_CALENDAR, activityCalendar);
+    ScenarioContext.current().put(PlatformSmartmeteringKeys.ACTIVITY_CALENDAR, activityCalendar);
+  }
+
+  @Given("^the activity calendar contains a season profile$")
+  public void theActivityCalendarContainsASeasonProfile(final Map<String, String> parameters)
+      throws Throwable {
+
+    final ActivityCalendar activityCalendar =
+        (ActivityCalendar)
+            ScenarioContext.current().get(PlatformSmartmeteringKeys.ACTIVITY_CALENDAR);
+
+    final String name = parameters.get(PlatformSmartmeteringKeys.SEASON_PROFILE_NAME);
+    final String start = parameters.get(PlatformSmartmeteringKeys.SEASON_PROFILE_START);
+    final String weekName = parameters.get(PlatformSmartmeteringKeys.SEASON_PROFILE_WEEK_NAME);
+
+    final SeasonProfile profile = new SeasonProfile(name, start, weekName);
+
+    activityCalendar.getSeasonProfiles().put(name, profile);
+
+    ScenarioContext.current().put(PlatformSmartmeteringKeys.ACTIVITY_CALENDAR, activityCalendar);
+  }
+
+  @Given("^the activity calendar contains a week profile$")
+  public void theActivityCalendarContainsAWeekProfile(final Map<String, String> parameters)
+      throws Throwable {
+
+    final ActivityCalendar activityCalendar =
+        (ActivityCalendar)
+            ScenarioContext.current().get(PlatformSmartmeteringKeys.ACTIVITY_CALENDAR);
+
+    final String name = parameters.get(PlatformSmartmeteringKeys.WEEK_PROFILE_NAME);
+    final int monday =
+        Integer.parseInt(parameters.get(PlatformSmartmeteringKeys.WEEK_PROFILE_MONDAY_DAY_ID));
+    final int tuesday =
+        Integer.parseInt(parameters.get(PlatformSmartmeteringKeys.WEEK_PROFILE_TUESDAY_DAY_ID));
+    final int wednesday =
+        Integer.parseInt(parameters.get(PlatformSmartmeteringKeys.WEEK_PROFILE_WEDNESDAY_DAY_ID));
+    final int thursday =
+        Integer.parseInt(parameters.get(PlatformSmartmeteringKeys.WEEK_PROFILE_THURSDAY_DAY_ID));
+    final int friday =
+        Integer.parseInt(parameters.get(PlatformSmartmeteringKeys.WEEK_PROFILE_FRIDAY_DAY_ID));
+    final int saturday =
+        Integer.parseInt(parameters.get(PlatformSmartmeteringKeys.WEEK_PROFILE_SATURDAY_DAY_ID));
+    final int sunday =
+        Integer.parseInt(parameters.get(PlatformSmartmeteringKeys.WEEK_PROFILE_SUNDAY_DAY_ID));
+
+    final WeekProfile profile =
+        new WeekProfile(name, monday, tuesday, wednesday, thursday, friday, saturday, sunday);
+
+    activityCalendar.getWeekProfiles().put(name, profile);
+
+    ScenarioContext.current().put(PlatformSmartmeteringKeys.ACTIVITY_CALENDAR, activityCalendar);
+  }
+
+  @Given("^the activity calendar contains a day profile$")
+  public void theActivityCalendarContainsADayProfile(final Map<String, String> parameters)
+      throws Throwable {
+
+    final ActivityCalendar activityCalendar =
+        (ActivityCalendar)
+            ScenarioContext.current().get(PlatformSmartmeteringKeys.ACTIVITY_CALENDAR);
+
+    final int dayId =
+        Integer.parseInt(parameters.get(PlatformSmartmeteringKeys.DAY_PROFILE_DAY_ID));
+    final int actionCount =
+        Integer.parseInt(parameters.get(PlatformSmartmeteringKeys.DAY_PROFILE_ACTION_COUNT));
+
+    final DayProfile profile = new DayProfile(dayId);
+
+    for (int i = 1; i <= actionCount; i++) {
+
+      final String start =
+          SettingsHelper.getStringValue(
+              parameters, PlatformSmartmeteringKeys.DAY_PROFILE_START_TIME, i);
+      final int selector =
+          SettingsHelper.getIntegerValue(
+              parameters, PlatformSmartmeteringKeys.DAY_PROFILE_SCRIPT_SELECTOR, i);
+
+      profile.getDayProfileActions().add(new DayProfileAction(start, selector));
     }
 
-    @Given("^the activity calendar contains a season profile$")
-    public void theActivityCalendarContainsASeasonProfile(final Map<String, String> parameters) throws Throwable {
+    activityCalendar.getDayProfiles().put(dayId, profile);
 
-        final ActivityCalendar activityCalendar = (ActivityCalendar) ScenarioContext.current()
-                .get(PlatformSmartmeteringKeys.ACTIVITY_CALENDAR);
+    ScenarioContext.current().put(PlatformSmartmeteringKeys.ACTIVITY_CALENDAR, activityCalendar);
+  }
 
-        final String name = parameters.get(PlatformSmartmeteringKeys.SEASON_PROFILE_NAME);
-        final String start = parameters.get(PlatformSmartmeteringKeys.SEASON_PROFILE_START);
-        final String weekName = parameters.get(PlatformSmartmeteringKeys.SEASON_PROFILE_WEEK_NAME);
+  @Given("^the bundle request contains a set activity calendar action$")
+  public void theBundleRequestContainsASetActivityCalendarAction() throws Throwable {
 
-        final SeasonProfile profile = new SeasonProfile(name, start, weekName);
+    SetActivityCalendarRequest action;
+    if (ScenarioContext.current().get(PlatformSmartmeteringKeys.ACTIVITY_CALENDAR) == null) {
 
-        activityCalendar.getSeasonProfiles().put(name, profile);
+      action = new SetActivityCalendarRequestBuilder().withDefaults().build();
 
-        ScenarioContext.current().put(PlatformSmartmeteringKeys.ACTIVITY_CALENDAR, activityCalendar);
+    } else {
+      final ActivityCalendar activityCalendar =
+          (ActivityCalendar)
+              ScenarioContext.current().get(PlatformSmartmeteringKeys.ACTIVITY_CALENDAR);
+      action =
+          new SetActivityCalendarRequestBuilder().withActivityCalendar(activityCalendar).build();
     }
 
-    @Given("^the activity calendar contains a week profile$")
-    public void theActivityCalendarContainsAWeekProfile(final Map<String, String> parameters) throws Throwable {
+    this.addActionToBundleRequest(action);
+  }
 
-        final ActivityCalendar activityCalendar = (ActivityCalendar) ScenarioContext.current()
-                .get(PlatformSmartmeteringKeys.ACTIVITY_CALENDAR);
+  @Given("^the bundle request contains a set activity calendar action with parameters$")
+  public void theBundleRequestContainsASetConfigurationObjectAction(
+      final Map<String, String> parameters) throws Throwable {
 
-        final String name = parameters.get(PlatformSmartmeteringKeys.WEEK_PROFILE_NAME);
-        final int monday = Integer.parseInt(parameters.get(PlatformSmartmeteringKeys.WEEK_PROFILE_MONDAY_DAY_ID));
-        final int tuesday = Integer.parseInt(parameters.get(PlatformSmartmeteringKeys.WEEK_PROFILE_TUESDAY_DAY_ID));
-        final int wednesday = Integer.parseInt(parameters.get(PlatformSmartmeteringKeys.WEEK_PROFILE_WEDNESDAY_DAY_ID));
-        final int thursday = Integer.parseInt(parameters.get(PlatformSmartmeteringKeys.WEEK_PROFILE_THURSDAY_DAY_ID));
-        final int friday = Integer.parseInt(parameters.get(PlatformSmartmeteringKeys.WEEK_PROFILE_FRIDAY_DAY_ID));
-        final int saturday = Integer.parseInt(parameters.get(PlatformSmartmeteringKeys.WEEK_PROFILE_SATURDAY_DAY_ID));
-        final int sunday = Integer.parseInt(parameters.get(PlatformSmartmeteringKeys.WEEK_PROFILE_SUNDAY_DAY_ID));
+    final SetConfigurationObjectRequest action =
+        new SetConfigurationObjectRequestBuilder().fromParameterMap(parameters).build();
 
-        final WeekProfile profile = new WeekProfile(name, monday, tuesday, wednesday, thursday, friday, saturday,
-                sunday);
+    this.addActionToBundleRequest(action);
+  }
 
-        activityCalendar.getWeekProfiles().put(name, profile);
+  @Then("^the bundle response should contain a set activity calendar response$")
+  public void theBundleResponseShouldContainASetActivityCalendarResponse() throws Throwable {
+    final Response response = this.getNextBundleResponse();
 
-        ScenarioContext.current().put(PlatformSmartmeteringKeys.ACTIVITY_CALENDAR, activityCalendar);
+    assertThat(response instanceof ActionResponse).as("Not a valid response").isTrue();
+  }
 
-    }
+  @Then("^the bundle response should contain a set activity calendar response with values$")
+  public void theBundleResponseShouldContainASetActivityCalendarResponse(
+      final Map<String, String> values) throws Throwable {
 
-    @Given("^the activity calendar contains a day profile$")
-    public void theActivityCalendarContainsADayProfile(final Map<String, String> parameters) throws Throwable {
+    final Response response = this.getNextBundleResponse();
 
-        final ActivityCalendar activityCalendar = (ActivityCalendar) ScenarioContext.current()
-                .get(PlatformSmartmeteringKeys.ACTIVITY_CALENDAR);
-
-        final int dayId = Integer.parseInt(parameters.get(PlatformSmartmeteringKeys.DAY_PROFILE_DAY_ID));
-        final int actionCount = Integer.parseInt(parameters.get(PlatformSmartmeteringKeys.DAY_PROFILE_ACTION_COUNT));
-
-        final DayProfile profile = new DayProfile(dayId);
-
-        for (int i = 1; i <= actionCount; i++) {
-
-            final String start = SettingsHelper.getStringValue(parameters,
-                    PlatformSmartmeteringKeys.DAY_PROFILE_START_TIME, i);
-            final int selector = SettingsHelper.getIntegerValue(parameters,
-                    PlatformSmartmeteringKeys.DAY_PROFILE_SCRIPT_SELECTOR, i);
-
-            profile.getDayProfileActions().add(new DayProfileAction(start, selector));
-        }
-
-        activityCalendar.getDayProfiles().put(dayId, profile);
-
-        ScenarioContext.current().put(PlatformSmartmeteringKeys.ACTIVITY_CALENDAR, activityCalendar);
-
-    }
-
-    @Given("^the bundle request contains a set activity calendar action$")
-    public void theBundleRequestContainsASetActivityCalendarAction() throws Throwable {
-
-        SetActivityCalendarRequest action;
-        if (ScenarioContext.current().get(PlatformSmartmeteringKeys.ACTIVITY_CALENDAR) == null) {
-
-            action = new SetActivityCalendarRequestBuilder().withDefaults().build();
-
-        } else {
-            final ActivityCalendar activityCalendar = (ActivityCalendar) ScenarioContext.current()
-                    .get(PlatformSmartmeteringKeys.ACTIVITY_CALENDAR);
-            action = new SetActivityCalendarRequestBuilder().withActivityCalendar(activityCalendar).build();
-
-        }
-
-        this.addActionToBundleRequest(action);
-    }
-
-    @Given("^the bundle request contains a set activity calendar action with parameters$")
-    public void theBundleRequestContainsASetConfigurationObjectAction(final Map<String, String> parameters)
-            throws Throwable {
-
-        final SetConfigurationObjectRequest action = new SetConfigurationObjectRequestBuilder()
-                .fromParameterMap(parameters).build();
-
-        this.addActionToBundleRequest(action);
-    }
-
-    @Then("^the bundle response should contain a set activity calendar response$")
-    public void theBundleResponseShouldContainASetActivityCalendarResponse() throws Throwable {
-        final Response response = this.getNextBundleResponse();
-
-        assertThat(response instanceof ActionResponse).as("Not a valid response").isTrue();
-    }
-
-    @Then("^the bundle response should contain a set activity calendar response with values$")
-    public void theBundleResponseShouldContainASetActivityCalendarResponse(final Map<String, String> values)
-            throws Throwable {
-
-        final Response response = this.getNextBundleResponse();
-
-        assertThat(response instanceof ActionResponse).as("Not a valid response").isTrue();
-        assertThat(response.getResult().name()).as("Result is not as expected.")
-                .isEqualTo(values.get(PlatformSmartmeteringKeys.RESULT));
-    }
-
+    assertThat(response instanceof ActionResponse).as("Not a valid response").isTrue();
+    assertThat(response.getResult().name())
+        .as("Result is not as expected.")
+        .isEqualTo(values.get(PlatformSmartmeteringKeys.RESULT));
+  }
 }

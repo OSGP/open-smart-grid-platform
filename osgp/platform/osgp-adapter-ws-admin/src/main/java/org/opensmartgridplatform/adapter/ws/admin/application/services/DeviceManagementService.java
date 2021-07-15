@@ -1,19 +1,20 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.admin.application.services;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
-
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.adapter.ws.admin.application.specifications.DeviceLogItemSpecifications;
 import org.opensmartgridplatform.adapter.ws.admin.application.valueobjects.WsMessageLogFilter;
@@ -73,530 +74,674 @@ import org.springframework.validation.annotation.Validated;
 @Transactional(value = "transactionManager")
 @Validated
 public class DeviceManagementService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
 
-    @Autowired
-    private PagingSettings pagingSettings;
+  @Autowired private PagingSettings pagingSettings;
 
-    @Autowired
-    private OrganisationDomainService organisationDomainService;
+  @Autowired private OrganisationDomainService organisationDomainService;
 
-    @Autowired
-    private DeviceDomainService deviceDomainService;
+  @Autowired private DeviceDomainService deviceDomainService;
 
-    @Autowired
-    private SecurityService securityService;
+  @Autowired private SecurityService securityService;
 
-    @Autowired
-    private OrganisationRepository organisationRepository;
+  @Autowired private OrganisationRepository organisationRepository;
 
-    @Autowired
-    private DeviceRepository deviceRepository;
+  @Autowired private DeviceRepository deviceRepository;
 
-    @Autowired
-    private DeviceLogItemSlicingRepository logItemRepository;
+  @Autowired private DeviceLogItemSlicingRepository logItemRepository;
 
-    @Autowired
-    private DeviceAuthorizationRepository authorizationRepository;
+  @Autowired private DeviceAuthorizationRepository authorizationRepository;
 
-    @Autowired
-    private EventRepository eventRepository;
+  @Autowired private EventRepository eventRepository;
 
-    @Autowired
-    private CorrelationIdProviderService correlationIdProviderService;
+  @Autowired private CorrelationIdProviderService correlationIdProviderService;
 
-    @Autowired
-    private AdminRequestMessageSender adminRequestMessageSender;
+  @Autowired private AdminRequestMessageSender adminRequestMessageSender;
 
-    @Autowired
-    private AdminResponseMessageFinder adminResponseMessageFinder;
+  @Autowired private AdminResponseMessageFinder adminResponseMessageFinder;
 
-    @Autowired
-    private ProtocolInfoRepository protocolRepository;
+  @Autowired private ProtocolInfoRepository protocolRepository;
 
-    /**
-     * Constructor
-     */
-    public DeviceManagementService() {
-        // Parameterless constructor required for transactions...
+  /** Constructor */
+  public DeviceManagementService() {
+    // Parameterless constructor required for transactions...
+  }
+
+  public void addOrganisation(
+      @Identification final String organisationIdentification,
+      @Valid @NotNull final Organisation newOrganisation)
+      throws FunctionalException {
+
+    LOGGER.debug(
+        "addOrganisation called with organisation {} and new organisation {}",
+        organisationIdentification,
+        newOrganisation.getOrganisationIdentification());
+
+    final Organisation organisation = this.findOrganisation(organisationIdentification);
+
+    this.isAllowed(organisation, PlatformFunction.CREATE_ORGANISATION);
+
+    try {
+      // Save the organisation.
+      this.organisationRepository.save(newOrganisation);
+    } catch (final JpaSystemException ex) {
+      if (ex.getCause() instanceof PersistenceException) {
+        LOGGER.error("Add organisation failure JpaSystemException", ex);
+        throw new FunctionalException(
+            FunctionalExceptionType.EXISTING_ORGANISATION,
+            ComponentType.WS_ADMIN,
+            new ExistingEntityException(
+                Organisation.class, newOrganisation.getOrganisationIdentification(), ex));
+      }
     }
+  }
 
-    public void addOrganisation(@Identification final String organisationIdentification,
-            @Valid @NotNull final Organisation newOrganisation) throws FunctionalException {
+  public void removeOrganisation(
+      @Identification final String organisationIdentification,
+      @Identification final String organisationToRemoveIdentification)
+      throws FunctionalException {
 
-        LOGGER.debug("addOrganisation called with organisation {} and new organisation {}", organisationIdentification,
-                newOrganisation.getOrganisationIdentification());
+    LOGGER.debug(
+        "removeOrganisation called with organisation {} and organisation to remove {}",
+        organisationIdentification,
+        organisationToRemoveIdentification);
 
-        final Organisation organisation = this.findOrganisation(organisationIdentification);
+    final Organisation organisation = this.findOrganisation(organisationIdentification);
+    final Organisation organisationToRemove =
+        this.findOrganisation(organisationToRemoveIdentification);
 
-        this.isAllowed(organisation, PlatformFunction.CREATE_ORGANISATION);
+    this.isAllowed(organisation, PlatformFunction.REMOVE_ORGANISATION);
 
-        try {
-            // Save the organisation.
-            this.organisationRepository.save(newOrganisation);
-        } catch (final JpaSystemException ex) {
-            if (ex.getCause() instanceof PersistenceException) {
-                LOGGER.error("Add organisation failure JpaSystemException", ex);
-                throw new FunctionalException(FunctionalExceptionType.EXISTING_ORGANISATION, ComponentType.WS_ADMIN,
-                        new ExistingEntityException(Organisation.class, newOrganisation.getOrganisationIdentification(),
-                                ex));
-            }
-        }
+    try {
+      final List<DeviceAuthorization> deviceAuthorizations =
+          this.authorizationRepository.findByOrganisation(organisationToRemove);
+      if (!deviceAuthorizations.isEmpty()) {
+        throw new FunctionalException(
+            FunctionalExceptionType.EXISTING_DEVICE_AUTHORIZATIONS,
+            ComponentType.WS_ADMIN,
+            new ValidationException(
+                String.format(
+                    "Device Authorizations are still present for the current organisation %s",
+                    organisationToRemove.getOrganisationIdentification())));
+      }
+
+      organisationToRemove.setIsEnabled(false);
+      this.organisationRepository.save(organisationToRemove);
+    } catch (final JpaSystemException ex) {
+      if (ex.getCause() instanceof PersistenceException) {
+        LOGGER.error("Remove organisation failure JpaSystemException", ex);
+        throw new FunctionalException(
+            FunctionalExceptionType.UNKNOWN_ORGANISATION,
+            ComponentType.WS_ADMIN,
+            new UnknownEntityException(Organisation.class, organisationToRemoveIdentification, ex));
+      }
     }
+  }
 
-    public void removeOrganisation(@Identification final String organisationIdentification,
-            @Identification final String organisationToRemoveIdentification) throws FunctionalException {
+  public void activateOrganisation(
+      @Identification final String organisationIdentification,
+      @Identification final String organisationIdentificationToActivate)
+      throws FunctionalException {
 
-        LOGGER.debug("removeOrganisation called with organisation {} and organisation to remove {}",
-                organisationIdentification, organisationToRemoveIdentification);
+    LOGGER.debug(
+        "activateOrganisation called with organisation {} and organisation to activate {}",
+        organisationIdentification,
+        organisationIdentificationToActivate);
 
-        final Organisation organisation = this.findOrganisation(organisationIdentification);
-        final Organisation organisationToRemove = this.findOrganisation(organisationToRemoveIdentification);
+    final Organisation organisation = this.findOrganisation(organisationIdentification);
+    final Organisation organisationToActivate =
+        this.findOrganisation(organisationIdentificationToActivate);
 
-        this.isAllowed(organisation, PlatformFunction.REMOVE_ORGANISATION);
+    this.isAllowed(organisation, PlatformFunction.CHANGE_ORGANISATION);
 
-        try {
-            final List<DeviceAuthorization> deviceAuthorizations = this.authorizationRepository
-                    .findByOrganisation(organisationToRemove);
-            if (!deviceAuthorizations.isEmpty()) {
-                throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE_AUTHORIZATIONS,
-                        ComponentType.WS_ADMIN,
-                        new ValidationException(
-                                String.format("Device Authorizations are still present for the current organisation %s",
-                                        organisationToRemove.getOrganisationIdentification())));
-            }
-
-            organisationToRemove.setIsEnabled(false);
-            this.organisationRepository.save(organisationToRemove);
-        } catch (final JpaSystemException ex) {
-            if (ex.getCause() instanceof PersistenceException) {
-                LOGGER.error("Remove organisation failure JpaSystemException", ex);
-                throw new FunctionalException(FunctionalExceptionType.UNKNOWN_ORGANISATION, ComponentType.WS_ADMIN,
-                        new UnknownEntityException(Organisation.class, organisationToRemoveIdentification, ex));
-            }
-        }
+    try {
+      organisationToActivate.setIsEnabled(true);
+      this.organisationRepository.save(organisationToActivate);
+    } catch (final JpaSystemException ex) {
+      if (ex.getCause() instanceof PersistenceException) {
+        LOGGER.error("activate organisation failure JpaSystemException", ex);
+        throw new FunctionalException(
+            FunctionalExceptionType.UNKNOWN_ORGANISATION,
+            ComponentType.WS_ADMIN,
+            new UnknownEntityException(
+                Organisation.class, organisationIdentificationToActivate, ex));
+      }
     }
+  }
 
-    public void activateOrganisation(@Identification final String organisationIdentification,
-            @Identification final String organisationIdentificationToActivate) throws FunctionalException {
+  public void changeOrganisation(
+      @Identification final String organisationIdentification,
+      @Identification final String organisationToBeChangedIdentification,
+      final String newOrganisationName,
+      @NotNull final PlatformFunctionGroup newOrganisationPlatformFunctionGroup,
+      @NotNull final List<PlatformDomain> newDomains)
+      throws FunctionalException {
 
-        LOGGER.debug("activateOrganisation called with organisation {} and organisation to activate {}",
-                organisationIdentification, organisationIdentificationToActivate);
+    LOGGER.info(
+        "changeOrganisation called with organisation {} and organisation to change {}. new values for organisationName {}, organisationPlatformFunctionGroup {}",
+        organisationIdentification,
+        organisationToBeChangedIdentification,
+        newOrganisationName,
+        newOrganisationPlatformFunctionGroup);
 
-        final Organisation organisation = this.findOrganisation(organisationIdentification);
-        final Organisation organisationToActivate = this.findOrganisation(organisationIdentificationToActivate);
+    final Organisation organisation = this.findOrganisation(organisationIdentification);
+    this.isAllowed(organisation, PlatformFunction.CHANGE_ORGANISATION);
 
-        this.isAllowed(organisation, PlatformFunction.CHANGE_ORGANISATION);
+    try {
+      final Organisation organisationToChange =
+          this.findOrganisation(organisationToBeChangedIdentification);
+      organisationToChange.changeOrganisationData(
+          newOrganisationName, newOrganisationPlatformFunctionGroup);
+      organisationToChange.setDomains(newDomains);
 
-        try {
-            organisationToActivate.setIsEnabled(true);
-            this.organisationRepository.save(organisationToActivate);
-        } catch (final JpaSystemException ex) {
-            if (ex.getCause() instanceof PersistenceException) {
-                LOGGER.error("activate organisation failure JpaSystemException", ex);
-                throw new FunctionalException(FunctionalExceptionType.UNKNOWN_ORGANISATION, ComponentType.WS_ADMIN,
-                        new UnknownEntityException(Organisation.class, organisationIdentificationToActivate, ex));
-            }
-        }
+      this.organisationRepository.save(organisationToChange);
+    } catch (final JpaSystemException ex) {
+      if (ex.getCause() instanceof PersistenceException) {
+        LOGGER.error("change organisation failure JpaSystemException", ex);
+        throw new FunctionalException(
+            FunctionalExceptionType.UNKNOWN_ORGANISATION,
+            ComponentType.WS_ADMIN,
+            new UnknownEntityException(
+                Organisation.class, organisationToBeChangedIdentification, ex));
+      }
     }
+  }
 
-    public void changeOrganisation(@Identification final String organisationIdentification,
-            @Identification final String organisationToBeChangedIdentification, final String newOrganisationName,
-            @NotNull final PlatformFunctionGroup newOrganisationPlatformFunctionGroup,
-            @NotNull final List<PlatformDomain> newDomains) throws FunctionalException {
+  public void addDeviceAuthorization(
+      @Identification final String ownerOrganisationIdentification,
+      @Identification final String organisationIdentification,
+      @Identification final String deviceIdentification,
+      @NotNull final DeviceFunctionGroup group)
+      throws FunctionalException {
 
+    // Check input data and authorization
+    final Organisation organisation = this.findOrganisation(organisationIdentification);
+
+    final Organisation ownerOrganisation = this.findOrganisation(ownerOrganisationIdentification);
+
+    final Device device = this.findDevice(deviceIdentification);
+
+    this.isAllowed(ownerOrganisation, device, DeviceFunction.SET_DEVICE_AUTHORIZATION);
+
+    // Check if group is already set on device
+    for (final DeviceAuthorization authorization : device.getAuthorizations()) {
+      if (authorization.getOrganisation() == organisation
+          && authorization.getFunctionGroup() == group) {
         LOGGER.info(
-                "changeOrganisation called with organisation {} and organisation to change {}. new values for organisationName {}, organisationPlatformFunctionGroup {}",
-                organisationIdentification, organisationToBeChangedIdentification, newOrganisationName,
-                newOrganisationPlatformFunctionGroup);
-
-        final Organisation organisation = this.findOrganisation(organisationIdentification);
-        this.isAllowed(organisation, PlatformFunction.CHANGE_ORGANISATION);
-
-        try {
-            final Organisation organisationToChange = this.findOrganisation(organisationToBeChangedIdentification);
-            organisationToChange.changeOrganisationData(newOrganisationName, newOrganisationPlatformFunctionGroup);
-            organisationToChange.setDomains(newDomains);
-
-            this.organisationRepository.save(organisationToChange);
-        } catch (final JpaSystemException ex) {
-            if (ex.getCause() instanceof PersistenceException) {
-                LOGGER.error("change organisation failure JpaSystemException", ex);
-                throw new FunctionalException(FunctionalExceptionType.UNKNOWN_ORGANISATION, ComponentType.WS_ADMIN,
-                        new UnknownEntityException(Organisation.class, organisationToBeChangedIdentification, ex));
-            }
-        }
+            "Organisation {} already has authorization for group {} on device {}",
+            organisationIdentification,
+            group,
+            deviceIdentification);
+        // Ignore the request, the authorization is already available
+        return;
+      }
     }
 
-    public void addDeviceAuthorization(@Identification final String ownerOrganisationIdentification,
-            @Identification final String organisationIdentification, @Identification final String deviceIdentification,
-            @NotNull final DeviceFunctionGroup group) throws FunctionalException {
+    // All checks pass, add new authorization
+    final DeviceAuthorization authorization = device.addAuthorization(organisation, group);
+    this.deviceRepository.save(device);
+    this.authorizationRepository.save(authorization);
 
-        // Check input data and authorization
-        final Organisation organisation = this.findOrganisation(organisationIdentification);
+    LOGGER.info(
+        "Organisation {} now has authorization for function group {} on device {}",
+        organisationIdentification,
+        group,
+        deviceIdentification);
+  }
 
-        final Organisation ownerOrganisation = this.findOrganisation(ownerOrganisationIdentification);
+  public void removeDeviceAuthorization(
+      @Identification final String ownerOrganisationIdentification,
+      @Identification final String organisationIdentification,
+      @Identification final String deviceIdentification,
+      @NotNull final DeviceFunctionGroup group)
+      throws FunctionalException {
 
-        final Device device = this.findDevice(deviceIdentification);
+    // Check input data and authorization
+    final Organisation organisation = this.findOrganisation(organisationIdentification);
 
-        this.isAllowed(ownerOrganisation, device, DeviceFunction.SET_DEVICE_AUTHORIZATION);
+    final Organisation ownerOrganisation = this.findOrganisation(ownerOrganisationIdentification);
 
-        // Check if group is already set on device
-        for (final DeviceAuthorization authorization : device.getAuthorizations()) {
-            if (authorization.getOrganisation() == organisation && authorization.getFunctionGroup() == group) {
-                LOGGER.info("Organisation {} already has authorization for group {} on device {}",
-                        organisationIdentification, group, deviceIdentification);
-                // Ignore the request, the authorization is already available
-                return;
-            }
-        }
+    final Device device = this.findDevice(deviceIdentification);
 
-        // All checks pass, add new authorization
-        final DeviceAuthorization authorization = device.addAuthorization(organisation, group);
-        this.deviceRepository.save(device);
-        this.authorizationRepository.save(authorization);
+    this.isAllowed(ownerOrganisation, device, DeviceFunction.SET_DEVICE_AUTHORIZATION);
 
-        LOGGER.info("Organisation {} now has authorization for function group {} on device {}",
-                organisationIdentification, group, deviceIdentification);
+    // Never remove the OWNER authorization
+    if (ownerOrganisation.equals(organisation) && DeviceFunctionGroup.OWNER.equals(group)) {
+      LOGGER.info("Not removing DeviceFunctionGroup.OWNER for organisation: {}", organisation);
+      return;
     }
 
-    public void removeDeviceAuthorization(@Identification final String ownerOrganisationIdentification,
-            @Identification final String organisationIdentification, @Identification final String deviceIdentification,
-            @NotNull final DeviceFunctionGroup group) throws FunctionalException {
+    // All checks pass, remove authorization
+    device.removeAuthorization(organisation, group);
+    this.deviceRepository.save(device);
+    this.authorizationRepository.deleteByDeviceAndFunctionGroupAndOrganisation(
+        device, group, organisation);
 
-        // Check input data and authorization
-        final Organisation organisation = this.findOrganisation(organisationIdentification);
+    LOGGER.info(
+        "Organisation {} now no longer has authorization for function group {} on device {}",
+        organisationIdentification,
+        group,
+        deviceIdentification);
+  }
 
-        final Organisation ownerOrganisation = this.findOrganisation(ownerOrganisationIdentification);
+  /**
+   * Get all devices which have no owner.
+   *
+   * @return All devices which have no owner.
+   * @throws FunctionalException In case the organisation can not be found or the organisation is
+   *     not allowed to perform this action.
+   */
+  public List<Device> findDevicesWhichHaveNoOwner(
+      @Identification final String organisationIdentification) throws FunctionalException {
+    final Organisation organisation = this.findOrganisation(organisationIdentification);
 
-        final Device device = this.findDevice(deviceIdentification);
+    this.isAllowed(organisation, PlatformFunction.GET_DEVICE_NO_OWNER);
 
-        this.isAllowed(ownerOrganisation, device, DeviceFunction.SET_DEVICE_AUTHORIZATION);
+    return this.deviceRepository.findDevicesWithNoOwner();
+  }
 
-        // Never remove the OWNER authorization
-        if (ownerOrganisation.equals(organisation) && DeviceFunctionGroup.OWNER.equals(group)) {
-            LOGGER.info("Not removing DeviceFunctionGroup.OWNER for organisation: {}", organisation);
-            return;
-        }
+  public List<DeviceAuthorization> findDeviceAuthorisations(
+      @Identification final String organisationIdentification,
+      @Identification final String deviceIdentification)
+      throws FunctionalException {
 
-        // All checks pass, remove authorization
-        device.removeAuthorization(organisation, group);
-        this.deviceRepository.save(device);
-        this.authorizationRepository.deleteByDeviceAndFunctionGroupAndOrganisation(device, group, organisation);
+    LOGGER.debug(
+        "findDeviceAuthorisations called with organisation {} and device {}",
+        organisationIdentification,
+        deviceIdentification);
 
-        LOGGER.info("Organisation {} now no longer has authorization for function group {} on device {}",
-                organisationIdentification, group, deviceIdentification);
+    final Organisation organisation = this.findOrganisation(organisationIdentification);
+
+    final Device device = this.findDevice(deviceIdentification);
+
+    this.isAllowed(organisation, device, DeviceFunction.GET_DEVICE_AUTHORIZATION);
+
+    return this.authorizationRepository.findByDeviceForOrganisation(device, organisation);
+  }
+
+  public Slice<DeviceLogItem> findDeviceMessages(
+      @Identification final String organisationIdentification, final WsMessageLogFilter filter)
+      throws FunctionalException {
+
+    LOGGER.info(
+        "findDeviceMessages called with organisation {} for filter {}",
+        organisationIdentification,
+        filter);
+
+    final Organisation organisation = this.findOrganisation(organisationIdentification);
+    this.isAllowed(organisation, PlatformFunction.GET_MESSAGES);
+
+    PageRequest pageRequest;
+    if (!StringUtils.isBlank(filter.getSortDirection())
+        && !StringUtils.isBlank(filter.getSortBy())) {
+      pageRequest =
+          PageRequest.of(
+              filter.getPageRequested(),
+              this.pagingSettings.getMaximumPageSize(),
+              Sort.Direction.valueOf(filter.getSortDirection()),
+              filter.getSortBy());
+    } else {
+      pageRequest =
+          PageRequest.of(
+              filter.getPageRequested(),
+              this.pagingSettings.getMaximumPageSize(),
+              Sort.Direction.DESC,
+              "modificationTime");
+    }
+    final Specification<DeviceLogItem> specification = this.applyFilter(filter);
+
+    return this.logItemRepository.findAll(specification, pageRequest);
+  }
+
+  private Specification<DeviceLogItem> applyFilter(final WsMessageLogFilter filter) {
+    final DeviceLogItemSpecifications specifications = new JpaDeviceLogItemSpecifications();
+
+    return specifications
+        .hasDeviceIdentification(filter.getDeviceIdentification())
+        .and(specifications.hasOrganisationIdentification(filter.getOrganisationIdentification()))
+        .and(specifications.hasStartDate(filter.getStartTime()))
+        .and(specifications.hasEndDate(filter.getEndTime()));
+  }
+
+  // === REMOVE DEVICE ===
+
+  /**
+   * Removes a device.
+   *
+   * @param organisationIdentification The organisation identification who performs the action
+   * @param deviceIdentification The device identification of the device
+   * @throws FunctionalException In case the device or organisation can not be found or the
+   *     organisation is not allowed to perform this action.
+   */
+  public void removeDevice(
+      @Identification final String organisationIdentification,
+      @Identification final String deviceIdentification)
+      throws FunctionalException {
+    final Organisation organisation = this.findOrganisation(organisationIdentification);
+    final Device device = this.findDevice(deviceIdentification);
+    this.isAllowed(organisation, device, DeviceFunction.REMOVE_DEVICE);
+
+    // First remove all authorizations
+    final List<DeviceAuthorization> authorisations =
+        this.authorizationRepository.findByDevice(device);
+    for (final DeviceAuthorization authorisation : authorisations) {
+      this.authorizationRepository.delete(authorisation);
     }
 
-    /**
-     * Get all devices which have no owner.
-     *
-     * @return All devices which have no owner.
-     *
-     * @throws FunctionalException
-     *             In case the organisation can not be found or the organisation
-     *             is not allowed to perform this action.
-     */
-    public List<Device> findDevicesWhichHaveNoOwner(@Identification final String organisationIdentification)
-            throws FunctionalException {
-        final Organisation organisation = this.findOrganisation(organisationIdentification);
-
-        this.isAllowed(organisation, PlatformFunction.GET_DEVICE_NO_OWNER);
-
-        return this.deviceRepository.findDevicesWithNoOwner();
+    // Remove all events
+    final List<Event> events =
+        this.eventRepository.findByDeviceIdentification(deviceIdentification);
+    for (final Event event : events) {
+      this.eventRepository.delete(event);
     }
 
-    public List<DeviceAuthorization> findDeviceAuthorisations(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification) throws FunctionalException {
+    // Then remove the device.
+    this.deviceRepository.delete(device);
+  }
 
-        LOGGER.debug("findDeviceAuthorisations called with organisation {} and device {}", organisationIdentification,
-                deviceIdentification);
+  // === SET OWNER ===
 
-        final Organisation organisation = this.findOrganisation(organisationIdentification);
+  /**
+   * Sets the owner of the device
+   *
+   * @param organisationIdentification The organisation identification who performs the action
+   *     (needed for security)
+   * @param deviceIdentification The device identification of the device
+   * @param newOwner The organisation identification of the new owner.
+   * @throws FunctionalException In case the device or organisation can not be found or the
+   *     organisation is not allowed to perform this action.
+   */
+  public void setOwner(
+      @Identification final String organisationIdentification,
+      @Identification final String deviceIdentification,
+      @Identification final String newOwner)
+      throws FunctionalException {
+    Organisation organisation = this.findOrganisation(organisationIdentification);
+    final Device device = this.findDevice(deviceIdentification);
+    this.isAllowed(organisation, PlatformFunction.SET_OWNER);
 
-        final Device device = this.findDevice(deviceIdentification);
+    organisation = this.findOrganisation(newOwner);
 
-        this.isAllowed(organisation, device, DeviceFunction.GET_DEVICE_AUTHORIZATION);
-
-        return this.authorizationRepository.findByDeviceForOrganisation(device, organisation);
+    // First remove any other owners.
+    final List<DeviceAuthorization> owners =
+        this.authorizationRepository.findByDeviceAndFunctionGroup(
+            device, DeviceFunctionGroup.OWNER);
+    if (!owners.isEmpty()) {
+      for (final DeviceAuthorization owner : owners) {
+        this.authorizationRepository.delete(owner);
+      }
     }
 
-    public Slice<DeviceLogItem> findDeviceMessages(@Identification final String organisationIdentification,
-            final WsMessageLogFilter filter) throws FunctionalException {
+    // Now add the authorization
+    final DeviceAuthorization authorization =
+        new DeviceAuthorization(device, organisation, DeviceFunctionGroup.OWNER);
+    this.authorizationRepository.save(authorization);
+  }
 
-        LOGGER.info("findDeviceMessages called with organisation {} for filter {}", organisationIdentification, filter);
+  // === UPDATE KEY ===
 
-        final Organisation organisation = this.findOrganisation(organisationIdentification);
-        this.isAllowed(organisation, PlatformFunction.GET_MESSAGES);
+  public void updateKey(
+      final String organisationIdentification,
+      @Identification final String deviceIdentification,
+      @PublicKey final String publicKey,
+      final Long protocolInfoId)
+      throws FunctionalException {
 
-        PageRequest pageRequest;
-        if (!StringUtils.isBlank(filter.getSortDirection()) && !StringUtils.isBlank(filter.getSortBy())) {
-            pageRequest = PageRequest.of(filter.getPageRequested(), this.pagingSettings.getMaximumPageSize(),
-                    Sort.Direction.valueOf(filter.getSortDirection()), filter.getSortBy());
-        } else {
-            pageRequest = PageRequest.of(filter.getPageRequested(), this.pagingSettings.getMaximumPageSize(),
-                    Sort.Direction.DESC, "modificationTime");
-        }
-        final Specification<DeviceLogItem> specification = this.applyFilter(filter);
+    LOGGER.debug(
+        "Updating key for device [{}] on behalf of organisation [{}]",
+        deviceIdentification,
+        organisationIdentification);
 
-        return this.logItemRepository.findAll(specification, pageRequest);
+    final Organisation organisation = this.findOrganisation(organisationIdentification);
+    this.isAllowed(organisation, PlatformFunction.UPDATE_KEY);
+    this.organisationDomainService.isOrganisationEnabled(organisation, ComponentType.WS_ADMIN);
+
+    final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+
+    if (device == null) {
+      // Device not found, create new device
+      LOGGER.debug("Device [{}] does not exist, creating new device", deviceIdentification);
+      final Ssld ssld = new Ssld(deviceIdentification);
+
+      final DeviceAuthorization authorization =
+          ssld.addAuthorization(organisation, DeviceFunctionGroup.OWNER);
+
+      final ProtocolInfo protocolInfo =
+          this.protocolRepository
+              .findById(protocolInfoId)
+              .orElseThrow(
+                  () ->
+                      new EntityNotFoundException(
+                          "No protocol info record found with ID: " + protocolInfoId));
+      ssld.updateProtocol(protocolInfo);
+
+      this.authorizationRepository.save(authorization);
     }
 
-    private Specification<DeviceLogItem> applyFilter(final WsMessageLogFilter filter) {
-        final DeviceLogItemSpecifications specifications = new JpaDeviceLogItemSpecifications();
+    this.enqueueUpdateKeyRequest(organisationIdentification, deviceIdentification, publicKey);
+  }
 
-        return specifications.hasDeviceIdentification(filter.getDeviceIdentification())
-                .and(specifications.hasOrganisationIdentification(filter.getOrganisationIdentification()))
-                .and(specifications.hasStartDate(filter.getStartTime()))
-                .and(specifications.hasEndDate(filter.getEndTime()));
+  public String enqueueUpdateKeyRequest(
+      final String organisationIdentification,
+      @Identification final String deviceIdentification,
+      @PublicKey final String publicKey) {
+
+    LOGGER.debug(
+        "enqueueUpdateKeyRequest called with organisation {} and device {}",
+        organisationIdentification,
+        deviceIdentification);
+
+    final String correlationUid =
+        this.correlationIdProviderService.getCorrelationId(
+            organisationIdentification, deviceIdentification);
+
+    final AdminRequestMessage message =
+        new AdminRequestMessage(
+            MessageType.UPDATE_KEY,
+            correlationUid,
+            organisationIdentification,
+            deviceIdentification,
+            publicKey);
+
+    this.adminRequestMessageSender.send(message);
+
+    return correlationUid;
+  }
+
+  public ResponseMessage dequeueUpdateKeyResponse(final String correlationUid)
+      throws OsgpException {
+
+    return this.adminResponseMessageFinder.findMessage(correlationUid);
+  }
+
+  // === REVOKE KEY ===
+
+  public void revokeKey(
+      final String organisationIdentification, @Identification final String deviceIdentification)
+      throws FunctionalException {
+
+    LOGGER.debug(
+        "Revoking key for device [{}] on behalf of organisation [{}]",
+        deviceIdentification,
+        organisationIdentification);
+
+    this.findDevice(deviceIdentification);
+    final Organisation organisation = this.findOrganisation(organisationIdentification);
+    this.isAllowed(organisation, PlatformFunction.REVOKE_KEY);
+
+    this.enqueueRevokeKeyRequest(organisationIdentification, deviceIdentification);
+  }
+
+  public String enqueueRevokeKeyRequest(
+      final String organisationIdentification, @Identification final String deviceIdentification) {
+
+    LOGGER.debug(
+        "enqueueRevokeKeyRequest called with organisation {} and device {}",
+        organisationIdentification,
+        deviceIdentification);
+
+    final String correlationUid =
+        this.correlationIdProviderService.getCorrelationId(
+            organisationIdentification, deviceIdentification);
+
+    final AdminRequestMessage message =
+        new AdminRequestMessage(
+            MessageType.REVOKE_KEY,
+            correlationUid,
+            organisationIdentification,
+            deviceIdentification,
+            null);
+
+    this.adminRequestMessageSender.send(message);
+
+    return correlationUid;
+  }
+
+  public ResponseMessage dequeueRevokeKeyResponse(final String correlationUid)
+      throws OsgpException {
+
+    return this.adminResponseMessageFinder.findMessage(correlationUid);
+  }
+
+  public List<ProtocolInfo> getProtocolInfos(final String organisationIdentification)
+      throws FunctionalException {
+
+    LOGGER.debug(
+        "Retrieving all protocol infos on behalf of organisation: {}", organisationIdentification);
+
+    final Organisation organisation = this.findOrganisation(organisationIdentification);
+    this.isAllowed(organisation, PlatformFunction.GET_PROTOCOL_INFOS);
+
+    return this.protocolRepository.findAll(Sort.by(Direction.ASC, "protocol", "protocolVersion"));
+  }
+
+  public void updateDeviceProtocol(
+      final String organisationIdentification,
+      @Identification final String deviceIdentification,
+      final String protocol,
+      final String protocolVersion)
+      throws FunctionalException {
+
+    LOGGER.debug(
+        "Updating protocol for device [{}] on behalf of organisation [{}] to protocol: {}, version: {}",
+        deviceIdentification,
+        organisationIdentification,
+        protocol,
+        protocolVersion);
+
+    final Organisation organisation = this.findOrganisation(organisationIdentification);
+    this.isAllowed(organisation, PlatformFunction.UPDATE_DEVICE_PROTOCOL);
+
+    final Device device = this.findDevice(deviceIdentification);
+    final ProtocolInfo protocolInfo = this.findProtocolInfo(protocol, protocolVersion);
+
+    if (protocolInfo.equals(device.getProtocolInfo())) {
+      LOGGER.info(
+          "Not updating protocol: {}, version: {} on device {} since it is already configured",
+          protocol,
+          protocolVersion,
+          deviceIdentification);
+      return;
     }
 
-    // === REMOVE DEVICE ===
+    device.updateProtocol(protocolInfo);
+    this.deviceRepository.save(device);
 
-    /**
-     * Removes a device.
-     *
-     * @param organisationIdentification
-     *            The organisation identification who performs the action
-     * @param deviceIdentification
-     *            The device identification of the device
-     *
-     * @throws FunctionalException
-     *             In case the device or organisation can not be found or the
-     *             organisation is not allowed to perform this action.
-     */
-    public void removeDevice(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification) throws FunctionalException {
-        final Organisation organisation = this.findOrganisation(organisationIdentification);
-        final Device device = this.findDevice(deviceIdentification);
-        this.isAllowed(organisation, device, DeviceFunction.REMOVE_DEVICE);
+    LOGGER.info(
+        "Organisation {} configured protocol: {}, version: {} on device {}",
+        organisationIdentification,
+        protocol,
+        protocolVersion,
+        deviceIdentification);
+  }
 
-        // First remove all authorizations
-        final List<DeviceAuthorization> authorisations = this.authorizationRepository.findByDevice(device);
-        for (final DeviceAuthorization authorisation : authorisations) {
-            this.authorizationRepository.delete(authorisation);
-        }
+  public Device updateCommunicationNetworkInformation(
+      final String organisationIdentification,
+      final String deviceIdentification,
+      final String ipAddress,
+      final Integer btsId,
+      final Integer cellId)
+      throws FunctionalException {
 
-        // Remove all events
-        final List<Event> events = this.eventRepository.findByDeviceIdentification(deviceIdentification);
-        for (final Event event : events) {
-            this.eventRepository.delete(event);
-        }
+    final Organisation organisation = this.findOrganisation(organisationIdentification);
+    final Device device = this.findDevice(deviceIdentification);
 
-        // Then remove the device.
-        this.deviceRepository.delete(device);
+    this.isAllowed(organisation, device, DeviceFunction.SET_COMMUNICATION_NETWORK_INFORMATION);
+
+    if (ipAddress != null) {
+      try {
+        device.setNetworkAddress(InetAddress.getByName(ipAddress));
+      } catch (final UnknownHostException e) {
+        LOGGER.error("Invalid ip address found {} for device {}", ipAddress, deviceIdentification);
+        throw new FunctionalException(
+            FunctionalExceptionType.INVALID_IP_ADDRESS, ComponentType.DOMAIN_SMART_METERING);
+      }
     }
 
-    // === SET OWNER ===
-
-    /**
-     * Sets the owner of the device
-     *
-     * @param organisationIdentification
-     *            The organisation identification who performs the action
-     *            (needed for security)
-     * @param deviceIdentification
-     *            The device identification of the device
-     * @param newOwner
-     *            The organisation identification of the new owner.
-     *
-     * @throws FunctionalException
-     *             In case the device or organisation can not be found or the
-     *             organisation is not allowed to perform this action.
-     */
-    public void setOwner(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, @Identification final String newOwner)
-            throws FunctionalException {
-        Organisation organisation = this.findOrganisation(organisationIdentification);
-        final Device device = this.findDevice(deviceIdentification);
-        this.isAllowed(organisation, PlatformFunction.SET_OWNER);
-
-        organisation = this.findOrganisation(newOwner);
-
-        // First remove any other owners.
-        final List<DeviceAuthorization> owners = this.authorizationRepository.findByDeviceAndFunctionGroup(device,
-                DeviceFunctionGroup.OWNER);
-        if (!owners.isEmpty()) {
-            for (final DeviceAuthorization owner : owners) {
-                this.authorizationRepository.delete(owner);
-            }
-        }
-
-        // Now add the authorization
-        final DeviceAuthorization authorization = new DeviceAuthorization(device, organisation,
-                DeviceFunctionGroup.OWNER);
-        this.authorizationRepository.save(authorization);
+    if (btsId != null) {
+      device.setBtsId(btsId);
     }
 
-    // === UPDATE KEY ===
-
-    public void updateKey(final String organisationIdentification, @Identification final String deviceIdentification,
-            @PublicKey final String publicKey, final Long protocolInfoId) throws FunctionalException {
-
-        LOGGER.debug("Updating key for device [{}] on behalf of organisation [{}]", deviceIdentification,
-                organisationIdentification);
-
-        final Organisation organisation = this.findOrganisation(organisationIdentification);
-        this.isAllowed(organisation, PlatformFunction.UPDATE_KEY);
-        this.organisationDomainService.isOrganisationEnabled(organisation, ComponentType.WS_ADMIN);
-
-        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-
-        if (device == null) {
-            // Device not found, create new device
-            LOGGER.debug("Device [{}] does not exist, creating new device", deviceIdentification);
-            final Ssld ssld = new Ssld(deviceIdentification);
-
-            final DeviceAuthorization authorization = ssld.addAuthorization(organisation, DeviceFunctionGroup.OWNER);
-
-            final ProtocolInfo protocolInfo = this.protocolRepository.findById(protocolInfoId)
-                    .orElseThrow(() -> new EntityNotFoundException(
-                            "No protocol info record found with ID: " + protocolInfoId));
-            ssld.updateProtocol(protocolInfo);
-
-            this.authorizationRepository.save(authorization);
-        }
-
-        this.enqueueUpdateKeyRequest(organisationIdentification, deviceIdentification, publicKey);
+    if (cellId != null) {
+      device.setCellId(cellId);
     }
 
-    public String enqueueUpdateKeyRequest(final String organisationIdentification,
-            @Identification final String deviceIdentification, @PublicKey final String publicKey) {
+    final Device updatedDevice = this.deviceRepository.save(device);
+    LOGGER.info(
+        "CommunicationNetworkInformation for Device {} updated to : ipAddress={}, btsId={}, cellId={} ",
+        deviceIdentification,
+        updatedDevice.getIpAddress(),
+        updatedDevice.getBtsId(),
+        updatedDevice.getCellId());
 
-        LOGGER.debug("enqueueUpdateKeyRequest called with organisation {} and device {}", organisationIdentification,
-                deviceIdentification);
+    return updatedDevice;
+  }
 
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
+  private Device findDevice(final String deviceIdentification) throws FunctionalException {
+    return this.deviceDomainService.searchDevice(deviceIdentification);
+  }
 
-        final AdminRequestMessage message = new AdminRequestMessage(MessageType.UPDATE_KEY, correlationUid,
-                organisationIdentification, deviceIdentification, publicKey);
-
-        this.adminRequestMessageSender.send(message);
-
-        return correlationUid;
+  private ProtocolInfo findProtocolInfo(final String protocol, final String protocolVersion)
+      throws FunctionalException {
+    final ProtocolInfo protocolInfo =
+        this.protocolRepository.findByProtocolAndProtocolVersion(protocol, protocolVersion);
+    if (protocolInfo == null) {
+      throw new FunctionalException(
+          FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION, ComponentType.WS_ADMIN);
     }
+    return protocolInfo;
+  }
 
-    public ResponseMessage dequeueUpdateKeyResponse(final String correlationUid) throws OsgpException {
-
-        return this.adminResponseMessageFinder.findMessage(correlationUid);
+  private Organisation findOrganisation(final String organisationIdentification)
+      throws FunctionalException {
+    Organisation organisation;
+    try {
+      organisation = this.organisationDomainService.searchOrganisation(organisationIdentification);
+    } catch (final UnknownEntityException e) {
+      throw new FunctionalException(
+          FunctionalExceptionType.UNKNOWN_ORGANISATION, ComponentType.WS_ADMIN, e);
     }
+    return organisation;
+  }
 
-    // === REVOKE KEY ===
-
-    public void revokeKey(final String organisationIdentification, @Identification final String deviceIdentification)
-            throws FunctionalException {
-
-        LOGGER.debug("Revoking key for device [{}] on behalf of organisation [{}]", deviceIdentification,
-                organisationIdentification);
-
-        this.findDevice(deviceIdentification);
-        final Organisation organisation = this.findOrganisation(organisationIdentification);
-        this.isAllowed(organisation, PlatformFunction.REVOKE_KEY);
-
-        this.enqueueRevokeKeyRequest(organisationIdentification, deviceIdentification);
+  private void isAllowed(final Organisation organisation, final PlatformFunction platformFunction)
+      throws FunctionalException {
+    try {
+      this.securityService.checkAuthorization(organisation, platformFunction);
+    } catch (final NotAuthorizedException e) {
+      throw new FunctionalException(
+          FunctionalExceptionType.UNAUTHORIZED, ComponentType.WS_ADMIN, e);
     }
+  }
 
-    public String enqueueRevokeKeyRequest(final String organisationIdentification,
-            @Identification final String deviceIdentification) {
-
-        LOGGER.debug("enqueueRevokeKeyRequest called with organisation {} and device {}", organisationIdentification,
-                deviceIdentification);
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
-
-        final AdminRequestMessage message = new AdminRequestMessage(MessageType.REVOKE_KEY, correlationUid,
-                organisationIdentification, deviceIdentification, null);
-
-        this.adminRequestMessageSender.send(message);
-
-        return correlationUid;
+  private void isAllowed(
+      final Organisation organisation, final Device device, final DeviceFunction deviceFunction)
+      throws FunctionalException {
+    try {
+      this.securityService.checkAuthorization(organisation, device, deviceFunction);
+    } catch (final NotAuthorizedException e) {
+      throw new FunctionalException(
+          FunctionalExceptionType.UNAUTHORIZED, ComponentType.WS_ADMIN, e);
     }
-
-    public ResponseMessage dequeueRevokeKeyResponse(final String correlationUid) throws OsgpException {
-
-        return this.adminResponseMessageFinder.findMessage(correlationUid);
-    }
-
-    public List<ProtocolInfo> getProtocolInfos(final String organisationIdentification) throws FunctionalException {
-
-        LOGGER.debug("Retrieving all protocol infos on behalf of organisation: {}", organisationIdentification);
-
-        final Organisation organisation = this.findOrganisation(organisationIdentification);
-        this.isAllowed(organisation, PlatformFunction.GET_PROTOCOL_INFOS);
-
-        return this.protocolRepository.findAll(Sort.by(Direction.ASC, "protocol", "protocolVersion"));
-    }
-
-    public void updateDeviceProtocol(final String organisationIdentification,
-            @Identification final String deviceIdentification, final String protocol, final String protocolVersion)
-            throws FunctionalException {
-
-        LOGGER.debug("Updating protocol for device [{}] on behalf of organisation [{}] to protocol: {}, version: {}",
-                deviceIdentification, organisationIdentification, protocol, protocolVersion);
-
-        final Organisation organisation = this.findOrganisation(organisationIdentification);
-        this.isAllowed(organisation, PlatformFunction.UPDATE_DEVICE_PROTOCOL);
-
-        final Device device = this.findDevice(deviceIdentification);
-        final ProtocolInfo protocolInfo = this.findProtocolInfo(protocol, protocolVersion);
-
-        if (protocolInfo.equals(device.getProtocolInfo())) {
-            LOGGER.info("Not updating protocol: {}, version: {} on device {} since it is already configured", protocol,
-                    protocolVersion, deviceIdentification);
-            return;
-        }
-
-        device.updateProtocol(protocolInfo);
-        this.deviceRepository.save(device);
-
-        LOGGER.info("Organisation {} configured protocol: {}, version: {} on device {}", organisationIdentification,
-                protocol, protocolVersion, deviceIdentification);
-    }
-
-    private Device findDevice(final String deviceIdentification) throws FunctionalException {
-        return this.deviceDomainService.searchDevice(deviceIdentification);
-    }
-
-    private ProtocolInfo findProtocolInfo(final String protocol, final String protocolVersion)
-            throws FunctionalException {
-        final ProtocolInfo protocolInfo = this.protocolRepository.findByProtocolAndProtocolVersion(protocol,
-                protocolVersion);
-        if (protocolInfo == null) {
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION,
-                    ComponentType.WS_ADMIN);
-        }
-        return protocolInfo;
-    }
-
-    private Organisation findOrganisation(final String organisationIdentification) throws FunctionalException {
-        Organisation organisation;
-        try {
-            organisation = this.organisationDomainService.searchOrganisation(organisationIdentification);
-        } catch (final UnknownEntityException e) {
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_ORGANISATION, ComponentType.WS_ADMIN, e);
-        }
-        return organisation;
-    }
-
-    private void isAllowed(final Organisation organisation, final PlatformFunction platformFunction)
-            throws FunctionalException {
-        try {
-            this.securityService.checkAuthorization(organisation, platformFunction);
-        } catch (final NotAuthorizedException e) {
-            throw new FunctionalException(FunctionalExceptionType.UNAUTHORIZED, ComponentType.WS_ADMIN, e);
-        }
-    }
-
-    private void isAllowed(final Organisation organisation, final Device device, final DeviceFunction deviceFunction)
-            throws FunctionalException {
-        try {
-            this.securityService.checkAuthorization(organisation, device, deviceFunction);
-        } catch (final NotAuthorizedException e) {
-            throw new FunctionalException(FunctionalExceptionType.UNAUTHORIZED, ComponentType.WS_ADMIN, e);
-        }
-
-    }
-
+  }
 }

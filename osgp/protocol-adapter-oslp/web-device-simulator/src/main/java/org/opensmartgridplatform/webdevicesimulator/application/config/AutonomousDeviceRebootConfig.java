@@ -1,14 +1,14 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.webdevicesimulator.application.config;
 
 import javax.annotation.Resource;
-
 import org.opensmartgridplatform.webdevicesimulator.application.tasks.AutonomousDeviceReboot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -29,36 +29,42 @@ import org.springframework.scheduling.support.CronTrigger;
 @PropertySource(value = "file:${osgp/WebDeviceSimulator/config}", ignoreResourceNotFound = true)
 public class AutonomousDeviceRebootConfig implements SchedulingConfigurer {
 
-    private static final String PROPERTY_NAME_AUTONOMOUS_TASKS_DEVICE_REBOOT_CRON_EXPRESSION = "autonomous.tasks.device.reboot.cron.expression";
-    private static final String PROPERTY_NAME_AUTONOMOUS_DEVICE_REBOOT_POOL_SIZE = "autonomous.task.device.reboot.pool.size";
-    private static final String PROPERTY_NAME_AUTONOMOUS_DEVICE_REBOOT_THREAD_NAME_PREFIX = "autonomous.task.device.reboot.thread.name.prefix";
+  private static final String PROPERTY_NAME_AUTONOMOUS_TASKS_DEVICE_REBOOT_CRON_EXPRESSION =
+      "autonomous.tasks.device.reboot.cron.expression";
+  private static final String PROPERTY_NAME_AUTONOMOUS_DEVICE_REBOOT_POOL_SIZE =
+      "autonomous.task.device.reboot.pool.size";
+  private static final String PROPERTY_NAME_AUTONOMOUS_DEVICE_REBOOT_THREAD_NAME_PREFIX =
+      "autonomous.task.device.reboot.thread.name.prefix";
 
-    @Resource
-    private Environment environment;
+  @Resource private Environment environment;
 
-    @Autowired
-    private AutonomousDeviceReboot autonomousDeviceReboot;
+  @Autowired private AutonomousDeviceReboot autonomousDeviceReboot;
 
-    @Override
-    public void configureTasks(final ScheduledTaskRegistrar taskRegistrar) {
-        taskRegistrar.setScheduler(this.deviceRebootTaskScheduler());
-        taskRegistrar.addCronTask(new CronTask(this.autonomousDeviceReboot, this.autonomousDeviceRebootTrigger()));
-    }
+  @Override
+  public void configureTasks(final ScheduledTaskRegistrar taskRegistrar) {
+    taskRegistrar.setScheduler(this.deviceRebootTaskScheduler());
+    taskRegistrar.addCronTask(
+        new CronTask(this.autonomousDeviceReboot, this.autonomousDeviceRebootTrigger()));
+  }
 
-    public CronTrigger autonomousDeviceRebootTrigger() {
-        final String cron = this.environment
-                .getRequiredProperty(PROPERTY_NAME_AUTONOMOUS_TASKS_DEVICE_REBOOT_CRON_EXPRESSION);
-        return new CronTrigger(cron);
-    }
+  public CronTrigger autonomousDeviceRebootTrigger() {
+    final String cron =
+        this.environment.getRequiredProperty(
+            PROPERTY_NAME_AUTONOMOUS_TASKS_DEVICE_REBOOT_CRON_EXPRESSION);
+    return new CronTrigger(cron);
+  }
 
-    @Bean(destroyMethod = "shutdown")
-    public TaskScheduler deviceRebootTaskScheduler() {
-        final ThreadPoolTaskScheduler deviceRebootTaskScheduler = new ThreadPoolTaskScheduler();
-        deviceRebootTaskScheduler.setPoolSize(Integer
-                .parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_AUTONOMOUS_DEVICE_REBOOT_POOL_SIZE)));
-        deviceRebootTaskScheduler.setThreadNamePrefix(
-                this.environment.getRequiredProperty(PROPERTY_NAME_AUTONOMOUS_DEVICE_REBOOT_THREAD_NAME_PREFIX));
-        deviceRebootTaskScheduler.setWaitForTasksToCompleteOnShutdown(false);
-        return deviceRebootTaskScheduler;
-    }
+  @Bean(destroyMethod = "shutdown")
+  public TaskScheduler deviceRebootTaskScheduler() {
+    final ThreadPoolTaskScheduler deviceRebootTaskScheduler = new ThreadPoolTaskScheduler();
+    deviceRebootTaskScheduler.setPoolSize(
+        Integer.parseInt(
+            this.environment.getRequiredProperty(
+                PROPERTY_NAME_AUTONOMOUS_DEVICE_REBOOT_POOL_SIZE)));
+    deviceRebootTaskScheduler.setThreadNamePrefix(
+        this.environment.getRequiredProperty(
+            PROPERTY_NAME_AUTONOMOUS_DEVICE_REBOOT_THREAD_NAME_PREFIX));
+    deviceRebootTaskScheduler.setWaitForTasksToCompleteOnShutdown(false);
+    return deviceRebootTaskScheduler;
+  }
 }

@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.messageprocessors;
 
@@ -24,29 +25,35 @@ import org.springframework.stereotype.Component;
 @Component
 public class ReadAlarmRegisterResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
-    @Autowired
-    private MonitoringService monitoringService;
+  @Autowired private MonitoringService monitoringService;
 
-    @Autowired
-    protected ReadAlarmRegisterResponseMessageProcessor(
-            WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
-        super(responseMessageSender, messageProcessorMap, MessageType.READ_ALARM_REGISTER,
-                ComponentType.DOMAIN_SMART_METERING);
-    }
+  @Autowired
+  protected ReadAlarmRegisterResponseMessageProcessor(
+      final WebServiceResponseMessageSender responseMessageSender,
+      @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
+          final MessageProcessorMap messageProcessorMap) {
+    super(
+        responseMessageSender,
+        messageProcessorMap,
+        MessageType.READ_ALARM_REGISTER,
+        ComponentType.DOMAIN_SMART_METERING);
+  }
 
-    @Override
-    protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
-        return responseMessage.getDataObject() instanceof AlarmRegisterResponseDto;
-    }
+  @Override
+  protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
+    return responseMessage.getDataObject() instanceof AlarmRegisterResponseDto;
+  }
 
-    @Override
-    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
-            final ResponseMessage responseMessage, final OsgpException osgpException) {
+  @Override
+  protected void handleMessage(
+      final DeviceMessageMetadata deviceMessageMetadata,
+      final ResponseMessage responseMessage,
+      final OsgpException osgpException) {
 
-        final AlarmRegisterResponseDto alarmRegisterDto = (AlarmRegisterResponseDto) responseMessage.getDataObject();
+    final AlarmRegisterResponseDto alarmRegisterDto =
+        (AlarmRegisterResponseDto) responseMessage.getDataObject();
 
-        this.monitoringService.handleReadAlarmRegisterResponse(deviceMessageMetadata, responseMessage.getResult(),
-                osgpException, alarmRegisterDto);
-    }
+    this.monitoringService.handleReadAlarmRegisterResponse(
+        deviceMessageMetadata, responseMessage.getResult(), osgpException, alarmRegisterDto);
+  }
 }

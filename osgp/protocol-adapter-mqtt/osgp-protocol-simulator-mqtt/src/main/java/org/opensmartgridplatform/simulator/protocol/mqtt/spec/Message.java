@@ -10,30 +10,28 @@ package org.opensmartgridplatform.simulator.protocol.mqtt.spec;
 
 public class Message {
 
-    private String topic;
-    private String payload;
-    private long pauseMillis;
+  private String topic;
+  private String payload;
+  private long pauseMillis;
 
-    public Message() {
+  public Message() {}
 
-    }
+  public Message(final String topic, final String payload, final long pauseMillis) {
+    super();
+    this.topic = topic;
+    this.payload = payload;
+    this.pauseMillis = pauseMillis;
+  }
 
-    public Message(final String topic, final String payload, final long pauseMillis) {
-        super();
-        this.topic = topic;
-        this.payload = payload;
-        this.pauseMillis = pauseMillis;
-    }
+  public String getTopic() {
+    return this.topic;
+  }
 
-    public String getTopic() {
-        return this.topic;
-    }
+  public String getPayload() {
+    return this.payload;
+  }
 
-    public String getPayload() {
-        return this.payload;
-    }
-
-    public long getPauseMillis() {
-        return this.pauseMillis;
-    }
+  public long getPauseMillis() {
+    return this.pauseMillis;
+  }
 }

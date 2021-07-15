@@ -1,12 +1,19 @@
-/**
+/*
  * Copyright 2020 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out;
 
+import com.alliander.data.scadameasurementpublishedevent.Message;
+import com.alliander.data.scadameasurementpublishedevent.ScadaMeasurementPublishedEvent;
+import com.alliander.messaging.MessageId;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opensmartgridplatform.adapter.kafka.da.application.mapping.DistributionAutomationMapper;
 import org.opensmartgridplatform.adapter.kafka.da.application.services.LocationService;
 import org.opensmartgridplatform.adapter.kafka.da.domain.entities.Feeder;
@@ -21,105 +28,105 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import com.alliander.data.scadameasurementpublishedevent.Message;
-import com.alliander.data.scadameasurementpublishedevent.ScadaMeasurementPublishedEvent;
-import com.alliander.messaging.MessageId;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @Service
 public class LowVoltageMessageProducer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LowVoltageMessageProducer.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(LowVoltageMessageProducer.class);
 
-    private static final int META_MEASUREMENT_FEEDER = 100;
+  private static final int META_MEASUREMENT_FEEDER = 100;
 
-    private final KafkaTemplate<String, Message> kafkaTemplate;
+  private final KafkaTemplate<String, Message> kafkaTemplate;
 
-    private final MessageSigner messageSigner;
+  private final MessageSigner messageSigner;
 
-    private final DistributionAutomationMapper mapper;
+  private final DistributionAutomationMapper mapper;
 
-    private final LocationService locationService;
+  private final LocationService locationService;
 
-    @Autowired
-    public LowVoltageMessageProducer(
-            @Qualifier("distributionAutomationKafkaTemplate") final KafkaTemplate<String, Message> kafkaTemplate,
-            final MessageSigner messageSigner, final DistributionAutomationMapper mapper,
-            final LocationService locationService) {
-        this.kafkaTemplate = kafkaTemplate;
-        this.messageSigner = messageSigner;
-        this.mapper = mapper;
-        this.locationService = locationService;
+  @Autowired
+  public LowVoltageMessageProducer(
+      @Qualifier("distributionAutomationKafkaTemplate")
+          final KafkaTemplate<String, Message> kafkaTemplate,
+      final MessageSigner messageSigner,
+      final DistributionAutomationMapper mapper,
+      final LocationService locationService) {
+    this.kafkaTemplate = kafkaTemplate;
+    this.messageSigner = messageSigner;
+    this.mapper = mapper;
+    this.locationService = locationService;
+  }
+
+  public void send(final String measurement) {
+
+    LOGGER.info("LowVoltageMessageProducer.send is called with measurement {}", measurement);
+
+    final ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    try {
+
+      // we expect a list with one payload from the rtu.
+      final ScadaMeasurementPayload[] payloads =
+          objectMapper.readValue(measurement, ScadaMeasurementPayload[].class);
+      if (payloads.length == 0 || payloads[0] == null) {
+        LOGGER.error("Source does not include the correct data fields. Source {}", measurement);
+        return;
+      } else if (payloads.length > 1) {
+        LOGGER.info(
+            "Source has more than one payload, we are only processing the first and ignoring the others");
+      }
+
+      final ScadaMeasurementPayload payload = this.addLocationData(payloads);
+
+      final ScadaMeasurementPublishedEvent event =
+          this.mapper.map(payload, ScadaMeasurementPublishedEvent.class);
+
+      LOGGER.debug("Trying to send ScadaMeasurementPublishedEventProducer {}", event);
+
+      if (event != null) {
+        final MessageId messageId = new MessageId(UuidUtil.getBytesFromRandomUuid());
+        final Message message =
+            new Message(messageId, System.currentTimeMillis(), "GXF", null, event);
+        this.messageSigner.sign(message);
+        /*
+         * No need for callback functionality now; by default, the
+         * template is configured with a LoggingProducerListener, which
+         * logs errors and does nothing when the send is successful.
+         */
+        this.kafkaTemplate.sendDefault(message);
+      }
+    } catch (final JsonProcessingException e) {
+      LOGGER.error("Error while converting measurement to Json", e);
     }
+  }
 
-    public void send(final String measurement) {
+  private ScadaMeasurementPayload addLocationData(final ScadaMeasurementPayload[] payloads) {
+    final ScadaMeasurementPayload payload = payloads[0];
+    final String substationIdentification = payload.getSubstationIdentification();
 
-        LOGGER.info("LowVoltageMessageProducer.send is called with measurement {}", measurement);
-
-        final ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        try {
-
-            // we expect a list with one payload from the rtu.
-            final ScadaMeasurementPayload[] payloads = objectMapper.readValue(measurement,
-                    ScadaMeasurementPayload[].class);
-            if (payloads.length == 0 || payloads[0] == null) {
-                LOGGER.error("Source does not include the correct data fields. Source {}", measurement);
-                return;
-            } else if (payloads.length > 1) {
-                LOGGER.info(
-                        "Source has more than one payload, we are only processing the first and ignoring the others");
-            }
-
-            final ScadaMeasurementPayload payload = this.addLocationData(payloads);
-
-            final ScadaMeasurementPublishedEvent event = this.mapper.map(payload, ScadaMeasurementPublishedEvent.class);
-
-            LOGGER.debug("Trying to send ScadaMeasurementPublishedEventProducer {}", event);
-
-            if (event != null) {
-                final MessageId messageId = new MessageId(UuidUtil.getBytesFromRandomUuid());
-                final Message message = new Message(messageId, System.currentTimeMillis(), "GXF", null, event);
-                this.messageSigner.sign(message);
-                /*
-                 * No need for callback functionality now; by default, the
-                 * template is configured with a LoggingProducerListener, which
-                 * logs errors and does nothing when the send is successful.
-                 */
-                this.kafkaTemplate.sendDefault(message);
-            }
-        } catch (final JsonProcessingException e) {
-            LOGGER.error("Error while converting measurement to Json", e);
-        }
+    final Location location =
+        this.locationService.getLocation(substationIdentification).orElse(null);
+    if (location == null) {
+      payload.setBayIdentification("");
+      payload.setSubstationName("");
+    } else {
+      addLocationData(payload, location);
     }
+    return payload;
+  }
 
-    private ScadaMeasurementPayload addLocationData(final ScadaMeasurementPayload[] payloads) {
-        final ScadaMeasurementPayload payload = payloads[0];
-        final String substationIdentification = payload.getSubstationIdentification();
+  private static void addLocationData(
+      final ScadaMeasurementPayload payload, final Location location) {
+    payload.setSubstationName(location.getName());
 
-        final Location location = this.locationService.getLocation(substationIdentification).orElse(null);
-        if (location == null) {
-            payload.setBayIdentification("");
-            payload.setSubstationName("");
-        } else {
-            addLocationData(payload, location);
-        }
-        return payload;
+    try {
+      final int feederNumber = Integer.parseInt(payload.getFeeder());
+      if (feederNumber != META_MEASUREMENT_FEEDER) {
+        final String bayIdentification =
+            location.getFeeder(feederNumber).map(Feeder::getName).orElse("");
+        payload.setBayIdentification(bayIdentification);
+      }
+    } catch (final NumberFormatException e) {
+      LOGGER.error("Payload contains a non-numeric value for feeder", e);
     }
-
-    private static void addLocationData(final ScadaMeasurementPayload payload, final Location location) {
-        payload.setSubstationName(location.getName());
-
-        try {
-            final int feederNumber = Integer.parseInt(payload.getFeeder());
-            if (feederNumber != META_MEASUREMENT_FEEDER) {
-                final String bayIdentification = location.getFeeder(feederNumber).map(Feeder::getName).orElse("");
-                payload.setBayIdentification(bayIdentification);
-            }
-        } catch (final NumberFormatException e) {
-            LOGGER.error("Payload contains a non-numeric value for feeder", e);
-        }
-    }
+  }
 }

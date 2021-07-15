@@ -16,6 +16,4 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource("classpath:osgp-adapter-protocol-mqtt.properties")
 @PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
 @PropertySource(value = "file:${osgp/AdapterProtocolMqtt/config}", ignoreResourceNotFound = true)
-public class MqttConfig extends AbstractConfig {
-
-}
+public class MqttConfig extends AbstractConfig {}

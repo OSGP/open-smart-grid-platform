@@ -4,7 +4,7 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
   xmlns:tns="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-installation/2014/10"
   xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
-  attributeFormDefault="unqualified" elementFormDefault="qualified"
+  elementFormDefault="qualified"
   targetNamespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-installation/2014/10">
 
   <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/common/2014/10"
@@ -21,7 +21,7 @@
   <xsd:element name="AddDeviceAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncResponse"></xsd:extension>
+        <xsd:extension base="common:AsyncResponse" />
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -29,7 +29,7 @@
   <xsd:element name="AddDeviceAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncRequest"></xsd:extension>
+        <xsd:extension base="common:AsyncRequest" />
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -37,8 +37,7 @@
   <xsd:element name="AddDeviceResponse">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" />
+        <xsd:element name="Result" type="common:OsgpResultType" />
         <xsd:element name="Description" type="xsd:string"
           minOccurs="0" />
       </xsd:sequence>
@@ -57,7 +56,7 @@
   <xsd:element name="CoupleMbusDeviceAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncResponse"></xsd:extension>
+        <xsd:extension base="common:AsyncResponse" />
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -65,7 +64,7 @@
   <xsd:element name="CoupleMbusDeviceAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncRequest"></xsd:extension>
+        <xsd:extension base="common:AsyncRequest" />
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -73,15 +72,14 @@
   <xsd:element name="CoupleMbusDeviceResponse">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" />
+        <xsd:element name="Result" type="common:OsgpResultType" />
         <xsd:element name="Description" type="xsd:string"
           minOccurs="0" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="DeCoupleMbusDeviceRequest">
+  <xsd:element name="DecoupleMbusDeviceRequest">
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
@@ -90,27 +88,26 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="DeCoupleMbusDeviceAsyncResponse">
+  <xsd:element name="DecoupleMbusDeviceAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncResponse"></xsd:extension>
+        <xsd:extension base="common:AsyncResponse" />
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="DeCoupleMbusDeviceAsyncRequest">
+  <xsd:element name="DecoupleMbusDeviceAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncRequest"></xsd:extension>
+        <xsd:extension base="common:AsyncRequest" />
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="DeCoupleMbusDeviceResponse">
+  <xsd:element name="DecoupleMbusDeviceResponse">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" />
+        <xsd:element name="Result" type="common:OsgpResultType" />
         <xsd:element name="Description" type="xsd:string"
           minOccurs="0" />
       </xsd:sequence>
@@ -130,7 +127,7 @@
   <xsd:element name="CoupleMbusDeviceByChannelAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncResponse"></xsd:extension>
+        <xsd:extension base="common:AsyncResponse" />
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -138,7 +135,7 @@
   <xsd:element name="CoupleMbusDeviceByChannelAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncRequest"></xsd:extension>
+        <xsd:extension base="common:AsyncRequest" />
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -157,6 +154,51 @@
       <xsd:extension base="common:Response">
         <xsd:sequence>
           <xsd:element name="ChannelElementValues" type="tns:ChannelElementValues" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="DecoupleMbusDeviceByChannelRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+        <xsd:element name="DecoupleMbusDeviceByChannelRequestData"
+          type="tns:DecoupleMbusDeviceByChannelRequestData" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="DecoupleMbusDeviceByChannelAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="DecoupleMbusDeviceByChannelAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest" />
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="DecoupleMbusDeviceByChannelResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="tns:DecoupleMbusDeviceByChannelResponseData">
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="DecoupleMbusDeviceByChannelResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
+        <xsd:sequence minOccurs="0">
+          <xsd:element name="mbusDeviceIdentification" type="common:DeviceIdentification" />
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -193,7 +235,7 @@
         </xsd:simpleType>
       </xsd:element>
 
-      <xsd:element name="ICC_id" minOccurs="0">
+      <xsd:element name="Icc_id" minOccurs="0">
         <xsd:simpleType>
           <xsd:restriction base="tns:AlphaNumericType">
             <xsd:maxLength value="20" />
@@ -225,11 +267,11 @@
         </xsd:simpleType>
       </xsd:element>
 
-      <xsd:element name="HLS3_active" type="xsd:boolean"
+      <xsd:element name="Hls3_active" type="xsd:boolean"
         minOccurs="0" />
-      <xsd:element name="HLS4_active" type="xsd:boolean"
+      <xsd:element name="Hls4_active" type="xsd:boolean"
         minOccurs="0" />
-      <xsd:element name="HLS5_active" type="xsd:boolean"
+      <xsd:element name="Hls5_active" type="xsd:boolean"
         minOccurs="0" />
       <!-- no type restriction for unencrypted keys for now -->
       <xsd:element name="Master_key" type="xsd:hexBinary"
@@ -238,8 +280,7 @@
         type="xsd:hexBinary" minOccurs="0" />
       <xsd:element name="Authentication_key" type="xsd:hexBinary"
         minOccurs="0" />
-      <xsd:element name="Delivery_date" type="xsd:dateTime"
-        minOccurs="1" maxOccurs="1" />
+      <xsd:element name="Delivery_date" type="xsd:dateTime" />
 
       <xsd:element name="Mbus_identification_number"
         minOccurs="0">
@@ -254,7 +295,7 @@
         minOccurs="0">
         <xsd:simpleType>
           <xsd:restriction base="xsd:string">
-            <xsd:pattern value="[A-Z]{3}"></xsd:pattern>
+            <xsd:pattern value="[A-Z]{3}" />
           </xsd:restriction>
         </xsd:simpleType>
       </xsd:element>
@@ -273,15 +314,14 @@
 
   <xsd:complexType name="DeviceModel">
     <xsd:sequence>
-      <xsd:element name="Manufacturer" minOccurs="1"
-        maxOccurs="1">
+      <xsd:element name="Manufacturer">
         <xsd:simpleType>
           <xsd:restriction base="xsd:string">
             <xsd:maxLength value="4" />
           </xsd:restriction>
         </xsd:simpleType>
       </xsd:element>
-      <xsd:element name="ModelCode" minOccurs="0" maxOccurs="1">
+      <xsd:element name="ModelCode" minOccurs="0">
         <xsd:simpleType>
           <xsd:restriction base="xsd:string">
             <xsd:maxLength value="255" />
@@ -307,6 +347,16 @@
     </xsd:complexContent>
   </xsd:complexType>
 
+  <xsd:complexType name="DecoupleMbusDeviceByChannelRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Command">
+        <xsd:sequence>
+          <xsd:element name="Channel" type="common:Channel" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
   <xsd:complexType name="ChannelElementValues">
     <xsd:sequence>
       <xsd:element name="Channel" type="common:Channel" />
@@ -317,5 +367,13 @@
       <xsd:element name="DeviceTypeIdentification" type="xsd:unsignedByte" />
     </xsd:sequence>
   </xsd:complexType>
+
+  <xsd:element name="GetCommunicationNetworkInformationRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="xsd:string" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
 
 </xsd:schema>

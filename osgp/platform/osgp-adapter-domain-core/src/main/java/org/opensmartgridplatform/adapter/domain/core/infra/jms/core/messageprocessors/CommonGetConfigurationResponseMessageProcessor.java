@@ -1,15 +1,15 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.core.infra.jms.core.messageprocessors;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
-
 import org.opensmartgridplatform.adapter.domain.core.application.services.ConfigurationManagementService;
 import org.opensmartgridplatform.adapter.domain.core.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.dto.valueobjects.ConfigurationDto;
@@ -29,78 +29,91 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-/**
- * Class for processing common get configuration response messages
- */
+/** Class for processing common get configuration response messages */
 @Component("domainCoreCommonGetConfigurationResponseMessageProcessor")
 public class CommonGetConfigurationResponseMessageProcessor extends BaseMessageProcessor {
-    /**
-     * Logger for this class
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommonGetConfigurationResponseMessageProcessor.class);
+  /** Logger for this class */
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(CommonGetConfigurationResponseMessageProcessor.class);
 
-    @Autowired
-    @Qualifier("domainCoreConfigurationManagementService")
-    private ConfigurationManagementService configurationManagementService;
+  @Autowired
+  @Qualifier("domainCoreConfigurationManagementService")
+  private ConfigurationManagementService configurationManagementService;
 
-    @Autowired
-    protected CommonGetConfigurationResponseMessageProcessor(
-            @Qualifier("domainCoreOutboundWebServiceResponsesMessageSender") final WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainCoreInboundOsgpCoreResponsesMessageProcessorMap") final MessageProcessorMap messageProcessorMap) {
-        super(responseMessageSender, messageProcessorMap, MessageType.GET_CONFIGURATION, ComponentType.DOMAIN_CORE);
+  @Autowired
+  protected CommonGetConfigurationResponseMessageProcessor(
+      @Qualifier("domainCoreOutboundWebServiceResponsesMessageSender")
+          final WebServiceResponseMessageSender responseMessageSender,
+      @Qualifier("domainCoreInboundOsgpCoreResponsesMessageProcessorMap")
+          final MessageProcessorMap messageProcessorMap) {
+    super(
+        responseMessageSender,
+        messageProcessorMap,
+        MessageType.GET_CONFIGURATION,
+        ComponentType.DOMAIN_CORE);
+  }
+
+  @Override
+  public void processMessage(final ObjectMessage message) throws JMSException {
+    LOGGER.debug("Processing common get configuration response message");
+
+    String correlationUid = null;
+    String messageType = null;
+    int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
+    String organisationIdentification = null;
+    String deviceIdentification = null;
+
+    ResponseMessage responseMessage;
+    ResponseMessageResultType responseMessageResultType = null;
+    OsgpException osgpException = null;
+    Object dataObject;
+
+    try {
+      correlationUid = message.getJMSCorrelationID();
+      messageType = message.getJMSType();
+      messagePriority = message.getJMSPriority();
+      organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
+      deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
+
+      responseMessage = (ResponseMessage) message.getObject();
+      responseMessageResultType = responseMessage.getResult();
+      osgpException = responseMessage.getOsgpException();
+      dataObject = responseMessage.getDataObject();
+    } catch (final JMSException e) {
+      LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
+      LOGGER.debug("correlationUid: {}", correlationUid);
+      LOGGER.debug("messageType: {}", messageType);
+      LOGGER.debug("messagePriority: {}", messagePriority);
+      LOGGER.debug("organisationIdentification: {}", organisationIdentification);
+      LOGGER.debug("deviceIdentification: {}", deviceIdentification);
+      LOGGER.debug("responseMessageResultType: {}", responseMessageResultType);
+      LOGGER.debug("deviceIdentification: {}", deviceIdentification);
+      LOGGER.debug("osgpException", osgpException);
+      return;
     }
 
-    @Override
-    public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing common get configuration response message");
+    try {
+      LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-        String correlationUid = null;
-        String messageType = null;
-        int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
-        String organisationIdentification = null;
-        String deviceIdentification = null;
+      final ConfigurationDto configurationDto = (ConfigurationDto) dataObject;
+      final CorrelationIds ids =
+          new CorrelationIds(organisationIdentification, deviceIdentification, correlationUid);
+      this.configurationManagementService.handleGetConfigurationResponse(
+          configurationDto,
+          ids,
+          messageType,
+          messagePriority,
+          responseMessageResultType,
+          osgpException);
 
-        ResponseMessage responseMessage;
-        ResponseMessageResultType responseMessageResultType = null;
-        OsgpException osgpException = null;
-        Object dataObject;
-
-        try {
-            correlationUid = message.getJMSCorrelationID();
-            messageType = message.getJMSType();
-            messagePriority = message.getJMSPriority();
-            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-
-            responseMessage = (ResponseMessage) message.getObject();
-            responseMessageResultType = responseMessage.getResult();
-            osgpException = responseMessage.getOsgpException();
-            dataObject = responseMessage.getDataObject();
-        } catch (final JMSException e) {
-            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            LOGGER.debug("correlationUid: {}", correlationUid);
-            LOGGER.debug("messageType: {}", messageType);
-            LOGGER.debug("messagePriority: {}", messagePriority);
-            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("responseMessageResultType: {}", responseMessageResultType);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("osgpException", osgpException);
-            return;
-        }
-
-        try {
-            LOGGER.info("Calling application service function to handle response: {}", messageType);
-
-            final ConfigurationDto configurationDto = (ConfigurationDto) dataObject;
-            final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
-                    correlationUid);
-            this.configurationManagementService.handleGetConfigurationResponse(configurationDto, ids, messageType,
-                    messagePriority, responseMessageResultType, osgpException);
-
-        } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,
-                    messagePriority);
-        }
+    } catch (final Exception e) {
+      this.handleError(
+          e,
+          correlationUid,
+          organisationIdentification,
+          deviceIdentification,
+          messageType,
+          messagePriority);
     }
+  }
 }

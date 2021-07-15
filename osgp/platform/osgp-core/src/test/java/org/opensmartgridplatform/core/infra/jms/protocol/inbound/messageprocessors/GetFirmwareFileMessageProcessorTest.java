@@ -1,7 +1,8 @@
-/**
+/*
  * Copyright 2019 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -16,7 +17,6 @@ import static org.mockito.Mockito.when;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -42,68 +42,75 @@ import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class GetFirmwareFileMessageProcessorTest {
 
-    @Mock
-    private ProtocolResponseMessageSender protocolResponseMessageSender;
+  @Mock private ProtocolResponseMessageSender protocolResponseMessageSender;
 
-    @Mock
-    private DeviceRepository deviceRepository;
+  @Mock private DeviceRepository deviceRepository;
 
-    @Mock
-    private FirmwareFileRepository firmwareFileRepository;
+  @Mock private FirmwareFileRepository firmwareFileRepository;
 
-    @Mock
-    private Device deviceMock;
+  @Mock private Device deviceMock;
 
-    @Mock
-    private FirmwareFile firmwareFileMock;
+  @Mock private FirmwareFile firmwareFileMock;
 
-    @InjectMocks
-    private GetFirmwareFileMessageProcessor getFirmwareFileMessageProcessor;
+  @InjectMocks private GetFirmwareFileMessageProcessor getFirmwareFileMessageProcessor;
 
-    @Test
-    public void processMessageShouldSendFirmwareFile() throws JMSException {
-        // arrange
-        final String correlationUid = "corr-uid-1";
-        final String organisationIdentification = "test-org";
-        final String deviceIdentification = "dvc-1";
+  @Test
+  public void processMessageShouldSendFirmwareFile() throws JMSException {
+    // arrange
+    final String correlationUid = "corr-uid-1";
+    final String organisationIdentification = "test-org";
+    final String deviceIdentification = "dvc-1";
 
-        final String firmwareFileIdentification = "fw";
-        final byte[] firmwareFileBytes = firmwareFileIdentification.getBytes();
+    final String firmwareFileIdentification = "fw";
+    final byte[] firmwareFileBytes = firmwareFileIdentification.getBytes();
 
-        final RequestMessage requestMessage = new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, firmwareFileIdentification);
-        final ObjectMessage message = new ObjectMessageBuilder().withCorrelationUid(correlationUid)
-                .withMessageType(DeviceFunction.GET_FIRMWARE_FILE.name()).withDeviceIdentification(deviceIdentification)
-                .withObject(requestMessage).build();
+    final RequestMessage requestMessage =
+        new RequestMessage(
+            correlationUid,
+            organisationIdentification,
+            deviceIdentification,
+            firmwareFileIdentification);
+    final ObjectMessage message =
+        new ObjectMessageBuilder()
+            .withCorrelationUid(correlationUid)
+            .withMessageType(DeviceFunction.GET_FIRMWARE_FILE.name())
+            .withDeviceIdentification(deviceIdentification)
+            .withObject(requestMessage)
+            .build();
 
-        when(this.deviceMock.getDeviceIdentification()).thenReturn(deviceIdentification);
-        when(this.deviceRepository.findByDeviceIdentification(deviceIdentification)).thenReturn(this.deviceMock);
+    when(this.deviceMock.getDeviceIdentification()).thenReturn(deviceIdentification);
+    when(this.deviceRepository.findByDeviceIdentification(deviceIdentification))
+        .thenReturn(this.deviceMock);
 
-        when(this.firmwareFileMock.getFilename()).thenReturn(firmwareFileIdentification);
-        when(this.firmwareFileMock.getFile()).thenReturn(firmwareFileBytes);
-        when(this.firmwareFileRepository.findByIdentification(firmwareFileIdentification))
-                .thenReturn(this.firmwareFileMock);
+    when(this.firmwareFileMock.getFilename()).thenReturn(firmwareFileIdentification);
+    when(this.firmwareFileMock.getFile()).thenReturn(firmwareFileBytes);
+    when(this.firmwareFileRepository.findByIdentification(firmwareFileIdentification))
+        .thenReturn(this.firmwareFileMock);
 
-        final byte[] expectedFile = firmwareFileBytes;
-        final String expectedMessageType = DeviceFunction.GET_FIRMWARE_FILE.name();
+    final byte[] expectedFile = firmwareFileBytes;
+    final String expectedMessageType = DeviceFunction.GET_FIRMWARE_FILE.name();
 
-        final ArgumentCaptor<ProtocolResponseMessage> responseMessageArgumentCaptor = ArgumentCaptor
-                .forClass(ProtocolResponseMessage.class);
-        final ArgumentCaptor<String> messageTypeCaptor = ArgumentCaptor.forClass(String.class);
+    final ArgumentCaptor<ProtocolResponseMessage> responseMessageArgumentCaptor =
+        ArgumentCaptor.forClass(ProtocolResponseMessage.class);
+    final ArgumentCaptor<String> messageTypeCaptor = ArgumentCaptor.forClass(String.class);
 
-        // act
-        this.getFirmwareFileMessageProcessor.processMessage(message);
+    // act
+    this.getFirmwareFileMessageProcessor.processMessage(message);
 
-        // assert
-        verify(this.protocolResponseMessageSender, times(1)).send(responseMessageArgumentCaptor.capture(),
-                messageTypeCaptor.capture(), nullable(ProtocolInfo.class), any(MessageMetadata.class));
+    // assert
+    verify(this.protocolResponseMessageSender, times(1))
+        .send(
+            responseMessageArgumentCaptor.capture(),
+            messageTypeCaptor.capture(),
+            nullable(ProtocolInfo.class),
+            any(MessageMetadata.class));
 
-        final byte[] actualFile = ((FirmwareFileDto) responseMessageArgumentCaptor.getValue().getDataObject())
-                .getFirmwareFile();
-        final String actualMessageType = messageTypeCaptor.getValue();
+    final byte[] actualFile =
+        ((FirmwareFileDto) responseMessageArgumentCaptor.getValue().getDataObject())
+            .getFirmwareFile();
+    final String actualMessageType = messageTypeCaptor.getValue();
 
-        assertThat(actualFile).isEqualTo(expectedFile);
-        assertThat(actualMessageType).isEqualTo(expectedMessageType);
-    }
-
+    assertThat(actualFile).isEqualTo(expectedFile);
+    assertThat(actualMessageType).isEqualTo(expectedMessageType);
+  }
 }

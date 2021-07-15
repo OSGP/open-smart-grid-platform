@@ -25,4 +25,4 @@ GXF detailed documentation:
 * [documentation.gxf.lfenergy.org](https://documentation.gxf.lfenergy.org/)
 
 GXF issue tracker:
-* [GXF Jira](https://smartsocietyservices.atlassian.net/projects/OC/issues/)
+* [github.com/OSGP/Documentation/issues](https://github.com/OSGP/Documentation/issues)

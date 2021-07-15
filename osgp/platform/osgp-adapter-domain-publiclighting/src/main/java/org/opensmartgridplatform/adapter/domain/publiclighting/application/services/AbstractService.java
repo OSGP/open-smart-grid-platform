@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.publiclighting.application.services;
 
@@ -26,45 +27,42 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 public class AbstractService {
 
-    @Autowired
-    protected DeviceDomainService deviceDomainService;
+  @Autowired protected DeviceDomainService deviceDomainService;
 
-    @Autowired
-    protected OrganisationDomainService organisationDomainService;
+  @Autowired protected OrganisationDomainService organisationDomainService;
 
-    @Autowired
-    protected SsldRepository ssldRepository;
+  @Autowired protected SsldRepository ssldRepository;
 
-    @Autowired
-    protected LightMeasurementDeviceRepository lightMeasurementDeviceRepository;
+  @Autowired protected LightMeasurementDeviceRepository lightMeasurementDeviceRepository;
 
-    @Autowired
-    @Qualifier(value = "domainPublicLightingOutboundOsgpCoreRequestsMessageSender")
-    protected OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
+  @Autowired
+  @Qualifier(value = "domainPublicLightingOutboundOsgpCoreRequestsMessageSender")
+  protected OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
 
-    @Autowired
-    protected DomainPublicLightingMapper domainCoreMapper;
+  @Autowired protected DomainPublicLightingMapper domainCoreMapper;
 
-    @Autowired
-    @Qualifier(value = "domainPublicLightingOutboundWebServiceResponsesMessageSender")
-    protected WebServiceResponseMessageSender webServiceResponseMessageSender;
+  @Autowired
+  @Qualifier(value = "domainPublicLightingOutboundWebServiceResponsesMessageSender")
+  protected WebServiceResponseMessageSender webServiceResponseMessageSender;
 
-    protected Device findActiveDevice(final String deviceIdentification) throws FunctionalException {
-        return this.deviceDomainService.searchActiveDevice(deviceIdentification, ComponentType.DOMAIN_PUBLIC_LIGHTING);
+  protected Device findActiveDevice(final String deviceIdentification) throws FunctionalException {
+    return this.deviceDomainService.searchActiveDevice(
+        deviceIdentification, ComponentType.DOMAIN_PUBLIC_LIGHTING);
+  }
+
+  protected Organisation findOrganisation(final String organisationIdentification)
+      throws FunctionalException {
+    Organisation organisation;
+    try {
+      organisation = this.organisationDomainService.searchOrganisation(organisationIdentification);
+    } catch (final UnknownEntityException e) {
+      throw new FunctionalException(
+          FunctionalExceptionType.UNKNOWN_ORGANISATION, ComponentType.DOMAIN_PUBLIC_LIGHTING, e);
     }
+    return organisation;
+  }
 
-    protected Organisation findOrganisation(final String organisationIdentification) throws FunctionalException {
-        Organisation organisation;
-        try {
-            organisation = this.organisationDomainService.searchOrganisation(organisationIdentification);
-        } catch (final UnknownEntityException e) {
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_ORGANISATION,
-                    ComponentType.DOMAIN_PUBLIC_LIGHTING, e);
-        }
-        return organisation;
-    }
-
-    protected Ssld findSsldForDevice(final Device device) {
-        return this.ssldRepository.findById(device.getId()).orElse(null);
-    }
+  protected Ssld findSsldForDevice(final Device device) {
+    return this.ssldRepository.findById(device.getId()).orElse(null);
+  }
 }

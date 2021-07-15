@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.database.core;
 
@@ -37,8 +38,8 @@ import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_GPS_L
 import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_GPS_LONGITUDE;
 import static org.opensmartgridplatform.cucumber.platform.PlatformKeys.KEY_SUPPLIER;
 
+import io.cucumber.java.en.Given;
 import java.util.Map;
-
 import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.BaseDeviceSteps;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
@@ -49,47 +50,46 @@ import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.cucumber.java.en.Given;
-
 public class SmartMeterSteps extends BaseDeviceSteps {
 
-    @Autowired
-    private DeviceRepository deviceRepository;
+  @Autowired private DeviceRepository deviceRepository;
 
-    @Autowired
-    private SmartMeterRepository smartMeterRepository;
+  @Autowired private SmartMeterRepository smartMeterRepository;
 
-    /**
-     * Given a smart meter exists.
-     */
-    @Given("^a smart meter$")
-    @Transactional("txMgrCore")
-    public Device aSmartMeter(final Map<String, String> settings) {
+  /** Given a smart meter exists. */
+  @Given("^a smart meter$")
+  @Transactional("txMgrCore")
+  public Device aSmartMeter(final Map<String, String> settings) {
 
-        final String deviceIdentification = getString(settings, KEY_DEVICE_IDENTIFICATION,
-                DEFAULT_DEVICE_IDENTIFICATION);
-        final SmartMeter smartMeter = new SmartMeter(deviceIdentification,
-                getString(settings, KEY_ALIAS, DEFAULT_ALIAS),
-                new Address(getString(settings, KEY_CONTAINER_CITY, DEFAULT_CONTAINER_CITY),
-                        getString(settings, KEY_CONTAINER_POSTALCODE, DEFAULT_CONTAINER_POSTALCODE),
-                        getString(settings, KEY_CONTAINER_STREET, DEFAULT_CONTAINER_STREET),
-                        getInteger(settings, KEY_CONTAINER_NUMBER, DEFAULT_CONTAINER_NUMBER),
-                        getString(settings, KEY_CONTAINER_NUMBER_ADDITION, DEFAULT_CONTAINER_NUMBER_ADDITION),
-                        getString(settings, KEY_CONTAINER_MUNICIPALITY, DEFAULT_CONTAINER_MUNICIPALITY)),
-                new GpsCoordinates(getFloat(settings, KEY_GPS_LATITUDE, DEFAULT_LATITUDE),
-                        getFloat(settings, KEY_GPS_LONGITUDE, DEFAULT_LONGITUDE)));
+    final String deviceIdentification =
+        getString(settings, KEY_DEVICE_IDENTIFICATION, DEFAULT_DEVICE_IDENTIFICATION);
+    final SmartMeter smartMeter =
+        new SmartMeter(
+            deviceIdentification,
+            getString(settings, KEY_ALIAS, DEFAULT_ALIAS),
+            new Address(
+                getString(settings, KEY_CONTAINER_CITY, DEFAULT_CONTAINER_CITY),
+                getString(settings, KEY_CONTAINER_POSTALCODE, DEFAULT_CONTAINER_POSTALCODE),
+                getString(settings, KEY_CONTAINER_STREET, DEFAULT_CONTAINER_STREET),
+                getInteger(settings, KEY_CONTAINER_NUMBER, DEFAULT_CONTAINER_NUMBER),
+                getString(
+                    settings, KEY_CONTAINER_NUMBER_ADDITION, DEFAULT_CONTAINER_NUMBER_ADDITION),
+                getString(settings, KEY_CONTAINER_MUNICIPALITY, DEFAULT_CONTAINER_MUNICIPALITY)),
+            new GpsCoordinates(
+                getFloat(settings, KEY_GPS_LATITUDE, DEFAULT_LATITUDE),
+                getFloat(settings, KEY_GPS_LONGITUDE, DEFAULT_LONGITUDE)));
 
-        smartMeter.setSupplier(getString(settings, KEY_SUPPLIER, DEFAULT_SUPPLIER));
+    smartMeter.setSupplier(getString(settings, KEY_SUPPLIER, DEFAULT_SUPPLIER));
 
-        if (settings.containsKey(KEY_GATEWAY_DEVICE_ID)) {
-            smartMeter.setChannel(getShort(settings, KEY_CHANNEL, DEFAULT_CHANNEL));
-            final Device smartEMeter = this.deviceRepository
-                    .findByDeviceIdentification(settings.get(KEY_GATEWAY_DEVICE_ID));
-            smartMeter.updateGatewayDevice(smartEMeter);
-        }
-
-        this.smartMeterRepository.save(smartMeter);
-
-        return this.updateDevice(deviceIdentification, settings);
+    if (settings.containsKey(KEY_GATEWAY_DEVICE_ID)) {
+      smartMeter.setChannel(getShort(settings, KEY_CHANNEL, DEFAULT_CHANNEL));
+      final Device smartEMeter =
+          this.deviceRepository.findByDeviceIdentification(settings.get(KEY_GATEWAY_DEVICE_ID));
+      smartMeter.updateGatewayDevice(smartEMeter);
     }
+
+    this.smartMeterRepository.save(smartMeter);
+
+    return this.updateDevice(deviceIdentification, settings);
+  }
 }

@@ -1,17 +1,15 @@
-/**
+/*
  * Copyright 2018 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
@@ -35,146 +33,167 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ScanMbusChannelsCommandExecutor extends AbstractCommandExecutor<Void, ScanMbusChannelsResponseDto> {
+public class ScanMbusChannelsCommandExecutor
+    extends AbstractCommandExecutor<Void, ScanMbusChannelsResponseDto> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ScanMbusChannelsCommandExecutor.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(ScanMbusChannelsCommandExecutor.class);
 
-    private static final int CLASS_ID = InterfaceClass.MBUS_CLIENT.id();
-    /**
-     * IDs of the attributes of the M-Bus Client Setup that make up the Short
-     * ID.
-     *
-     * The order of the IDs should match the way attributes are used in
-     * {@link #makeAttributeAddressesShortIds()} and
-     * {@link #channelShortIdsFromGetResults(List, Protocol)}.
+  private static final int CLASS_ID = InterfaceClass.MBUS_CLIENT.id();
+  /**
+   * IDs of the attributes of the M-Bus Client Setup that make up the Short ID.
+   *
+   * <p>The order of the IDs should match the way attributes are used in {@link
+   * #makeAttributeAddressesShortIds()} and {@link #channelShortIdsFromGetResults(List, Protocol)}.
+   */
+  private static final int[] ATTRIBUTE_IDS_SHORT_ID =
+      new int[] {
+        MbusClientAttribute.IDENTIFICATION_NUMBER.attributeId(),
+            MbusClientAttribute.MANUFACTURER_ID.attributeId(),
+        MbusClientAttribute.VERSION.attributeId(), MbusClientAttribute.DEVICE_TYPE.attributeId()
+      };
+
+  private static final int OBIS_BYTE_A_MBUS_CLIENT_SETUP = 0;
+  private static final int OBIS_BYTE_C_MBUS_CLIENT_SETUP = 24;
+  private static final int OBIS_BYTE_D_MBUS_CLIENT_SETUP = 1;
+  private static final int OBIS_BYTE_E_MBUS_CLIENT_SETUP = 0;
+  private static final int OBIS_BYTE_F_MBUS_CLIENT_SETUP = 255;
+
+  private static final int NUMBER_OF_CHANNELS = 4;
+  private static final int NUMBER_OF_SHORT_ID_ATTRIBUTES_PER_CHANNEL =
+      ATTRIBUTE_IDS_SHORT_ID.length;
+
+  private static final AttributeAddress[] SHORT_ID_ATTRIBUTE_ADDRESSES =
+      makeAttributeAddressesShortIds();
+
+  @Autowired private DlmsHelper dlmsHelper;
+
+  public ScanMbusChannelsCommandExecutor() {
+    super(ScanMbusChannelsRequestDataDto.class);
+  }
+
+  private static ObisCode getObisCodeMbusClientSetup(final int channel) {
+    return new ObisCode(
+        OBIS_BYTE_A_MBUS_CLIENT_SETUP,
+        channel,
+        OBIS_BYTE_C_MBUS_CLIENT_SETUP,
+        OBIS_BYTE_D_MBUS_CLIENT_SETUP,
+        OBIS_BYTE_E_MBUS_CLIENT_SETUP,
+        OBIS_BYTE_F_MBUS_CLIENT_SETUP);
+  }
+
+  /**
+   * @see #ATTRIBUTE_IDS_SHORT_ID
+   * @see #channelShortIdsFromGetResults(List, Protocol)
+   */
+  private static AttributeAddress[] makeAttributeAddressesShortIds() {
+    final AttributeAddress[] shortIdAddresses =
+        new AttributeAddress[NUMBER_OF_CHANNELS * NUMBER_OF_SHORT_ID_ATTRIBUTES_PER_CHANNEL];
+    int index = 0;
+    for (int channel = 1; channel <= NUMBER_OF_CHANNELS; channel++) {
+      final ObisCode obisCode = getObisCodeMbusClientSetup(channel);
+      for (int i = 0; i < NUMBER_OF_SHORT_ID_ATTRIBUTES_PER_CHANNEL; i++) {
+        shortIdAddresses[index++] =
+            new AttributeAddress(CLASS_ID, obisCode, ATTRIBUTE_IDS_SHORT_ID[i]);
+      }
+    }
+    return shortIdAddresses;
+  }
+
+  @Override
+  public Void fromBundleRequestInput(final ActionRequestDto bundleInput)
+      throws ProtocolAdapterException {
+    /*
+     * ScanMbusChannelsRequestDto does not contain any values to pass on,
+     * and the ScanMbusChannelsCommandExecutor takes a Void as input that is
+     * ignored.
      */
-    private static final int[] ATTRIBUTE_IDS_SHORT_ID = new int[] {
-            MbusClientAttribute.IDENTIFICATION_NUMBER.attributeId(), MbusClientAttribute.MANUFACTURER_ID.attributeId(),
-            MbusClientAttribute.VERSION.attributeId(), MbusClientAttribute.DEVICE_TYPE.attributeId() };
+    return null;
+  }
 
-    private static final int OBIS_BYTE_A_MBUS_CLIENT_SETUP = 0;
-    private static final int OBIS_BYTE_C_MBUS_CLIENT_SETUP = 24;
-    private static final int OBIS_BYTE_D_MBUS_CLIENT_SETUP = 1;
-    private static final int OBIS_BYTE_E_MBUS_CLIENT_SETUP = 0;
-    private static final int OBIS_BYTE_F_MBUS_CLIENT_SETUP = 255;
+  @Override
+  public ScanMbusChannelsResponseDto execute(
+      final DlmsConnectionManager conn, final DlmsDevice device, final Void mbusAttributesDto)
+      throws OsgpException {
 
-    private static final int NUMBER_OF_CHANNELS = 4;
-    private static final int NUMBER_OF_SHORT_ID_ATTRIBUTES_PER_CHANNEL = ATTRIBUTE_IDS_SHORT_ID.length;
+    LOGGER.debug("retrieving mbus info on e-meter");
+    final List<GetResult> mbusShortIdResults =
+        this.dlmsHelper.getAndCheck(
+            conn, device, "Retrieve M-Bus Short ID attributes", SHORT_ID_ATTRIBUTE_ADDRESSES);
+    final List<MbusChannelShortEquipmentIdentifierDto> channelShortIds =
+        this.channelShortIdsFromGetResults(mbusShortIdResults, Protocol.forDevice(device));
+    return new ScanMbusChannelsResponseDto(channelShortIds);
+  }
 
-    private static final AttributeAddress[] SHORT_ID_ATTRIBUTE_ADDRESSES = makeAttributeAddressesShortIds();
+  /**
+   * @see #ATTRIBUTE_IDS_SHORT_ID
+   * @see #makeAttributeAddressesShortIds()
+   */
+  private List<MbusChannelShortEquipmentIdentifierDto> channelShortIdsFromGetResults(
+      final List<GetResult> mbusShortIdResults, final Protocol protocol)
+      throws ProtocolAdapterException {
 
-    @Autowired
-    private DlmsHelper dlmsHelper;
-
-    public ScanMbusChannelsCommandExecutor() {
-        super(ScanMbusChannelsRequestDataDto.class);
-    }
-
-    private static ObisCode getObisCodeMbusClientSetup(final int channel) {
-        return new ObisCode(OBIS_BYTE_A_MBUS_CLIENT_SETUP, channel, OBIS_BYTE_C_MBUS_CLIENT_SETUP,
-                OBIS_BYTE_D_MBUS_CLIENT_SETUP, OBIS_BYTE_E_MBUS_CLIENT_SETUP, OBIS_BYTE_F_MBUS_CLIENT_SETUP);
-    }
-
-    /**
-     * @see #ATTRIBUTE_IDS_SHORT_ID
-     * @see #channelShortIdsFromGetResults(List, Protocol)
+    /*
+     * Process attributes in the same order as they were placed in the
+     * attribute addresses used to retrieve the get results.
      */
-    private static AttributeAddress[] makeAttributeAddressesShortIds() {
-        final AttributeAddress[] shortIdAddresses = new AttributeAddress[NUMBER_OF_CHANNELS
-                * NUMBER_OF_SHORT_ID_ATTRIBUTES_PER_CHANNEL];
-        int index = 0;
-        for (int channel = 1; channel <= NUMBER_OF_CHANNELS; channel++) {
-            final ObisCode obisCode = getObisCodeMbusClientSetup(channel);
-            for (int i = 0; i < NUMBER_OF_SHORT_ID_ATTRIBUTES_PER_CHANNEL; i++) {
-                shortIdAddresses[index++] = new AttributeAddress(CLASS_ID, obisCode, ATTRIBUTE_IDS_SHORT_ID[i]);
-            }
-        }
-        return shortIdAddresses;
+    final List<MbusChannelShortEquipmentIdentifierDto> channelShortIds = new ArrayList<>();
+    int index = 0;
+    for (short channel = 1; channel <= NUMBER_OF_CHANNELS; channel++) {
+      final String identificationNumber =
+          this.determineIdentificationNumber(mbusShortIdResults.get(index++), channel, protocol);
+      final String manufacturerIdentification =
+          this.determineManufacturerIdentification(mbusShortIdResults.get(index++), channel);
+      final Short versionIdentification =
+          this.determineVersionIdentification(mbusShortIdResults.get(index++), channel);
+      final Short deviceTypeIdentification =
+          this.determineDeviceTypeIdentification(mbusShortIdResults.get(index++), channel);
+      final MbusShortEquipmentIdentifierDto shortId =
+          new MbusShortEquipmentIdentifierDto(
+              identificationNumber,
+              manufacturerIdentification,
+              versionIdentification,
+              deviceTypeIdentification);
+      channelShortIds.add(new MbusChannelShortEquipmentIdentifierDto(channel, shortId));
+    }
+    return channelShortIds;
+  }
+
+  private String determineIdentificationNumber(
+      final GetResult getResult, final short channel, final Protocol protocol)
+      throws ProtocolAdapterException {
+
+    final Long identification =
+        this.dlmsHelper.readLong(getResult, "Identification number on channel " + channel);
+    if (identification == null) {
+      return null;
     }
 
-    @Override
-    public Void fromBundleRequestInput(final ActionRequestDto bundleInput) throws ProtocolAdapterException {
-        /*
-         * ScanMbusChannelsRequestDto does not contain any values to pass on,
-         * and the ScanMbusChannelsCommandExecutor takes a Void as input that is
-         * ignored.
-         */
-        return null;
+    return IdentificationNumberFactory.create(protocol)
+        .fromIdentification(identification)
+        .getLast8Digits();
+  }
+
+  private String determineManufacturerIdentification(final GetResult getResult, final short channel)
+      throws ProtocolAdapterException {
+
+    final Integer manufacturerId =
+        this.dlmsHelper.readInteger(getResult, "Manufacturer identification on channel " + channel);
+    if (manufacturerId == null) {
+      return null;
     }
+    return ManufacturerId.fromId(manufacturerId).getIdentification();
+  }
 
-    @Override
-    public ScanMbusChannelsResponseDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
-            final Void mbusAttributesDto) throws OsgpException {
+  private Short determineVersionIdentification(final GetResult getResult, final short channel)
+      throws ProtocolAdapterException {
 
-        LOGGER.debug("retrieving mbus info on e-meter");
-        final List<GetResult> mbusShortIdResults = this.dlmsHelper.getAndCheck(conn, device,
-                "Retrieve M-Bus Short ID attributes", SHORT_ID_ATTRIBUTE_ADDRESSES);
-        final List<MbusChannelShortEquipmentIdentifierDto> channelShortIds = this
-                .channelShortIdsFromGetResults(mbusShortIdResults, Protocol.forDevice(device));
-        return new ScanMbusChannelsResponseDto(channelShortIds);
-    }
+    return this.dlmsHelper.readShort(getResult, "Version identification on channel " + channel);
+  }
 
-    /**
-     * @see #ATTRIBUTE_IDS_SHORT_ID
-     * @see #makeAttributeAddressesShortIds()
-     */
-    private List<MbusChannelShortEquipmentIdentifierDto> channelShortIdsFromGetResults(
-            final List<GetResult> mbusShortIdResults, final Protocol protocol) throws ProtocolAdapterException {
+  private Short determineDeviceTypeIdentification(final GetResult getResult, final short channel)
+      throws ProtocolAdapterException {
 
-        /*
-         * Process attributes in the same order as they were placed in the
-         * attribute addresses used to retrieve the get results.
-         */
-        final List<MbusChannelShortEquipmentIdentifierDto> channelShortIds = new ArrayList<>();
-        int index = 0;
-        for (short channel = 1; channel <= NUMBER_OF_CHANNELS; channel++) {
-            final String identificationNumber = this.determineIdentificationNumber(mbusShortIdResults.get(index++),
-                    channel, protocol);
-            final String manufacturerIdentification = this
-                    .determineManufacturerIdentification(mbusShortIdResults.get(index++), channel);
-            final Short versionIdentification = this.determineVersionIdentification(mbusShortIdResults.get(index++),
-                    channel);
-            final Short deviceTypeIdentification = this
-                    .determineDeviceTypeIdentification(mbusShortIdResults.get(index++), channel);
-            final MbusShortEquipmentIdentifierDto shortId = new MbusShortEquipmentIdentifierDto(identificationNumber,
-                    manufacturerIdentification, versionIdentification, deviceTypeIdentification);
-            channelShortIds.add(new MbusChannelShortEquipmentIdentifierDto(channel, shortId));
-        }
-        return channelShortIds;
-    }
-
-    private String determineIdentificationNumber(final GetResult getResult, final short channel,
-            final Protocol protocol) throws ProtocolAdapterException {
-
-        final Long identification = this.dlmsHelper.readLong(getResult, "Identification number on channel " + channel);
-        if (identification == null) {
-            return null;
-        }
-
-        return IdentificationNumberFactory.create(protocol).fromIdentification(identification).getLast8Digits();
-    }
-
-    private String determineManufacturerIdentification(final GetResult getResult, final short channel)
-            throws ProtocolAdapterException {
-
-        final Integer manufacturerId = this.dlmsHelper.readInteger(getResult,
-                "Manufacturer identification on channel " + channel);
-        if (manufacturerId == null) {
-            return null;
-        }
-        return ManufacturerId.fromId(manufacturerId).getIdentification();
-    }
-
-    private Short determineVersionIdentification(final GetResult getResult, final short channel)
-            throws ProtocolAdapterException {
-
-        return this.dlmsHelper.readShort(getResult, "Version identification on channel " + channel);
-    }
-
-    private Short determineDeviceTypeIdentification(final GetResult getResult, final short channel)
-            throws ProtocolAdapterException {
-
-        return this.dlmsHelper.readShort(getResult, "Device type identification on channel " + channel);
-    }
-
+    return this.dlmsHelper.readShort(getResult, "Device type identification on channel " + channel);
+  }
 }

@@ -1,15 +1,14 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import java.io.Serializable;
-
 import org.openmuc.jdlms.AccessResultCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.datetime.SynchronizeTimeCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.ScanMbusChannelsCommandExecutor;
@@ -31,52 +30,55 @@ import org.springframework.stereotype.Service;
 @Service(value = "dlmsAdhocService")
 public class AdhocService {
 
-    @Autowired
-    private SynchronizeTimeCommandExecutor synchronizeTimeCommandExecutor;
+  @Autowired private SynchronizeTimeCommandExecutor synchronizeTimeCommandExecutor;
 
-    @Autowired
-    private GetAllAttributeValuesCommandExecutor getAllAttributeValuesCommandExecutor;
+  @Autowired private GetAllAttributeValuesCommandExecutor getAllAttributeValuesCommandExecutor;
 
-    @Autowired
-    private GetSpecificAttributeValueCommandExecutor getSpecificAttributeValueCommandExecutor;
+  @Autowired
+  private GetSpecificAttributeValueCommandExecutor getSpecificAttributeValueCommandExecutor;
 
-    @Autowired
-    private GetAssociationLnObjectsCommandExecutor getAssociationLnObjectsCommandExecutor;
+  @Autowired private GetAssociationLnObjectsCommandExecutor getAssociationLnObjectsCommandExecutor;
 
-    @Autowired
-    private ScanMbusChannelsCommandExecutor scanMbusChannelsCommandExecutor;
+  @Autowired private ScanMbusChannelsCommandExecutor scanMbusChannelsCommandExecutor;
 
-    // === REQUEST Synchronize Time DATA ===
+  // === REQUEST Synchronize Time DATA ===
 
-    public void synchronizeTime(final DlmsConnectionManager conn, final DlmsDevice device,
-            final SynchronizeTimeRequestDto synchronizeTimeRequestDataDto) throws ProtocolAdapterException {
-        final AccessResultCode accessResultCode = this.synchronizeTimeCommandExecutor
-                .execute(conn, device, synchronizeTimeRequestDataDto);
+  public void synchronizeTime(
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final SynchronizeTimeRequestDto synchronizeTimeRequestDataDto)
+      throws ProtocolAdapterException {
+    final AccessResultCode accessResultCode =
+        this.synchronizeTimeCommandExecutor.execute(conn, device, synchronizeTimeRequestDataDto);
 
-        if (!AccessResultCode.SUCCESS.equals(accessResultCode)) {
-            throw new ProtocolAdapterException("AccessResultCode for synchronizeTime: " + accessResultCode);
-        }
+    if (!AccessResultCode.SUCCESS.equals(accessResultCode)) {
+      throw new ProtocolAdapterException(
+          "AccessResultCode for synchronizeTime: " + accessResultCode);
     }
+  }
 
-    public String getAllAttributeValues(final DlmsConnectionManager conn, final DlmsDevice device)
-            throws OsgpException {
+  public String getAllAttributeValues(final DlmsConnectionManager conn, final DlmsDevice device)
+      throws OsgpException {
 
-        return this.getAllAttributeValuesCommandExecutor.execute(conn, device, null);
-    }
+    return this.getAllAttributeValuesCommandExecutor.execute(conn, device, null);
+  }
 
-    public AssociationLnListTypeDto getAssociationLnObjects(final DlmsConnectionManager conn, final DlmsDevice device)
-            throws ProtocolAdapterException {
-        return this.getAssociationLnObjectsCommandExecutor.execute(conn, device, null);
-    }
+  public AssociationLnListTypeDto getAssociationLnObjects(
+      final DlmsConnectionManager conn, final DlmsDevice device) throws ProtocolAdapterException {
+    return this.getAssociationLnObjectsCommandExecutor.execute(conn, device, null);
+  }
 
-    public Serializable getSpecificAttributeValue(final DlmsConnectionManager conn, final DlmsDevice device,
-            final SpecificAttributeValueRequestDto specificAttributeValueRequestDataDto) throws FunctionalException {
-        return this.getSpecificAttributeValueCommandExecutor
-                .execute(conn, device, specificAttributeValueRequestDataDto);
-    }
+  public Serializable getSpecificAttributeValue(
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final SpecificAttributeValueRequestDto specificAttributeValueRequestDataDto)
+      throws FunctionalException {
+    return this.getSpecificAttributeValueCommandExecutor.execute(
+        conn, device, specificAttributeValueRequestDataDto);
+  }
 
-    public ScanMbusChannelsResponseDto scanMbusChannels(final DlmsConnectionManager conn, final DlmsDevice device)
-            throws OsgpException {
-        return this.scanMbusChannelsCommandExecutor.execute(conn, device, null);
-    }
+  public ScanMbusChannelsResponseDto scanMbusChannels(
+      final DlmsConnectionManager conn, final DlmsDevice device) throws OsgpException {
+    return this.scanMbusChannelsCommandExecutor.execute(conn, device, null);
+  }
 }

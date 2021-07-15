@@ -14,7 +14,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-integration-tests</artifactId>
-    <version>5.9.3</version>
+    <version>5.11.0</version>
     <relativePath>../parent-integration-tests/pom.xml</relativePath>
   </parent>
 
@@ -116,7 +116,6 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>${lombok.version}</version>
       <scope>test</scope>
     </dependency>
 
@@ -140,10 +139,20 @@
       <artifactId>cucumber-tests-platform-common</artifactId>
       <type>test-jar</type>
     </dependency>
+    <dependency>
+      <groupId>org.opensmartgridplatform</groupId>
+      <artifactId>cucumber-tests-protocol-iec60870</artifactId>
+      <type>test-jar</type>
+    </dependency>
 
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-protocol-adapter-oslp-elster</artifactId>
+      <classifier>classes</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opensmartgridplatform</groupId>
+      <artifactId>osgp-protocol-adapter-iec60870</artifactId>
       <classifier>classes</classifier>
     </dependency>
     <dependency>

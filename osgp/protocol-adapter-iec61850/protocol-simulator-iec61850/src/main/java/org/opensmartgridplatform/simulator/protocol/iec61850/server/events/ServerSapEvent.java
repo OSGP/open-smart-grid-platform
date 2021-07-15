@@ -1,22 +1,23 @@
-/**
+/*
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.simulator.protocol.iec61850.server.events;
 
 import com.beanit.openiec61850.ServerSap;
 
 public class ServerSapEvent {
-    private final ServerSap serverSap;
+  private final ServerSap serverSap;
 
-    public ServerSapEvent(final ServerSap serverSap) {
-        this.serverSap = serverSap;
-    }
+  public ServerSapEvent(final ServerSap serverSap) {
+    this.serverSap = serverSap;
+  }
 
-    public ServerSap getServerSap() {
-        return this.serverSap;
-    }
+  public ServerSap getServerSap() {
+    return this.serverSap;
+  }
 }

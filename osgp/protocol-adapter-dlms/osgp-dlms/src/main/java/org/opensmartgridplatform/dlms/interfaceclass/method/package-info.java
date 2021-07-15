@@ -15,7 +15,5 @@
  *
  * http://www.openmuc.org
  */
-/**
- * This package contains method objects for each IC.
- */
+/** This package contains method objects for each IC. */
 package org.opensmartgridplatform.dlms.interfaceclass.method;

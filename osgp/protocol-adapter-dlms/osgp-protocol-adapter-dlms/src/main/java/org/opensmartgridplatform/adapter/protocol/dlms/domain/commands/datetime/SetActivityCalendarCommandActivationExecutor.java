@@ -1,15 +1,14 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.datetime;
 
 import java.io.IOException;
-
 import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResult;
 import org.openmuc.jdlms.MethodResultCode;
@@ -26,37 +25,51 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component()
-public class SetActivityCalendarCommandActivationExecutor extends AbstractCommandExecutor<Void, MethodResultCode> {
+public class SetActivityCalendarCommandActivationExecutor
+    extends AbstractCommandExecutor<Void, MethodResultCode> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetActivityCalendarCommandActivationExecutor.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(SetActivityCalendarCommandActivationExecutor.class);
 
-    private static final int CLASS_ID = 20;
-    private static final ObisCode OBIS_CODE = new ObisCode("0.0.13.0.0.255");
-    private static final int METHOD_ID_ACTIVATE_PASSIVE_CALENDAR = 1;
+  private static final int CLASS_ID = 20;
+  private static final ObisCode OBIS_CODE = new ObisCode("0.0.13.0.0.255");
+  private static final int METHOD_ID_ACTIVATE_PASSIVE_CALENDAR = 1;
 
-    @Override
-    public MethodResultCode execute(final DlmsConnectionManager conn, final DlmsDevice device, final Void v)
-            throws ProtocolAdapterException {
+  @Override
+  public MethodResultCode execute(
+      final DlmsConnectionManager conn, final DlmsDevice device, final Void v)
+      throws ProtocolAdapterException {
 
-        LOGGER.info("ACTIVATING PASSIVE CALENDAR");
-        final MethodParameter method = new MethodParameter(CLASS_ID, OBIS_CODE, METHOD_ID_ACTIVATE_PASSIVE_CALENDAR,
-                DataObject.newInteger32Data(0));
+    LOGGER.info("ACTIVATING PASSIVE CALENDAR");
+    final MethodParameter method =
+        new MethodParameter(
+            CLASS_ID,
+            OBIS_CODE,
+            METHOD_ID_ACTIVATE_PASSIVE_CALENDAR,
+            DataObject.newInteger32Data(0));
 
-        conn.getDlmsMessageListener().setDescription(
-                "SetActivityCalendarActivation, call method: " + JdlmsObjectToStringUtil.describeMethod(method));
+    conn.getDlmsMessageListener()
+        .setDescription(
+            "SetActivityCalendarActivation, call method: "
+                + JdlmsObjectToStringUtil.describeMethod(method));
 
-        final MethodResult methodResultCode;
-        try {
-            methodResultCode = conn.getConnection().action(method);
-        } catch (final IOException e) {
-            throw new ConnectionException(e);
-        }
-        if (!MethodResultCode.SUCCESS.equals(methodResultCode.getResultCode())) {
-            throw new ProtocolAdapterException(
-                    "Activating the activity calendar failed. MethodResult is: " + methodResultCode.getResultCode()
-                            + " ClassId: " + CLASS_ID + " obisCode: " + OBIS_CODE + " method id: "
-                            + METHOD_ID_ACTIVATE_PASSIVE_CALENDAR);
-        }
-        return MethodResultCode.SUCCESS;
+    final MethodResult methodResultCode;
+    try {
+      methodResultCode = conn.getConnection().action(method);
+    } catch (final IOException e) {
+      throw new ConnectionException(e);
     }
+    if (!MethodResultCode.SUCCESS.equals(methodResultCode.getResultCode())) {
+      throw new ProtocolAdapterException(
+          "Activating the activity calendar failed. MethodResult is: "
+              + methodResultCode.getResultCode()
+              + " ClassId: "
+              + CLASS_ID
+              + " obisCode: "
+              + OBIS_CODE
+              + " method id: "
+              + METHOD_ID_ACTIVATE_PASSIVE_CALENDAR);
+    }
+    return MethodResultCode.SUCCESS;
+  }
 }

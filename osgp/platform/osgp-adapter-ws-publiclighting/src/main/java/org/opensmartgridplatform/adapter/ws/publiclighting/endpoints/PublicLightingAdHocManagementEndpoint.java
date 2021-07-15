@@ -1,17 +1,17 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.publiclighting.endpoints;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.validation.ConstraintViolationException;
-
 import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
@@ -44,7 +44,6 @@ import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.LightMeasurementDevice;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.LightValue;
 import org.opensmartgridplatform.domain.core.valueobjects.ResumeScheduleData;
 import org.opensmartgridplatform.domain.core.valueobjects.TransitionMessageDataContainer;
@@ -61,6 +60,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
+import org.springframework.data.util.Streamable;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
@@ -69,358 +69,442 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 @Endpoint
 public class PublicLightingAdHocManagementEndpoint {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PublicLightingAdHocManagementEndpoint.class);
-    private static final String NAMESPACE = "http://www.opensmartgridplatform.org/schemas/publiclighting/adhocmanagement/2014/10";
-    private static final ComponentType COMPONENT_WS_PUBLIC_LIGHTING = ComponentType.WS_PUBLIC_LIGHTING;
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(PublicLightingAdHocManagementEndpoint.class);
+  private static final String NAMESPACE =
+      "http://www.opensmartgridplatform.org/schemas/publiclighting/adhocmanagement/2014/10";
+  private static final ComponentType COMPONENT_WS_PUBLIC_LIGHTING =
+      ComponentType.WS_PUBLIC_LIGHTING;
 
-    private static final String EXCEPTION_OCCURRED = "Exception Occurred";
+  private static final String EXCEPTION_OCCURRED = "Exception Occurred";
 
-    private final AdHocManagementService adHocManagementService;
-    private final AdHocManagementMapper adHocManagementMapper;
+  private final AdHocManagementService adHocManagementService;
+  private final AdHocManagementMapper adHocManagementMapper;
 
-    @Autowired
-    public PublicLightingAdHocManagementEndpoint(
-            @Qualifier("wsPublicLightingAdHocManagementService") final AdHocManagementService adHocManagementService,
-            @Qualifier("publicLightingAdhocManagementMapper") final AdHocManagementMapper adHocManagementMapper) {
-        this.adHocManagementService = adHocManagementService;
-        this.adHocManagementMapper = adHocManagementMapper;
+  @Autowired
+  public PublicLightingAdHocManagementEndpoint(
+      @Qualifier("wsPublicLightingAdHocManagementService")
+          final AdHocManagementService adHocManagementService,
+      @Qualifier("publicLightingAdhocManagementMapper")
+          final AdHocManagementMapper adHocManagementMapper) {
+    this.adHocManagementService = adHocManagementService;
+    this.adHocManagementMapper = adHocManagementMapper;
+  }
+
+  @PayloadRoot(localPart = "FindAllDevicesRequest", namespace = NAMESPACE)
+  @ResponsePayload
+  public FindAllDevicesResponse findAllDevices(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final FindAllDevicesRequest request)
+      throws OsgpException {
+
+    LOGGER.info(
+        "Finding All Devices Request received from organisation: {}.", organisationIdentification);
+
+    final FindAllDevicesResponse response = new FindAllDevicesResponse();
+
+    try {
+      final PageSpecifier pageSpecifier =
+          new PageSpecifier(request.getPageSize(), request.getPage());
+      final Page<Device> page =
+          this.adHocManagementService.findAllDevices(organisationIdentification, pageSpecifier);
+
+      if (page != null && !page.isEmpty()) {
+
+        final List<Ssld> sslds = listOfType(page, Ssld.class);
+        final List<LightMeasurementDevice> lmds = listOfType(page, LightMeasurementDevice.class);
+
+        final DevicePage devicePage = new DevicePage();
+        devicePage.setPage(
+            new org.opensmartgridplatform.adapter.ws.schema.publiclighting.common.Page());
+        devicePage.getPage().setPageSize(page.getSize());
+        devicePage.getPage().setTotalPages(page.getTotalPages());
+        devicePage.getPage().setCurrentPage(page.getNumber());
+        devicePage
+            .getDevices()
+            .addAll(
+                this.adHocManagementMapper.mapAsList(
+                    sslds,
+                    org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Ssld
+                        .class));
+        devicePage
+            .getDevices()
+            .addAll(
+                this.adHocManagementMapper.mapAsList(
+                    lmds,
+                    org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement
+                        .LightMeasurementDevice.class));
+        response.setDevicePage(devicePage);
+      } else {
+        final DevicePage devicePage = new DevicePage();
+        devicePage.setPage(
+            new org.opensmartgridplatform.adapter.ws.schema.publiclighting.common.Page());
+        devicePage.getPage().setCurrentPage(0);
+        devicePage.getPage().setPageSize(request.getPageSize() == null ? 0 : request.getPageSize());
+        devicePage.getPage().setTotalPages(0);
+        response.setDevicePage(devicePage);
+      }
+    } catch (final ConstraintViolationException e) {
+      LOGGER.error(EXCEPTION_OCCURRED, e);
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          COMPONENT_WS_PUBLIC_LIGHTING,
+          new ValidationException(e.getConstraintViolations()));
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    @PayloadRoot(localPart = "FindAllDevicesRequest", namespace = NAMESPACE)
-    @ResponsePayload
-    public FindAllDevicesResponse findAllDevices(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final FindAllDevicesRequest request) throws OsgpException {
+    return response;
+  }
 
-        LOGGER.info("Finding All Devices Request received from organisation: {}.", organisationIdentification);
+  private static <T> List<T> listOfType(
+      final Streamable<? super T> streamable, final Class<T> clazz) {
+    return streamable.filter(clazz::isInstance).map(clazz::cast).toList();
+  }
 
-        final FindAllDevicesResponse response = new FindAllDevicesResponse();
+  // === SET LIGHT ===
 
-        try {
-            final PageSpecifier pageSpecifier = new PageSpecifier(request.getPageSize(), request.getPage());
-            final Page<Device> page = this.adHocManagementService.findAllDevices(organisationIdentification,
-                    pageSpecifier);
+  @PayloadRoot(localPart = "SetLightRequest", namespace = NAMESPACE)
+  @ResponsePayload
+  public SetLightAsyncResponse setLight(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetLightRequest request,
+      @MessagePriority final String messagePriority)
+      throws OsgpException {
 
-            if (page != null && !page.isEmpty()) {
-                final List<Ssld> sslds = page.filter(d -> d instanceof Ssld).map(d -> (Ssld) d).toList();
-                final List<LightMeasurementDevice> lmds = page.filter(d -> d instanceof LightMeasurementDevice)
-                        .map(d -> (LightMeasurementDevice) d)
-                        .toList();
+    LOGGER.info(
+        "Set Light Request received from organisation: {} for device: {} with message priority: {}.",
+        organisationIdentification,
+        request.getDeviceIdentification(),
+        messagePriority);
 
-                final DevicePage devicePage = new DevicePage();
-                devicePage.setPage(new org.opensmartgridplatform.adapter.ws.schema.publiclighting.common.Page());
-                devicePage.getPage().setPageSize(page.getSize());
-                devicePage.getPage().setTotalPages(page.getTotalPages());
-                devicePage.getPage().setCurrentPage(page.getNumber());
-                devicePage.getDevices()
-                        .addAll(this.adHocManagementMapper.mapAsList(sslds,
-                                org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Ssld.class));
-                devicePage.getDevices()
-                        .addAll(this.adHocManagementMapper.mapAsList(lmds,
-                                org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.LightMeasurementDevice.class));
-                response.setDevicePage(devicePage);
-            } else {
-                final DevicePage devicePage = new DevicePage();
-                devicePage.setPage(new org.opensmartgridplatform.adapter.ws.schema.publiclighting.common.Page());
-                devicePage.getPage().setCurrentPage(0);
-                devicePage.getPage().setPageSize(request.getPageSize() == null ? 0 : request.getPageSize());
-                devicePage.getPage().setTotalPages(0);
-                response.setDevicePage(devicePage);
-            }
-        } catch (final ConstraintViolationException e) {
-            LOGGER.error(EXCEPTION_OCCURRED, e);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_WS_PUBLIC_LIGHTING,
-                    new ValidationException(e.getConstraintViolations()));
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
+    final SetLightAsyncResponse response = new SetLightAsyncResponse();
 
-        return response;
+    try {
+      final List<LightValue> lightValues =
+          new ArrayList<>(
+              this.adHocManagementMapper.mapAsList(request.getLightValue(), LightValue.class));
+      final String correlationUid =
+          this.adHocManagementService.enqueueSetLightRequest(
+              organisationIdentification,
+              request.getDeviceIdentification(),
+              lightValues,
+              MessagePriorityEnum.getMessagePriority(messagePriority));
+
+      final AsyncResponse asyncResponse = new AsyncResponse();
+
+      asyncResponse.setCorrelationUid(correlationUid);
+      asyncResponse.setDeviceId(request.getDeviceIdentification());
+
+      response.setAsyncResponse(asyncResponse);
+    } catch (final ConstraintViolationException e) {
+      LOGGER.error(EXCEPTION_OCCURRED, e);
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          COMPONENT_WS_PUBLIC_LIGHTING,
+          new ValidationException(e.getConstraintViolations()));
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    // === SET LIGHT ===
+    return response;
+  }
 
-    @PayloadRoot(localPart = "SetLightRequest", namespace = NAMESPACE)
-    @ResponsePayload
-    public SetLightAsyncResponse setLight(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetLightRequest request, @MessagePriority final String messagePriority)
-            throws OsgpException {
+  @PayloadRoot(localPart = "SetLightAsyncRequest", namespace = NAMESPACE)
+  @ResponsePayload
+  public SetLightResponse getSetLightResponse(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetLightAsyncRequest request)
+      throws OsgpException {
 
-        LOGGER.info("Set Light Request received from organisation: {} for device: {} with message priority: {}.",
-                organisationIdentification, request.getDeviceIdentification(), messagePriority);
+    LOGGER.info(
+        "Get Set Light Response received from organisation: {} with correlationUid: {}.",
+        organisationIdentification,
+        request.getAsyncRequest().getCorrelationUid());
 
-        final SetLightAsyncResponse response = new SetLightAsyncResponse();
+    final SetLightResponse response = new SetLightResponse();
 
-        try {
-            final List<LightValue> lightValues = new ArrayList<>();
-            lightValues.addAll(this.adHocManagementMapper.mapAsList(request.getLightValue(), LightValue.class));
-
-            final String correlationUid = this.adHocManagementService.enqueueSetLightRequest(organisationIdentification,
-                    request.getDeviceIdentification(), lightValues,
-                    MessagePriorityEnum.getMessagePriority(messagePriority));
-
-            final AsyncResponse asyncResponse = new AsyncResponse();
-
-            asyncResponse.setCorrelationUid(correlationUid);
-            asyncResponse.setDeviceId(request.getDeviceIdentification());
-
-            response.setAsyncResponse(asyncResponse);
-        } catch (final ConstraintViolationException e) {
-            LOGGER.error(EXCEPTION_OCCURRED, e);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_WS_PUBLIC_LIGHTING,
-                    new ValidationException(e.getConstraintViolations()));
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-
-        return response;
+    try {
+      final ResponseMessage message =
+          this.adHocManagementService.dequeueSetLightResponse(
+              request.getAsyncRequest().getCorrelationUid());
+      if (message != null) {
+        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    @PayloadRoot(localPart = "SetLightAsyncRequest", namespace = NAMESPACE)
-    @ResponsePayload
-    public SetLightResponse getSetLightResponse(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetLightAsyncRequest request) throws OsgpException {
+    return response;
+  }
 
-        LOGGER.info("Get Set Light Response received from organisation: {} with correlationUid: {}.",
-                organisationIdentification, request.getAsyncRequest().getCorrelationUid());
+  // === GET STATUS ===
 
-        final SetLightResponse response = new SetLightResponse();
+  @PayloadRoot(localPart = "GetStatusRequest", namespace = NAMESPACE)
+  @ResponsePayload
+  public GetStatusAsyncResponse getStatus(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final GetStatusRequest request,
+      @MessagePriority final String messagePriority)
+      throws OsgpException {
 
-        try {
-            final ResponseMessage message = this.adHocManagementService
-                    .dequeueSetLightResponse(request.getAsyncRequest().getCorrelationUid());
-            if (message != null) {
-                response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-            }
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
+    LOGGER.info(
+        "Get Status received from organisation: {} for device: {} with message priority: {}.",
+        organisationIdentification,
+        request.getDeviceIdentification(),
+        messagePriority);
 
-        return response;
+    final GetStatusAsyncResponse response = new GetStatusAsyncResponse();
+
+    try {
+      final String correlationUid =
+          this.adHocManagementService.enqueueGetStatusRequest(
+              organisationIdentification,
+              request.getDeviceIdentification(),
+              MessagePriorityEnum.getMessagePriority(messagePriority));
+
+      final AsyncResponse asyncResponse = new AsyncResponse();
+      asyncResponse.setCorrelationUid(correlationUid);
+      asyncResponse.setDeviceId(request.getDeviceIdentification());
+      response.setAsyncResponse(asyncResponse);
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    // === GET STATUS ===
+    return response;
+  }
 
-    @PayloadRoot(localPart = "GetStatusRequest", namespace = NAMESPACE)
-    @ResponsePayload
-    public GetStatusAsyncResponse getStatus(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetStatusRequest request, @MessagePriority final String messagePriority)
-            throws OsgpException {
+  @PayloadRoot(localPart = "GetStatusAsyncRequest", namespace = NAMESPACE)
+  @ResponsePayload
+  public GetStatusResponse getGetStatusResponse(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final GetStatusAsyncRequest request)
+      throws OsgpException {
 
-        LOGGER.info("Get Status received from organisation: {} for device: {} with message priority: {}.",
-                organisationIdentification, request.getDeviceIdentification(), messagePriority);
+    LOGGER.info(
+        "Get Status Response received from organisation: {} for correlationUid: {}.",
+        organisationIdentification,
+        request.getAsyncRequest().getCorrelationUid());
 
-        final GetStatusAsyncResponse response = new GetStatusAsyncResponse();
+    final GetStatusResponse response = new GetStatusResponse();
 
-        try {
-            final String correlationUid = this.adHocManagementService.enqueueGetStatusRequest(
-                    organisationIdentification, request.getDeviceIdentification(),
-                    MessagePriorityEnum.getMessagePriority(messagePriority));
-
-            final AsyncResponse asyncResponse = new AsyncResponse();
-            asyncResponse.setCorrelationUid(correlationUid);
-            asyncResponse.setDeviceId(request.getDeviceIdentification());
-            response.setAsyncResponse(asyncResponse);
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-
-        return response;
+    try {
+      final ResponseMessage message =
+          this.adHocManagementService.dequeueGetStatusResponse(
+              request.getAsyncRequest().getCorrelationUid());
+      if (message != null) {
+        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+        response.setStatus(
+            this.adHocManagementMapper.map(
+                message.getDataObject(),
+                org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.Status
+                    .class));
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    @PayloadRoot(localPart = "GetStatusAsyncRequest", namespace = NAMESPACE)
-    @ResponsePayload
-    public GetStatusResponse getGetStatusResponse(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetStatusAsyncRequest request) throws OsgpException {
+    return response;
+  }
 
-        LOGGER.info("Get Status Response received from organisation: {} for correlationUid: {}.",
-                organisationIdentification, request.getAsyncRequest().getCorrelationUid());
+  // === RESUME SCHEDULE ===
 
-        final GetStatusResponse response = new GetStatusResponse();
+  @PayloadRoot(localPart = "ResumeScheduleRequest", namespace = NAMESPACE)
+  @ResponsePayload
+  public ResumeScheduleAsyncResponse resumeSchedule(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final ResumeScheduleRequest request,
+      @MessagePriority final String messagePriority)
+      throws OsgpException {
 
-        try {
-            final ResponseMessage message = this.adHocManagementService
-                    .dequeueGetStatusResponse(request.getAsyncRequest().getCorrelationUid());
-            if (message != null) {
-                response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-                final DeviceStatus deviceStatus = (DeviceStatus) message.getDataObject();
-                if (deviceStatus != null) {
-                    response.setDeviceStatus(this.adHocManagementMapper.map(deviceStatus,
-                            org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.DeviceStatus.class));
-                }
-            }
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
+    LOGGER.info(
+        "Resume Schedule Request received from organisation: {} for device: {} with message priority: {}.",
+        organisationIdentification,
+        request.getDeviceIdentification(),
+        messagePriority);
 
-        return response;
+    final ResumeScheduleAsyncResponse response = new ResumeScheduleAsyncResponse();
+
+    try {
+      final ResumeScheduleData resumeScheduleData = new ResumeScheduleData();
+      if (request.getIndex() != null) {
+        resumeScheduleData.setIndex(request.getIndex());
+      }
+      resumeScheduleData.setIsImmediate(request.isIsImmediate());
+
+      final String correlationUid =
+          this.adHocManagementService.enqueueResumeScheduleRequest(
+              organisationIdentification,
+              request.getDeviceIdentification(),
+              resumeScheduleData,
+              MessagePriorityEnum.getMessagePriority(messagePriority));
+
+      final AsyncResponse asyncResponse = new AsyncResponse();
+      asyncResponse.setCorrelationUid(correlationUid);
+      asyncResponse.setDeviceId(request.getDeviceIdentification());
+      response.setAsyncResponse(asyncResponse);
+    } catch (final ConstraintViolationException e) {
+      LOGGER.error(EXCEPTION_OCCURRED, e);
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          COMPONENT_WS_PUBLIC_LIGHTING,
+          new ValidationException(e.getConstraintViolations()));
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    // === RESUME SCHEDULE ===
+    return response;
+  }
 
-    @PayloadRoot(localPart = "ResumeScheduleRequest", namespace = NAMESPACE)
-    @ResponsePayload
-    public ResumeScheduleAsyncResponse resumeSchedule(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final ResumeScheduleRequest request, @MessagePriority final String messagePriority)
-            throws OsgpException {
+  @PayloadRoot(localPart = "ResumeScheduleAsyncRequest", namespace = NAMESPACE)
+  @ResponsePayload
+  public ResumeScheduleResponse getResumeScheduleResponse(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final ResumeScheduleAsyncRequest request)
+      throws OsgpException {
 
-        LOGGER.info("Resume Schedule Request received from organisation: {} for device: {} with message priority: {}.",
-                organisationIdentification, request.getDeviceIdentification(), messagePriority);
+    LOGGER.info(
+        "Resume Schedule Async Request received from organisation: {} for device: {}.",
+        organisationIdentification,
+        request.getAsyncRequest().getDeviceId());
 
-        final ResumeScheduleAsyncResponse response = new ResumeScheduleAsyncResponse();
+    final ResumeScheduleResponse response = new ResumeScheduleResponse();
 
-        try {
-            final ResumeScheduleData resumeScheduleData = new ResumeScheduleData();
-            if (request.getIndex() != null) {
-                resumeScheduleData.setIndex(request.getIndex());
-            }
-            resumeScheduleData.setIsImmediate(request.isIsImmediate());
-
-            final String correlationUid = this.adHocManagementService.enqueueResumeScheduleRequest(
-                    organisationIdentification, request.getDeviceIdentification(), resumeScheduleData,
-                    MessagePriorityEnum.getMessagePriority(messagePriority));
-
-            final AsyncResponse asyncResponse = new AsyncResponse();
-            asyncResponse.setCorrelationUid(correlationUid);
-            asyncResponse.setDeviceId(request.getDeviceIdentification());
-            response.setAsyncResponse(asyncResponse);
-        } catch (final ConstraintViolationException e) {
-            LOGGER.error(EXCEPTION_OCCURRED, e);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_WS_PUBLIC_LIGHTING,
-                    new ValidationException(e.getConstraintViolations()));
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-
-        return response;
+    try {
+      final ResponseMessage message =
+          this.adHocManagementService.dequeueResumeScheduleResponse(
+              request.getAsyncRequest().getCorrelationUid());
+      if (message != null) {
+        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    @PayloadRoot(localPart = "ResumeScheduleAsyncRequest", namespace = NAMESPACE)
-    @ResponsePayload
-    public ResumeScheduleResponse getResumeScheduleResponse(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final ResumeScheduleAsyncRequest request) throws OsgpException {
+    return response;
+  }
 
-        LOGGER.info("Resume Schedule Async Request received from organisation: {} for device: {}.",
-                organisationIdentification, request.getAsyncRequest().getDeviceId());
+  // === SET TRANSITION ===
 
-        final ResumeScheduleResponse response = new ResumeScheduleResponse();
+  @PayloadRoot(localPart = "SetTransitionRequest", namespace = NAMESPACE)
+  @ResponsePayload
+  public SetTransitionAsyncResponse setTransition(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetTransitionRequest request,
+      @MessagePriority final String messagePriority)
+      throws OsgpException {
 
-        try {
-            final ResponseMessage message = this.adHocManagementService
-                    .dequeueResumeScheduleResponse(request.getAsyncRequest().getCorrelationUid());
-            if (message != null) {
-                response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-            }
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
+    LOGGER.info(
+        "Set Transition Request received from organisation: {} for device: {} with message priority: {}.",
+        organisationIdentification,
+        request.getDeviceIdentification(),
+        messagePriority);
 
-        return response;
+    final SetTransitionAsyncResponse response = new SetTransitionAsyncResponse();
+
+    try {
+      final TransitionMessageDataContainer transitionMessageDataContainer =
+          new TransitionMessageDataContainer();
+
+      if (request.getTransitionType() != null) {
+        transitionMessageDataContainer.setTransitionType(
+            this.adHocManagementMapper.map(
+                request.getTransitionType(),
+                org.opensmartgridplatform.domain.core.valueobjects.TransitionType.class));
+      }
+      DateTime dateTime = null;
+      if (request.getTime() != null) {
+        dateTime = new DateTime(request.getTime().toGregorianCalendar().getTime());
+      }
+      transitionMessageDataContainer.setDateTime(dateTime);
+
+      final String correlationUid =
+          this.adHocManagementService.enqueueTransitionRequest(
+              organisationIdentification,
+              request.getDeviceIdentification(),
+              transitionMessageDataContainer,
+              MessagePriorityEnum.getMessagePriority(messagePriority));
+
+      final AsyncResponse asyncResponse = new AsyncResponse();
+      asyncResponse.setCorrelationUid(correlationUid);
+      asyncResponse.setDeviceId(request.getDeviceIdentification());
+      response.setAsyncResponse(asyncResponse);
+    } catch (final Exception e) {
+      this.handleException(e);
+    }
+    return response;
+  }
+
+  @PayloadRoot(localPart = "SetTransitionAsyncRequest", namespace = NAMESPACE)
+  @ResponsePayload
+  public SetTransitionResponse getSetTransitionResponse(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetTransitionAsyncRequest request)
+      throws OsgpException {
+
+    LOGGER.info(
+        "Get Set Transition Response received from organisation: {} with correlationUid: {}.",
+        organisationIdentification,
+        request.getAsyncRequest().getCorrelationUid());
+
+    final SetTransitionResponse response = new SetTransitionResponse();
+
+    try {
+      final ResponseMessage message =
+          this.adHocManagementService.dequeueSetTransitionResponse(
+              request.getAsyncRequest().getCorrelationUid());
+      if (message != null) {
+        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    // === SET TRANSITION ===
+    return response;
+  }
 
-    @PayloadRoot(localPart = "SetTransitionRequest", namespace = NAMESPACE)
-    @ResponsePayload
-    public SetTransitionAsyncResponse setTransition(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetTransitionRequest request, @MessagePriority final String messagePriority)
-            throws OsgpException {
+  // === SET LIGHT MEASUREMENT DEVICE ===
 
-        LOGGER.info("Set Transition Request received from organisation: {} for device: {} with message priority: {}.",
-                organisationIdentification, request.getDeviceIdentification(), messagePriority);
+  @PayloadRoot(localPart = "SetLightMeasurementDeviceRequest", namespace = NAMESPACE)
+  @ResponsePayload
+  public SetLightMeasurementDeviceResponse setLightMeasurementDevice(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetLightMeasurementDeviceRequest request,
+      @MessagePriority final String messagePriority)
+      throws OsgpException {
 
-        final SetTransitionAsyncResponse response = new SetTransitionAsyncResponse();
+    LOGGER.info(
+        "Set Light Measurement Device Request received from organisation: {} for device: {} for light measurement device: {} with message priority: {}",
+        organisationIdentification,
+        request.getDeviceIdentification(),
+        request.getLightMeasurementDeviceIdentification(),
+        messagePriority);
 
-        try {
-            final TransitionMessageDataContainer transitionMessageDataContainer = new TransitionMessageDataContainer();
+    final SetLightMeasurementDeviceResponse response = new SetLightMeasurementDeviceResponse();
 
-            if (request.getTransitionType() != null) {
-                transitionMessageDataContainer
-                        .setTransitionType(this.adHocManagementMapper.map(request.getTransitionType(),
-                                org.opensmartgridplatform.domain.core.valueobjects.TransitionType.class));
-            }
-            DateTime dateTime = null;
-            if (request.getTime() != null) {
-                dateTime = new DateTime(request.getTime().toGregorianCalendar().getTime());
-            }
-            transitionMessageDataContainer.setDateTime(dateTime);
+    try {
+      this.adHocManagementService.coupleLightMeasurementDeviceForSsld(
+          organisationIdentification,
+          request.getDeviceIdentification(),
+          request.getLightMeasurementDeviceIdentification(),
+          MessagePriorityEnum.getMessagePriority(messagePriority));
 
-            final String correlationUid = this.adHocManagementService.enqueueTransitionRequest(
-                    organisationIdentification, request.getDeviceIdentification(), transitionMessageDataContainer,
-                    MessagePriorityEnum.getMessagePriority(messagePriority));
-
-            final AsyncResponse asyncResponse = new AsyncResponse();
-            asyncResponse.setCorrelationUid(correlationUid);
-            asyncResponse.setDeviceId(request.getDeviceIdentification());
-            response.setAsyncResponse(asyncResponse);
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-        return response;
+      response.setResult(OsgpResultType.OK);
+    } catch (final Exception e) {
+      this.handleException(e);
     }
+    return response;
+  }
 
-    @PayloadRoot(localPart = "SetTransitionAsyncRequest", namespace = NAMESPACE)
-    @ResponsePayload
-    public SetTransitionResponse getSetTransitionResponse(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetTransitionAsyncRequest request) throws OsgpException {
-
-        LOGGER.info("Get Set Transition Response received from organisation: {} with correlationUid: {}.",
-                organisationIdentification, request.getAsyncRequest().getCorrelationUid());
-
-        final SetTransitionResponse response = new SetTransitionResponse();
-
-        try {
-            final ResponseMessage message = this.adHocManagementService
-                    .dequeueSetTransitionResponse(request.getAsyncRequest().getCorrelationUid());
-            if (message != null) {
-                response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-            }
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-
-        return response;
+  private void handleException(final Exception e) throws OsgpException {
+    // Rethrow exception if it already is a functional or technical
+    // exception,
+    // otherwise throw new technical exception.
+    LOGGER.error("Exception occurred: ", e);
+    if (e instanceof OsgpException) {
+      throw (OsgpException) e;
+    } else {
+      throw new TechnicalException(COMPONENT_WS_PUBLIC_LIGHTING, e);
     }
-
-    // === SET LIGHT MEASUREMENT DEVICE ===
-
-    @PayloadRoot(localPart = "SetLightMeasurementDeviceRequest", namespace = NAMESPACE)
-    @ResponsePayload
-    public SetLightMeasurementDeviceResponse setLightMeasurementDevice(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetLightMeasurementDeviceRequest request,
-            @MessagePriority final String messagePriority) throws OsgpException {
-
-        LOGGER.info(
-                "Set Light Measurement Device Request received from organisation: {} for device: {} for light measurement device: {} with message priority: {}",
-                organisationIdentification, request.getDeviceIdentification(),
-                request.getLightMeasurementDeviceIdentification(), messagePriority);
-
-        final SetLightMeasurementDeviceResponse response = new SetLightMeasurementDeviceResponse();
-
-        try {
-            this.adHocManagementService.coupleLightMeasurementDeviceForSsld(organisationIdentification,
-                    request.getDeviceIdentification(), request.getLightMeasurementDeviceIdentification(),
-                    MessagePriorityEnum.getMessagePriority(messagePriority));
-
-            response.setResult(OsgpResultType.OK);
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-        return response;
-    }
-
-    private void handleException(final Exception e) throws OsgpException {
-        // Rethrow exception if it already is a functional or technical
-        // exception,
-        // otherwise throw new technical exception.
-        LOGGER.error("Exception occurred: ", e);
-        if (e instanceof OsgpException) {
-            throw (OsgpException) e;
-        } else {
-            throw new TechnicalException(COMPONENT_WS_PUBLIC_LIGHTING, e);
-        }
-    }
+  }
 }

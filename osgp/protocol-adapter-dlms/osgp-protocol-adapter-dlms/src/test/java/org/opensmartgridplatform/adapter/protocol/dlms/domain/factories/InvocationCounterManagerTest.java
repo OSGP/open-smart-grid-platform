@@ -1,8 +1,8 @@
-/**
+/*
  * Copyright 2019 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -32,56 +32,57 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.DeviceSessionT
 
 @ExtendWith(MockitoExtension.class)
 class InvocationCounterManagerTest {
-    private static final AttributeAddress ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE = new AttributeAddress(1,
-            new ObisCode(new byte[] { 0, 0, 43, 1, 0, -1 }), 2);
+  private static final AttributeAddress ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE =
+      new AttributeAddress(1, new ObisCode(new byte[] {0, 0, 43, 1, 0, -1}), 2);
 
-    private InvocationCounterManager manager;
+  private InvocationCounterManager manager;
 
-    @Mock
-    private DlmsConnectionFactory connectionFactory;
+  @Mock private DlmsConnectionFactory connectionFactory;
 
-    @Mock
-    private DlmsHelper dlmsHelper;
+  @Mock private DlmsHelper dlmsHelper;
 
-    @Mock
-    private DlmsDeviceRepository deviceRepository;
+  @Mock private DlmsDeviceRepository deviceRepository;
 
-    @BeforeEach
-    public void setUp() {
-        this.manager = new InvocationCounterManager(this.connectionFactory, this.dlmsHelper, this.deviceRepository);
+  @BeforeEach
+  public void setUp() {
+    this.manager =
+        new InvocationCounterManager(
+            this.connectionFactory, this.dlmsHelper, this.deviceRepository);
+  }
+
+  @Test
+  void initializesInvocationCounterForDevice() throws Exception {
+    final DlmsDevice device = new DlmsDeviceBuilder().build();
+
+    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+    when(this.connectionFactory.getPublicClientConnection(device, null))
+        .thenReturn(connectionManager);
+
+    final DataObject dataObject = DataObject.newInteger32Data(123);
+    when(this.dlmsHelper.getAttributeValue(
+            eq(connectionManager), refEq(ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE)))
+        .thenReturn(dataObject);
+
+    try {
+      this.manager.initializeInvocationCounter(device);
+      fail("Should throw exception");
+    } catch (final DeviceSessionTerminatedAfterReadingInvocationCounterException e) {
+      // expected
     }
 
-    @Test
-    void initializesInvocationCounterForDevice() throws Exception {
-        final DlmsDevice device = new DlmsDeviceBuilder().build();
+    assertThat(device.getInvocationCounter())
+        .isEqualTo(Long.valueOf(dataObject.getValue().toString()));
+    verify(this.deviceRepository).save(device);
+    verify(connectionManager).close();
+  }
 
-        final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
-        when(this.connectionFactory.getPublicClientConnection(device, null)).thenReturn(connectionManager);
+  @Test
+  void resetsInvocationCounter() {
+    final DlmsDevice device = new DlmsDeviceBuilder().withInvocationCounter(123L).build();
 
-        final DataObject dataObject = DataObject.newInteger32Data(123);
-        when(this.dlmsHelper
-                .getAttributeValue(eq(connectionManager), refEq(ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE)))
-                .thenReturn(dataObject);
+    this.manager.resetInvocationCounter(device);
 
-        try {
-            this.manager.initializeInvocationCounter(device);
-            fail("Should throw exception");
-        } catch (final DeviceSessionTerminatedAfterReadingInvocationCounterException e) {
-            // expected
-        }
-
-        assertThat(device.getInvocationCounter()).isEqualTo(Long.valueOf(dataObject.getValue().toString()));
-        verify(this.deviceRepository).save(device);
-        verify(connectionManager).close();
-    }
-
-    @Test
-    void resetsInvocationCounter() {
-        final DlmsDevice device = new DlmsDeviceBuilder().withInvocationCounter(123L).build();
-
-        this.manager.resetInvocationCounter(device);
-
-        assertThat(device.isInvocationCounterInitialized()).isFalse();
-        verify(this.deviceRepository).save(device);
-    }
+    assertThat(device.isInvocationCounterInitialized()).isFalse();
+    verify(this.deviceRepository).save(device);
+  }
 }

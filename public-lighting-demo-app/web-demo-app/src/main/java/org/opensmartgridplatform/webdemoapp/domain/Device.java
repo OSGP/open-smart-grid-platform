@@ -1,126 +1,124 @@
-/**
+/*
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.webdemoapp.domain;
 
+/** An entity class which contains the data of a single device. */
+public class Device {
 
+  private String deviceIdentification;
 
-/**
- * An entity class which contains the data of a single device.
- */
-public class Device  {
+  private String containerCity;
 
-    private String deviceIdentification;
+  private String containerPostalCode;
 
-    private String containerCity;
+  private String containerStreet;
 
-    private String containerPostalCode;
+  private String containerNumber;
 
-    private String containerStreet;
+  private String region;
 
-    private String containerNumber;
+  private String transitionOrganisationIdentification;
 
-    private String region;
+  private boolean activated;
 
-    private String transitionOrganisationIdentification;
+  private boolean hasSchedule;
 
-    private boolean activated;
+  private String activatedText;
 
-    private boolean hasSchedule;
+  private String hasScheduleText;
 
-    private String activatedText;
+  public String getDeviceIdentification() {
+    return this.deviceIdentification;
+  }
 
-    private String hasScheduleText;
+  public void setDeviceIdentification(final String deviceIdentification) {
+    this.deviceIdentification = deviceIdentification;
+  }
 
-    public String getDeviceIdentification() {
-        return this.deviceIdentification;
-    }
+  public String getContainerCity() {
+    return this.containerCity;
+  }
 
-    public void setDeviceIdentification(final String deviceIdentification) {
-        this.deviceIdentification = deviceIdentification;
-    }
+  public void setContainerCity(final String containerCity) {
+    this.containerCity = containerCity;
+  }
 
-    public String getContainerCity() {
-        return this.containerCity;
-    }
+  public String getContainerStreet() {
+    return this.containerStreet;
+  }
 
-    public void setContainerCity(final String containerCity) {
-        this.containerCity = containerCity;
-    }
+  public void setContainerStreet(final String containerStreet) {
+    this.containerStreet = containerStreet;
+  }
 
-    public String getContainerStreet() {
-        return this.containerStreet;
-    }
+  public String getContainerPostalCode() {
+    return this.containerPostalCode;
+  }
 
-    public void setContainerStreet(final String containerStreet) {
-        this.containerStreet = containerStreet;
-    }
+  public void setContainerPostalCode(final String containerPostalCode) {
+    this.containerPostalCode = containerPostalCode;
+  }
 
-    public String getContainerPostalCode() {
-        return this.containerPostalCode;
-    }
+  public String getContainerNumber() {
+    return this.containerNumber;
+  }
 
-    public void setContainerPostalCode(final String containerPostalCode) {
-        this.containerPostalCode = containerPostalCode;
-    }
+  public void setContainerNumber(final String containerNumber) {
+    this.containerNumber = containerNumber;
+  }
 
-    public String getContainerNumber() {
-        return this.containerNumber;
-    }
+  public String getActivatedText() {
+    return this.activatedText;
+  }
 
-    public void setContainerNumber(final String containerNumber) {
-        this.containerNumber = containerNumber;
-    }
+  public void setActivatedText(final String activatedText) {
+    this.activatedText = activatedText;
+  }
 
-    public String getActivatedText() {
-        return this.activatedText;
-    }
+  public boolean isActivated() {
+    return this.activated;
+  }
 
-    public void setActivatedText(final String activatedText) {
-        this.activatedText = activatedText;
-    }
+  public void setActivated(final boolean activated) {
+    this.activated = activated;
+  }
 
-    public boolean isActivated() {
-        return this.activated;
-    }
+  public String getHasScheduleText() {
+    return this.hasScheduleText;
+  }
 
-    public void setActivated(final boolean activated) {
-        this.activated = activated;
-    }
+  public void setHasScheduleText(final String hasScheduleText) {
+    this.hasScheduleText = hasScheduleText;
+  }
 
-    public String getHasScheduleText() {
-        return this.hasScheduleText;
-    }
+  public boolean hasSchedule() {
+    return this.hasSchedule;
+  }
 
-    public void setHasScheduleText(final String hasScheduleText) {
-        this.hasScheduleText = hasScheduleText;
-    }
+  public void setHasSchedule(final boolean hasSchedule) {
+    this.hasSchedule = hasSchedule;
+  }
 
-    public boolean hasSchedule() {
-        return this.hasSchedule;
-    }
+  public String getRegion() {
+    return this.region;
+  }
 
-    public void setHasSchedule(final boolean hasSchedule) {
-        this.hasSchedule = hasSchedule;
-    }
+  public void setRegion(final String region) {
+    this.region = region;
+  }
 
-    public String getRegion() {
-        return this.region;
-    }
+  public String getTransitionOrganisationIdentification() {
+    return this.transitionOrganisationIdentification;
+  }
 
-    public void setRegion(final String region) {
-        this.region = region;
-    }
-
-    public String getTransitionOrganisationIdentification() {
-        return this.transitionOrganisationIdentification;
-    }
-
-    public void setTransitionOrganisationIdentification(final String transitionOrganisationIdentification) {
-        this.transitionOrganisationIdentification = transitionOrganisationIdentification;
-    }
+  public void setTransitionOrganisationIdentification(
+      final String transitionOrganisationIdentification) {
+    this.transitionOrganisationIdentification = transitionOrganisationIdentification;
+  }
 }

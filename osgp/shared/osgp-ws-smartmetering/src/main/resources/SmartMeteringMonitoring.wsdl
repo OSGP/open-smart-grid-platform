@@ -109,6 +109,7 @@
     <wsdl:part element="smmon:ActualMeterReadsGasResponse"
       name="ActualMeterReadsGasResponse" />
   </wsdl:message>
+
   <!-- READ ALARM REGISTER -->
   <wsdl:message name="ReadAlarmRegisterRequest">
     <wsdl:part element="smmon:ReadAlarmRegisterRequest" name="AlarmRegisterRequest" />
@@ -173,6 +174,29 @@
   <wsdl:message name="GetPowerQualityProfileAsyncResponse">
     <wsdl:part element="smmon:GetPowerQualityProfileAsyncResponse"
       name="GetPowerQualityProfileAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+  <!-- ACTUAL POWER QUALITY -->
+
+  <wsdl:message name="ActualPowerQualityRequest">
+    <wsdl:part element="smmon:ActualPowerQualityRequest" name="ActualPowerQualityRequest">
+    </wsdl:part>
+  </wsdl:message>
+
+  <wsdl:message name="ActualPowerQualityAsyncResponse">
+    <wsdl:part element="smmon:ActualPowerQualityAsyncResponse"
+      name="ActualPowerQualityAsyncResponse" />
+  </wsdl:message>
+
+  <wsdl:message name="ActualPowerQualityAsyncRequest">
+    <wsdl:part element="smmon:ActualPowerQualityAsyncRequest"
+      name="ActualPowerQualityAsyncRequest" />
+  </wsdl:message>
+
+  <wsdl:message name="ActualPowerQualityResponse">
+    <wsdl:part element="smmon:ActualPowerQualityResponse"
+               name="ActualPowerQualityResponse">
     </wsdl:part>
   </wsdl:message>
 
@@ -288,7 +312,7 @@
       <wsdl:output message="tns:RetrievePushNotificationAlarmResponse"
         name="RetrievePushNotificationAlarmResponse" />
     </wsdl:operation>
- 
+
     <wsdl:operation name="GetPowerQualityProfile">
       <wsdl:input message="tns:GetPowerQualityProfileRequest"
         name="GetPowerQualityProfileRequest">
@@ -305,7 +329,7 @@
         name="GetPowerQualityProfileResponse">
       </wsdl:output>
     </wsdl:operation>
-    
+
   </wsdl:portType>
 
   <wsdl:binding name="SmartMeteringMonitoringPortSoap11"
@@ -438,7 +462,7 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    
+
     <wsdl:operation name="ReadAlarmRegister">
       <soap:operation soapAction="" />
       <wsdl:input name="ReadAlarmRegisterRequest">
@@ -516,7 +540,7 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    
+
     <wsdl:operation name="GetPowerQualityProfile">
       <soap:operation soapAction="" />
       <wsdl:input name="GetPowerQualityProfileRequest">
@@ -532,7 +556,7 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    
+
     <wsdl:operation name="GetPowerQualityProfileResponse">
       <soap:operation soapAction="" />
       <wsdl:input name="GetPowerQualityProfileAsyncRequest">
@@ -548,7 +572,7 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    
+
   </wsdl:binding>
   <wsdl:service name="SmartMeteringMonitoringPortService">
     <wsdl:port binding="tns:SmartMeteringMonitoringPortSoap11"

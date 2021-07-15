@@ -1,3 +1,12 @@
+/*
+ * Copyright 2021 Alliander N.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters;
 
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
@@ -5,5 +14,5 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 
 @FunctionalInterface
 public interface CustomValueToDtoConverter<T, R> {
-    R convert(T type, SmartMeter smartmeter) throws FunctionalException;
+  R convert(T type, SmartMeter smartmeter) throws FunctionalException;
 }

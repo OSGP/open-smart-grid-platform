@@ -1,17 +1,19 @@
-/**
+/*
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.cucumber.platform.common.glue.steps.ws.core.deviceinstallation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import java.util.List;
 import java.util.Map;
-
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.Device;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.FindRecentDevicesRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.FindRecentDevicesResponse;
@@ -23,47 +25,44 @@ import org.opensmartgridplatform.cucumber.platform.glue.steps.ws.GenericResponse
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
-
 public class FindRecentDeviceSteps {
 
-    @Autowired
-    private CoreDeviceInstallationClient client;
+  @Autowired private CoreDeviceInstallationClient client;
 
-    @When("receiving a find recent devices request")
-    public void receivingAFindRecentDevicesRequest() throws Throwable {
-        final FindRecentDevicesRequest request = new FindRecentDevicesRequest();
+  @When("receiving a find recent devices request")
+  public void receivingAFindRecentDevicesRequest() throws Throwable {
+    final FindRecentDevicesRequest request = new FindRecentDevicesRequest();
 
-        try {
-            ScenarioContext.current().put(PlatformKeys.RESPONSE, this.client.findRecentDevices(request));
-        } catch (final SoapFaultClientException ex) {
-            ScenarioContext.current().put(PlatformKeys.RESPONSE, ex);
-        }
+    try {
+      ScenarioContext.current().put(PlatformKeys.RESPONSE, this.client.findRecentDevices(request));
+    } catch (final SoapFaultClientException ex) {
+      ScenarioContext.current().put(PlatformKeys.RESPONSE, ex);
     }
+  }
 
-    @Then("the find recent devices response contains \"{int}\" device(s)")
-    public void theFindRecentDevicesResponseContains(final Integer numberOfDevices) {
-        final FindRecentDevicesResponse response = (FindRecentDevicesResponse) ScenarioContext.current()
-                .get(PlatformCommonKeys.RESPONSE);
+  @Then("the find recent devices response contains \"{int}\" device(s)")
+  public void theFindRecentDevicesResponseContains(final Integer numberOfDevices) {
+    final FindRecentDevicesResponse response =
+        (FindRecentDevicesResponse) ScenarioContext.current().get(PlatformCommonKeys.RESPONSE);
 
-        final List<Device> devices = response.getDevices();
-        assertThat((devices != null) ? devices.size() : 0).isEqualTo((int) numberOfDevices);
-    }
+    final List<Device> devices = response.getDevices();
+    assertThat((devices != null) ? devices.size() : 0).isEqualTo((int) numberOfDevices);
+  }
 
-    @Then("the find recent devices response contains at index \"{int}\"")
-    public void theFindRecentDevicesResponseContainsAtIndex(final Integer index,
-            final Map<String, String> expectedDevice) throws Throwable {
-        final FindRecentDevicesResponse response = (FindRecentDevicesResponse) ScenarioContext.current()
-                .get(PlatformCommonKeys.RESPONSE);
+  @Then("the find recent devices response contains at index \"{int}\"")
+  public void theFindRecentDevicesResponseContainsAtIndex(
+      final Integer index, final Map<String, String> expectedDevice) throws Throwable {
+    final FindRecentDevicesResponse response =
+        (FindRecentDevicesResponse) ScenarioContext.current().get(PlatformCommonKeys.RESPONSE);
 
-        final Device device = response.getDevices().get(index - 1);
-        assertThat(device).isNotNull();
-        DeviceSteps.checkDevice(expectedDevice, device);
-    }
+    final Device device = response.getDevices().get(index - 1);
+    assertThat(device).isNotNull();
+    DeviceSteps.checkDevice(expectedDevice, device);
+  }
 
-    @Then("^the find recent devices response contains soap fault$")
-    public void theAddDeviceResponseContainsSoapFault(final Map<String, String> expectedResult) throws Throwable {
-        GenericResponseSteps.verifySoapFault(expectedResult);
-    }
+  @Then("^the find recent devices response contains soap fault$")
+  public void theAddDeviceResponseContainsSoapFault(final Map<String, String> expectedResult)
+      throws Throwable {
+    GenericResponseSteps.verifySoapFault(expectedResult);
+  }
 }

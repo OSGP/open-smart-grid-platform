@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2021 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.customconverters;
 
@@ -12,7 +13,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.List;
-
 import ma.glasnost.orika.MappingContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,45 +29,42 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupAlarmDt
 
 @ExtendWith(MockitoExtension.class)
 class PushSetupAlarmDtoConverterTest {
-    @Mock
-    private ConfigurationMapper configurationMapper;
-    @Mock
-    private MappingContext mappingContext;
-    @Mock
-    private PushSetupAlarm pushSetupAlarm;
-    private PushSetupAlarmDtoConverter pushSetupAlarmDtoConverter;
+  @Mock private ConfigurationMapper configurationMapper;
+  @Mock private MappingContext mappingContext;
+  @Mock private PushSetupAlarm pushSetupAlarm;
+  private PushSetupAlarmDtoConverter pushSetupAlarmDtoConverter;
 
-    @BeforeEach
-    public void setup(){
-        this.pushSetupAlarmDtoConverter = new PushSetupAlarmDtoConverter(this.configurationMapper);
-    }
+  @BeforeEach
+  public void setup() {
+    this.pushSetupAlarmDtoConverter = new PushSetupAlarmDtoConverter(this.configurationMapper);
+  }
 
-    @Test
-    void convertTest() {
-        final List<WindowElement> testList = Collections.singletonList(
-                new WindowElement(new CosemDateTime(), new CosemDateTime()));
-        when(this.pushSetupAlarm.getCommunicationWindow()).thenReturn(testList);
+  @Test
+  void convertTest() {
+    final List<WindowElement> testList =
+        Collections.singletonList(new WindowElement(new CosemDateTime(), new CosemDateTime()));
+    when(this.pushSetupAlarm.getCommunicationWindow()).thenReturn(testList);
 
-        final CosemObisCode code = new CosemObisCode(1, 2, 3, 4, 5, 6);
-        when(this.pushSetupAlarm.getPushObjectList()).thenReturn(Collections.singletonList(
-                new CosemObjectDefinition(1, code, 2)));
+    final CosemObisCode code = new CosemObisCode(1, 2, 3, 4, 5, 6);
+    when(this.pushSetupAlarm.getPushObjectList())
+        .thenReturn(Collections.singletonList(new CosemObjectDefinition(1, code, 2)));
 
-        final PushSetupAlarmDto result = this.pushSetupAlarmDtoConverter.convert(this.pushSetupAlarm, null,
-                this.mappingContext);
+    final PushSetupAlarmDto result =
+        this.pushSetupAlarmDtoConverter.convert(this.pushSetupAlarm, null, this.mappingContext);
 
-        assertThat(result.getCommunicationWindow()).isNotNull();
-        assertThat(result.getPushObjectList()).isNotNull();
-    }
+    assertThat(result.getCommunicationWindow()).isNotNull();
+    assertThat(result.getPushObjectList()).isNotNull();
+  }
 
-    @Test
-    void convertTestWithEmptyLists() {
-        when(this.pushSetupAlarm.getCommunicationWindow()).thenReturn(null);
-        when(this.pushSetupAlarm.getPushObjectList()).thenReturn(null);
+  @Test
+  void convertTestWithEmptyLists() {
+    when(this.pushSetupAlarm.getCommunicationWindow()).thenReturn(null);
+    when(this.pushSetupAlarm.getPushObjectList()).thenReturn(null);
 
-        final PushSetupAlarmDto result = this.pushSetupAlarmDtoConverter.convert(this.pushSetupAlarm, null,
-                this.mappingContext);
+    final PushSetupAlarmDto result =
+        this.pushSetupAlarmDtoConverter.convert(this.pushSetupAlarm, null, this.mappingContext);
 
-        assertThat(result.getCommunicationWindow()).isNull();
-        assertThat(result.getPushObjectList()).isNull();
-    }
+    assertThat(result.getCommunicationWindow()).isNull();
+    assertThat(result.getPushObjectList()).isNull();
+  }
 }

@@ -1,16 +1,14 @@
-/**
+/*
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.da.application.services;
 
 import java.util.UUID;
-
 import org.opensmartgridplatform.adapter.domain.da.application.mapping.DomainDistributionAutomationMapper;
 import org.opensmartgridplatform.adapter.domain.da.application.routing.ResponseMessageRouter;
 import org.opensmartgridplatform.adapter.domain.da.infra.jms.core.OsgpCoreRequestMessageSender;
@@ -29,50 +27,52 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 public class BaseService {
 
-    @Autowired
-    protected DeviceDomainService deviceDomainService;
+  @Autowired protected DeviceDomainService deviceDomainService;
 
-    @Autowired
-    protected OrganisationDomainService organisationDomainService;
+  @Autowired protected OrganisationDomainService organisationDomainService;
 
-    @Autowired
-    @Qualifier(value = "domainDistributionAutomationOutboundOsgpCoreRequestsMessageSender")
-    protected OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
+  @Autowired
+  @Qualifier(value = "domainDistributionAutomationOutboundOsgpCoreRequestsMessageSender")
+  protected OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
 
-    @Autowired
-    protected DomainDistributionAutomationMapper domainCoreMapper;
+  @Autowired protected DomainDistributionAutomationMapper domainCoreMapper;
 
-    @Autowired
-    protected ResponseMessageRouter responseMessageRouter;
+  @Autowired protected ResponseMessageRouter responseMessageRouter;
 
-    protected Device findActiveDevice(final String deviceIdentification) throws FunctionalException {
-        return this.deviceDomainService.searchActiveDevice(deviceIdentification,
-                ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION);
+  protected Device findActiveDevice(final String deviceIdentification) throws FunctionalException {
+    return this.deviceDomainService.searchActiveDevice(
+        deviceIdentification, ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION);
+  }
+
+  protected Organisation findOrganisation(final String organisationIdentification)
+      throws FunctionalException {
+    final Organisation organisation;
+    try {
+      organisation = this.organisationDomainService.searchOrganisation(organisationIdentification);
+    } catch (final UnknownEntityException e) {
+      throw new FunctionalException(
+          FunctionalExceptionType.UNKNOWN_ORGANISATION,
+          ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION,
+          e);
+    }
+    return organisation;
+  }
+
+  protected OsgpException ensureOsgpException(final Throwable t, final String defaultMessage) {
+    if (t instanceof OsgpException) {
+      return (OsgpException) t;
     }
 
-    protected Organisation findOrganisation(final String organisationIdentification) throws FunctionalException {
-        final Organisation organisation;
-        try {
-            organisation = this.organisationDomainService.searchOrganisation(organisationIdentification);
-        } catch (final UnknownEntityException e) {
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_ORGANISATION,
-                    ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION, e);
-        }
-        return organisation;
-    }
+    return new TechnicalException(ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION, defaultMessage, t);
+  }
 
-    protected OsgpException ensureOsgpException(final Throwable t, final String defaultMessage) {
-        if (t instanceof OsgpException) {
-            return (OsgpException) t;
-        }
+  protected static String getCorrelationId(
+      final String organisationIdentification, final String deviceIdentification) {
 
-        return new TechnicalException(ComponentType.DOMAIN_DISTRIBUTION_AUTOMATION, defaultMessage, t);
-    }
-
-    protected static String getCorrelationId(final String organisationIdentification,
-            final String deviceIdentification) {
-
-        return organisationIdentification + "|||" + deviceIdentification + "|||" + UUID.randomUUID().toString();
-    }
-
+    return organisationIdentification
+        + "|||"
+        + deviceIdentification
+        + "|||"
+        + UUID.randomUUID().toString();
+  }
 }

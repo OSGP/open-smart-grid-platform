@@ -4,7 +4,7 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
             xmlns:tns="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-management/2014/10"
-            attributeFormDefault="unqualified" elementFormDefault="qualified"
+            elementFormDefault="qualified"
             targetNamespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-management/2014/10">
 
   <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/common/2014/10"
@@ -69,7 +69,7 @@
   <xsd:element name="FindEventsAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncResponse"></xsd:extension>
+        <xsd:extension base="common:AsyncResponse"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -77,7 +77,7 @@
   <xsd:element name="FindEventsAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncRequest"></xsd:extension>
+        <xsd:extension base="common:AsyncRequest"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -105,8 +105,7 @@
   <xsd:element name="EnableDebuggingRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"
-                     minOccurs="1" maxOccurs="1"/>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -114,7 +113,7 @@
   <xsd:element name="EnableDebuggingAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncResponse"></xsd:extension>
+        <xsd:extension base="common:AsyncResponse"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -122,7 +121,7 @@
   <xsd:element name="EnableDebuggingAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncRequest"></xsd:extension>
+        <xsd:extension base="common:AsyncRequest"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -147,7 +146,7 @@
   <xsd:element name="DisableDebuggingAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncResponse"></xsd:extension>
+        <xsd:extension base="common:AsyncResponse"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -155,7 +154,7 @@
   <xsd:element name="DisableDebuggingAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncRequest"></xsd:extension>
+        <xsd:extension base="common:AsyncRequest"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -181,7 +180,7 @@
   <xsd:element name="FindMessageLogsAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncResponse"></xsd:extension>
+        <xsd:extension base="common:AsyncResponse"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -189,7 +188,7 @@
   <xsd:element name="FindMessageLogsAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncRequest"></xsd:extension>
+        <xsd:extension base="common:AsyncRequest"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -215,7 +214,7 @@
   <xsd:element name="SetDeviceCommunicationSettingsAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncResponse"></xsd:extension>
+        <xsd:extension base="common:AsyncResponse"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -223,7 +222,7 @@
   <xsd:element name="SetDeviceCommunicationSettingsAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncRequest"></xsd:extension>
+        <xsd:extension base="common:AsyncRequest"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -250,14 +249,14 @@
   <xsd:element name="SetDeviceLifecycleStatusByChannelAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncResponse"></xsd:extension>
+        <xsd:extension base="common:AsyncResponse"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
   <xsd:element name="SetDeviceLifecycleStatusByChannelAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
-        <xsd:extension base="common:AsyncRequest"></xsd:extension>
+        <xsd:extension base="common:AsyncRequest"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -294,7 +293,19 @@
       <xsd:element name="eventType" type="tns:EventType"/>
       <xsd:element name="EventLogCategory" type="tns:EventLogCategory"/>
       <xsd:element name="eventCounter" type="xsd:int" minOccurs="0"/>
-      <xsd:element name="eventDetails" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="eventDetails" type="tns:EventDetail"
+                   maxOccurs="unbounded" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- Certain events require or contain more details than just
+   a description and a category. For example, specification of
+   a particular channel number, alarm number, relay number,
+   port number, formula number, version number, etc -->
+  <xsd:complexType name="EventDetail">
+    <xsd:sequence>
+      <xsd:element name="name" type="xsd:string"/>
+      <xsd:element name="value" type="xsd:string"/>
     </xsd:sequence>
   </xsd:complexType>
 
@@ -557,6 +568,8 @@
       <xsd:enumeration value="SET_MAINTENANCE_STATE_G_SUCCESS"/>
       <xsd:enumeration value="SET_MAINTENANCE_STATE_E_FAILED"/>
       <xsd:enumeration value="SET_MAINTENANCE_STATE_G_FAILED"/>
+      <xsd:enumeration value="COMMUNICATION_NETWORK_INFORMATION_UPDATED"/>
+      <xsd:enumeration value="CLEAN_UP_M_BUS_CHANNEL"/>
 
     </xsd:restriction>
   </xsd:simpleType>

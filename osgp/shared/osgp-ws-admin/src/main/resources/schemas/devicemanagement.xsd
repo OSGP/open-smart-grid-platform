@@ -72,7 +72,7 @@
   <xsd:element name="FindMessageLogsRequest">
     <xsd:complexType>
       <xsd:sequence>
-		<xsd:element name="MessageLogFilter" type="tns:MessageLogFilter" />
+        <xsd:element name="MessageLogFilter" type="tns:MessageLogFilter" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -384,4 +384,28 @@
       <xsd:enumeration value="DESC" />
     </xsd:restriction>
   </xsd:simpleType>
+
+  <xsd:element name="SetCommunicationNetworkInformationRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="xsd:string" />
+        <xsd:element name="IpAddress" type="xsd:string" minOccurs="0" />
+        <xsd:element name="BtsId" type="xsd:int" minOccurs="0" />
+        <xsd:element name="CellId" type="xsd:int" minOccurs="0" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="SetCommunicationNetworkInformationResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType" />
+        <xsd:element name="FaultResponseMessage" type="xsd:string" minOccurs="0" />
+        <xsd:element name="IpAddress" type="xsd:string" minOccurs="0" />
+        <xsd:element name="BtsId" type="xsd:int" minOccurs="0" />
+        <xsd:element name="CellId" type="xsd:int" minOccurs="0" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
 </xsd:schema>

@@ -1,17 +1,16 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.ws.core.endpoints;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.validation.ConstraintViolationException;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.opensmartgridplatform.adapter.ws.core.application.criteria.SearchEventsCriteria;
@@ -88,642 +87,822 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
-/**
- * Device Management Endpoint class
- */
+/** Device Management Endpoint class */
 @Endpoint(value = "coreDeviceManagementEndpoint")
 public class DeviceManagementEndpoint {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementEndpoint.class);
-    private static final String DEVICE_MANAGEMENT_NAMESPACE = "http://www.opensmartgridplatform.org/schemas/devicemanagement/2014/10";
-    private static final ComponentType COMPONENT_WS_CORE = ComponentType.WS_CORE;
+  private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementEndpoint.class);
+  private static final String DEVICE_MANAGEMENT_NAMESPACE =
+      "http://www.opensmartgridplatform.org/schemas/devicemanagement/2014/10";
+  private static final ComponentType COMPONENT_WS_CORE = ComponentType.WS_CORE;
 
-    private static final String EXCEPTION = "Exception: {}, StackTrace: {}";
-    private static final String EXCEPTION_WHILE_UPDATING_DEVICE = "Exception: {} while updating device: {} for organisation: {}.";
+  private static final String EXCEPTION = "Exception: {}, StackTrace: {}";
+  private static final String EXCEPTION_WHILE_UPDATING_DEVICE =
+      "Exception: {} while updating device: {} for organisation: {}.";
 
-    private final DeviceManagementService deviceManagementService;
-    private final DeviceManagementMapper deviceManagementMapper;
+  private final DeviceManagementService deviceManagementService;
+  private final DeviceManagementMapper deviceManagementMapper;
 
-    @Autowired
-    private CorrelationIdProviderService correlationIdProviderService;
+  @Autowired private CorrelationIdProviderService correlationIdProviderService;
 
-    @Autowired
-    private NotificationService notificationService;
+  @Autowired private NotificationService notificationService;
 
-    @Autowired
-    public DeviceManagementEndpoint(
-            @Qualifier(value = "wsCoreDeviceManagementService") final DeviceManagementService deviceManagementService,
-            @Qualifier(value = "coreDeviceManagementMapper") final DeviceManagementMapper deviceManagementMapper) {
-        this.deviceManagementService = deviceManagementService;
-        this.deviceManagementMapper = deviceManagementMapper;
+  @Autowired
+  public DeviceManagementEndpoint(
+      @Qualifier(value = "wsCoreDeviceManagementService")
+          final DeviceManagementService deviceManagementService,
+      @Qualifier(value = "coreDeviceManagementMapper")
+          final DeviceManagementMapper deviceManagementMapper) {
+    this.deviceManagementService = deviceManagementService;
+    this.deviceManagementMapper = deviceManagementMapper;
+  }
+
+  @PayloadRoot(localPart = "FindOrganisationRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
+  @ResponsePayload
+  public FindOrganisationResponse findOrganisation(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final FindOrganisationRequest request)
+      throws OsgpException {
+
+    LOGGER.info("Find organisation for organisation: {}.", organisationIdentification);
+
+    final FindOrganisationResponse response = new FindOrganisationResponse();
+
+    try {
+      final Organisation organisation =
+          this.deviceManagementService.findOrganisation(
+              organisationIdentification, request.getOrganisationIdentification());
+      response.setOrganisation(
+          this.deviceManagementMapper.map(
+              organisation,
+              org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Organisation
+                  .class));
+    } catch (final ConstraintViolationException e) {
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          ComponentType.WS_CORE,
+          new ValidationException(e.getConstraintViolations()));
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    @PayloadRoot(localPart = "FindOrganisationRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
-    @ResponsePayload
-    public FindOrganisationResponse findOrganisation(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final FindOrganisationRequest request) throws OsgpException {
+    return response;
+  }
 
-        LOGGER.info("Find organisation for organisation: {}.", organisationIdentification);
+  @PayloadRoot(localPart = "FindAllOrganisationsRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
+  @ResponsePayload
+  public FindAllOrganisationsResponse findAllOrganisations(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final FindAllOrganisationsRequest request)
+      throws OsgpException {
 
-        final FindOrganisationResponse response = new FindOrganisationResponse();
+    LOGGER.info("Find all organisations for organisation: {}.", organisationIdentification);
 
-        try {
-            final Organisation organisation = this.deviceManagementService.findOrganisation(organisationIdentification,
-                    request.getOrganisationIdentification());
-            response.setOrganisation(this.deviceManagementMapper.map(organisation,
-                    org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Organisation.class));
-        } catch (final ConstraintViolationException e) {
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations()));
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
+    final FindAllOrganisationsResponse response = new FindAllOrganisationsResponse();
 
-        return response;
+    try {
+      final List<Organisation> organisations =
+          this.deviceManagementService.findAllOrganisations(organisationIdentification);
+      response
+          .getOrganisations()
+          .addAll(
+              this.deviceManagementMapper.mapAsList(
+                  organisations,
+                  org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Organisation
+                      .class));
+    } catch (final ConstraintViolationException e) {
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          ComponentType.WS_CORE,
+          new ValidationException(e.getConstraintViolations()));
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    @PayloadRoot(localPart = "FindAllOrganisationsRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
-    @ResponsePayload
-    public FindAllOrganisationsResponse findAllOrganisations(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final FindAllOrganisationsRequest request) throws OsgpException {
+    return response;
+  }
 
-        LOGGER.info("Find all organisations for organisation: {}.", organisationIdentification);
+  @PayloadRoot(localPart = "SetEventNotificationsRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
+  @ResponsePayload
+  public SetEventNotificationsAsyncResponse setEventNotifications(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetEventNotificationsRequest request,
+      @MessagePriority final String messagePriority)
+      throws OsgpException {
 
-        final FindAllOrganisationsResponse response = new FindAllOrganisationsResponse();
+    LOGGER.info(
+        "Set EventNotifications Request received from organisation: {} for event device: {} with message priority: {}.",
+        organisationIdentification,
+        request.getDeviceIdentification(),
+        messagePriority);
 
-        try {
-            final List<Organisation> organisations = this.deviceManagementService
-                    .findAllOrganisations(organisationIdentification);
-            response.getOrganisations()
-                    .addAll(this.deviceManagementMapper.mapAsList(organisations,
-                            org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Organisation.class));
-        } catch (final ConstraintViolationException e) {
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations()));
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
+    final SetEventNotificationsAsyncResponse response = new SetEventNotificationsAsyncResponse();
 
-        return response;
+    try {
+      final List<EventNotificationType> eventNotifications = new ArrayList<>();
+      eventNotifications.addAll(
+          this.deviceManagementMapper.mapAsList(
+              request.getEventNotifications(), EventNotificationType.class));
+
+      final String correlationUid =
+          this.deviceManagementService.enqueueSetEventNotificationsRequest(
+              organisationIdentification,
+              request.getDeviceIdentification(),
+              eventNotifications,
+              MessagePriorityEnum.getMessagePriority(messagePriority));
+
+      final AsyncResponse asyncResponse = new AsyncResponse();
+      asyncResponse.setCorrelationUid(correlationUid);
+      asyncResponse.setDeviceId(request.getDeviceIdentification());
+      response.setAsyncResponse(asyncResponse);
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    @PayloadRoot(localPart = "SetEventNotificationsRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
-    @ResponsePayload
-    public SetEventNotificationsAsyncResponse setEventNotifications(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetEventNotificationsRequest request, @MessagePriority final String messagePriority)
-            throws OsgpException {
+    return response;
+  }
 
-        LOGGER.info(
-                "Set EventNotifications Request received from organisation: {} for event device: {} with message priority: {}.",
-                organisationIdentification, request.getDeviceIdentification(), messagePriority);
+  @PayloadRoot(
+      localPart = "SetEventNotificationsAsyncRequest",
+      namespace = DEVICE_MANAGEMENT_NAMESPACE)
+  @ResponsePayload
+  public SetEventNotificationsResponse getSetEventNotificationsResponse(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetEventNotificationsAsyncRequest request)
+      throws OsgpException {
 
-        final SetEventNotificationsAsyncResponse response = new SetEventNotificationsAsyncResponse();
+    LOGGER.info(
+        "Get Set Event Notifications Response received from organisation: {} with correlationUid: {}.",
+        organisationIdentification,
+        request.getAsyncRequest().getCorrelationUid());
 
-        try {
-            final List<EventNotificationType> eventNotifications = new ArrayList<>();
-            eventNotifications.addAll(this.deviceManagementMapper.mapAsList(request.getEventNotifications(),
-                    EventNotificationType.class));
+    final SetEventNotificationsResponse response = new SetEventNotificationsResponse();
 
-            final String correlationUid = this.deviceManagementService.enqueueSetEventNotificationsRequest(
-                    organisationIdentification, request.getDeviceIdentification(), eventNotifications,
-                    MessagePriorityEnum.getMessagePriority(messagePriority));
-
-            final AsyncResponse asyncResponse = new AsyncResponse();
-            asyncResponse.setCorrelationUid(correlationUid);
-            asyncResponse.setDeviceId(request.getDeviceIdentification());
-            response.setAsyncResponse(asyncResponse);
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-
-        return response;
+    try {
+      final ResponseMessage message =
+          this.deviceManagementService.dequeueSetEventNotificationsResponse(
+              request.getAsyncRequest().getCorrelationUid());
+      if (message != null) {
+        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    @PayloadRoot(localPart = "SetEventNotificationsAsyncRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
-    @ResponsePayload
-    public SetEventNotificationsResponse getSetEventNotificationsResponse(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetEventNotificationsAsyncRequest request) throws OsgpException {
+    return response;
+  }
 
-        LOGGER.info("Get Set Event Notifications Response received from organisation: {} with correlationUid: {}.",
-                organisationIdentification, request.getAsyncRequest().getCorrelationUid());
+  @PayloadRoot(localPart = "FindEventsRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
+  @ResponsePayload
+  public FindEventsResponse findEventsRequest(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final FindEventsRequest request)
+      throws OsgpException {
 
-        final SetEventNotificationsResponse response = new SetEventNotificationsResponse();
+    LOGGER.info(
+        "Find events response for organisation: {} and device: {}.",
+        organisationIdentification,
+        request.getDeviceIdentification());
 
-        try {
-            final ResponseMessage message = this.deviceManagementService
-                    .dequeueSetEventNotificationsResponse(request.getAsyncRequest().getCorrelationUid());
-            if (message != null) {
-                response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-            }
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
+    // Create response.
+    final FindEventsResponse response = new FindEventsResponse();
 
-        return response;
+    try {
+      // Get the request parameters, make sure that they are in UTC.
+      // Maybe add an adapter to the service, so that all datetime are
+      // converted to utc automatically.
+      final DateTime from =
+          request.getFrom() == null
+              ? null
+              : new DateTime(request.getFrom().toGregorianCalendar()).toDateTime(DateTimeZone.UTC);
+      final DateTime until =
+          request.getUntil() == null
+              ? null
+              : new DateTime(request.getUntil().toGregorianCalendar()).toDateTime(DateTimeZone.UTC);
+
+      // Get all events matching the request.
+      final SearchEventsCriteria criteria =
+          SearchEventsCriteria.builder()
+              .organisationIdentification(organisationIdentification)
+              .deviceIdentification(request.getDeviceIdentification())
+              .pageSpecifier(this.pageFrom(request))
+              .from(from)
+              .until(until)
+              .eventTypes(
+                  this.deviceManagementMapper.mapAsList(request.getEventTypes(), EventType.class))
+              .description(request.getDescription())
+              .descriptionStartsWith(request.getDescriptionStartsWith())
+              .build();
+      final Page<org.opensmartgridplatform.domain.core.entities.Event> result =
+          this.deviceManagementService.findEvents(criteria);
+
+      response
+          .getEvents()
+          .addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Event.class));
+      response.setPage(new org.opensmartgridplatform.adapter.ws.schema.core.common.Page());
+      response.getPage().setPageSize(result.getSize());
+      response.getPage().setTotalPages(result.getTotalPages());
+      response.getPage().setCurrentPage(result.getNumber());
+    } catch (final ConstraintViolationException e) {
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          ComponentType.WS_CORE,
+          new ValidationException(e.getConstraintViolations()));
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    @PayloadRoot(localPart = "FindEventsRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
-    @ResponsePayload
-    public FindEventsResponse findEventsRequest(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final FindEventsRequest request) throws OsgpException {
+    return response;
+  }
 
-        LOGGER.info("Find events response for organisation: {} and device: {}.", organisationIdentification,
-                request.getDeviceIdentification());
+  private PageSpecifier pageFrom(final FindEventsRequest request) {
+    return new PageSpecifier(request.getPageSize(), request.getPage());
+  }
 
-        // Create response.
-        final FindEventsResponse response = new FindEventsResponse();
+  @PayloadRoot(localPart = "FindDevicesRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
+  @ResponsePayload
+  public FindDevicesResponse findDevices(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final FindDevicesRequest request)
+      throws OsgpException {
 
-        try {
-            // Get the request parameters, make sure that they are in UTC.
-            // Maybe add an adapter to the service, so that all datetime are
-            // converted to utc automatically.
-            final DateTime from = request.getFrom() == null ? null
-                    : new DateTime(request.getFrom().toGregorianCalendar()).toDateTime(DateTimeZone.UTC);
-            final DateTime until = request.getUntil() == null ? null
-                    : new DateTime(request.getUntil().toGregorianCalendar()).toDateTime(DateTimeZone.UTC);
+    LOGGER.info("Find devices for organisation: {}.", organisationIdentification);
 
-            // Get all events matching the request.
-            final SearchEventsCriteria criteria = SearchEventsCriteria.builder()
-                    .organisationIdentification(organisationIdentification)
-                    .deviceIdentification(request.getDeviceIdentification())
-                    .pageSpecifier(this.pageFrom(request))
-                    .from(from)
-                    .until(until)
-                    .eventTypes(this.deviceManagementMapper.mapAsList(request.getEventTypes(), EventType.class))
-                    .description(request.getDescription())
-                    .descriptionStartsWith(request.getDescriptionStartsWith())
-                    .build();
-            final Page<org.opensmartgridplatform.domain.core.entities.Event> result = this.deviceManagementService
-                    .findEvents(criteria);
+    final FindDevicesResponse response = new FindDevicesResponse();
 
-            response.getEvents().addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Event.class));
-            response.setPage(new org.opensmartgridplatform.adapter.ws.schema.core.common.Page());
-            response.getPage().setPageSize(result.getSize());
-            response.getPage().setTotalPages(result.getTotalPages());
-            response.getPage().setCurrentPage(result.getNumber());
-        } catch (final ConstraintViolationException e) {
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations()));
-        } catch (final Exception e) {
-            this.handleException(e);
+    try {
+      final PageSpecifier pageSpecifier = this.pageFrom(request);
+      Page<org.opensmartgridplatform.domain.core.entities.Device> result =
+          this.deviceManagementService.findDevices(
+              organisationIdentification, pageSpecifier, this.deviceFilterFrom(request));
+
+      if (result != null && response.getDevices() != null) {
+        response
+            .getDevices()
+            .addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Device.class));
+        response.setPage(new org.opensmartgridplatform.adapter.ws.schema.core.common.Page());
+        response.getPage().setPageSize(result.getSize());
+        response.getPage().setTotalPages(result.getTotalPages());
+        response.getPage().setCurrentPage(result.getNumber());
+      }
+
+      if (result != null && request.isUsePages() != null && !request.isUsePages()) {
+        int calls = 0;
+        while ((calls += 1) < result.getTotalPages()) {
+          request.setPage(calls);
+          result =
+              this.deviceManagementService.findDevices(
+                  organisationIdentification, pageSpecifier, this.deviceFilterFrom(request));
+          response
+              .getDevices()
+              .addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Device.class));
         }
-
-        return response;
+      }
+    } catch (final ConstraintViolationException e) {
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          ComponentType.WS_CORE,
+          new ValidationException(e.getConstraintViolations()));
+    } catch (final Exception e) {
+      LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
+      this.handleException(e);
     }
 
-    private PageSpecifier pageFrom(final FindEventsRequest request) {
-        return new PageSpecifier(request.getPageSize(), request.getPage());
+    return response;
+  }
+
+  private DeviceFilter deviceFilterFrom(final FindDevicesRequest request) {
+    return this.deviceManagementMapper.map(request.getDeviceFilter(), DeviceFilter.class);
+  }
+
+  // suppress warning about unused method. This method is used in findDevices.
+  @SuppressWarnings("squid:S1144")
+  private PageSpecifier pageFrom(final FindDevicesRequest request) {
+    return new PageSpecifier(request.getPageSize(), request.getPage());
+  }
+
+  @PayloadRoot(localPart = "FindScheduledTasksRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
+  @ResponsePayload
+  public FindScheduledTasksResponse findScheduledTasks(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final FindScheduledTasksRequest request)
+      throws OsgpException {
+
+    LOGGER.info("Finding scheduled tasks for organisation: {}.", organisationIdentification);
+
+    final FindScheduledTasksResponse response = new FindScheduledTasksResponse();
+
+    try {
+      final List<ScheduledTaskWithoutData> scheduledTasks;
+      if (request.getDeviceIdentification() == null) {
+        scheduledTasks =
+            this.deviceManagementService.findScheduledTasks(organisationIdentification);
+      } else {
+        scheduledTasks =
+            this.deviceManagementService.findScheduledTasks(
+                organisationIdentification, request.getDeviceIdentification());
+      }
+
+      response
+          .getScheduledTask()
+          .addAll(
+              this.deviceManagementMapper.mapAsList(
+                  scheduledTasks,
+                  org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.ScheduledTask
+                      .class));
+    } catch (final ConstraintViolationException e) {
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          ComponentType.WS_CORE,
+          new ValidationException(e.getConstraintViolations()));
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    @PayloadRoot(localPart = "FindDevicesRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
-    @ResponsePayload
-    public FindDevicesResponse findDevices(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final FindDevicesRequest request) throws OsgpException {
+    return response;
+  }
 
-        LOGGER.info("Find devices for organisation: {}.", organisationIdentification);
+  @PayloadRoot(localPart = "UpdateDeviceRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
+  @ResponsePayload
+  public UpdateDeviceResponse updateDevice(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final UpdateDeviceRequest request)
+      throws OsgpException {
 
-        final FindDevicesResponse response = new FindDevicesResponse();
+    final String deviceToUpdateIdentification = request.getDeviceIdentification();
 
-        try {
-            final PageSpecifier pageSpecifier = this.pageFrom(request);
-            Page<org.opensmartgridplatform.domain.core.entities.Device> result = this.deviceManagementService
-                    .findDevices(organisationIdentification, pageSpecifier, this.deviceFilterFrom(request));
+    LOGGER.info(
+        "UpdateDeviceRequest received for device: {} for organisation: {}.",
+        deviceToUpdateIdentification,
+        organisationIdentification);
 
-            if (result != null && response.getDevices() != null) {
-                response.getDevices().addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Device.class));
-                response.setPage(new org.opensmartgridplatform.adapter.ws.schema.core.common.Page());
-                response.getPage().setPageSize(result.getSize());
-                response.getPage().setTotalPages(result.getTotalPages());
-                response.getPage().setCurrentPage(result.getNumber());
-            }
+    try {
+      final org.opensmartgridplatform.domain.core.entities.Ssld ssld =
+          this.deviceManagementMapper.map(
+              request.getUpdatedDevice(),
+              org.opensmartgridplatform.domain.core.entities.Ssld.class);
 
-            if (result != null && request.isUsePages() != null && !request.isUsePages()) {
-                int calls = 0;
-                while ((calls += 1) < result.getTotalPages()) {
-                    request.setPage(calls);
-                    result = this.deviceManagementService.findDevices(organisationIdentification, pageSpecifier,
-                            this.deviceFilterFrom(request));
-                    response.getDevices()
-                            .addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Device.class));
-                }
-            }
-        } catch (final ConstraintViolationException e) {
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations()));
-        } catch (final Exception e) {
-            LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
-            this.handleException(e);
-        }
-
-        return response;
+      this.deviceManagementService.updateDevice(
+          organisationIdentification, deviceToUpdateIdentification, ssld);
+    } catch (final ConstraintViolationException e) {
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          ComponentType.WS_CORE,
+          new ValidationException(e.getConstraintViolations()));
+    } catch (final Exception e) {
+      LOGGER.error(
+          EXCEPTION_WHILE_UPDATING_DEVICE,
+          e.getMessage(),
+          deviceToUpdateIdentification,
+          organisationIdentification,
+          e);
+      this.handleException(e);
     }
 
-    private DeviceFilter deviceFilterFrom(final FindDevicesRequest request) {
-        return this.deviceManagementMapper.map(request.getDeviceFilter(), DeviceFilter.class);
+    final UpdateDeviceResponse updateDeviceResponse = new UpdateDeviceResponse();
+
+    final String correlationUid =
+        this.correlationIdProviderService.getCorrelationId(
+            organisationIdentification, deviceToUpdateIdentification);
+
+    final AsyncResponse asyncResponse = new AsyncResponse();
+    asyncResponse.setCorrelationUid(correlationUid);
+    asyncResponse.setDeviceId(deviceToUpdateIdentification);
+
+    updateDeviceResponse.setAsyncResponse(asyncResponse);
+
+    try {
+      this.notificationService.sendNotification(
+          organisationIdentification,
+          deviceToUpdateIdentification,
+          null,
+          null,
+          null,
+          NotificationType.DEVICE_UPDATED);
+    } catch (final Exception e) {
+      LOGGER.error(e.getMessage(), e);
     }
 
-    // suppress warning about unused method. This method is used in findDevices.
-    @SuppressWarnings("squid:S1144")
-    private PageSpecifier pageFrom(final FindDevicesRequest request) {
-        return new PageSpecifier(request.getPageSize(), request.getPage());
+    return updateDeviceResponse;
+  }
+
+  @PayloadRoot(localPart = "SetDeviceAliasRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
+  @ResponsePayload
+  public SetDeviceAliasResponse setDeviceAlias(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetDeviceAliasRequest request)
+      throws OsgpException {
+
+    LOGGER.info(
+        "Setting device alias for device: {} to: {}.",
+        request.getDeviceIdentification(),
+        request.getDeviceAlias());
+
+    try {
+      this.deviceManagementService.setDeviceAlias(
+          organisationIdentification,
+          request.getDeviceIdentification(),
+          request.getDeviceAlias(),
+          request.getDeviceOutputSettings());
+    } catch (final ConstraintViolationException e) {
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          ComponentType.WS_CORE,
+          new ValidationException(e.getConstraintViolations()));
+    } catch (final Exception e) {
+      LOGGER.error(
+          EXCEPTION_WHILE_UPDATING_DEVICE,
+          e.getMessage(),
+          request.getDeviceIdentification(),
+          organisationIdentification,
+          e);
+      this.handleException(e);
     }
 
-    @PayloadRoot(localPart = "FindScheduledTasksRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
-    @ResponsePayload
-    public FindScheduledTasksResponse findScheduledTasks(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final FindScheduledTasksRequest request) throws OsgpException {
+    final SetDeviceAliasResponse setDeviceAliasResponse = new SetDeviceAliasResponse();
 
-        LOGGER.info("Finding scheduled tasks for organisation: {}.", organisationIdentification);
+    final String correlationUid =
+        this.correlationIdProviderService.getCorrelationId(
+            organisationIdentification, request.getDeviceIdentification());
 
-        final FindScheduledTasksResponse response = new FindScheduledTasksResponse();
+    final AsyncResponse asyncResponse = new AsyncResponse();
+    asyncResponse.setCorrelationUid(correlationUid);
+    asyncResponse.setDeviceId(request.getDeviceIdentification());
 
-        try {
-            final List<ScheduledTaskWithoutData> scheduledTasks;
-            if (request.getDeviceIdentification() == null) {
-                scheduledTasks = this.deviceManagementService.findScheduledTasks(organisationIdentification);
-            } else {
-                scheduledTasks = this.deviceManagementService.findScheduledTasks(organisationIdentification,
-                        request.getDeviceIdentification());
-            }
+    setDeviceAliasResponse.setAsyncResponse(asyncResponse);
 
-            response.getScheduledTask()
-                    .addAll(this.deviceManagementMapper.mapAsList(scheduledTasks,
-                            org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.ScheduledTask.class));
-        } catch (final ConstraintViolationException e) {
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations()));
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-
-        return response;
+    try {
+      this.notificationService.sendNotification(
+          organisationIdentification,
+          request.getDeviceIdentification(),
+          null,
+          null,
+          null,
+          NotificationType.DEVICE_UPDATED);
+    } catch (final Exception e) {
+      LOGGER.error(e.getMessage(), e);
     }
 
-    @PayloadRoot(localPart = "UpdateDeviceRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
-    @ResponsePayload
-    public UpdateDeviceResponse updateDevice(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final UpdateDeviceRequest request) throws OsgpException {
+    return setDeviceAliasResponse;
+  }
 
-        final String deviceToUpdateIdentification = request.getDeviceIdentification();
+  @PayloadRoot(localPart = "SetMaintenanceStatusRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
+  @ResponsePayload
+  public SetMaintenanceStatusResponse setMaintenanceStatus(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetMaintenanceStatusRequest request)
+      throws OsgpException {
 
-        LOGGER.info("UpdateDeviceRequest received for device: {} for organisation: {}.", deviceToUpdateIdentification,
-                organisationIdentification);
+    LOGGER.info(
+        "Setting maintenance for device:{} to: {}.",
+        request.getDeviceIdentification(),
+        request.isStatus());
 
-        try {
-            final org.opensmartgridplatform.domain.core.entities.Ssld ssld = this.deviceManagementMapper
-                    .map(request.getUpdatedDevice(), org.opensmartgridplatform.domain.core.entities.Ssld.class);
-
-            this.deviceManagementService.updateDevice(organisationIdentification, deviceToUpdateIdentification, ssld);
-        } catch (final ConstraintViolationException e) {
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations()));
-        } catch (final Exception e) {
-            LOGGER.error(EXCEPTION_WHILE_UPDATING_DEVICE, e.getMessage(), deviceToUpdateIdentification,
-                    organisationIdentification, e);
-            this.handleException(e);
-        }
-
-        final UpdateDeviceResponse updateDeviceResponse = new UpdateDeviceResponse();
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceToUpdateIdentification);
-
-        final AsyncResponse asyncResponse = new AsyncResponse();
-        asyncResponse.setCorrelationUid(correlationUid);
-        asyncResponse.setDeviceId(deviceToUpdateIdentification);
-
-        updateDeviceResponse.setAsyncResponse(asyncResponse);
-
-        try {
-            this.notificationService.sendNotification(organisationIdentification, deviceToUpdateIdentification, null,
-                    null, null, NotificationType.DEVICE_UPDATED);
-        } catch (final Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-
-        return updateDeviceResponse;
+    try {
+      this.deviceManagementService.setMaintenanceStatus(
+          organisationIdentification, request.getDeviceIdentification(), request.isStatus());
+    } catch (final ConstraintViolationException e) {
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          ComponentType.WS_CORE,
+          new ValidationException(e.getConstraintViolations()));
+    } catch (final Exception e) {
+      LOGGER.error(
+          EXCEPTION_WHILE_UPDATING_DEVICE,
+          e.getMessage(),
+          request.getDeviceIdentification(),
+          organisationIdentification,
+          e);
+      this.handleException(e);
     }
 
-    @PayloadRoot(localPart = "SetDeviceAliasRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
-    @ResponsePayload
-    public SetDeviceAliasResponse setDeviceAlias(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetDeviceAliasRequest request) throws OsgpException {
+    final SetMaintenanceStatusResponse setMaintenanceStatusResponse =
+        new SetMaintenanceStatusResponse();
+    setMaintenanceStatusResponse.setResult(OsgpResultType.OK);
 
-        LOGGER.info("Setting device alias for device: {} to: {}.", request.getDeviceIdentification(),
-                request.getDeviceAlias());
-
-        try {
-            this.deviceManagementService.setDeviceAlias(organisationIdentification, request.getDeviceIdentification(),
-                    request.getDeviceAlias(), request.getDeviceOutputSettings());
-        } catch (final ConstraintViolationException e) {
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations()));
-        } catch (final Exception e) {
-            LOGGER.error(EXCEPTION_WHILE_UPDATING_DEVICE, e.getMessage(), request.getDeviceIdentification(),
-                    organisationIdentification, e);
-            this.handleException(e);
-        }
-
-        final SetDeviceAliasResponse setDeviceAliasResponse = new SetDeviceAliasResponse();
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                request.getDeviceIdentification());
-
-        final AsyncResponse asyncResponse = new AsyncResponse();
-        asyncResponse.setCorrelationUid(correlationUid);
-        asyncResponse.setDeviceId(request.getDeviceIdentification());
-
-        setDeviceAliasResponse.setAsyncResponse(asyncResponse);
-
-        try {
-            this.notificationService.sendNotification(organisationIdentification, request.getDeviceIdentification(),
-                    null, null, null, NotificationType.DEVICE_UPDATED);
-        } catch (final Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-
-        return setDeviceAliasResponse;
+    try {
+      this.notificationService.sendNotification(
+          organisationIdentification,
+          request.getDeviceIdentification(),
+          null,
+          null,
+          null,
+          NotificationType.DEVICE_UPDATED);
+    } catch (final Exception e) {
+      LOGGER.error(e.getMessage(), e);
     }
 
-    @PayloadRoot(localPart = "SetMaintenanceStatusRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
-    @ResponsePayload
-    public SetMaintenanceStatusResponse setMaintenanceStatus(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetMaintenanceStatusRequest request) throws OsgpException {
+    return setMaintenanceStatusResponse;
+  }
 
-        LOGGER.info("Setting maintenance for device:{} to: {}.", request.getDeviceIdentification(), request.isStatus());
+  @PayloadRoot(
+      localPart = "UpdateDeviceSslCertificationRequest",
+      namespace = DEVICE_MANAGEMENT_NAMESPACE)
+  @ResponsePayload
+  public UpdateDeviceSslCertificationAsyncResponse updateDeviceSslCertification(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final UpdateDeviceSslCertificationRequest request,
+      @MessagePriority final String messagePriority)
+      throws OsgpException {
 
-        try {
-            this.deviceManagementService.setMaintenanceStatus(organisationIdentification,
-                    request.getDeviceIdentification(), request.isStatus());
-        } catch (final ConstraintViolationException e) {
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations()));
-        } catch (final Exception e) {
-            LOGGER.error(EXCEPTION_WHILE_UPDATING_DEVICE, e.getMessage(), request.getDeviceIdentification(),
-                    organisationIdentification, e);
-            this.handleException(e);
-        }
+    LOGGER.info(
+        "Update Device Ssl Certification Request received from organisation: {} for device: {} with message priority: {}.",
+        organisationIdentification,
+        request.getDeviceIdentification(),
+        messagePriority);
 
-        final SetMaintenanceStatusResponse setMaintenanceStatusResponse = new SetMaintenanceStatusResponse();
-        setMaintenanceStatusResponse.setResult(OsgpResultType.OK);
+    final UpdateDeviceSslCertificationAsyncResponse response =
+        new UpdateDeviceSslCertificationAsyncResponse();
 
-        try {
-            this.notificationService.sendNotification(organisationIdentification, request.getDeviceIdentification(),
-                    null, null, null, NotificationType.DEVICE_UPDATED);
-        } catch (final Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
+    try {
+      final Certification certification =
+          this.deviceManagementMapper.map(request.getCertification(), Certification.class);
 
-        return setMaintenanceStatusResponse;
+      final String correlationUid =
+          this.deviceManagementService.enqueueUpdateDeviceSslCertificationRequest(
+              organisationIdentification,
+              request.getDeviceIdentification(),
+              certification,
+              MessagePriorityEnum.getMessagePriority(messagePriority));
+
+      final AsyncResponse asyncResponse = new AsyncResponse();
+      asyncResponse.setCorrelationUid(correlationUid);
+      asyncResponse.setDeviceId(request.getDeviceIdentification());
+      response.setAsyncResponse(asyncResponse);
+
+    } catch (final ConstraintViolationException e) {
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          ComponentType.WS_CORE,
+          new ValidationException(e.getConstraintViolations()));
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    @PayloadRoot(localPart = "UpdateDeviceSslCertificationRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
-    @ResponsePayload
-    public UpdateDeviceSslCertificationAsyncResponse updateDeviceSslCertification(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final UpdateDeviceSslCertificationRequest request,
-            @MessagePriority final String messagePriority) throws OsgpException {
+    return response;
+  }
 
-        LOGGER.info(
-                "Update Device Ssl Certification Request received from organisation: {} for device: {} with message priority: {}.",
-                organisationIdentification, request.getDeviceIdentification(), messagePriority);
+  @PayloadRoot(
+      localPart = "UpdateDeviceSslCertificationAsyncRequest",
+      namespace = DEVICE_MANAGEMENT_NAMESPACE)
+  @ResponsePayload
+  public UpdateDeviceSslCertificationResponse getUpdateDeviceSslCertificationResponse(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final UpdateDeviceSslCertificationAsyncRequest request)
+      throws OsgpException {
 
-        final UpdateDeviceSslCertificationAsyncResponse response = new UpdateDeviceSslCertificationAsyncResponse();
+    LOGGER.info(
+        "Update Device Ssl Certification Response received from organisation: {} with correlationUid: {}.",
+        organisationIdentification,
+        request.getAsyncRequest().getCorrelationUid());
 
-        try {
-            final Certification certification = this.deviceManagementMapper.map(request.getCertification(),
-                    Certification.class);
+    final UpdateDeviceSslCertificationResponse response =
+        new UpdateDeviceSslCertificationResponse();
 
-            final String correlationUid = this.deviceManagementService.enqueueUpdateDeviceSslCertificationRequest(
-                    organisationIdentification, request.getDeviceIdentification(), certification,
-                    MessagePriorityEnum.getMessagePriority(messagePriority));
-
-            final AsyncResponse asyncResponse = new AsyncResponse();
-            asyncResponse.setCorrelationUid(correlationUid);
-            asyncResponse.setDeviceId(request.getDeviceIdentification());
-            response.setAsyncResponse(asyncResponse);
-
-        } catch (final ConstraintViolationException e) {
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations()));
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-
-        return response;
+    try {
+      final ResponseMessage message =
+          this.deviceManagementService.dequeueUpdateDeviceSslCertificationResponse(
+              request.getAsyncRequest().getCorrelationUid());
+      if (message != null) {
+        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+      } else {
+        LOGGER.debug("Update Device Ssl Certification data is null");
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    @PayloadRoot(localPart = "UpdateDeviceSslCertificationAsyncRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
-    @ResponsePayload
-    public UpdateDeviceSslCertificationResponse getUpdateDeviceSslCertificationResponse(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final UpdateDeviceSslCertificationAsyncRequest request) throws OsgpException {
+    return response;
+  }
 
-        LOGGER.info("Update Device Ssl Certification Response received from organisation: {} with correlationUid: {}.",
-                organisationIdentification, request.getAsyncRequest().getCorrelationUid());
+  @PayloadRoot(
+      localPart = "SetDeviceVerificationKeyRequest",
+      namespace = DEVICE_MANAGEMENT_NAMESPACE)
+  @ResponsePayload
+  public SetDeviceVerificationKeyAsyncResponse setDeviceVerificationKey(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetDeviceVerificationKeyRequest request,
+      @MessagePriority final String messagePriority)
+      throws OsgpException {
 
-        final UpdateDeviceSslCertificationResponse response = new UpdateDeviceSslCertificationResponse();
+    LOGGER.info(
+        "Set Device Verification Key Request received from organisation: {} for device: {} with message priority: {}.",
+        organisationIdentification,
+        request.getDeviceIdentification(),
+        messagePriority);
 
-        try {
-            final ResponseMessage message = this.deviceManagementService
-                    .dequeueUpdateDeviceSslCertificationResponse(request.getAsyncRequest().getCorrelationUid());
-            if (message != null) {
-                response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-            } else {
-                LOGGER.debug("Update Device Ssl Certification data is null");
-            }
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
+    final SetDeviceVerificationKeyAsyncResponse response =
+        new SetDeviceVerificationKeyAsyncResponse();
 
-        return response;
+    try {
+      final String correlationUid =
+          this.deviceManagementService.enqueueSetDeviceVerificationKeyRequest(
+              organisationIdentification,
+              request.getDeviceIdentification(),
+              request.getVerificationKey(),
+              MessagePriorityEnum.getMessagePriority(messagePriority));
+
+      final AsyncResponse asyncResponse = new AsyncResponse();
+      asyncResponse.setCorrelationUid(correlationUid);
+      asyncResponse.setDeviceId(request.getDeviceIdentification());
+      response.setAsyncResponse(asyncResponse);
+
+    } catch (final ConstraintViolationException e) {
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          ComponentType.WS_CORE,
+          new ValidationException(e.getConstraintViolations()));
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    @PayloadRoot(localPart = "SetDeviceVerificationKeyRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
-    @ResponsePayload
-    public SetDeviceVerificationKeyAsyncResponse setDeviceVerificationKey(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetDeviceVerificationKeyRequest request,
-            @MessagePriority final String messagePriority) throws OsgpException {
+    return response;
+  }
 
-        LOGGER.info(
-                "Set Device Verification Key Request received from organisation: {} for device: {} with message priority: {}.",
-                organisationIdentification, request.getDeviceIdentification(), messagePriority);
+  @PayloadRoot(
+      localPart = "SetDeviceVerificationKeyAsyncRequest",
+      namespace = DEVICE_MANAGEMENT_NAMESPACE)
+  @ResponsePayload
+  public SetDeviceVerificationKeyResponse getSetDeviceVerificationKeyResponse(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetDeviceVerificationKeyAsyncRequest request)
+      throws OsgpException {
 
-        final SetDeviceVerificationKeyAsyncResponse response = new SetDeviceVerificationKeyAsyncResponse();
+    LOGGER.info(
+        "Set Device Verification Key Response received from organisation: {} with correlationUid: {}.",
+        organisationIdentification,
+        request.getAsyncRequest().getCorrelationUid());
 
-        try {
-            final String correlationUid = this.deviceManagementService.enqueueSetDeviceVerificationKeyRequest(
-                    organisationIdentification, request.getDeviceIdentification(), request.getVerificationKey(),
-                    MessagePriorityEnum.getMessagePriority(messagePriority));
+    final SetDeviceVerificationKeyResponse response = new SetDeviceVerificationKeyResponse();
 
-            final AsyncResponse asyncResponse = new AsyncResponse();
-            asyncResponse.setCorrelationUid(correlationUid);
-            asyncResponse.setDeviceId(request.getDeviceIdentification());
-            response.setAsyncResponse(asyncResponse);
-
-        } catch (final ConstraintViolationException e) {
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations()));
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-
-        return response;
+    try {
+      final ResponseMessage message =
+          this.deviceManagementService.dequeueSetDeviceVerificationKeyResponse(
+              request.getAsyncRequest().getCorrelationUid());
+      if (message != null) {
+        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+      } else {
+        LOGGER.debug("Set Device Verification Key is null");
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    @PayloadRoot(localPart = "SetDeviceVerificationKeyAsyncRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
-    @ResponsePayload
-    public SetDeviceVerificationKeyResponse getSetDeviceVerificationKeyResponse(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetDeviceVerificationKeyAsyncRequest request) throws OsgpException {
+    return response;
+  }
 
-        LOGGER.info("Set Device Verification Key Response received from organisation: {} with correlationUid: {}.",
-                organisationIdentification, request.getAsyncRequest().getCorrelationUid());
+  @PayloadRoot(
+      localPart = "SetDeviceLifecycleStatusRequest",
+      namespace = DEVICE_MANAGEMENT_NAMESPACE)
+  @ResponsePayload
+  public SetDeviceLifecycleStatusAsyncResponse setDeviceLifecycleRequest(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetDeviceLifecycleStatusRequest request)
+      throws OsgpException {
 
-        final SetDeviceVerificationKeyResponse response = new SetDeviceVerificationKeyResponse();
+    LOGGER.info(
+        "SetDeviceLifecycleStatusRequest received for device: {} and organisation: {}.",
+        request.getDeviceIdentification(),
+        organisationIdentification);
 
-        try {
-            final ResponseMessage message = this.deviceManagementService
-                    .dequeueSetDeviceVerificationKeyResponse(request.getAsyncRequest().getCorrelationUid());
-            if (message != null) {
-                response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-            } else {
-                LOGGER.debug("Set Device Verification Key is null");
-            }
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
+    final SetDeviceLifecycleStatusAsyncResponse asyncResponse =
+        new SetDeviceLifecycleStatusAsyncResponse();
 
-        return response;
+    try {
+      final String correlationUid =
+          this.deviceManagementService.enqueueSetDeviceLifecycleStatusRequest(
+              organisationIdentification,
+              request.getDeviceIdentification(),
+              request.getDeviceLifecycleStatus());
+
+      asyncResponse.setCorrelationUid(correlationUid);
+      asyncResponse.setDeviceId(request.getDeviceIdentification());
+
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    @PayloadRoot(localPart = "SetDeviceLifecycleStatusRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
-    @ResponsePayload
-    public SetDeviceLifecycleStatusAsyncResponse setDeviceLifecycleRequest(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetDeviceLifecycleStatusRequest request) throws OsgpException {
+    return asyncResponse;
+  }
 
-        LOGGER.info("SetDeviceLifecycleStatusRequest received for device: {} and organisation: {}.",
-                request.getDeviceIdentification(), organisationIdentification);
+  @PayloadRoot(
+      localPart = "SetDeviceLifecycleStatusAsyncRequest",
+      namespace = DEVICE_MANAGEMENT_NAMESPACE)
+  @ResponsePayload
+  public SetDeviceLifecycleStatusResponse getSetDeviceLifecycleStatusResponse(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final SetDeviceLifecycleStatusAsyncRequest asyncRequest)
+      throws OsgpException {
 
-        final SetDeviceLifecycleStatusAsyncResponse asyncResponse = new SetDeviceLifecycleStatusAsyncResponse();
+    LOGGER.info(
+        "Get Set Device Lifecycle Status Notifications Response received from organisation: {} with correlationUid: {}.",
+        organisationIdentification,
+        asyncRequest.getCorrelationUid());
 
-        try {
-            final String correlationUid = this.deviceManagementService.enqueueSetDeviceLifecycleStatusRequest(
-                    organisationIdentification, request.getDeviceIdentification(), request.getDeviceLifecycleStatus());
+    final SetDeviceLifecycleStatusResponse response = new SetDeviceLifecycleStatusResponse();
 
-            asyncResponse.setCorrelationUid(correlationUid);
-            asyncResponse.setDeviceId(request.getDeviceIdentification());
-
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-
-        return asyncResponse;
+    try {
+      final ResponseMessage message =
+          this.deviceManagementService.dequeueSetDeviceLifecycleStatusResponse(
+              asyncRequest.getCorrelationUid());
+      if (message != null) {
+        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    @PayloadRoot(localPart = "SetDeviceLifecycleStatusAsyncRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
-    @ResponsePayload
-    public SetDeviceLifecycleStatusResponse getSetDeviceLifecycleStatusResponse(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetDeviceLifecycleStatusAsyncRequest asyncRequest) throws OsgpException {
-
-        LOGGER.info(
-                "Get Set Device Lifecycle Status Notifications Response received from organisation: {} with correlationUid: {}.",
-                organisationIdentification, asyncRequest.getCorrelationUid());
-
-        final SetDeviceLifecycleStatusResponse response = new SetDeviceLifecycleStatusResponse();
-
-        try {
-            final ResponseMessage message = this.deviceManagementService
-                    .dequeueSetDeviceLifecycleStatusResponse(asyncRequest.getCorrelationUid());
-            if (message != null) {
-                response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-            }
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-
-        if (OsgpResultType.OK.equals(response.getResult())) {
-            try {
-                this.notificationService.sendNotification(organisationIdentification, asyncRequest.getDeviceId(),
-                        response.getResult().name(), asyncRequest.getCorrelationUid(), null,
-                        NotificationType.DEVICE_UPDATED);
-            } catch (final Exception e) {
-                LOGGER.error(e.getMessage(), e);
-            }
-        }
-
-        return response;
+    if (OsgpResultType.OK.equals(response.getResult())) {
+      try {
+        this.notificationService.sendNotification(
+            organisationIdentification,
+            asyncRequest.getDeviceId(),
+            response.getResult().name(),
+            asyncRequest.getCorrelationUid(),
+            null,
+            NotificationType.DEVICE_UPDATED);
+      } catch (final Exception e) {
+        LOGGER.error(e.getMessage(), e);
+      }
     }
 
-    @PayloadRoot(localPart = "UpdateDeviceCdmaSettingsRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
-    @ResponsePayload
-    public UpdateDeviceCdmaSettingsAsyncResponse updateDeviceCdmaSettingsRequest(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final UpdateDeviceCdmaSettingsRequest request) throws OsgpException {
+    return response;
+  }
 
-        LOGGER.info("UpdateDeviceCdmaSettingsRequest received for device: {} and organisation: {}.",
-                request.getDeviceIdentification(), organisationIdentification);
+  @PayloadRoot(
+      localPart = "UpdateDeviceCdmaSettingsRequest",
+      namespace = DEVICE_MANAGEMENT_NAMESPACE)
+  @ResponsePayload
+  public UpdateDeviceCdmaSettingsAsyncResponse updateDeviceCdmaSettingsRequest(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final UpdateDeviceCdmaSettingsRequest request)
+      throws OsgpException {
 
-        final UpdateDeviceCdmaSettingsAsyncResponse asyncResponse = new UpdateDeviceCdmaSettingsAsyncResponse();
+    LOGGER.info(
+        "UpdateDeviceCdmaSettingsRequest received for device: {} and organisation: {}.",
+        request.getDeviceIdentification(),
+        organisationIdentification);
 
-        try {
-            final CdmaSettings cdmaSettings = new CdmaSettings(request.getMastSegment(), request.getBatchNumber());
-            final String correlationUid = this.deviceManagementService.enqueueUpdateDeviceCdmaSettingsRequest(
-                    organisationIdentification, request.getDeviceIdentification(), cdmaSettings);
+    final UpdateDeviceCdmaSettingsAsyncResponse asyncResponse =
+        new UpdateDeviceCdmaSettingsAsyncResponse();
 
-            asyncResponse.setCorrelationUid(correlationUid);
-            asyncResponse.setDeviceId(request.getDeviceIdentification());
+    try {
+      final CdmaSettings cdmaSettings =
+          new CdmaSettings(request.getMastSegment(), request.getBatchNumber());
+      final String correlationUid =
+          this.deviceManagementService.enqueueUpdateDeviceCdmaSettingsRequest(
+              organisationIdentification, request.getDeviceIdentification(), cdmaSettings);
 
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
+      asyncResponse.setCorrelationUid(correlationUid);
+      asyncResponse.setDeviceId(request.getDeviceIdentification());
 
-        return asyncResponse;
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    @PayloadRoot(localPart = "UpdateDeviceCdmaSettingsAsyncRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
-    @ResponsePayload
-    public UpdateDeviceCdmaSettingsResponse getUpdateDeviceCdmaSettingsResponse(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final UpdateDeviceCdmaSettingsAsyncRequest asyncRequest) throws OsgpException {
+    return asyncResponse;
+  }
 
-        LOGGER.info("GetUpdateDeviceCdmaSettingsResponse received from organisation: {} with correlationUid: {}.",
-                organisationIdentification, asyncRequest.getCorrelationUid());
+  @PayloadRoot(
+      localPart = "UpdateDeviceCdmaSettingsAsyncRequest",
+      namespace = DEVICE_MANAGEMENT_NAMESPACE)
+  @ResponsePayload
+  public UpdateDeviceCdmaSettingsResponse getUpdateDeviceCdmaSettingsResponse(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final UpdateDeviceCdmaSettingsAsyncRequest asyncRequest)
+      throws OsgpException {
 
-        final UpdateDeviceCdmaSettingsResponse response = new UpdateDeviceCdmaSettingsResponse();
+    LOGGER.info(
+        "GetUpdateDeviceCdmaSettingsResponse received from organisation: {} with correlationUid: {}.",
+        organisationIdentification,
+        asyncRequest.getCorrelationUid());
 
-        try {
-            final ResponseMessage message = this.deviceManagementService
-                    .dequeueUpdateDeviceCdmaSettingsResponse(asyncRequest.getCorrelationUid());
-            if (message != null) {
-                response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-            }
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
+    final UpdateDeviceCdmaSettingsResponse response = new UpdateDeviceCdmaSettingsResponse();
 
-        return response;
+    try {
+      final ResponseMessage message =
+          this.deviceManagementService.dequeueUpdateDeviceCdmaSettingsResponse(
+              asyncRequest.getCorrelationUid());
+      if (message != null) {
+        response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
     }
 
-    private void handleException(final Exception e) throws OsgpException {
-        // Rethrow exception if it already is a functional or technical
-        // exception,
-        // otherwise throw new technical exception.
-        if (e instanceof OsgpException) {
-            LOGGER.error("Exception occurred: ", e);
-            throw (OsgpException) e;
-        } else {
-            LOGGER.error("Exception occurred: ", e);
-            throw new TechnicalException(COMPONENT_WS_CORE, e);
-        }
+    return response;
+  }
+
+  private void handleException(final Exception e) throws OsgpException {
+    // Rethrow exception if it already is a functional or technical
+    // exception,
+    // otherwise throw new technical exception.
+    if (e instanceof OsgpException) {
+      LOGGER.error("Exception occurred: ", e);
+      throw (OsgpException) e;
+    } else {
+      LOGGER.error("Exception occurred: ", e);
+      throw new TechnicalException(COMPONENT_WS_CORE, e);
     }
+  }
 }

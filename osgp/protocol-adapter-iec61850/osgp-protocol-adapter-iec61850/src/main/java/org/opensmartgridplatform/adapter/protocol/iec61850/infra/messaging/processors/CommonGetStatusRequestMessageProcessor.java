@@ -1,15 +1,15 @@
-/**
+/*
  * Copyright 2014-2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging.processors;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceRequest;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DomainInformation;
@@ -23,52 +23,58 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-/**
- * Class for processing common get status request messages
- */
+/** Class for processing common get status request messages */
 @Component("iec61850CommonGetStatusRequestMessageProcessor")
 public class CommonGetStatusRequestMessageProcessor extends SsldDeviceRequestMessageProcessor {
-    /**
-     * Logger for this class
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommonGetStatusRequestMessageProcessor.class);
+  /** Logger for this class */
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(CommonGetStatusRequestMessageProcessor.class);
 
-    public CommonGetStatusRequestMessageProcessor() {
-        super(MessageType.GET_STATUS);
+  public CommonGetStatusRequestMessageProcessor() {
+    super(MessageType.GET_STATUS);
+  }
+
+  @Override
+  public void processMessage(final ObjectMessage message) throws JMSException {
+    LOGGER.debug("Processing common get status request message");
+
+    MessageMetadata messageMetadata;
+    try {
+      messageMetadata = MessageMetadata.fromMessage(message);
+    } catch (final JMSException e) {
+      LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
+      return;
     }
 
-    @Override
-    public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing common get status request message");
+    final RequestMessageData requestMessageData =
+        RequestMessageData.newBuilder().messageMetadata(messageMetadata).build();
 
-        MessageMetadata messageMetadata;
-        try {
-            messageMetadata = MessageMetadata.fromMessage(message);
-        } catch (final JMSException e) {
-            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            return;
-        }
+    this.printDomainInfo(requestMessageData);
 
-        final RequestMessageData requestMessageData = RequestMessageData.newBuilder()
-                .messageMetadata(messageMetadata)
-                .build();
+    final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler =
+        this.createIec61850DeviceResponseHandler(requestMessageData, message);
 
-        this.printDomainInfo(requestMessageData);
+    final DeviceRequest deviceRequest =
+        DeviceRequest.newBuilder().messageMetaData(messageMetadata).build();
 
-        final Iec61850DeviceResponseHandler iec61850DeviceResponseHandler = this
-                .createIec61850DeviceResponseHandler(requestMessageData, message);
+    this.deviceService.getStatus(deviceRequest, iec61850DeviceResponseHandler);
+  }
 
-        final DeviceRequest deviceRequest = DeviceRequest.newBuilder().messageMetaData(messageMetadata).build();
-
-        this.deviceService.getStatus(deviceRequest, iec61850DeviceResponseHandler);
-    }
-
-    @Override
-    public void handleDeviceResponse(final DeviceResponse deviceResponse,
-            final ResponseMessageSender responseMessageSender, final DomainInformation domainInformation,
-            final String messageType, final int retryCount, final boolean isScheduled) {
-        LOGGER.info("Override for handleDeviceResponse() by CommonGetStatusRequestMessageProcessor");
-        this.handleGetStatusDeviceResponse(deviceResponse, responseMessageSender, domainInformation, messageType,
-                retryCount, isScheduled);
-    }
+  @Override
+  public void handleDeviceResponse(
+      final DeviceResponse deviceResponse,
+      final ResponseMessageSender responseMessageSender,
+      final DomainInformation domainInformation,
+      final String messageType,
+      final int retryCount,
+      final boolean isScheduled) {
+    LOGGER.info("Override for handleDeviceResponse() by CommonGetStatusRequestMessageProcessor");
+    this.handleGetStatusDeviceResponse(
+        deviceResponse,
+        responseMessageSender,
+        domainInformation,
+        messageType,
+        retryCount,
+        isScheduled);
+  }
 }

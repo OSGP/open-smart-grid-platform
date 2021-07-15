@@ -1,8 +1,8 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -28,51 +28,59 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component()
-public class GetAdministrativeStatusCommandExecutor extends AbstractCommandExecutor<Void, AdministrativeStatusTypeDto> {
+public class GetAdministrativeStatusCommandExecutor
+    extends AbstractCommandExecutor<Void, AdministrativeStatusTypeDto> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetAdministrativeStatusCommandExecutor.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(GetAdministrativeStatusCommandExecutor.class);
 
-    private static final int CLASS_ID = 1;
-    private static final ObisCode OBIS_CODE = new ObisCode("0.1.94.31.0.255");
-    private static final int ATTRIBUTE_ID = 2;
+  private static final int CLASS_ID = 1;
+  private static final ObisCode OBIS_CODE = new ObisCode("0.1.94.31.0.255");
+  private static final int ATTRIBUTE_ID = 2;
 
-    @Autowired
-    private ConfigurationMapper configurationMapper;
+  @Autowired private ConfigurationMapper configurationMapper;
 
-    public GetAdministrativeStatusCommandExecutor() {
-        super(GetAdministrativeStatusDataDto.class);
-    }
+  public GetAdministrativeStatusCommandExecutor() {
+    super(GetAdministrativeStatusDataDto.class);
+  }
 
-    @Override
-    public Void fromBundleRequestInput(final ActionRequestDto bundleInput) throws ProtocolAdapterException {
+  @Override
+  public Void fromBundleRequestInput(final ActionRequestDto bundleInput)
+      throws ProtocolAdapterException {
 
-        this.checkActionRequestType(bundleInput);
+    this.checkActionRequestType(bundleInput);
 
-        return null;
-    }
+    return null;
+  }
 
-    @Override
-    public ActionResponseDto asBundleResponse(final AdministrativeStatusTypeDto executionResult)
-            throws ProtocolAdapterException {
+  @Override
+  public ActionResponseDto asBundleResponse(final AdministrativeStatusTypeDto executionResult)
+      throws ProtocolAdapterException {
 
-        return new AdministrativeStatusTypeResponseDto(executionResult);
-    }
+    return new AdministrativeStatusTypeResponseDto(executionResult);
+  }
 
-    @Override
-    public AdministrativeStatusTypeDto execute(final DlmsConnectionManager conn, final DlmsDevice device,
-            final Void useless) throws ProtocolAdapterException {
+  @Override
+  public AdministrativeStatusTypeDto execute(
+      final DlmsConnectionManager conn, final DlmsDevice device, final Void useless)
+      throws ProtocolAdapterException {
 
-        final AttributeAddress getParameter = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
+    final AttributeAddress getParameter = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
-        conn.getDlmsMessageListener().setDescription(
-                "GetAdministrativeStatus, retrieve attribute: " + JdlmsObjectToStringUtil
-                        .describeAttributes(getParameter));
+    conn.getDlmsMessageListener()
+        .setDescription(
+            "GetAdministrativeStatus, retrieve attribute: "
+                + JdlmsObjectToStringUtil.describeAttributes(getParameter));
 
-        LOGGER.info("Retrieving current administrative status by issuing get request for class id: {}, obis code: {}, "
-                + "attribute id: {}", CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
+    LOGGER.info(
+        "Retrieving current administrative status by issuing get request for class id: {}, obis code: {}, "
+            + "attribute id: {}",
+        CLASS_ID,
+        OBIS_CODE,
+        ATTRIBUTE_ID);
 
-        final DataObject dataObject = this.getValidatedResultData(conn, getParameter);
+    final DataObject dataObject = this.getValidatedResultData(conn, getParameter);
 
-        return this.configurationMapper.map(dataObject.getValue(), AdministrativeStatusTypeDto.class);
-    }
+    return this.configurationMapper.map(dataObject.getValue(), AdministrativeStatusTypeDto.class);
+  }
 }

@@ -1,8 +1,8 @@
-/**
+/*
  * Copyright 2019 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -20,32 +20,32 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
 
 public class SecurityLevelTest {
-    @Test
-    public void returnsSecurityLevelForDevice() {
-        assertThat(SecurityLevel.forDevice(this.aHls5Device())).isEqualTo(HLS5);
-        assertThat(SecurityLevel.forDevice(this.aHls4Device())).isEqualTo(HLS4);
-        assertThat(SecurityLevel.forDevice(this.aHls3Device())).isEqualTo(HLS3);
-        assertThat(SecurityLevel.forDevice(this.aLls1Device())).isEqualTo(LLS1);
-        assertThat(SecurityLevel.forDevice(this.aLls0Device())).isEqualTo(LLS0);
-    }
+  @Test
+  public void returnsSecurityLevelForDevice() {
+    assertThat(SecurityLevel.forDevice(this.aHls5Device())).isEqualTo(HLS5);
+    assertThat(SecurityLevel.forDevice(this.aHls4Device())).isEqualTo(HLS4);
+    assertThat(SecurityLevel.forDevice(this.aHls3Device())).isEqualTo(HLS3);
+    assertThat(SecurityLevel.forDevice(this.aLls1Device())).isEqualTo(LLS1);
+    assertThat(SecurityLevel.forDevice(this.aLls0Device())).isEqualTo(LLS0);
+  }
 
-    private DlmsDevice aHls5Device() {
-        return new DlmsDeviceBuilder().withHls5Active(true).build();
-    }
+  private DlmsDevice aHls5Device() {
+    return new DlmsDeviceBuilder().withHls5Active(true).build();
+  }
 
-    private DlmsDevice aHls4Device() {
-        return new DlmsDeviceBuilder().withHls4Active(true).build();
-    }
+  private DlmsDevice aHls4Device() {
+    return new DlmsDeviceBuilder().withHls4Active(true).build();
+  }
 
-    private DlmsDevice aHls3Device() {
-        return new DlmsDeviceBuilder().withHls3Active(true).build();
-    }
+  private DlmsDevice aHls3Device() {
+    return new DlmsDeviceBuilder().withHls3Active(true).build();
+  }
 
-    private DlmsDevice aLls1Device() {
-        return new DlmsDeviceBuilder().withLls1Active(true).build();
-    }
+  private DlmsDevice aLls1Device() {
+    return new DlmsDeviceBuilder().withLls1Active(true).build();
+  }
 
-    private DlmsDevice aLls0Device() {
-        return new DlmsDeviceBuilder().build();
-    }
+  private DlmsDevice aLls0Device() {
+    return new DlmsDeviceBuilder().build();
+  }
 }

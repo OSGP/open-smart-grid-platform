@@ -1,15 +1,15 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.messageprocessors;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
-
 import org.opensmartgridplatform.adapter.domain.publiclighting.application.services.AdHocManagementService;
 import org.opensmartgridplatform.adapter.domain.publiclighting.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.valueobjects.ResumeScheduleData;
@@ -26,69 +26,78 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-/**
- * Class for processing public lighting resume schedule request messages
- */
+/** Class for processing public lighting resume schedule request messages */
 @Component("domainPublicLightingResumeScheduleRequestMessageProcessor")
 public class PublicLightingResumeScheduleRequestMessageProcessor extends BaseMessageProcessor {
-    /**
-     * Logger for this class
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(PublicLightingResumeScheduleRequestMessageProcessor.class);
+  /** Logger for this class */
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(PublicLightingResumeScheduleRequestMessageProcessor.class);
 
-    @Autowired
-    @Qualifier("domainPublicLightingAdHocManagementService")
-    private AdHocManagementService adHocManagementService;
+  @Autowired
+  @Qualifier("domainPublicLightingAdHocManagementService")
+  private AdHocManagementService adHocManagementService;
 
-    @Autowired
-    public PublicLightingResumeScheduleRequestMessageProcessor(
-            final WebServiceResponseMessageSender webServiceResponseMessageSender,
-            @Qualifier("domainPublicLightingInboundWebServiceRequestsMessageProcessorMap") final MessageProcessorMap webServiceRequestMessageProcessorMap) {
-        super(webServiceResponseMessageSender, webServiceRequestMessageProcessorMap, MessageType.RESUME_SCHEDULE,
-                ComponentType.DOMAIN_PUBLIC_LIGHTING);
+  @Autowired
+  public PublicLightingResumeScheduleRequestMessageProcessor(
+      final WebServiceResponseMessageSender webServiceResponseMessageSender,
+      @Qualifier("domainPublicLightingInboundWebServiceRequestsMessageProcessorMap")
+          final MessageProcessorMap webServiceRequestMessageProcessorMap) {
+    super(
+        webServiceResponseMessageSender,
+        webServiceRequestMessageProcessorMap,
+        MessageType.RESUME_SCHEDULE,
+        ComponentType.DOMAIN_PUBLIC_LIGHTING);
+  }
+
+  @Override
+  public void processMessage(final ObjectMessage message) {
+    LOGGER.debug("Processing public lighting resume schedule request message");
+
+    String correlationUid = null;
+    String messageType = null;
+    int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
+    String organisationIdentification = null;
+    String deviceIdentification = null;
+    Object dataObject;
+
+    try {
+      correlationUid = message.getJMSCorrelationID();
+      messageType = message.getJMSType();
+      messagePriority = message.getJMSPriority();
+      organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
+      deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
+      dataObject = message.getObject();
+    } catch (final JMSException e) {
+      LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
+      LOGGER.debug("correlationUid: {}", correlationUid);
+      LOGGER.debug("messageType: {}", messageType);
+      LOGGER.debug("messagePriority: {}", messagePriority);
+      LOGGER.debug("organisationIdentification: {}", organisationIdentification);
+      LOGGER.debug("deviceIdentification: {}", deviceIdentification);
+      return;
     }
 
-    @Override
-    public void processMessage(final ObjectMessage message) {
-        LOGGER.debug("Processing public lighting resume schedule request message");
+    try {
+      LOGGER.info("Calling application service function: {}", messageType);
 
-        String correlationUid = null;
-        String messageType = null;
-        int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
-        String organisationIdentification = null;
-        String deviceIdentification = null;
-        Object dataObject;
+      final ResumeScheduleData resumeScheduleData = (ResumeScheduleData) dataObject;
+      final CorrelationIds ids =
+          new CorrelationIds(organisationIdentification, deviceIdentification, correlationUid);
+      this.adHocManagementService.resumeSchedule(
+          ids,
+          resumeScheduleData.getIndex(),
+          resumeScheduleData.getIsImmediate(),
+          messageType,
+          messagePriority);
 
-        try {
-            correlationUid = message.getJMSCorrelationID();
-            messageType = message.getJMSType();
-            messagePriority = message.getJMSPriority();
-            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-            dataObject = message.getObject();
-        } catch (final JMSException e) {
-            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            LOGGER.debug("correlationUid: {}", correlationUid);
-            LOGGER.debug("messageType: {}", messageType);
-            LOGGER.debug("messagePriority: {}", messagePriority);
-            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            return;
-        }
-
-        try {
-            LOGGER.info("Calling application service function: {}", messageType);
-
-            final ResumeScheduleData resumeScheduleData = (ResumeScheduleData) dataObject;
-            final CorrelationIds ids = new CorrelationIds(organisationIdentification, deviceIdentification,
-                    correlationUid);
-            this.adHocManagementService.resumeSchedule(ids, resumeScheduleData.getIndex(),
-                    resumeScheduleData.getIsImmediate(), messageType, messagePriority);
-
-        } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,
-                    messagePriority);
-        }
+    } catch (final Exception e) {
+      this.handleError(
+          e,
+          correlationUid,
+          organisationIdentification,
+          deviceIdentification,
+          messageType,
+          messagePriority);
     }
+  }
 }

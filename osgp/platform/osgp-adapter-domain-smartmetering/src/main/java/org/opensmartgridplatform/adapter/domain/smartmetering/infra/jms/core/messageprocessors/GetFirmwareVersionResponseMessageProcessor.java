@@ -1,19 +1,20 @@
-/**
+/*
  * Copyright 2016 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.messageprocessors;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.ConfigurationService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
+import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionGasDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -29,38 +30,53 @@ import org.springframework.stereotype.Component;
 @Component
 public class GetFirmwareVersionResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
-    @Autowired
-    private ConfigurationService configurationService;
+  @Autowired private ConfigurationService configurationService;
 
-    @Autowired
-    protected GetFirmwareVersionResponseMessageProcessor(
-            WebServiceResponseMessageSender responseMessageSender,
-            @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap") MessageProcessorMap messageProcessorMap) {
-        super(responseMessageSender, messageProcessorMap, MessageType.GET_FIRMWARE_VERSION,
-                ComponentType.DOMAIN_SMART_METERING);
+  @Autowired
+  protected GetFirmwareVersionResponseMessageProcessor(
+      final WebServiceResponseMessageSender responseMessageSender,
+      @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
+          final MessageProcessorMap messageProcessorMap) {
+    super(
+        responseMessageSender,
+        messageProcessorMap,
+        MessageType.GET_FIRMWARE_VERSION,
+        ComponentType.DOMAIN_SMART_METERING);
+  }
+
+  @Override
+  protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
+    final Object dataObject = responseMessage.getDataObject();
+    return dataObject instanceof ArrayList || dataObject instanceof FirmwareVersionGasDto;
+  }
+
+  @Override
+  protected void handleMessage(
+      final DeviceMessageMetadata deviceMessageMetadata,
+      final ResponseMessage responseMessage,
+      final OsgpException osgpException)
+      throws FunctionalException {
+
+    if (responseMessage.getDataObject() instanceof ArrayList) {
+      @SuppressWarnings("unchecked")
+      final List<FirmwareVersionDto> firmwareVersionList =
+          (List<FirmwareVersionDto>) responseMessage.getDataObject();
+
+      this.configurationService.handleGetFirmwareVersionResponse(
+          deviceMessageMetadata, responseMessage.getResult(), osgpException, firmwareVersionList);
+    } else if (responseMessage.getDataObject() instanceof FirmwareVersionGasDto) {
+      this.configurationService.handleGetFirmwareVersionGasResponse(
+          deviceMessageMetadata,
+          responseMessage.getResult(),
+          osgpException,
+          (FirmwareVersionGasDto) responseMessage.getDataObject());
+    } else {
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          ComponentType.DOMAIN_SMART_METERING,
+          new OsgpException(
+              ComponentType.DOMAIN_SMART_METERING,
+              "DataObject for response message should be of type ArrayList"));
     }
-
-    @Override
-    protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
-        final Object dataObject = responseMessage.getDataObject();
-        return dataObject instanceof ArrayList;
-    }
-
-    @Override
-    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
-            final ResponseMessage responseMessage, final OsgpException osgpException) throws FunctionalException {
-
-        if (responseMessage.getDataObject() instanceof ArrayList) {
-            @SuppressWarnings("unchecked")
-            final List<FirmwareVersionDto> firmwareVersionList = (List<FirmwareVersionDto>) responseMessage
-                    .getDataObject();
-
-            this.configurationService.handleGetFirmwareVersionResponse(deviceMessageMetadata,
-                    responseMessage.getResult(), osgpException, firmwareVersionList);
-        } else {
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
-                    ComponentType.DOMAIN_SMART_METERING, new OsgpException(ComponentType.DOMAIN_SMART_METERING,
-                            "DataObject for response message should be of type ArrayList"));
-        }
-    }
+  }
 }

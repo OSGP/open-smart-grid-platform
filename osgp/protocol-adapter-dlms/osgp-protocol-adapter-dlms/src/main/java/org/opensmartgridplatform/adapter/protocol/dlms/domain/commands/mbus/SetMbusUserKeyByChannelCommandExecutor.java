@@ -1,8 +1,8 @@
-/**
+/*
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -26,58 +26,61 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Executor that sets the M-Bus User key for an M-Bus device on a given channel
- * on a gateway device.
- * <p>
- * This executor delegates meter communication to the
- * {@link SetEncryptionKeyExchangeOnGMeterCommandExecutor} for which the actual
- * M-Bus device (with its M-Bus master key) needs to be known ahead of
- * execution.
- * <p>
- * This is implemented as a command executor in order to be able to link it to a
- * {@link SetMbusUserKeyByChannelRequestDataDto} from a bundle, as there does
- * not appear to be a simple way to use the
- * {@link SetEncryptionKeyExchangeOnGMeterCommandExecutor} from the
- * {@link BundleService} for both the {@link GMeterInfoDto} and the
- * {@link SetMbusUserKeyByChannelRequestDataDto} (where in the latter case the
- * M-Bus device has to be retrieved by the channel and the gateway device, while
- * in the former case it can be looked up by device identification).
+ * Executor that sets the M-Bus User key for an M-Bus device on a given channel on a gateway device.
+ *
+ * <p>This executor delegates meter communication to the {@link
+ * SetEncryptionKeyExchangeOnGMeterCommandExecutor} for which the actual M-Bus device (with its
+ * M-Bus master key) needs to be known ahead of execution.
+ *
+ * <p>This is implemented as a command executor in order to be able to link it to a {@link
+ * SetMbusUserKeyByChannelRequestDataDto} from a bundle, as there does not appear to be a simple way
+ * to use the {@link SetEncryptionKeyExchangeOnGMeterCommandExecutor} from the {@link BundleService}
+ * for both the {@link GMeterInfoDto} and the {@link SetMbusUserKeyByChannelRequestDataDto} (where
+ * in the latter case the M-Bus device has to be retrieved by the channel and the gateway device,
+ * while in the former case it can be looked up by device identification).
  */
 @Component()
-public class SetMbusUserKeyByChannelCommandExecutor extends AbstractCommandExecutor<GMeterInfoDto, MethodResultCode> {
+public class SetMbusUserKeyByChannelCommandExecutor
+    extends AbstractCommandExecutor<GMeterInfoDto, MethodResultCode> {
 
-    @Autowired
-    private ConfigurationService configurationService;
+  @Autowired private ConfigurationService configurationService;
 
-    @Autowired
-    private SetEncryptionKeyExchangeOnGMeterCommandExecutor setEncryptionKeyExchangeOnGMeterCommandExecutor;
+  @Autowired
+  private SetEncryptionKeyExchangeOnGMeterCommandExecutor
+      setEncryptionKeyExchangeOnGMeterCommandExecutor;
 
-    public SetMbusUserKeyByChannelCommandExecutor() {
-        super(SetMbusUserKeyByChannelRequestDataDto.class);
-    }
+  public SetMbusUserKeyByChannelCommandExecutor() {
+    super(SetMbusUserKeyByChannelRequestDataDto.class);
+  }
 
-    @Override
-    public ActionResponseDto executeBundleAction(final DlmsConnectionManager conn, final DlmsDevice device,
-            final ActionRequestDto actionRequestDto) throws OsgpException {
+  @Override
+  public ActionResponseDto executeBundleAction(
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final ActionRequestDto actionRequestDto)
+      throws OsgpException {
 
-        this.checkActionRequestType(actionRequestDto);
-        final SetMbusUserKeyByChannelRequestDataDto setMbusUserKeyByChannelRequestData =
-                (SetMbusUserKeyByChannelRequestDataDto) actionRequestDto;
-        final GMeterInfoDto gMeterInfo = this.configurationService
-                .getMbusKeyExchangeData(conn, device, setMbusUserKeyByChannelRequestData);
-        final MethodResultCode executionResult = this.execute(conn, device, gMeterInfo);
-        return this.asBundleResponse(executionResult);
-    }
+    this.checkActionRequestType(actionRequestDto);
+    final SetMbusUserKeyByChannelRequestDataDto setMbusUserKeyByChannelRequestData =
+        (SetMbusUserKeyByChannelRequestDataDto) actionRequestDto;
+    final GMeterInfoDto gMeterInfo =
+        this.configurationService.getMbusKeyExchangeData(
+            conn, device, setMbusUserKeyByChannelRequestData);
+    final MethodResultCode executionResult = this.execute(conn, device, gMeterInfo);
+    return this.asBundleResponse(executionResult);
+  }
 
-    @Override
-    public ActionResponseDto asBundleResponse(final MethodResultCode executionResult) throws ProtocolAdapterException {
-        this.checkMethodResultCode(executionResult);
-        return new ActionResponseDto("Setting M-Bus User key by channel was successful");
-    }
+  @Override
+  public ActionResponseDto asBundleResponse(final MethodResultCode executionResult)
+      throws ProtocolAdapterException {
+    this.checkMethodResultCode(executionResult);
+    return new ActionResponseDto("Setting M-Bus User key by channel was successful");
+  }
 
-    @Override
-    public MethodResultCode execute(final DlmsConnectionManager conn, final DlmsDevice device,
-            final GMeterInfoDto gMeterInfo) throws ProtocolAdapterException, FunctionalException {
-        return this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, gMeterInfo);
-    }
+  @Override
+  public MethodResultCode execute(
+      final DlmsConnectionManager conn, final DlmsDevice device, final GMeterInfoDto gMeterInfo)
+      throws ProtocolAdapterException, FunctionalException {
+    return this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, gMeterInfo);
+  }
 }

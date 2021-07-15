@@ -2,38 +2,34 @@
   License, Version 2.0 (the "License"); you may not use this file except in 
   compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 -->
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-  xmlns:tns="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-notification/2014/10"
-  xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
-  attributeFormDefault="unqualified" elementFormDefault="qualified"
-  targetNamespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-notification/2014/10">
+            xmlns:tns="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-notification/2014/10"
+            xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
+            elementFormDefault="qualified"
+            targetNamespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-notification/2014/10">
 
   <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/common/2014/10"
-    schemaLocation="common.xsd" />
+              schemaLocation="common.xsd"/>
 
   <xsd:element name="SendNotificationRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="Notification" type="tns:Notification" />
+        <xsd:element name="Notification" type="tns:Notification"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
 
   <xsd:element name="SendNotificationResponse">
-    <xsd:complexType />
+    <xsd:complexType/>
   </xsd:element>
 
   <xsd:complexType name="Notification">
     <xsd:sequence>
       <xsd:element name="message" type="xsd:string"
-        minOccurs="0" maxOccurs="1" />
-      <xsd:element name="result" type="xsd:string"
-        minOccurs="1" maxOccurs="1" />
-      <xsd:element name="deviceIdentification" type="xsd:string"
-        minOccurs="1" maxOccurs="1" />
-      <xsd:element name="correlationUid" type="common:CorrelationUid"
-        minOccurs="1" maxOccurs="1" />
-      <xsd:element name="NotificationType" type="tns:NotificationType"
-        minOccurs="1" maxOccurs="1" />
+                   minOccurs="0"/>
+      <xsd:element name="result" type="xsd:string"/>
+      <xsd:element name="deviceIdentification" type="xsd:string"/>
+      <xsd:element name="correlationUid" type="common:CorrelationUid"/>
+      <xsd:element name="NotificationType" type="tns:NotificationType"/>
     </xsd:sequence>
   </xsd:complexType>
 
@@ -41,6 +37,7 @@
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="ADD_METER" />
       <xsd:enumeration value="FIND_EVENTS" />
+      <xsd:enumeration value="GET_ACTUAL_POWER_QUALITY" />
       <xsd:enumeration value="REQUEST_PERIODIC_METER_DATA" />
       <xsd:enumeration value="SYNCHRONIZE_TIME" />
       <xsd:enumeration value="SET_SPECIAL_DAYS" />
@@ -64,7 +61,7 @@
       <xsd:enumeration value="GET_ASSOCIATION_LN_OBJECTS" />
       <xsd:enumeration value="GET_FIRMWARE_VERSION" />
       <xsd:enumeration value="COUPLE_MBUS_DEVICE" />
-      <xsd:enumeration value="DE_COUPLE_MBUS_DEVICE" />
+      <xsd:enumeration value="DECOUPLE_MBUS_DEVICE" />
       <xsd:enumeration value="UPDATE_FIRMWARE" />
       <xsd:enumeration value="ENABLE_DEBUGGING" />
       <xsd:enumeration value="DISABLE_DEBUGGING" />
@@ -82,6 +79,9 @@
       <xsd:enumeration value="GET_MBUS_ENCRYPTION_KEY_STATUS_BY_CHANNEL" />
       <xsd:enumeration value="SET_DEVICE_LIFECYCLE_STATUS_BY_CHANNEL" />
       <xsd:enumeration value="SCAN_MBUS_CHANNELS" />
+      <xsd:enumeration value="DECOUPLE_MBUS_DEVICE_BY_CHANNEL" />
+      <xsd:enumeration value="SET_RANDOMISATION_SETTINGS" />
+      <xsd:enumeration value="SET_COMMUNICATION_NETWORK_INFORMATION" />
     </xsd:restriction>
   </xsd:simpleType>
 

@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.core.application.services;
 
@@ -25,56 +26,57 @@ import org.springframework.stereotype.Service;
 @Service
 public class DeviceRequestMessageService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRequestMessageService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRequestMessageService.class);
 
-    @Autowired
-    private DomainHelperService domainHelperService;
+  @Autowired private DomainHelperService domainHelperService;
 
-    @Autowired
-    private DomainResponseService domainResponseMessageSender;
+  @Autowired private DomainResponseService domainResponseMessageSender;
 
-    @Autowired
-    private ProtocolRequestService protocolRequestService;
+  @Autowired private ProtocolRequestService protocolRequestService;
 
-    public void processMessage(final ProtocolRequestMessage message) throws FunctionalException {
+  public void processMessage(final ProtocolRequestMessage message) throws FunctionalException {
 
-        try {
+    try {
 
-            final Device device = this.domainHelperService.findDevice(message.getDeviceIdentification());
-            final ProtocolInfo protocolInfo;
-            if (device.getGatewayDevice() == null) {
-                protocolInfo = device.getProtocolInfo();
-            } else {
-                protocolInfo = device.getGatewayDevice().getProtocolInfo();
-            }
+      final Device device = this.domainHelperService.findDevice(message.getDeviceIdentification());
+      final ProtocolInfo protocolInfo;
+      if (device.getGatewayDevice() == null) {
+        protocolInfo = device.getProtocolInfo();
+      } else {
+        protocolInfo = device.getGatewayDevice().getProtocolInfo();
+      }
 
-            if (protocolInfo == null || !this.protocolRequestService.isSupported(protocolInfo)) {
-                if (protocolInfo == null) {
-                    LOGGER.error("Protocol unknown for device [{}]", device.getDeviceIdentification());
-                } else {
-                    LOGGER.error("Protocol [{}] with version [{}] unknown for device [{}], needs to be reloaded.",
-                            protocolInfo.getProtocol(), protocolInfo.getProtocolVersion(),
-                            device.getDeviceIdentification());
-                }
-
-                throw new FunctionalException(FunctionalExceptionType.PROTOCOL_UNKNOWN_FOR_DEVICE,
-                        ComponentType.OSGP_CORE);
-            }
-
-            LOGGER.info("Device is using protocol [{}] with version [{}]", protocolInfo.getProtocol(),
-                    protocolInfo.getProtocolVersion());
-
-            final Organisation organisation = this.domainHelperService
-                    .findOrganisation(message.getOrganisationIdentification());
-
-            this.domainHelperService.isAllowed(organisation, device,
-                    Enum.valueOf(DeviceFunction.class, message.getMessageType()));
-
-            this.protocolRequestService.send(message, protocolInfo);
-
-        } catch (final FunctionalException e) {
-            this.domainResponseMessageSender.send(message, e);
-            throw e;
+      if (protocolInfo == null || !this.protocolRequestService.isSupported(protocolInfo)) {
+        if (protocolInfo == null) {
+          LOGGER.error("Protocol unknown for device [{}]", device.getDeviceIdentification());
+        } else {
+          LOGGER.error(
+              "Protocol [{}] with version [{}] unknown for device [{}], needs to be reloaded.",
+              protocolInfo.getProtocol(),
+              protocolInfo.getProtocolVersion(),
+              device.getDeviceIdentification());
         }
+
+        throw new FunctionalException(
+            FunctionalExceptionType.PROTOCOL_UNKNOWN_FOR_DEVICE, ComponentType.OSGP_CORE);
+      }
+
+      LOGGER.info(
+          "Device is using protocol [{}] with version [{}]",
+          protocolInfo.getProtocol(),
+          protocolInfo.getProtocolVersion());
+
+      final Organisation organisation =
+          this.domainHelperService.findOrganisation(message.getOrganisationIdentification());
+
+      this.domainHelperService.isAllowed(
+          organisation, device, Enum.valueOf(DeviceFunction.class, message.getMessageType()));
+
+      this.protocolRequestService.send(message, protocolInfo);
+
+    } catch (final FunctionalException e) {
+      this.domainResponseMessageSender.send(message, e);
+      throw e;
     }
+  }
 }

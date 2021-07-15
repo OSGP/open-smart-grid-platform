@@ -15,7 +15,5 @@
  *
  * http://www.openmuc.org
  */
-/**
- * This package contains attribute objects for each IC.
- */
+/** This package contains attribute objects for each IC. */
 package org.opensmartgridplatform.dlms.interfaceclass.attribute;

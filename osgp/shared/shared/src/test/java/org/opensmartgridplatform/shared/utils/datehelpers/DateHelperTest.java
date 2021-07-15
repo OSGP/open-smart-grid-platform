@@ -1,8 +1,8 @@
-/**
+/*
  * Copyright 2020 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -14,37 +14,41 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
-
 import org.junit.jupiter.api.Test;
 
 public class DateHelperTest {
 
-    @Test
-    public void getDateFromStringEuropeParis() throws ParseException {
-        final Date expected = this.getDate("2023-02-15 04:13:38.123+0100", "yyyy-MM-dd HH:mm:ss.SSSZ",
-                TimeZone.getTimeZone("Europe/Paris"));
+  @Test
+  public void getDateFromStringEuropeParis() throws ParseException {
+    final Date expected =
+        this.getDate(
+            "2023-02-15 04:13:38.123+0100",
+            "yyyy-MM-dd HH:mm:ss.SSSZ",
+            TimeZone.getTimeZone("Europe/Paris"));
 
-        final String dateText = "2023-02-15T04:13:38.123+01:00[Europe/Paris]";
-        final Date actual = DateHelper.dateFromIsoString(dateText);
+    final String dateText = "2023-02-15T04:13:38.123+01:00[Europe/Paris]";
+    final Date actual = DateHelper.dateFromIsoString(dateText);
 
-        assertThat(actual).isEqualTo(expected);
-    }
+    assertThat(actual).isEqualTo(expected);
+  }
 
-    @Test
-    public void getDateFromStringUTC() throws ParseException {
-        final Date expected = this.getDate("2023-06-21 05:03:50.456Z", "yyyy-MM-dd HH:mm:ss.SSS",
-                TimeZone.getTimeZone("UTC"));
+  @Test
+  public void getDateFromStringUTC() throws ParseException {
+    final Date expected =
+        this.getDate(
+            "2023-06-21 05:03:50.456Z", "yyyy-MM-dd HH:mm:ss.SSS", TimeZone.getTimeZone("UTC"));
 
-        final String dateText = "2023-06-21T05:03:50.456Z";
-        final Date actual = DateHelper.dateFromIsoString(dateText);
+    final String dateText = "2023-06-21T05:03:50.456Z";
+    final Date actual = DateHelper.dateFromIsoString(dateText);
 
-        assertThat(actual).isEqualTo(expected);
-    }
+    assertThat(actual).isEqualTo(expected);
+  }
 
-    private Date getDate(final String dateString, final String pattern, final TimeZone timeZone) throws ParseException {
-        final SimpleDateFormat sdf = new SimpleDateFormat(pattern);
-        sdf.setTimeZone(timeZone);
+  private Date getDate(final String dateString, final String pattern, final TimeZone timeZone)
+      throws ParseException {
+    final SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+    sdf.setTimeZone(timeZone);
 
-        return sdf.parse(dateString);
-    }
+    return sdf.parse(dateString);
+  }
 }

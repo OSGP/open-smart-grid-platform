@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright 2020 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.domain.da.application.routing;
 
@@ -29,81 +30,75 @@ import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 @ExtendWith(MockitoExtension.class)
 class ResponseMessageRouterTest {
 
-    @Mock
-    private DeviceDomainService deviceDomainService;
+  @Mock private DeviceDomainService deviceDomainService;
 
-    @Mock
-    private WebServiceResponseMessageSender webServiceResponseMessageSender;
+  @Mock private WebServiceResponseMessageSender webServiceResponseMessageSender;
 
-    @Mock
-    private KafkaResponseMessageSender kafkaResponseMessageSender;
+  @Mock private KafkaResponseMessageSender kafkaResponseMessageSender;
 
-    @InjectMocks
-    private ResponseMessageRouter responseMessageRouter;
+  @InjectMocks private ResponseMessageRouter responseMessageRouter;
 
-    private static final String MESSAGE_TYPE = DeviceFunction.GET_DATA.toString();
-    private static final String DEVICE_ID = "TST-01";
-    private static final ResponseMessage MESSAGE = ResponseMessage.newResponseMessageBuilder()
-            .withDeviceIdentification(DEVICE_ID)
-            .build();
+  private static final String MESSAGE_TYPE = DeviceFunction.GET_DATA.toString();
+  private static final String DEVICE_ID = "TST-01";
+  private static final ResponseMessage MESSAGE =
+      ResponseMessage.newResponseMessageBuilder().withDeviceIdentification(DEVICE_ID).build();
 
-    @Test
-    void testSendDefault() {
+  @Test
+  void testSendDefault() {
 
-        // Act
-        this.responseMessageRouter.send(MESSAGE, MESSAGE_TYPE);
+    // Act
+    this.responseMessageRouter.send(MESSAGE, MESSAGE_TYPE);
 
-        // Assert
-        verify(this.webServiceResponseMessageSender).send(any(ResponseMessage.class), anyString());
-    }
+    // Assert
+    verify(this.webServiceResponseMessageSender).send(any(ResponseMessage.class), anyString());
+  }
 
-    @Test
-    void testSendWebservice() throws FunctionalException {
+  @Test
+  void testSendWebservice() throws FunctionalException {
 
-        // Arrange
-        final Device device = this.createDevice(IntegrationType.WEB_SERVICE);
-        when(this.deviceDomainService.searchDevice(anyString())).thenReturn(device);
+    // Arrange
+    final Device device = this.createDevice(IntegrationType.WEB_SERVICE);
+    when(this.deviceDomainService.searchDevice(anyString())).thenReturn(device);
 
-        // Act
-        this.responseMessageRouter.send(MESSAGE, MESSAGE_TYPE);
+    // Act
+    this.responseMessageRouter.send(MESSAGE, MESSAGE_TYPE);
 
-        // Assert
-        verify(this.webServiceResponseMessageSender).send(any(ResponseMessage.class), anyString());
-    }
+    // Assert
+    verify(this.webServiceResponseMessageSender).send(any(ResponseMessage.class), anyString());
+  }
 
-    @Test
-    void testSendKafka() throws FunctionalException {
+  @Test
+  void testSendKafka() throws FunctionalException {
 
-        // Arrange
-        final Device device = this.createDevice(IntegrationType.KAFKA);
-        when(this.deviceDomainService.searchDevice(anyString())).thenReturn(device);
+    // Arrange
+    final Device device = this.createDevice(IntegrationType.KAFKA);
+    when(this.deviceDomainService.searchDevice(anyString())).thenReturn(device);
 
-        // Act
-        this.responseMessageRouter.send(MESSAGE, MESSAGE_TYPE);
+    // Act
+    this.responseMessageRouter.send(MESSAGE, MESSAGE_TYPE);
 
-        // Assert
-        verify(this.kafkaResponseMessageSender).send(any(ResponseMessage.class), anyString());
-    }
+    // Assert
+    verify(this.kafkaResponseMessageSender).send(any(ResponseMessage.class), anyString());
+  }
 
-    @Test
-    void testSendBoth() throws FunctionalException {
+  @Test
+  void testSendBoth() throws FunctionalException {
 
-        // Arrange
-        final Device device = this.createDevice(IntegrationType.BOTH);
-        when(this.deviceDomainService.searchDevice(anyString())).thenReturn(device);
+    // Arrange
+    final Device device = this.createDevice(IntegrationType.BOTH);
+    when(this.deviceDomainService.searchDevice(anyString())).thenReturn(device);
 
-        // Act
-        this.responseMessageRouter.send(MESSAGE, MESSAGE_TYPE);
+    // Act
+    this.responseMessageRouter.send(MESSAGE, MESSAGE_TYPE);
 
-        // Assert
-        verify(this.webServiceResponseMessageSender).send(any(ResponseMessage.class), anyString());
-        verify(this.kafkaResponseMessageSender).send(any(ResponseMessage.class), anyString());
-    }
+    // Assert
+    verify(this.webServiceResponseMessageSender).send(any(ResponseMessage.class), anyString());
+    verify(this.kafkaResponseMessageSender).send(any(ResponseMessage.class), anyString());
+  }
 
-    private Device createDevice(final IntegrationType integrationType) {
-        final Device device = new Device(DEVICE_ID);
-        device.setIntegrationType(integrationType);
-        return device;
-    }
-
+  private Device createDevice(final IntegrationType integrationType) {
+    final Device device = new Device(DEVICE_ID);
+    device.setIntegrationType(integrationType);
+    return device;
+  }
 }
