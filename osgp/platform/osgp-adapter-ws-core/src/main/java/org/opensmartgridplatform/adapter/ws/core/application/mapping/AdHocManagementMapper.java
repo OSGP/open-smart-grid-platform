@@ -7,12 +7,11 @@
  */
 package org.opensmartgridplatform.adapter.ws.core.application.mapping;
 
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.ConfigurableMapper;
-
+import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
 import org.springframework.stereotype.Component;
 
-import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.ConfigurableMapper;
 
 @Component(value = "coreAdhocManagementMapper")
 public class AdHocManagementMapper extends ConfigurableMapper {

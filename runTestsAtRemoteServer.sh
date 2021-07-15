@@ -9,6 +9,11 @@ then
   exit 1
 fi
 
+if [ "$#" -ne 7 ]; then
+    echo "Illegal number of parameters"
+    exit -1
+fi
+
 SERVER=$1
 FOLDER=$2
 PROJECT=$3
@@ -18,7 +23,7 @@ ADDITIONAL_PARAMETERS=$6
 ADDITIONAL_CUCUMBER_OPTIONS=$7
 
 # If a space is found in the identity file then create a shortcut as the -i parameter for ssh can't handle spaces.
-[ "${SSH_KEY_FILE}"!="" ] && [ "${SSH_KEY_FILE}"=~" " ] && echo "Creating link ${HOME}/.ssh/${5/ /} => ${HOME}/.ssh/${5} ..." && ln -sf "${HOME}/.ssh/${5}" "${HOME}/.ssh/${5/ /}"
+[[ $SSH_KEY_FILE != "" ]] && [[ $SSH_KEY_FILE =~ " " ]] && echo "Creating link ${HOME}/.ssh/${5/ /} => ${HOME}/.ssh/${5} ..." && ln -sf "${HOME}/.ssh/${5}" "${HOME}/.ssh/${5/ /}"
 
 # Now determine if a -i parameter should be generated
 [ "${SSH_KEY_FILE}"!="" ] && SSH_KEY_FILE="-oIdentityFile=\"${HOME}/.ssh/${5/ /}\"" && echo "SSH_KEY_FILE=[${SSH_KEY_FILE}]"
@@ -65,7 +70,13 @@ CMD="ssh -oStrictHostKeyChecking=no -oTCPKeepAlive=yes -oServerAliveInterval=50 
 ${CMD}
 
 echo '- Create zip file from files from server ...'
-CMD="sudo tar zhcvf /tmp/${SERVER}-${PROJECT}.tgz /etc/osgp /etc/httpd/conf.d /usr/share/tomcat/conf /var/log/tomcat /var/log/osgp && sudo chown $USER:$USER /tmp/${SERVER}-${PROJECT}.tgz"
+CMD="sudo tar zhcvf /tmp/${SERVER}-${PROJECT}.tgz /etc/osgp /etc/httpd/conf.d /usr/share/tomcat/conf /var/log/tomcat /var/log/osgp --warning=no-file-changed"
+echo "  [${CMD}]"
+CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"cd /data/software/${PROJECT} && ${CMD}\"\""
+${CMD}
+
+echo '- Take ownership over /tmp/${SERVER}-${PROJECT}.tgz ...'
+CMD="sudo chown $USER:$USER /tmp/${SERVER}-${PROJECT}.tgz"
 echo "  [${CMD}]"
 CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"cd /data/software/${PROJECT} && ${CMD}\"\""
 ${CMD}
@@ -87,9 +98,9 @@ CMD="scp -oStrictHostKeyChecking=no ${SSH_KEY_FILE} -r ${USER}@${SERVER}:/tmp/${
 echo "  [${CMD}]"
 ${CMD}
 
-echo "- Clean logging for next tests on ${SERVER} ..."
-CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"sudo rm -rf /var/log/tomcat/* && sudo rm -rf /var/log/osgp/logs/*\"\""
-echo "  [${CMD}]"
-${CMD}
+#echo "- Clean logging for next tests on ${SERVER} ..."
+#CMD="ssh -oStrictHostKeyChecking=no ${SSH_KEY_FILE} ${USER}@${SERVER} \"\"sudo truncate -s 0 /var/log/tomcat/catalina.out && sudo find /var/log/osgp/logs/ -name 'osgp*.log' -exec truncate -s 0 {} \; && sudo find /var/log/osp/logs/ -name 'web*.log' -exec truncate -s0 {} \; \"\""
+#echo "  [${CMD}]"
+#${CMD}
 
 echo "Done."

@@ -16,9 +16,7 @@ import org.joda.time.DateTime;
 import org.opensmartgridplatform.cucumber.core.DateTimeHelper;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
-import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.BaseDeviceSteps;
 import org.opensmartgridplatform.domain.core.entities.Device;
-import org.opensmartgridplatform.domain.core.entities.DomainInfo;
 import org.opensmartgridplatform.domain.core.entities.RtuDevice;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.DomainInfoRepository;
@@ -38,7 +36,7 @@ public class RtuDeviceSteps extends BaseDeviceSteps {
 
     @Autowired
     private DeviceRepository deviceRepository;
-    
+
     @Autowired
     private DomainInfoRepository domainInfoRepository;
 
@@ -48,9 +46,10 @@ public class RtuDeviceSteps extends BaseDeviceSteps {
 
         final String deviceIdentification = getString(settings, PlatformKeys.KEY_DEVICE_IDENTIFICATION);
         final RtuDevice rtuDevice = new RtuDevice(deviceIdentification);
-        rtuDevice.setDomainInfo(domainInfoRepository.findByDomainAndDomainVersion(getString(settings, PlatformKeys.KEY_DOMAIN, PlatformDefaults.DOMAIN), 
+        rtuDevice.setDomainInfo(this.domainInfoRepository.findByDomainAndDomainVersion(
+                getString(settings, PlatformKeys.KEY_DOMAIN, PlatformDefaults.DOMAIN),
                 getString(settings, PlatformKeys.KEY_DOMAIN_VERSION, PlatformDefaults.DOMAIN_VERSION)));
-        rtuDevice.messageReceived(this.getLastCommunicationTime(settings).toDate());
+        rtuDevice.messageReceived(this.getLastCommunicationTime(settings).toDate().toInstant());
         return this.rtuDeviceRepository.save(rtuDevice);
     }
 
@@ -62,7 +61,7 @@ public class RtuDeviceSteps extends BaseDeviceSteps {
 
     private DateTime getLastCommunicationTime(final Map<String, String> settings) {
         if (settings.containsKey(KEY_LAST_COMMUNICATION_TIME)) {
-            return (DateTimeHelper.getDateTime(settings.get(KEY_LAST_COMMUNICATION_TIME)));
+            return DateTimeHelper.getDateTime(settings.get(KEY_LAST_COMMUNICATION_TIME));
         }
         return DateTime.now();
     }

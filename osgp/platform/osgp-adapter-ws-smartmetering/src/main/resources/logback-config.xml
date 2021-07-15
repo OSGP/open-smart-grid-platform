@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+  <!-- Currently switched off due to performance issues.
+<appender name="DB" class="ch.qos.logback.classic.db.DBAppender">
+  <connectionSource class="ch.qos.logback.core.db.DriverManagerConnectionSource">
+    <driverClass>org.postgresql.Driver</driverClass>
+    <url>jdbc:postgresql://localhost/osgp_logging</url>
+    <user>osp_admin</user>
+    <password>1234</password>
+  </connectionSource>
+</appender>
+-->
+
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}] [${HOSTNAME}] [%thread] %level %logger{36}@%method:%line - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>/var/log/osp/logs/osgp-adapter-ws-smart-metering.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <fileNamePattern>/var/log/osp/logs/osgp-adapter-ws-smart-metering.log.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+      <maxFileSize>100MB</maxFileSize>
+      <maxHistory>10</maxHistory>
+      <totalSizeCap>20GB</totalSizeCap>
+    </rollingPolicy>
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}] [${HOSTNAME}] [%thread] %level %logger{36}@%method:%line - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <root level="INFO" additivity="false">
+    <appender-ref ref="CONSOLE"/>
+    <appender-ref ref="FILE"/>
+    <!--<appender-ref ref="DB"/>-->
+  </root>
+
+</configuration>

@@ -709,7 +709,7 @@
           </xsd:restriction>
         </xsd:simpleType>
       </xsd:element>
-      <xsd:element name="description" type="xsd:string" />
+      <xsd:element name="description" type="xsd:string" minOccurs="0" />
     </xsd:sequence>
   </xsd:complexType>
 

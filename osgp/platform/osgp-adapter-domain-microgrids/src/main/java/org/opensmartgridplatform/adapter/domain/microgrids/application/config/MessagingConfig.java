@@ -18,15 +18,11 @@ import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsC
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.PropertySource;
 
 /**
  * An application context Java configuration class.
  */
 @Configuration
-@PropertySource("classpath:osgp-adapter-domain-microgrids.properties")
-@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
-@PropertySource(value = "file:${osgp/AdapterDomainMicrogrids/config}", ignoreResourceNotFound = true)
 @Import(value = { InboundOsgpCoreRequestsMessagingConfig.class, InboundOsgpCoreResponsesMessagingConfig.class,
         InboundWebServiceRequestsMessagingConfig.class, OutboundOsgpCoreRequestsMessagingConfig.class,
         OutboundOsgpCoreResponsesMessagingConfig.class, OutboundWebServiceResponsesMessagingConfig.class })

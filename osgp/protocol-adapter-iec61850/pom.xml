@@ -14,7 +14,7 @@
 
   <artifactId>protocol-adapter-iec61850</artifactId>
   <groupId>org.opensmartgridplatform</groupId>
-  <version>5.5.4</version>
+  <version>5.8.0</version>
   <packaging>pom</packaging>
   <name>protocol-adapter-iec61850</name>
   <properties>

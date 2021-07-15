@@ -31,8 +31,8 @@ public class DomainRequestMessageSender implements DomainRequestService {
 
     @Override
     public void send(final RequestMessage message, final String messageType, final DomainInfo domainInfo) {
-        LOGGER.info("Sending domain incoming request message for device [{}] using domain [{}] with version [{}]",
-                message.getDeviceIdentification(), domainInfo.getDomain(), domainInfo.getDomainVersion());
+        LOGGER.info("Sending domain incoming request message for device [{}] of type [{}] using domain [{}] with version [{}]",
+                message.getDeviceIdentification(), messageType, domainInfo.getDomain(), domainInfo.getDomainVersion());
 
         final JmsTemplate jmsTemplate = this.domainRequestMessageJmsTemplateFactory.getJmsTemplate(domainInfo.getKey());
 

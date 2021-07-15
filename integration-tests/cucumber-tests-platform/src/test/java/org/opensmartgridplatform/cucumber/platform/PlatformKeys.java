@@ -347,4 +347,9 @@ public class PlatformKeys extends Keys {
     public static final String MBUS_IDENTIFICATION_NUMBER_CHANNEL2 = "MbusIdentificationNumberChannel2";
     public static final String MBUS_IDENTIFICATION_NUMBER_CHANNEL3 = "MbusIdentificationNumberChannel3";
     public static final String MBUS_IDENTIFICATION_NUMBER_CHANNEL4 = "MbusIdentificationNumberChannel4";
+
+    public static final String KEY_LMD_DESCRIPTION = "LmdDescription";
+    public static final String KEY_LMD_CODE = "LmdCode";
+    public static final String KEY_LMD_COLOR = "LmdColor";
+    public static final String KEY_LMD_DIGITAL_INPUT = "LmdDigitalInput";
 }

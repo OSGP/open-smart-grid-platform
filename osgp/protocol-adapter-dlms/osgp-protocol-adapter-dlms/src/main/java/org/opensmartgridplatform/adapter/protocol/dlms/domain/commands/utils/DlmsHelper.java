@@ -169,6 +169,7 @@ public class DlmsHelper {
         } catch (final IOException e) {
             throw new ConnectionException(e);
         } catch (final Exception e) {
+            LOGGER.error("Unexpected excpetion", e);
             throw new ProtocolAdapterException("Error retrieving values with-list.", e);
         }
     }

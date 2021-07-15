@@ -18,13 +18,13 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.2.6.RELEASE</version>
+    <version>2.4.0</version>
     <relativePath /> <!-- lookup parent from repository -->
   </parent>
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>osgp-protocol-simulator-iec60870</artifactId>
-  <version>5.5.4</version>
+  <version>5.8.0</version>
   <packaging>war</packaging>
   <name>osgp-protocol-simulator-iec60870</name>
   <description>Simulator for IEC60870-5-104 protocol</description>
@@ -58,7 +58,7 @@
 
     <jxr.version>3.0.0</jxr.version>
     <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
-    <maven.site.plugin>3.7.1</maven.site.plugin>
+    <maven.site.plugin>3.9.0</maven.site.plugin>
 
   </properties>
 
@@ -167,6 +167,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
+        <version>${maven.site.plugin}</version>
       </plugin>
 
     </plugins>

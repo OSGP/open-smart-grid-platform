@@ -32,6 +32,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ReadAlar
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ScanMbusChannelsResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.SetDeviceLifecycleStatusByChannelResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.GetOutagesResponse;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.AdhocMapper;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.CommonMapper;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.ConfigurationMapper;
@@ -51,6 +52,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetAllAt
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfigurationObjectResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetOutagesResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetPowerQualityProfileResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterReads;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.MeterReadsGas;
@@ -116,6 +118,7 @@ public class ActionMapperResponseService {
         CLASS_TO_MAPPER_MAP.put(GetMbusEncryptionKeyStatusByChannelResponseData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SetDeviceLifecycleStatusByChannelResponseData.class, this.managementMapper);
         CLASS_TO_MAPPER_MAP.put(ScanMbusChannelsResponseData.class, this.adhocMapper);
+        CLASS_TO_MAPPER_MAP.put(GetOutagesResponseData.class, this.managementMapper);
     }
 
     /**
@@ -152,6 +155,7 @@ public class ActionMapperResponseService {
         CLASS_MAP.put(SetDeviceLifecycleStatusByChannelResponseData.class,
                 SetDeviceLifecycleStatusByChannelResponse.class);
         CLASS_MAP.put(ScanMbusChannelsResponseData.class, ScanMbusChannelsResponse.class);
+        CLASS_MAP.put(GetOutagesResponseData.class, GetOutagesResponse.class);
     }
 
     public BundleResponse mapAllActions(final Serializable actionList) throws FunctionalException {

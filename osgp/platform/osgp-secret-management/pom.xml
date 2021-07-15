@@ -19,20 +19,20 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-platform</artifactId>
-    <version>5.5.4</version>
+    <version>5.8.0</version>
     <relativePath>../parent-platform/pom.xml</relativePath>
   </parent>
 
   <properties>
     <java.version>1.8</java.version>
-    <spring.boot.version>2.2.2.RELEASE</spring.boot.version>
+    <spring.boot.version>2.4.0</spring.boot.version>
     <jaxb.plugin.version>2.5.0</jaxb.plugin.version>
     <build.helper.maven.plugin.version>3.0.0</build.helper.maven.plugin.version>
     <apache.ws.xlmschema.version>2.0.1</apache.ws.xlmschema.version>
     <apache.jms.api.version>2.0.1</apache.jms.api.version>
     <wsdl4j.version>1.6.3</wsdl4j.version>
-    <maven.failsafe.plugin.version>3.0.0-M4</maven.failsafe.plugin.version>
-    <spring.boot.maven.plugin.version>2.2.2.RELEASE</spring.boot.maven.plugin.version>
+    <maven.failsafe.plugin.version>3.0.0-M5</maven.failsafe.plugin.version>
+    <spring.boot.maven.plugin.version>2.4.0</spring.boot.maven.plugin.version>
     <osgp-ws-secret-management-version>${project.parent.version}</osgp-ws-secret-management-version>
     <com.h2database>1.4.200</com.h2database>
     <failOnMissingWebXml>false</failOnMissingWebXml>

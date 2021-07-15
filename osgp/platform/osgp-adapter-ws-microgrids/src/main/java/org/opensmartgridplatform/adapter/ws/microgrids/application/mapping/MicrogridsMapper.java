@@ -8,8 +8,6 @@
 package org.opensmartgridplatform.adapter.ws.microgrids.application.mapping;
 
 import org.joda.time.DateTime;
-import org.springframework.stereotype.Component;
-
 import org.opensmartgridplatform.domain.microgrids.valueobjects.GetDataRequest;
 import org.opensmartgridplatform.domain.microgrids.valueobjects.GetDataResponse;
 import org.opensmartgridplatform.domain.microgrids.valueobjects.GetDataSystemIdentifier;
@@ -19,6 +17,8 @@ import org.opensmartgridplatform.domain.microgrids.valueobjects.SetDataRequest;
 import org.opensmartgridplatform.domain.microgrids.valueobjects.SetDataSystemIdentifier;
 import org.opensmartgridplatform.domain.microgrids.valueobjects.SystemFilter;
 import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
+import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToInstantConverter;
+import org.springframework.stereotype.Component;
 
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.converter.builtin.PassThroughConverter;
@@ -35,45 +35,71 @@ public class MicrogridsMapper extends ConfigurableMapper {
     public void configure(final MapperFactory mapperFactory) {
         mapperFactory.getConverterFactory().registerConverter(new PassThroughConverter(DateTime.class));
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
+        mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToInstantConverter());
 
         mapperFactory
                 .classMap(org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.SystemFilter.class,
                         SystemFilter.class)
-                .field(TYPE, SYSTEM_TYPE).field("measurementFilter", "measurementFilters")
-                .field("profileFilter", "profileFilters").byDefault().register();
-
-        mapperFactory.classMap(org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.GetDataRequest.class,
-                GetDataRequest.class).field(SYSTEM, "systemFilters").byDefault().register();
-
-        mapperFactory
-                .classMap(GetDataSystemIdentifier.class,
-                        org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.GetDataSystemIdentifier.class)
-                .field(SYSTEM_TYPE, TYPE).field("measurements", "measurement").field("profiles", "profile").byDefault()
+                .field(TYPE, SYSTEM_TYPE)
+                .field("measurementFilter", "measurementFilters")
+                .field("profileFilter", "profileFilters")
+                .byDefault()
                 .register();
 
         mapperFactory
-                .classMap(Profile.class, org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.Profile.class)
-                .field("profileEntries", "profileEntry").byDefault().register();
+                .classMap(org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.GetDataRequest.class,
+                        GetDataRequest.class)
+                .field(SYSTEM, "systemFilters")
+                .byDefault()
+                .register();
+
+        mapperFactory.classMap(GetDataSystemIdentifier.class,
+                org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.GetDataSystemIdentifier.class)
+                .field(SYSTEM_TYPE, TYPE)
+                .field("measurements", "measurement")
+                .field("profiles", "profile")
+                .byDefault()
+                .register();
+
+        mapperFactory
+                .classMap(Profile.class,
+                        org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.Profile.class)
+                .field("profileEntries", "profileEntry")
+                .byDefault()
+                .register();
         mapperFactory
                 .classMap(Measurement.class,
                         org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.Measurement.class)
-                .byDefault().register();
+                .byDefault()
+                .register();
 
         mapperFactory
                 .classMap(GetDataResponse.class,
                         org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.GetDataResponse.class)
-                .field("getDataSystemIdentifiers", SYSTEM).byDefault().register();
-
-        mapperFactory.classMap(org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.SetDataRequest.class,
-                SetDataRequest.class).field(SYSTEM, "setDataSystemIdentifiers").byDefault().register();
+                .field("getDataSystemIdentifiers", SYSTEM)
+                .byDefault()
+                .register();
 
         mapperFactory
-                .classMap(org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.SetDataSystemIdentifier.class,
-                        SetDataSystemIdentifier.class)
-                .field(TYPE, SYSTEM_TYPE).field("setPoint", "setPoints").field("profile", "profiles").byDefault()
+                .classMap(org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.SetDataRequest.class,
+                        SetDataRequest.class)
+                .field(SYSTEM, "setDataSystemIdentifiers")
+                .byDefault()
+                .register();
+
+        mapperFactory.classMap(
+                org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.SetDataSystemIdentifier.class,
+                SetDataSystemIdentifier.class)
+                .field(TYPE, SYSTEM_TYPE)
+                .field("setPoint", "setPoints")
+                .field("profile", "profiles")
+                .byDefault()
                 .register();
         mapperFactory
-                .classMap(org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.Profile.class, Profile.class)
-                .field("profileEntry", "profileEntries").byDefault().register();
+                .classMap(org.opensmartgridplatform.adapter.ws.schema.microgrids.adhocmanagement.Profile.class,
+                        Profile.class)
+                .field("profileEntry", "profileEntries")
+                .byDefault()
+                .register();
     }
 }

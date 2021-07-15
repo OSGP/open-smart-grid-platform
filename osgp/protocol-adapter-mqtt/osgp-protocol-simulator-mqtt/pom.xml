@@ -39,12 +39,12 @@ http://www.apache.org/licenses/LICENSE-2.0
       <url>${maven.site.distributionManagement.site.url}</url>
     </site>
   </distributionManagement>
-  <version>5.5.4</version>
+  <version>5.8.0</version>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.2.6.RELEASE</version>
+    <version>2.4.0</version>
     <relativePath/>
   </parent>
 
@@ -54,7 +54,7 @@ http://www.apache.org/licenses/LICENSE-2.0
     <java.version>1.8</java.version>
     <jxr.version>3.0.0</jxr.version>
     <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
-    <maven.site.plugin>3.7.1</maven.site.plugin>
+    <maven.site.plugin>3.9.0</maven.site.plugin>
     <moquette-broker.version>0.13</moquette-broker.version>
     <hivemq-mqtt-client.version>1.2.0</hivemq-mqtt-client.version>
     <start-class>org.opensmartgridplatform.simulator.protocol.mqtt.Simulator</start-class>
@@ -156,6 +156,7 @@ http://www.apache.org/licenses/LICENSE-2.0
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
+        <version>${maven.site.plugin}</version>
       </plugin>
     </plugins>
 

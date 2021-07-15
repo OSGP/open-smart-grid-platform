@@ -15,6 +15,7 @@ import org.opensmartgridplatform.adapter.ws.core.application.mapping.ws.EventTyp
 import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.repositories.SsldRepository;
 import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
+import org.opensmartgridplatform.shared.mappers.XMLGregorianCalendarToInstantConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -82,6 +83,7 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                 .register();
 
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
+        mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToInstantConverter());
         mapperFactory.getConverterFactory().registerConverter(new EventTypeConverter());
         mapperFactory.getConverterFactory().registerConverter(new SmartMeterConverter());
         mapperFactory.getConverterFactory().registerConverter(new DeviceConverter());

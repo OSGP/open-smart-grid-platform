@@ -20,7 +20,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-pa-oslp</artifactId>
-    <version>5.5.4</version>
+    <version>5.8.0</version>
     <relativePath>../parent-pa-oslp/pom.xml</relativePath>
   </parent>
 

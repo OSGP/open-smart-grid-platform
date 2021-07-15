@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.domain.core.entities;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -20,8 +20,8 @@ public class RtuDevice extends Device {
 
     private static final long serialVersionUID = -5356111084356341244L;
 
-    @Column(insertable = false)
-    private Date lastCommunicationTime;
+    @Column
+    private Instant lastCommunicationTime = Instant.EPOCH;
 
     @ManyToOne()
     @JoinColumn(name = "domain_info_id")
@@ -36,14 +36,14 @@ public class RtuDevice extends Device {
     }
 
     public void messageReceived() {
-        this.lastCommunicationTime = new Date();
+        this.lastCommunicationTime = Instant.now();
     }
 
-    public void messageReceived(final Date date) {
-        this.lastCommunicationTime = date;
+    public void messageReceived(final Instant instant) {
+        this.lastCommunicationTime = instant;
     }
 
-    public Date getLastCommunicationTime() {
+    public Instant getLastCommunicationTime() {
         return this.lastCommunicationTime;
     }
 

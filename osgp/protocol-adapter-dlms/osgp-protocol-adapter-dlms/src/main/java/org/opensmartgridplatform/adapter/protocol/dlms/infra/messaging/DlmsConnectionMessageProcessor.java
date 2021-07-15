@@ -19,7 +19,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.RetryableException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -174,7 +173,7 @@ public abstract class DlmsConnectionMessageProcessor {
         }
 
         final RetryHeader retryHeader;
-        if ((result == ResponseMessageResultType.NOT_OK) && (exception instanceof RetryableException)) {
+        if (result == ResponseMessageResultType.NOT_OK) {
             retryHeader = this.retryHeaderFactory.createRetryHeader(messageMetadata.getRetryCount());
         } else {
             retryHeader = this.retryHeaderFactory.createEmtpyRetryHeader();

@@ -23,7 +23,7 @@ import org.opensmartgridplatform.adapter.protocol.mqtt.domain.entities.MqttDevic
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.repositories.MqttDeviceRepository;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationDefaults;
 import org.opensmartgridplatform.cucumber.platform.distributionautomation.PlatformDistributionAutomationKeys;
-import org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.kafka.in.PeakShavingConsumer;
+import org.opensmartgridplatform.cucumber.platform.distributionautomation.glue.kafka.in.LowVoltageMessageConsumer;
 import org.opensmartgridplatform.simulator.protocol.mqtt.SimulatorSpecPublishingClient;
 import org.opensmartgridplatform.simulator.protocol.mqtt.spec.Message;
 import org.opensmartgridplatform.simulator.protocol.mqtt.spec.SimulatorSpec;
@@ -38,9 +38,11 @@ import com.alliander.data.scadameasurementpublishedevent.BaseVoltage;
 import com.alliander.data.scadameasurementpublishedevent.ConductingEquipment;
 import com.alliander.data.scadameasurementpublishedevent.MeasuringPeriodKind;
 import com.alliander.data.scadameasurementpublishedevent.Name;
+import com.alliander.data.scadameasurementpublishedevent.NameType;
 import com.alliander.data.scadameasurementpublishedevent.ScadaMeasurementPublishedEvent;
 import com.alliander.data.scadameasurementpublishedevent.UnitMultiplier;
 import com.alliander.data.scadameasurementpublishedevent.UnitSymbol;
+import com.alliander.data.scadameasurementpublishedevent.Voltage;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -51,9 +53,11 @@ public class MqttDeviceSteps {
     private MqttDeviceRepository mqttDeviceRepository;
 
     @Autowired
-    private PeakShavingConsumer consumer;
+    private LowVoltageMessageConsumer consumer;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MqttDeviceSteps.class);
+
+    private static final float LOW_VOLTAGE_NOMINAL = 0.4f;
 
     @When("MQTT device {string} sends a measurement report")
     public void theDeviceSendsAMeasurementReport(final String deviceIdentification,
@@ -77,9 +81,11 @@ public class MqttDeviceSteps {
 
     @Then("a message is published to Kafka")
     public void aMessageIsPublishedToKafka(final Map<String, String> parameters) {
-        final String description = getString(parameters, PlatformDistributionAutomationKeys.DESCRIPTION);
+
+        final Voltage voltage = new Voltage(UnitMultiplier.k, UnitSymbol.V, LOW_VOLTAGE_NOMINAL);
+
         final ConductingEquipment powerSystemResource = new ConductingEquipment(
-                new BaseVoltage(new Utf8(description), null), new ArrayList<Name>());
+                new BaseVoltage(new Utf8("LS"), voltage), this.getNames(parameters));
 
         final List<Analog> measurements = new ArrayList<>();
         for (int index = 1; index <= getInteger(parameters,
@@ -97,9 +103,24 @@ public class MqttDeviceSteps {
         }
 
         final ScadaMeasurementPublishedEvent expectedMessage = new ScadaMeasurementPublishedEvent(measurements,
-                powerSystemResource, System.currentTimeMillis(), new Utf8(description), null);
+                powerSystemResource, System.currentTimeMillis(), null, null);
 
         this.consumer.checkKafkaOutput(expectedMessage);
+    }
+
+    private ArrayList<Name> getNames(final Map<String, String> parameters) {
+        final String substationIdentification = getString(parameters,
+                PlatformDistributionAutomationKeys.SUBSTATION_IDENTIFICATION);
+        final String substationName = getString(parameters, PlatformDistributionAutomationKeys.SUBSTATION_NAME);
+        final String bayPosition = getString(parameters, PlatformDistributionAutomationKeys.BAY_POSITION);
+        final String bayIdentification = getString(parameters, PlatformDistributionAutomationKeys.BAY_IDENTIFICATION);
+
+        final ArrayList<Name> names = new ArrayList<>();
+        names.add(new Name(new NameType("gisbehuizingnummer"), substationIdentification));
+        names.add(new Name(new NameType("msr naam"), substationName));
+        names.add(new Name(new NameType("bay positie"), bayPosition));
+        names.add(new Name(new NameType("bay identificatie"), bayIdentification));
+        return names;
     }
 
     private Analog createAnalog(final String description, final Float value, final UnitSymbol unitSymbol,

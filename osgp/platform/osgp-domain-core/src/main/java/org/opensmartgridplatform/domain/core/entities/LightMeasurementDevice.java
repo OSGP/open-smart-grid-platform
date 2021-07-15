@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.domain.core.entities;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Objects;
 import java.util.Set;
 
@@ -19,14 +19,14 @@ import javax.persistence.PrimaryKeyJoinColumn;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import org.opensmartgridplatform.domain.core.valueobjects.Address;
+import org.opensmartgridplatform.domain.core.valueobjects.CdmaSettings;
+import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 
 @Entity
 @PrimaryKeyJoinColumn(name = "id")
 public class LightMeasurementDevice extends Device {
 
-    /**
-     * Serial Version UID.
-     */
     private static final long serialVersionUID = 3318500857714946908L;
 
     /**
@@ -47,7 +47,7 @@ public class LightMeasurementDevice extends Device {
     private Short digitalInput;
 
     @Column
-    private Date lastCommunicationTime;
+    private Instant lastCommunicationTime;
 
     @OneToMany(mappedBy = "id", cascade = { CascadeType.MERGE, CascadeType.PERSIST }, orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.TRUE)
@@ -59,6 +59,11 @@ public class LightMeasurementDevice extends Device {
 
     public LightMeasurementDevice(final String deviceIdentification) {
         super(deviceIdentification);
+    }
+
+    public LightMeasurementDevice(final String deviceIdentification, final String alias, final Address containerAddress,
+            final GpsCoordinates gpsCoordinates, final CdmaSettings cdmaSettings) {
+        super(deviceIdentification, alias, containerAddress, gpsCoordinates, cdmaSettings);
     }
 
     public String getDescription() {
@@ -93,11 +98,11 @@ public class LightMeasurementDevice extends Device {
         this.digitalInput = digitalInput;
     }
 
-    public Date getLastCommunicationTime() {
+    public Instant getLastCommunicationTime() {
         return this.lastCommunicationTime;
     }
 
-    public void setLastCommunicationTime(final Date lastCommunicationTime) {
+    public void setLastCommunicationTime(final Instant lastCommunicationTime) {
         this.lastCommunicationTime = lastCommunicationTime;
     }
 

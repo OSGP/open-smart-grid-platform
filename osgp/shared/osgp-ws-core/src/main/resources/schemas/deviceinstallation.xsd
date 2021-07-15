@@ -41,6 +41,31 @@
     <xsd:complexType />
   </xsd:element>
 
+  <xsd:element name="AddLightMeasurementDeviceRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="LightMeasurementDevice" type="tns:LightMeasurementDevice" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="AddLightMeasurementDeviceResponse">
+    <xsd:complexType />
+  </xsd:element>
+
+  <xsd:element name="UpdateLightMeasurementDeviceRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:Identification" />
+        <xsd:element name="UpdatedLightMeasurementDevice" type="tns:LightMeasurementDevice" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="UpdateLightMeasurementDeviceResponse">
+    <xsd:complexType />
+  </xsd:element>
+
   <xsd:element name="FindRecentDevicesRequest">
     <xsd:complexType>
       <xsd:sequence>
@@ -187,6 +212,26 @@
       <xsd:element name="PublicKeyPresent" type="xsd:boolean"
         minOccurs="0" />
       <xsd:element name="DeviceModel" type="tns:DeviceModel" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="LightMeasurementDevice">
+    <xsd:sequence>
+      <xsd:element name="DeviceIdentification" type="common:Identification" />
+      <xsd:element name="Alias" type="xsd:string" minOccurs="0" />
+      <xsd:element name="Owner" type="xsd:string" />
+      <xsd:element name="ContainerAddress" type="common:Address" minOccurs="0" />
+      <xsd:element name="GpsLatitude" type="xsd:float"
+        minOccurs="0" />
+      <xsd:element name="GpsLongitude" type="xsd:float"
+        minOccurs="0" />
+      <xsd:element name="Activated" type="xsd:boolean"
+        minOccurs="0" />
+      <xsd:element name="DeviceModel" type="tns:DeviceModel" />
+      <xsd:element name="Description" type="xsd:string" minOccurs="0" />
+      <xsd:element name="Code" type="xsd:string" minOccurs="0" />
+      <xsd:element name="Color" type="xsd:string" minOccurs="0" />
+      <xsd:element name="DigitalInput" type="xsd:short" />
     </xsd:sequence>
   </xsd:complexType>
 

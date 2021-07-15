@@ -13,7 +13,7 @@ The demo app currently supports the following web requests:
 - SetLight request + Async response
 
 Through it's front end it allows the user to easily add a device, see which devices are registered on the platform and switch/set a light.
-See the [Installation Manual](http://documentation.opensmartgridplatform.org/Userguide/Installation/Installationguide.html) for more information.
+See the [Installation Manual](https://documentation.gxf.lfenergy.org/Userguide/Installation/Installationguide.html) for more information.
 
 ### Stack
 The demo app is using the following frameworks/technologies
@@ -40,13 +40,13 @@ Under ```<IfModule mod_proxy_ajp.c>```
             ProxyPassReverse /web-demo-app /web-demo-app
 ```
 
-## Open smart grid platform information and news
+## Grid eXchange Fabric information and news
 
-High-level project information and news can be found on the open smart grid platform website: 
-* [www.opensmartgridplatform.org](http://opensmartgridplatform.org/)
+High-level project information and news can be found on the Grid eXchange Fabric website:
+* [www.lfenergy.org/projects/gxf](https://www.lfenergy.org/projects/gxf/)
 
-Open smart grid platform detailed documentation:
-* [documentation.opensmartgridplatform.org/](http://documentation.opensmartgridplatform.org/)
+Grid eXchange Fabric detailed documentation:
+* [documentation.gxf.lfenergy.org](https://documentation.gxf.lfenergy.org/)
 
-Open smart grid platform issue tracker:
-* [Open smart grid platform Jira](https://smartsocietyservices.atlassian.net/projects/OC/issues/)
+Grid eXchange Fabric issue tracker:
+* [Grid eXchange Fabric Jira](https://smartsocietyservices.atlassian.net/projects/OC/issues/)

@@ -21,8 +21,6 @@ import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderSer
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,8 +30,6 @@ import org.springframework.validation.annotation.Validated;
 @Transactional(value = "transactionManager")
 @Validated
 public class BundleService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(BundleService.class);
 
     @Autowired
     private DomainHelperService domainHelperService;
@@ -55,7 +51,6 @@ public class BundleService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
-        LOGGER.info("Bundle request called with organisation {}", organisationIdentification);
         this.checkIfBundleIsAllowed(actionList, organisation, device);
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,

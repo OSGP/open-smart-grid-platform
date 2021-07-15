@@ -26,16 +26,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service(value = "domainDistributionAutomationAdHocManagementService")
-@Transactional(value = "transactionManager")
 public class AdHocManagementService extends BaseService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdHocManagementService.class);
 
     @Autowired
     private DomainDistributionAutomationMapper mapper;
+
+    @Autowired
+    private RtuResponseService rtuResponseService;
 
     /**
      * Constructor
@@ -80,7 +81,7 @@ public class AdHocManagementService extends BaseService {
                 throw osgpException;
             }
 
-            this.handleResponseMessageReceived(LOGGER, deviceIdentification);
+            this.rtuResponseService.handleResponseMessageReceived(LOGGER, deviceIdentification);
 
             getDeviceModelResponse = this.mapper.map(getDeviceModelResponseDto, GetDeviceModelResponse.class);
 
@@ -102,7 +103,17 @@ public class AdHocManagementService extends BaseService {
     }
 
     public void handleGetDataResponse(final ResponseMessage response, final MessageType messageType) {
-        LOGGER.info("Forward {} response {} for device: {}", messageType, response, response.getDeviceIdentification());
+
+        final String deviceIdentification = response.getDeviceIdentification();
+        LOGGER.info("Forward {} response {} for device: {}", messageType, response, deviceIdentification);
+
+        try {
+            this.rtuResponseService.handleResponseMessageReceived(LOGGER, deviceIdentification);
+        } catch (final FunctionalException e) {
+            LOGGER.error("FunctionalException", e);
+            return;
+        }
+
         this.responseMessageRouter.send(response, messageType.toString());
     }
 

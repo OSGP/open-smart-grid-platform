@@ -34,7 +34,7 @@ public class EventNotificationMessageProcessor extends AbstractProtocolRequestMe
     private EventNotificationMessageService eventNotificationMessageService;
 
     protected EventNotificationMessageProcessor() {
-        super(MessageType.ADD_EVENT_NOTIFICATION);
+        super(MessageType.EVENT_NOTIFICATION);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class EventNotificationMessageProcessor extends AbstractProtocolRequestMe
         final MessageMetadata metadata = MessageMetadata.fromMessage(message);
 
         LOGGER.info("Received message of messageType: {} organisationIdentification: {} deviceIdentification: {}",
-                messageType, metadata.getOrganisationIdentification(), metadata.getDeviceIdentification());
+                this.messageType, metadata.getOrganisationIdentification(), metadata.getDeviceIdentification());
 
         final RequestMessage requestMessage = (RequestMessage) message.getObject();
         final Object dataObject = requestMessage.getRequest();
@@ -56,15 +56,12 @@ public class EventNotificationMessageProcessor extends AbstractProtocolRequestMe
                 this.eventNotificationMessageService.handleEvent(metadata.getDeviceIdentification(), eventNotification);
 
             } else if (dataObject instanceof List) {
-
-                @SuppressWarnings("unchecked") final List<EventNotificationDto> eventNotifications =
-                        (List<EventNotificationDto>) dataObject;
-                this.eventNotificationMessageService.handleEvents(metadata.getDeviceIdentification(),
-                        eventNotifications);
+                final List<EventNotificationDto> eventNotificationDtoList = (List<EventNotificationDto>) dataObject;
+                this.eventNotificationMessageService.handleEvents(metadata.getDeviceIdentification(), eventNotificationDtoList);
             }
 
         } catch (final UnknownEntityException e) {
-            String errorMessage = String.format("%s occurred, reason: %s", e.getClass().getName(), e.getMessage());
+            final String errorMessage = String.format("%s occurred, reason: %s", e.getClass().getName(), e.getMessage());
             LOGGER.error(errorMessage, e);
 
             throw new JMSException(errorMessage);

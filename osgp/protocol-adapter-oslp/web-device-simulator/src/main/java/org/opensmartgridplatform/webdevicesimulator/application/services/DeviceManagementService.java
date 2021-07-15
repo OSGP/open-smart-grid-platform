@@ -45,6 +45,9 @@ public class DeviceManagementService {
     @Autowired
     private Boolean checkboxEventNotificationValue;
 
+    @Autowired
+    private Integer rebootDelayInSeconds;
+
     public List<EventNotificationToBeSent> getEventNotificationToBeSent() {
         return EVENT_NOTIFICATION_TO_BE_SENT;
     }
@@ -123,5 +126,13 @@ public class DeviceManagementService {
 
     public void setEventNotification(final Boolean eventNotification) {
         this.checkboxEventNotificationValue = eventNotification;
+    }
+
+    public int getRebootDelay() {
+        return this.rebootDelayInSeconds;
+    }
+
+    public void setRebootDelay(final int rebootDelayInSeconds) {
+        this.rebootDelayInSeconds = rebootDelayInSeconds;
     }
 }

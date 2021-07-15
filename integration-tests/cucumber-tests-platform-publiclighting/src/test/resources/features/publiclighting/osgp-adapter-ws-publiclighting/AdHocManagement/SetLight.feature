@@ -4,6 +4,13 @@ Feature: PublicLightingAdhocManagement Set Light
   I want to asynchronously handle set light requests
   In order to ...
 
+  Background:
+    Given an organization
+      | OrganizationIdentification | LianderNetManagement |
+      | Name                       | LianderNetManagement |
+      | PlatformFunctionGroup      | ADMIN                |
+      | Domains                    | COMMON               |
+
   @OslpMockServer
   Scenario Outline: Receive A Set Light Request With A Single Light Value
     Given an ssld oslp device
@@ -24,20 +31,24 @@ Feature: PublicLightingAdhocManagement Set Light
       | DimValue | <DimValue> |
     And a resume schedule "<Protocol>" message is sent to device "TEST1024000000001"
       | Protocol  | <Protocol> |
-      | Index     | 0          |
+      | Index     |          0 |
       | Immediate | false      |
     And the platform buffers a set light response message for device "TEST1024000000001"
       | Result | OK |
+    And the event is stored
+      | DeviceIdentification | TEST1024000000001 |
+      | Event                | <Event>           |
+      | Index                | <Index>           |
 
     Examples: 
-      | Protocol    | Index | On    | DimValue |
-      | OSLP ELSTER |     0 | true  |          |
-      | OSLP ELSTER |     1 | true  |          |
-      | OSLP ELSTER |     6 | true  |          |
-      | OSLP ELSTER |     1 | false |          |
-      | OSLP ELSTER |     1 | true  |        1 |
-      | OSLP ELSTER |     1 | true  |       75 |
-      | OSLP ELSTER |     1 | true  |      100 |
+      | Protocol    | Index | On    | DimValue | Event                  |
+      | OSLP ELSTER |     0 | true  |          | LIGHT_EVENTS_LIGHT_ON  |
+      | OSLP ELSTER |     2 | true  |          | LIGHT_EVENTS_LIGHT_ON  |
+      | OSLP ELSTER |     6 | true  |          | LIGHT_EVENTS_LIGHT_ON  |
+      | OSLP ELSTER |     2 | false |          | LIGHT_EVENTS_LIGHT_OFF |
+      | OSLP ELSTER |     2 | true  |        1 | LIGHT_EVENTS_LIGHT_ON  |
+      | OSLP ELSTER |     2 | true  |       75 | LIGHT_EVENTS_LIGHT_ON  |
+      | OSLP ELSTER |     2 | true  |      100 | LIGHT_EVENTS_LIGHT_ON  |
 
   Scenario Outline: Receive A Set Light Request With An Invalid Single Light Value
     Given a device
@@ -83,15 +94,21 @@ Feature: PublicLightingAdhocManagement Set Light
     And a set light "<Protocol>" message with "<nofLightValues>" lightvalues is sent to the device
     And a resume schedule "<Protocol>" message is sent to device "TEST1024000000001"
       | Protocol  | <Protocol> |
-      | Index     | 0          |
+      | Index     |          0 |
       | Immediate | false      |
     And the platform buffers a set light response message for device "TEST1024000000001"
       | Result | OK |
+    And the events are stored
+      | DeviceIdentification | TEST1024000000001       |
+      | Events               | <EventTypes>            |
+      | Indexes              | <Indexes>               |
+      | NumberOfEvents       | <NumberOfEvents>        |
+      | NumberOfStatuses     | <NumberOfRelayStatuses> |
 
     Examples: 
-      | Protocol    | nofLightValues |
-      | OSLP ELSTER |              1 |
-      | OSLP ELSTER |              6 |
+      | Protocol    | nofLightValues | EventTypes                                                          | Indexes | NumberOfEvents | NumberOfRelayStatuses |
+      | OSLP ELSTER |              2 | LIGHT_EVENTS_LIGHT_ON, LIGHT_EVENTS_LIGHT_ON                        |     2,3 |              2 |                     2 |
+      | OSLP ELSTER |              3 | LIGHT_EVENTS_LIGHT_ON, LIGHT_EVENTS_LIGHT_ON, LIGHT_EVENTS_LIGHT_ON |   2,3,4 |              3 |                     3 |
 
   Scenario Outline: Receive A Set Light Request With Invalid Multiple Light Values
     Given a device
@@ -105,5 +122,4 @@ Feature: PublicLightingAdhocManagement Set Light
       | NofValidLightValues | NofInvalidLightValues | Message          |
       |                   0 |                     0 | Validation error |
       |                   7 |                     0 | Validation error |
-      |                   1 |                     1 | VALIDATION_ERROR |
-      |                   5 |                     1 | VALIDATION_ERROR |
+      |                   2 |                     1 | VALIDATION_ERROR |

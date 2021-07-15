@@ -49,13 +49,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class BaseDeviceSteps {
 
     @Autowired
-    private CoreDeviceConfiguration configuration;
+    protected CoreDeviceConfiguration configuration;
 
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepository;
 
     @Autowired
-    private DeviceModelRepository deviceModelRepository;
+    protected DeviceModelRepository deviceModelRepository;
 
     @Autowired
     private DeviceRepository deviceRepository;

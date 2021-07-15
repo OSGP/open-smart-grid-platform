@@ -67,6 +67,15 @@ public class Iec61850ChannelHandlerServer extends Iec61850ChannelHandler {
         this.logMessage(message);
 
         final String deviceIdentification = message.getDeviceIdentification();
+
+        if (this.deviceRegistrationService.isKnownDevice(deviceIdentification)) {
+            LOGGER.info("Device {} found, start processing this registration message", deviceIdentification);
+        } else {
+            LOGGER.warn("Ignoring this registration message, because there's no device having identification {}",
+                    deviceIdentification);
+            return;
+        }
+
         final IED ied = IED.FLEX_OVL;
         final String ipAddress;
 

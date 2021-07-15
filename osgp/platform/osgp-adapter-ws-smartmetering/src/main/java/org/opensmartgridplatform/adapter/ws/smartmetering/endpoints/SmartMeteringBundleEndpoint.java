@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.endpoints;
 
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.BypassRetry;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
@@ -29,8 +30,6 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.BundleMe
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -38,12 +37,12 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
+@Slf4j
 @Endpoint
 public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringBundleEndpoint.class);
-    private static final String NAMESPACE = "http://www.opensmartgridplatform"
-            + ".org/schemas/smartmetering/sm-bundle/2014/10";
+    private static final String NAMESPACE =
+            "http://www.opensmartgridplatform.org/schemas/smartmetering/sm-bundle/2014/10";
 
     private final BundleService bundleService;
     private final ActionMapperService actionMapperService;
@@ -65,9 +64,9 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
             @MessagePriority final String messagePriority, @ResponseUrl final String responseUrl,
             @BypassRetry final String bypassRetry, @RequestPayload final BundleRequest request) throws OsgpException {
 
-        LOGGER.info("Bundle request for organisation: {} and device: {}. and responseUrl: {}. Request contains {}.",
-                organisationIdentification, request.getDeviceIdentification(), responseUrl,
-                request.getActions().getActionList());
+        log.info("Incoming BundleRequest with responseUrl {} and actions {}. [deviceId={} | organisationId={}]",
+                responseUrl, request.getActions().getActionList(), request.getDeviceIdentification(),
+                organisationIdentification);
 
         BundleAsyncResponse response = null;
         try {
@@ -86,6 +85,9 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
                     deviceIdentification, actionRequestList, MessagePriorityEnum.getMessagePriority(messagePriority),
                     Boolean.parseBoolean(bypassRetry));
 
+            log.info("BundleRequest placed on queue [correlationId={} | deviceId={} | organisationId={}]",
+                    correlationUid, deviceIdentification, organisationIdentification);
+
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
 
@@ -101,8 +103,8 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
     public BundleResponse getBundleResponse(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final BundleAsyncRequest request) throws OsgpException {
 
-        LOGGER.info("Get bundle response for organisation: {} and device: {}.", organisationIdentification,
-                request.getDeviceIdentification());
+        log.info("Incoming call to retrieve BundleResponse [correlationId={} | deviceId={} | organisation={}]",
+                request.getCorrelationUid(), request.getDeviceIdentification(), organisationIdentification);
 
         final ResponseData responseData = this.responseDataService.dequeue(request.getCorrelationUid(),
                 BundleMessagesResponse.class, ComponentType.WS_SMART_METERING);

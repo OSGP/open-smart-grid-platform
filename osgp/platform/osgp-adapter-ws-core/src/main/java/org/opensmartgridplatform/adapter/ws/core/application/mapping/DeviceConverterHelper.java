@@ -8,13 +8,9 @@
 package org.opensmartgridplatform.adapter.ws.core.application.mapping;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Objects;
 
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.opensmartgridplatform.adapter.ws.schema.core.devicemanagement.Device;
@@ -27,13 +23,10 @@ import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.valueobjects.Address;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
 import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ma.glasnost.orika.MapperFacade;
 
 class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.entities.Device> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceConverterHelper.class);
 
     private final Class<T> clazz;
     private MapperFacade mapper;
@@ -103,7 +96,7 @@ class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.enti
         destination.setDeviceIdentification(source.getDeviceIdentification());
         destination.setDeviceType(source.getDeviceType());
         destination.setTechnicalInstallationDate(
-                this.convertDateToXMLGregorianCalendar(source.getTechnicalInstallationDate()));
+                this.mapper.map(source.getTechnicalInstallationDate(), XMLGregorianCalendar.class));
 
         if (!Objects.isNull(source.getGpsCoordinates())) {
             final GpsCoordinates gpsCoordinates = source.getGpsCoordinates();
@@ -148,7 +141,7 @@ class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.enti
         }
 
         destination.setLastCommunicationTime(
-                this.convertDateToXMLGregorianCalendar(source.getLastSuccessfulConnectionTimestamp()));
+                this.mapper.map(source.getLastSuccessfulConnectionTimestamp(), XMLGregorianCalendar.class));
 
         if (source instanceof LightMeasurementDevice) {
             final LightMeasurementDevice sourceLmd = (LightMeasurementDevice) source;
@@ -158,26 +151,10 @@ class DeviceConverterHelper<T extends org.opensmartgridplatform.domain.core.enti
             destinationLmd.setColor(sourceLmd.getColor());
             destinationLmd.setDigitalInput(sourceLmd.getDigitalInput());
             destinationLmd.setLastCommunicationTime(
-                    this.convertDateToXMLGregorianCalendar(sourceLmd.getLastCommunicationTime()));
+                    this.mapper.map(sourceLmd.getLastCommunicationTime(), XMLGregorianCalendar.class));
             destination.setLightMeasurementDevice(destinationLmd);
         }
 
         return destination;
     }
-
-    public XMLGregorianCalendar convertDateToXMLGregorianCalendar(final Date date) {
-        XMLGregorianCalendar xmlCalendar = null;
-        if (date != null) {
-            final GregorianCalendar gCalendar = new GregorianCalendar();
-            gCalendar.setTime(date);
-            try {
-                xmlCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gCalendar);
-            } catch (final DatatypeConfigurationException dce) {
-                LOGGER.error("Bad date format in 'date' parameter", dce);
-            }
-        }
-
-        return xmlCalendar;
-    }
-
 }

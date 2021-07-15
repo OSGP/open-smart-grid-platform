@@ -93,8 +93,7 @@ public class SetLightSteps {
 
         for (int i = 0; i < nofValidLightValues; i++) {
             final LightValue lightValue = new LightValue();
-            lightValue.setIndex(getInteger(requestParameters, PlatformPubliclightingKeys.KEY_INDEX,
-                    PlatformPubliclightingDefaults.DEFAULT_INDEX));
+            lightValue.setIndex(i + 2);
             lightValue.setDimValue(getInteger(requestParameters, PlatformPubliclightingKeys.KEY_DIMVALUE,
                     PlatformPubliclightingDefaults.DEFAULT_DIMVALUE));
             lightValue.setOn(getBoolean(requestParameters, PlatformPubliclightingKeys.KEY_ON,
@@ -104,8 +103,7 @@ public class SetLightSteps {
 
         for (int i = 0; i < nofInvalidLightValues; i++) {
             final LightValue lightValue = new LightValue();
-            lightValue.setIndex(getInteger(requestParameters, PlatformPubliclightingKeys.KEY_INDEX,
-                    PlatformPubliclightingDefaults.DEFAULT_INDEX));
+            lightValue.setIndex(i + 2 + nofValidLightValues);
             lightValue.setDimValue(50);
             lightValue.setOn(false);
             request.getLightValue().add(lightValue);
@@ -128,8 +126,7 @@ public class SetLightSteps {
 
         for (int i = 0; i < nofLightValues; i++) {
             final LightValue lightValue = new LightValue();
-            lightValue.setIndex(getInteger(requestParameters, PlatformPubliclightingKeys.KEY_INDEX,
-                    PlatformPubliclightingDefaults.DEFAULT_INDEX));
+            lightValue.setIndex(i + 2);
             lightValue.setDimValue(getInteger(requestParameters, PlatformPubliclightingKeys.KEY_DIMVALUE,
                     PlatformPubliclightingDefaults.DEFAULT_DIMVALUE));
             lightValue.setOn(getBoolean(requestParameters, PlatformPubliclightingKeys.KEY_ON,

@@ -16,7 +16,6 @@ import org.opensmartgridplatform.adapter.ws.domain.repositories.NotificationWebS
 import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.cucumber.platform.common.glue.steps.database.ws.NotificationWebServiceConfigurationBuilder;
 import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
-import org.opensmartgridplatform.domain.core.repositories.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,9 +33,6 @@ public class Database {
 
     @Autowired
     private RtuDeviceRepository rtuDeviceRepository;
-
-    @Autowired
-    private TaskRepository taskRepository;
 
     private void insertDefaultData() {
         this.notificationWebServiceConfigurationRepository.saveAll(this.notificationEndpointConfigurations());
@@ -65,7 +61,6 @@ public class Database {
         this.responseDataRepository.deleteAll();
 
         // Now remove all from the core.
-        this.taskRepository.deleteAll();
         this.rtuDeviceRepository.deleteAll();
 
         this.insertDefaultData();

@@ -7,7 +7,9 @@
  */
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking;
 
+import java.time.Clock;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -23,9 +25,15 @@ public class ChannelCache {
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelCache.class);
 
     private final ConcurrentMap<String, ChannelCacheEntry> channelMap = new ConcurrentHashMap<>();
+    private final Clock clock;
     private final long expirationMillis;
 
     public ChannelCache(final long expirationMillis) {
+        this(expirationMillis, Clock.systemUTC());
+    }
+
+    ChannelCache(final long expirationMillis, final Clock clock) {
+        this.clock = Objects.requireNonNull(clock, "clock");
         if (expirationMillis < 0) {
             throw new IllegalArgumentException("expirationMillis must not be negative: " + expirationMillis);
         }
@@ -37,7 +45,7 @@ public class ChannelCache {
         final int referenceCount;
         synchronized (this) {
             referenceCount = this.channelMap.computeIfAbsent(channelIdAsLongText, key -> new ChannelCacheEntry(channel))
-                    .incrementAndGetReferenceCount();
+                    .incrementAndGetReferenceCount(this.clock.millis());
         }
         if (referenceCount == 1) {
             LOGGER.debug("Cached channel {}", channelIdAsLongText);
@@ -72,7 +80,7 @@ public class ChannelCache {
     }
 
     public void removeExpiredCacheEntries() {
-        final long thresholdMillis = System.currentTimeMillis() - this.expirationMillis;
+        final long thresholdMillis = this.clock.millis() - this.expirationMillis;
         final Set<String> keysForExpiredEntries = this.channelMap.entrySet()
                 .stream()
                 .filter(entry -> entry.getValue().getLastRefreshedMillis() < thresholdMillis)

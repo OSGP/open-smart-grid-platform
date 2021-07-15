@@ -19,9 +19,11 @@ import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonRequestMessageS
 import org.opensmartgridplatform.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
 import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceAuthorizationRepository;
 import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceRepository;
+import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableLightMeasurementDeviceRepository;
 import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableSsldRepository;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
+import org.opensmartgridplatform.domain.core.entities.LightMeasurementDevice;
 import org.opensmartgridplatform.domain.core.entities.Organisation;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.exceptions.ExistingEntityException;
@@ -71,6 +73,9 @@ public class DeviceInstallationService {
 
     @Autowired
     private WritableSsldRepository writableSsldRepository;
+
+    @Autowired
+    private WritableLightMeasurementDeviceRepository writableLightMeasurementDeviceRepository;
 
     @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
@@ -168,6 +173,102 @@ public class DeviceInstallationService {
         existingDevice.setPublicKeyPresent(updateDevice.isPublicKeyPresent());
 
         this.writableSsldRepository.save(existingDevice);
+    }
+
+    @Transactional(value = "writableTransactionManager")
+    public void addLightMeasurementDevice(@Identification final String organisationIdentification,
+            @Valid final LightMeasurementDevice newLightMeasurementDevice,
+            @Identification final String ownerOrganisationIdentification) throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_ORGANISATIONS);
+        this.domainHelperService.isOrganisationEnabled(organisation);
+
+        // If the device already exists, throw an exception.
+        final Device existingDevice = this.writableDeviceRepository
+                .findByDeviceIdentification(newLightMeasurementDevice.getDeviceIdentification());
+
+        // Added additional check on device type: if device type is empty
+        // there has been no communication with the device yet
+        // and it should be possible to overwrite the existing device
+        // It would probably be better to use isActivated for this, however this
+        // would require additional changes in applications currently using this
+        // field
+        if (existingDevice != null && StringUtils.isNotBlank(existingDevice.getDeviceType())) {
+            throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE, ComponentType.WS_CORE,
+                    new ExistingEntityException(Device.class, newLightMeasurementDevice.getDeviceIdentification()));
+        }
+
+        LightMeasurementDevice lmd;
+
+        if (existingDevice != null) {
+            // Update existing light measurement device
+            lmd = this.writableLightMeasurementDeviceRepository
+                    .findByDeviceIdentification(newLightMeasurementDevice.getDeviceIdentification());
+            lmd.updateMetaData(newLightMeasurementDevice.getAlias(), newLightMeasurementDevice.getContainerAddress(),
+                    newLightMeasurementDevice.getGpsCoordinates());
+            lmd.getAuthorizations().clear();
+        } else {
+            // Create a new LMD instance.
+            lmd = new LightMeasurementDevice(newLightMeasurementDevice.getDeviceIdentification(),
+                    newLightMeasurementDevice.getAlias(), newLightMeasurementDevice.getContainerAddress(),
+                    newLightMeasurementDevice.getGpsCoordinates(), null);
+        }
+        lmd.setDeviceModel(newLightMeasurementDevice.getDeviceModel());
+        lmd.setDescription(newLightMeasurementDevice.getDescription());
+        lmd.setCode(newLightMeasurementDevice.getCode());
+        lmd.setColor(newLightMeasurementDevice.getColor());
+        lmd.setDigitalInput(newLightMeasurementDevice.getDigitalInput());
+
+        final Organisation ownerOrganisation = this.domainHelperService
+                .findOrganisation(ownerOrganisationIdentification);
+        lmd = this.writableLightMeasurementDeviceRepository.save(lmd);
+        final DeviceAuthorization authorization = lmd.addAuthorization(ownerOrganisation, DeviceFunctionGroup.OWNER);
+        this.writableAuthorizationRepository.save(authorization);
+        LOGGER.info("Created new light measurement device {} with owner {}",
+                newLightMeasurementDevice.getDeviceIdentification(), ownerOrganisationIdentification);
+    }
+
+    @Transactional(value = "writableTransactionManager")
+    public void updateLightMeasurementDevice(@Identification final String organisationIdentification,
+            @Valid final LightMeasurementDevice updateLightMeasurementDevice) throws FunctionalException {
+
+        final LightMeasurementDevice existingLmd = this.writableLightMeasurementDeviceRepository
+                .findByDeviceIdentification(updateLightMeasurementDevice.getDeviceIdentification());
+        if (existingLmd == null) {
+            // device does not exist
+            LOGGER.info("Device does not exist, nothing to update.");
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.WS_CORE,
+                    new UnknownEntityException(Device.class, updateLightMeasurementDevice.getDeviceIdentification()));
+        }
+
+        final List<DeviceAuthorization> owners = this.writableAuthorizationRepository
+                .findByDeviceAndFunctionGroup(existingLmd, DeviceFunctionGroup.OWNER);
+
+        // Check organisation against owner of device
+        boolean isOwner = false;
+        for (final DeviceAuthorization owner : owners) {
+            if (owner.getOrganisation().getOrganisationIdentification().equalsIgnoreCase(organisationIdentification)) {
+                isOwner = true;
+            }
+        }
+
+        if (!isOwner) {
+            LOGGER.info("Device has no owner yet, or organisation is not the owner.");
+            throw new FunctionalException(FunctionalExceptionType.UNAUTHORIZED, ComponentType.WS_CORE,
+                    new NotAuthorizedException(organisationIdentification));
+        }
+
+        // Update LMD
+        existingLmd.updateMetaData(updateLightMeasurementDevice.getAlias(),
+                updateLightMeasurementDevice.getContainerAddress(), updateLightMeasurementDevice.getGpsCoordinates());
+        existingLmd.setDeviceModel(updateLightMeasurementDevice.getDeviceModel());
+        existingLmd.setDescription(updateLightMeasurementDevice.getDescription());
+        existingLmd.setCode(updateLightMeasurementDevice.getCode());
+        existingLmd.setColor(updateLightMeasurementDevice.getColor());
+        existingLmd.setDigitalInput(updateLightMeasurementDevice.getDigitalInput());
+
+        this.writableLightMeasurementDeviceRepository.save(existingLmd);
     }
 
     @Transactional(value = "transactionManager")

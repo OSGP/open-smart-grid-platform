@@ -9,128 +9,71 @@
 package org.opensmartgridplatform.adapter.kafka.da.application.mapping;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
+import org.opensmartgridplatform.adapter.kafka.da.infra.mqtt.in.ScadaMeasurementPayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.data.scadameasurementpublishedevent.Analog;
 import com.alliander.data.scadameasurementpublishedevent.BaseVoltage;
 import com.alliander.data.scadameasurementpublishedevent.ConductingEquipment;
 import com.alliander.data.scadameasurementpublishedevent.Name;
+import com.alliander.data.scadameasurementpublishedevent.NameType;
 import com.alliander.data.scadameasurementpublishedevent.ScadaMeasurementPublishedEvent;
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.alliander.data.scadameasurementpublishedevent.UnitMultiplier;
+import com.alliander.data.scadameasurementpublishedevent.UnitSymbol;
+import com.alliander.data.scadameasurementpublishedevent.Voltage;
 
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.metadata.Type;
 
-/**
- * Class for mapping String containing a simple measurement or ls peak shaving
- * measurement to ScadaMeasurementPublishedEvent
- * <p>
- * simple measurement: ean_code; voltage_L1; voltage_L2; voltage_L3;
- * current_in_L1; current_in_L2; current_in_L3; current_returned_L1;
- * current_returned_L2; current_returned_L3;
- * <p>
- * ls peak shaving measurement: ean_code + the values of
- * LsPeakShavingMeasurementType separated by semicolons.
- */
-public class ScadaMeasurementPublishedEventConverter extends CustomConverter<String, ScadaMeasurementPublishedEvent> {
+public class ScadaMeasurementPublishedEventConverter
+        extends CustomConverter<ScadaMeasurementPayload, ScadaMeasurementPublishedEvent> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScadaMeasurementPublishedEventConverter.class);
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private static final float LOW_VOLTAGE_NOMINAL = 0.4f;
 
     @Override
-    public ScadaMeasurementPublishedEvent convert(final String source,
+    public ScadaMeasurementPublishedEvent convert(final ScadaMeasurementPayload source,
             final Type<? extends ScadaMeasurementPublishedEvent> destinationType, final MappingContext mappingContext) {
 
-        LsMeasurementMessageToAnalogList stringArrayToAnalogList = null;
-        LOGGER.debug("Source string: {}", source);
+        if (source == null || source.getData() == null || source.getData().length == 0) {
+            LOGGER.error("The payload is null or has no measurement values");
+            return null;
+        }
 
+        final String[] measurementValues = source.getData();
+
+        final List<Analog> analogList;
         try {
-            final Payload[] payloads = this.objectMapper.readValue(source, Payload[].class);
-            if (payloads.length == 0 || payloads[0] == null) {
-                LOGGER.error("Source does not include the correct data fields. Source {}", source);
-                return null;
-            }
-            final Payload payload = payloads[0];
-
-            final String[] measurementValues = (payload.gisnr + ", " + String.join(", ", payload.data)).split(", ");
-            LOGGER.debug("Values length: {} and values: {}", measurementValues.length,
-                    Arrays.toString(measurementValues));
-
-            if (measurementValues.length == LsPeakShavingMeasurementType.getNumberOfElements() + 1) {
-                stringArrayToAnalogList = new LsMeasurementMessageToAnalogList();
-            } else {
-                LOGGER.error(
-                        "Measurement values does not have the expected amount of fields. Expecting: {}, actual: {}. Payload: {}.",
-                        LsPeakShavingMeasurementType.getNumberOfElements() + 1, measurementValues.length, source);
-                return null;
-            }
-
-            final String eanCode = measurementValues[0];
-            final ConductingEquipment powerSystemResource = new ConductingEquipment(new BaseVoltage(eanCode, null),
-                    new ArrayList<Name>());
-            return new ScadaMeasurementPublishedEvent(stringArrayToAnalogList.convertToAnalogList(measurementValues),
-                    powerSystemResource, payload.createdUtcSeconds * 1000l, eanCode, UUID.randomUUID().toString());
-        } catch (final JsonMappingException e) {
-            LOGGER.error("Caught an error mapping a JSON string to Payload. {}", source, e);
-            return null;
-        } catch (final JsonProcessingException e) {
-            LOGGER.error("Caught an error processing a JSON string to Payload. {}", source, e);
+            analogList = new LowVoltageMeasurementToAnalogList().convertToAnalogList(measurementValues);
+        } catch (final IllegalArgumentException e) {
+            LOGGER.error(
+                    "Measurement values does not have the expected amount of fields. Expecting: {} or {}, actual: {}. Payload: {}.",
+                    LowVoltageMeasurementType.values().length, LowVoltageMetaMeasurementType.values().length,
+                    measurementValues.length, source, e);
             return null;
         }
+
+        return new ScadaMeasurementPublishedEvent(analogList, this.createPowerSystemResource(source),
+                source.getCreatedUtcSeconds() * 1000L, source.getSubstationIdentification(),
+                UUID.randomUUID().toString());
     }
 
-    private static class Payload {
-
-        private String gisnr;
-        private String feeder;
-        @JsonAlias({ "D" })
-        private String date;
-        @JsonAlias({ "uts" })
-        private long createdUtcSeconds;
-        private String[] data;
-
-        // Super is needed to map the String to the Payload object by the
-        // objectmapper.
-        @SuppressWarnings("unused")
-        public Payload() {
-            super();
+    private ConductingEquipment createPowerSystemResource(final ScadaMeasurementPayload source) {
+        final ArrayList<Name> names = new ArrayList<>();
+        names.add(new Name(new NameType("gisbehuizingnummer"), source.getSubstationIdentification()));
+        names.add(new Name(new NameType("msr naam"), source.getSubstationName()));
+        names.add(new Name(new NameType("bay positie"), source.getFeeder()));
+        if (source.getBayIdentification() != null) {
+            names.add(new Name(new NameType("bay identificatie"), source.getBayIdentification()));
         }
-
-        public Payload(final String gisnr, final String feeder, final String date, final long createdUtcSeconds,
-                final String[] data) {
-            this.gisnr = gisnr;
-            this.feeder = feeder;
-            this.date = date;
-            this.createdUtcSeconds = createdUtcSeconds;
-            this.data = data;
-        }
-
-        public String getGisnr() {
-            return this.gisnr;
-        }
-
-        public String getFeeder() {
-            return this.feeder;
-        }
-
-        public String getDate() {
-            return this.date;
-        }
-
-        public long getCreatedUtcSeconds() {
-            return this.createdUtcSeconds;
-        }
-
-        public String[] getData() {
-            return this.data;
-        }
+        final Voltage voltage = new Voltage(UnitMultiplier.k, UnitSymbol.V, LOW_VOLTAGE_NOMINAL);
+        return new ConductingEquipment(new BaseVoltage("LS", voltage), names);
     }
+
 }

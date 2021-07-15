@@ -19,12 +19,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.joda.time.DateTime;
-import com.beanit.openiec61850.BdaBoolean;
-import com.beanit.openiec61850.BdaInt8U;
-import com.beanit.openiec61850.BdaTimestamp;
-import com.beanit.openiec61850.BdaVisibleString;
-import com.beanit.openiec61850.FcModelNode;
-import com.beanit.openiec61850.Report;
 import org.opensmartgridplatform.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.DeviceMessageLog;
 import org.opensmartgridplatform.adapter.protocol.iec61850.domain.valueobjects.EventType;
@@ -39,6 +33,13 @@ import org.opensmartgridplatform.core.db.api.iec61850.entities.DeviceOutputSetti
 import org.opensmartgridplatform.dto.valueobjects.EventNotificationDto;
 import org.opensmartgridplatform.dto.valueobjects.EventTypeDto;
 import org.springframework.util.CollectionUtils;
+
+import com.beanit.openiec61850.BdaBoolean;
+import com.beanit.openiec61850.BdaInt8U;
+import com.beanit.openiec61850.BdaTimestamp;
+import com.beanit.openiec61850.BdaVisibleString;
+import com.beanit.openiec61850.FcModelNode;
+import com.beanit.openiec61850.Report;
 
 public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventListener {
 
@@ -146,8 +147,7 @@ public class Iec61850ClientSSLDEventListener extends Iec61850ClientBaseEventList
     }
 
     private DateTime getTimeOfEntry(final Report report) {
-        return report.getTimeOfEntry() == null ? null
-                : new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET);
+        return report.getTimeOfEntry() == null ? null : new DateTime(report.getTimeOfEntry().getTimestampValue());
     }
 
     private String getReportDescription(final Report report, final DateTime timeOfEntry) {

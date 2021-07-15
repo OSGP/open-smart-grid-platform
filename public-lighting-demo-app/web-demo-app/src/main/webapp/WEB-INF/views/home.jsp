@@ -21,7 +21,7 @@
 			of the Open Smart Grid Platform.</p>
 		<p>
 			Please follow the steps as described in the Installation Manual of the <a
-				href="http://documentation.opensmartgridplatform.org/Userguide/Installation/testOSGP.html">Open
+				href="https://documentation.gxf.lfenergy.org/Userguide/Installation/testOSGP.html">Open
 				Smart Grid Platform Documentation</a>
 		</p>
 

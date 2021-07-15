@@ -1,9 +1,10 @@
 /**
  * Copyright 2017 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.shared.security;
 
@@ -34,12 +35,13 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
-
-import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
+import org.springframework.util.StreamUtils;
 
 /**
  * {@link RsaEncryptionService} provides methods for encrypting and/or
@@ -69,22 +71,29 @@ public class RsaEncryptionService {
     public static final String ALGORITHM = "RSA";
     public static final String TRANSFORMATION = "RSA/ECB/PKCS1Padding";
 
-    private static final String UNEXPECTED_EXCEPTION_INITIALIZING_ENCRYPTION = "Unexpected exception initializing encryption";
-    private static final String UNEXPECTED_EXCEPTION_GENERATING_KEY_PAIR = "Unexpected exception generating a new key pair";
-    private static final String UNEXPECTED_EXCEPTION_WHEN_READING_PRIVATE_KEY = "Unexpected exception when reading private key";
-    private static final String UNEXPECTED_EXCEPTION_WHEN_READING_PUBLIC_KEY = "Unexpected exception when reading public key";
+    private static final String UNEXPECTED_EXCEPTION_INITIALIZING_ENCRYPTION =
+            "Unexpected exception initializing " + "encryption";
+    private static final String UNEXPECTED_EXCEPTION_GENERATING_KEY_PAIR =
+            "Unexpected exception generating a new key" + " pair";
+    private static final String UNEXPECTED_EXCEPTION_WHEN_READING_PRIVATE_KEY =
+            "Unexpected exception when reading " + "private key";
+    private static final String UNEXPECTED_EXCEPTION_WHEN_READING_PUBLIC_KEY =
+            "Unexpected exception when reading " + "public key";
     private static final String PUBLIC_KEY_IS_NOT_AN_RSA_KEY = "Public key is not an RSA key";
     private static final String PRIVATE_KEY_IS_NOT_AN_RSA_KEY = "Private key is not an RSA key";
-    private static final String PUBLIC_KEY_DOES_NOT_BELONG_WITH_PRIVATE_KEY = "Public key does not belong with private key";
+    private static final String PUBLIC_KEY_DOES_NOT_BELONG_WITH_PRIVATE_KEY =
+            "Public key does not belong with " + "private key";
     private static final String UNEXPECTED_EXCEPTION_DURING_ENCRYPTION = "Unexpected exception during encryption";
     private static final String UNEXPECTED_EXCEPTION_DURING_DECRYPTION = "Unexpected exception during decryption";
-    private static final String PUBLIC_KEY_MUST_BE_CONFIGURED_FOR_ENCRYPTION = "Public key must be configured for encryption";
-    private static final String PRIVATE_KEY_MUST_BE_CONFIGURED_FOR_DECRYPTION = "Private key must be configured for decryption";
+    private static final String PUBLIC_KEY_MUST_BE_CONFIGURED_FOR_ENCRYPTION =
+            "Public key must be configured for " + "encryption";
+    private static final String PRIVATE_KEY_MUST_BE_CONFIGURED_FOR_DECRYPTION =
+            "Private key must be configured for " + "decryption";
 
     @Value("${encryption.rsa.private.key.path:#{null}}")
-    private String rsaPrivateKeyPath;
+    private Resource rsaPrivateKeyPath;
     @Value("${encryption.rsa.public.key.path:#{null}}")
-    private String rsaPublicKeyPath;
+    private Resource rsaPublicKeyPath;
 
     private KeyPair keyPair;
 
@@ -101,7 +110,7 @@ public class RsaEncryptionService {
      * available.
      *
      * @param keyPair
-     *            a key pair for algorithm {@value #ALGORITHM}.
+     *         a key pair for algorithm {@value #ALGORITHM}.
      */
     protected RsaEncryptionService(final KeyPair keyPair) {
         /*
@@ -111,18 +120,12 @@ public class RsaEncryptionService {
         this.keyPair = this.createKeyPair(keyPair.getPublic(), keyPair.getPrivate());
     }
 
-    /**
-     * Constructor for easier testability.
-     *
-     * @param rsaPublicKeyPath
-     *            the path to an X.509 encoded public key file, encryption will
-     *            be disabled if this is blank.
-     * @param rsaPrivateKeyPath
-     *            the path to a PKCS#8 encoded private key file, decryption will
-     *            be disabled if this is blank.
-     */
-    public RsaEncryptionService(final String rsaPublicKeyPath, final String rsaPrivateKeyPath) {
-        this.keyPair = this.createKeyPair(rsaPublicKeyPath, rsaPrivateKeyPath);
+    public RsaEncryptionService(final Resource rsaPublicKeyPath, final Resource rsaPrivateKeyPath) {
+
+        final PrivateKey privateKey = readPrivateKeyFromResource(rsaPrivateKeyPath);
+        final PublicKey publicKey = readPublicKeyFromResource(rsaPublicKeyPath);
+
+        this.keyPair = this.createKeyPair(publicKey, privateKey);
     }
 
     @PostConstruct
@@ -136,18 +139,19 @@ public class RsaEncryptionService {
      * call to this method will result in an exception.
      *
      * @param input
-     *            bytes to be encrypted.
+     *         bytes to be encrypted.
+     *
      * @return bytes encrypted with the public key of the configured key pair.
+     *
      * @throws EncrypterException
-     *             if the public key is not configured or if anything goes wrong
-     *             while encrypting the given {@code input}.
+     *         if the public key is not configured or if anything goes wrong
+     *         while encrypting the given {@code input}.
      */
     public byte[] encrypt(final byte[] input) {
         try {
             final Cipher cipher = this.getCipherForEncryption();
             return cipher.doFinal(input);
-        } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException
-                | BadPaddingException e) {
+        } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException e) {
             LOGGER.error(UNEXPECTED_EXCEPTION_DURING_ENCRYPTION, e);
             throw new EncrypterException(UNEXPECTED_EXCEPTION_DURING_ENCRYPTION, e);
         }
@@ -159,19 +163,20 @@ public class RsaEncryptionService {
      * case a call to this method will result in an exception.
      *
      * @param input
-     *            bytes encrypted with the public key of the configured key
-     *            pair.
+     *         bytes encrypted with the public key of the configured key
+     *         pair.
+     *
      * @return bytes decrypted with the private key of the configured key pair.
+     *
      * @throws EncrypterException
-     *             if the private key is not configured or if anything goes
-     *             wrong while decrypting the given {@code input}.
+     *         if the private key is not configured or if anything goes
+     *         wrong while decrypting the given {@code input}.
      */
     public byte[] decrypt(final byte[] input) {
         try {
             final Cipher cipher = this.getCipherForDecryption();
             return cipher.doFinal(input);
-        } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException
-                | BadPaddingException e) {
+        } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException e) {
             LOGGER.error(UNEXPECTED_EXCEPTION_DURING_DECRYPTION, e);
             throw new EncrypterException(UNEXPECTED_EXCEPTION_DURING_DECRYPTION, e);
         }
@@ -201,9 +206,9 @@ public class RsaEncryptionService {
         return cipher;
     }
 
-    private KeyPair createKeyPair(final String rsaPublicKeyPath, final String rsaPrivateKeyPath) {
-        final PrivateKey privateKey = readPrivateKeyFromFile(rsaPrivateKeyPath);
-        final PublicKey publicKey = readPublicKeyFromFile(rsaPublicKeyPath);
+    private KeyPair createKeyPair(final Resource rsaPublicKeyPath, final Resource rsaPrivateKeyPath) {
+        final PrivateKey privateKey = readPrivateKeyFromResource(rsaPrivateKeyPath);
+        final PublicKey publicKey = readPublicKeyFromResource(rsaPublicKeyPath);
         return this.createKeyPair(publicKey, privateKey);
     }
 
@@ -225,8 +230,8 @@ public class RsaEncryptionService {
         final BigInteger two = BigInteger.valueOf(2);
         final BigInteger publicExponent = rsaPublicKey.getPublicExponent();
         final BigInteger privateExponent = rsaPrivateKey.getPrivateExponent();
-        if (modulus.equals(rsaPrivateKey.getModulus())
-                && two.modPow(publicExponent.multiply(privateExponent).subtract(BigInteger.ONE), modulus)
+        if (modulus.equals(rsaPrivateKey.getModulus()) && two
+                .modPow(publicExponent.multiply(privateExponent).subtract(BigInteger.ONE), modulus)
                 .equals(BigInteger.ONE)) {
             return new KeyPair(publicKey, privateKey);
         }
@@ -262,8 +267,9 @@ public class RsaEncryptionService {
      * property key {@code encryption.rsa.public.key.path}.
      *
      * @param filename
-     *            the name of a file containing binary data according to the
-     *            {@link X509EncodedKeySpec X.509 encoded key spec}.
+     *         the name of a file containing binary data according to the
+     *         {@link X509EncodedKeySpec X.509 encoded key spec}.
+     *
      * @return a public key for algorithm {@value #ALGORITHM}, or {@code null}
      *         if the given {@code filename} is blank.
      */
@@ -273,12 +279,16 @@ public class RsaEncryptionService {
         }
         try {
             final byte[] publicKeyBytes = Files.readAllBytes(Paths.get(filename));
-            final X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
-            return getKeyFactory().generatePublic(publicKeySpec);
+            return generatePublicKey(publicKeyBytes);
         } catch (final IOException | InvalidKeySpecException e) {
             LOGGER.error(UNEXPECTED_EXCEPTION_WHEN_READING_PUBLIC_KEY, e);
             throw new EncrypterException(UNEXPECTED_EXCEPTION_WHEN_READING_PUBLIC_KEY, e);
         }
+    }
+
+    private static PublicKey generatePublicKey(byte[] publicKeyBytes) throws InvalidKeySpecException {
+        final X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
+        return getKeyFactory().generatePublic(publicKeySpec);
     }
 
     /**
@@ -291,8 +301,9 @@ public class RsaEncryptionService {
      * property key {@code encryption.rsa.private.key.path}.
      *
      * @param filename
-     *            the name of a file containing binary data according to the
-     *            {@link PKCS8EncodedKeySpec PKCS#8 encoded key spec}.
+     *         the name of a file containing binary data according to the
+     *         {@link PKCS8EncodedKeySpec PKCS#8 encoded key spec}.
+     *
      * @return a public key for algorithm {@value #ALGORITHM}, or {@code null}
      *         if the given {@code filename} is blank.
      */
@@ -302,12 +313,47 @@ public class RsaEncryptionService {
         }
         try {
             final byte[] privateKeyBytes = Files.readAllBytes(Paths.get(filename));
-            final PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
-            return getKeyFactory().generatePrivate(privateKeySpec);
+            return generatePrivateKey(privateKeyBytes);
         } catch (final IOException | InvalidKeySpecException e) {
             LOGGER.error(UNEXPECTED_EXCEPTION_WHEN_READING_PRIVATE_KEY, e);
             throw new EncrypterException(UNEXPECTED_EXCEPTION_WHEN_READING_PRIVATE_KEY, e);
         }
+    }
+
+    private static PrivateKey readPrivateKeyFromResource(final Resource resource) {
+
+        if (resource == null) {
+            return null;
+        }
+
+        try {
+            final byte[] privateKeyBytes = StreamUtils.copyToByteArray(resource.getInputStream());
+            return generatePrivateKey(privateKeyBytes);
+        } catch (final IOException | InvalidKeySpecException e) {
+            LOGGER.error(UNEXPECTED_EXCEPTION_WHEN_READING_PRIVATE_KEY, e);
+            throw new EncrypterException(UNEXPECTED_EXCEPTION_WHEN_READING_PRIVATE_KEY, e);
+        }
+    }
+
+    private static PrivateKey generatePrivateKey(byte[] privateKeyBytes) throws InvalidKeySpecException {
+        final PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
+        return getKeyFactory().generatePrivate(privateKeySpec);
+    }
+
+    private static PublicKey readPublicKeyFromResource(final Resource resource) {
+
+        if (resource == null) {
+            return null;
+        }
+
+        try {
+            final byte[] publicKeyBytes = StreamUtils.copyToByteArray(resource.getInputStream());
+            return generatePublicKey(publicKeyBytes);
+        } catch (final IOException | InvalidKeySpecException e) {
+            LOGGER.error(UNEXPECTED_EXCEPTION_WHEN_READING_PUBLIC_KEY, e);
+            throw new EncrypterException(UNEXPECTED_EXCEPTION_WHEN_READING_PUBLIC_KEY, e);
+        }
+
     }
 
     private static KeyFactory getKeyFactory() {
@@ -324,8 +370,9 @@ public class RsaEncryptionService {
      * {@value #ALGORITHM} and the given {@code keysize}.
      *
      * @param keysize
-     *            the keysize for which the key pair generator will be
-     *            initialized.
+     *         the keysize for which the key pair generator will be
+     *         initialized.
+     *
      * @return a randomly initialized {@value #ALGORITHM} key pair for the given
      *         {@code keysize}.
      */
@@ -349,12 +396,13 @@ public class RsaEncryptionService {
      * {@link #readPrivateKeyFromFile(String) private} key.
      *
      * @param key
-     *            a key implementation for algorithm {@value #ALGORITHM}.
+     *         a key implementation for algorithm {@value #ALGORITHM}.
      * @param filename
-     *            the name of a file to be newly created.
+     *         the name of a file to be newly created.
+     *
      * @throws IOException
-     *             if a file with the given {@code filename} already exists or
-     *             cannot be created or written to.
+     *         if a file with the given {@code filename} already exists or
+     *         cannot be created or written to.
      */
     public static void saveKeyToFile(final Key key, final String filename) throws IOException {
         final byte[] encoded = key.getEncoded();

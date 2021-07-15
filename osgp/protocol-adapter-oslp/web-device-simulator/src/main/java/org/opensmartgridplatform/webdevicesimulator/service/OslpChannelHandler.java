@@ -11,15 +11,20 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.security.PrivateKey;
-import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.SortedSet;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.TreeSet;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -80,6 +85,9 @@ import io.netty.channel.SimpleChannelInboundHandler;
 public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OslpChannelHandler.class);
+
+    private static final SortedSet<String> REBOOTING_DEVICE_IDS = Collections.synchronizedSortedSet(new TreeSet<>());
+
     private final Lock lock = new ReentrantLock();
     private final ConcurrentMap<String, Callback> callbacks = new ConcurrentHashMap<>();
     private final List<OutOfSequenceEvent> outOfSequenceList = new ArrayList<>();
@@ -94,8 +102,6 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
     private String oslpSignature;
     @Autowired
     private int connectionTimeout;
-    @Autowired
-    private String firmwareVersion;
     @Autowired
     private String configurationIpConfigFixedIpAddress;
     @Autowired
@@ -297,6 +303,15 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
     @Override
     public void channelRead0(final ChannelHandlerContext ctx, final OslpEnvelope message) throws Exception {
 
+        final String deviceUid = Base64.encodeBase64String(message.getDeviceId());
+        if (this.isRebooting(message.getDeviceId())) {
+            LOGGER.warn("Disconnect device {}, simulating unavailability while rebooting", deviceUid);
+            ctx.disconnect();
+            return;
+        } else {
+            LOGGER.info("Process envelope for device {}, not rebooting", deviceUid);
+        }
+
         this.oslpLogItemRepository.save(new OslpLogItem(message.getDeviceId(),
                 this.getDeviceIdentificationFromMessage(message.getPayloadMessage()), true,
                 message.getPayloadMessage()));
@@ -372,12 +387,9 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
         } else {
             LOGGER.warn("Received message wasn't properly secured.");
         }
-
-        ctx.fireChannelRead(message);
     }
 
     @Override
-
     public void channelActive(final ChannelHandlerContext ctx) throws Exception {
         LOGGER.info("Channel {} active.", ctx.channel().id());
         super.channelActive(ctx);
@@ -472,7 +484,7 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
     }
 
     private Oslp.Message handleRequest(final OslpEnvelope message, final int sequenceNumber)
-            throws DeviceSimulatorException, ParseException {
+            throws DeviceSimulatorException {
         final Oslp.Message request = message.getPayloadMessage();
 
         // Create response message
@@ -534,7 +546,7 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
      * request, suppress the SonarQube check for now.
      */
     @SuppressWarnings("squid:MethodCyclomaticComplexity")
-    private Oslp.Message checkForRequest(final Oslp.Message request, final Device device) throws ParseException {
+    private Oslp.Message checkForRequest(final Oslp.Message request, final Device device) {
 
         Oslp.Message response = null;
 
@@ -562,7 +574,7 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
 
             response = createUpdateFirmwareResponse();
         } else if (request.hasGetFirmwareVersionRequest()) {
-            response = createGetFirmwareVersionResponse(this.firmwareVersion);
+            response = createGetFirmwareVersionResponse(device.getFirmwareVersion());
         } else if (request.hasSwitchFirmwareRequest()) {
             response = createSwitchFirmwareResponse();
         } else if (request.hasUpdateDeviceSslCertificationRequest()) {
@@ -590,7 +602,7 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
         } else if (request.hasSetRebootRequest()) {
             response = createSetRebootResponse();
 
-            this.sendDelayedDeviceRegistration(device);
+            this.simulateReboot(device);
         } else if (request.hasSetTransitionRequest()) {
             this.handleSetTransitionRequest(device, request.getSetTransitionRequest());
 
@@ -606,35 +618,71 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
         return response;
     }
 
-    private void sendDelayedDeviceRegistration(final Device device) {
+    private void startRebooting(final String deviceUid) {
+        LOGGER.info("Blocking further requests for {} while rebooting", deviceUid);
+        REBOOTING_DEVICE_IDS.add(deviceUid);
+    }
+
+    private void finishRebooting(final String deviceUid) {
+        REBOOTING_DEVICE_IDS.remove(deviceUid);
+        LOGGER.info("Accepting new requests for {} after rebooting", deviceUid);
+    }
+
+    private boolean isRebooting(final byte[] deviceId) {
+        final String deviceUid = Base64.encodeBase64String(deviceId);
+        LOGGER.info("Checking whether device {} is rebooting", deviceUid);
+        return REBOOTING_DEVICE_IDS.contains(deviceUid);
+    }
+
+    private DeviceMessageStatus performDeviceRegistration(final Device device) {
         if (device == null) {
-            return;
+            return DeviceMessageStatus.FAILURE;
         }
 
         final String deviceIdentification = device.getDeviceIdentification();
-        if (StringUtils.isEmpty(deviceIdentification)) {
-            return;
+        if (!StringUtils.hasText(deviceIdentification)) {
+            return DeviceMessageStatus.FAILURE;
         }
 
-        new Timer().schedule(new TimerTask() {
+        try {
+            LOGGER.info("Sending DeviceRegistrationRequest for device: {}", deviceIdentification);
 
-            @Override
-            public void run() {
-                try {
-                    LOGGER.info("Sending DeviceRegistrationRequest for device: {}", deviceIdentification);
-                    final DeviceMessageStatus deviceMessageStatus = OslpChannelHandler.this.registerDevice
-                            .sendRegisterDeviceCommand(device.getId(), true);
-                    if (DeviceMessageStatus.OK.equals(deviceMessageStatus)) {
-                        LOGGER.info("Sending ConfirmDeviceRegistrationRequest for device: {}", deviceIdentification);
-                        OslpChannelHandler.this.registerDevice.sendConfirmDeviceRegistrationCommand(device.getId());
-                    }
-                } catch (final Exception e) {
-                    LOGGER.error("Caught exception during sendDelayedDeviceRegistration() for device : "
-                            + deviceIdentification, e);
-                }
+            this.finishRebooting(device.getDeviceUid());
+            final DeviceMessageStatus deviceMessageStatus = OslpChannelHandler.this.registerDevice
+                    .sendRegisterDeviceCommand(device.getId(), true);
+            if (DeviceMessageStatus.OK.equals(deviceMessageStatus)) {
+                LOGGER.info("Sending ConfirmDeviceRegistrationRequest for device: {}", deviceIdentification);
+                return OslpChannelHandler.this.registerDevice.sendConfirmDeviceRegistrationCommand(device.getId());
+            } else {
+                LOGGER.info(
+                        "Not sending ConfirmDeviceRegistrationRequest for device: {} because DeviceRegistrationRequest ended with status: {}",
+                        deviceIdentification, deviceMessageStatus);
             }
+        } catch (final Exception e) {
+            LOGGER.error("Exception during registration process of device: {}", deviceIdentification, e);
+        }
+        return DeviceMessageStatus.FAILURE;
+    }
 
-        }, 2000);
+    private CompletableFuture<DeviceMessageStatus> simulateReboot(final Device device) {
+        final String deviceUid = device.getDeviceUid();
+        this.startRebooting(deviceUid);
+        return CompletableFuture.supplyAsync(() -> {
+            DeviceMessageStatus result = DeviceMessageStatus.FAILURE;
+            try {
+                result = Executors.newSingleThreadScheduledExecutor()
+                        .schedule(() -> this.performDeviceRegistration(device),
+                                this.deviceManagementService.getRebootDelay(), TimeUnit.SECONDS)
+                        .get();
+            } catch (final InterruptedException e) {
+                Thread.currentThread().interrupt();
+                LOGGER.error("simulateReboot was interrupted", e);
+            } catch (final ExecutionException e) {
+                LOGGER.error("simulateReboot threw an Exception", e);
+            }
+            this.finishRebooting(deviceUid);
+            return result;
+        });
     }
 
     private void handleSetScheduleRequest(final Device device, final SetScheduleRequest setScheduleRequest) {
@@ -873,13 +921,25 @@ public class OslpChannelHandler extends SimpleChannelInboundHandler<OslpEnvelope
         LOGGER.debug("handle UpdateFirmwareRequest for device: {}, with serialized size of {}",
                 device.getDeviceIdentification(), request.getSerializedSize());
 
-        this.sendDelayedDeviceRegistration(device);
-
-        // Send a firmware activation event after the device registration has
-        // (likely) been finished
-        final Oslp.Event event = Oslp.Event.FIRMWARE_EVENTS_ACTIVATING;
-        final String description = "A new firmware is activated";
-        this.sendEventWithCustomDelay(device, event, description, 7000);
+        this.simulateReboot(device).thenAccept(deviceMessageStatus -> {
+            if (DeviceMessageStatus.NOT_FOUND == deviceMessageStatus) {
+                LOGGER.error("Device {} not found handling update firmware request", device.getDeviceIdentification());
+                return;
+            }
+            final Oslp.Event event;
+            final String description;
+            if (DeviceMessageStatus.OK == deviceMessageStatus) {
+                event = Oslp.Event.FIRMWARE_EVENTS_ACTIVATING;
+                description = "A new firmware is activated";
+            } else {
+                LOGGER.warn("Device {} has issues registering after reboot handling update firmware request",
+                        device.getDeviceIdentification());
+                event = Oslp.Event.FIRMWARE_EVENTS_DOWNLOAD_FAILED;
+                description = "Failure rebooting and registrating device during firmware activation";
+            }
+            this.sendEventWithCustomDelay(device, event, description,
+                    Math.max(1, 7 - this.deviceManagementService.getRebootDelay()));
+        });
     }
 
     private void handleSetConfigurationRequest(final Device device,

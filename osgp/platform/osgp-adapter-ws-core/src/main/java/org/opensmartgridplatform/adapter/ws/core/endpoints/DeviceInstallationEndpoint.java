@@ -19,6 +19,8 @@ import org.opensmartgridplatform.adapter.ws.schema.core.common.AsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.AddDeviceRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.AddDeviceResponse;
+import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.AddLightMeasurementDeviceRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.AddLightMeasurementDeviceResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.FindRecentDevicesRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.FindRecentDevicesResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.GetStatusAsyncRequest;
@@ -35,9 +37,12 @@ import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.StopD
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.StopDeviceTestResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.UpdateDeviceRequest;
 import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.UpdateDeviceResponse;
+import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.UpdateLightMeasurementDeviceRequest;
+import org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.UpdateLightMeasurementDeviceResponse;
 import org.opensmartgridplatform.adapter.ws.schema.core.notification.NotificationType;
 import org.opensmartgridplatform.adapter.ws.shared.services.NotificationService;
 import org.opensmartgridplatform.domain.core.entities.Device;
+import org.opensmartgridplatform.domain.core.entities.LightMeasurementDevice;
 import org.opensmartgridplatform.domain.core.entities.Ssld;
 import org.opensmartgridplatform.domain.core.exceptions.ValidationException;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceStatus;
@@ -77,9 +82,10 @@ public class DeviceInstallationEndpoint {
     }
 
     @Autowired
-    public DeviceInstallationEndpoint(
-            @Qualifier(value = "wsCoreDeviceInstallationService") final DeviceInstallationService deviceInstallationService,
-            @Qualifier(value = "coreDeviceInstallationMapper") final DeviceInstallationMapper deviceInstallationMapper) {
+    public DeviceInstallationEndpoint(@Qualifier(
+            value = "wsCoreDeviceInstallationService") final DeviceInstallationService deviceInstallationService,
+            @Qualifier(
+                    value = "coreDeviceInstallationMapper") final DeviceInstallationMapper deviceInstallationMapper) {
         this.deviceInstallationService = deviceInstallationService;
         this.deviceInstallationMapper = deviceInstallationMapper;
     }
@@ -200,6 +206,74 @@ public class DeviceInstallationEndpoint {
         return new UpdateDeviceResponse();
     }
 
+    @PayloadRoot(localPart = "AddLightMeasurementDeviceRequest", namespace = DEVICE_INSTALLATION_NAMESPACE)
+    @ResponsePayload
+    public AddLightMeasurementDeviceResponse addLightMeasurementDevice(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final AddLightMeasurementDeviceRequest request) throws OsgpException {
+
+        LOGGER.info("Adding light measurement device: {}.",
+                request.getLightMeasurementDevice().getDeviceIdentification());
+
+        try {
+            final LightMeasurementDevice lmd = this.deviceInstallationMapper.map(request.getLightMeasurementDevice(),
+                    LightMeasurementDevice.class);
+            final String ownerOrganisationIdentification = request.getLightMeasurementDevice().getOwner();
+
+            this.deviceInstallationService.addLightMeasurementDevice(organisationIdentification, lmd,
+                    ownerOrganisationIdentification);
+        } catch (final ConstraintViolationException e) {
+            LOGGER.error(EXCEPTION_WHILE_ADDING_DEVICE, e.getMessage(),
+                    request.getLightMeasurementDevice().getDeviceIdentification(), organisationIdentification, e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final AssertionError e) {
+            LOGGER.error(EXCEPTION_WHILE_ADDING_DEVICE, e.getMessage(),
+                    request.getLightMeasurementDevice().getDeviceIdentification(), organisationIdentification, e);
+            throw new TechnicalException(COMPONENT_WS_CORE, e);
+        } catch (final Exception e) {
+            LOGGER.error(EXCEPTION_WHILE_ADDING_DEVICE, e.getMessage(),
+                    request.getLightMeasurementDevice().getDeviceIdentification(), organisationIdentification, e);
+            this.handleException(e);
+        }
+
+        return new AddLightMeasurementDeviceResponse();
+    }
+
+    @PayloadRoot(localPart = "UpdateLightMeasurementDeviceRequest", namespace = DEVICE_INSTALLATION_NAMESPACE)
+    @ResponsePayload
+    public UpdateLightMeasurementDeviceResponse updateLightMeasurementDevice(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final UpdateLightMeasurementDeviceRequest request) throws OsgpException {
+
+        LOGGER.info("Updating light measurement device: {}.", request.getDeviceIdentification());
+
+        try {
+            final LightMeasurementDevice device = this.deviceInstallationMapper
+                    .map(request.getUpdatedLightMeasurementDevice(), LightMeasurementDevice.class);
+
+            this.deviceInstallationService.updateLightMeasurementDevice(organisationIdentification, device);
+        } catch (final ConstraintViolationException e) {
+            LOGGER.error("Exception update Device: {} ", e.getMessage(), e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            LOGGER.error(EXCEPTION_WHILE_UPDATING_DEVICE, e.getMessage(),
+                    request.getUpdatedLightMeasurementDevice().getDeviceIdentification(), organisationIdentification,
+                    e);
+            this.handleException(e);
+        }
+
+        try {
+            this.notificationService.sendNotification(organisationIdentification, request.getDeviceIdentification(),
+                    null, null, null, NotificationType.DEVICE_UPDATED);
+        } catch (final Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+
+        return new UpdateLightMeasurementDeviceResponse();
+    }
+
     @PayloadRoot(localPart = "FindRecentDevicesRequest", namespace = DEVICE_INSTALLATION_NAMESPACE)
     @ResponsePayload
     public FindRecentDevicesResponse findRecentDevices(
@@ -213,8 +287,9 @@ public class DeviceInstallationEndpoint {
         try {
             final List<Device> recentDevices = this.deviceInstallationService
                     .findRecentDevices(organisationIdentification);
-            response.getDevices().addAll(this.deviceInstallationMapper.mapAsList(recentDevices,
-                    org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.Device.class));
+            response.getDevices()
+                    .addAll(this.deviceInstallationMapper.mapAsList(recentDevices,
+                            org.opensmartgridplatform.adapter.ws.schema.core.deviceinstallation.Device.class));
         } catch (final ConstraintViolationException e) {
             LOGGER.error("Exception find recent device: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,

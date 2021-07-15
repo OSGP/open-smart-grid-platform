@@ -15,20 +15,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.DateTime;
-import com.beanit.openiec61850.BdaFloat32;
-import com.beanit.openiec61850.BdaTimestamp;
-import com.beanit.openiec61850.Fc;
-import com.beanit.openiec61850.FcModelNode;
-import com.beanit.openiec61850.ModelNode;
-import com.beanit.openiec61850.Report;
+import org.opensmartgridplatform.adapter.protocol.iec61850.application.services.DeviceManagementService;
+import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.da.GetPQValuesResponseDto;
 import org.opensmartgridplatform.dto.da.iec61850.DataSampleDto;
 import org.opensmartgridplatform.dto.da.iec61850.LogicalDeviceDto;
 import org.opensmartgridplatform.dto.da.iec61850.LogicalNodeDto;
 import org.springframework.util.CollectionUtils;
 
-import org.opensmartgridplatform.adapter.protocol.iec61850.application.services.DeviceManagementService;
-import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
+import com.beanit.openiec61850.BdaFloat32;
+import com.beanit.openiec61850.BdaTimestamp;
+import com.beanit.openiec61850.Fc;
+import com.beanit.openiec61850.FcModelNode;
+import com.beanit.openiec61850.ModelNode;
+import com.beanit.openiec61850.Report;
 
 public class Iec61850ClientDaRTUEventListener extends Iec61850ClientBaseEventListener {
 
@@ -40,7 +40,7 @@ public class Iec61850ClientDaRTUEventListener extends Iec61850ClientBaseEventLis
     @Override
     public void newReport(final Report report) {
         final DateTime timeOfEntry = report.getTimeOfEntry() == null ? null
-                : new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET);
+                : new DateTime(report.getTimeOfEntry().getTimestampValue());
 
         final String reportDescription = this.getReportDescription(report, timeOfEntry);
 

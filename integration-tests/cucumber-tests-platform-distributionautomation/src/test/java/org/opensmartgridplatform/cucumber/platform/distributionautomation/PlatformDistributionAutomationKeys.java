@@ -25,6 +25,10 @@ public class PlatformDistributionAutomationKeys {
     public static final String MQTT_QOS = "MqttQos";
     public static final String DESCRIPTION = "description";
     public static final String KIND = "kind";
+    public static final String SUBSTATION_IDENTIFICATION = "substation identification";
+    public static final String SUBSTATION_NAME = "substation name";
+    public static final String BAY_POSITION = "bay position";
+    public static final String BAY_IDENTIFICATION = "bay identification";
     public static final String NUMBER_OF_ELEMENTS = "numberOfElements";
     public static final String MEASUREMENT = "measurement";
     public static final String UNIT_SYMBOL = "unitSymbol";

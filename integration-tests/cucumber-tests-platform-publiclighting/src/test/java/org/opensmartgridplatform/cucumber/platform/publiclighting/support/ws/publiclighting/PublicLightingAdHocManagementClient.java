@@ -7,6 +7,8 @@
  */
 package org.opensmartgridplatform.cucumber.platform.publiclighting.support.ws.publiclighting;
 
+import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.FindAllDevicesRequest;
+import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.FindAllDevicesResponse;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusRequest;
@@ -89,4 +91,10 @@ public class PublicLightingAdHocManagementClient extends BaseClient {
         return (SetTransitionAsyncResponse) webServiceTemplate.marshalSendAndReceive(request);
     }
 
+    public FindAllDevicesResponse findAllDevices(final FindAllDevicesRequest request)
+            throws WebServiceSecurityException {
+        final WebServiceTemplate webServiceTemplate = this.publicLightingAdHocManagementWstf
+                .getTemplate(this.getOrganizationIdentification(), this.getUserName());
+        return (FindAllDevicesResponse) webServiceTemplate.marshalSendAndReceive(request);
+    }
 }

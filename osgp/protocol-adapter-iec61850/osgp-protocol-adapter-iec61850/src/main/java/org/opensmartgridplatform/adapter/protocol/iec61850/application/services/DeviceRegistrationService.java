@@ -203,4 +203,8 @@ public class DeviceRegistrationService {
             }
         }, DeviceRegistrationService.this.delayAfterDeviceRegistration);
     }
+
+    public boolean isKnownDevice(final String deviceIdentification) {
+        return this.ssldDataRepository.findByDeviceIdentification(deviceIdentification) != null;
+    }
 }

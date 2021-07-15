@@ -11,21 +11,21 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.mapping;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventLogCategoryDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component(value = "dataObjectToEventListConverter")
 public class DataObjectToEventListConverter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DataObjectToEventListConverter.class);
+    public static final String EVENT_DATA_VALUE_IS_NOT_A_NUMBER = "eventData value is not a number";
 
     private final DlmsHelper dlmsHelper;
 
@@ -70,7 +70,7 @@ public class DataObjectToEventListConverter {
         final Integer eventCounter = this.extractEventCounter(eventLogCategory, eventData);
         final String eventLogCategoryName = eventLogCategory.name();
 
-        LOGGER.info("Event time is {}, event code is {}, event category is {} and event counter is {}", dateTime, code,
+        log.info("Event time is {}, event code is {}, event category is {} and event counter is {}", dateTime, code,
                 eventLogCategoryName, eventCounter);
 
         // build a new EventDto with those values.
@@ -89,7 +89,7 @@ public class DataObjectToEventListConverter {
     private Short extractCode(final List<DataObject> eventData) throws ProtocolAdapterException {
 
         if (!eventData.get(1).isNumber()) {
-            throw new ProtocolAdapterException("eventData value is not a number");
+            throw new ProtocolAdapterException(EVENT_DATA_VALUE_IS_NOT_A_NUMBER);
         }
         return eventData.get(1).getValue();
     }
@@ -101,7 +101,7 @@ public class DataObjectToEventListConverter {
 
         if (eventLogCategory.getNumberOfEventElements() == 3) {
             if (!eventData.get(2).isNumber()) {
-                throw new ProtocolAdapterException("eventData value is not a number");
+                throw new ProtocolAdapterException(EVENT_DATA_VALUE_IS_NOT_A_NUMBER);
             }
             eventCounter = eventData.get(2).getValue();
         }

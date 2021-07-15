@@ -10,7 +10,6 @@ package org.opensmartgridplatform.webdevicesimulator.application.config;
 import java.util.Properties;
 
 import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
@@ -21,6 +20,7 @@ import org.opensmartgridplatform.webdevicesimulator.service.RegisterDevice;
 import org.opensmartgridplatform.webdevicesimulator.service.SwitchingServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -28,8 +28,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -64,53 +64,99 @@ public class ApplicationContext {
     private static final String VIEW_RESOLVER_PREFIX = "/WEB-INF/views/";
     private static final String VIEW_RESOLVER_SUFFIX = ".jsp";
 
-    private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.driver";
-    private static final String PROPERTY_NAME_DATABASE_PW = "db.password";
-    private static final String PROPERTY_NAME_DATABASE_URL = "db.url";
-    private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.username";
-
-    private static final String PROPERTY_NAME_DATABASE_MAX_POOL_SIZE = "db.max_pool_size";
-    private static final String PROPERTY_NAME_DATABASE_AUTO_COMMIT = "db.auto_commit";
-
     private static final String PROPERTY_NAME_HIBERNATE_DIALECT = "hibernate.dialect";
     private static final String PROPERTY_NAME_HIBERNATE_FORMAT_SQL = "hibernate.format_sql";
     private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY = "hibernate.physical_naming_strategy";
     private static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
 
-    private static final String PROPERTY_NAME_FLYWAY_INITIAL_VERSION = "flyway.initial.version";
-    private static final String PROPERTY_NAME_FLYWAY_INITIAL_DESCRIPTION = "flyway.initial.description";
-    private static final String PROPERTY_NAME_FLYWAY_INIT_ON_MIGRATE = "flyway.init.on.migrate";
+    @Value("${db.driver}")
+    private String driver;
 
-    private static final String PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN = "entitymanager.packages.to.scan";
+    @Value("${db.username}")
+    private String username;
 
-    private static final String PROPERTY_NAME_MESSAGESOURCE_BASENAME = "message.source.basename";
-    private static final String PROPERTY_NAME_MESSAGESOURCE_USE_CODE_AS_DEFAULT_MESSAGE = "message.source.use.code.as.default.message";
+    @Value("${db.password}")
+    private String password;
 
-    private static final String PROPERTY_NAME_RESPONSE_DELAY_TIME = "response.delay.time";
-    private static final String PROPERTY_NAME_RESPONSE_DELAY_RANDOM_RANGE = "response.delay.random.range";
+    @Value("${db.url}")
+    private String url;
 
-    private static final String PROPERTY_NAME_CHECKBOX_DEVICE_REGISTRATION_VALUE = "checkbox.device.registration.value";
-    private static final String PROPERTY_NAME_CHECKBOX_DEVICE_REBOOT_VALUE = "checkbox.device.reboot.value";
-    private static final String PROPERTY_NAME_CHECKBOX_LIGHT_SWITCHING_VALUE = "checkbox.light.switching.value";
-    private static final String PROPERTY_NAME_CHECKBOX_TARIFF_SWITCHING_VALUE = "checkbox.tariff.switching.value";
-    private static final String PROPERTY_NAME_CHECKBOX_EVENT_NOTIFICATION_VALUE = "checkbox.event.notification.value";
+    @Value("${db.max_pool_size:5}")
+    private int maxPoolSize;
 
-    private static final String PROPERTY_NAME_FIRMWARE_VERSION = "firmware.version";
+    @Value("${db.auto_commit:false}")
+    private boolean autoCommit;
 
-    private static final String PROPERTY_NAME_CONFIGURATION_IP_CONFIG_FIXED_IP_ADDRESS = "configuration.ip.config.fixed.ip.address";
-    private static final String PROPERTY_NAME_CONFIGURATION_IP_CONFIG_NETMASK = "configuration.ip.config.netmask";
-    private static final String PROPERTY_NAME_CONFIGURATION_IP_CONFIG_GATEWAY = "configuration.ip.config.gateway";
-    private static final String PROPERTY_NAME_CONFIGURATION_OSGP_IP_ADDRESS = "configuration.osgp.ip.address";
-    private static final String PROPERTY_NAME_CONFIGURATION_OSGP_PORT_NUMBER = "configuration.osgp.port.number";
+    @Value("${hibernate.dialect}")
+    private String hibernateDialect;
 
-    private static final String PROPERTY_NAME_STATUS_INTERNAL_IP_ADDRESS = "status.internal.ip.address";
+    @Value("${hibernate.format_sql}")
+    private String hibernateFormatSql;
+
+    @Value("${hibernate.physical_naming_strategy}")
+    private String hibernatePhysicalStategy;
+
+    @Value("${hibernate.show_sql}")
+    private String hibernateShowSql;
+
+    @Value("${flyway.initial.version}")
+    private String flywayInitialVersion;
+
+    @Value("${flyway.initial.description}")
+    private String flywayInitialDescription;
+
+    @Value("${flyway.init.on.migrate:true}")
+    private boolean flywayInitOnMigrate;
+
+    @Value("${entitymanager.packages.to.scan}")
+    private String entitymanagerPackagesToScan;
+
+    @Value("${message.source.basename}")
+    private String messageSourceBasename;
+    @Value("${message.source.use.code.as.default.message:true}")
+    private boolean messageSourceUseCodeAsDefaultMessage;
+
+    @Value("${reboot.delay.seconds:5}")
+    private int rebootDelayInSeconds;
+
+    @Value("${response.delay.time:10}")
+    private long responseDelayTime;
+    @Value("${response.delay.random.range:20}")
+    private long responseDelayRandomRange;
+
+    @Value("${checkbox.device.registration.value}")
+    private boolean checkboxDeviceRegistration;
+    @Value("${checkbox.device.reboot.value}")
+    private boolean checkboxDeviceReboot;
+    @Value("${checkbox.light.switching.value:false}")
+    private boolean checkboxLightSwitching;
+    @Value("${checkbox.tariff.switching.value:false}")
+    private boolean checkboxTariffSwitching;
+    @Value("${checkbox.event.notification.value:false}")
+    private boolean checkboxEventNotification;
+
+    @Value("${configuration.ip.config.fixed.ip.address}")
+    private String ipConfigFixedIpAddress;
+    @Value("${configuration.ip.config.netmask}")
+    private String ipConfigNetmask;
+    @Value("${configuration.ip.config.gateway}")
+    private String ipConfigGateway;
+    @Value("${configuration.osgp.ip.address}")
+    private String osgpIpAddress;
+    @Value("${configuration.osgp.port.number:12122}")
+    private int osgpPortNumber;
+
+    @Value("${status.internal.ip.address}")
+    private String statusInternalIpAddress;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
 
-    @Resource
-    private Environment environment;
-
     private HikariDataSource dataSource;
+
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer propertyConfigurer() {
+        return new PropertySourcesPlaceholderConfigurer();
+    }
 
     /**
      * Method for creating the Data Source.
@@ -121,15 +167,13 @@ public class ApplicationContext {
         if (this.dataSource == null) {
             final HikariConfig hikariConfig = new HikariConfig();
 
-            hikariConfig.setDriverClassName(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
-            hikariConfig.setJdbcUrl(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
-            hikariConfig.setUsername(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
-            hikariConfig.setPassword(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_PW));
+            hikariConfig.setDriverClassName(this.driver);
+            hikariConfig.setJdbcUrl(this.url);
+            hikariConfig.setUsername(this.username);
+            hikariConfig.setPassword(this.password);
 
-            hikariConfig.setMaximumPoolSize(
-                    Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE)));
-            hikariConfig.setAutoCommit(
-                    Boolean.parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_AUTO_COMMIT)));
+            hikariConfig.setMaximumPoolSize(this.maxPoolSize);
+            hikariConfig.setAutoCommit(this.autoCommit);
 
             this.dataSource = new HikariDataSource(hikariConfig);
         }
@@ -155,10 +199,9 @@ public class ApplicationContext {
         // @formatter:off
         return Flyway.configure()
                 .baselineVersion(MigrationVersion
-                        .fromVersion(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_VERSION)))
-                .baselineDescription(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_DESCRIPTION))
-                .baselineOnMigrate(Boolean
-                        .parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INIT_ON_MIGRATE)))
+                        .fromVersion(this.flywayInitialVersion))
+                .baselineDescription(this.flywayInitialDescription)
+                .baselineOnMigrate(this.flywayInitOnMigrate)
                 .outOfOrder(true).table("schema_version")
                 .dataSource(this.getDataSource())
                 .load();
@@ -177,19 +220,14 @@ public class ApplicationContext {
 
         entityManagerFactoryBean.setPersistenceUnitName("OSPG_DEVICESIMULATOR_WEB");
         entityManagerFactoryBean.setDataSource(this.getDataSource());
-        entityManagerFactoryBean
-                .setPackagesToScan(this.environment.getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
+        entityManagerFactoryBean.setPackagesToScan(this.entitymanagerPackagesToScan);
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
 
         final Properties jpaProperties = new Properties();
-        jpaProperties.put(PROPERTY_NAME_HIBERNATE_DIALECT,
-                this.environment.getRequiredProperty(PROPERTY_NAME_HIBERNATE_DIALECT));
-        jpaProperties.put(PROPERTY_NAME_HIBERNATE_FORMAT_SQL,
-                this.environment.getRequiredProperty(PROPERTY_NAME_HIBERNATE_FORMAT_SQL));
-        jpaProperties.put(PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY,
-                this.environment.getRequiredProperty(PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY));
-        jpaProperties.put(PROPERTY_NAME_HIBERNATE_SHOW_SQL,
-                this.environment.getRequiredProperty(PROPERTY_NAME_HIBERNATE_SHOW_SQL));
+        jpaProperties.put(PROPERTY_NAME_HIBERNATE_DIALECT, this.hibernateDialect);
+        jpaProperties.put(PROPERTY_NAME_HIBERNATE_FORMAT_SQL, this.hibernateFormatSql);
+        jpaProperties.put(PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY, this.hibernatePhysicalStategy);
+        jpaProperties.put(PROPERTY_NAME_HIBERNATE_SHOW_SQL, this.hibernateShowSql);
 
         entityManagerFactoryBean.setJpaProperties(jpaProperties);
 
@@ -205,9 +243,8 @@ public class ApplicationContext {
     public MessageSource messageSource() {
         final ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
 
-        messageSource.setBasename(this.environment.getRequiredProperty(PROPERTY_NAME_MESSAGESOURCE_BASENAME));
-        messageSource.setUseCodeAsDefaultMessage(Boolean.parseBoolean(
-                this.environment.getRequiredProperty(PROPERTY_NAME_MESSAGESOURCE_USE_CODE_AS_DEFAULT_MESSAGE)));
+        messageSource.setBasename(this.messageSourceBasename);
+        messageSource.setUseCodeAsDefaultMessage(this.messageSourceUseCodeAsDefaultMessage);
 
         return messageSource;
     }
@@ -239,98 +276,79 @@ public class ApplicationContext {
     }
 
     @Bean
+    public Integer rebootDelayInSeconds() {
+        return this.rebootDelayInSeconds;
+    }
+
+    @Bean
     public Long responseDelayTime() {
-        final String propertyValue = this.environment.getProperty(PROPERTY_NAME_RESPONSE_DELAY_TIME);
 
-        final Long value = propertyValue == null ? null : Long.parseLong(propertyValue);
-        if (value == null) {
-            LOGGER.info("response delay time in milliseconds is not set using property: {}",
-                    PROPERTY_NAME_RESPONSE_DELAY_TIME);
-        } else {
+        LOGGER.info("response delay time in milliseconds: {}", this.responseDelayTime);
 
-            LOGGER.info("response delay time in milliseconds: {}", value);
-        }
-
-        return value;
+        return this.responseDelayTime;
     }
 
     @Bean
     public Long reponseDelayRandomRange() {
-        final String propertyValue = this.environment.getProperty(PROPERTY_NAME_RESPONSE_DELAY_RANDOM_RANGE);
 
-        final Long value = propertyValue == null ? null : Long.parseLong(propertyValue);
-        if (value == null) {
-            LOGGER.info("response end delay time in milliseconds is not set using property: {}",
-                    PROPERTY_NAME_RESPONSE_DELAY_RANDOM_RANGE);
-        } else {
+        LOGGER.info("response end delay time in milliseconds: {}", this.responseDelayRandomRange);
 
-            LOGGER.info("response end delay time in milliseconds: {}", value);
-        }
-
-        return value;
+        return this.responseDelayRandomRange;
     }
 
     @Bean
     public Boolean checkboxDeviceRegistrationValue() {
-        return Boolean
-                .parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_CHECKBOX_DEVICE_REGISTRATION_VALUE));
+        return this.checkboxDeviceRegistration;
     }
 
     @Bean
     public Boolean checkboxDeviceRebootValue() {
-        return Boolean.parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_CHECKBOX_DEVICE_REBOOT_VALUE));
+        return this.checkboxDeviceReboot;
     }
 
     @Bean
     public Boolean checkboxLightSwitchingValue() {
-        return Boolean.parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_CHECKBOX_LIGHT_SWITCHING_VALUE));
+        return this.checkboxLightSwitching;
     }
 
     @Bean
     public Boolean checkboxTariffSwitchingValue() {
-        return Boolean
-                .parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_CHECKBOX_TARIFF_SWITCHING_VALUE));
+        return this.checkboxTariffSwitching;
     }
 
     @Bean
     public Boolean checkboxEventNotificationValue() {
-        return Boolean
-                .parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_CHECKBOX_EVENT_NOTIFICATION_VALUE));
-    }
-
-    @Bean
-    public String firmwareVersion() {
-        return this.environment.getRequiredProperty(PROPERTY_NAME_FIRMWARE_VERSION);
+        return this.checkboxEventNotification;
     }
 
     @Bean
     public String configurationIpConfigFixedIpAddress() {
-        return this.environment.getRequiredProperty(PROPERTY_NAME_CONFIGURATION_IP_CONFIG_FIXED_IP_ADDRESS);
+        return this.ipConfigFixedIpAddress;
     }
 
     @Bean
     public String configurationIpConfigNetmask() {
-        return this.environment.getRequiredProperty(PROPERTY_NAME_CONFIGURATION_IP_CONFIG_NETMASK);
+        return this.ipConfigNetmask;
     }
 
     @Bean
     public String configurationIpConfigGateway() {
-        return this.environment.getRequiredProperty(PROPERTY_NAME_CONFIGURATION_IP_CONFIG_GATEWAY);
+        return this.ipConfigGateway;
     }
 
     @Bean
     public String configurationOsgpIpAddress() {
-        return this.environment.getRequiredProperty(PROPERTY_NAME_CONFIGURATION_OSGP_IP_ADDRESS);
+        return this.osgpIpAddress;
     }
 
     @Bean
     public Integer configurationOsgpPortNumber() {
-        return Integer.valueOf(this.environment.getRequiredProperty(PROPERTY_NAME_CONFIGURATION_OSGP_PORT_NUMBER));
+        return this.osgpPortNumber;
     }
 
     @Bean
     public String statusInternalIpAddress() {
-        return this.environment.getRequiredProperty(PROPERTY_NAME_STATUS_INTERNAL_IP_ADDRESS);
+        return this.statusInternalIpAddress;
     }
 
     @PreDestroy

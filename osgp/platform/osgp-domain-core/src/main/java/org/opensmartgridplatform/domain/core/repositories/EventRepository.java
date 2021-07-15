@@ -28,7 +28,7 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
     List<Event> findByDeviceIdentification(String deviceIdentification);
 
     @Query("SELECT d.id as device, MAX(e.dateTime) as dateTime "
-            + "FROM Event e JOIN Device d ON e.deviceIdentification = d.deviceIdentification "
+            + "FROM Device d LEFT JOIN Event e ON d.deviceIdentification = e.deviceIdentification "
             + "WHERE d IN (?1) GROUP BY d.id")
     List<Object> findLatestEventForEveryDevice(Collection<Device> devices);
 

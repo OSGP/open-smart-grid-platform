@@ -10,13 +10,14 @@ package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
+import lombok.Getter;
+import lombok.ToString;
 import org.joda.time.DateTime;
 
+@Getter
+@ToString
 public class Event implements Serializable {
 
-    /**
-     * Serial Version UID.
-     */
     private static final long serialVersionUID = 4482313912422705642L;
     private final DateTime timestamp;
     private final Integer eventCode;
@@ -29,28 +30,5 @@ public class Event implements Serializable {
         this.eventCode = eventCode;
         this.eventCounter = eventCounter;
         this.eventLogCategory = eventLogCategory;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("Event[time=%s, code=%s, category=%s, type=%s%s]", this.timestamp, this.eventCode,
-                this.eventLogCategory.name(), this.eventCode == null ? null : EventType.getByEventCode(this.eventCode),
-                this.eventCounter == null ? "" : ", counter=" + this.eventCounter);
-    }
-
-    public DateTime getTimestamp() {
-        return this.timestamp;
-    }
-
-    public Integer getEventCode() {
-        return this.eventCode;
-    }
-
-    public Integer getEventCounter() {
-        return this.eventCounter;
-    }
-
-    public EventLogCategory getEventLogCategory() {
-        return this.eventLogCategory;
     }
 }

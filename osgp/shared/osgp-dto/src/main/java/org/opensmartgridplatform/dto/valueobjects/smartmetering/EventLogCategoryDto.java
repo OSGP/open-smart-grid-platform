@@ -16,7 +16,7 @@ public enum EventLogCategoryDto {
 
     private final int numberOfEventLogElements;
 
-    private EventLogCategoryDto(final int numberOfEventLogElements) {
+    EventLogCategoryDto(final int numberOfEventLogElements) {
         this.numberOfEventLogElements = numberOfEventLogElements;
     }
 

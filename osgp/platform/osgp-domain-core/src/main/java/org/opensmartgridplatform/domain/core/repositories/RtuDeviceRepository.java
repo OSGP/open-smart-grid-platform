@@ -7,7 +7,7 @@
  */
 package org.opensmartgridplatform.domain.core.repositories;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,8 +24,8 @@ public interface RtuDeviceRepository extends JpaRepository<RtuDevice, Long> {
     Optional<RtuDevice> findByDeviceIdentification(String deviceIdentification);
 
     List<RtuDevice> findByDeviceLifecycleStatusAndLastCommunicationTimeBefore(
-            DeviceLifecycleStatus deviceLifecycleStatus, Date lastCommunicationTime);
+            DeviceLifecycleStatus deviceLifecycleStatus, Instant lastCommunicationTime);
 
     List<RtuDevice> findByDeviceLifecycleStatusAndLastCommunicationTimeBeforeAndDomainInfo(
-            DeviceLifecycleStatus deviceLifecycleStatus, Date lastCommunicationTime, DomainInfo domainInfo);
+            DeviceLifecycleStatus deviceLifecycleStatus, Instant lastCommunicationTime, DomainInfo domainInfo);
 }

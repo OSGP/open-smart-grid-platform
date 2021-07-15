@@ -15,11 +15,6 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import com.beanit.openiec61850.BdaBoolean;
-import com.beanit.openiec61850.FcModelNode;
-import com.beanit.openiec61850.Report;
-import org.springframework.util.CollectionUtils;
-
 import org.opensmartgridplatform.adapter.protocol.iec61850.application.services.DeviceManagementService;
 import org.opensmartgridplatform.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
@@ -27,6 +22,11 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.help
 import org.opensmartgridplatform.core.db.api.iec61850.entities.LightMeasurementDevice;
 import org.opensmartgridplatform.dto.valueobjects.EventNotificationDto;
 import org.opensmartgridplatform.dto.valueobjects.EventTypeDto;
+import org.springframework.util.CollectionUtils;
+
+import com.beanit.openiec61850.BdaBoolean;
+import com.beanit.openiec61850.FcModelNode;
+import com.beanit.openiec61850.Report;
 
 public class Iec61850ClientLMDEventListener extends Iec61850ClientBaseEventListener {
 
@@ -105,7 +105,7 @@ public class Iec61850ClientLMDEventListener extends Iec61850ClientBaseEventListe
 
     private DateTime getTimeOfEntry(final Report report) {
         return report.getTimeOfEntry() == null ? DateTime.now(DateTimeZone.UTC)
-                : new DateTime(report.getTimeOfEntry().getTimestampValue() + IEC61850_ENTRY_TIME_OFFSET);
+                : new DateTime(report.getTimeOfEntry().getTimestampValue());
     }
 
     private String getReportDescription(final Report report, final DateTime timeOfEntry) {

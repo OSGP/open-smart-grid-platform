@@ -14,8 +14,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.exceptions;
  * single TCP connection to be used for connecting to both the Public Client and the Management Client of the device
  * successively.
  */
-public class DeviceSessionTerminatedAfterReadingInvocationCounterException extends RetryableException
-        implements SilentException {
+public class DeviceSessionTerminatedAfterReadingInvocationCounterException extends RuntimeException implements SilentException {
     private static final long serialVersionUID = -5829526280696092035L;
 
     public DeviceSessionTerminatedAfterReadingInvocationCounterException(final String deviceIdentification) {

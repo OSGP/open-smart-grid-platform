@@ -12,7 +12,7 @@ import java.io.Serializable;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out.ScadaMeasurementPublishedEventProducer;
+import org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out.LowVoltageMessageProducer;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -34,7 +34,7 @@ public class DomainResponseMessageProcessor implements MessageProcessor {
     private static final MessageType GET_DATA = MessageType.GET_DATA;
 
     @Autowired
-    private ScadaMeasurementPublishedEventProducer producer;
+    private LowVoltageMessageProducer producer;
 
     @Override
     public void processMessage(final ObjectMessage message) {

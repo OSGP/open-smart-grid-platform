@@ -7,6 +7,7 @@
  */
 package org.opensmartgridplatform.webdevicesimulator.web.controller;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -28,11 +29,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -46,7 +47,7 @@ public class DeviceManagementController extends AbstractController {
 
     protected static final String DEVICES_URL = "/devices";
     protected static final String DEVICE_CREATE_URL = "/devices/create";
-    protected static final String DEVICE_EDIT_URL = "/devices/edit/{id}";
+    protected static final String DEVICE_EDIT_URL = "/devices/edit/{deviceId}";
 
     protected static final String DEVICES_VIEW = "devices/list";
     protected static final String DEVICE_CREATE_VIEW = "devices/create";
@@ -65,11 +66,15 @@ public class DeviceManagementController extends AbstractController {
     protected static final String LIGHT_SWITCHING_CHECK_JSON_URL = "/devices/lightSwitchingCheck/json";
     protected static final String EVENT_NOTIFICATION_CHECK_JSON_URL = "/devices/eventNotificationCheck/json";
 
+    protected static final String REBOOT_DELAY_SECONDS_JSON_URL = "/devices/rebootDelaySeconds/json";
+
     protected static final String DEVICE_REGISTRATION_CHECK_URL = "/devices/deviceRegistrationCheck";
     protected static final String DEVICE_REBOOT_CHECK_URL = "/devices/deviceRebootCheck";
     protected static final String TARIFF_SWITCHING_CHECK_URL = "/devices/tariffSwitchingCheck";
     protected static final String LIGHT_SWITCHING_CHECK_URL = "/devices/lightSwitchingCheck";
     protected static final String EVENT_NOTIFICATION_CHECK_URL = "/devices/eventNotificationCheck";
+
+    protected static final String REBOOT_DELAY_SECONDS_URL = "/devices/rebootDelaySeconds";
 
     protected static final String MODEL_ATTRIBUTE_DEVICES = "devices";
     protected static final String MODEL_ATTRIBUTE_ISAUTONOMOUS = "isAutonomous";
@@ -104,13 +109,15 @@ public class DeviceManagementController extends AbstractController {
 
     protected static final String DEFAULT_SORT_DIRECTION = "DESC";
 
+    private final Random byteGenerator = new SecureRandom();
+
     @Resource
     private DeviceManagementService deviceManagementService;
 
     @Autowired
     private RegisterDevice registerDevice;
 
-    @RequestMapping(value = DEVICES_URL, method = RequestMethod.GET)
+    @GetMapping(value = DEVICES_URL)
     public String showDevices(
             @RequestParam(value = "devicesPerPage", required = false, defaultValue = "20") final Integer devicesPerPage,
             @RequestParam(value = "sort", required = false, defaultValue = DEFAULT_SORT_DIRECTION) final String sort,
@@ -120,7 +127,7 @@ public class DeviceManagementController extends AbstractController {
         return DEVICES_VIEW;
     }
 
-    @RequestMapping(value = "/devices/{pageNumber}", method = RequestMethod.GET)
+    @GetMapping(value = "/devices/{pageNumber}")
     public String showPageOFDevices(@PathVariable final Integer pageNumber,
             @RequestParam(value = "devicesPerPage", required = false, defaultValue = "20") final Integer devicesPerPage,
             @RequestParam(value = "sort", required = false, defaultValue = DEFAULT_SORT_DIRECTION) final String sort,
@@ -130,7 +137,7 @@ public class DeviceManagementController extends AbstractController {
         return DEVICES_VIEW;
     }
 
-    @RequestMapping(value = "/devices/{deviceIdentification}/{pageNumber}", method = RequestMethod.GET)
+    @GetMapping(value = "/devices/{deviceIdentification}/{pageNumber}")
     public String showPageOFDevices(@PathVariable final String deviceIdentification,
             @PathVariable final Integer pageNumber,
             @RequestParam(value = "devicesPerPage", required = false, defaultValue = "20") final Integer devicesPerPage,
@@ -177,77 +184,114 @@ public class DeviceManagementController extends AbstractController {
         LOGGER.debug("Fetched data: {} records, {} pages", page.getContent().size(), page.getTotalPages());
     }
 
-    @RequestMapping(value = DEVICE_REGISTRATION_CHECK_URL, method = RequestMethod.POST)
+    private ResponseEntity<String> badRequestResponse(final Object request) {
+        LOGGER.warn("Bad Request: {}", request);
+        return ResponseEntity.badRequest().build();
+    }
+
+    @PostMapping(value = DEVICE_REGISTRATION_CHECK_URL)
     public ResponseEntity<String> setDeviceRegistrationValue(@RequestBody final AutonomousRequest request) {
+        if (request == null || request.getAutonomousStatus() == null) {
+            return this.badRequestResponse(request);
+        }
 
         this.deviceManagementService.setdeviceRegistration(request.getAutonomousStatus());
 
         return ResponseEntity.ok().build();
     }
 
-    @RequestMapping(value = DEVICE_REGISTRATION_CHECK_JSON_URL, method = RequestMethod.GET)
+    @GetMapping(value = DEVICE_REGISTRATION_CHECK_JSON_URL)
     @ResponseBody
     public Boolean getDeviceRegistrationState() {
         return this.deviceManagementService.getDevRegistration();
     }
 
-    @RequestMapping(value = DEVICE_REBOOT_CHECK_URL, method = RequestMethod.POST)
-    public ResponseEntity<String> getDeviceRebootValue(@RequestBody final AutonomousRequest request) {
+    @PostMapping(value = DEVICE_REBOOT_CHECK_URL)
+    public ResponseEntity<String> setDeviceRebootValue(@RequestBody final AutonomousRequest request) {
+        if (request == null || request.getAutonomousStatus() == null) {
+            return this.badRequestResponse(request);
+        }
 
         this.deviceManagementService.setDeviceReboot(request.getAutonomousStatus());
 
         return ResponseEntity.ok().build();
     }
 
-    @RequestMapping(value = DEVICE_REBOOT_CHECK_JSON_URL, method = RequestMethod.GET)
+    @GetMapping(value = DEVICE_REBOOT_CHECK_JSON_URL)
     @ResponseBody
     public Boolean getDeviceRebootState() {
         return this.deviceManagementService.getDevReboot();
     }
 
-    @RequestMapping(value = TARIFF_SWITCHING_CHECK_URL, method = RequestMethod.POST)
-    public ResponseEntity<String> getTariffSwitchingValue(@RequestBody final AutonomousRequest request) {
+    @PostMapping(value = TARIFF_SWITCHING_CHECK_URL)
+    public ResponseEntity<String> setTariffSwitchingValue(@RequestBody final AutonomousRequest request) {
+        if (request == null || request.getAutonomousStatus() == null) {
+            return this.badRequestResponse(request);
+        }
 
         this.deviceManagementService.setTariffSwitching(request.getAutonomousStatus());
 
         return ResponseEntity.ok().build();
     }
 
-    @RequestMapping(value = TARIFF_SWITCHING_CHECK_JSON_URL, method = RequestMethod.GET)
+    @GetMapping(value = TARIFF_SWITCHING_CHECK_JSON_URL)
     @ResponseBody
     public Boolean getTariffSwitchingState() {
         return this.deviceManagementService.getTariffSwitching();
     }
 
-    @RequestMapping(value = LIGHT_SWITCHING_CHECK_URL, method = RequestMethod.POST)
-    public ResponseEntity<String> getLightSwitchingValue(@RequestBody final AutonomousRequest request) {
+    @PostMapping(value = LIGHT_SWITCHING_CHECK_URL)
+    public ResponseEntity<String> setLightSwitchingValue(@RequestBody final AutonomousRequest request) {
+        if (request == null || request.getAutonomousStatus() == null) {
+            return this.badRequestResponse(request);
+        }
 
         this.deviceManagementService.setLightSwitching(request.getAutonomousStatus());
 
         return ResponseEntity.ok().build();
     }
 
-    @RequestMapping(value = LIGHT_SWITCHING_CHECK_JSON_URL, method = RequestMethod.GET)
+    @GetMapping(value = LIGHT_SWITCHING_CHECK_JSON_URL)
     @ResponseBody
     public Boolean getLightSwitchingState() {
         return this.deviceManagementService.getLightSwitching();
     }
 
-    @RequestMapping(value = EVENT_NOTIFICATION_CHECK_URL, method = RequestMethod.POST)
-    public ResponseEntity<String> getEventNotificationValue(@RequestBody final AutonomousRequest request) {
+    @PostMapping(value = EVENT_NOTIFICATION_CHECK_URL)
+    public ResponseEntity<String> setEventNotificationValue(@RequestBody final AutonomousRequest request) {
+        if (request == null || request.getAutonomousStatus() == null) {
+            return this.badRequestResponse(request);
+        }
 
         this.deviceManagementService.setEventNotification(request.getAutonomousStatus());
 
         return ResponseEntity.ok().build();
     }
 
-    @RequestMapping(value = EVENT_NOTIFICATION_CHECK_JSON_URL, method = RequestMethod.GET)
+    @GetMapping(value = EVENT_NOTIFICATION_CHECK_JSON_URL)
     @ResponseBody
     public Boolean getEventNotificationState() {
         return this.deviceManagementService.getEventNotification();
     }
 
-    @RequestMapping(value = DEVICE_CREATE_URL, method = RequestMethod.GET)
+    @PostMapping(value = REBOOT_DELAY_SECONDS_URL)
+    public ResponseEntity<String> setRebootDelaySeconds(@RequestBody final DelayRequest request) {
+        if (request == null || request.getDelay() == null || request.getDelay() < 0) {
+            return this.badRequestResponse(request);
+        }
+
+        this.deviceManagementService.setRebootDelay(request.getDelay());
+
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping(value = REBOOT_DELAY_SECONDS_JSON_URL)
+    @ResponseBody
+    public int getRebootDelaySeconds() {
+        return this.deviceManagementService.getRebootDelay();
+    }
+
+    @GetMapping(value = DEVICE_CREATE_URL)
     public String showCreateDevice(final Model model) {
         model.addAttribute(MODEL_ATTRIBUTE_DEVICE, new Device());
 
@@ -257,14 +301,17 @@ public class DeviceManagementController extends AbstractController {
     private byte[] createRandomDeviceUid() {
         // Generate random bytes for UID
         final byte[] deviceUid = new byte[OslpEnvelope.DEVICE_ID_LENGTH];
-        final Random byteGenerator = new Random();
-        byteGenerator.nextBytes(deviceUid);
+        this.byteGenerator.nextBytes(deviceUid);
         // Combine manufacturer id of 2 bytes (1 is AME) and device UID of 10
         // bytes.
         return ArrayUtils.addAll(new byte[] { 0, 1 }, deviceUid);
     }
 
-    @RequestMapping(value = DEVICE_CREATE_URL, method = RequestMethod.POST)
+    private String getDefaultFirmwareVersion() {
+        return "R01";
+    }
+
+    @PostMapping(value = DEVICE_CREATE_URL)
     public String createDevice(@ModelAttribute(MODEL_ATTRIBUTE_DEVICE) final Device created,
             final BindingResult bindingResult, final RedirectAttributes attributes) {
 
@@ -273,6 +320,7 @@ public class DeviceManagementController extends AbstractController {
         }
 
         created.setDeviceUid(this.createRandomDeviceUid());
+        created.setFirmwareVersion(this.getDefaultFirmwareVersion());
 
         Device device;
         try {
@@ -280,29 +328,30 @@ public class DeviceManagementController extends AbstractController {
             device = this.deviceManagementService.addDevice(created);
             this.addFeedbackMessage(attributes, FEEDBACK_MESSAGE_KEY_DEVICE_CREATED, device.getDeviceIdentification());
         } catch (final Exception e) {
-            LOGGER.error("Error creating device: {}", e);
+            LOGGER.error("Error creating device", e);
             this.setErrorFeedbackMessage(created, attributes);
         }
 
         return this.createRedirectViewPath(DEVICES_URL);
     }
 
-    @RequestMapping(value = DEVICE_EDIT_URL, method = RequestMethod.GET)
-    public String showEditDevice(@PathVariable final Long id, final Model model) {
-        model.addAttribute(MODEL_ATTRIBUTE_DEVICE, this.deviceManagementService.findDevice(id));
+    @GetMapping(value = DEVICE_EDIT_URL)
+    public String showEditDevice(@PathVariable final Long deviceId, final Model model) {
+        model.addAttribute(MODEL_ATTRIBUTE_DEVICE, this.deviceManagementService.findDevice(deviceId));
         return DEVICE_EDIT_VIEW;
     }
 
-    @RequestMapping(value = DEVICE_EDIT_URL, method = RequestMethod.POST)
-    public String editDevice(@ModelAttribute(MODEL_ATTRIBUTE_DEVICE) final Device updated, @PathVariable final Long id,
-            final BindingResult bindingResult, final RedirectAttributes attributes, final Model model) {
+    @PostMapping(value = DEVICE_EDIT_URL)
+    public String editDevice(@ModelAttribute(MODEL_ATTRIBUTE_DEVICE) final Device updated,
+            @PathVariable final Long deviceId, final BindingResult bindingResult, final RedirectAttributes attributes,
+            final Model model) {
 
         if (bindingResult.hasErrors()) {
             return DEVICE_EDIT_VIEW;
         }
 
         // Find device
-        final Device deviceToUpdate = this.deviceManagementService.findDevice(id);
+        final Device deviceToUpdate = this.deviceManagementService.findDevice(deviceId);
         if (deviceToUpdate == null) {
             return DEVICE_EDIT_VIEW;
         }
@@ -313,6 +362,7 @@ public class DeviceManagementController extends AbstractController {
         deviceToUpdate.setActualLinkType(updated.getActualLinkType());
         deviceToUpdate.setTariffOn(updated.isTariffOn());
         deviceToUpdate.setProtocol(updated.getProtocol());
+        deviceToUpdate.setFirmwareVersion(updated.getFirmwareVersion());
 
         // Store device
         final Device device = this.deviceManagementService.updateDevice(deviceToUpdate);
@@ -323,7 +373,7 @@ public class DeviceManagementController extends AbstractController {
         return DEVICE_EDIT_VIEW;
     }
 
-    @RequestMapping(value = COMMAND_REGISTER_URL, method = RequestMethod.POST)
+    @PostMapping(value = COMMAND_REGISTER_URL)
     @ResponseBody
     public String sendRegisterDeviceCommand(@RequestBody final RegisterDeviceRequest request) {
         // Find device
@@ -341,7 +391,7 @@ public class DeviceManagementController extends AbstractController {
         }
     }
 
-    @RequestMapping(value = COMMAND_REGISTER_CONFIRM_URL, method = RequestMethod.POST)
+    @PostMapping(value = COMMAND_REGISTER_CONFIRM_URL)
     @ResponseBody
     public String sendConfirmDeviceRegistrationCommand(@RequestBody final ConfirmDeviceRegistrationRequest request) {
 
@@ -361,7 +411,7 @@ public class DeviceManagementController extends AbstractController {
 
     }
 
-    @RequestMapping(value = COMMAND_SENDNOTIFICATION_URL, method = RequestMethod.POST)
+    @PostMapping(value = COMMAND_SENDNOTIFICATION_URL)
     @ResponseBody
     public String sendEventNotificationCommandAll(@RequestBody final SendEventNotificationRequest request) {
 
@@ -380,13 +430,13 @@ public class DeviceManagementController extends AbstractController {
         }
     }
 
-    @RequestMapping(value = DEVICES_JSON_URL, method = RequestMethod.GET)
+    @GetMapping(value = DEVICES_JSON_URL)
     @ResponseBody
     public List<Device> getLightStates() {
         return this.deviceManagementService.findAllDevices();
     }
 
-    @RequestMapping(value = COMMAND_GET_SEQUENCE_NUMBER_URL, method = RequestMethod.POST)
+    @PostMapping(value = COMMAND_GET_SEQUENCE_NUMBER_URL)
     @ResponseBody
     public Integer getSequenceNumber(@RequestBody final GetSequenceNumberRequest getSequenceNumberRequest) {
         final Long deviceId = getSequenceNumberRequest.getDeviceId();
@@ -399,7 +449,7 @@ public class DeviceManagementController extends AbstractController {
         }
     }
 
-    @RequestMapping(value = COMMAND_SET_SEQUENCE_NUMBER_URL, method = RequestMethod.POST)
+    @PostMapping(value = COMMAND_SET_SEQUENCE_NUMBER_URL)
     @ResponseBody
     public Integer setSequenceNumber(@RequestBody final SetSequenceNumberRequest setSequenceNumberRequest) {
         final Long deviceId = setSequenceNumberRequest.getDeviceId();

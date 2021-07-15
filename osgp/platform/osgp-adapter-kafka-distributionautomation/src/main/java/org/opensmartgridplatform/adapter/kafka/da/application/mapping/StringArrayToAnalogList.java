@@ -7,24 +7,11 @@
  */
 package org.opensmartgridplatform.adapter.kafka.da.application.mapping;
 
-import java.util.Arrays;
 import java.util.List;
 
-import com.alliander.data.scadameasurementpublishedevent.AccumulationKind;
 import com.alliander.data.scadameasurementpublishedevent.Analog;
-import com.alliander.data.scadameasurementpublishedevent.AnalogValue;
-import com.alliander.data.scadameasurementpublishedevent.MeasuringPeriodKind;
-import com.alliander.data.scadameasurementpublishedevent.UnitMultiplier;
-import com.alliander.data.scadameasurementpublishedevent.UnitSymbol;
 
 public interface StringArrayToAnalogList {
 
     List<Analog> convertToAnalogList(String[] values);
-
-    default Analog createAnalog(final String description, final Float value, final UnitSymbol unitSymbol,
-            final UnitMultiplier unitMultiplier) {
-        return new Analog(Arrays.asList(new AnalogValue(null, value)), AccumulationKind.none, description,
-                MeasuringPeriodKind.none, unitMultiplier, unitSymbol);
-    }
-
 }

@@ -40,7 +40,7 @@ public class DaylightSavingTimeTransition {
         JULIAN_DAY_IGNORING_FEBRUARY_29 {
             @Override
             public boolean isValid(final String transition) {
-                if (transition == null || 'J' != transition.charAt(0)) {
+                if (transition == null || transition.isEmpty() || 'J' != transition.charAt(0)) {
                     return false;
                 }
                 final int timeSeparatorPos = transition.indexOf('/');
@@ -60,8 +60,7 @@ public class DaylightSavingTimeTransition {
                 if (timeSeparatorPos == -1) {
                     return true;
                 }
-                return transition.length() > timeSeparatorPos
-                        && this.isValidTime(transition.substring(timeSeparatorPos + 1));
+                return this.isValidTime(transition.substring(timeSeparatorPos + 1));
             }
 
             @Override
@@ -140,8 +139,7 @@ public class DaylightSavingTimeTransition {
                 if (timeSeparatorPos == -1) {
                     return true;
                 }
-                return transition.length() > timeSeparatorPos
-                        && this.isValidTime(transition.substring(timeSeparatorPos + 1));
+                return this.isValidTime(transition.substring(timeSeparatorPos + 1));
             }
 
             @Override
@@ -183,7 +181,7 @@ public class DaylightSavingTimeTransition {
         DAY_OF_WEEK_OF_MONTH {
             @Override
             public boolean isValid(final String transition) {
-                if (transition == null || 'M' != transition.charAt(0)) {
+                if (transition == null || transition.isEmpty() || 'M' != transition.charAt(0)) {
                     return false;
                 }
                 final int timeSeparatorPos = transition.indexOf('/');
@@ -224,8 +222,7 @@ public class DaylightSavingTimeTransition {
                 if (timeSeparatorPos == -1) {
                     return true;
                 }
-                return transition.length() > timeSeparatorPos
-                        && this.isValidTime(transition.substring(timeSeparatorPos + 1));
+                return this.isValidTime(transition.substring(timeSeparatorPos + 1));
             }
 
             @Override
@@ -385,10 +382,13 @@ public class DaylightSavingTimeTransition {
     }
 
     public DateTime getDateTimeForNextTransition() {
-        final DateTime now = DateTime.now(this.dateTimeZone);
-        final DateTime thisYearsTransition = this.getDateTimeForYear(now.getYear());
-        if (now.isAfter(thisYearsTransition)) {
-            return this.getDateTimeForYear(now.getYear() + 1);
+        return this.getDateTimeForNextTransition(DateTime.now(this.dateTimeZone));
+    }
+
+    public DateTime getDateTimeForNextTransition(final DateTime dateTime) {
+        final DateTime thisYearsTransition = this.getDateTimeForYear(dateTime.getYear());
+        if (dateTime.isAfter(thisYearsTransition)) {
+            return this.getDateTimeForYear(dateTime.getYear() + 1);
         }
         return thisYearsTransition;
     }

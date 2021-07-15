@@ -11,9 +11,9 @@ import javax.jms.ConnectionFactory;
 import javax.jms.MessageListener;
 import javax.net.ssl.SSLException;
 
-import org.opensmartgridplatform.shared.application.config.jms.JmsConfigurationNames;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
+import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationNames;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

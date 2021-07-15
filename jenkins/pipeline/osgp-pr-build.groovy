@@ -64,7 +64,7 @@ pipeline {
                                 jgivenPublisher(disabled: true),
                                 jacocoPublisher(disabled: true)
                         ]) {
-                    sh "mvn clean install -B -T4 -DskipTestJarWithDependenciesAssembly=false"
+                    sh "mvn clean install -B -T1C -DskipTestJarWithDependenciesAssembly=false"
                 }
 
                 // Collect all build wars and copy them to target/artifacts
@@ -98,7 +98,7 @@ pipeline {
             parallel {
                 stage ('Sonar Analysis') {
                     steps {
-                        withSonarQubeEnv('SonarQube local') {
+                        withSonarQubeEnv('sonar.osgp.cloud') {
                             withMaven(
                                 maven: 'Apache Maven',
                                 mavenLocalRepo: '.repository',
@@ -113,10 +113,15 @@ pipeline {
                                         jgivenPublisher(disabled: true),
                                         jacocoPublisher(disabled: true)
                                 ]) {
-                                sh "mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.2:sonar -B -Dmaven.test.failure.ignore=true -Dclirr=true " +
-                                  "-Dsonar.github.repository=OSGP/open-smart-grid-platform -Dsonar.analysis.mode=preview " +
-                                  "-Dsonar.issuesReport.console.enable=true -Dsonar.forceUpdate=true -Dsonar.github.pullRequest=$ghprbPullId " +
-                                  "${SONAR_EXTRA_PROPS}"
+                                sh '''
+                                   mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.6.0.1398:sonar -B \
+                                       -Dmaven.repo.local=.repository \
+                                       -Dsonar.java.source=8 \
+                                       -Dsonar.ws.timeout=600 \
+                                       -Dsonar.pullrequest.key=$ghprbPullId \
+                                       -Dsonar.pullrequest.branch=$ghprbSourceBranch \
+                                       -Dsonar.pullrequest.base=$ghprbTargetBranch
+                                   '''
                             }
                         }
                     }
@@ -161,11 +166,11 @@ echo "$EXTRACTED_TAGS and not @NightlyBuildOnly" > "${WORKSPACE}/cucumber-tags"
 
 echo Found cucumber tags: [$EXTRACTED_TAGS]'''
                 sh "ssh-keygen -f \"$HOME/.ssh/known_hosts\" -R ${servername}-instance.dev.osgp.cloud"
-                sh "./runTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-common centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
-                sh "./runPubliclightingTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-publiclighting centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
-                sh "./runMicrogridsTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-microgrids centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
-                sh "./runSmartMeteringTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-smartmetering centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
-                sh "./runDistributionAutomationTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-distributionautomation centos \"OSGP Development.pem\" \"\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
+                sh "./runTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-common centos \"OSGP Development.pem\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
+                sh "./runPubliclightingTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-publiclighting centos \"OSGP Development.pem\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
+                sh "./runMicrogridsTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-microgrids centos \"OSGP Development.pem\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
+                sh "./runSmartMeteringTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-smartmetering centos \"OSGP Development.pem\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
+                sh "./runDistributionAutomationTestsAtRemoteServer.sh ${servername}-instance.dev.osgp.cloud integration-tests cucumber-tests-platform-distributionautomation centos \"OSGP Development.pem\" \"\" \"`cat \"${WORKSPACE}/cucumber-tags\"`\""
             }
         } // stage
 

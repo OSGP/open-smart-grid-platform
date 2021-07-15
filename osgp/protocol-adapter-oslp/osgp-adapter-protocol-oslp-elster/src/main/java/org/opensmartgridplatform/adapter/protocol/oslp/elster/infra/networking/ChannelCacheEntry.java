@@ -8,7 +8,7 @@
 package org.opensmartgridplatform.adapter.protocol.oslp.elster.infra.networking;
 
 import java.time.Instant;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
@@ -26,8 +26,8 @@ public class ChannelCacheEntry {
         this.referenceCount = 0;
     }
 
-    public int incrementAndGetReferenceCount() {
-        this.lastRefreshedMillis.set(System.currentTimeMillis());
+    public int incrementAndGetReferenceCount(final long updateTimeMillis) {
+        this.lastRefreshedMillis.set(updateTimeMillis);
         synchronized (this) {
             this.referenceCount += 1;
             return this.referenceCount;
@@ -65,7 +65,7 @@ public class ChannelCacheEntry {
     public String toString() {
         return String.format("ChannelCacheEntry[channel: %s, referenceCount: %d, lastRefreshed: %s]",
                 this.channel.id().asShortText(), this.referenceCount,
-                ZonedDateTime.ofInstant(Instant.ofEpochMilli(this.getLastRefreshedMillis()), ZoneId.of("UTC")));
+                ZonedDateTime.ofInstant(Instant.ofEpochMilli(this.getLastRefreshedMillis()), ZoneOffset.UTC));
     }
 
     @Override

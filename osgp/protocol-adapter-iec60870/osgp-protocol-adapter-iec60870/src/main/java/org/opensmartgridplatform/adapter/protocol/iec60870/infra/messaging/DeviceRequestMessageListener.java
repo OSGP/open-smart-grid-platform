@@ -42,13 +42,6 @@ public class DeviceRequestMessageListener implements MessageListener {
     @Qualifier("protocolIec60870OutboundOsgpCoreResponsesMessageSender")
     private DeviceResponseMessageSender deviceResponseMessageSender;
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.springframework.jms.listener.SessionAwareMessageListener#onMessage
-     * (javax.jms.Message, javax.jms.Session)
-     */
     @Override
     public void onMessage(final Message message) {
 
