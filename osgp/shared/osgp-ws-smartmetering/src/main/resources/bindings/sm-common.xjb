@@ -14,7 +14,7 @@
 
   <jxb:bindings schemaLocation="../schemas/common-ws-smartmetering.xsd">
     <jxb:schemaBindings>
-      <jxb:package name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.smcomm"></jxb:package>
+      <jxb:package name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.smcommon"></jxb:package>
     </jxb:schemaBindings>
   </jxb:bindings>
 

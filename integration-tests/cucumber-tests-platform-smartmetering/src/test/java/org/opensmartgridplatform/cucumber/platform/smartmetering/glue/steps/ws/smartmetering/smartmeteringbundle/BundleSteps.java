@@ -16,6 +16,8 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.HashMap;
 import java.util.Map;
+import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActionResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.Actions;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActualMeterReadsResponse;
@@ -91,6 +93,7 @@ public class BundleSteps extends BaseBundleSteps {
   }
 
   @Autowired private SmartMeteringBundleClient client;
+  @Autowired private ResponseDataRepository responseDataRepository;
 
   @Given("^a bundle request$")
   public void aABundleRequest(final Map<String, String> settings) throws Throwable {
@@ -197,5 +200,17 @@ public class BundleSteps extends BaseBundleSteps {
 
     assertThat(faultResponse.getMessage())
         .containsSubsequence(values.get(PlatformSmartmeteringKeys.MESSAGE));
+  }
+
+  @Then("^the bundle response data record should not be deleted$")
+  public void theResponseDataRecordExist() throws Throwable {
+
+    final String correlationUid =
+        (String) ScenarioContext.current().get(PlatformSmartmeteringKeys.CORRELATION_UID);
+
+    final ResponseData responseData =
+        this.responseDataRepository.findByCorrelationUid(correlationUid);
+
+    assertThat(responseData).as("Response data should not be deleted").isNotNull();
   }
 }

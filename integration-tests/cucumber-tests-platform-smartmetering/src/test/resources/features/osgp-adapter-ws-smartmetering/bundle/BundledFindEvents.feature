@@ -17,3 +17,4 @@ Feature: SmartMetering Bundle - FindEvents
       | Until            | 2014-10-01T00:00:00.000Z |
     When the bundle request is received
     Then the bundle response should contain a find events response
+    And the bundle response data record should not be deleted
