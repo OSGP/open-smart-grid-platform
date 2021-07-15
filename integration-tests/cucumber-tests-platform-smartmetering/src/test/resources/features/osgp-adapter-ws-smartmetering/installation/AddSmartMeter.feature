@@ -29,7 +29,6 @@ Feature: SmartMetering Installation - Add smart meter
       | ModelCode        | Test |
     And a request to the device can be performed after activation
     And the stored keys are not equal to the received keys
-    And the response data record should not be deleted
 
   @NightlyBuildOnly @Skip
   Scenario: Add a new device with incorrectly encrypted keys

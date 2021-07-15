@@ -24,4 +24,3 @@ Feature: SmartMetering Management - Set Device Communication Settings
       | IpAddressIsStatic        | false |
       | UseSn                    | false |
       | UseHdlc                  | true  |
-    And the response data record should not be deleted

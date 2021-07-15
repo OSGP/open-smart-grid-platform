@@ -16,7 +16,6 @@ Feature: SmartMetering Installation - Decouple M-Bus Device
     Then the Decouple response is "OK"
     And the G-meter "TESTG102400000001" is Decoupled from device "TEST1024000000001"
     And the channel of device "TESTG102400000001" is cleared
-    And the response data record should not be deleted
 
   Scenario: Decouple unknown G-meter from E-meter
     Given a dlms device

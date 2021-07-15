@@ -111,4 +111,3 @@ Feature: SmartMetering Bundle - GetActualPowerQuality
       | PowerQualityObject_Unit_27  | VAR                                                |
       | PowerQualityObject_Name_28  | INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES |
       | PowerQualityObject_Unit_28  | AMP                                                |
-    And the response data record should not be deleted

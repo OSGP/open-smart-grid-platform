@@ -12,4 +12,3 @@ Feature: SmartMetering Management - Get debug information
     When the get debug information request is received
       | DeviceIdentification        | TEST1024000000001 |
     Then the device debug information should be in the response message
-    And the response data record should not be deleted

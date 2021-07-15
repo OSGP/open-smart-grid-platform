@@ -33,7 +33,6 @@ Feature: SmartMetering - Configuration - M-Bus encryption key status by channel
       | DeviceIdentification | TEST1024000000001     |
       | Channel              |                     1 |
       | EncryptionKeyStatus  | ENCRYPTION_KEY_IN_USE |
-    And the response data record should not be deleted
 
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514

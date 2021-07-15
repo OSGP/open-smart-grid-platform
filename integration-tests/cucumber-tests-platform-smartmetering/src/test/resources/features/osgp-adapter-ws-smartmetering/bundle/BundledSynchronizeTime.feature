@@ -15,4 +15,3 @@ Feature: SmartMetering Bundle - SynchronizeTime
     When the bundle request is received
     Then the bundle response should contain a synchronize time response with values
       | Result | OK |
-    And the response data record should not be deleted

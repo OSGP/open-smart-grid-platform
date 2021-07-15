@@ -36,7 +36,6 @@ Feature: SmartMetering Management - Set Device Lifecycle Status by Channel
       | DeviceIdentification  | TEST1024000000001 |
       | Channel               | 1                 |
       | DeviceLifecycleStatus | READY_FOR_USE     |
-    And the response data record should not be deleted
 
   Scenario: Set M-Bus device lifecycle status by channel, no device on that channel
     And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes

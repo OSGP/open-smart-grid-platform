@@ -18,4 +18,3 @@ Feature: SmartMetering Bundle - GetMbusEncryptionKeyStatus
       | MBusDeviceIdentification | TESTG102400000001      |
     When the bundle request is received
     Then the bundle response should contain a get M-Bus encryption key status response
-    And the response data record should not be deleted

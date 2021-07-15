@@ -14,7 +14,6 @@ Feature: SmartMetering Configuration - Administrative Status
       | DeviceIdentification | TEST1024000000001 |
     Then the administrative status should be returned
       | DeviceIdentification | TEST1024000000001 |
-    And the response data record should not be deleted
 
   Scenario: Set administrative status on a device
     When the set administrative status request is received
@@ -22,4 +21,3 @@ Feature: SmartMetering Configuration - Administrative Status
       | AdministrativeStatusType | ON                |
     Then the administrative status should be set on the device
       | DeviceIdentification | TEST1024000000001 |
-    And the response data record should not be deleted

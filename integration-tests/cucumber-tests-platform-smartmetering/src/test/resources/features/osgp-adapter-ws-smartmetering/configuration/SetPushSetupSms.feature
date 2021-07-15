@@ -14,4 +14,3 @@ Feature: SmartMetering Configuration - Set Push Setup SMS
       | Port                 |              9598 |
     Then the PushSetupSms should be set on the device
       | DeviceIdentification | TEST1024000000001 |
-    And the response data record should not be deleted

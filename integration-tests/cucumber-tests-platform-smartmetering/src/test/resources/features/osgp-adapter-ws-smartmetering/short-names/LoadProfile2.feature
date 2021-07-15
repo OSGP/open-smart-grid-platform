@@ -27,4 +27,3 @@ Feature: SmartMetering short names - Load profile 2
       | DeviceIdentification | TEST1024000000005 |
       | Result               | OK                |
       | ResponsePart         | 0-0:96.240.12.255 |
-    And the response data record should not be deleted

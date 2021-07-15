@@ -12,4 +12,3 @@ Feature: SmartMetering AdHoc - Get Association LN Objects
       | DeviceIdentification | TEST1024000000001 |
     Then the objectlist should be returned
       | DeviceIdentification | TEST1024000000001 |
-    And the response data record should not be deleted

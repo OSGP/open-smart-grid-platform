@@ -28,7 +28,6 @@ Feature: SmartMetering Configuration - Configure Definable Load Profile
       | CaptureObject_LogicalName_2    | 1.0.32.7.0.255 |
       | CaptureObject_AttributeIndex_2 |              2 |
       | CaptureObject_DataIndex_2      |              0 |
-    And the response data record should not be deleted
 
   Scenario: Set capture period to 1 hour in definable load profile
     Given a dlms device

@@ -21,7 +21,6 @@ Feature: SmartMetering Bundle - GetFirmwareVersion
       | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
       | FirmwareModuleVersionFunc | M57 4836               |
       | FirmwareIsForSmartMeters  | true                   |
-    And the response data record should not be deleted
 
   Scenario: Retrieve an updated firmware version of a device in a bundle request, when a device already has a firmware
     Given a dlms device

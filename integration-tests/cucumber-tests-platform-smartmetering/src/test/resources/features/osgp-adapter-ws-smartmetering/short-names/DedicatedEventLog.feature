@@ -27,7 +27,6 @@ Feature: SmartMetering short names - Dedicated event logs
       | DeviceIdentification | TEST1024000000005 |
       | Result               | OK                |
       | ResponsePart         | <responsePart>    |
-    And the response data record should not be deleted
 
     Examples: 
       | log            | obiscodeE | responsePart      |

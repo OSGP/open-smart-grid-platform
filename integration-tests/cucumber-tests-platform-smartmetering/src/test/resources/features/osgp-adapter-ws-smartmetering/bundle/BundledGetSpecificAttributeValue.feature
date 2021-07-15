@@ -25,7 +25,6 @@ Feature: SmartMetering Bundle - GetSpecificAttributeValueAction
     Then the bundle response should contain a get specific attribute value response with values
       | Result       | OK                                                        |
       | ResponsePart | bytes[100, 101, 118, 105, 99, 101, 32, 110, 97, 109, 101] |
-    And the response data record should not be deleted
 
   Scenario: Retrieve Administrative in-out
     Given a bundle request

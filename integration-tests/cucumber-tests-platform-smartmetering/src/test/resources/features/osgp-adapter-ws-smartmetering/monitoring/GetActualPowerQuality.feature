@@ -39,7 +39,6 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       | PowerQualityObject_Name_13  | NUMBER_OF_VOLTAGE_SWELLS_FOR_L1 |
       | PowerQualityObject_Name_14  | NUMBER_OF_VOLTAGE_SWELLS_FOR_L2 |
       | PowerQualityObject_Name_15  | NUMBER_OF_VOLTAGE_SWELLS_FOR_L3 |
-    And the response data record should not be deleted
 
   Scenario: Get the actual power quality private from a device
     When the get actual power quality request is received
@@ -104,7 +103,6 @@ Feature: SmartMetering Monitoring - Get Actual Power Quality
       | PowerQualityObject_Unit_27  | VAR                                                |
       | PowerQualityObject_Name_28  | INSTANTANEOUS_ACTIVE_CURRENT_TOTAL_OVER_ALL_PHASES |
       | PowerQualityObject_Unit_28  | AMP                                                |
-    And the response data record should not be deleted
 
   Scenario: Do not refuse an operation with an inactive device
     Given a dlms device

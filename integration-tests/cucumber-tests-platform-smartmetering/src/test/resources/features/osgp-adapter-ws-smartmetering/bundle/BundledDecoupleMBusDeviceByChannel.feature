@@ -25,7 +25,6 @@ Feature: SmartMetering Bundle - Decouple M-Bus Device By Channel
       | 7 | long-unsigned        | 0 |
       | 8 | unsigned             | 0 |
       | 9 | unsigned             | 0 |
-    And the response data record should not be deleted
 
   Scenario: Decouple M-Bus Device By Channel on a administratively decoupled E-meter with empty channel
     Given a bundle request

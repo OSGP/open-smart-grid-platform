@@ -17,7 +17,6 @@ Feature: SmartMetering Monitoring - Alarm Register
       | DeviceIdentification | TEST1024000000001 |
     Then the alarm register should be returned
       | DeviceIdentification | TEST1024000000001 |
-    And the response data record should not be deleted
 
   Scenario: Clear alarm register
     When the Clear Alarm Code request is received
@@ -25,4 +24,3 @@ Feature: SmartMetering Monitoring - Alarm Register
     Then the Clear Alarm Code response should be returned
       | DeviceIdentification | TEST1024000000001 |
       | Result               | OK                |
-    And the response data record should not be deleted

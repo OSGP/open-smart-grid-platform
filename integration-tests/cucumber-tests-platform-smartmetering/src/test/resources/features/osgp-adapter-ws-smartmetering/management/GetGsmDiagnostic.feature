@@ -29,4 +29,3 @@ Feature: SmartMetering Management - Get GSM Diagnostic
       | adjacentCellSignalQualities | MINUS_91_DBM,MINUS_89_DBM |
 # Reading of captureTime is disabled for now
 #      | captureTime               | 2021-04-13T08:45:00.000Z |
-    And the response data record should not be deleted

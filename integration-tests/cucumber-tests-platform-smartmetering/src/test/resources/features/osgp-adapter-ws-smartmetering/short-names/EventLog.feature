@@ -27,4 +27,3 @@ Feature: SmartMetering short names - Event Log
       | DeviceIdentification | TEST1024000000005 |
       | Result               | OK                |
       | ResponsePart         | 0-0:1.0.0.255     |
-    And the response data record should not be deleted

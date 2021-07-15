@@ -40,4 +40,3 @@ Feature: SmartMetering Bundle - GetConfigurationObject
       | GprsOperationMode    | ALWAYS_ON |
       | DISCOVER_ON_POWER_ON | true      |
       | HLS_5_ON_P_3_ENABLE  | true      |
-    And the response data record should not be deleted

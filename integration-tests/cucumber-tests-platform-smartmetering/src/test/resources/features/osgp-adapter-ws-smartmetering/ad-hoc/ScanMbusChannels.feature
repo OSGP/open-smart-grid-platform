@@ -62,4 +62,3 @@ Feature: SmartMetering Scan M-Bus Channels
       | Channel4MbusManufacturerIdentification |                   |
       | Channel4MbusVersion                    |                 0 |
       | Channel4MbusDeviceTypeIdentification   |                 0 |
-    And the response data record should not be deleted

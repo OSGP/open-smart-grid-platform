@@ -30,4 +30,3 @@ Feature: SmartMetering Installation - Add M-Bus device
       | MbusVersion                    | 066               |
       | MbusDeviceTypeIdentification   | 03                |
     And the stored M-Bus Default key is not equal to the received key
-    And the response data record should not be deleted

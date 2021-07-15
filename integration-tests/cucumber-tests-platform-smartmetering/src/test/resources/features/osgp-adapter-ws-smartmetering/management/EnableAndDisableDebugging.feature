@@ -12,7 +12,6 @@ Feature: SmartMetering Management - Enable and disable debugging
       | DeviceIdentification | TEST1024000000001 |
     Then the enable debug response should be "OK"
     And the device debug information should be enabled
-    And the response data record should not be deleted
 
   Scenario: Disable debug information from a single meter
     Given a dlms device
@@ -22,4 +21,3 @@ Feature: SmartMetering Management - Enable and disable debugging
       | DeviceIdentification | TEST1024000000001 |
     Then the disable debug response should be "OK"
     And the device debug information should be disabled
-    And the response data record should not be deleted

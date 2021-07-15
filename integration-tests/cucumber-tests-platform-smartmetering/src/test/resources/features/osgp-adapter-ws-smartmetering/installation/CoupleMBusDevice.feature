@@ -25,7 +25,6 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     When the Couple G-meter "TESTG102400000001" request is received for E-meter "TEST1024000000001"
     Then the Couple response is "OK"
     And the M-Bus device "TESTG102400000001" is coupled to device "TEST1024000000001" on M-Bus channel "1" with PrimaryAddress "9"
-    And the response data record should not be deleted
 
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: ITG corresponds with the device attributeID 7: 9863

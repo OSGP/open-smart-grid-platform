@@ -12,4 +12,3 @@ Feature: SmartMetering AdHoc - Get All Attribute Values
       | DeviceIdentification | TEST1024000000001 |
     Then a get all attribute values response should be returned
       | Result | OK |
-    And the response data record should not be deleted

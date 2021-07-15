@@ -24,7 +24,6 @@ Feature: SmartMetering AdHoc
     Then a get specific attribute value response should be returned
       | Result       | OK                                                        |
       | ResponsePart | bytes[100, 101, 118, 105, 99, 101, 32, 110, 97, 109, 101] |
-    And the response data record should not be deleted
 
   Scenario: Retrieve Administrative in-out
     When the get specific attribute value request is received

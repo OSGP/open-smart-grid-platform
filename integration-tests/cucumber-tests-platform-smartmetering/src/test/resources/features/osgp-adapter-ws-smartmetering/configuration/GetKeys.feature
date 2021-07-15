@@ -13,4 +13,3 @@ Feature: SmartMetering - Configuration - Get Keys
       | SecretTypes          | E_METER_MASTER_KEY,E_METER_AUTHENTICATION_KEY |
     Then the get keys response should return the requested keys
       | SecretTypes          | E_METER_MASTER_KEY,E_METER_AUTHENTICATION_KEY |
-    And the response data record should not be deleted

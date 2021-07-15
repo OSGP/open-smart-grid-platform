@@ -32,7 +32,6 @@ Feature: SmartMetering Configuration - Firmware
       | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
       | FirmwareModuleVersionFunc | M57 4836               |
       | FirmwareIsForSmartMeters  | true                   |
-    And the response data record should not be deleted
 
   #  TODO (RvM): to fix test: support SMR 5.1 with invocation counter in the simulator
   @wip @Skip
