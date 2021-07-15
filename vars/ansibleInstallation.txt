@@ -1,0 +1,2 @@
+Installs Ansible and additional python libraries on a container. 
+Python should already be present on the container.

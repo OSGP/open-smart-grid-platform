@@ -1,0 +1,205 @@
+// Pipeline script for the OSGP Nightly Build job in Jenkins
+/* groovylint-disable CompileStatic, DuplicateStringLiteral, LineLength, NestedBlockDepth, NoDef, VariableTypeRequired */
+
+// Use global pipeline library
+@Library('jenkins-shared@development') _
+
+def stream = 'osgp'
+def servername = stream + '-at-' + env.BUILD_NUMBER
+def playbook = stream + '-at.yml'
+def branchReleaseRepo = 'master'
+def amiName = 'CentOS7SingleInstance'
+def amiOwner = 'self'
+def ec2InstanceType = 'm4.xlarge'
+
+pipeline {
+    agent {
+      kubernetes {
+        inheritFrom 'gxf-jenkins-agent'
+      }
+    }
+
+    options {
+        ansiColor('xterm')
+        timestamps()
+        timeout(240)
+        // Only keep the 10 most recent builds
+        buildDiscarder(logRotator(numToKeepStr:'10'))
+    }
+
+    environment {
+        ANSIBLE_FORCE_COLOR = true
+    }
+
+    stages {
+        stage ('Parallel stages') {
+            parallel {
+                stage ('SSH configuration') {
+                    steps {
+                        container ('python') {
+                            sshConfiguration()
+                        }
+                        container ('maven') {
+                            sshConfiguration()
+                        }
+                    }
+                }
+
+                stage ('Ansible installation') {
+                    steps {
+                        container ('python') {
+                            ansibleInstallation()
+                        }
+                    }
+                }
+
+                stage ('Maven build') {
+                    steps {
+                        container ('maven') {
+                            sh 'mvn clean install -B -DskipTestJarWithDependenciesAssembly=false'
+                            sh 'mkdir -p target/artifacts && find . -name *.war -exec cp -uf {} target/artifacts \\;'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage ('Test server creation') {
+            steps {
+                container ('python') {
+                    // Get Ansible playbooks from release repository
+                    sh 'git clone git@github.com:SmartSocietyServices/release.git'
+                    sh "cd release && git checkout ${branchReleaseRepo}"
+
+                    script {
+                        // Determine the actual pom version from the pom.
+                        POMVERSION = sh ( script: 'grep \"<version>\" pom.xml | sed \"s#<[/]\\?version>##g;s# ##g\" | grep SNAPSHOT', returnStdout: true).trim()
+                    } // script
+                    echo "Using version ${POMVERSION} (from pom) to collect artifacts which are needed to deploy a new environment but weren't build in this job."
+
+                    // Download configuration artifacts from artifactory using same version
+                    sh """cd release && ansible-playbook plays/download-artifacts.yml \
+                            -e artifactstodownload='{{ configuration_artifacts }}' \
+                            -e deployment_type=snapshot \
+                            -e osgp_version=${POMVERSION} \
+                            -e tmp_artifacts_directory=../../target/artifacts"""
+
+                    // Download DLMS simulator artifacts from artifactory using same version
+                    sh """cd release && ansible-playbook plays/download-artifacts.yml \
+                            -e artifactstodownload='{{ dlms_simulator_artifacts }}' \
+                            -e deployment_type=snapshot \
+                            -e osgp_version=${POMVERSION} \
+                            -e tmp_artifacts_directory=../../target/artifacts"""
+
+                    // Make sure configuration tgz is present
+                    sh "cp -p target/artifacts/configuration-${POMVERSION}-configuration.tgz target/artifacts/configuration-${POMVERSION}.tgz"
+
+                    // Create a new single instance (not stream specific) and put all the artifacts in /data/software/artifacts
+                    sh """cd release && ansible-playbook plays/deploy-files-to-system.yml \
+                            -e osgp_version=${POMVERSION} \
+                            -e deployment_name=${servername} \
+                            -e directory_to_deploy=../../target/artifacts \
+                            -e tomcat_restart=false \
+                            -e ec2_instance_type=${ec2InstanceType} \
+                            -e ami_name=${amiName} \
+                            -e ami_owner=${amiOwner}"""
+                }
+            }
+        }
+
+        stage ('Test server software deployment') {
+            steps {
+                container ('python') {
+                    // Deploy artifacts
+                    sh """cd release && ansible-playbook plays/${playbook} \
+                            -e osgp_version=${POMVERSION} \
+                            -e deployment_name=${servername} \
+                            -e INSTALL_FROM_LOCAL_DIR=true \
+                            -e ARTIFACT_DIRECTORY=/data/software/artifacts \
+                            -e ARTIFACT_DIRECTORY_REMOTE_SRC=true \
+                            -e ec2_instance_type=${ec2InstanceType} \
+                            -e ami_name=${amiName} \
+                            -e ami_owner=${amiOwner}"""
+
+                    // Wait until probe is available, which is an indicator that everything is up and running.
+                    sh "cd release  && ./wait.sh https://${servername}.dev.osgp.cloud/probe 900 302"
+                }
+            }
+        }
+
+        stage ('Test execution') {
+            steps {
+                container ('maven') {
+                    runTestsOnServer(servername)
+                }
+            }
+        }
+
+        stage ('Coverage collection') {
+            steps {
+                container ("maven") {
+                    sh """mvn -Djacoco.destFile=target/code-coverage/jacoco-it.exec \
+                            -Djacoco.address=${servername}.dev.osgp.cloud \
+                            org.jacoco:jacoco-maven-plugin:0.7.9:dump"""
+                }
+            }
+        }
+
+        stage ('Reporting') {
+            steps {
+                jacoco execPattern: '**/code-coverage/jacoco-it.exec'
+                cucumber buildStatus: 'FAILURE', fileIncludePattern: '**/cucumber.json', sortingMethod: 'ALPHABETICAL'
+                archiveArtifacts '**/target/*.tgz'
+
+                // Check the console log for failed tests
+                step([$class: 'LogParserPublisher', projectRulePath: 'console-test-result-rules',
+                        unstableOnWarning: true, failBuildOnError: true, useProjectRule: true])
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'End of pipeline'
+            echo 'Destroying test server'
+            container ('python') {
+                sh """cd release && ansible-playbook plays/${playbook} \
+                        -e deployment_name=${servername} \
+                        -e deployment_action=destroy \
+                        -e ec2_instance_type=${ec2InstanceType}"""
+            }
+        }
+        failure {
+            emailext (
+                subject: '${DEFAULT_SUBJECT}',
+                body: '${DEFAULT_CONTENT}',
+                recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']],
+                to: '${DEFAULT_RECIPIENTS}',
+                from: '${DEFAULT_REPLYTO}')
+        }
+        cleanup {
+            // Delete workspace folder.
+            cleanWs()
+        }
+    }
+}
+
+def runTestsOnServer(servername) {
+    runTestScript('runTestsAtRemoteServer.sh', 'cucumber-tests-platform-common', servername)
+    runTestScript('runPubliclightingTestsAtRemoteServer.sh','cucumber-tests-platform-publiclighting', servername)
+    runTestScript('runMicrogridsTestsAtRemoteServer.sh','cucumber-tests-platform-microgrids', servername)
+    runTestScript('runSmartMeteringTestsAtRemoteServer.sh','cucumber-tests-platform-smartmetering', servername)
+    runTestScript('runDistributionAutomationTestsAtRemoteServer.sh','cucumber-tests-platform-distributionautomation', servername)
+}
+
+def runTestScript(scriptName, projectName, servername) {
+    sh """./${scriptName} \
+            ${servername}.dev.osgp.cloud \
+            integration-tests \
+            ${projectName} \
+            centos \
+            \"osgp_development.pem\" \
+            \"\" \
+            \"\""""
+}
+

@@ -19,7 +19,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>super-osgp</artifactId>
-    <version>5.8.0</version>
+    <version>5.9.0</version>
     <relativePath>../../super/pom.xml</relativePath>
   </parent>
   <distributionManagement>
@@ -64,6 +64,12 @@
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-adapter-ws-distributionautomation</artifactId>
+        <version>${osgp.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-adapter-kafka-distributionautomation</artifactId>
         <version>${osgp.version}</version>
         <classifier>classes</classifier>
       </dependency>

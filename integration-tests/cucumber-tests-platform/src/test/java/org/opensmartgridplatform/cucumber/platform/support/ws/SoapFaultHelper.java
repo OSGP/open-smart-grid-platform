@@ -37,7 +37,6 @@ public class SoapFaultHelper {
     }
 
     public static Object getFaultDetailValuesByElement(final SoapFaultClientException soapFaultClientException) {
-
         if (soapFaultClientException == null || soapFaultClientException.getSoapFault() == null) {
             return Collections.emptyMap();
         }

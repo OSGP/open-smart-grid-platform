@@ -3,7 +3,6 @@ Feature: Core operations
   As a grid operator
   I want to log each retry in the audit trail
   So I get better information the number of retries necessary
-@Skip
   Scenario: Try to connect to an unknown ip address
     Given a dlms device
       | DeviceIdentification | TEST1024000000002 |

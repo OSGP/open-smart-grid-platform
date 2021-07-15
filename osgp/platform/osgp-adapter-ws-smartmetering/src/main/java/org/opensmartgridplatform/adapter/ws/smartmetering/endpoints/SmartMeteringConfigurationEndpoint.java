@@ -527,7 +527,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
             LOGGER.error(
                     "Exception: {} while setting Encryption Key Exchange On G-Meter on device: {} for organisation {}.",
-                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
+                    e.getMessage(), request.getDeviceIdentification(), organisationIdentification, e);
             this.handleException(e);
         }
         return response;
@@ -807,7 +807,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         } catch (final Exception e) {
 
             LOGGER.error("Exception: {} while setting activity calendar on device: {} for organisation {}.",
-                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
+                    e.getMessage(), request.getDeviceIdentification(), organisationIdentification, e);
 
             this.handleException(e);
         }
@@ -868,7 +868,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         } catch (final Exception e) {
 
             LOGGER.error("Exception: {} while setting alarm notifications on device: {} for organisation {}.",
-                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
+                    e.getMessage(), request.getDeviceIdentification(), organisationIdentification, e);
 
             this.handleException(e);
         }

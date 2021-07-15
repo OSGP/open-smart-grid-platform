@@ -9,16 +9,17 @@ package org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writa
 
 import java.util.List;
 
+import org.opensmartgridplatform.domain.core.entities.DeviceModel;
+import org.opensmartgridplatform.domain.core.entities.FirmwareFile;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import org.opensmartgridplatform.domain.core.entities.DeviceModel;
-import org.opensmartgridplatform.domain.core.entities.FirmwareFile;
-
 @Repository
-public interface WritableFirmwareFileRepository extends JpaRepository<FirmwareFile, Long> {
+public interface WritableFirmwareFileRepository
+        extends JpaRepository<FirmwareFile, Long>, JpaSpecificationExecutor<FirmwareFile> {
 
     @Query("SELECT ff FROM FirmwareFile ff WHERE :deviceModel MEMBER OF ff.deviceModels")
     List<FirmwareFile> findByDeviceModel(@Param("deviceModel") DeviceModel deviceModel);

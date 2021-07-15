@@ -10,6 +10,9 @@ package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 import java.util.EnumSet;
 import java.util.Set;
 
+// suppress warning for duplicate string at reserved (line 21,22,23). The way it
+// is currently done is according to the blue book 12th edition at paragraph 4.1.6.1
+@SuppressWarnings("squid:S1192")
 public enum ClockStatusBit {
 
     INVALID_VALUE("invalid value"),
@@ -45,6 +48,12 @@ public enum ClockStatusBit {
         return forClockStatus(clockStatus & 0xFF);
     }
 
+    // SonarQube complains about the null return. SonarQube wants to see a
+    // return of an empty set. The problem is that the behavior of the code
+    // differs depending on whether the return value is null or an empty set.
+    // Trying to correct this would result in other behavior changes, making a
+    // simple fix not possible. It is still an issue though, meaning it
+    // shouldn't be suppressed.
     public static Set<ClockStatusBit> forClockStatus(final int clockStatus) {
         if (ClockStatus.STATUS_NOT_SPECIFIED == clockStatus) {
             return null;
@@ -71,5 +80,4 @@ public enum ClockStatusBit {
         }
         return status;
     }
-
 }

@@ -7,16 +7,6 @@
  */
 package org.opensmartgridplatform.adapter.ws.tariffswitching.endpoints;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.Page;
-import org.springframework.ws.server.endpoint.annotation.Endpoint;
-import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
-import org.springframework.ws.server.endpoint.annotation.RequestPayload;
-import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
-
 import javax.validation.ConstraintViolationException;
 
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
@@ -42,6 +32,15 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 @Endpoint
 public class TariffSwitchingAdHocManagementEndpoint {
@@ -80,7 +79,6 @@ public class TariffSwitchingAdHocManagementEndpoint {
                     org.opensmartgridplatform.adapter.ws.schema.tariffswitching.adhocmanagement.Device.class));
             response.setDevicePage(devicePage);
         } catch (final ConstraintViolationException e) {
-            LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_WS_TARIFF_SWITCHING,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {

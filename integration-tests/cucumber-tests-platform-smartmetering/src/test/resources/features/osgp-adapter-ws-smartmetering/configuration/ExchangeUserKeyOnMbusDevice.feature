@@ -36,7 +36,6 @@ Feature: SmartMetering Configuration - Exchange User Key on M-Bus Device
       | DeviceIdentification | TESTG102411111111 |
     Then a valid m-bus user key is stored
       | DeviceIdentification | TESTG102411111111 |
-@Skip
   Scenario: Exchange user key on a gas device with existing user key
     When the exchange user key request is received
       | DeviceIdentification | TESTG102400000001 |
@@ -48,7 +47,6 @@ Feature: SmartMetering Configuration - Exchange User Key on M-Bus Device
 
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
-  @Skip
   Scenario: Exchange user key on an m-bus device identified by channel
     Given a dlms device
       | DeviceIdentification           | TESTG101205673117 |

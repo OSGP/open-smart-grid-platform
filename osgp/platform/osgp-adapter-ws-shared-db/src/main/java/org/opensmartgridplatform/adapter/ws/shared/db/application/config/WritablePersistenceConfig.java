@@ -14,21 +14,19 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.opensmartgridplatform.adapter.ws.shared.db.domain.exceptions.SharedDbException;
 import org.opensmartgridplatform.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceRepository;
 import org.opensmartgridplatform.shared.application.config.AbstractCustomConfig;
 import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import com.zaxxer.hikari.HikariDataSource;
+import org.springframework.transaction.support.AbstractPlatformTransactionManager;
 
 @EnableJpaRepositories(entityManagerFactoryRef = "writableEntityManagerFactory", basePackageClasses = {
         WritableDeviceRepository.class })
@@ -57,8 +55,6 @@ public class WritablePersistenceConfig extends AbstractCustomConfig {
     private static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
 
     private static final String PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN = "entitymanager.packages.to.scan";
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(WritablePersistenceConfig.class);
 
     private HikariDataSource dataSource;
 
@@ -125,10 +121,9 @@ public class WritablePersistenceConfig extends AbstractCustomConfig {
 
         try {
             transactionManager.setEntityManagerFactory(this.writableEntityManagerFactory().getObject());
-            transactionManager.setTransactionSynchronization(JpaTransactionManager.SYNCHRONIZATION_ALWAYS);
+            transactionManager.setTransactionSynchronization(AbstractPlatformTransactionManager.SYNCHRONIZATION_ALWAYS);
         } catch (final Exception e) {
             final String msg = "Error in creating transaction manager bean";
-            LOGGER.error(msg, e);
             throw new SharedDbException(msg, e);
         }
 

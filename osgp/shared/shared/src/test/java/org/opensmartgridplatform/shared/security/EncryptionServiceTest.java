@@ -47,19 +47,19 @@ public class EncryptionServiceTest {
      * Authentication key in encrypted string format and decrypted binary
      * format.
      */
-    private static final String AUTH_KEY_ENCRYPTED_STRING = "bc082efed278e1bbebddc0431877d4fae80fa4e72925b6ad0bc67c84b8721598eda8458bcc1b2827fe6e5e7918ce22fd";
+    private static final String AUTH_KEY_ENCRYPTED_STRING = "c19fe80a22a0f6c5cdaad0826c4d204f23694ded08d811b66e9b845d9f2157d2";
     private static final String SRC_TEST_RESOURCES_KEYS_AUTH_KEY_DECRYPTED = "src/test/resources/keys/authkeydecrypted";
 
     /*
      * Encryption key in encrypted string format and decrypted binary format.
      */
-    private static final String ENC_KEY_ENCRYPTED_STRING = "bc082efed278e1bbebddc0431877d4fa2df7728229f3e03c57b2549142b40d047b35011dbf9f77ad91db5fe6f19a7b9c";
+    private static final String ENC_KEY_ENCRYPTED_STRING = "867424ac75b6d53c89276d304608321f0a1f6e401f453f84adf3477c7ee1623c";
     private static final String SRC_TEST_RESOURCES_KEYS_ENC_KEY_DECRYPTED = "src/test/resources/keys/enckeydecrypted";
 
     /*
      * Master key in encrypted string format and decrypted binary format.
      */
-    private static final String MASTER_KEY_ENCRYPTED_STRING = "bc082efed278e1bbebddc0431877d4fa16374b00e96dd102beab666dcb72efbd1f0b868412497f6d3d0c62caa4700585";
+    private static final String MASTER_KEY_ENCRYPTED_STRING = "55dc88791e6c8f6aff4c8be7714fb8d2ae3d02693ec474593acd3523ee032638";
     private static final String SRC_TEST_RESOURCES_KEYS_MASTER_KEY_DECRYPTED = "src/test/resources/keys/masterkeydecrypted";
 
     /**

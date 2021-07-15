@@ -11,14 +11,13 @@ package org.opensmartgridplatform.secretmanagement.application.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Date;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptionKeyReference;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 public class DbEncryptionKeyRepositoryIT extends AbstractRepositoryIT {
     @Autowired
@@ -53,11 +52,11 @@ public class DbEncryptionKeyRepositoryIT extends AbstractRepositoryIT {
     }
 
     @Test
-    public void find_noValidTo() {
-        final Page<DbEncryptionKeyReference> resultPage = this.repository.findByTypeAndValid(new Date(),
-                EncryptionProviderType.HSM, Pageable.unpaged());
-        assertThat(resultPage.getSize()).isEqualTo(1);
-        final DbEncryptionKeyReference keyReference = resultPage.toList().get(0);
+    public void findNoValidTo() {
+        final List<DbEncryptionKeyReference> results = this.repository.findByTypeAndValid(EncryptionProviderType.HSM,
+                new Date());
+        assertThat(results.size()).isEqualTo(1);
+        final DbEncryptionKeyReference keyReference = results.get(0);
         assertThat(keyReference).isNotNull();
         assertThat(keyReference.getId()).isNotNull();
         assertThat(keyReference.getEncryptionProviderType()).isEqualTo(EncryptionProviderType.HSM);
@@ -65,11 +64,11 @@ public class DbEncryptionKeyRepositoryIT extends AbstractRepositoryIT {
     }
 
     @Test
-    public void find_validTo() {
-        final Page<DbEncryptionKeyReference> resultPage = this.repository.findByTypeAndValid(new Date(),
-                EncryptionProviderType.JRE, Pageable.unpaged());
-        assertThat(resultPage.getSize()).isEqualTo(1);
-        final DbEncryptionKeyReference keyReference = resultPage.toList().get(0);
+    public void findValidTo() {
+        final List<DbEncryptionKeyReference> results = this.repository.findByTypeAndValid(EncryptionProviderType.JRE,
+                new Date());
+        assertThat(results.size()).isEqualTo(1);
+        final DbEncryptionKeyReference keyReference = results.get(0);
         assertThat(keyReference).isNotNull();
         assertThat(keyReference.getId()).isNotNull();
         assertThat(keyReference.getEncryptionProviderType()).isEqualTo(EncryptionProviderType.JRE);

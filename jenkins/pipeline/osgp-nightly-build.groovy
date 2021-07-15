@@ -115,8 +115,6 @@ pipeline {
         stage ('Reporting') {
             steps {
                 jacoco execPattern: '**/code-coverage/jacoco-it.exec'
-                cucumber buildStatus: 'FAILURE', fileIncludePattern: '**/cucumber.json', sortingMethod: 'ALPHABETICAL'
-                archiveArtifacts '**/target/*.tgz'
 
                 // Check the console log for failed tests
                 step([$class: 'LogParserPublisher', projectRulePath: 'console-test-result-rules', unstableOnWarning: true, failBuildOnError: true, useProjectRule: true])
@@ -128,6 +126,9 @@ pipeline {
         always {
             echo "End of pipeline"
             build job: 'Destroy an AWS System', parameters: [string(name: 'SERVERNAME', value: servername), string(name: 'PLAYBOOK', value: playbook)]
+            
+            cucumber buildStatus: 'FAILURE', fileIncludePattern: '**/cucumber.json', sortingMethod: 'ALPHABETICAL'
+            archiveArtifacts '**/target/*.tgz'
         }
         failure {
             emailext (

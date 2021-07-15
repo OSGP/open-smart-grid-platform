@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-integration-tests</artifactId>
-    <version>5.8.0</version>
+    <version>5.9.0</version>
     <relativePath>../parent-integration-tests/pom.xml</relativePath>
   </parent>
 
@@ -124,7 +124,11 @@
       <artifactId>cucumber-tests-platform-common</artifactId>
       <type>test-jar</type>
     </dependency>
-
+    <dependency>
+      <groupId>org.opensmartgridplatform</groupId>
+      <artifactId>osgp-adapter-kafka-distributionautomation</artifactId>
+      <classifier>classes</classifier>
+    </dependency>
     <dependency>
       <groupId>org.opensmartgridplatform</groupId>
       <artifactId>osgp-adapter-ws-distributionautomation</artifactId>

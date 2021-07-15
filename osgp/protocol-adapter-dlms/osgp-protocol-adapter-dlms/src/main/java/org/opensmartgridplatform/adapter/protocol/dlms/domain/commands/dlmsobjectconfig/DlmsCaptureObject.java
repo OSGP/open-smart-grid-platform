@@ -55,6 +55,6 @@ public class DlmsCaptureObject {
     }
 
     public boolean channelMatches(Integer channel) {
-        return this.channel == null || this.channel == channel;
+        return this.channel == null || this.channel.equals(channel);
     }
 }

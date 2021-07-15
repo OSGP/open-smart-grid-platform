@@ -11,7 +11,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.opensmartgridplatform.shared.security.providers.RsaEncryptionProvider;
+import org.opensmartgridplatform.shared.security.RsaEncrypter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -56,6 +56,9 @@ public class SoapClientConfig {
     @Value("${encryption.soap.rsa.private.key.resource}")
     private Resource soapRsaPrivateKeyResource;
 
+    @Value("${encryption.soap.rsa.public.key.resource}")
+    private Resource soapRsaPublicKeyResource;
+
     @Bean
     Jaxb2Marshaller soapClientJaxb2Marshaller() {
         Jaxb2Marshaller jaxb2Marshaller = new Jaxb2Marshaller();
@@ -67,12 +70,12 @@ public class SoapClientConfig {
     public WebServiceTemplate webServiceTemplate() throws Exception {
 
         WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
-        webServiceTemplate.setMarshaller(soapClientJaxb2Marshaller());
-        webServiceTemplate.setUnmarshaller(soapClientJaxb2Marshaller());
-        webServiceTemplate.setDefaultUri(defaultUri);
+        webServiceTemplate.setMarshaller(this.soapClientJaxb2Marshaller());
+        webServiceTemplate.setUnmarshaller(this.soapClientJaxb2Marshaller());
+        webServiceTemplate.setDefaultUri(this.defaultUri);
 
-        if (Boolean.parseBoolean(useClientAuth)) {
-            webServiceTemplate.setMessageSender(httpsUrlConnectionMessageSender());
+        if (Boolean.parseBoolean(this.useClientAuth)) {
+            webServiceTemplate.setMessageSender(this.httpsUrlConnectionMessageSender());
         }
 
         return webServiceTemplate;
@@ -83,11 +86,11 @@ public class SoapClientConfig {
         HttpsUrlConnectionMessageSender httpsUrlConnectionMessageSender =
                 new HttpsUrlConnectionMessageSender();
         // set the trust store(s)
-        httpsUrlConnectionMessageSender.setTrustManagers(trustManagersFactoryBean().getObject());
+        httpsUrlConnectionMessageSender.setTrustManagers(this.trustManagersFactoryBean().getObject());
         // set the key store(s)
-        httpsUrlConnectionMessageSender.setKeyManagers(keyManagersFactoryBean().getObject());
+        httpsUrlConnectionMessageSender.setKeyManagers(this.keyManagersFactoryBean().getObject());
 
-        if (Boolean.parseBoolean(useHostNameVerifier) == false) {
+        if (!Boolean.parseBoolean(this.useHostNameVerifier)) {
             httpsUrlConnectionMessageSender.setHostnameVerifier(new NoopHostnameVerifier());
         }
 
@@ -97,8 +100,8 @@ public class SoapClientConfig {
     @Bean
     public KeyStoreFactoryBean trustStore() {
         KeyStoreFactoryBean keyStoreFactoryBean = new KeyStoreFactoryBean();
-        keyStoreFactoryBean.setLocation(trustStore);
-        keyStoreFactoryBean.setPassword(trustStorePassword);
+        keyStoreFactoryBean.setLocation(this.trustStore);
+        keyStoreFactoryBean.setPassword(this.trustStorePassword);
 
         return keyStoreFactoryBean;
     }
@@ -106,7 +109,7 @@ public class SoapClientConfig {
     @Bean
     public TrustManagersFactoryBean trustManagersFactoryBean() {
         TrustManagersFactoryBean trustManagersFactoryBean = new TrustManagersFactoryBean();
-        trustManagersFactoryBean.setKeyStore(trustStore().getObject());
+        trustManagersFactoryBean.setKeyStore(this.trustStore().getObject());
 
         return trustManagersFactoryBean;
     }
@@ -114,8 +117,8 @@ public class SoapClientConfig {
     @Bean
     public KeyStoreFactoryBean keyStore() {
         KeyStoreFactoryBean keyStoreFactoryBean = new KeyStoreFactoryBean();
-        keyStoreFactoryBean.setLocation(keyStore);
-        keyStoreFactoryBean.setPassword(keyStorePassword);
+        keyStoreFactoryBean.setLocation(this.keyStore);
+        keyStoreFactoryBean.setPassword(this.keyStorePassword);
 
         return keyStoreFactoryBean;
     }
@@ -123,21 +126,23 @@ public class SoapClientConfig {
     @Bean
     public KeyManagersFactoryBean keyManagersFactoryBean() {
         KeyManagersFactoryBean keyManagersFactoryBean = new KeyManagersFactoryBean();
-        keyManagersFactoryBean.setKeyStore(keyStore().getObject());
-        keyManagersFactoryBean.setPassword(keyPassword);
+        keyManagersFactoryBean.setKeyStore(this.keyStore().getObject());
+        keyManagersFactoryBean.setPassword(this.keyPassword);
         return keyManagersFactoryBean;
     }
 
     @Bean
-    public RsaEncryptionProvider rsaEncryptionProvider() {
+    public RsaEncrypter rsaEncrypter() {
         try {
             File privateRsaKeyFile = this.soapRsaPrivateKeyResource.getFile();
-            RsaEncryptionProvider rsaEncryptionProvider = new RsaEncryptionProvider();
-            rsaEncryptionProvider.setPrivateKeyStore(privateRsaKeyFile);
-            return rsaEncryptionProvider;
+            File publicRsaKeyFile = this.soapRsaPublicKeyResource.getFile();
+            RsaEncrypter rsaEncrypter= new RsaEncrypter();
+            rsaEncrypter.setPrivateKeyStore(privateRsaKeyFile);
+            rsaEncrypter.setPublicKeyStore(publicRsaKeyFile);
+            return rsaEncrypter;
         }
         catch(IOException e) {
-            throw new IllegalStateException("Could not initialize RsaEncryptionProvider", e);
+            throw new IllegalStateException("Could not initialize RsaEncrypter", e);
         }
     }
 }

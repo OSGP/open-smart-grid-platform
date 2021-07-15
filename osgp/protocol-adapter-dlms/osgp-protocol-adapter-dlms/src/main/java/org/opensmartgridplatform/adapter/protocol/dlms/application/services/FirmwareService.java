@@ -31,7 +31,7 @@ public class FirmwareService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FirmwareService.class);
 
-    private static final String EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE = "Firmware file is not available.";
+    private static final String EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE = "Firmware file %s is not available.";
 
     @Autowired
     private FirmwareFileCachingRepository firmwareRepository;
@@ -62,7 +62,8 @@ public class FirmwareService {
                 device, firmwareFileDto.getFirmwareIdentification());
 
         if (ArrayUtils.isEmpty(firmwareFileDto.getFirmwareFile())) {
-            throw new ProtocolAdapterException(EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE);
+            throw new ProtocolAdapterException(String.format(EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE,
+                    firmwareFileDto.getFirmwareIdentification()));
         }
         this.firmwareRepository.store(firmwareFileDto.getFirmwareIdentification(), firmwareFileDto.getFirmwareFile());
 
@@ -78,7 +79,8 @@ public class FirmwareService {
         if (this.firmwareRepository.isAvailable(firmwareIdentification)) {
             return this.updateFirmwareCommandExecutor.execute(conn, device, firmwareIdentification);
         } else {
-            throw new ProtocolAdapterException(EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE);
+            throw new ProtocolAdapterException(
+                    String.format(EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE, firmwareIdentification));
         }
     }
 }

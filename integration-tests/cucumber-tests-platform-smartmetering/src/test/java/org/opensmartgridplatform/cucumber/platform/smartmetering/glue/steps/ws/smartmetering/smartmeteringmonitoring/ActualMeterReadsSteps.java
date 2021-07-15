@@ -8,9 +8,12 @@
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmonitoring;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import java.util.Map;
 
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsRequest;
@@ -21,9 +24,6 @@ import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smar
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringRequestClient;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring.SmartMeteringMonitoringResponseClient;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
 
 public class ActualMeterReadsSteps {
 
@@ -56,7 +56,8 @@ public class ActualMeterReadsSteps {
         assertThat(actualMeterReadsAsyncRequest).as("ActualMeterReadsAsyncRequest should not be null").isNotNull();
 
         try {
-            this.responseClient.getResponse(actualMeterReadsAsyncRequest);
+            final ActualMeterReadsResponse response = this.responseClient.getResponse(actualMeterReadsAsyncRequest);
+            fail("Expected exception, but got a response: %s", response.toString());
         } catch (final Exception exception) {
             ScenarioContext.current().put(PlatformKeys.RESPONSE, exception);
         }

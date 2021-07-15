@@ -36,14 +36,12 @@ public class EventConverter extends
         }
 
         try {
-            final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventType eventType =
-                    org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventType.getByEventCode(
-                    source.getEventCode());
             final XMLGregorianCalendar timestamp = DatatypeFactory.newInstance().newXMLGregorianCalendar(
                     source.getTimestamp().toGregorianCalendar());
             final org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event event =
                     new org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event();
-            event.setEventType(EventType.fromValue(eventType.toString()));
+            event.setEventCode(source.getEventCode());
+            event.setEventType(EventType.fromValue(source.getEventType().name()));
             event.setTimestamp(timestamp);
             event.setEventCounter(source.getEventCounter());
             event.setEventLogCategory(EventLogCategory.fromValue(source.getEventLogCategory().name()));
@@ -63,11 +61,13 @@ public class EventConverter extends
         }
 
         final DateTime timestamp = new DateTime(source.getTimestamp().toGregorianCalendar().getTime());
-        final Integer eventCode = org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventType.valueOf(
-                source.getEventType().toString()).getEventCode();
         final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventLogCategory eventLogCategory =
                 org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventLogCategory.fromValue(
-                source.getEventLogCategory().value());
-        return new Event(timestamp, eventCode, source.getEventCounter(), eventLogCategory);
+                        source.getEventLogCategory().value());
+        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventType eventType =
+                org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventType.fromValue(
+                        source.getEventType().value());
+
+        return new Event(timestamp, eventType, source.getEventCounter(), eventLogCategory);
     }
 }

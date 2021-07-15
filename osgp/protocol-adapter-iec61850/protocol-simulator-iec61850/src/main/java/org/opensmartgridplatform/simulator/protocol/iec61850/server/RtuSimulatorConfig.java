@@ -63,7 +63,7 @@ public class RtuSimulatorConfig {
             rtuSimulator.start();
             return rtuSimulator;
         } catch (final SclParseException e) {
-            LOGGER.warn("Error parsing SCL/ICD file {}", e);
+            LOGGER.warn("Error parsing SCL/ICD file", e);
         } finally {
             icdInputStream.close();
         }

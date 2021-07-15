@@ -31,7 +31,7 @@ public class MqttDeviceSteps {
     private static final String DEFAULT_DEVICE_TYPE = "PSD";
     private static final String DEFAULT_PROTOCOL = "MQTT";
     private static final String DEFAULT_PROTOCOL_VERSION = "3.1.1";
-    private static final String DEFAULT_LAST_COMMUNICATION_TIME = "now - 15 minutes";
+    private static final String DEFAULT_LAST_COMMUNICATION_TIME = "yesterday";
 
     private static final Map<String, String> MQTT_DEFAULT_SETTINGS;
 

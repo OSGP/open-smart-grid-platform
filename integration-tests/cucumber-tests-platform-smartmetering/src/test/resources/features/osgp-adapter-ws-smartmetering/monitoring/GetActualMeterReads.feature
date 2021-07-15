@@ -26,7 +26,7 @@ Feature: SmartMetering Monitoring - Get Actual Meter Reads
       | DeviceIdentification | TESTG102400000001 |
     Then the actual meter reads gas result should be returned
       | DeviceIdentification | TESTG102400000001 |
-  @NightlyBuildOnly @Skip
+  @NightlyBuildOnly
   Scenario: Do not refuse an operation with an inactive device
     Given a dlms device
       | DeviceIdentification  | E9998000014123414 |

@@ -5,7 +5,6 @@ Feature: SmartMetering Connection security
   So the transferred data is as secure as possible
 
   # Needs a DlmsDevice simulator with security.enabled=false on port 1025
-  @Skip
   Scenario: Communicate with LLS1 encryption without sn and hdlc
     Given a dlms device
       | DeviceIdentification | TEST1025000000001 |

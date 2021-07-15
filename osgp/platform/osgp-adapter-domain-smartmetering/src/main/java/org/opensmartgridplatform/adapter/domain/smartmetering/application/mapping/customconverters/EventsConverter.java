@@ -13,7 +13,9 @@ import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.Event;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventLogCategory;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventTypeDto;
 
 public class EventsConverter extends BidirectionalConverter<EventDto, Event> {
 
@@ -22,8 +24,8 @@ public class EventsConverter extends BidirectionalConverter<EventDto, Event> {
         if (source == null) {
             return null;
         }
-
-        return new Event(source.getTimestamp(), source.getEventCode(), source.getEventCounter(),
+        final EventType eventType = EventType.valueOf(source.getEventTypeDto().name());
+        return new Event(source.getTimestamp(), eventType, source.getEventCounter(),
                 EventLogCategory.fromValue(source.getEventLogCategoryName()));
     }
 
@@ -33,8 +35,10 @@ public class EventsConverter extends BidirectionalConverter<EventDto, Event> {
         if (source == null) {
             return null;
         }
-
-        return new EventDto(source.getTimestamp(), source.getEventCode(), source.getEventCounter(),
+        final EventDto eventDto = new EventDto(source.getTimestamp(), source.getEventCode(),
+                source.getEventCounter(),
                 source.getEventLogCategory().name());
+        eventDto.setEventTypeDto(EventTypeDto.valueOf(source.getEventType().name()));
+        return eventDto;
     }
 }

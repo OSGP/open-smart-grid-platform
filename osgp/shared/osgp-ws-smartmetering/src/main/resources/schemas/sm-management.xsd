@@ -290,6 +290,7 @@
   <xsd:complexType name="Event">
     <xsd:sequence>
       <xsd:element name="timestamp" type="xsd:dateTime"/>
+      <xsd:element name="eventCode" type="xsd:int"/>
       <xsd:element name="eventType" type="tns:EventType"/>
       <xsd:element name="EventLogCategory" type="tns:EventLogCategory"/>
       <xsd:element name="eventCounter" type="xsd:int" minOccurs="0"/>
@@ -311,251 +312,246 @@
   <!-- Standard Event Log Event Types -->
   <xsd:simpleType name="EventType">
     <xsd:restriction base="xsd:string">
-      <!-- 255 - Event Log Cleared -->
+      <!-- 255 - event log cleared -  -  -  -->
       <xsd:enumeration value="EVENTLOG_CLEARED"/>
-      <!-- 1 - Power Down -->
+      <!-- 1 - power down -  -  - SMART_METER_E -->
       <xsd:enumeration value="POWER_FAILURE"/>
-      <!-- 2 - Power Up -->
+      <!-- 1 - power down g -  -  - SMART_METER_G -->
+      <xsd:enumeration value="POWER_FAILURE_G"/>
+      <!-- 1 - power down w -  -  - SMART_METER_W -->
+      <xsd:enumeration value="POWER_FAILURE_W"/>
+      <!-- 2 - power up -  -  -  -->
       <xsd:enumeration value="POWER_RETURNED"/>
-      <!-- 3 - Daylight Saving Time Enabled or Disabled -->
+      <!-- 3 - daylight saving time enabled or disabled -  -  -  -->
       <xsd:enumeration value="CLOCK_UPDATE"/>
-      <!-- 4 - Clock Adjusted (old date/time) -->
+      <!-- 4 - clock adjusted old datetime -  -  -  -->
       <xsd:enumeration value="CLOCK_ADJUSTED_OLD_TIME"/>
-      <!-- 5 - Clock Adjusted (new date/time) -->
+      <!-- 5 - clock adjusted new datetime -  -  -  -->
       <xsd:enumeration value="CLOCK_ADJUSTED_NEW_TIME"/>
-      <!-- 6 - Clock Invalid -->
+      <!-- 6 - clock invalid -  -  -  -->
       <xsd:enumeration value="CLOCK_INVALID"/>
-      <!-- 7 - Replace Battery -->
+      <!-- 7 - replace battery -  -  -  -->
       <xsd:enumeration value="REPLACE_BATTERY"/>
-      <!-- 8 - Battery Voltage Low -->
+      <!-- 8 - battery voltage low -  -  -  -->
       <xsd:enumeration value="BATTERY_VOLTAGE_LOW"/>
-      <!-- 9 - Tariff Shift Times (TOU) Activated -->
+      <!-- 9 - tou activated -  -  -  -->
       <xsd:enumeration value="TARIFF_ACTIVATED"/>
-      <!-- 10 - Error Register Cleared -->
+      <!-- 10 - error register cleared -  -  -  -->
       <xsd:enumeration value="ERROR_REGISTER_CLEARED"/>
-      <!-- 11 - Alarm Register Cleared -->
+      <!-- 11 - alarm register cleared -  -  -  -->
       <xsd:enumeration value="ALARM_REGISTER_CLEARED"/>
-      <!-- NOTE: 12, 13, 14 and 16 are mapped to unique enum members instead 
-        of mapped to HARDWARE_ERROR -->
-      <!-- 12 - Program Memory Error -->
-      <!-- 13 - RAM Error -->
-      <!-- 14 - NV Memory Error -->
-      <!-- 16 - Measurement System Error -->
-      <!-- <xsd:enumeration value="HARDWARE_ERROR" /> -->
-      <!-- 12 - Program Memory Error -->
+      <!-- 12 - program memory error -  -  -  -->
       <xsd:enumeration value="HARDWARE_ERROR_PROGRAM_MEMORY"/>
-      <!-- 13 - RAM Error -->
+      <!-- 13 - ram error -  -  -  -->
       <xsd:enumeration value="HARDWARE_ERROR_RAM"/>
-      <!-- 14 - NV Memory Error -->
+      <!-- 14 - nv memory error -  -  -  -->
       <xsd:enumeration value="HARDWARE_ERROR_NV_MEMORY"/>
-      <!-- 15 - Watchdog Error -->
+      <!-- 15 - watchdog error -  -  -  -->
       <xsd:enumeration value="WATCHDOG_ERROR"/>
-      <!-- 16 - Measurement System Error -->
+      <!-- 16 - measurement system error -  -  -  -->
       <xsd:enumeration value="HARDWARE_ERROR_MEASUREMENT_SYSTEM"/>
-      <!-- 17 - Firmware Ready for Activation -->
+      <!-- 17 - firmware ready for activation -  -  -  -->
       <xsd:enumeration value="FIRMWARE_READY_FOR_ACTIVATION"/>
-      <!-- 18 - Firmware Activated -->
+      <!-- 18 - firmware activated -  -  -  -->
       <xsd:enumeration value="FIRMWARE_ACTIVATED"/>
-      <!-- 19 - Tariff Shift Time (TOU) -->
+      <!-- 19 - passive tariff updated -  -  -  -->
       <xsd:enumeration value="PASSIVE_TARIFF_UPDATED"/>
-      <!-- 20 - Successful Selfcheck after Firmware Update -->
+      <!-- 20 - successful self check after firmware update -  -  -  -->
       <xsd:enumeration value="SUCCESSFUL_SELFCHECK_AFTER_FIRMWARE_UPDATE"/>
-      <!-- 40 - Indicates that the terminal cover has been removed -->
+      <!-- 21 - communication module removed -  -  -  -->
+      <xsd:enumeration value="COMMUNICATION_MODULE_REMOVED"/>
+      <!-- 22 - communication module inserted -  -  -  -->
+      <xsd:enumeration value="COMMUNICATION_MODULE_INSERTED"/>
+      <!-- 40 - terminal cover removed -  -  -  -->
       <xsd:enumeration value="TERMINAL_COVER_REMOVED"/>
-      <!-- 41 - Indicates that the terminal cover has been closed -->
+      <!-- 41 - terminal cover closed -  -  -  -->
       <xsd:enumeration value="TERMINAL_COVER_CLOSED"/>
-      <!-- 42 - Indicates that a strong magnetic DC field has been detected. -->
+      <!-- 42 - strong dc field detected -  -  -  -->
       <xsd:enumeration value="STRONG_DC_FIELD_DETECTED"/>
-      <!-- 43 - Indicates that the strong magnetic DC field has disappeared. -->
+      <!-- 43 - no strong dc field anymore -  -  -  -->
       <xsd:enumeration value="NO_STRONG_DC_FIELD_ANYMORE"/>
-      <!-- 44 - Indicates that the meter cover has been removed. -->
+      <!-- 44 - meter cover removed -  -  -  -->
       <xsd:enumeration value="METER_COVER_REMOVED"/>
-      <!-- 45 - Indicates that the meter cover has been closed. -->
+      <!-- 45 - meter cover closed -  -  -  -->
       <xsd:enumeration value="METER_COVER_CLOSED"/>
-      <!-- 46 - Indicates that a user tried to gain access with wrong authentication 
-        credentials (intrusion detection) -->
+      <!-- 46 - failed login attempt -  -  -  -->
       <xsd:enumeration value="FAILED_LOGIN_ATTEMPT"/>
-      <!-- 47 - Indicates that configuration is activated or de-activated 
-        after the meter was installed. -->
+      <!-- 47 - configuration changed -  -  -  -->
       <xsd:enumeration value="CONFIGURATION_CHANGE"/>
-      <!-- 71 - Technical maintenance of the meter (Comlog Code 1) -->
+      <!-- 48 - module cover opened -  -  -  -->
+      <xsd:enumeration value="MODULE_COVER_OPENED"/>
+      <!-- 49 - module cover closed -  -  -  -->
+      <xsd:enumeration value="MODULE_COVER_CLOSED"/>
+      <!-- 71 - metrological maintenance -  -  -  -->
       <xsd:enumeration value="METROLOGICAL_MAINTENANCE"/>
-      <!-- 72 - Technical maintenance of the grid (Comlog Code 2) -->
+      <!-- 72 - technical maintenance -  -  -  -->
       <xsd:enumeration value="TECHNICAL_MAINTENANCE"/>
-      <!-- 73 - Retrieving of meter readings E (Comlog Code 3) -->
+      <!-- 73 - retrieve meter readings e -  -  -  -->
       <xsd:enumeration value="RETRIEVE_METER_READINGS_E"/>
-      <!-- 74 - Retrieving of meter readings G (Comlog Code 4) -->
+      <!-- 74 - retrieve meter readings g -  -  -  -->
       <xsd:enumeration value="RETRIEVE_METER_READINGS_G"/>
-      <!-- 75 - Retrieving of interval data E (Comlog Code 5) -->
+      <!-- 75 - retrieve interval data e -  -  -  -->
       <xsd:enumeration value="RETRIEVE_INTERVAL_DATA_E"/>
-      <!-- 76 - Retrieving of interval data G (Comlog Code 6) -->
+      <!-- 76 - retrieve interval data g -  -  -  -->
       <xsd:enumeration value="RETRIEVE_INTERVAL_DATA_G"/>
-      <!-- 77 - Indicates that under-voltage occurred on at least L1 phase -->
+      <!-- 77 - under voltage l1 -  -  -  -->
       <xsd:enumeration value="UNDER_VOLTAGE_L1"/>
-      <!-- 78 - Indicates that under-voltage occurred on at least L2 phase -->
+      <!-- 78 - under voltage l2 -  -  -  -->
       <xsd:enumeration value="UNDER_VOLTAGE_L2"/>
-      <!-- 79 - Indicates that under-voltage occurred on at least L3 phase -->
+      <!-- 79 - under voltage l3 -  -  -  -->
       <xsd:enumeration value="UNDER_VOLTAGE_L3"/>
-
-      <!-- SMR4.2 / SMR4.3 EventTypes -->
+      <!-- 80 - pv voltage sag l1 - DSMR -  -  -->
       <xsd:enumeration value="PV_VOLTAGE_SAG_L1"/>
+      <!-- 81 - pv voltage sag l2 - DSMR -  -  -->
       <xsd:enumeration value="PV_VOLTAGE_SAG_L2"/>
+      <!-- 82 - pv voltage sag l3 - DSMR -  -  -->
       <xsd:enumeration value="PV_VOLTAGE_SAG_L3"/>
+      <!-- 83 - pv voltage swell l1 - DSMR -  -  -->
       <xsd:enumeration value="PV_VOLTAGE_SWELL_L1"/>
+      <!-- 84 - pv voltage swell l2 - DSMR -  -  -->
       <xsd:enumeration value="PV_VOLTAGE_SWELL_L2"/>
+      <!-- 85 - pv voltage swell l3"), - DSMR -  -  -->
       <xsd:enumeration value="PV_VOLTAGE_SWELL_L3"/>
-
-      <!-- SMR5 EventTypes -->
-      <!-- 80 - Indicates that over-voltage occurred on at least L1 phase -->
+      <!-- 80 - over voltage l1 - SMR -  -  -->
       <xsd:enumeration value="OVER_VOLTAGE_L1"/>
-      <!-- 81 - Indicates that over-voltage occurred on at least L2 phase -->
+      <!-- 81 - over voltage l2 - SMR -  -  -->
       <xsd:enumeration value="OVER_VOLTAGE_L2"/>
-      <!-- 82 - Indicates that over-voltage occurred on at least L3 phase -->
+      <!-- 82 - over voltage l3 - SMR -  -  -->
       <xsd:enumeration value="OVER_VOLTAGE_L3"/>
-      <!-- 83 - Indicates that mains voltage on L1 is within the limits
-                again (e.g.: after over-voltage or under-voltage) -->
+      <!-- 83 - voltage l1 normal - SMR -  -  -->
       <xsd:enumeration value="VOLTAGE_L1_NORMAL"/>
-      <!-- 84 - Indicates that mains voltage on L2 is within the limits
-                again (e.g.: after over-voltage or under-voltage) -->
+      <!-- 84 - voltage l2 normal - SMR -  -  -->
       <xsd:enumeration value="VOLTAGE_L2_NORMAL"/>
-      <!-- 85 - Indicates that mains voltage on L3 is within the limits
-                again (e.g.: after over-voltage or under-voltage) -->
+      <!-- 85 - voltage l3 normal - SMR -  -  -->
       <xsd:enumeration value="VOLTAGE_L3_NORMAL"/>
-      <!-- 86 - Indicates a phase power outage has been detected on
-                L1 (and a phase outage alarm sent) -->
+      <!-- 86 - phase outage l1 -  -  -  -->
       <xsd:enumeration value="PHASE_OUTAGE_L1"/>
-      <!-- 87 - Indicates a phase power outage has been detected on
-                L2 (and a phase outage alarm sent) -->
+      <!-- 87 - phase outage l2 -  -  -  -->
       <xsd:enumeration value="PHASE_OUTAGE_L2"/>
-      <!-- 88 - Indicates a phase power outage has been detected on
-                L3 (and a phase outage alarm sent) -->
+      <!-- 88 - phase outage l3 -  -  -  -->
       <xsd:enumeration value="PHASE_OUTAGE_L3"/>
-      <!-- 89 - Indicates a phase power outage test has been indicated
-                (and a phase outage test indication alarm sent) -->
+      <!-- 89 - phase outage test -  -  -  -->
       <xsd:enumeration value="PHASE_OUTAGE_TEST"/>
-      <!-- 100 - Indicates a communication problem when reading the meter 
-        connected to channel 1 of the M_BUS -->
+      <!-- 90 - phase returned l1 -  -  -  -->
+      <xsd:enumeration value="PHASE_RETURNED_L1"/>
+      <!-- 91 - phase returned l2 -  -  -  -->
+      <xsd:enumeration value="PHASE_RETURNED_L2"/>
+      <!-- 92 - phase returned l3 -  -  -  -->
+      <xsd:enumeration value="PHASE_RETURNED_L3"/>
+      <!-- 100 - communication error mbus channel1 -  -  -  -->
       <xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_1"/>
-      <!-- 101 - Indicates that the communication with the M_BUS meter connected 
-        to channel 1 of the M_BUS is ok again. -->
+      <!-- 101 - communication ok mbus channel1 -  -  -  -->
       <xsd:enumeration value="COMMUNICATION_OK_M_BUS_CHANNEL_1"/>
-      <!-- 102 - Indicates that the battery must be echanged due to the epected 
-        end of life time. -->
+      <!-- 102 - replace battery mbus channel1 -  -  -  -->
       <xsd:enumeration value="REPLACE_BATTERY_M_BUS_CHANNEL_1"/>
-      <!-- 103 - Indicates that a fraud attempt has been registered. -->
+      <!-- 103 - fraud attempt mbus channel1 -  -  -  -->
       <xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_1"/>
-      <!-- 104 - Indicates that the clock has been adjusted. (Only in case 
-        of a large time adjustment) -->
+      <!-- 104 - clock adjusted mbus channel1 -  -  -  -->
       <xsd:enumeration value="CLOCK_ADJUSTED_M_BUS_CHANNEL_1"/>
-      <!-- 105 - Indicates that a new M_BUS Device has been detected on channel 
-        1 of the M_BUS -->
+      <!-- 105 - new mbus device discovered channel1 -  -  -  -->
       <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_1"/>
-      <!-- 106 - Indicates that a Permanent error has been received from 
-        the M_BUS device. The Permanent error can be a self-check error, or any other 
-        fatal device error that requires a service action -->
+      <!-- 106 - permanent error from mbus device channel1 -  -  -  -->
       <xsd:enumeration value="PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_1"/>
-      <!-- 110 - Indicates a communication problem when reading the meter 
-        connected to channel 2 of the M_BUS -->
+      <!-- 110 - communication error mbus channel2 -  -  -  -->
       <xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_2"/>
-      <!-- 111 - Indicates that the communication with the M_BUS meter connected 
-        to channel 2 of the M_BUS is ok again. -->
+      <!-- 111 - communication ok mbus channel2 -  -  -  -->
       <xsd:enumeration value="COMMUNICATION_OK_M_BUS_CHANNEL_2"/>
-      <!-- 112 - Indicates that the battery must be echanged due to the epected 
-        end of life time. -->
+      <!-- 112 - replace battery mbus channel2 -  -  -  -->
       <xsd:enumeration value="REPLACE_BATTERY_M_BUS_CHANNEL_2"/>
-      <!-- 113 - Indicates that a fraud attempt has been registered in the 
-        M_BUS device. -->
+      <!-- 113 - fraud attempt mbus channel2 -  -  -  -->
       <xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_2"/>
-      <!-- 114 - Indicates that the clock has been adjusted. (Only in case 
-        of a large time adjustment) -->
+      <!-- 114 - clock adjusted mbus channel2 -  -  -  -->
       <xsd:enumeration value="CLOCK_ADJUSTED_M_BUS_CHANNEL_2"/>
-      <!-- 115 - Indicates that a new M_BUS Device has been detected on channel 
-        2 of the M_BUS -->
+      <!-- 115 - new mbus device discovered channel2 -  -  -  -->
       <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_2"/>
-      <!-- 116 - Indicates that a Permanent error has been received from 
-        the M_BUS device. The Permanent error can be a self-check error, or any other 
-        fatal device error that requires a service action -->
+      <!-- 116 - permanent error from mbus device channel2 -  -  -  -->
       <xsd:enumeration value="PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_2"/>
-      <!-- 120 - Indicates a communication problem when reading the meter 
-        connected to channel 3 of the M_BUS -->
+      <!-- 120 - communication error mbus channel3 -  -  -  -->
       <xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_3"/>
-      <!-- 121 - Indicates that the communication with the M_BUS meter connected 
-        to channel 3 of the M_BUS is ok again. -->
+      <!-- 121 - communication ok mbus channel3 -  -  -  -->
       <xsd:enumeration value="COMMUNICATION_OK_M_BUS_CHANNEL_3"/>
-      <!-- 122 - Indicates that the battery must be echanged due to the epected 
-        end of life time. -->
+      <!-- 122 - replace battery mbus channel3 -  -  -  -->
       <xsd:enumeration value="REPLACE_BATTERY_M_BUS_CHANNEL_3"/>
-      <!-- 123 - Indicates that a fraud attempt has been registered. -->
+      <!-- 123 - fraud attempt mbus channel3 -  -  -  -->
       <xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_3"/>
-      <!-- 124 - Indicates that the clock has been adjusted. (Only in case 
-        of a large time adjustment) -->
+      <!-- 124 - clock adjusted mbus channel3 -  -  -  -->
       <xsd:enumeration value="CLOCK_ADJUSTED_M_BUS_CHANNEL_3"/>
-      <!-- 125 - Indicates that a new M_BUS Device has been detected on channel 
-        3 of the M_BUS -->
+      <!-- 125 - new mbus device discovered channel3 -  -  -  -->
       <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_3"/>
-      <!-- 126 - Indicates that a Permanent error has been received from 
-        the M_BUS device. The Permanent error can be a self-check error, or any other 
-        fatal device error that requires a service action -->
+      <!-- 126 - permanent error from mbus device channel3 -  -  -  -->
       <xsd:enumeration value="PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_3"/>
-      <!-- 130 - Indicates a communication problem when reading the meter 
-        connected to channel 4 of the M_BUS -->
+      <!-- 130 - communication error mbus channel4 -  -  -  -->
       <xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_4"/>
-      <!-- 131 - Indicates that the communication with the M_BUS meter connected 
-        to channel 4 of the M_BUS is ok again. -->
+      <!-- 131 - communication ok mbus channel4 -  -  -  -->
       <xsd:enumeration value="COMMUNICATION_OK_M_BUS_CHANNEL_4"/>
-      <!-- 132 - Indicates that the battery must be echanged due to the epected 
-        end of life time. -->
+      <!-- 132 - replace battery mbus channel4 -  -  -  -->
       <xsd:enumeration value="REPLACE_BATTERY_M_BUS_CHANNEL_4"/>
-      <!-- 133 - Indicates that a fraud attempt has been registered. -->
+      <!-- 133 - fraud attempt mbus channel4 -  -  -  -->
       <xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_4"/>
-      <!-- 134 - Indicates that the clock has been adjusted. (Only in case 
-        of a large time adjustment) -->
+      <!-- 134 - clock adjusted mbus channel4 -  -  -  -->
       <xsd:enumeration value="CLOCK_ADJUSTED_M_BUS_CHANNEL_4"/>
-      <!-- 135 - Indicates that a new M_BUS Device has been detected on channel 
-        4 of the M_BUS -->
+      <!-- 135 - new mbus device discovered channel4 -  -  -  -->
       <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4"/>
-      <!-- 136 - Indicates that a Permanent error has been received from 
-        the M_BUS device. The Permanent error can be a self-check error, or any other 
-        fatal device error that requires a service action -->
+      <!-- 136 - permanent error from mbus device channel4 -  -  -  -->
       <xsd:enumeration value="PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_4"/>
-      <!-- 231 - Indicates a manufacturer specific code -->
+      <!-- 231 - manufacturer specific 231 -  -  -  -->
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_231"/>
-      <!-- 232 - Indicates a manufacturer specific code -->
+      <!-- 232 - manufacturer specific 232 -  -  -  -->
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_232"/>
-      <!-- 233 - Indicates a manufacturer specific code -->
+      <!-- 233 - manufacturer specific 233 -  -  -  -->
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_233"/>
-      <!-- 234 - Indicates a manufacturer specific code -->
+      <!-- 234 - manufacturer specific 234 -  -  -  -->
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_234"/>
-      <!-- 235 - Indicates a manufacturer specific code -->
+      <!-- 235 - manufacturer specific 235 -  -  -  -->
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_235"/>
-      <!-- 236 - Indicates a manufacturer specific code -->
+      <!-- 236 - manufacturer specific 236 -  -  -  -->
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_236"/>
-      <!-- 237 - Indicates a manufacturer specific code -->
+      <!-- 237 - manufacturer specific 237 -  -  -  -->
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_237"/>
-      <!-- 238 - Indicates a manufacturer specific code -->
+      <!-- 238 - manufacturer specific 238 -  -  -  -->
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_238"/>
-      <!-- 239 - Indicates a manufacturer specific code -->
+      <!-- 239 - manufacturer specific 239 -  -  -  -->
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_239"/>
-      <!-- 240 - Indicates a manufacturer specific code -->
+      <!-- 240 - manufacturer specific 240 -  -  -  -->
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_240"/>
-      <!-- 241 - Indicates a manufacturer specific code -->
+      <!-- 241 - manufacturer specific 241 -  -  -  -->
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_241"/>
-      <!-- 242 - Indicates a manufacturer specific code -->
+      <!-- 242 - manufacturer specific 242 -  -  -  -->
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_242"/>
-      <!-- 243 - Indicates a manufacturer specific code -->
+      <!-- 243 - manufacturer specific 243 -  -  -  -->
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_243"/>
-      <!-- 244 - Indicates a manufacturer specific code -->
+      <!-- 244 - manufacturer specific 244 -  -  -  -->
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_244"/>
-      <!-- 245 - Indicates a manufacturer specific code -->
+      <!-- 245 - manufacturer specific 245 -  -  -  -->
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_245"/>
-      <!-- 246 - Indicates a manufacturer specific code -->
+      <!-- 246 - manufacturer specific 246 -  -  -  -->
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_246"/>
-      <!-- 247 - Indicates a manufacturer specific code -->
+      <!-- 247 - manufacturer specific 247 -  -  -  -->
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_247"/>
-      <!-- 248 - Indicates a manufacturer specific code -->
+      <!-- 248 - manufacturer specific 248 -  -  -  -->
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_248"/>
-      <!-- 249 - Indicates a manufacturer specific code -->
+      <!-- 249 - manufacturer specific 249 -  -  -  -->
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_249"/>
+      <!-- 230 - fatal error iskr -  - Iskr -  -->
+      <xsd:enumeration value="FATAL_ERROR_ISKR"/>
+      <!-- 231 - billing reset iskr -  - Iskr -  -->
+      <xsd:enumeration value="BILLING_RESET_ISKR"/>
+      <!-- 232 - power down phase l1 iskr -  - Iskr -  -->
+      <xsd:enumeration value="POWER_DOWN_PHASE_L1_ISKR"/>
+      <!-- 233 - power down phase l2 iskr -  - Iskr -  -->
+      <xsd:enumeration value="POWER_DOWN_PHASE_L2_ISKR"/>
+      <!-- 234 - power down phase l3 iskr -  - Iskr -  -->
+      <xsd:enumeration value="POWER_DOWN_PHASE_L3_ISKR"/>
+      <!-- 235 - power restored phase l1 iskr -  - Iskr -  -->
+      <xsd:enumeration value="POWER_RESTORED_PHASE_L1_ISKR"/>
+      <!-- 236 - power restored phase l2 iskr -  - Iskr -  -->
+      <xsd:enumeration value="POWER_RESTORED_PHASE_L2_ISKR"/>
+      <!-- 237 - power restored phase l3 iskr -  - Iskr -  -->
+      <xsd:enumeration value="POWER_RESTORED_PHASE_L3_ISKR"/>
+      <!-- 244 - module cover opened iskr -  - Iskr -  -->
+      <xsd:enumeration value="MODULE_COVER_OPENED_ISKR"/>
+      <!-- 245 - module cover closed iskr -  - Iskr -  -->
+      <xsd:enumeration value="MODULE_COVER_CLOSED_ISKR"/>
       <!-- the following events are System Events -->
       <xsd:enumeration value="SET_MAINTENANCE_STATE_E_SUCCESS"/>
       <xsd:enumeration value="SET_MAINTENANCE_STATE_G_SUCCESS"/>

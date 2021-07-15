@@ -8,7 +8,9 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws;
 
+import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
+import javax.jms.Session;
 
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
@@ -45,40 +47,42 @@ public class WebServiceResponseMessageSender implements NotificationResponseMess
             this.jmsTemplate.setTimeToLive(timeToLive);
         }
 
-        this.jmsTemplate.send(session -> {
-            final ObjectMessage objectMessage = session.createObjectMessage(responseMessage);
-
-            objectMessage.setJMSPriority(responseMessage.getMessagePriority());
-            objectMessage.setJMSCorrelationID(responseMessage.getCorrelationUid());
-            objectMessage.setJMSType(messageType);
-            objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
-                    responseMessage.getOrganisationIdentification());
-            objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION, responseMessage.getDeviceIdentification());
-            objectMessage.setStringProperty(Constants.RESULT, responseMessage.getResult().toString());
-            if (responseMessage.getOsgpException() == null) {
-                objectMessage.setObject(responseMessage.getDataObject());
-            } else {
-                String description;
-
-                // If an exception had a cause, get the message of the
-                // cause. If not, get the message of the exception itself
-                final OsgpException osgpException = responseMessage.getOsgpException();
-                if (osgpException.getCause() != null) {
-                    description = osgpException.getCause().getMessage();
-                } else {
-                    description = osgpException.getMessage();
-                }
-                objectMessage.setStringProperty(Constants.DESCRIPTION, description);
-                objectMessage.setObject(osgpException);
-            }
-
-            return objectMessage;
-        });
+        this.jmsTemplate.send(session -> makeObjectMessage(session, responseMessage, messageType));
 
         if (timeToLive != null) {
             // Restore the time to live from the configuration.
             this.jmsTemplate.setTimeToLive(originalTimeToLive);
         }
+    }
+
+    private ObjectMessage makeObjectMessage(Session session, ResponseMessage responseMessage, String messageType) throws JMSException {
+        final ObjectMessage objectMessage = session.createObjectMessage(responseMessage);
+
+        objectMessage.setJMSPriority(responseMessage.getMessagePriority());
+        objectMessage.setJMSCorrelationID(responseMessage.getCorrelationUid());
+        objectMessage.setJMSType(messageType);
+        objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
+                responseMessage.getOrganisationIdentification());
+        objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION, responseMessage.getDeviceIdentification());
+        objectMessage.setStringProperty(Constants.RESULT, responseMessage.getResult().toString());
+        if (responseMessage.getOsgpException() == null) {
+            objectMessage.setObject(responseMessage.getDataObject());
+        } else {
+            String description;
+
+            // If an exception had a cause, get the message of the
+            // cause. If not, get the message of the exception itself
+            final OsgpException osgpException = responseMessage.getOsgpException();
+            if (osgpException.getCause() != null) {
+                description = osgpException.getCause().getMessage();
+            } else {
+                description = osgpException.getMessage();
+            }
+            objectMessage.setStringProperty(Constants.DESCRIPTION, description);
+            objectMessage.setObject(osgpException);
+        }
+
+        return objectMessage;
     }
 
     @Override

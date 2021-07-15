@@ -39,7 +39,7 @@ http://www.apache.org/licenses/LICENSE-2.0
       <url>${maven.site.distributionManagement.site.url}</url>
     </site>
   </distributionManagement>
-  <version>5.8.0</version>
+  <version>5.9.0</version>
 
   <parent>
     <groupId>org.springframework.boot</groupId>

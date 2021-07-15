@@ -99,7 +99,7 @@ public class FindMatchingChannelHelper {
     private static boolean hasValidMbusAttributes(final MbusChannelElementsDto mbusChannelElements,
             final ChannelElementValuesDto channelElementValues) {
         return channelElementValues.isMbusSlaveDeviceConfigured()
-                && mbusChannelElements.getPrimaryAddress().equals(mbusChannelElements.getPrimaryAddress());
+                && mbusChannelElements.getPrimaryAddress().equals(channelElementValues.getPrimaryAddress());
     }
 
     private static boolean failMatchOnMbusIdentificationNumber(final MbusChannelElementsDto mbusChannelElements,

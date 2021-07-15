@@ -19,6 +19,7 @@ import org.opensmartgridplatform.adapter.domain.smartmetering.application.mappin
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventMessagesResponse;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventTypeDto;
 
 public class EventMessageDataContainerMappingTest {
 
@@ -56,6 +57,8 @@ public class EventMessageDataContainerMappingTest {
     public void testWithFilledList() {
         // build test data
         final EventDto event = new EventDto(new DateTime(), new Integer(1), new Integer(2), "STANDARD_EVENT_LOG");
+        event.setEventTypeDto(EventTypeDto.POWER_FAILURE);
+
         final ArrayList<EventDto> events = new ArrayList<>();
         events.add(event);
         final EventMessageDataResponseDto containerDto = new EventMessageDataResponseDto(events);
@@ -68,6 +71,8 @@ public class EventMessageDataContainerMappingTest {
                 .isEqualTo(containerDto.getEvents().get(0).getTimestamp());
         assertThat(container.getEvents().get(0).getEventCode())
                 .isEqualTo(containerDto.getEvents().get(0).getEventCode());
+        assertThat(container.getEvents().get(0).getEventType().name())
+                .isEqualTo(containerDto.getEvents().get(0).getEventTypeDto().name());
         assertThat(container.getEvents().get(0).getEventCounter())
                 .isEqualTo(containerDto.getEvents().get(0).getEventCounter());
     }

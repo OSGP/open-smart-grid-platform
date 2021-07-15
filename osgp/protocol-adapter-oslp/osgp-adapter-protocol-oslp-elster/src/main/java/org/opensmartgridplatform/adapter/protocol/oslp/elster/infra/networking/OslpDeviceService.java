@@ -71,6 +71,8 @@ import org.springframework.stereotype.Component;
 
 import com.google.protobuf.ByteString;
 
+import io.micrometer.core.instrument.Metrics;
+
 @Component
 public class OslpDeviceService implements DeviceService {
 
@@ -105,6 +107,9 @@ public class OslpDeviceService implements DeviceService {
 
     @Autowired
     private OslpSigningService oslpSigningService;
+
+    @Autowired
+    private String failedMessagesMetric;
 
     @Override
     public void startSelfTest(final DeviceRequest deviceRequest) {
@@ -627,6 +632,8 @@ public class OslpDeviceService implements DeviceService {
 
     protected void handleException(final Throwable t, final DeviceRequest deviceRequest,
             final DeviceResponseHandler deviceResponseHandler) {
+
+        Metrics.counter(this.failedMessagesMetric).increment();
 
         final DeviceResponse deviceResponse = new DeviceResponse(deviceRequest.getOrganisationIdentification(),
                 deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(),

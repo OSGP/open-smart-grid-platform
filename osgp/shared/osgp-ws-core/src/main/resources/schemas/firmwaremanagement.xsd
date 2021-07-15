@@ -7,13 +7,16 @@
         http://www.apache.org/licenses/LICENSE-2.0
 
 -->
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+<xsd:schema
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
   xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
   xmlns:tns="http://www.opensmartgridplatform.org/schemas/common/firmwaremanagement/2014/10"
-  attributeFormDefault="unqualified" elementFormDefault="qualified"
+  attributeFormDefault="unqualified"
+  elementFormDefault="qualified"
   targetNamespace="http://www.opensmartgridplatform.org/schemas/common/firmwaremanagement/2014/10">
 
-  <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/common/2014/10"
+  <xsd:import
+    namespace="http://www.opensmartgridplatform.org/schemas/common/2014/10"
     schemaLocation="../schemas/common-ws-core.xsd" />
 
   <xsd:element name="UpdateFirmwareRequest">
@@ -29,10 +32,8 @@
             </xsd:restriction>
           </xsd:simpleType>
         </xsd:element>
-        <xsd:element name="FirmwareModuleType" type="tns:FirmwareModuleType"
-          minOccurs="0" maxOccurs="5" />
-        <xsd:element name="scheduled_time" type="xsd:dateTime"
-          minOccurs="0" maxOccurs="1" />
+        <xsd:element name="FirmwareModuleType" type="tns:FirmwareModuleType" minOccurs="0" maxOccurs="5" />
+        <xsd:element name="scheduled_time" type="xsd:dateTime" minOccurs="0" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -54,8 +55,7 @@
   <xsd:element name="UpdateFirmwareResponse">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" />
+        <xsd:element name="Result" type="common:OsgpResultType" />
         <xsd:element name="Description" type="xsd:string" />
       </xsd:sequence>
     </xsd:complexType>
@@ -85,12 +85,10 @@
   <xsd:element name="GetFirmwareVersionResponse">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" />
+        <xsd:element name="Result" type="common:OsgpResultType" />
         <xsd:element name="Description" type="xsd:string" />
         <xsd:sequence>
-          <xsd:element name="FirmwareVersion" type="tns:FirmwareVersion"
-            minOccurs="1" maxOccurs="unbounded" />
+          <xsd:element name="FirmwareVersion" type="tns:FirmwareVersion" maxOccurs="unbounded" />
         </xsd:sequence>
       </xsd:sequence>
     </xsd:complexType>
@@ -106,8 +104,7 @@
   <xsd:element name="FindAllManufacturersResponse">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element maxOccurs="unbounded" name="Manufacturers"
-          type="tns:Manufacturer" />
+        <xsd:element maxOccurs="unbounded" name="Manufacturers" type="tns:Manufacturer" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -123,10 +120,8 @@
   <xsd:element name="AddManufacturerResponse">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" maxOccurs="1" />
-        <xsd:element name="Description" type="xsd:string"
-          minOccurs="0" />
+        <xsd:element name="Result" type="common:OsgpResultType" />
+        <xsd:element name="Description" type="xsd:string" minOccurs="0" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -134,8 +129,7 @@
   <xsd:element name="RemoveManufacturerRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="ManufacturerId" minOccurs="1"
-          maxOccurs="1">
+        <xsd:element name="ManufacturerId">
           <xsd:simpleType>
             <xsd:restriction base="xsd:string">
               <xsd:maxLength value="4" />
@@ -149,10 +143,8 @@
   <xsd:element name="RemoveManufacturerResponse">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" maxOccurs="1" />
-        <xsd:element name="Description" type="xsd:string"
-          minOccurs="0" />
+        <xsd:element name="Result" type="common:OsgpResultType" />
+        <xsd:element name="Description" type="xsd:string" minOccurs="0" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -168,10 +160,8 @@
   <xsd:element name="ChangeManufacturerResponse">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" maxOccurs="1" />
-        <xsd:element name="Description" type="xsd:string"
-          minOccurs="0" />
+        <xsd:element name="Result" type="common:OsgpResultType" />
+        <xsd:element name="Description" type="xsd:string" minOccurs="0" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -186,8 +176,7 @@
   <xsd:element name="FindAllDeviceModelsResponse">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element maxOccurs="unbounded" name="DeviceModels"
-          type="tns:DeviceModel" />
+        <xsd:element maxOccurs="unbounded" name="DeviceModels" type="tns:DeviceModel" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -225,10 +214,8 @@
   <xsd:element name="AddDeviceModelResponse">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" maxOccurs="1" />
-        <xsd:element name="Description" type="xsd:string"
-          minOccurs="0" />
+        <xsd:element name="Result" type="common:OsgpResultType" />
+        <xsd:element name="Description" type="xsd:string" minOccurs="0" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -236,16 +223,14 @@
   <xsd:element name="RemoveDeviceModelRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="DeviceModelId" minOccurs="1"
-          maxOccurs="1">
+        <xsd:element name="DeviceModelId" >
           <xsd:simpleType>
             <xsd:restriction base="xsd:string">
               <xsd:maxLength value="255" />
             </xsd:restriction>
           </xsd:simpleType>
         </xsd:element>
-        <xsd:element name="DeviceManufacturerId" minOccurs="1"
-          maxOccurs="1">
+        <xsd:element name="DeviceManufacturerId" >
           <xsd:simpleType>
             <xsd:restriction base="xsd:string">
               <xsd:maxLength value="4" />
@@ -259,10 +244,8 @@
   <xsd:element name="RemoveDeviceModelResponse">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" maxOccurs="1" />
-        <xsd:element name="Description" type="xsd:string"
-          minOccurs="0" />
+        <xsd:element name="Result" type="common:OsgpResultType" />
+        <xsd:element name="Description" type="xsd:string" minOccurs="0" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -278,10 +261,8 @@
   <xsd:element name="ChangeDeviceModelResponse">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" maxOccurs="1" />
-        <xsd:element name="Description" type="xsd:string"
-          minOccurs="0" />
+        <xsd:element name="Result" type="common:OsgpResultType" />
+        <xsd:element name="Description" type="xsd:string" minOccurs="0" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -289,9 +270,9 @@
   <xsd:element name="FindAllFirmwaresRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="Manufacturer" type="xsd:string"
-          minOccurs="0" />
+        <xsd:element name="Manufacturer" type="xsd:string" minOccurs="0" />
         <xsd:element name="ModelCode" type="xsd:string" />
+        <xsd:element name="Active" type="xsd:boolean" minOccurs="0" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -299,8 +280,7 @@
   <xsd:element name="FindAllFirmwaresResponse">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element maxOccurs="unbounded" name="Firmwares"
-          type="tns:Firmware" />
+        <xsd:element name="Firmwares" type="tns:Firmware" maxOccurs="unbounded" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -316,8 +296,7 @@
   <xsd:element name="FindFirmwareResponse">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="Firmware" type="tns:Firmware"
-          minOccurs="0" />
+        <xsd:element name="Firmware" type="tns:Firmware" minOccurs="0" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -334,8 +313,7 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType" />
-        <xsd:element name="Description" type="xsd:string"
-          minOccurs="0" />
+        <xsd:element name="Description" type="xsd:string" minOccurs="0" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -368,8 +346,7 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType" />
-        <xsd:element name="Description" type="xsd:string"
-          minOccurs="0" />
+        <xsd:element name="Description" type="xsd:string" minOccurs="0" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -387,8 +364,7 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType" />
-        <xsd:element name="Description" type="xsd:string"
-          minOccurs="0" />
+        <xsd:element name="Description" type="xsd:string" minOccurs="0" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -404,8 +380,7 @@
   <xsd:element name="SwitchFirmwareResponse">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="Result" type="common:OsgpResultType"
-          minOccurs="1" />
+        <xsd:element name="Result" type="common:OsgpResultType" />
         <xsd:element name="Description" type="xsd:string" />
       </xsd:sequence>
     </xsd:complexType>
@@ -443,46 +418,42 @@
 
   <xsd:complexType name="Manufacturer">
     <xsd:sequence>
-      <xsd:element name="Id" type="xsd:int" minOccurs="1" maxOccurs="1" />
-      <xsd:element name="Code" minOccurs="1"
-        maxOccurs="1">
+      <xsd:element name="Id" type="xsd:int" />
+      <xsd:element name="Code">
         <xsd:simpleType>
           <xsd:restriction base="xsd:string">
             <xsd:maxLength value="4" />
           </xsd:restriction>
         </xsd:simpleType>
       </xsd:element>
-      <xsd:element name="Name" minOccurs="1" maxOccurs="1">
+      <xsd:element name="Name">
         <xsd:simpleType>
           <xsd:restriction base="xsd:string">
             <xsd:maxLength value="50" />
           </xsd:restriction>
         </xsd:simpleType>
       </xsd:element>
-      <xsd:element name="UsePrefix" type="xsd:boolean"
-        minOccurs="1" maxOccurs="1" />
+      <xsd:element name="UsePrefix" type="xsd:boolean" />
     </xsd:sequence>
   </xsd:complexType>
 
   <xsd:complexType name="DeviceModel">
     <xsd:sequence>
-      <xsd:element name="Manufacturer" minOccurs="1"
-        maxOccurs="1">
+      <xsd:element name="Manufacturer" >
         <xsd:simpleType>
           <xsd:restriction base="xsd:string">
             <xsd:maxLength value="4" />
           </xsd:restriction>
         </xsd:simpleType>
       </xsd:element>
-      <xsd:element name="ModelCode" minOccurs="0" maxOccurs="1">
+      <xsd:element name="ModelCode" minOccurs="0" >
         <xsd:simpleType>
           <xsd:restriction base="xsd:string">
             <xsd:maxLength value="255" />
           </xsd:restriction>
         </xsd:simpleType>
       </xsd:element>
-      <xsd:element name="Description" minOccurs="0"
-        maxOccurs="1">
+      <xsd:element name="Description" minOccurs="0" >
         <xsd:simpleType>
           <xsd:restriction base="xsd:string">
             <xsd:maxLength value="255" />
@@ -495,10 +466,8 @@
   <xsd:complexType name="Firmware">
     <xsd:sequence>
       <xsd:element name="Id" type="xsd:int" />
-      <xsd:element name="Filename" type="xsd:string"
-        minOccurs="0" />
-      <xsd:element name="CreationTime" type="xsd:dateTime"
-        minOccurs="0" maxOccurs="1" />
+      <xsd:element name="Filename" type="xsd:string" minOccurs="0" />
+      <xsd:element name="CreationTime" type="xsd:dateTime" minOccurs="0" />
       <xsd:element name="Manufacturer" minOccurs="0">
         <xsd:simpleType>
           <xsd:restriction base="xsd:string">
@@ -513,8 +482,7 @@
           </xsd:restriction>
         </xsd:simpleType>
       </xsd:element>
-      <xsd:element name="Description" minOccurs="0"
-        maxOccurs="1">
+      <xsd:element name="Description" minOccurs="0">
         <xsd:simpleType>
           <xsd:restriction base="xsd:string">
             <xsd:maxLength value="255" />
@@ -522,6 +490,7 @@
         </xsd:simpleType>
       </xsd:element>
       <xsd:element name="PushToNewDevices" type="xsd:boolean" />
+      <xsd:element name="Active" type="xsd:boolean" />
       <xsd:element name="FirmwareModuleData" type="tns:FirmwareModuleData" />
       <xsd:element name="File" minOccurs="0" type="xsd:base64Binary" />
     </xsd:sequence>
@@ -530,20 +499,16 @@
   <xsd:complexType name="DeviceFirmwareHistory">
     <xsd:sequence>
       <xsd:element name="DeviceIdentification" type="common:Identification" />
-      <xsd:element name="DeviceFirmwares" type="tns:DeviceFirmware"
-        minOccurs="0" maxOccurs="unbounded" />
-      <xsd:element name="DeviceModel" type="tns:DeviceModel"
-        minOccurs="0" maxOccurs="1" />
+      <xsd:element name="DeviceFirmwares" type="tns:DeviceFirmware" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="DeviceModel" type="tns:DeviceModel" minOccurs="0" />
     </xsd:sequence>
   </xsd:complexType>
 
   <xsd:complexType name="DeviceFirmware">
     <xsd:sequence>
       <xsd:element name="DeviceIdentification" type="common:Identification" />
-      <xsd:element name="InstallationDate" type="xsd:dateTime"
-        minOccurs="0" />
-      <xsd:element name="InstalledBy" type="xsd:string"
-        minOccurs="0" />
+      <xsd:element name="InstallationDate" type="xsd:dateTime" minOccurs="0" />
+      <xsd:element name="InstalledBy" type="xsd:string" minOccurs="0" />
       <xsd:element name="Active" type="xsd:boolean" />
       <xsd:element name="Firmware" type="tns:Firmware" />
     </xsd:sequence>
@@ -558,18 +523,12 @@
 
   <xsd:complexType name="FirmwareModuleData">
     <xsd:sequence>
-      <xsd:element name="ModuleVersionComm" type="xsd:string"
-        minOccurs="0" />
-      <xsd:element name="ModuleVersionFunc" type="xsd:string"
-        minOccurs="0" />
-      <xsd:element name="ModuleVersionMa" type="xsd:string"
-        minOccurs="0" />
-      <xsd:element name="ModuleVersionMbus" type="xsd:string"
-        minOccurs="0" />
-      <xsd:element name="ModuleVersionSec" type="xsd:string"
-        minOccurs="0" />
-      <xsd:element name="ModuleVersionMBusDriverActive" type="xsd:string"
-        minOccurs="0" />
+      <xsd:element name="ModuleVersionComm" type="xsd:string" minOccurs="0" />
+      <xsd:element name="ModuleVersionFunc" type="xsd:string" minOccurs="0" />
+      <xsd:element name="ModuleVersionMa" type="xsd:string" minOccurs="0" />
+      <xsd:element name="ModuleVersionMbus" type="xsd:string" minOccurs="0" />
+      <xsd:element name="ModuleVersionSec" type="xsd:string" minOccurs="0" />
+      <xsd:element name="ModuleVersionMBusDriverActive" type="xsd:string" minOccurs="0" />
     </xsd:sequence>
   </xsd:complexType>
 

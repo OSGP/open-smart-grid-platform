@@ -22,6 +22,7 @@ import java.security.spec.AlgorithmParameterSpec;
 import java.util.Arrays;
 
 import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 
@@ -29,11 +30,10 @@ import org.apache.commons.codec.binary.Hex;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.security.EncryptedSecret;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
-import org.opensmartgridplatform.shared.security.Secret;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class HsmEncryptionProvider extends AbstractEncryptionProvider implements EncryptionProvider {
+public class HsmEncryptionProvider extends AbstractEncryptionProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HsmEncryptionProvider.class);
 
@@ -45,63 +45,74 @@ public class HsmEncryptionProvider extends AbstractEncryptionProvider implements
 
     private final KeyStore keyStore;
 
-    public HsmEncryptionProvider(File keyStoreFile) {
+    public HsmEncryptionProvider(final File keyStoreFile) {
         try {
             super.setKeyFile(keyStoreFile);
             this.keyStore = KeyStore.getInstance(TYPE, PROVIDER);
-            FileInputStream fIn = new FileInputStream(keyStoreFile);
+            final FileInputStream fIn = new FileInputStream(keyStoreFile);
             this.keyStore.load(fIn, null);
-        } catch (CertificateException | NoSuchAlgorithmException | NoSuchProviderException | IOException | KeyStoreException e) {
+        } catch (final CertificateException | NoSuchAlgorithmException | NoSuchProviderException | IOException | KeyStoreException e) {
             throw new EncrypterException("Could not read keystore", e);
         }
     }
 
-    public Secret decrypt(EncryptedSecret secret, String keyReference) {
-
-        Secret decryptedSecret = super.decrypt(secret, keyReference);
-
-        byte[] decryptedSecretBytes = decryptedSecret.getSecret();
-
-        if (decryptedSecretBytes.length > KEY_LENGTH) {
-
-            byte[] truncatedDecryptedSecretBytes = Arrays.copyOfRange(decryptedSecretBytes, 0,
-                    decryptedSecretBytes.length-16);
-
-            LOGGER.trace("Truncating decrypted key from " + Hex.encodeHexString(decryptedSecretBytes) + " to " +
-                            Hex.encodeHexString(truncatedDecryptedSecretBytes));
-
-            decryptedSecret = new Secret(truncatedDecryptedSecretBytes);
+    @Override
+    public byte[] decrypt(final EncryptedSecret secret, final String keyReference) {
+        byte[] decryptedSecret = super.decrypt(secret, keyReference);
+        if (decryptedSecret.length > KEY_LENGTH) {
+            // This provider uses NoPadding, but since decrypted byte size is bigger than key byte size,
+            // the secrets were apparently encrypted using padding of some kind; truncate the padded bytes.
+            final byte[] truncatedDecryptedSecretBytes = Arrays.copyOfRange(decryptedSecret, 0, KEY_LENGTH);
+            LOGGER.trace("Truncating decrypted key from " + Hex.encodeHexString(decryptedSecret) + " to " + Hex
+                    .encodeHexString(truncatedDecryptedSecretBytes));
+            return truncatedDecryptedSecretBytes;
         }
-
         return decryptedSecret;
     }
 
+    @Override
+    public byte[] generateAes128BitsSecret(String keyReference) {
+        try {
+            return this.encrypt(KeyGenerator.getInstance("AES").generateKey().getEncoded(), keyReference).getSecret();
+        } catch (NoSuchAlgorithmException exc) {
+            throw new EncrypterException("Could not generate secret", exc);
+        }
+    }
+
+    @Override
+    public int getSecretByteLength() {
+        return KEY_LENGTH;
+    }
+
+    @Override
     protected Cipher getCipher() {
         try {
             return Cipher.getInstance(ALGORITHM, PROVIDER);
-        } catch (NoSuchPaddingException | NoSuchAlgorithmException | NoSuchProviderException e) {
+        } catch (final NoSuchPaddingException | NoSuchAlgorithmException | NoSuchProviderException e) {
             throw new EncrypterException("Could not get cipher", e);
         }
     }
 
     /**
-     * This method reads the 'actual' encryption key (from the database).
-     * Normally this is the key start isValidFrom(now) and isValidUntil(now).
+     * This method reads the encryption key specified by keyReference from the Hsm.
      *
      * @return the key that must be used for encryption/decryption
      */
-    protected Key getSecretEncryptionKey(String keyReference, int cipherMode) {
+    @Override
+    protected Key getSecretEncryptionKey(final String keyReference, final int cipherMode) {
         try {
             return this.keyStore.getKey(keyReference, null);
-        } catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
+        } catch (final UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
             throw new EncrypterException("Could not get keystore from key", e);
         }
     }
 
+    @Override
     protected AlgorithmParameterSpec getAlgorithmParameterSpec() {
         return new IvParameterSpec(IV);
     }
 
+    @Override
     public EncryptionProviderType getType() {
         return EncryptionProviderType.HSM;
     }

@@ -240,10 +240,10 @@ public class DeviceManagementService {
         if (description == null && descriptionStartsWith == null) {
             return specification;
         }
-        if (description == null && descriptionStartsWith != null) {
+        if (description == null) {
             return specification.and(descriptionStartsWithSpecification);
         }
-        if (description != null && descriptionStartsWith == null) {
+        if (descriptionStartsWith == null) {
             return specification.and(descriptionSpecification);
         }
         return specification.and(descriptionSpecification.or(descriptionStartsWithSpecification));
@@ -302,7 +302,7 @@ public class DeviceManagementService {
 
     private Page<Device> findDevices(final String organisationIdentification, final DeviceFilter deviceFilter,
             final Organisation organisation, final PageRequest request) {
-        Page<Device> devices;
+        final Page<Device> devices;
         try {
             if (!this.netManagementOrganisation.equals(organisationIdentification)) {
                 // Municipality organization.
@@ -543,7 +543,7 @@ public class DeviceManagementService {
 
     private Specification<Device> doFilterOnOrganisationIdentification(final DeviceFilter deviceFilter,
             final Organisation organisation) throws FunctionalException, ArgumentNullOrEmptyException {
-        Specification<Device> specification;
+        final Specification<Device> specification;
         if (!StringUtils.isEmpty(deviceFilter.getOrganisationIdentification())) {
             final Organisation org = this.domainHelperService
                     .findOrganisation(deviceFilter.getOrganisationIdentification());

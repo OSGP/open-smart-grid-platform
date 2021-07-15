@@ -40,6 +40,8 @@ public class DbEncryptedSecret {
     private String deviceIdentification;
     @Enumerated(EnumType.STRING)
     private SecretType secretType;
+    @Enumerated(EnumType.STRING)
+    private SecretStatus secretStatus;
     private String encodedSecret;
     @ManyToOne
     private DbEncryptionKeyReference encryptionKeyReference;

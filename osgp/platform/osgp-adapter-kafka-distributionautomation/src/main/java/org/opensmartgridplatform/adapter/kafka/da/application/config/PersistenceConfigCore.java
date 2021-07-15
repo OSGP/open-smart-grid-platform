@@ -9,26 +9,23 @@ package org.opensmartgridplatform.adapter.kafka.da.application.config;
 
 import javax.sql.DataSource;
 
+import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
+import org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository;
 import org.opensmartgridplatform.shared.application.config.AbstractPersistenceConfig;
 import org.opensmartgridplatform.shared.infra.db.DefaultConnectionPoolFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import com.zaxxer.hikari.HikariDataSource;
 
+@Configuration
 @EnableJpaRepositories(transactionManagerRef = "coreTransactionManager",
         entityManagerFactoryRef = "coreEntityManagerFactory",
-        basePackageClasses = { org.opensmartgridplatform.domain.core.repositories.DeviceRepository.class,
-                org.opensmartgridplatform.domain.core.repositories.RtuDeviceRepository.class })
-@Configuration
-@PropertySource("classpath:osgp-adapter-kafka-distributionautomation.properties")
-@PropertySource(value = "file:${osgp/Global/config}", ignoreResourceNotFound = true)
-@PropertySource(value = "file:${osgp/AdapterKafkaDistributionAutomation/config}", ignoreResourceNotFound = true)
+        basePackageClasses = { DeviceRepository.class, RtuDeviceRepository.class })
 public class PersistenceConfigCore extends AbstractPersistenceConfig {
 
     @Value("${db.username.core}")

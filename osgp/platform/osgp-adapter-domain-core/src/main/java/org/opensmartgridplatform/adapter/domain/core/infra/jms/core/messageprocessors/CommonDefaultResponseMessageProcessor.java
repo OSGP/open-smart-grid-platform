@@ -91,7 +91,7 @@ public class CommonDefaultResponseMessageProcessor extends BaseMessageProcessor 
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             LOGGER.debug("responseMessageResultType: {}", responseMessageResultType);
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("description: {}", osgpException);
+            LOGGER.debug("osgpException", osgpException);
             return;
         }
 

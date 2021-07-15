@@ -16,7 +16,6 @@ package org.opensmartgridplatform.shared.security;
 public enum EncryptionProviderType {
     HSM, //Thales HSM
     JRE, //Sun crypto
-    RSA  //PKI
 }
 
 

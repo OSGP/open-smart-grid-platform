@@ -2,7 +2,7 @@
 Feature: SmartMetering Installation - Add smart meter
   As a grid operator
   I want to be able to add a smart meter
-@Skip
+
   Scenario: Add a new device
     When receiving a smartmetering add device request
       | DeviceIdentification  | TEST1024000000001                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |

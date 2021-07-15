@@ -12,6 +12,7 @@ import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.Osg
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
@@ -42,7 +43,7 @@ public class FindEventsResponseMessageProcessor extends OsgpCoreResponseMessageP
 
     @Override
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
-            final ResponseMessage responseMessage, final OsgpException osgpException) {
+            final ResponseMessage responseMessage, final OsgpException osgpException) throws FunctionalException {
 
         final EventMessageDataResponseDto eventMessageDataContainer = (EventMessageDataResponseDto) responseMessage
                 .getDataObject();

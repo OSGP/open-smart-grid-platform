@@ -8,8 +8,13 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_AUTHENTICATION;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_ENCRYPTION;
+
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openmuc.jdlms.AuthenticationMechanism;
@@ -17,9 +22,10 @@ import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.SecuritySuite;
 import org.openmuc.jdlms.SecuritySuite.EncryptionMechanism;
 import org.openmuc.jdlms.TcpConnectionBuilder;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecurityKeyService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -31,7 +37,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -44,8 +49,7 @@ public class Hls5Connector extends SecureDlmsConnector {
     private final RecoverKeyProcessInitiator recoverKeyProcessInitiator;
 
     @Autowired
-    @Qualifier("secretManagementService")
-    private SecurityKeyService securityKeyService;
+    private SecretManagementService secretManagementService;
 
     public Hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator, final int responseTimeout,
             final int logicalDeviceAddress, final DlmsDeviceAssociation deviceAssociation) {
@@ -63,16 +67,15 @@ public class Hls5Connector extends SecureDlmsConnector {
 
         try {
             return this.createConnection(device, dlmsMessageListener);
-        } catch (final UnknownHostException e) {
+        } catch (final UnknownHostException e) { // Unknown IP, unrecoverable.
             LOGGER.error("The IP address is not found: {}", device.getIpAddress(), e);
-            // Unknown IP, unrecoverable.
             throw new TechnicalException(ComponentType.PROTOCOL_DLMS,
                     "The IP address is not found: " + device.getIpAddress());
-        } catch (final IOException e) {
-            if (device.hasNewSecurityKey()) {
-                // Queue key recovery process.
+        } catch (final IOException e) { //Queue key recovery process
+            if (this.secretManagementService.hasNewSecretOfType(device.getDeviceIdentification(), E_METER_ENCRYPTION)) {
                 this.recoverKeyProcessInitiator.initiate(device.getDeviceIdentification(), device.getIpAddress());
             }
+
             final String msg = String
                     .format("Error creating connection for device %s with Ip address:%s Port:%d UseHdlc:%b UseSn:%b "
                                     + "Message:%s", device.getDeviceIdentification(), device.getIpAddress(),
@@ -94,12 +97,13 @@ public class Hls5Connector extends SecureDlmsConnector {
         final byte[] dlmsAuthenticationKey;
         final byte[] dlmsEncryptionKey;
         try {
-            dlmsAuthenticationKey = this.securityKeyService.getDlmsAuthenticationKey(deviceIdentification);
-            dlmsEncryptionKey = this.securityKeyService.getDlmsGlobalUnicastEncryptionKey(deviceIdentification);
+            Map<SecurityKeyType, byte[]> encryptedKeys = this.secretManagementService
+                    .getKeys(deviceIdentification, Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION));
+            dlmsAuthenticationKey = encryptedKeys.get(E_METER_AUTHENTICATION);
+            dlmsEncryptionKey = encryptedKeys.get(E_METER_ENCRYPTION);
         } catch (final EncrypterException e) {
-            LOGGER.error("Error determining DLMS communication key setting up HLS5 connection", e);
             throw new FunctionalException(FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION,
-                    ComponentType.PROTOCOL_DLMS);
+                    ComponentType.PROTOCOL_DLMS, e);
         }
 
         // Validate keys before JDLMS does and throw a FunctionalException if
@@ -153,12 +157,12 @@ public class Hls5Connector extends SecureDlmsConnector {
     private void validateKeys(final byte[] encryptionKey, final byte[] authenticationKey) throws FunctionalException {
         if (this.checkEmptyKey(encryptionKey)) {
             this.throwFunctionalException("The encryption key is empty",
-                    FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION);
+                    FunctionalExceptionType.KEY_NOT_PRESENT);
         }
 
         if (this.checkEmptyKey(authenticationKey)) {
             this.throwFunctionalException("The authentication key is empty",
-                    FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION);
+                    FunctionalExceptionType.KEY_NOT_PRESENT);
         }
 
         if (this.checkLenghtKey(encryptionKey)) {

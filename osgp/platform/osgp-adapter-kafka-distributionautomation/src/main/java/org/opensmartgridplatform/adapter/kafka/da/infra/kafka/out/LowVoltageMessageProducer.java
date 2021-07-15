@@ -7,9 +7,12 @@
  */
 package org.opensmartgridplatform.adapter.kafka.da.infra.kafka.out;
 
-import org.opensmartgridplatform.adapter.kafka.da.application.config.LocationConfig;
 import org.opensmartgridplatform.adapter.kafka.da.application.mapping.DistributionAutomationMapper;
+import org.opensmartgridplatform.adapter.kafka.da.application.services.LocationService;
+import org.opensmartgridplatform.adapter.kafka.da.domain.entities.Feeder;
+import org.opensmartgridplatform.adapter.kafka.da.domain.entities.Location;
 import org.opensmartgridplatform.adapter.kafka.da.infra.mqtt.in.ScadaMeasurementPayload;
+import org.opensmartgridplatform.adapter.kafka.da.signature.MessageSigner;
 import org.opensmartgridplatform.shared.utils.UuidUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,17 +37,21 @@ public class LowVoltageMessageProducer {
 
     private final KafkaTemplate<String, Message> kafkaTemplate;
 
+    private final MessageSigner messageSigner;
+
     private final DistributionAutomationMapper mapper;
 
-    private final LocationConfig locationConfig;
+    private final LocationService locationService;
 
     @Autowired
     public LowVoltageMessageProducer(
             @Qualifier("distributionAutomationKafkaTemplate") final KafkaTemplate<String, Message> kafkaTemplate,
-            final DistributionAutomationMapper mapper, final LocationConfig locationConfig) {
+            final MessageSigner messageSigner, final DistributionAutomationMapper mapper,
+            final LocationService locationService) {
         this.kafkaTemplate = kafkaTemplate;
+        this.messageSigner = messageSigner;
         this.mapper = mapper;
-        this.locationConfig = locationConfig;
+        this.locationService = locationService;
     }
 
     public void send(final String measurement) {
@@ -75,6 +82,7 @@ public class LowVoltageMessageProducer {
             if (event != null) {
                 final MessageId messageId = new MessageId(UuidUtil.getBytesFromRandomUuid());
                 final Message message = new Message(messageId, System.currentTimeMillis(), "GXF", null, event);
+                this.messageSigner.sign(message);
                 /*
                  * No need for callback functionality now; by default, the
                  * template is configured with a LoggingProducerListener, which
@@ -90,16 +98,28 @@ public class LowVoltageMessageProducer {
     private ScadaMeasurementPayload addLocationData(final ScadaMeasurementPayload[] payloads) {
         final ScadaMeasurementPayload payload = payloads[0];
         final String substationIdentification = payload.getSubstationIdentification();
-        payload.setSubstationName(this.locationConfig.getSubstationLocation(substationIdentification));
-        final String feeder = payload.getFeeder();
+
+        final Location location = this.locationService.getLocation(substationIdentification).orElse(null);
+        if (location == null) {
+            payload.setBayIdentification("");
+            payload.setSubstationName("");
+        } else {
+            addLocationData(payload, location);
+        }
+        return payload;
+    }
+
+    private static void addLocationData(final ScadaMeasurementPayload payload, final Location location) {
+        payload.setSubstationName(location.getName());
+
         try {
-            if (Integer.valueOf(feeder) != META_MEASUREMENT_FEEDER) {
-                payload.setBayIdentification(
-                        this.locationConfig.getBayIdentification(substationIdentification, feeder));
+            final int feederNumber = Integer.parseInt(payload.getFeeder());
+            if (feederNumber != META_MEASUREMENT_FEEDER) {
+                final String bayIdentification = location.getFeeder(feederNumber).map(Feeder::getName).orElse("");
+                payload.setBayIdentification(bayIdentification);
             }
         } catch (final NumberFormatException e) {
             LOGGER.error("Payload contains a non-numeric value for feeder", e);
         }
-        return payload;
     }
 }

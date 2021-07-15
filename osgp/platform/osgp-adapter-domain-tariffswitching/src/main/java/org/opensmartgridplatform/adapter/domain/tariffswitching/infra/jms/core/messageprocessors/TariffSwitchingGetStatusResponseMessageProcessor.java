@@ -88,7 +88,7 @@ public class TariffSwitchingGetStatusResponseMessageProcessor extends BaseMessag
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             LOGGER.debug("responseMessageResultType: {}", responseMessageResultType);
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("osgpException: {}", osgpException);
+            LOGGER.debug("osgpException", osgpException);
             return;
         }
 

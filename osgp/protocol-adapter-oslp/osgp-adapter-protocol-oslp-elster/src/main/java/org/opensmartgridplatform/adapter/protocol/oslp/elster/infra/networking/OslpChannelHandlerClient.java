@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import io.micrometer.core.instrument.Metrics;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -36,6 +37,9 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
 
     @Autowired
     private DeviceRegistrationService deviceRegistrationService;
+
+    @Autowired
+    private String successfulMessagesMetric;
 
     public OslpChannelHandlerClient() {
         super(LOGGER);
@@ -85,6 +89,7 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
                 try {
                     this.deviceRegistrationService.checkSequenceNumber(message.getDeviceId(), sequenceNumber);
                     oslpResponseHandler.handleResponse(message);
+                    Metrics.counter(this.successfulMessagesMetric).increment();
                 } catch (final ProtocolAdapterException exc) {
                     // Users should not be able to see errors about sequence
                     // numbers, replace the exception by a generic exception.

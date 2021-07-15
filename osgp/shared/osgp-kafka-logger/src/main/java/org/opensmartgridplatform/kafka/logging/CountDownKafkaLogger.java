@@ -11,7 +11,6 @@ import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.opensmartgridplatform.kafka.logging.Slf4jKafkaLogger;
 
 /**
  * KafkaLogger implementation that can be used in tests to verify it is called,

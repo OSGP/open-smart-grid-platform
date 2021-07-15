@@ -19,6 +19,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.BundleMe
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FirmwareVersionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -69,7 +70,11 @@ public class BundleService {
     @Autowired
     private FirmwareService firmwareService;
 
+    @Autowired
+    private EventService eventService;
+
     public BundleService() {
+
         // Parameterless constructor required for transactions...
     }
 
@@ -132,6 +137,8 @@ public class BundleService {
             } else if (action instanceof SetDeviceLifecycleStatusByChannelResponseDto) {
                 this.managementService
                         .setDeviceLifecycleStatusByChannel((SetDeviceLifecycleStatusByChannelResponseDto) action);
+            } else if (action instanceof EventMessageDataResponseDto) {
+                this.eventService.addEventTypeToEvents(deviceMessageMetadata, (EventMessageDataResponseDto)action);
             } else if (action instanceof FirmwareVersionResponseDto) {
                 final List<FirmwareVersion> firmwareVersions = this.configurationMapper
                         .mapAsList(((FirmwareVersionResponseDto) action).getFirmwareVersions(), FirmwareVersion.class);

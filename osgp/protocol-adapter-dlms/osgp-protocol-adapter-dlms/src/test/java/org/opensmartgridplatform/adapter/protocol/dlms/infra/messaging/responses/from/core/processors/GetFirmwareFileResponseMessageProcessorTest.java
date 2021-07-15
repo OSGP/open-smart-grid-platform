@@ -35,6 +35,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RetryHeaderFactory;
@@ -44,6 +46,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ObjectMessageBuilder;
+import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 
@@ -72,6 +75,9 @@ public class GetFirmwareFileResponseMessageProcessorTest {
 
     @Mock
     private ThrottlingService throttlingService;
+
+    @Mock
+    private OsgpExceptionConverter osgpExceptionConverter;
 
     private DlmsDevice dlmsDevice;
 
@@ -130,13 +136,44 @@ public class GetFirmwareFileResponseMessageProcessorTest {
                 .updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDevice, firmwareFileDto);
     }
 
+
+    @Test
+    public void processMessageShouldSendNotOkResponseMessageContainingOriginalFirmwareUpdateRequest()
+            throws OsgpException, JMSException {
+        // arrange
+        final FirmwareFileDto firmwareFileDto = this.setupFirmwareFileDto();
+        final ResponseMessage responseMessage = this.setupResponseMessage(firmwareFileDto);
+        final ObjectMessage message = new ObjectMessageBuilder().withMessageType(MessageType.GET_FIRMWARE_FILE.name())
+                                                                .withObject(responseMessage).build();
+
+        final ArgumentCaptor<ResponseMessage> responseMessageArgumentCaptor = ArgumentCaptor
+                .forClass(ResponseMessage.class);
+
+        when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class))).thenReturn(this.dlmsDevice);
+        when(this.dlmsConnectionManagerMock.getDlmsMessageListener()).thenReturn(this.dlmsMessageListenerMock);
+        when(this.connectionHelper
+                .createConnectionForDevice(same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
+                .thenReturn(this.dlmsConnectionManagerMock);
+        when(this.firmwareService.updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDevice, firmwareFileDto))
+                .thenThrow(new ProtocolAdapterException("Firmware file fw is not available."));
+
+        // act
+        this.getFirmwareFileResponseMessageProcessor.processMessage(message);
+
+        // assert
+        verify(this.responseMessageSender, times(1)).send(responseMessageArgumentCaptor.capture());
+
+        assertThat(responseMessageArgumentCaptor.getValue().getDataObject()).isSameAs("fw");
+        assertThat(responseMessageArgumentCaptor.getValue().getResult()).isSameAs(ResponseMessageResultType.NOT_OK);
+        assertThat(responseMessageArgumentCaptor.getValue().bypassRetry()).isFalse();
+    }
+
     private FirmwareFileDto setupFirmwareFileDto() {
         return new FirmwareFileDto("fw", "fw".getBytes());
     }
 
-    private ResponseMessage setupResponseMessage(final FirmwareFileDto firmwareFileDto) {
-        return ResponseMessage.newResponseMessageBuilder().withCorrelationUid("corr-uid-1")
-                              .withOrganisationIdentification("test-org").withDeviceIdentification("dvc-01")
-                              .withResult(ResponseMessageResultType.OK).withDataObject(firmwareFileDto).build();
+    private ProtocolResponseMessage setupResponseMessage(final FirmwareFileDto firmwareFileDto) {
+        return ProtocolResponseMessage.newBuilder().correlationUid("corr-uid-1")
+                                      .result(ResponseMessageResultType.OK).dataObject(firmwareFileDto).build();
     }
 }

@@ -17,7 +17,7 @@
 
   <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-administration"
               schemaLocation="sm-administration.xsd"/>
-
+  
   <xsd:element name="ExternalInterfaceRequestMessage">
     <xsd:complexType>
       <xsd:sequence>
@@ -31,6 +31,7 @@
           <xsd:element ref="bun:GetActualMeterReadsRequest"/>
           <xsd:element ref="bun:GetActualMeterReadsGasRequest"/>
           <xsd:element ref="adm:SetMaintenanceStateRequest"/>
+          <xsd:element ref="bun:SynchronizeTimeRequest"/>
         </xsd:choice>
       </xsd:sequence>
     </xsd:complexType>
@@ -42,7 +43,6 @@
         <xsd:element name="messageId" type="xsd:string" minOccurs="0"/>
         <xsd:element name="deviceIdentification" type="xsd:string"/>
         <xsd:element name="deviceType" type="tns:DeviceType"/>
-        <xsd:element name="deviceModel" type="xsd:string" minOccurs="0"/>
         <xsd:choice>
           <!-- responses to P4/P5 -->
           <xsd:element ref="bun:PeriodicMeterReadsResponse"/>
@@ -52,6 +52,7 @@
           <xsd:element ref="bun:ActualMeterReadsGasResponse"/>
           <xsd:element ref="con:GetPushNotificationAlarmResponse"/>
           <xsd:element ref="bun:FindEventsResponse"/>
+          <xsd:element ref="bun:ActionResponse"/>
           <xsd:element ref="bun:FaultResponse"/>
         </xsd:choice>
       </xsd:sequence>

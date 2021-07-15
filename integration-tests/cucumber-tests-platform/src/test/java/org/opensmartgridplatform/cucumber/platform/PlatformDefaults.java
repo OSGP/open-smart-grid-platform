@@ -153,6 +153,7 @@ public class PlatformDefaults {
     public static final String SMART_METER_E = "SMART_METER_E";
     public static final String SMART_METER_G = "SMART_METER_G";
 
+    public static final boolean FIRMWARE_ACTIVE = true;
     public static final String FIRMWARE_IDENTIFICATION = "F01";
     public static final Boolean FIRMWARE_PUSH_TO_NEW_DEVICE = false;
     public static final String DC_LIGHTS = "";

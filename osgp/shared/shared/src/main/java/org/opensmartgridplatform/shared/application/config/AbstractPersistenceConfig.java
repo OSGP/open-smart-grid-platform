@@ -23,6 +23,7 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.springframework.transaction.support.AbstractPlatformTransactionManager;
 
 /**
  * This class provides the basic components used for persistence.
@@ -121,7 +122,7 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
         final JpaTransactionManager transactionManager = new JpaTransactionManager();
 
         transactionManager.setEntityManagerFactory(this.entityManagerFactory().getObject());
-        transactionManager.setTransactionSynchronization(JpaTransactionManager.SYNCHRONIZATION_ALWAYS);
+        transactionManager.setTransactionSynchronization(AbstractPlatformTransactionManager.SYNCHRONIZATION_ALWAYS);
 
         return transactionManager;
     }

@@ -37,6 +37,7 @@ public class PlatformKeys extends Keys {
     public static final String EMAIL = "Email";
     public static final String END_TIME = "EndTime";
     public static final String FAILED_LOGIN_ATTEMP_TIME_STAMP = "FailedLoginAttemptTimeStamp";
+    public static final String FIRMWARE_ACTIVE = "FirmwareActive";
     public static final String FIRMWARE_DESCRIPTION = "FirmwareDescription";
     public static final String FIRMWARE_FILE = "FirmwareFile";
     public static final String FIRMWARE_FILE_FILENAME = "FirmwareFilename";
