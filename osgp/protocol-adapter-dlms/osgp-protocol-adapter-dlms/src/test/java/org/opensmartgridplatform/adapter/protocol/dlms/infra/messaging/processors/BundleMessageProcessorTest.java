@@ -9,6 +9,9 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -66,15 +69,12 @@ class BundleMessageProcessorTest {
   @Mock private DlmsMessageListener messageListener;
 
   private DlmsDevice dlmsDevice;
-  private MessageMetadata messageMetadata;
 
   @InjectMocks private BundleMessageProcessor messageProcessor;
 
   @BeforeEach
   public void setUp() throws JMSException, OsgpException {
     this.dlmsDevice = new DlmsDeviceBuilder().withHls5Active(true).build();
-    this.messageMetadata =
-        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
     when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class)))
         .thenReturn(this.dlmsDevice);
   }
@@ -84,18 +84,18 @@ class BundleMessageProcessorTest {
     this.prepareBundleServiceMockWithRequestAndResponse(new ActionResponseDto());
     when(this.dlmsConnectionManager.getDlmsMessageListener()).thenReturn(this.messageListener);
     when(this.dlmsConnectionHelper.createConnectionForDevice(
-            this.messageMetadata, this.dlmsDevice, null))
+            any(MessageMetadata.class), same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
         .thenReturn(this.dlmsConnectionManager);
 
     this.messageProcessor.processMessage(this.message);
 
-    verify(this.retryHeaderFactory).createEmtpyRetryHeader();
+    verify(this.retryHeaderFactory, times(1)).createEmtpyRetryHeader();
   }
 
   @Test
   public void shouldSetRetryHeaderOnRuntimeException() throws OsgpException, JMSException {
     when(this.dlmsConnectionHelper.createConnectionForDevice(
-            this.messageMetadata, this.dlmsDevice, null))
+            any(MessageMetadata.class), same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
         .thenThrow(new RuntimeException());
 
     this.messageProcessor.processMessage(this.message);
@@ -106,7 +106,7 @@ class BundleMessageProcessorTest {
   @Test
   public void shouldSetRetryHeaderOnOsgpException() throws OsgpException, JMSException {
     when(this.dlmsConnectionHelper.createConnectionForDevice(
-            this.messageMetadata, this.dlmsDevice, null))
+            any(MessageMetadata.class), same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
         .thenThrow(new OsgpException(ComponentType.PROTOCOL_DLMS, ""));
 
     this.messageProcessor.processMessage(this.message);
@@ -119,7 +119,7 @@ class BundleMessageProcessorTest {
       throws OsgpException, JMSException {
     when(this.dlmsConnectionManager.getDlmsMessageListener()).thenReturn(this.messageListener);
     when(this.dlmsConnectionHelper.createConnectionForDevice(
-            this.messageMetadata, this.dlmsDevice, null))
+            any(MessageMetadata.class), same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
         .thenReturn(this.dlmsConnectionManager);
 
     this.prepareBundleServiceMockWithRequestAndResponse(
@@ -135,7 +135,7 @@ class BundleMessageProcessorTest {
       throws OsgpException, JMSException {
     when(this.dlmsConnectionManager.getDlmsMessageListener()).thenReturn(this.messageListener);
     when(this.dlmsConnectionHelper.createConnectionForDevice(
-            this.messageMetadata, this.dlmsDevice, null))
+            any(MessageMetadata.class), same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
         .thenReturn(this.dlmsConnectionManager);
 
     this.prepareBundleServiceMockWithRequestAndResponse(
@@ -156,7 +156,10 @@ class BundleMessageProcessorTest {
     when(this.message.getObject()).thenReturn(request);
 
     when(this.bundleService.callExecutors(
-            this.dlmsConnectionManager, this.dlmsDevice, request, this.messageMetadata))
+            same(this.dlmsConnectionManager),
+            same(this.dlmsDevice),
+            same(request),
+            any(MessageMetadata.class)))
         .thenReturn(request);
   }
 }

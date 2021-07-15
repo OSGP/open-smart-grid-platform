@@ -506,8 +506,10 @@ public class ConfigurationService {
   }
 
   public GetKeysResponseDto requestGetKeys(
-      final DlmsDevice device, final GetKeysRequestDto getKeysRequestDto) {
+      final DlmsDevice device,
+      final GetKeysRequestDto getKeysRequestDto,
+      final MessageMetadata messageMetadata) {
 
-    return this.getKeysService.getKeys(device, getKeysRequestDto);
+    return this.getKeysService.getKeys(device, getKeysRequestDto, messageMetadata);
   }
 }

@@ -15,6 +15,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -51,11 +52,18 @@ public class FirmwareServiceTest {
 
   @InjectMocks private FirmwareService firmwareService;
 
+  private static MessageMetadata messageMetadata;
+  private static final String firmwareIdentification = "fw";
+
+  @BeforeAll
+  public static void init() {
+    messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+  }
+
   @Test
   public void getFirmwareVersionsShouldCallExecutor() throws ProtocolAdapterException {
     // Arrange
-    final MessageMetadata messageMetadata =
-        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
 
     // Act
     this.firmwareService.getFirmwareVersions(
@@ -69,7 +77,6 @@ public class FirmwareServiceTest {
   @Test
   public void updateFirmwareShouldCallExecutorWhenFirmwareFileInCache() throws OsgpException {
     // Arrange
-    final String firmwareIdentification = "fw";
     final byte[] firmwareFile = firmwareIdentification.getBytes();
     final byte[] firmwareImageIdentifier = new byte[10];
     final MessageMetadata messageMetadata =
@@ -102,10 +109,6 @@ public class FirmwareServiceTest {
   @Test
   public void updateFirmwareShouldThrowExceptionWhenFirmwareFileNotInCache() throws OsgpException {
     // Arrange
-    final String firmwareIdentification = "fw";
-    final MessageMetadata messageMetadata =
-        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
-
     when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification)).thenReturn(null);
 
     // Act
@@ -126,10 +129,6 @@ public class FirmwareServiceTest {
   @Test
   public void updateFirmwareShouldNotCallExecutorWhenFirmwareFileNotInCache() throws OsgpException {
     // Arrange
-    final String firmwareIdentification = "fw";
-    final MessageMetadata messageMetadata =
-        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
-
     when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification)).thenReturn(null);
 
     // Act
@@ -156,7 +155,6 @@ public class FirmwareServiceTest {
   public void updateFirmwareUsingFirmwareFileShouldStoreFirmwareFileAndCallExecutor()
       throws OsgpException {
     // Arrange
-    final String firmwareIdentification = "fw";
     final byte[] firmwareFile = firmwareIdentification.getBytes();
     final byte[] firmwareImageIdentifier = new byte[10];
 
@@ -193,7 +191,6 @@ public class FirmwareServiceTest {
   @Test
   public void isFirmwareAvailableShouldReturnTrueWhenFirmwareFileAvailable() {
     // Arrange
-    final String firmwareIdentification = "unavailable";
     when(this.firmwareFileCachingRepository.isAvailable(firmwareIdentification)).thenReturn(true);
     final boolean expected = true;
 
@@ -207,7 +204,6 @@ public class FirmwareServiceTest {
   @Test
   public void isFirmwareAvailableShouldReturnFalseWhenFirmwareFileNotAvailable() {
     // Arrange
-    final String firmwareIdentification = "unavailable";
     when(this.firmwareFileCachingRepository.isAvailable(firmwareIdentification)).thenReturn(false);
     final boolean expected = false;
 
