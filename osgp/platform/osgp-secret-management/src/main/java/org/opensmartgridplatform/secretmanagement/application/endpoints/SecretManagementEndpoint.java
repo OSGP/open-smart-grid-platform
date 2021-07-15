@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.transform.TransformerException;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.secretmanagement.application.domain.SecretType;
 import org.opensmartgridplatform.secretmanagement.application.domain.TypedSecret;
@@ -82,8 +81,7 @@ public class SecretManagementEndpoint {
   }
 
   private void addHeaderToResponse(
-      final MessageContext messageContext, final SoapHeaderElement header)
-      throws TransformerException {
+      final MessageContext messageContext, final SoapHeaderElement header) {
     if (header != null) {
       final SaajSoapMessage soapResponse = (SaajSoapMessage) messageContext.getResponse();
       final org.springframework.ws.soap.SoapHeader responseHeader = soapResponse.getSoapHeader();
@@ -97,7 +95,7 @@ public class SecretManagementEndpoint {
       final SoapHeaderElement correlationUidHeaderElement,
       final MessageContext messageContext,
       final List<String> secretTypeNames)
-      throws TransformerException, OsgpException {
+      throws OsgpException {
     final String correlationUid = this.getCorrelationUidFromHeader(correlationUidHeaderElement);
     log.info(
         "[{}] Handling incoming SOAP request '{}' for device {} and secrettypes {}",
@@ -178,7 +176,7 @@ public class SecretManagementEndpoint {
       @RequestPayload final GetSecretsRequest request,
       @SoapHeader(CORRELATION_HEADER) final SoapHeaderElement header,
       final MessageContext messageContext)
-      throws OsgpException, TransformerException {
+      throws OsgpException {
     return this.handleRequest(
         request, this::getSecrets, header, messageContext, this.nameList(request.getSecretTypes()));
   }
@@ -189,7 +187,7 @@ public class SecretManagementEndpoint {
       @RequestPayload final GetNewSecretsRequest request,
       @SoapHeader(CORRELATION_HEADER) final SoapHeaderElement header,
       final MessageContext messageContext)
-      throws OsgpException, TransformerException {
+      throws OsgpException {
     return this.handleRequest(
         request,
         this::getNewSecrets,
@@ -204,7 +202,7 @@ public class SecretManagementEndpoint {
       @RequestPayload final StoreSecretsRequest request,
       @SoapHeader(CORRELATION_HEADER) final SoapHeaderElement header,
       final MessageContext messageContext)
-      throws OsgpException, TransformerException {
+      throws OsgpException {
     return this.handleRequest(
         request,
         this::storeSecrets,
@@ -219,7 +217,7 @@ public class SecretManagementEndpoint {
       @RequestPayload final GenerateAndStoreSecretsRequest request,
       @SoapHeader(CORRELATION_HEADER) final SoapHeaderElement header,
       final MessageContext messageContext)
-      throws OsgpException, TransformerException {
+      throws OsgpException {
     return this.handleRequest(
         request,
         this::generateAndStoreSecrets,
@@ -248,7 +246,7 @@ public class SecretManagementEndpoint {
       @RequestPayload final ActivateSecretsRequest request,
       @SoapHeader(CORRELATION_HEADER) final SoapHeaderElement header,
       final MessageContext messageContext)
-      throws OsgpException, TransformerException {
+      throws OsgpException {
     return this.handleRequest(
         request,
         this::activateSecrets,
@@ -263,7 +261,7 @@ public class SecretManagementEndpoint {
       @RequestPayload final HasNewSecretRequest request,
       @SoapHeader(CORRELATION_HEADER) final SoapHeaderElement header,
       final MessageContext messageContext)
-      throws OsgpException, TransformerException {
+      throws OsgpException {
     return this.handleRequest(
         request,
         this::hasNewSecret,
@@ -276,7 +274,9 @@ public class SecretManagementEndpoint {
     if (secretTypes == null) {
       return Collections.emptyList();
     }
-    return secretTypes.getSecretType().stream().map(st -> st.name()).collect(Collectors.toList());
+    return secretTypes.getSecretType().stream()
+        .map(org.opensmartgridplatform.ws.schema.core.secret.management.SecretType::name)
+        .collect(Collectors.toList());
   }
 
   private List<String> nameList(final TypedSecrets typedSecrets) {
