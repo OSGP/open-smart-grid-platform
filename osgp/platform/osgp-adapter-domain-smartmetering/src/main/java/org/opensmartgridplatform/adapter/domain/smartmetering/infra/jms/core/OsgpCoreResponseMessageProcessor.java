@@ -97,7 +97,7 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
 
     final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(message);
 
-    ResponseMessage responseMessage;
+    final ResponseMessage responseMessage;
     OsgpException osgpException = null;
 
     try {
@@ -116,8 +116,9 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
         this.handleError(osgpException, deviceMessageMetadata, responseMessage);
       } else if (this.hasRegularResponseObject(responseMessage)) {
         LOGGER.info(
-            "Calling application service function to handle response: {}",
-            deviceMessageMetadata.getMessageType());
+            "Calling application service function to handle response: {} with correlationUid: {}",
+            deviceMessageMetadata.getMessageType(),
+            deviceMessageMetadata.getCorrelationUid());
 
         this.handleMessage(deviceMessageMetadata, responseMessage, osgpException);
       } else {

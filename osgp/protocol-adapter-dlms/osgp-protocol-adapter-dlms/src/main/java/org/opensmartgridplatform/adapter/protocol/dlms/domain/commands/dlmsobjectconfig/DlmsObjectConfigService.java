@@ -17,6 +17,7 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.CommunicationMethod;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsProfile;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsRegister;
@@ -24,6 +25,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjec
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -67,6 +69,28 @@ public class DlmsObjectConfigService {
         .filter(config -> config.contains(protocol))
         .findAny()
         .flatMap(dlmsObjectConfig -> dlmsObjectConfig.findObject(type, filterMedium));
+  }
+
+  public DlmsObject findDlmsObjectForCommunicationMethod(
+      final DlmsDevice device, final DlmsObjectType type) throws ProtocolAdapterException {
+    final Protocol protocol = Protocol.forDevice(device);
+    final CommunicationMethod method =
+        CommunicationMethod.getCommunicationMethod(device.getCommunicationMethod());
+
+    return this.dlmsObjectConfigs.stream()
+        .filter(config -> config.contains(protocol))
+        .findAny()
+        .flatMap(
+            dlmsObjectConfig -> dlmsObjectConfig.findObjectForCommunicationMethod(type, method))
+        .orElseThrow(
+            () ->
+                new ProtocolAdapterException(
+                    "Did not find "
+                        + type.name()
+                        + " object with communication method "
+                        + method.getMethodName()
+                        + " for device "
+                        + device.getDeviceId()));
   }
 
   public List<AttributeAddress> getAttributeAddressesForScalerUnit(

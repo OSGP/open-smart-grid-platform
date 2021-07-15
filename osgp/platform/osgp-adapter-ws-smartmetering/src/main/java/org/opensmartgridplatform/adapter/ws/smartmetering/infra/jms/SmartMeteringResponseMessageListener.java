@@ -46,6 +46,8 @@ public class SmartMeteringResponseMessageListener implements MessageListener {
 
       this.processor.processMessage(objectMessage);
 
+      log.info("Finished processing CorrelationUID: {}", correlationUid);
+
     } catch (final JMSException ex) {
       log.error("Exception: {} ", ex.getMessage(), ex);
     }

@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-shared</artifactId>
-    <version>5.12.0</version>
+    <version>5.13.0</version>
     <relativePath>../parent-shared/pom.xml</relativePath>
   </parent>
 

@@ -198,7 +198,11 @@ public class DlmsHelper {
           e);
     } catch (final Exception e) {
       throw new ProtocolAdapterException(
-          "Error retrieving values with-list for device: " + device.getDeviceIdentification(), e);
+          "Error retrieving values with-list for device: "
+              + device.getDeviceIdentification()
+              + ", with-list: "
+              + (device.isWithListSupported() ? "supported" : "not supported"),
+          e);
     }
   }
 
@@ -971,7 +975,6 @@ public class DlmsHelper {
     return (byte[]) resultValue;
   }
 
-  @SuppressWarnings("unchecked")
   private List<DataObject> readList(final DataObject resultData, final String description)
       throws ProtocolAdapterException {
     this.logDebugResultData(resultData, description);

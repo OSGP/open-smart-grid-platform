@@ -47,15 +47,25 @@ public class OsgpScheduler {
   }
 
   /**
-   * Shutdown the Quartz {@link Scheduler} and delete the data.
+   * Clears all the data from the scheduler.
    *
-   * @throws SchedulerException If the Quartz {@link Scheduler} can't shutdown or the data can't be
-   *     deleted.
+   * @throws SchedulerException If the Quartz {@link Scheduler} can't clear the data.
+   */
+  public void clear() throws SchedulerException {
+    // Clear existing jobs, to make sure the latest version is loaded
+    // and deleted triggers are removed from the database
+    LOGGER.info("Clear scheduler {}.", this.quartzScheduler.getSchedulerName());
+    this.quartzScheduler.clear();
+  }
+
+  /**
+   * Shutdown the Quartz {@link Scheduler}
+   *
+   * @throws SchedulerException If the Quartz {@link Scheduler} can't shutdown
    */
   public void shutdown() throws SchedulerException {
     LOGGER.info("Stopping {}.", this.quartzScheduler.getSchedulerName());
     this.quartzScheduler.shutdown(true);
-    this.quartzScheduler.clear();
   }
 
   /**

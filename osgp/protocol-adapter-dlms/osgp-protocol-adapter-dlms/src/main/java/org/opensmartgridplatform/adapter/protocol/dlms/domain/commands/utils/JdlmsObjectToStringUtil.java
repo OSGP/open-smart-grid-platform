@@ -8,7 +8,10 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.openmuc.jdlms.AttributeAddress;
+import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.MethodParameter;
 
 /**
@@ -44,5 +47,31 @@ public class JdlmsObjectToStringUtil {
     return String.format(
         "{%d,%s,%d}",
         methodParameter.getClassId(), methodParameter.getInstanceId(), methodParameter.getId());
+  }
+
+  public static String describeGetResults(final List<GetResult> results) {
+    return results.stream()
+        .map(JdlmsObjectToStringUtil::describeGetResult)
+        .collect(Collectors.joining(" - ", "{", "}"));
+  }
+
+  public static String describeGetResult(final GetResult result) {
+    if (result != null) {
+      final String code;
+      final String data;
+      if (result.getResultCode() != null) {
+        code = result.getResultCode().toString();
+      } else {
+        code = "Result code is null";
+      }
+      if (result.getResultData() != null) {
+        data = result.getResultData().toString();
+      } else {
+        data = "Result data is null";
+      }
+      return code + ", " + data;
+    } else {
+      return "Result is null";
+    }
   }
 }

@@ -173,11 +173,8 @@ public class FirmwareManagementEndpoint {
       asyncResponse.setDeviceId(request.getDeviceIdentification());
       response.setAsyncResponse(asyncResponse);
     } catch (final ConstraintViolationException e) {
-      LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
-      throw new FunctionalException(
-          FunctionalExceptionType.VALIDATION_ERROR,
-          ComponentType.WS_CORE,
-          new ValidationException(e.getConstraintViolations()));
+      LOGGER.error("Exception updating firmware", e);
+      this.handleException(e);
     } catch (final Exception e) {
       this.handleException(e);
     }
@@ -285,11 +282,8 @@ public class FirmwareManagementEndpoint {
       response.setAsyncResponse(asyncResponse);
 
     } catch (final ConstraintViolationException e) {
-      LOGGER.error("exception", e);
-      throw new FunctionalException(
-          FunctionalExceptionType.VALIDATION_ERROR,
-          ComponentType.WS_CORE,
-          new ValidationException(e.getConstraintViolations()));
+      LOGGER.error("Exception getting firmware version", e);
+      this.handleException(e);
     } catch (final Exception e) {
       this.handleException(e);
     }
@@ -362,11 +356,8 @@ public class FirmwareManagementEndpoint {
                   org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.Manufacturer
                       .class));
     } catch (final ConstraintViolationException e) {
-      LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
-      throw new FunctionalException(
-          FunctionalExceptionType.VALIDATION_ERROR,
-          ComponentType.WS_CORE,
-          new ValidationException(e.getConstraintViolations()));
+      LOGGER.error("Exception finding all manufacturers", e);
+      this.handleException(e);
     } catch (final Exception e) {
       this.handleException(e);
     }
@@ -392,11 +383,8 @@ public class FirmwareManagementEndpoint {
               request.getManufacturer().getName(),
               request.getManufacturer().isUsePrefix()));
     } catch (final ConstraintViolationException e) {
-      LOGGER.error("Exception adding manufacturer: {} ", e.getMessage(), e);
-      throw new FunctionalException(
-          FunctionalExceptionType.VALIDATION_ERROR,
-          ComponentType.WS_CORE,
-          new ValidationException(e.getConstraintViolations()));
+      LOGGER.error("Exception adding manufacturer", e);
+      this.handleException(e);
     } catch (final FunctionalException e) {
       LOGGER.error("Exception adding manufacturer: {} ", e.getMessage(), e);
       if (FunctionalExceptionType.EXISTING_MANUFACTURER == e.getExceptionType()) {
@@ -437,11 +425,8 @@ public class FirmwareManagementEndpoint {
               request.getManufacturer().getName(),
               request.getManufacturer().isUsePrefix()));
     } catch (final ConstraintViolationException e) {
-      LOGGER.error("Exception Changing manufacturer: {} ", e.getMessage(), e);
-      throw new FunctionalException(
-          FunctionalExceptionType.VALIDATION_ERROR,
-          ComponentType.WS_CORE,
-          new ValidationException(e.getConstraintViolations()));
+      LOGGER.error("Exception Changing manufacturer", e);
+      this.handleException(e);
     } catch (final Exception e) {
       LOGGER.error(
           "Exception: {} while Changing manufacturer: {} for organisation {}",
@@ -472,11 +457,8 @@ public class FirmwareManagementEndpoint {
       this.firmwareManagementService.removeManufacturer(
           organisationIdentification, request.getManufacturerId());
     } catch (final ConstraintViolationException e) {
-      LOGGER.error("Exception removing manufacturer: {} ", e.getMessage(), e);
-      throw new FunctionalException(
-          FunctionalExceptionType.VALIDATION_ERROR,
-          ComponentType.WS_CORE,
-          new ValidationException(e.getConstraintViolations()));
+      LOGGER.error("Exception removing manufacturer", e);
+      this.handleException(e);
     } catch (final FunctionalException e) {
       LOGGER.error("Exception removing manufacturer: {} ", e.getMessage(), e);
       if (e.getExceptionType().equals(FunctionalExceptionType.EXISTING_DEVICEMODEL_MANUFACTURER)) {
@@ -529,11 +511,8 @@ public class FirmwareManagementEndpoint {
       asyncResponse.setDeviceId(request.getDeviceIdentification());
       response.setAsyncResponse(asyncResponse);
     } catch (final ConstraintViolationException e) {
-      LOGGER.error("Exception switch firmware: {} ", e.getMessage(), e);
-      throw new FunctionalException(
-          FunctionalExceptionType.VALIDATION_ERROR,
-          ComponentType.WS_CORE,
-          new ValidationException(e.getConstraintViolations()));
+      LOGGER.error("Exception switch firmware", e);
+      this.handleException(e);
     } catch (final Exception e) {
       this.handleException(e);
     }
@@ -597,11 +576,8 @@ public class FirmwareManagementEndpoint {
                   org.opensmartgridplatform.adapter.ws.schema.core.firmwaremanagement.DeviceModel
                       .class));
     } catch (final ConstraintViolationException e) {
-      LOGGER.error("Exception find all devicemodels {}: ", e);
-      throw new FunctionalException(
-          FunctionalExceptionType.VALIDATION_ERROR,
-          ComponentType.WS_CORE,
-          new ValidationException(e.getConstraintViolations()));
+      LOGGER.error("Exception find all devicemodels", e);
+      this.handleException(e);
     } catch (final Exception e) {
       this.handleException(e);
     }
@@ -635,10 +611,7 @@ public class FirmwareManagementEndpoint {
                   .class));
     } catch (final ConstraintViolationException e) {
       LOGGER.error("Exception find all devicemodels", e);
-      throw new FunctionalException(
-          FunctionalExceptionType.VALIDATION_ERROR,
-          ComponentType.WS_CORE,
-          new ValidationException(e.getConstraintViolations()));
+      this.handleException(e);
     } catch (final Exception e) {
       this.handleException(e);
     }
@@ -663,11 +636,8 @@ public class FirmwareManagementEndpoint {
           request.getDeviceModel().getModelCode(),
           request.getDeviceModel().getDescription());
     } catch (final ConstraintViolationException e) {
-      LOGGER.error("Exception adding devicemodel: {} ", e.getMessage(), e);
-      throw new FunctionalException(
-          FunctionalExceptionType.VALIDATION_ERROR,
-          ComponentType.WS_CORE,
-          new ValidationException(e.getConstraintViolations()));
+      LOGGER.error("Exception adding devicemodel", e);
+      this.handleException(e);
     } catch (final FunctionalException e) {
       LOGGER.error("Exception adding devicemodel: {} ", e.getMessage(), e);
       if (FunctionalExceptionType.EXISTING_DEVICEMODEL == e.getExceptionType()) {
@@ -708,11 +678,8 @@ public class FirmwareManagementEndpoint {
           request.getDeviceManufacturerId(),
           request.getDeviceModelId());
     } catch (final ConstraintViolationException e) {
-      LOGGER.error("Exception removing deviceModel: {} ", e.getMessage(), e);
-      throw new FunctionalException(
-          FunctionalExceptionType.VALIDATION_ERROR,
-          ComponentType.WS_CORE,
-          new ValidationException(e.getConstraintViolations()));
+      LOGGER.error("Exception removing deviceModel", e);
+      this.handleException(e);
     } catch (final FunctionalException e) {
       LOGGER.error("Exception removing deviceModel: {} ", e.getMessage(), e);
       if (FunctionalExceptionType.EXISTING_DEVICE_DEVICEMODEL == e.getExceptionType()) {
@@ -756,11 +723,8 @@ public class FirmwareManagementEndpoint {
           request.getDeviceModel().getModelCode(),
           request.getDeviceModel().getDescription());
     } catch (final ConstraintViolationException e) {
-      LOGGER.error("Exception Changing devicemodel: {} ", e.getMessage(), e);
-      throw new FunctionalException(
-          FunctionalExceptionType.VALIDATION_ERROR,
-          ComponentType.WS_CORE,
-          new ValidationException(e.getConstraintViolations()));
+      LOGGER.error("Exception Changing devicemodel", e);
+      this.handleException(e);
     } catch (final Exception e) {
       LOGGER.error(
           "Exception: {} while Changing devicemodel: {} for organisation {}",
@@ -812,10 +776,7 @@ public class FirmwareManagementEndpoint {
 
     } catch (final ConstraintViolationException e) {
       LOGGER.error("Exception find all firmwares", e);
-      throw new FunctionalException(
-          FunctionalExceptionType.VALIDATION_ERROR,
-          ComponentType.WS_CORE,
-          new ValidationException(e.getConstraintViolations()));
+      this.handleException(e);
     } catch (final Exception e) {
       this.handleException(e);
     }
@@ -849,10 +810,7 @@ public class FirmwareManagementEndpoint {
 
     } catch (final ConstraintViolationException e) {
       LOGGER.error("Exception find firmware", e);
-      throw new FunctionalException(
-          FunctionalExceptionType.VALIDATION_ERROR,
-          ComponentType.WS_CORE,
-          new ValidationException(e.getConstraintViolations()));
+      this.handleException(e);
     } catch (final Exception e) {
       this.handleException(e);
     }
@@ -877,11 +835,8 @@ public class FirmwareManagementEndpoint {
           this.firmwareManagementMapper.map(request.getDeviceFirmware(), DeviceFirmwareFile.class));
 
     } catch (final ConstraintViolationException e) {
-      LOGGER.error("Exception while saving current devicefirmware: {} ", e.getMessage(), e);
-      throw new FunctionalException(
-          FunctionalExceptionType.VALIDATION_ERROR,
-          ComponentType.WS_CORE,
-          new ValidationException(e.getConstraintViolations()));
+      LOGGER.error("Exception while saving current devicefirmware", e);
+      this.handleException(e);
     } catch (final Exception e) {
       LOGGER.error(
           "Exception: {} while saving device firmware: {} to device: {} for organisation {}",
@@ -922,11 +877,8 @@ public class FirmwareManagementEndpoint {
           request.getFirmware().getModelCode(),
           firmwareModuleData);
     } catch (final ConstraintViolationException e) {
-      LOGGER.error("Exception adding firmware: {} ", e.getMessage(), e);
-      throw new FunctionalException(
-          FunctionalExceptionType.VALIDATION_ERROR,
-          ComponentType.WS_CORE,
-          new ValidationException(e.getConstraintViolations()));
+      LOGGER.error("Exception adding firmware ", e);
+      this.handleException(e);
     } catch (final FunctionalException e) {
       LOGGER.error("Exception adding firmware: {} ", e.getMessage(), e);
       if (FunctionalExceptionType.EXISTING_FIRMWARE == e.getExceptionType()) {
@@ -980,11 +932,8 @@ public class FirmwareManagementEndpoint {
           request.getFirmware().getModelCode(),
           firmwareModuleData);
     } catch (final ConstraintViolationException e) {
-      LOGGER.error("Exception Changing firmware: {} ", e.getMessage(), e);
-      throw new FunctionalException(
-          FunctionalExceptionType.VALIDATION_ERROR,
-          ComponentType.WS_CORE,
-          new ValidationException(e.getConstraintViolations()));
+      LOGGER.error("Exception Changing firmware", e);
+      this.handleException(e);
     } catch (final Exception e) {
       LOGGER.error(
           "Exception: {} while Changing firmware: {} for organisation {}",
@@ -1014,11 +963,8 @@ public class FirmwareManagementEndpoint {
     try {
       this.firmwareManagementService.removeFirmware(organisationIdentification, request.getId());
     } catch (final ConstraintViolationException e) {
-      LOGGER.error("Exception removing firmware: {} ", e.getMessage(), e);
-      throw new FunctionalException(
-          FunctionalExceptionType.VALIDATION_ERROR,
-          ComponentType.WS_CORE,
-          new ValidationException(e.getConstraintViolations()));
+      LOGGER.error("Exception removing firmware", e);
+      this.handleException(e);
     } catch (final FunctionalException e) {
       LOGGER.error("Exception removing firmware: {} ", e.getMessage(), e);
       if (e.getExceptionType().equals(FunctionalExceptionType.EXISTING_FIRMWARE_DEVICEFIRMWARE)) {
@@ -1102,10 +1048,7 @@ public class FirmwareManagementEndpoint {
 
     } catch (final ConstraintViolationException e) {
       LOGGER.error("Exception get firmware history", e);
-      throw new FunctionalException(
-          FunctionalExceptionType.VALIDATION_ERROR,
-          ComponentType.WS_CORE,
-          new ValidationException(e.getConstraintViolations()));
+      this.handleException(e);
     } catch (final Exception e) {
       this.handleException(e);
     }
@@ -1116,7 +1059,12 @@ public class FirmwareManagementEndpoint {
   private void handleException(final Exception e) throws OsgpException {
     // Rethrow exception if it already is a functional or technical
     // exception, otherwise throw new technical exception.
-    if (e instanceof OsgpException) {
+    if (e instanceof ConstraintViolationException) {
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          ComponentType.WS_CORE,
+          new ValidationException(((ConstraintViolationException) e).getConstraintViolations()));
+    } else if (e instanceof OsgpException) {
       throw (OsgpException) e;
     } else {
       throw new TechnicalException(COMPONENT_WS_CORE, e);

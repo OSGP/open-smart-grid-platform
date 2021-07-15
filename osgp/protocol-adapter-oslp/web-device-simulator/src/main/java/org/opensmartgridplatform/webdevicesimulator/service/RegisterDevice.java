@@ -14,6 +14,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.security.PrivateKey;
+import java.security.SecureRandom;
 import java.text.MessageFormat;
 import java.util.Random;
 import javax.annotation.Resource;
@@ -43,14 +44,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 public class RegisterDevice {
-
   private static final Logger LOGGER = LoggerFactory.getLogger(RegisterDevice.class);
-
-  protected static final String FEEDBACK_MESSAGE_KEY_DEVICE_REGISTERED =
-      "feedback.message.device.registered";
-  protected static final String FEEDBACK_MESSAGE_KEY_DEVICE_REGISTERED_CONFIRM =
-      "feedback.message.device.registered.confirm";
-  protected static final String FEEDBACK_MESSAGE_KEY_DEVICE_ERROR = "feedback.message.device.error";
 
   @Autowired private DeviceManagementService deviceManagementService;
 
@@ -73,6 +67,8 @@ public class RegisterDevice {
   private String currentTime;
 
   private String errorMessage;
+
+  private final Random byteGenerator = new SecureRandom();
 
   public DeviceMessageStatus sendRegisterDeviceCommand(
       final long deviceId, final Boolean hasSchedule) {
@@ -308,13 +304,13 @@ public class RegisterDevice {
     }
 
     // Attempt to send the request and receive response.
-    LOGGER.info("Trying to send request: {}", request.getPayloadMessage().toString());
+    LOGGER.info("Trying to send request: {}", request.getPayloadMessage());
     final OslpEnvelope response =
         this.oslpChannelHandler.send(
             new InetSocketAddress(this.oslpAddressServer, port),
             request,
             device.getDeviceIdentification());
-    LOGGER.info("Received response: {}", response.getPayloadMessage().toString());
+    LOGGER.info("Received response: {}", response.getPayloadMessage());
     return response;
   }
 
@@ -376,8 +372,7 @@ public class RegisterDevice {
   private byte[] createRandomDeviceUid() {
     // Generate random bytes for UID
     final byte[] deviceUid = new byte[OslpEnvelope.DEVICE_ID_LENGTH];
-    final Random byteGenerator = new Random();
-    byteGenerator.nextBytes(deviceUid);
+    this.byteGenerator.nextBytes(deviceUid);
     // Combine manufacturer id of 2 bytes (1 is AME) and device UID of 10
     // bytes.
     return ArrayUtils.addAll(new byte[] {0, 1}, deviceUid);

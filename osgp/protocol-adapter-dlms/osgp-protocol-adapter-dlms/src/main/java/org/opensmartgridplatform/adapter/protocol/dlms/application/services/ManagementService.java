@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.FindEventsCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetGsmDiagnosticCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.SetDeviceLifecycleStatusByChannelCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -21,6 +22,8 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FindEventsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FindEventsRequestList;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetGsmDiagnosticRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetGsmDiagnosticResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceCommunicationSettingsRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceCommunicationSettingsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelRequestDataDto;
@@ -35,11 +38,22 @@ public class ManagementService {
 
   @Autowired private FindEventsCommandExecutor findEventsCommandExecutor;
 
+  @Autowired private GetGsmDiagnosticCommandExecutor getGsmDiagnosticCommandExecutor;
+
   @Autowired
   private SetDeviceLifecycleStatusByChannelCommandExecutor
       setDeviceLifecycleStatusByChannelCommandExecutor;
 
   @Autowired private DlmsDeviceRepository dlmsDeviceRepository;
+
+  public GetGsmDiagnosticResponseDto getGsmDiagnostic(
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final GetGsmDiagnosticRequestDto getGsmDiagnosticRequestDto)
+      throws ProtocolAdapterException {
+
+    return this.getGsmDiagnosticCommandExecutor.execute(conn, device, getGsmDiagnosticRequestDto);
+  }
 
   // === FIND EVENTS ===
 

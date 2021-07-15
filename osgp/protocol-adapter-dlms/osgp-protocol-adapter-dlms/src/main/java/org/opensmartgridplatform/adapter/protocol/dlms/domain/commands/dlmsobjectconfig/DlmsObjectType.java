@@ -35,9 +35,10 @@ public enum DlmsObjectType {
   MONTHLY_BILLING_VALUES(PeriodTypeDto.MONTHLY),
   DAILY_LOAD_PROFILE(PeriodTypeDto.DAILY),
   DIRECT_ATTACH(null),
-  RANDOMISATION_SETTINGS(null);
+  RANDOMISATION_SETTINGS(null),
+  GSM_DIAGNOSTIC(null);
 
-  private PeriodTypeDto relatedPeriodType;
+  private final PeriodTypeDto relatedPeriodType;
 
   DlmsObjectType(final PeriodTypeDto relatedPeriodType) {
     this.relatedPeriodType = relatedPeriodType;
@@ -51,6 +52,6 @@ public enum DlmsObjectType {
         .orElseThrow(
             () ->
                 new ProtocolAdapterException(
-                    String.format("periodtype %s not supported", periodType)));
+                    String.format("periodType %s not supported", periodType)));
   }
 }

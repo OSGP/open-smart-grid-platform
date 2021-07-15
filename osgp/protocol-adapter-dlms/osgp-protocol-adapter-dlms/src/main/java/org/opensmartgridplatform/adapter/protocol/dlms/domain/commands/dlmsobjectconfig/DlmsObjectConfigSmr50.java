@@ -37,6 +37,7 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dl
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsAutoAnswer;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsClock;
@@ -54,7 +55,7 @@ public class DlmsObjectConfigSmr50 extends DlmsObjectConfig {
 
   @Override
   List<Protocol> initProtocols() {
-    return Arrays.asList(Protocol.SMR_5_0_0, Protocol.SMR_5_1);
+    return Collections.singletonList(Protocol.SMR_5_0_0);
   }
 
   @Override
