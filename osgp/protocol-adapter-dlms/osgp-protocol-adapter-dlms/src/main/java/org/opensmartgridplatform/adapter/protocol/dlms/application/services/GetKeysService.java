@@ -63,9 +63,12 @@ public class GetKeysService {
   private KeyDto convertToKeyDtoWithEncryptedKey(
       final SecurityKeyType securityKeyType, final byte[] unencryptedKey) {
 
-    final byte[] encryptedKey = this.keyEncrypter.encrypt(unencryptedKey);
-
-    return new KeyDto(this.convertToSecretTypeDto(securityKeyType), encryptedKey);
+    if (unencryptedKey != null) {
+      final byte[] encryptedKey = this.keyEncrypter.encrypt(unencryptedKey);
+      return new KeyDto(this.convertToSecretTypeDto(securityKeyType), encryptedKey);
+    } else {
+      return new KeyDto(this.convertToSecretTypeDto(securityKeyType), null);
+    }
   }
 
   private SecurityKeyType convertToSecurityKeyType(final SecretTypeDto secretTypeDto) {
