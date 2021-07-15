@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -22,7 +23,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -67,24 +67,20 @@ public class UpdateFirmwareRequestMessageProcessorTest {
   @Mock private ThrottlingService throttlingService;
 
   private DlmsDevice device;
-  private MessageMetadata messageMetadata;
 
   @InjectMocks private UpdateFirmwareRequestMessageProcessor processor;
 
   @BeforeEach
   public void setup() throws OsgpException {
-    MockitoAnnotations.initMocks(this);
 
     this.device = new DlmsDeviceBuilder().withHls5Active(true).build();
-    this.messageMetadata =
-        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
 
     when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class)))
         .thenReturn(this.device);
     when(this.dlmsConnectionManagerMock.getDlmsMessageListener())
         .thenReturn(this.messageListenerMock);
     when(this.connectionHelper.createConnectionForDevice(
-            any(), same(this.device), any(DlmsMessageListener.class)))
+            any(MessageMetadata.class), same(this.device), nullable(DlmsMessageListener.class)))
         .thenReturn(this.dlmsConnectionManagerMock);
   }
 
@@ -145,7 +141,11 @@ public class UpdateFirmwareRequestMessageProcessorTest {
 
     // Assert
     verify(this.configurationService, times(1))
-        .updateFirmware(null, this.device, firmwareIdentification, this.messageMetadata);
+        .updateFirmware(
+            nullable(DlmsConnectionManager.class),
+            same(this.device),
+            same(firmwareIdentification),
+            any(MessageMetadata.class));
   }
 
   @Test
@@ -166,9 +166,9 @@ public class UpdateFirmwareRequestMessageProcessorTest {
     // Assert
     verify(this.firmwareService, times(0))
         .updateFirmware(
-            this.dlmsConnectionManagerMock,
-            this.device,
-            firmwareIdentification,
-            this.messageMetadata);
+            nullable(DlmsConnectionManager.class),
+            same(this.device),
+            same(firmwareIdentification),
+            any(MessageMetadata.class));
   }
 }

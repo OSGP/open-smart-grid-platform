@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.monitori
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -38,13 +39,19 @@ public class GetPowerQualityProfileCommandExecutorTest {
 
   @InjectMocks private GetPowerQualityProfileCommandExecutor executor;
 
+  private static MessageMetadata messageMetadata;
+
+  @BeforeAll
+  public static void init() {
+    messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+  }
+
   @Test
   public void executeWithSelectiveAccess() throws ProtocolAdapterException {
 
     final DlmsDevice dlmsDevice = new DlmsDevice();
     dlmsDevice.setSelectiveAccessSupported(true);
-    final MessageMetadata messageMetadata =
-        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
 
     this.executor.execute(
         this.conn, dlmsDevice, this.getPowerQualityProfileRequestDataDto, messageMetadata);
@@ -61,8 +68,6 @@ public class GetPowerQualityProfileCommandExecutorTest {
 
     final DlmsDevice dlmsDevice = new DlmsDevice();
     dlmsDevice.setSelectiveAccessSupported(false);
-    final MessageMetadata messageMetadata =
-        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
 
     this.executor.execute(
         this.conn, dlmsDevice, this.getPowerQualityProfileRequestDataDto, messageMetadata);
