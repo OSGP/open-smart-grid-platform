@@ -13,7 +13,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>integration-tests</artifactId>
-  <version>5.5.2</version>
+  <version>5.5.3</version>
   <packaging>pom</packaging>
 
   <properties>
