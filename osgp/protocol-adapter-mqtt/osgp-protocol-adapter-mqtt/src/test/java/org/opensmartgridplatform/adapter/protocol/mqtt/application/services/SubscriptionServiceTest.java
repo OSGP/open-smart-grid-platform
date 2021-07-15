@@ -35,6 +35,7 @@ import org.opensmartgridplatform.adapter.protocol.mqtt.domain.valueobjects.MqttC
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class SubscriptionServiceTest {
@@ -136,7 +137,8 @@ class SubscriptionServiceTest {
     when(this.mqttClientAdapterFactory.create(
             eq(device), eq(this.messageMetadata), eq(this.instance)))
         .thenReturn(this.mqttClientAdapter);
-    this.instance.setMqttClient(this.mqttClient);
+    ReflectionTestUtils.setField(
+        this.instance, SubscriptionService.class, "mqttClient", this.mqttClient, MqttClient.class);
 
     // CALL
     this.instance.subscribe(this.messageMetadata);

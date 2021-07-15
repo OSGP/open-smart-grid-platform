@@ -51,10 +51,6 @@ public class SubscriptionService implements MqttClientEventHandler {
     this.mqttClientDefaults = mqttClientDefaults;
   }
 
-  public void setMqttClient(final MqttClient mqttClient) {
-    this.mqttClient = mqttClient;
-  }
-
   public void subscribe(final MessageMetadata messageMetadata) {
     final MqttDevice device = this.getOrCreateDevice(messageMetadata);
     final MqttClientAdapter mqttClientAdapter =
