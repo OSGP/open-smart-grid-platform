@@ -26,6 +26,7 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 
 @ExtendWith(MockitoExtension.class)
 class InvocationCounterManagerTest {
@@ -38,9 +39,13 @@ class InvocationCounterManagerTest {
 
   @Mock private DlmsHelper dlmsHelper;
 
+  @Mock private DlmsDeviceRepository deviceRepository;
+
   @BeforeEach
   public void setUp() {
-    this.manager = new InvocationCounterManager(this.connectionFactory, this.dlmsHelper);
+    this.manager =
+        new InvocationCounterManager(
+            this.connectionFactory, this.dlmsHelper, this.deviceRepository);
   }
 
   @Test
