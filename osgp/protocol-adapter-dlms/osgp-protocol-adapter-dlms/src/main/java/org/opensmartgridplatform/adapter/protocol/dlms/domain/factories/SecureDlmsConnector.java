@@ -34,7 +34,9 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
    * @param tcpConnectionBuilder The connection builder instance.
    */
   protected abstract void setSecurity(
-      final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder)
+      final DlmsDevice device,
+      final SecurityKeyProvider keyProvider,
+      final TcpConnectionBuilder tcpConnectionBuilder)
       throws OsgpException;
 
   /**
@@ -47,7 +49,9 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
    * @throws OsgpException When there are problems reading the security and authorization keys.
    */
   DlmsConnection createConnection(
-      final DlmsDevice device, final DlmsMessageListener dlmsMessageListener)
+      final DlmsDevice device,
+      final DlmsMessageListener dlmsMessageListener,
+      final SecurityKeyProvider keyProvider)
       throws IOException, OsgpException {
 
     // Setup connection to device
@@ -64,7 +68,7 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
       tcpConnectionBuilder.useHdlc();
     }
 
-    this.setSecurity(device, tcpConnectionBuilder);
+    this.setSecurity(device, keyProvider, tcpConnectionBuilder);
     this.setOptionalValues(device, tcpConnectionBuilder);
 
     if (device.isInDebugMode()

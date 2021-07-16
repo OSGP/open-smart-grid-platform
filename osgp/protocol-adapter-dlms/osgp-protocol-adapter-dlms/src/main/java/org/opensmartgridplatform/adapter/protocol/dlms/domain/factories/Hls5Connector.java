@@ -35,7 +35,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -47,15 +46,17 @@ public class Hls5Connector extends SecureDlmsConnector {
 
   private final RecoverKeyProcessInitiator recoverKeyProcessInitiator;
 
-  @Autowired private SecretManagementService secretManagementService;
+  private final SecretManagementService secretManagementService;
 
   public Hls5Connector(
       final RecoverKeyProcessInitiator recoverKeyProcessInitiator,
       final int responseTimeout,
       final int logicalDeviceAddress,
-      final DlmsDeviceAssociation deviceAssociation) {
+      final DlmsDeviceAssociation deviceAssociation,
+      final SecretManagementService secretManagementService) {
     super(responseTimeout, logicalDeviceAddress, deviceAssociation);
     this.recoverKeyProcessInitiator = recoverKeyProcessInitiator;
+    this.secretManagementService = secretManagementService;
   }
 
   @Override
@@ -67,7 +68,8 @@ public class Hls5Connector extends SecureDlmsConnector {
     this.checkIpAddress(device);
 
     try {
-      return this.createConnection(device, dlmsMessageListener);
+      return this.createConnection(
+          device, dlmsMessageListener, this.secretManagementService::getKeys);
     } catch (final UnknownHostException e) { // Unknown IP, unrecoverable.
       LOGGER.error("The IP address is not found: {}", device.getIpAddress(), e);
       throw new TechnicalException(
@@ -97,24 +99,40 @@ public class Hls5Connector extends SecureDlmsConnector {
     }
   }
 
+  /**
+   * Connect method without any error handling. Used by key recovery process to try to connect to a
+   * device with newly registered keys, without triggering a new key recovery process when the
+   * connection fails.
+   *
+   * @param device the device to connect to
+   * @param dlmsMessageListener a message listener (for tracing or debugging)
+   * @param keyProvider the method to use to get the required keys
+   * @return the created connection
+   * @throws IOException
+   * @throws OsgpException
+   * @see org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcess
+   */
+  public DlmsConnection connectUnchecked(
+      final DlmsDevice device,
+      final DlmsMessageListener dlmsMessageListener,
+      final SecurityKeyProvider keyProvider)
+      throws IOException, OsgpException {
+    return this.createConnection(device, dlmsMessageListener, keyProvider);
+  }
+
   @Override
   protected void setSecurity(
-      final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder)
-      throws OsgpException {
+      final DlmsDevice device,
+      final SecurityKeyProvider provider,
+      final TcpConnectionBuilder tcpConnectionBuilder)
+      throws FunctionalException {
 
-    final String deviceIdentification = device.getDeviceIdentification();
-    final byte[] dlmsAuthenticationKey;
-    final byte[] dlmsEncryptionKey;
-    try {
-      final Map<SecurityKeyType, byte[]> encryptedKeys =
-          this.secretManagementService.getKeys(
-              deviceIdentification, Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION));
-      dlmsAuthenticationKey = encryptedKeys.get(E_METER_AUTHENTICATION);
-      dlmsEncryptionKey = encryptedKeys.get(E_METER_ENCRYPTION);
-    } catch (final EncrypterException e) {
-      throw new FunctionalException(
-          FunctionalExceptionType.INVALID_DLMS_KEY_ENCRYPTION, ComponentType.PROTOCOL_DLMS, e);
-    }
+    final Map<SecurityKeyType, byte[]> encryptedKeys =
+        provider.getKeys(
+            device.getDeviceIdentification(),
+            Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION));
+    final byte[] dlmsAuthenticationKey = encryptedKeys.get(E_METER_AUTHENTICATION);
+    final byte[] dlmsEncryptionKey = encryptedKeys.get(E_METER_ENCRYPTION);
 
     // Validate keys before JDLMS does and throw a FunctionalException if
     // necessary
