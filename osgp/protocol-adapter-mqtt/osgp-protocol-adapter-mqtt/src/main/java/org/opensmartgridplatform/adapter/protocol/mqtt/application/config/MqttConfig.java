@@ -25,9 +25,11 @@ public class MqttConfig extends AbstractConfig {
   public MqttClientDefaults mqttClientDefaults(
       @Value("${mqtt.default.host:localhost}") final String defaultHost,
       @Value("${mqtt.default.port:1883}") final int defaultPort,
+      @Value("${mqtt.default.username:#{null}}") final String defaultUsername,
+      @Value("${mqtt.default.password:#{null}}") final String defaultPassword,
       @Value("${mqtt.default.qos:AT_LEAST_ONCE}") final String defaultQos,
       @Value("${mqtt.default.topics:+/measurement}") final String defaultTopics) {
 
-    return new MqttClientDefaults(defaultHost, defaultPort, defaultQos, defaultTopics);
+    return new MqttClientDefaults(defaultHost, defaultPort, defaultUsername, defaultPassword, defaultQos, defaultTopics);
   }
 }
