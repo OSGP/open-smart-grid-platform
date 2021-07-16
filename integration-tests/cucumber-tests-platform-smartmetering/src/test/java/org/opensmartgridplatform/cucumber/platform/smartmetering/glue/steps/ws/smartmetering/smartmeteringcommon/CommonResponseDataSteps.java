@@ -16,7 +16,7 @@ public class CommonResponseDataSteps {
   @Autowired private SmartMeteringCommonClient client;
 
   @When("^the delete response data request with correlation uid \"([^\"]*)\"$")
-  public void theDeleteResponseDataIsRequested(final String correlationUid)
+  public void theDeleteResponseDataRequestWithCorrelationUid(final String correlationUid)
       throws WebServiceSecurityException {
 
     final DeleteResponseDataRequest request = new DeleteResponseDataRequest();
@@ -29,8 +29,8 @@ public class CommonResponseDataSteps {
 
   @When(
       "^the delete response data request with correlation uid \"([^\"]*)\" should throw SoapFault$")
-  public void theDeleteResponseDataIsRequestedForUnknownUid(final String correlationUid)
-      throws WebServiceSecurityException {
+  public void theDeleteResponseDataRequestWithCorrelationUidShouldThrowSoapFault(
+      final String correlationUid) throws WebServiceSecurityException {
 
     final DeleteResponseDataRequest request = new DeleteResponseDataRequest();
     request.setCorrelationUid(correlationUid);

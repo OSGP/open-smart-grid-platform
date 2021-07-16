@@ -16,7 +16,6 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.HashMap;
 import java.util.Map;
-import org.opensmartgridplatform.adapter.ws.domain.repositories.ResponseDataRepository;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActionResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.Actions;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActualMeterReadsResponse;
@@ -92,7 +91,6 @@ public class BundleSteps extends BaseBundleSteps {
   }
 
   @Autowired private SmartMeteringBundleClient client;
-  @Autowired private ResponseDataRepository responseDataRepository;
 
   @Given("^a bundle request$")
   public void aABundleRequest(final Map<String, String> settings) throws Throwable {
