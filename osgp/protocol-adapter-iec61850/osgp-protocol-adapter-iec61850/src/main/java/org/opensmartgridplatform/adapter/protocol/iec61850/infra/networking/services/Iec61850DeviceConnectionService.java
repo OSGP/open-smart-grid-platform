@@ -45,6 +45,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @DependsOn({
+  "iec61850PortClient",
   "iec61850SsldPortServer",
   "iec61850RtuPortServer",
   "responseTimeout",
@@ -67,7 +68,7 @@ public class Iec61850DeviceConnectionService {
 
   @Autowired private Iec61850Client iec61850Client;
 
-  @Autowired private int iec61850DefaultPort;
+  @Autowired private int iec61850PortClient;
 
   @Autowired private int iec61850SsldPortServer;
 
@@ -220,7 +221,7 @@ public class Iec61850DeviceConnectionService {
     } else if (IED.ZOWN_RTU.equals(ied) || IED.DA_RTU.equals(ied)) {
       port = this.iec61850RtuPortServer;
     } else {
-      port = this.iec61850DefaultPort;
+      port = this.iec61850PortClient;
     }
     return port;
   }
