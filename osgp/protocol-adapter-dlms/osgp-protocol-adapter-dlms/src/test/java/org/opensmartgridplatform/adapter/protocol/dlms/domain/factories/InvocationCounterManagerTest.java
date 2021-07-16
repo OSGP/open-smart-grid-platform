@@ -70,6 +70,11 @@ class InvocationCounterManagerTest {
     this.manager.initializeInvocationCounter(device);
 
     assertThat(device.getInvocationCounter()).isEqualTo(invocationCounterValueOnDevice);
+
+    assertThat(device.getInvocationCounter())
+        .isEqualTo(Long.valueOf(dataObject.getValue().toString()));
+    verify(this.deviceRepository).save(device);
+
     verify(connectionManager).close();
   }
 }
