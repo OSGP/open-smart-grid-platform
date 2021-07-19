@@ -99,10 +99,13 @@ public class GetFirmwareFileResponseMessageProcessorTest {
     when(this.dlmsConnectionManagerMock.getDlmsMessageListener())
         .thenReturn(this.dlmsMessageListenerMock);
     when(this.connectionHelper.createConnectionForDevice(
-            same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
+            any(MessageMetadata.class), same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
         .thenReturn(this.dlmsConnectionManagerMock);
     when(this.firmwareService.updateFirmware(
-            this.dlmsConnectionManagerMock, this.dlmsDevice, firmwareFileDto))
+            same(this.dlmsConnectionManagerMock),
+            same(this.dlmsDevice),
+            same(firmwareFileDto),
+            any(MessageMetadata.class)))
         .thenReturn(updateFirmwareResponseDto);
 
     // act
@@ -129,7 +132,11 @@ public class GetFirmwareFileResponseMessageProcessorTest {
 
     // assert
     verify(this.firmwareService, times(1))
-        .updateFirmware(this.dlmsConnectionManagerMock, this.dlmsDevice, firmwareFileDto);
+        .updateFirmware(
+            same(this.dlmsConnectionManagerMock),
+            same(this.dlmsDevice),
+            same(firmwareFileDto),
+            any(MessageMetadata.class));
   }
 
   @Test
@@ -152,10 +159,13 @@ public class GetFirmwareFileResponseMessageProcessorTest {
     when(this.dlmsConnectionManagerMock.getDlmsMessageListener())
         .thenReturn(this.dlmsMessageListenerMock);
     when(this.connectionHelper.createConnectionForDevice(
-            same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
+            any(MessageMetadata.class), same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
         .thenReturn(this.dlmsConnectionManagerMock);
     when(this.firmwareService.updateFirmware(
-            this.dlmsConnectionManagerMock, this.dlmsDevice, firmwareFileDto))
+            same(this.dlmsConnectionManagerMock),
+            same(this.dlmsDevice),
+            same(firmwareFileDto),
+            any(MessageMetadata.class)))
         .thenThrow(new ProtocolAdapterException("Firmware file fw is not available."));
 
     // act

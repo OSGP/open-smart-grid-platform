@@ -17,6 +17,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,7 +37,8 @@ public class CoupleMbusDeviceByChannelCommandExecutor
   public CoupleMbusDeviceByChannelResponseDto execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final CoupleMbusDeviceByChannelRequestDataDto requestDto)
+      final CoupleMbusDeviceByChannelRequestDataDto requestDto,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     log.info(

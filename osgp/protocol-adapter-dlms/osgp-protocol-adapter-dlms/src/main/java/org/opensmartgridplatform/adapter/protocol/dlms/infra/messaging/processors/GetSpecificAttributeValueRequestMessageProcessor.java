@@ -16,6 +16,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecificAttributeValueRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -32,7 +33,10 @@ public class GetSpecificAttributeValueRequestMessageProcessor
 
   @Override
   protected Serializable handleMessage(
-      final DlmsConnectionManager conn, final DlmsDevice device, final Serializable requestObject)
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final Serializable requestObject,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException, FunctionalException {
 
     this.assertRequestObjectType(SpecificAttributeValueRequestDto.class, requestObject);
@@ -41,6 +45,6 @@ public class GetSpecificAttributeValueRequestMessageProcessor
         (SpecificAttributeValueRequestDto) requestObject;
 
     return this.adhocService.getSpecificAttributeValue(
-        conn, device, specificConfigurationObjectRequestDataDto);
+        conn, device, specificConfigurationObjectRequestDataDto, messageMetadata);
   }
 }

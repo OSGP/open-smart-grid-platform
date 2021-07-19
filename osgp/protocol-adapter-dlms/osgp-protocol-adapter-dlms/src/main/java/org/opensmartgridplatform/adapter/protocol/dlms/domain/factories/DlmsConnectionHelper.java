@@ -14,6 +14,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +58,10 @@ public class DlmsConnectionHelper {
    * invocation counter when required.
    */
   public DlmsConnectionManager createConnectionForDevice(
-      final DlmsDevice device, final DlmsMessageListener messageListener) throws OsgpException {
+      final MessageMetadata messageMetadata,
+      final DlmsDevice device,
+      final DlmsMessageListener messageListener)
+      throws OsgpException {
 
     final boolean pingDevice =
         this.devicePingConfig.pingingEnabled() && StringUtils.hasText(device.getIpAddress());
@@ -72,7 +76,8 @@ public class DlmsConnectionHelper {
         pingDevice,
         initializeInvocationCounter,
         NO_DELAY,
-        waitBeforeCreatingTheConnection);
+        waitBeforeCreatingTheConnection,
+        messageMetadata);
   }
 
   private void delay(final Duration duration) {
@@ -93,7 +98,8 @@ public class DlmsConnectionHelper {
       final boolean pingDevice,
       final boolean initializeInvocationCounter,
       final Duration waitBeforeInitializingInvocationCounter,
-      final Duration waitBeforeCreatingTheConnection)
+      final Duration waitBeforeCreatingTheConnection,
+      final MessageMetadata messageMetadata)
       throws OsgpException {
 
     if (pingDevice) {
@@ -102,12 +108,12 @@ public class DlmsConnectionHelper {
 
     if (initializeInvocationCounter) {
       this.delay(waitBeforeInitializingInvocationCounter);
-      this.invocationCounterManager.initializeInvocationCounter(device);
+      this.invocationCounterManager.initializeInvocationCounter(messageMetadata, device);
     }
 
     try {
       this.delay(waitBeforeCreatingTheConnection);
-      return this.connectionFactory.getConnection(device, messageListener);
+      return this.connectionFactory.getConnection(messageMetadata, device, messageListener);
     } catch (final ConnectionException e) {
       if ((device.needsInvocationCounter() && this.indicatesInvocationCounterOutOfSync(e))
           && !initializeInvocationCounter) {
@@ -128,7 +134,8 @@ public class DlmsConnectionHelper {
             false,
             true,
             this.delayBetweenDlmsConnections,
-            this.delayBetweenDlmsConnections);
+            this.delayBetweenDlmsConnections,
+            messageMetadata);
       }
       /*
        * The connection exception is assumed not to be related to the invocation counter, or has

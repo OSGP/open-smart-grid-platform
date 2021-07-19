@@ -25,6 +25,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdministrativeStatusTypeDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +72,8 @@ public class SetAdministrativeStatusCommandExecutor
   public AccessResultCode execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final AdministrativeStatusTypeDto administrativeStatusType)
+      final AdministrativeStatusTypeDto administrativeStatusType,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     LOGGER.info(

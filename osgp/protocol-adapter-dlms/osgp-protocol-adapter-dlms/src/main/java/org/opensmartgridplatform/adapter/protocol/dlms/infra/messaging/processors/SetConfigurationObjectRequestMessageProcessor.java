@@ -15,6 +15,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -31,7 +32,10 @@ public class SetConfigurationObjectRequestMessageProcessor extends DeviceRequest
 
   @Override
   protected Serializable handleMessage(
-      final DlmsConnectionManager conn, final DlmsDevice device, final Serializable requestObject)
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final Serializable requestObject,
+      final MessageMetadata messageMetadata)
       throws OsgpException {
 
     this.assertRequestObjectType(SetConfigurationObjectRequestDto.class, requestObject);
@@ -39,7 +43,8 @@ public class SetConfigurationObjectRequestMessageProcessor extends DeviceRequest
     final SetConfigurationObjectRequestDto setConfigurationObjectRequest =
         (SetConfigurationObjectRequestDto) requestObject;
 
-    this.configurationService.requestSetConfiguration(conn, device, setConfigurationObjectRequest);
+    this.configurationService.requestSetConfiguration(
+        conn, device, setConfigurationObjectRequest, messageMetadata);
     return null;
   }
 }

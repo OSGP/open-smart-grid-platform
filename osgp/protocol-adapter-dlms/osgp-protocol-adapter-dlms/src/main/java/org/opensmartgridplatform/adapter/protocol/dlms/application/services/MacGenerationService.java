@@ -25,6 +25,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.enums.SecurityType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -58,7 +59,10 @@ public class MacGenerationService {
 
   @Autowired private SecretManagementService secretManagementService;
 
-  public byte[] calculateMac(final String deviceIdentification, final FirmwareFile firmwareFile)
+  public byte[] calculateMac(
+      final MessageMetadata messageMetadata,
+      final String deviceIdentification,
+      final FirmwareFile firmwareFile)
       throws ProtocolAdapterException {
 
     final FirmwareFileHeader header = firmwareFile.getHeader();
@@ -68,7 +72,9 @@ public class MacGenerationService {
 
     final byte[] decryptedFirmwareUpdateAuthenticationKey =
         this.secretManagementService.getKey(
-            deviceIdentification, SecurityKeyType.G_METER_FIRMWARE_UPDATE_AUTHENTICATION);
+            messageMetadata,
+            deviceIdentification,
+            SecurityKeyType.G_METER_FIRMWARE_UPDATE_AUTHENTICATION);
 
     if (decryptedFirmwareUpdateAuthenticationKey == null
         || decryptedFirmwareUpdateAuthenticationKey.length == 0) {

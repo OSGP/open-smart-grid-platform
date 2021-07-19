@@ -26,6 +26,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MeterReadsGasResponseDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +69,8 @@ public class GetActualMeterReadsGasCommandExecutor
   public MeterReadsGasResponseDto execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final ActualMeterReadsQueryDto actualMeterReadsRequest)
+      final ActualMeterReadsQueryDto actualMeterReadsRequest,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     final ObisCode obisCodeMbusMasterValue =

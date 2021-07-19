@@ -20,6 +20,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupAlarmRequestDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -60,7 +61,8 @@ public class SetPushSetupAlarmCommandExecutor
   public AccessResultCode execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final PushSetupAlarmDto pushSetupAlarm)
+      final PushSetupAlarmDto pushSetupAlarm,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     final SetParameter setParameterSendDestinationAndMethod = this.getSetParameter(pushSetupAlarm);

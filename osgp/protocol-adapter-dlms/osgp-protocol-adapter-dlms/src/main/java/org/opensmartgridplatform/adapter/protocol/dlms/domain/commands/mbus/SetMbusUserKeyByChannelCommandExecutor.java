@@ -22,6 +22,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GMeterInfoDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestDataDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -57,7 +58,8 @@ public class SetMbusUserKeyByChannelCommandExecutor
   public ActionResponseDto executeBundleAction(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final ActionRequestDto actionRequestDto)
+      final ActionRequestDto actionRequestDto,
+      final MessageMetadata messageMetadata)
       throws OsgpException {
 
     this.checkActionRequestType(actionRequestDto);
@@ -65,8 +67,9 @@ public class SetMbusUserKeyByChannelCommandExecutor
         (SetMbusUserKeyByChannelRequestDataDto) actionRequestDto;
     final GMeterInfoDto gMeterInfo =
         this.configurationService.getMbusKeyExchangeData(
-            conn, device, setMbusUserKeyByChannelRequestData);
-    final MethodResultCode executionResult = this.execute(conn, device, gMeterInfo);
+            conn, device, setMbusUserKeyByChannelRequestData, messageMetadata);
+    final MethodResultCode executionResult =
+        this.execute(conn, device, gMeterInfo, messageMetadata);
     return this.asBundleResponse(executionResult);
   }
 
@@ -79,8 +82,12 @@ public class SetMbusUserKeyByChannelCommandExecutor
 
   @Override
   public MethodResultCode execute(
-      final DlmsConnectionManager conn, final DlmsDevice device, final GMeterInfoDto gMeterInfo)
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final GMeterInfoDto gMeterInfo,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException, FunctionalException {
-    return this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, gMeterInfo);
+    return this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(
+        conn, device, gMeterInfo, messageMetadata);
   }
 }

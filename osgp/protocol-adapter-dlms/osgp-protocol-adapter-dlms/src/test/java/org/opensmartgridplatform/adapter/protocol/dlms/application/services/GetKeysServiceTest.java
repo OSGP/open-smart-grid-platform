@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,6 +29,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysRequestDt
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.KeyDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SecretTypeDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.security.RsaEncrypter;
 
 @ExtendWith(MockitoExtension.class)
@@ -51,18 +53,29 @@ class GetKeysServiceTest {
   private static final byte[] KEY_1_ENCRYPTED = new byte[] {99, 88, 77};
   private static final byte[] KEY_2_ENCRYPTED = new byte[] {66, 55, 44};
 
+  private static MessageMetadata messageMetadata;
+
+  @BeforeAll
+  public static void init() {
+    messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+  }
+
   @Test
   void getKeys() {
     final Map<SecurityKeyType, byte[]> keys = new EnumMap<>(SecurityKeyType.class);
+
     keys.put(SecurityKeyType.E_METER_MASTER, KEY_1_UNENCRYPTED);
     keys.put(SecurityKeyType.E_METER_AUTHENTICATION, KEY_2_UNENCRYPTED);
     when(this.secretManagementService.getKeys(
+            messageMetadata,
             DEVICE_ID,
             Arrays.asList(SecurityKeyType.E_METER_MASTER, SecurityKeyType.E_METER_AUTHENTICATION)))
         .thenReturn(keys);
     when(this.rsaEncrypter.encrypt(KEY_1_UNENCRYPTED)).thenReturn(KEY_1_ENCRYPTED);
     when(this.rsaEncrypter.encrypt(KEY_2_UNENCRYPTED)).thenReturn(KEY_2_ENCRYPTED);
-    final GetKeysResponseDto response = this.getKeysService.getKeys(DEVICE, REQUEST);
+    final GetKeysResponseDto response =
+        this.getKeysService.getKeys(DEVICE, REQUEST, messageMetadata);
 
     final GetKeysResponseDto expectedResponse =
         new GetKeysResponseDto(
@@ -75,8 +88,8 @@ class GetKeysServiceTest {
   @Test
   void getKeysWithoutKeyTypes() {
     final GetKeysRequestDto request = new GetKeysRequestDto(Collections.emptyList());
-
-    final GetKeysResponseDto response = this.getKeysService.getKeys(DEVICE, request);
+    final GetKeysResponseDto response =
+        this.getKeysService.getKeys(DEVICE, request, messageMetadata);
 
     assertThat(response).isNotNull();
     assertThat(response.getKeys()).isEmpty();
@@ -88,12 +101,14 @@ class GetKeysServiceTest {
     keys.put(SecurityKeyType.E_METER_MASTER, KEY_1_UNENCRYPTED);
     keys.put(SecurityKeyType.E_METER_AUTHENTICATION, null);
     when(this.secretManagementService.getKeys(
+            messageMetadata,
             DEVICE_ID,
             Arrays.asList(SecurityKeyType.E_METER_MASTER, SecurityKeyType.E_METER_AUTHENTICATION)))
         .thenReturn(keys);
     when(this.rsaEncrypter.encrypt(KEY_1_UNENCRYPTED)).thenReturn(KEY_1_ENCRYPTED);
 
-    final GetKeysResponseDto response = this.getKeysService.getKeys(DEVICE, REQUEST);
+    final GetKeysResponseDto response =
+        this.getKeysService.getKeys(DEVICE, REQUEST, messageMetadata);
 
     final GetKeysResponseDto expectedResponse =
         new GetKeysResponseDto(

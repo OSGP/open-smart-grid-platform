@@ -28,6 +28,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,32 +53,36 @@ public class GenerateAndReplaceKeyCommandExecutor
   public ActionResponseDto executeBundleAction(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final ActionRequestDto actionRequestDto)
+      final ActionRequestDto actionRequestDto,
+      final MessageMetadata messageMetadata)
       throws OsgpException {
 
-    return this.execute(conn, device, actionRequestDto);
+    return this.execute(conn, device, actionRequestDto, messageMetadata);
   }
 
   @Override
   public ActionResponseDto execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final ActionRequestDto actionRequestDto)
+      final ActionRequestDto actionRequestDto,
+      final MessageMetadata messageMetadata)
       throws OsgpException {
     LOGGER.info("Generate new keys for device {}", device.getDeviceIdentification());
     final SetKeysRequestDto setKeysRequest =
-        this.generateSetKeysRequest(device.getDeviceIdentification());
-    return this.replaceKeyCommandExecutor.executeBundleAction(conn, device, setKeysRequest);
+        this.generateSetKeysRequest(messageMetadata, device.getDeviceIdentification());
+    return this.replaceKeyCommandExecutor.executeBundleAction(
+        conn, device, setKeysRequest, messageMetadata);
   }
 
-  private SetKeysRequestDto generateSetKeysRequest(final String deviceIdentification)
+  private SetKeysRequestDto generateSetKeysRequest(
+      final MessageMetadata messageMetadata, final String deviceIdentification)
       throws FunctionalException {
     try {
       final List<SecurityKeyType> keyTypes =
           Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION);
       final Map<SecurityKeyType, byte[]> generatedKeys =
           this.secretManagementService.generate128BitsKeysAndStoreAsNewKeys(
-              deviceIdentification, keyTypes);
+              messageMetadata, deviceIdentification, keyTypes);
       final SetKeysRequestDto setKeysRequest =
           new SetKeysRequestDto(
               generatedKeys.get(E_METER_AUTHENTICATION), generatedKeys.get(E_METER_ENCRYPTION));

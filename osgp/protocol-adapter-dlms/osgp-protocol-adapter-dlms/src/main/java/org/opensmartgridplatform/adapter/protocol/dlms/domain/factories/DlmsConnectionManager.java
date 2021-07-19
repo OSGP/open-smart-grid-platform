@@ -42,6 +42,7 @@ public class DlmsConnectionManager implements AutoCloseable {
         }
       };
 
+  private final MessageMetadata messageMetadata;
   private final DlmsConnector connector;
   private final DlmsDevice device;
   private final DlmsMessageListener dlmsMessageListener;
@@ -51,17 +52,19 @@ public class DlmsConnectionManager implements AutoCloseable {
 
   public DlmsConnectionManager(
       final DlmsConnector connector,
+      final MessageMetadata messageMetadata,
       final DlmsDevice device,
       final DlmsMessageListener dlmsMessageListener,
       final DomainHelperService domainHelperService) {
     this.connector = connector;
+    this.messageMetadata = messageMetadata;
     this.device = device;
-    this.domainHelperService = domainHelperService;
     if (dlmsMessageListener == null) {
       this.dlmsMessageListener = DO_NOTHING_LISTENER;
     } else {
       this.dlmsMessageListener = dlmsMessageListener;
     }
+    this.domainHelperService = domainHelperService;
   }
 
   /**
@@ -113,7 +116,8 @@ public class DlmsConnectionManager implements AutoCloseable {
           "Cannot create a new connection because a connection already exists.");
     }
 
-    this.dlmsConnection = this.connector.connect(this.device, this.dlmsMessageListener);
+    this.dlmsConnection =
+        this.connector.connect(this.messageMetadata, this.device, this.dlmsMessageListener);
   }
 
   /**
@@ -133,7 +137,8 @@ public class DlmsConnectionManager implements AutoCloseable {
       this.device.setIpAddress(
           this.domainHelperService.getDeviceIpAddressFromSessionProvider(this.device));
     }
-    this.dlmsConnection = this.connector.connect(this.device, this.dlmsMessageListener);
+    this.dlmsConnection =
+        this.connector.connect(this.messageMetadata, this.device, this.dlmsMessageListener);
   }
 
   /**

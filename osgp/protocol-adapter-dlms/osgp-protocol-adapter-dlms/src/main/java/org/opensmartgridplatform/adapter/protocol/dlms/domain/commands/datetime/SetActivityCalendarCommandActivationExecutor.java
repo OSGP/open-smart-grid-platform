@@ -20,6 +20,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -37,7 +38,10 @@ public class SetActivityCalendarCommandActivationExecutor
 
   @Override
   public MethodResultCode execute(
-      final DlmsConnectionManager conn, final DlmsDevice device, final Void v)
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final Void v,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     LOGGER.info("ACTIVATING PASSIVE CALENDAR");

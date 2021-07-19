@@ -13,6 +13,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 public class GetActualMeterReadsBundleCommandExecutorStub extends AbstractCommandExecutorStub {
 
@@ -20,7 +21,8 @@ public class GetActualMeterReadsBundleCommandExecutorStub extends AbstractComman
   public ActionResponseDto executeBundleAction(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final ActionRequestDto actionRequestDto)
+      final ActionRequestDto actionRequestDto,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
     return this.doExecute(conn, device, actionRequestDto);
   }

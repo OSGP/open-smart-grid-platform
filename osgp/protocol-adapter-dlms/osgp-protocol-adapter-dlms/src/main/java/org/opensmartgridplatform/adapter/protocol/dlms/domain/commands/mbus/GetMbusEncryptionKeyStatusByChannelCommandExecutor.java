@@ -20,6 +20,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -42,7 +43,8 @@ public class GetMbusEncryptionKeyStatusByChannelCommandExecutor
   public GetMbusEncryptionKeyStatusByChannelResponseDto execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final GetMbusEncryptionKeyStatusByChannelRequestDataDto request)
+      final GetMbusEncryptionKeyStatusByChannelRequestDataDto request,
+      final MessageMetadata messageMetadata)
       throws OsgpException {
 
     final GetMBusDeviceOnChannelRequestDataDto mbusDeviceOnChannelRequest =
@@ -50,7 +52,7 @@ public class GetMbusEncryptionKeyStatusByChannelCommandExecutor
             device.getDeviceIdentification(), request.getChannel());
     final ChannelElementValuesDto channelElementValues =
         this.getMBusDeviceOnChannelCommandExecutor.execute(
-            conn, device, mbusDeviceOnChannelRequest);
+            conn, device, mbusDeviceOnChannelRequest, messageMetadata);
 
     if (!channelElementValues.hasChannel()
         || !channelElementValues.hasDeviceTypeIdentification()

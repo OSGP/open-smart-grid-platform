@@ -45,6 +45,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFla
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisationSettingsRequestDataDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -66,6 +67,7 @@ public class SetRandomisationSettingsCommandExecutorTest {
 
   private SetRandomisationSettingsRequestDataDto dataDto;
   private DlmsDevice device;
+  private MessageMetadata messageMetadata;
 
   @BeforeEach
   public void init() throws ProtocolAdapterException, IOException {
@@ -73,6 +75,9 @@ public class SetRandomisationSettingsCommandExecutorTest {
     // SETUP
     final Protocol smr51 = Protocol.SMR_5_1;
     this.device = this.createDlmsDevice(smr51);
+
+    this.messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
 
     final AttributeAddress address = new AttributeAddress(1, new ObisCode("0.1.94.31.12.255"), 1);
 
@@ -107,7 +112,8 @@ public class SetRandomisationSettingsCommandExecutorTest {
 
     // CALL
     final AccessResultCode resultCode =
-        this.executor.execute(this.dlmsConnectionManager, this.device, this.dataDto);
+        this.executor.execute(
+            this.dlmsConnectionManager, this.device, this.dataDto, this.messageMetadata);
 
     // ASSERT
     assertThat(resultCode).isEqualTo(AccessResultCode.SUCCESS);
@@ -126,7 +132,8 @@ public class SetRandomisationSettingsCommandExecutorTest {
         .isThrownBy(
             () -> {
               // CALL
-              this.executor.execute(this.dlmsConnectionManager, this.device, this.dataDto);
+              this.executor.execute(
+                  this.dlmsConnectionManager, this.device, this.dataDto, this.messageMetadata);
             });
   }
 
@@ -142,7 +149,8 @@ public class SetRandomisationSettingsCommandExecutorTest {
         .isThrownBy(
             () -> {
               // CALL
-              this.executor.execute(this.dlmsConnectionManager, this.device, this.dataDto);
+              this.executor.execute(
+                  this.dlmsConnectionManager, this.device, this.dataDto, this.messageMetadata);
             });
   }
 
@@ -158,7 +166,8 @@ public class SetRandomisationSettingsCommandExecutorTest {
         .isThrownBy(
             () -> {
               // CALL
-              this.executor.execute(this.dlmsConnectionManager, this.device, this.dataDto);
+              this.executor.execute(
+                  this.dlmsConnectionManager, this.device, this.dataDto, this.messageMetadata);
             });
   }
 

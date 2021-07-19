@@ -13,12 +13,16 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 public class ReadAlarmRegisterBundleCommandExecutorStub extends AbstractCommandExecutorStub {
 
   @Override
   public ActionResponseDto executeBundleAction(
-      final DlmsConnectionManager conn, final DlmsDevice device, final ActionRequestDto object)
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final ActionRequestDto object,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
     return this.doExecute(conn, device, object);
   }

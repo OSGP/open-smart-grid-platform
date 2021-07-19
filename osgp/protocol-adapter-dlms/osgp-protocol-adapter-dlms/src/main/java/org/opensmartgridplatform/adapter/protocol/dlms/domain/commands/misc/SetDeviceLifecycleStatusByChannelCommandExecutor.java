@@ -21,6 +21,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -42,7 +43,8 @@ public class SetDeviceLifecycleStatusByChannelCommandExecutor
   public SetDeviceLifecycleStatusByChannelResponseDto execute(
       final DlmsConnectionManager conn,
       final DlmsDevice gatewayDevice,
-      final SetDeviceLifecycleStatusByChannelRequestDataDto request)
+      final SetDeviceLifecycleStatusByChannelRequestDataDto request,
+      final MessageMetadata messageMetadata)
       throws OsgpException {
 
     final GetMBusDeviceOnChannelRequestDataDto mbusDeviceOnChannelRequest =
@@ -50,7 +52,7 @@ public class SetDeviceLifecycleStatusByChannelCommandExecutor
             gatewayDevice.getDeviceIdentification(), request.getChannel());
     final ChannelElementValuesDto channelElementValues =
         this.getMBusDeviceOnChannelCommandExecutor.execute(
-            conn, gatewayDevice, mbusDeviceOnChannelRequest);
+            conn, gatewayDevice, mbusDeviceOnChannelRequest, messageMetadata);
 
     if (!channelElementValues.hasChannel()
         || !channelElementValues.hasDeviceTypeIdentification()

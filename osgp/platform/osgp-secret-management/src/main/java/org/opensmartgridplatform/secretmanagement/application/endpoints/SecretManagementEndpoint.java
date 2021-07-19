@@ -9,7 +9,10 @@
 package org.opensmartgridplatform.secretmanagement.application.endpoints;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -19,6 +22,8 @@ import org.opensmartgridplatform.secretmanagement.application.domain.TypedSecret
 import org.opensmartgridplatform.secretmanagement.application.services.SecretManagementService;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.opensmartgridplatform.ws.schema.core.secret.management.AbstractRequest;
+import org.opensmartgridplatform.ws.schema.core.secret.management.AbstractResponse;
 import org.opensmartgridplatform.ws.schema.core.secret.management.ActivateSecretsRequest;
 import org.opensmartgridplatform.ws.schema.core.secret.management.ActivateSecretsResponse;
 import org.opensmartgridplatform.ws.schema.core.secret.management.GenerateAndStoreSecretsRequest;
@@ -34,20 +39,28 @@ import org.opensmartgridplatform.ws.schema.core.secret.management.SecretTypes;
 import org.opensmartgridplatform.ws.schema.core.secret.management.StoreSecretsRequest;
 import org.opensmartgridplatform.ws.schema.core.secret.management.StoreSecretsResponse;
 import org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecrets;
+import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
+import org.springframework.ws.soap.SoapHeaderElement;
+import org.springframework.ws.soap.saaj.SaajSoapMessage;
+import org.springframework.ws.soap.server.endpoint.annotation.SoapHeader;
 
 @Endpoint
 @Slf4j
 public class SecretManagementEndpoint {
 
-  private static final String NAMESPACE_URI =
-      "http://www.opensmartgridplatform.org/schemas/security/secretmanagement";
-  private static final String STR_MISSING_SECRET_TYPES = "Missing input: secret types";
-  private static final String STR_MISSING_TYPED_SECRETS = "Missing input: typed secrets";
+  @FunctionalInterface
+  private interface RequestProcessor<R extends AbstractRequest, S extends AbstractResponse> {
+    S processRequest(R request) throws OsgpException;
+  }
 
+  public static final String NAMESPACE_URI =
+      "http://www.opensmartgridplatform.org/schemas/security/secretmanagement";
+  public static final String CORRELATION_UID = "correlationUid";
+  private static final String CORRELATION_HEADER = "{" + NAMESPACE_URI + "}" + CORRELATION_UID;
   private final SecretManagementService secretManagementService;
   private final SoapEndpointDataTypeConverter converter;
 
@@ -58,95 +71,159 @@ public class SecretManagementEndpoint {
     this.converter = converter;
   }
 
-  @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getSecretsRequest")
-  @ResponsePayload
-  public GetSecretsResponse getSecretsRequest(@RequestPayload final GetSecretsRequest request)
+  private String getCorrelationUidFromHeader(final SoapHeaderElement header)
+      throws TechnicalException {
+    final String correlationUid = header != null ? header.getText() : null;
+    if (correlationUid == null) {
+      throw new TechnicalException("Missing input: correlation UID");
+    }
+    return correlationUid;
+  }
+
+  private void addHeaderToResponse(
+      final MessageContext messageContext, final SoapHeaderElement header) {
+    if (header != null) {
+      final SaajSoapMessage soapResponse = (SaajSoapMessage) messageContext.getResponse();
+      final org.springframework.ws.soap.SoapHeader responseHeader = soapResponse.getSoapHeader();
+      responseHeader.addHeaderElement(header.getName()).setText(header.getText());
+    }
+  }
+
+  private <R extends AbstractRequest, S extends AbstractResponse> S handleRequest(
+      final R request,
+      final RequestProcessor<R, S> processor,
+      final SoapHeaderElement correlationUidHeaderElement,
+      final MessageContext messageContext,
+      final List<String> secretTypeNames)
       throws OsgpException {
+    final String correlationUid = this.getCorrelationUidFromHeader(correlationUidHeaderElement);
     log.info(
-        "Handling incoming SOAP request 'getSecretsRequest' for device {}", request.getDeviceId());
+        "[{}] Handling incoming SOAP request '{}' for device {} and secrettypes {}",
+        correlationUid,
+        request.getClass().getSimpleName(),
+        request.getDeviceId(),
+        secretTypeNames);
     if (log.isDebugEnabled()) {
       log.debug(this.requestToString(request));
     }
+    final S response = processor.processRequest(request);
+    response.setResult(OsgpResultType.OK);
+    this.addHeaderToResponse(messageContext, correlationUidHeaderElement);
+    return response;
+  }
+
+  public GetSecretsResponse getSecrets(final GetSecretsRequest request) throws OsgpException {
     final GetSecretsResponse response = new GetSecretsResponse();
     final SecretTypes soapSecretTypes = request.getSecretTypes();
-    if (soapSecretTypes == null) {
-      throw new TechnicalException(STR_MISSING_SECRET_TYPES);
-    }
     final List<SecretType> secretTypeList = this.converter.convertToSecretTypes(soapSecretTypes);
     final List<TypedSecret> typedSecrets =
         this.secretManagementService.retrieveSecrets(request.getDeviceId(), secretTypeList);
     final TypedSecrets soapTypedSecrets = this.converter.convertToSoapTypedSecrets(typedSecrets);
     response.setTypedSecrets(soapTypedSecrets);
-    response.setResult(OsgpResultType.OK);
     return response;
   }
 
-  @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getNewSecretsRequest")
-  @ResponsePayload
-  public GetNewSecretsResponse getNewSecretsRequest(
-      @RequestPayload final GetNewSecretsRequest request) throws OsgpException {
-    log.info(
-        "Handling incoming SOAP request 'getSecretsRequest' for device {}", request.getDeviceId());
-    if (log.isDebugEnabled()) {
-      log.debug(this.requestToString(request));
-    }
+  public GetNewSecretsResponse getNewSecrets(final GetNewSecretsRequest request)
+      throws OsgpException {
     final GetNewSecretsResponse response = new GetNewSecretsResponse();
     final SecretTypes soapSecretTypes = request.getSecretTypes();
-    if (soapSecretTypes == null) {
-      throw new TechnicalException(STR_MISSING_SECRET_TYPES);
-    }
     final List<SecretType> secretTypeList = this.converter.convertToSecretTypes(soapSecretTypes);
     final List<TypedSecret> typedSecrets =
         this.secretManagementService.retrieveNewSecrets(request.getDeviceId(), secretTypeList);
     final TypedSecrets soapTypedSecrets = this.converter.convertToSoapTypedSecrets(typedSecrets);
     response.setTypedSecrets(soapTypedSecrets);
-    response.setResult(OsgpResultType.OK);
     return response;
+  }
+
+  public StoreSecretsResponse storeSecrets(final StoreSecretsRequest request) throws OsgpException {
+    final TypedSecrets soapTypedSecrets = request.getTypedSecrets();
+    final List<TypedSecret> typedSecretList =
+        this.converter.convertToTypedSecrets(soapTypedSecrets);
+    this.secretManagementService.storeSecrets(request.getDeviceId(), typedSecretList);
+    return new StoreSecretsResponse();
+  }
+
+  public GenerateAndStoreSecretsResponse generateAndStoreSecrets(
+      final GenerateAndStoreSecretsRequest request) throws OsgpException {
+    final GenerateAndStoreSecretsResponse response = new GenerateAndStoreSecretsResponse();
+    final SecretTypes soapSecretTypes = request.getSecretTypes();
+    final List<SecretType> secretTypeList = this.converter.convertToSecretTypes(soapSecretTypes);
+    final List<TypedSecret> typedSecretList =
+        this.secretManagementService.generateAndStoreSecrets(request.getDeviceId(), secretTypeList);
+    response.setTypedSecrets(this.converter.convertToSoapTypedSecrets(typedSecretList));
+    return response;
+  }
+
+  public ActivateSecretsResponse activateSecrets(final ActivateSecretsRequest request)
+      throws OsgpException {
+    final SecretTypes soapSecretTypes = request.getSecretTypes();
+    this.secretManagementService.activateNewSecrets(
+        request.getDeviceId(), this.converter.convertToSecretTypes(soapSecretTypes));
+    return new ActivateSecretsResponse();
+  }
+
+  public HasNewSecretResponse hasNewSecret(final HasNewSecretRequest request) {
+    final SecretType type = this.converter.convertToSecretType(request.getSecretType());
+    final boolean result = this.secretManagementService.hasNewSecret(request.getDeviceId(), type);
+    final HasNewSecretResponse response = new HasNewSecretResponse();
+    response.setHasNewSecret(result);
+    return response;
+  }
+
+  @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getSecretsRequest")
+  @ResponsePayload
+  public GetSecretsResponse getSecretsRequest(
+      @RequestPayload final GetSecretsRequest request,
+      @SoapHeader(CORRELATION_HEADER) final SoapHeaderElement header,
+      final MessageContext messageContext)
+      throws OsgpException {
+    return this.handleRequest(
+        request, this::getSecrets, header, messageContext, this.nameList(request.getSecretTypes()));
+  }
+
+  @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getNewSecretsRequest")
+  @ResponsePayload
+  public GetNewSecretsResponse getNewSecretsRequest(
+      @RequestPayload final GetNewSecretsRequest request,
+      @SoapHeader(CORRELATION_HEADER) final SoapHeaderElement header,
+      final MessageContext messageContext)
+      throws OsgpException {
+    return this.handleRequest(
+        request,
+        this::getNewSecrets,
+        header,
+        messageContext,
+        this.nameList(request.getSecretTypes()));
   }
 
   @PayloadRoot(namespace = NAMESPACE_URI, localPart = "storeSecretsRequest")
   @ResponsePayload
-  public StoreSecretsResponse storeSecretsRequest(@RequestPayload final StoreSecretsRequest request)
+  public StoreSecretsResponse storeSecretsRequest(
+      @RequestPayload final StoreSecretsRequest request,
+      @SoapHeader(CORRELATION_HEADER) final SoapHeaderElement header,
+      final MessageContext messageContext)
       throws OsgpException {
-    log.info(
-        "Handling incoming SOAP request 'storeSecretsRequest' for device {}",
-        request.getDeviceId());
-    if (log.isDebugEnabled()) {
-      log.debug(this.requestToString(request));
-    }
-    final StoreSecretsResponse response = new StoreSecretsResponse();
-    final TypedSecrets soapTypedSecrets = request.getTypedSecrets();
-    if (soapTypedSecrets == null) {
-      throw new TechnicalException(STR_MISSING_TYPED_SECRETS);
-    }
-    final List<TypedSecret> typedSecretList =
-        this.converter.convertToTypedSecrets(soapTypedSecrets);
-    this.secretManagementService.storeSecrets(request.getDeviceId(), typedSecretList);
-    response.setResult(OsgpResultType.OK);
-    return response;
+    return this.handleRequest(
+        request,
+        this::storeSecrets,
+        header,
+        messageContext,
+        this.nameList(request.getTypedSecrets()));
   }
 
   @PayloadRoot(namespace = NAMESPACE_URI, localPart = "generateAndStoreSecretsRequest")
   @ResponsePayload
   public GenerateAndStoreSecretsResponse generateAndStoreSecretsRequest(
-      @RequestPayload final GenerateAndStoreSecretsRequest request) throws OsgpException {
-    log.info(
-        "Handling incoming SOAP request 'generateAndStoreSecretsRequest' for device {}",
-        request.getDeviceId());
-    if (log.isDebugEnabled()) {
-      log.debug(this.requestToString(request));
-    }
-    final GenerateAndStoreSecretsResponse response = new GenerateAndStoreSecretsResponse();
-    final SecretTypes soapSecretTypes = request.getSecretTypes();
-    if (soapSecretTypes == null) {
-      throw new TechnicalException(STR_MISSING_SECRET_TYPES);
-    }
-    final List<SecretType> secretTypeList = this.converter.convertToSecretTypes(soapSecretTypes);
-    final List<TypedSecret> typedSecretList =
-        this.secretManagementService.generateAndStoreSecrets(request.getDeviceId(), secretTypeList);
-    response.setResult(OsgpResultType.OK);
-    response.setTypedSecrets(this.converter.convertToSoapTypedSecrets(typedSecretList));
-    return response;
+      @RequestPayload final GenerateAndStoreSecretsRequest request,
+      @SoapHeader(CORRELATION_HEADER) final SoapHeaderElement header,
+      final MessageContext messageContext)
+      throws OsgpException {
+    return this.handleRequest(
+        request,
+        this::generateAndStoreSecrets,
+        header,
+        messageContext,
+        this.nameList(request.getSecretTypes()));
   }
 
   private <T> String requestToString(final T request) {
@@ -166,43 +243,48 @@ public class SecretManagementEndpoint {
   @PayloadRoot(namespace = NAMESPACE_URI, localPart = "activateSecretsRequest")
   @ResponsePayload
   public ActivateSecretsResponse activateSecretsRequest(
-      @RequestPayload final ActivateSecretsRequest request) throws OsgpException {
-    log.info(
-        "Handling incoming SOAP request 'activateSecretRequest' for device {}",
-        request.getDeviceId());
-    if (log.isDebugEnabled()) {
-      log.debug(this.requestToString(request));
-    }
-    final ActivateSecretsResponse response = new ActivateSecretsResponse();
-    final SecretTypes soapSecretTypes = request.getSecretTypes();
-    if (soapSecretTypes == null) {
-      throw new TechnicalException(STR_MISSING_SECRET_TYPES);
-    }
-    try {
-      this.secretManagementService.activateNewSecrets(
-          request.getDeviceId(), this.converter.convertToSecretTypes(soapSecretTypes));
-      response.setResult(OsgpResultType.OK);
-    } catch (final RuntimeException rte) {
-      log.error("Could not activate new secrets: " + rte.toString());
-      throw new TechnicalException("Could not activate new secrets", rte);
-    }
-    return response;
+      @RequestPayload final ActivateSecretsRequest request,
+      @SoapHeader(CORRELATION_HEADER) final SoapHeaderElement header,
+      final MessageContext messageContext)
+      throws OsgpException {
+    return this.handleRequest(
+        request,
+        this::activateSecrets,
+        header,
+        messageContext,
+        this.nameList(request.getSecretTypes()));
   }
 
   @PayloadRoot(namespace = NAMESPACE_URI, localPart = "hasNewSecretRequest")
   @ResponsePayload
-  public HasNewSecretResponse hasNewSecretRequest(@RequestPayload final HasNewSecretRequest request)
+  public HasNewSecretResponse hasNewSecretRequest(
+      @RequestPayload final HasNewSecretRequest request,
+      @SoapHeader(CORRELATION_HEADER) final SoapHeaderElement header,
+      final MessageContext messageContext)
       throws OsgpException {
-    log.info(
-        "Handling incoming SOAP request 'hasNewSecretRequest' for device {}",
-        request.getDeviceId());
-    if (log.isDebugEnabled()) {
-      log.debug(this.requestToString(request));
+    return this.handleRequest(
+        request,
+        this::hasNewSecret,
+        header,
+        messageContext,
+        Arrays.asList(request.getSecretType().name()));
+  }
+
+  private List<String> nameList(final SecretTypes secretTypes) {
+    if (secretTypes == null) {
+      return Collections.emptyList();
     }
-    final HasNewSecretResponse response = new HasNewSecretResponse();
-    final SecretType type = this.converter.convertToSecretType(request.getSecretType());
-    final boolean result = this.secretManagementService.hasNewSecret(request.getDeviceId(), type);
-    response.setHasNewSecret(result);
-    return response;
+    return secretTypes.getSecretType().stream()
+        .map(org.opensmartgridplatform.ws.schema.core.secret.management.SecretType::name)
+        .collect(Collectors.toList());
+  }
+
+  private List<String> nameList(final TypedSecrets typedSecrets) {
+    if (typedSecrets == null) {
+      return Collections.emptyList();
+    }
+    return typedSecrets.getTypedSecret().stream()
+        .map(ts -> ts.getType().name())
+        .collect(Collectors.toList());
   }
 }

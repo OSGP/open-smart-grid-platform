@@ -14,6 +14,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileResponseDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -37,7 +38,8 @@ public class GetPowerQualityProfileCommandExecutor
   public GetPowerQualityProfileResponseDto execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final GetPowerQualityProfileRequestDataDto getPowerQualityProfileRequestDataDto)
+      final GetPowerQualityProfileRequestDataDto getPowerQualityProfileRequestDataDto,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     if (device.isSelectiveAccessSupported()) {

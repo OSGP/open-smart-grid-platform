@@ -24,6 +24,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecificAttribut
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,10 +47,12 @@ public class AdhocService {
   public void synchronizeTime(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final SynchronizeTimeRequestDto synchronizeTimeRequestDataDto)
+      final SynchronizeTimeRequestDto synchronizeTimeRequestDataDto,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
     final AccessResultCode accessResultCode =
-        this.synchronizeTimeCommandExecutor.execute(conn, device, synchronizeTimeRequestDataDto);
+        this.synchronizeTimeCommandExecutor.execute(
+            conn, device, synchronizeTimeRequestDataDto, messageMetadata);
 
     if (!AccessResultCode.SUCCESS.equals(accessResultCode)) {
       throw new ProtocolAdapterException(
@@ -57,28 +60,38 @@ public class AdhocService {
     }
   }
 
-  public String getAllAttributeValues(final DlmsConnectionManager conn, final DlmsDevice device)
+  public String getAllAttributeValues(
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final MessageMetadata messageMetadata)
       throws OsgpException {
 
-    return this.getAllAttributeValuesCommandExecutor.execute(conn, device, null);
+    return this.getAllAttributeValuesCommandExecutor.execute(conn, device, null, messageMetadata);
   }
 
   public AssociationLnListTypeDto getAssociationLnObjects(
-      final DlmsConnectionManager conn, final DlmsDevice device) throws ProtocolAdapterException {
-    return this.getAssociationLnObjectsCommandExecutor.execute(conn, device, null);
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final MessageMetadata messageMetadata)
+      throws ProtocolAdapterException {
+    return this.getAssociationLnObjectsCommandExecutor.execute(conn, device, null, messageMetadata);
   }
 
   public Serializable getSpecificAttributeValue(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final SpecificAttributeValueRequestDto specificAttributeValueRequestDataDto)
+      final SpecificAttributeValueRequestDto specificAttributeValueRequestDataDto,
+      final MessageMetadata messageMetadata)
       throws FunctionalException {
     return this.getSpecificAttributeValueCommandExecutor.execute(
-        conn, device, specificAttributeValueRequestDataDto);
+        conn, device, specificAttributeValueRequestDataDto, messageMetadata);
   }
 
   public ScanMbusChannelsResponseDto scanMbusChannels(
-      final DlmsConnectionManager conn, final DlmsDevice device) throws OsgpException {
-    return this.scanMbusChannelsCommandExecutor.execute(conn, device, null);
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final MessageMetadata messageMetadata)
+      throws OsgpException {
+    return this.scanMbusChannelsCommandExecutor.execute(conn, device, null, messageMetadata);
   }
 }

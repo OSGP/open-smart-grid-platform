@@ -14,6 +14,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 public abstract class AbstractCommandExecutorStub implements CommandExecutor<Object, Object> {
 
@@ -73,7 +74,10 @@ public abstract class AbstractCommandExecutorStub implements CommandExecutor<Obj
 
   @Override
   public Object execute(
-      final DlmsConnectionManager conn, final DlmsDevice device, final Object object) {
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final Object object,
+      final MessageMetadata messageMetadata) {
     throw new AssertionError(
         "execute(DlmsConnection, DlmsDevice, Object) called by " + this.getClass().getName());
   }

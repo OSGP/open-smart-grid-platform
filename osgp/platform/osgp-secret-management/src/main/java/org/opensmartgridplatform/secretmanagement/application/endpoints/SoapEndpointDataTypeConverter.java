@@ -21,7 +21,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SoapEndpointDataTypeConverter {
-  public List<SecretType> convertToSecretTypes(final SecretTypes soapSecretTypes) {
+  public List<SecretType> convertToSecretTypes(final SecretTypes soapSecretTypes)
+      throws OsgpException {
+    if (soapSecretTypes == null) {
+      throw new TechnicalException("Missing input: secret types");
+    }
     final List<org.opensmartgridplatform.ws.schema.core.secret.management.SecretType>
         soapSecretTypeList = soapSecretTypes.getSecretType();
     return soapSecretTypeList.stream().map(this::convertToSecretType).collect(Collectors.toList());

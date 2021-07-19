@@ -24,6 +24,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
 public class GetConfigurationObjectCommandExecutorTest {
@@ -40,13 +41,16 @@ public class GetConfigurationObjectCommandExecutorTest {
     // SETUP
     final DlmsDevice device = new DlmsDevice();
     final Protocol protocol = Protocol.DSMR_4_2_2;
+    final MessageMetadata messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
     device.setProtocol(protocol);
 
     when(this.protocolServiceLookup.lookupGetService(protocol)).thenReturn(this.getService);
     when(this.getService.getConfigurationObject(this.conn)).thenReturn(this.configurationObjectDto);
 
     // CALL
-    final ConfigurationObjectDto result = this.instance.execute(this.conn, device, null);
+    final ConfigurationObjectDto result =
+        this.instance.execute(this.conn, device, null, messageMetadata);
 
     // VERIFY
     assertThat(result).isSameAs(this.configurationObjectDto);

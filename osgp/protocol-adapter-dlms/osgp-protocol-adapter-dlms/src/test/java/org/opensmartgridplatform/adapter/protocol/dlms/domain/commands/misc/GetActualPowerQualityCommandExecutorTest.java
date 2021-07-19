@@ -44,6 +44,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQuali
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsUnitTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityValueDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
 public class GetActualPowerQualityCommandExecutorTest {
@@ -60,9 +61,13 @@ public class GetActualPowerQualityCommandExecutorTest {
   @Mock private DlmsMessageListener dlmsMessageListener;
 
   private ActualPowerQualityRequestDto actualPowerQualityRequestDto;
+  private MessageMetadata messageMetadata;
 
   @BeforeEach
   public void before() throws ProtocolAdapterException, IOException {
+    this.messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
   }
 
@@ -95,7 +100,11 @@ public class GetActualPowerQualityCommandExecutorTest {
         .isThrownBy(
             () -> {
               new GetActualPowerQualityCommandExecutor(this.dlmsHelper)
-                  .execute(this.conn, this.dlmsDevice, this.actualPowerQualityRequestDto);
+                  .execute(
+                      this.conn,
+                      this.dlmsDevice,
+                      this.actualPowerQualityRequestDto,
+                      this.messageMetadata);
             });
   }
 
@@ -117,7 +126,8 @@ public class GetActualPowerQualityCommandExecutorTest {
         new GetActualPowerQualityCommandExecutor(this.dlmsHelper);
 
     final ActualPowerQualityResponseDto responseDto =
-        executor.execute(this.conn, this.dlmsDevice, this.actualPowerQualityRequestDto);
+        executor.execute(
+            this.conn, this.dlmsDevice, this.actualPowerQualityRequestDto, this.messageMetadata);
 
     assertThat(responseDto.getActualPowerQualityData().getPowerQualityValues())
         .hasSize(metadatas.size());

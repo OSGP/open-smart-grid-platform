@@ -24,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.FirmwareFile;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.core.io.ClassPathResource;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,6 +40,8 @@ public class MacGenerationServiceTest {
   private static byte[] byteArray;
   private static final int mbusDeviceIdentificationNumber = Integer.parseInt("10000540", 16);
   private static final String deviceIdentification = "G0035161000054016";
+  private static final MessageMetadata messageMetadata =
+      MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
 
   @BeforeAll
   public static void init() throws IOException {
@@ -50,21 +53,24 @@ public class MacGenerationServiceTest {
   void calculateMac() throws IOException, ProtocolAdapterException {
 
     when(this.secretManagementService.getKey(
-            deviceIdentification, SecurityKeyType.G_METER_FIRMWARE_UPDATE_AUTHENTICATION))
+            messageMetadata,
+            deviceIdentification,
+            SecurityKeyType.G_METER_FIRMWARE_UPDATE_AUTHENTICATION))
         .thenReturn(this.firmwareUpdateAuthenticationKey);
 
     final FirmwareFile firmwareFile = this.createFirmwareFile();
     final byte[] calculatedMac =
-        this.macGenerationService.calculateMac(deviceIdentification, firmwareFile);
+        this.macGenerationService.calculateMac(messageMetadata, deviceIdentification, firmwareFile);
 
     assertThat(Hex.toHexString(calculatedMac)).isEqualTo(this.expectedMac);
   }
 
   @Test
   void testNoKey() throws IOException, ProtocolAdapterException {
-
     when(this.secretManagementService.getKey(
-            deviceIdentification, SecurityKeyType.G_METER_FIRMWARE_UPDATE_AUTHENTICATION))
+            messageMetadata,
+            deviceIdentification,
+            SecurityKeyType.G_METER_FIRMWARE_UPDATE_AUTHENTICATION))
         .thenReturn(null);
 
     final FirmwareFile firmwareFile = this.createFirmwareFile();
@@ -73,7 +79,8 @@ public class MacGenerationServiceTest {
         assertThrows(
             ProtocolAdapterException.class,
             () -> {
-              this.macGenerationService.calculateMac(deviceIdentification, firmwareFile);
+              this.macGenerationService.calculateMac(
+                  messageMetadata, deviceIdentification, firmwareFile);
             });
     assertThat(exception)
         .hasMessageContaining(
@@ -221,7 +228,8 @@ public class MacGenerationServiceTest {
         assertThrows(
             exceptionClass,
             () -> {
-              this.macGenerationService.calculateMac(deviceIdentification, firmwareFile);
+              this.macGenerationService.calculateMac(
+                  messageMetadata, deviceIdentification, firmwareFile);
             });
     assertThat(exception).hasMessageContaining(partOfExceptionMessage);
   }

@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.monitori
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,6 +21,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetPowerQualityProfileRequestDataDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
 public class GetPowerQualityProfileCommandExecutorTest {
@@ -37,13 +39,22 @@ public class GetPowerQualityProfileCommandExecutorTest {
 
   @InjectMocks private GetPowerQualityProfileCommandExecutor executor;
 
+  private static MessageMetadata messageMetadata;
+
+  @BeforeAll
+  public static void init() {
+    messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+  }
+
   @Test
   public void executeWithSelectiveAccess() throws ProtocolAdapterException {
 
     final DlmsDevice dlmsDevice = new DlmsDevice();
     dlmsDevice.setSelectiveAccessSupported(true);
 
-    this.executor.execute(this.conn, dlmsDevice, this.getPowerQualityProfileRequestDataDto);
+    this.executor.execute(
+        this.conn, dlmsDevice, this.getPowerQualityProfileRequestDataDto, messageMetadata);
 
     verify(this.getPowerQualityProfileSelectiveAccessHandler)
         .handle(
@@ -58,7 +69,8 @@ public class GetPowerQualityProfileCommandExecutorTest {
     final DlmsDevice dlmsDevice = new DlmsDevice();
     dlmsDevice.setSelectiveAccessSupported(false);
 
-    this.executor.execute(this.conn, dlmsDevice, this.getPowerQualityProfileRequestDataDto);
+    this.executor.execute(
+        this.conn, dlmsDevice, this.getPowerQualityProfileRequestDataDto, messageMetadata);
 
     verify(this.getPowerQualityProfileNoSelectiveAccessHandler)
         .handle(

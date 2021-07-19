@@ -27,6 +27,7 @@ import org.opensmartgridplatform.dlms.interfaceclass.attribute.ClockAttribute;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -68,7 +69,8 @@ public class SynchronizeTimeCommandExecutor
   public AccessResultCode execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final SynchronizeTimeRequestDto synchronizeTimeRequestDto)
+      final SynchronizeTimeRequestDto synchronizeTimeRequestDto,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
     final DateTime dt = DateTime.now();
     final DataObject time =

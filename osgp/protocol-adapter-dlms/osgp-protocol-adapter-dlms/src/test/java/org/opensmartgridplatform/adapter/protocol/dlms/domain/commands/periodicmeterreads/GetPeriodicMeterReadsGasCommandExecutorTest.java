@@ -63,6 +63,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsGasResponseItemDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -83,16 +84,19 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
   private final long to = 2222222L;
   private final DateTime fromDateTime = new DateTime(this.from);
   private final DateTime toDateTime = new DateTime(this.to);
+  private MessageMetadata messageMetadata;
 
   @BeforeEach
   public void setUp() {
+    this.messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
     when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
   }
 
   @Test
   public void testExecuteNullRequest() throws ProtocolAdapterException {
     try {
-      this.executor.execute(this.connectionManager, this.device, null);
+      this.executor.execute(this.connectionManager, this.device, null, this.messageMetadata);
       fail("Calling execute with null query should fail");
     } catch (final IllegalArgumentException e) {
       // expected exception
@@ -114,7 +118,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
 
     // CALL
     try {
-      this.executor.execute(this.connectionManager, this.device, request);
+      this.executor.execute(this.connectionManager, this.device, request, this.messageMetadata);
       fail("When no matching object is found, then execute should fail");
     } catch (final ProtocolAdapterException e) {
       assertThat(e.getMessage())
@@ -230,7 +234,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorTest {
 
     // CALL
     final PeriodicMeterReadGasResponseDto result =
-        this.executor.execute(this.connectionManager, this.device, request);
+        this.executor.execute(this.connectionManager, this.device, request, this.messageMetadata);
 
     // VERIFY - the right functions should be called
     verify(this.dlmsMessageListener)

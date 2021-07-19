@@ -27,6 +27,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDayDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -68,7 +69,8 @@ public class SetSpecialDaysCommandExecutor
   public AccessResultCode execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final List<SpecialDayDto> specialDays)
+      final List<SpecialDayDto> specialDays,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     final StringBuilder specialDayData = new StringBuilder();

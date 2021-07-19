@@ -35,6 +35,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetAssociationLn
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MethodAccessDescriptorDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MethodAccessItemDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MethodAccessModeTypeDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,7 +90,10 @@ public class GetAssociationLnObjectsCommandExecutor
 
   @Override
   public AssociationLnListTypeDto execute(
-      final DlmsConnectionManager conn, final DlmsDevice device, final Void object)
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final Void object,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     final AttributeAddress attributeAddress =

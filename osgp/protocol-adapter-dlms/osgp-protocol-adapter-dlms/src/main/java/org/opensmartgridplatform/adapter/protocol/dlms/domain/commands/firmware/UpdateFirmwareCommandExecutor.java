@@ -19,6 +19,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDt
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -63,7 +64,8 @@ public class UpdateFirmwareCommandExecutor
   public UpdateFirmwareResponseDto execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final String firmwareIdentification)
+      final String firmwareIdentification,
+      final MessageMetadata messageMetadata)
       throws OsgpException {
     final ImageTransfer transfer =
         new ImageTransfer(

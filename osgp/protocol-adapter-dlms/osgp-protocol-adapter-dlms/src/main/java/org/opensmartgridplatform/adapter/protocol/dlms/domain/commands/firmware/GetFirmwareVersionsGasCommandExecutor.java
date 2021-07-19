@@ -30,6 +30,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.FirmwareVersionG
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersionGasRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersionQueryDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -72,7 +73,8 @@ public class GetFirmwareVersionsGasCommandExecutor
   public FirmwareVersionGasDto execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final GetFirmwareVersionQueryDto queryDto)
+      final GetFirmwareVersionQueryDto queryDto,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException, FunctionalException {
 
     if (queryDto == null || !queryDto.isMbusQuery()) {

@@ -16,6 +16,8 @@ import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Hex;
 import org.openmuc.jdlms.AuthenticationMechanism;
 import org.openmuc.jdlms.DlmsConnection;
@@ -33,13 +35,11 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 
+@Slf4j
 public class RecoverKeyProcess implements Runnable {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(RecoverKeyProcess.class);
 
   private final DomainHelperService domainHelperService;
 
@@ -49,11 +49,13 @@ public class RecoverKeyProcess implements Runnable {
 
   private final int clientId;
 
-  private String deviceIdentification;
+  @Setter private String deviceIdentification;
 
   private DlmsDevice device;
 
-  private String ipAddress;
+  @Setter private String ipAddress;
+
+  @Setter private MessageMetadata messageMetadata;
 
   @Autowired private SecretManagementService secretManagementService;
 
@@ -68,32 +70,28 @@ public class RecoverKeyProcess implements Runnable {
     this.clientId = deviceAssociation.getClientId();
   }
 
-  public void setDeviceIdentification(final String deviceIdentification) {
-    this.deviceIdentification = deviceIdentification;
-  }
-
-  public void setIpAddress(final String ipAddress) {
-    this.ipAddress = ipAddress;
-  }
-
   @Override
   public void run() {
     this.checkState();
 
-    LOGGER.info("Attempting key recovery for device {}", this.deviceIdentification);
+    log.info(
+        "[{}] Attempting key recovery for device {}",
+        this.messageMetadata.getCorrelationUid(),
+        this.deviceIdentification);
 
     try {
       this.findDevice();
     } catch (final Exception e) {
-      LOGGER.error("Could not find device", e);
+      log.error("[{}] Could not find device", this.messageMetadata.getCorrelationUid(), e);
       // why try to find device if you don't do anything with the result?!?
       // shouldn't we throw an exception here?
     }
 
     if (!this.secretManagementService.hasNewSecretOfType(
-        this.deviceIdentification, E_METER_AUTHENTICATION)) {
-      LOGGER.warn(
-          "Could not recover keys: device has no new authorisation key registered in secret-mgmt module");
+        this.messageMetadata, this.deviceIdentification, E_METER_AUTHENTICATION)) {
+      log.warn(
+          "[{}] Could not recover keys: device has no new authorisation key registered in secret-mgmt module",
+          this.messageMetadata.getCorrelationUid());
       return;
     }
 
@@ -101,12 +99,15 @@ public class RecoverKeyProcess implements Runnable {
       final List<SecurityKeyType> keyTypesToActivate =
           Arrays.asList(E_METER_ENCRYPTION, E_METER_AUTHENTICATION);
       try {
-        this.secretManagementService.activateNewKeys(this.deviceIdentification, keyTypesToActivate);
+        this.secretManagementService.activateNewKeys(
+            this.messageMetadata, this.deviceIdentification, keyTypesToActivate);
       } catch (final Exception e) {
         throw new RecoverKeyException(e);
       }
     } else {
-      LOGGER.warn("Could not recover keys: could not connect to device using new keys");
+      log.warn(
+          "[{}] Could not recover keys: could not connect to device using new keys",
+          this.messageMetadata.getCorrelationUid());
       // shouldn't we try to connect using 'old' keys? or send key change to device again?
     }
   }
@@ -135,14 +136,14 @@ public class RecoverKeyProcess implements Runnable {
       connection = this.createConnectionUsingNewKeys();
       return true;
     } catch (final Exception e) {
-      LOGGER.warn("Connection exception: {}", e.getMessage(), e);
+      log.warn("Connection exception: {}", e.getMessage(), e);
       return false;
     } finally {
       if (connection != null) {
         try {
           connection.close();
         } catch (final IOException e) {
-          LOGGER.warn("Connection exception: {}", e.getMessage(), e);
+          log.warn("Connection exception: {}", e.getMessage(), e);
         }
       }
     }
@@ -157,7 +158,9 @@ public class RecoverKeyProcess implements Runnable {
   private DlmsConnection createConnectionUsingNewKeys() throws IOException, FunctionalException {
     final Map<SecurityKeyType, byte[]> keys =
         this.secretManagementService.getNewKeys(
-            this.deviceIdentification, Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION));
+            this.messageMetadata,
+            this.deviceIdentification,
+            Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION));
     final byte[] authenticationKey = Hex.decode(keys.get(E_METER_AUTHENTICATION));
     final byte[] encryptionKey = Hex.decode(keys.get(E_METER_ENCRYPTION));
 
@@ -183,7 +186,7 @@ public class RecoverKeyProcess implements Runnable {
         tcpConnectionBuilder.setChallengeLength(challengeLength);
       }
     } catch (final IllegalArgumentException e) {
-      LOGGER.error("Exception occurred: Invalid key format");
+      log.error("Exception occurred: Invalid key format");
       throw new FunctionalException(
           FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);
     }

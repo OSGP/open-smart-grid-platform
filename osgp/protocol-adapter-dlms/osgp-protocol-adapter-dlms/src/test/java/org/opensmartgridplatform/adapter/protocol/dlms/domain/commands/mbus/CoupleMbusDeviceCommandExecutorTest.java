@@ -30,6 +30,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
 public class CoupleMbusDeviceCommandExecutorTest {
@@ -42,6 +43,7 @@ public class CoupleMbusDeviceCommandExecutorTest {
   private short deviceTypeIdentification;
   private String identificationNumber;
   private List<ChannelElementValuesDto> candidateChannelElementValues;
+  private MessageMetadata messageMetadata;
 
   @Mock private DeviceChannelsHelper deviceChannelsHelper;
 
@@ -70,6 +72,8 @@ public class CoupleMbusDeviceCommandExecutorTest {
                 this.manufacturerIdentification,
                 this.version,
                 this.deviceTypeIdentification));
+    this.messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
   }
 
   @Test
@@ -89,7 +93,8 @@ public class CoupleMbusDeviceCommandExecutorTest {
         .thenReturn(this.candidateChannelElementValues);
 
     final MbusChannelElementsResponseDto responseDto =
-        this.commandExecutor.execute(this.conn, this.device, mbusChannelElementsDto);
+        this.commandExecutor.execute(
+            this.conn, this.device, mbusChannelElementsDto, this.messageMetadata);
 
     assertThat(responseDto.getChannel()).isEqualTo(this.channel);
     assertThat(responseDto.getRetrievedChannelElements().get(0).getDeviceTypeIdentification())
@@ -125,7 +130,8 @@ public class CoupleMbusDeviceCommandExecutorTest {
         .thenReturn(this.candidateChannelElementValues);
 
     final MbusChannelElementsResponseDto responseDto =
-        this.commandExecutor.execute(this.conn, this.device, mbusChannelElementsDto);
+        this.commandExecutor.execute(
+            this.conn, this.device, mbusChannelElementsDto, this.messageMetadata);
 
     assertThat(responseDto.getChannel()).isEqualTo(this.channel);
     assertThat(responseDto.getRetrievedChannelElements().get(0).getDeviceTypeIdentification())
@@ -156,7 +162,8 @@ public class CoupleMbusDeviceCommandExecutorTest {
         .thenReturn(this.candidateChannelElementValues);
 
     final MbusChannelElementsResponseDto responseDto =
-        this.commandExecutor.execute(this.conn, this.device, mbusChannelElementsDto);
+        this.commandExecutor.execute(
+            this.conn, this.device, mbusChannelElementsDto, this.messageMetadata);
 
     assertThat(responseDto.getChannel()).isNull();
     assertThat(responseDto.getRetrievedChannelElements().get(0).getDeviceTypeIdentification())
@@ -210,7 +217,8 @@ public class CoupleMbusDeviceCommandExecutorTest {
         .thenReturn((short) (emptyChannel.getChannel() - 1));
 
     final MbusChannelElementsResponseDto responseDto =
-        this.commandExecutor.execute(this.conn, this.device, mbusChannelElementsDto);
+        this.commandExecutor.execute(
+            this.conn, this.device, mbusChannelElementsDto, this.messageMetadata);
 
     assertThat(responseDto.getChannel()).isEqualTo((short) 2);
     assertThat(responseDto.getRetrievedChannelElements().get(0).getDeviceTypeIdentification())

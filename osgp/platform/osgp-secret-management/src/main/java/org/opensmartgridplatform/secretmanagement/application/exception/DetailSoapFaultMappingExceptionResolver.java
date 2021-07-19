@@ -8,11 +8,18 @@
  */
 package org.opensmartgridplatform.secretmanagement.application.exception;
 
+import static org.opensmartgridplatform.secretmanagement.application.endpoints.SecretManagementEndpoint.CORRELATION_UID;
+import static org.opensmartgridplatform.secretmanagement.application.endpoints.SecretManagementEndpoint.NAMESPACE_URI;
+
+import java.util.Iterator;
 import javax.xml.namespace.QName;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.soap.SoapFault;
 import org.springframework.ws.soap.SoapFaultDetail;
+import org.springframework.ws.soap.SoapHeaderElement;
+import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.springframework.ws.soap.server.endpoint.SoapFaultMappingExceptionResolver;
 
 @Slf4j
@@ -43,5 +50,23 @@ public class DetailSoapFaultMappingExceptionResolver extends SoapFaultMappingExc
           .addFaultDetailElement(COMPONENT)
           .addText(((TechnicalException) ex).getComponentType().name());
     }
+  }
+
+  @Override
+  protected void logException(final Exception ex, final MessageContext messageContext) {
+    log.error(
+        "[{}] Exception occurred during SOAP request processing",
+        this.getCorrelationUid(messageContext),
+        ex);
+  }
+
+  private String getCorrelationUid(final MessageContext messageContext) {
+    final SaajSoapMessage request = (SaajSoapMessage) messageContext.getRequest();
+    final Iterator<SoapHeaderElement> iter =
+        request
+            .getEnvelope()
+            .getHeader()
+            .examineHeaderElements(new QName(NAMESPACE_URI, CORRELATION_UID));
+    return iter.hasNext() ? iter.next().getText() : null;
   }
 }

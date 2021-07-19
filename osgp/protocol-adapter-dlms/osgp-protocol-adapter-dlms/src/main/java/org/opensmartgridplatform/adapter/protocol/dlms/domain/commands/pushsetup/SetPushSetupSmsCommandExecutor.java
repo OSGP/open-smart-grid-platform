@@ -20,6 +20,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupSmsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupSmsRequestDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -58,7 +59,10 @@ public class SetPushSetupSmsCommandExecutor
 
   @Override
   public AccessResultCode execute(
-      final DlmsConnectionManager conn, final DlmsDevice device, final PushSetupSmsDto pushSetupSms)
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final PushSetupSmsDto pushSetupSms,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     final SetParameter setParameterSendDestinationAndMethod = this.getSetParameter(pushSetupSms);

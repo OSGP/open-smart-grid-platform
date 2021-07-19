@@ -22,6 +22,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +64,8 @@ public abstract class AbstractCommandExecutor<T, R> implements CommandExecutor<T
   public ActionResponseDto executeBundleAction(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final ActionRequestDto actionRequestDto)
+      final ActionRequestDto actionRequestDto,
+      final MessageMetadata messageMetadata)
       throws OsgpException {
 
     if (this.bundleExecutorMapKey == null) {
@@ -76,7 +78,7 @@ public abstract class AbstractCommandExecutor<T, R> implements CommandExecutor<T
         "Translated {} from bundle to {} for call to CommandExecutor.",
         this.className(actionRequestDto),
         this.className(commandInput));
-    final R executionResult = this.execute(conn, device, commandInput);
+    final R executionResult = this.execute(conn, device, commandInput, messageMetadata);
     final ActionResponseDto bundleResponse = this.asBundleResponse(executionResult);
     LOGGER.debug(
         "Translated {} to {} for bundle response after call to CommandExecutor.",

@@ -19,6 +19,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysRequestDt
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.KeyDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SecretTypeDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.security.RsaEncrypter;
 import org.opensmartgridplatform.ws.schema.core.secret.management.SecretType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,9 @@ public class GetKeysService {
   }
 
   public GetKeysResponseDto getKeys(
-      final DlmsDevice device, final GetKeysRequestDto getKeysRequestDto) {
+      final DlmsDevice device,
+      final GetKeysRequestDto getKeysRequestDto,
+      final MessageMetadata messageMetadata) {
 
     final List<SecurityKeyType> securityKeyTypes =
         getKeysRequestDto.getSecretTypes().stream()
@@ -46,7 +49,8 @@ public class GetKeysService {
             .collect(Collectors.toList());
 
     final Map<SecurityKeyType, byte[]> unencryptedKeys =
-        this.secretManagementService.getKeys(device.getDeviceIdentification(), securityKeyTypes);
+        this.secretManagementService.getKeys(
+            messageMetadata, device.getDeviceIdentification(), securityKeyTypes);
 
     final List<KeyDto> encryptedKeys = this.convertToKeyDtosWithEncryptedKeys(unencryptedKeys);
 

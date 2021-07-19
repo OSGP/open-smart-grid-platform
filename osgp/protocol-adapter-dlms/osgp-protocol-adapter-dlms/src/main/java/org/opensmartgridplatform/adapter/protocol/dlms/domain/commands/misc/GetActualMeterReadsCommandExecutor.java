@@ -26,6 +26,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualMeterReads
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MeterReadsResponseDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,7 +122,8 @@ public class GetActualMeterReadsCommandExecutor
   public MeterReadsResponseDto execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final ActualMeterReadsQueryDto actualMeterReadsQuery)
+      final ActualMeterReadsQueryDto actualMeterReadsQuery,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     if (actualMeterReadsQuery != null && actualMeterReadsQuery.isMbusQuery()) {

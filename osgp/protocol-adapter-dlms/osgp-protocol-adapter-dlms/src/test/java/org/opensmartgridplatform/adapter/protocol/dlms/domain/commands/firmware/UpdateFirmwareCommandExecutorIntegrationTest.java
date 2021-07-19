@@ -30,6 +30,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.Firmw
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.ImageTransferAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.method.ImageTransferMethod;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
 class UpdateFirmwareCommandExecutorIntegrationTest {
@@ -43,6 +44,7 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
 
   private DlmsConnectionManagerStub connectionManagerStub;
   private DlmsConnectionStub connectionStub;
+  private MessageMetadata messageMetadata;
 
   @BeforeEach
   void setUp() {
@@ -58,6 +60,10 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
     this.connectionManagerStub = new DlmsConnectionManagerStub(this.connectionStub);
 
     this.connectionStub.setDefaultReturnValue(DataObject.newArrayData(Collections.emptyList()));
+
+    this.messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+
     final MethodResult methodResult = mock(MethodResult.class);
     when(methodResult.getResultCode()).thenReturn(MethodResultCode.SUCCESS);
     this.connectionStub.setDefaultMethodResult(methodResult);
@@ -91,7 +97,8 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
     when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification))
         .thenReturn(firmwareFile);
 
-    this.commandExecutor.execute(this.connectionManagerStub, device, firmwareIdentification);
+    this.commandExecutor.execute(
+        this.connectionManagerStub, device, firmwareIdentification, this.messageMetadata);
 
     assertThat(
             this.connectionStub.hasMethodBeenInvoked(ImageTransferMethod.IMAGE_TRANSFER_INITIATE))

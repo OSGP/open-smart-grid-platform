@@ -43,6 +43,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseItemDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
 public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
@@ -242,6 +243,8 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
       throws Exception {
 
     // SETUP
+    final MessageMetadata messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
 
     // Reset stub
     this.connectionStub.clearRequestedAttributeAddresses();
@@ -266,7 +269,7 @@ public class GetPeriodicMeterReadsCommandExecutorIntegrationTest {
 
     // CALL
     final PeriodicMeterReadsResponseDto response =
-        this.executor.execute(this.connectionManagerStub, device, request);
+        this.executor.execute(this.connectionManagerStub, device, request, messageMetadata);
 
     // VERIFY
 

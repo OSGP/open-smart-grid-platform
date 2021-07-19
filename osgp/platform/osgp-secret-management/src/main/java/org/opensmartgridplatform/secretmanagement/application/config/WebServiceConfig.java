@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.ws.config.annotation.EnableWs;
 import org.springframework.ws.config.annotation.WsConfigurerAdapter;
+import org.springframework.ws.server.EndpointExceptionResolver;
 import org.springframework.ws.soap.server.endpoint.SoapFaultDefinition;
 import org.springframework.ws.soap.server.endpoint.SoapFaultMappingExceptionResolver;
 import org.springframework.ws.transport.http.MessageDispatcherServlet;
@@ -69,7 +70,7 @@ public class WebServiceConfig extends WsConfigurerAdapter {
   }
 
   @Bean
-  public SoapFaultMappingExceptionResolver exceptionResolver() {
+  public EndpointExceptionResolver exceptionResolver() {
     final SoapFaultMappingExceptionResolver exceptionResolver =
         new DetailSoapFaultMappingExceptionResolver();
 

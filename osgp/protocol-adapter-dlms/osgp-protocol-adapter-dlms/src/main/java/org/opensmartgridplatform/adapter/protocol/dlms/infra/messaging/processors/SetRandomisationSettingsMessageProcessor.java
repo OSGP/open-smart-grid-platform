@@ -15,6 +15,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisationSettingsRequestDataDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -31,7 +32,10 @@ public class SetRandomisationSettingsMessageProcessor extends DeviceRequestMessa
 
   @Override
   protected Serializable handleMessage(
-      final DlmsConnectionManager conn, final DlmsDevice device, final Serializable requestObject)
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final Serializable requestObject,
+      final MessageMetadata messageMetadata)
       throws OsgpException {
 
     this.assertRequestObjectType(SetRandomisationSettingsRequestDataDto.class, requestObject);
@@ -40,7 +44,7 @@ public class SetRandomisationSettingsMessageProcessor extends DeviceRequestMessa
         (SetRandomisationSettingsRequestDataDto) requestObject;
 
     this.configurationService.requestSetRandomizationSettings(
-        conn, device, setRandomisationSettingsRequestDataDto);
+        conn, device, setRandomisationSettingsRequestDataDto, messageMetadata);
     return null;
   }
 }

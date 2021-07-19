@@ -9,20 +9,16 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors;
 
 import java.io.Serializable;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ConfigurationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.FirmwareService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.SilentException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessageSender;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
-import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,106 +41,49 @@ public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageP
   }
 
   @Override
-  public void processMessage(final ObjectMessage message) {
-    LOGGER.debug("Processing {} request message", this.messageType);
-    MessageMetadata messageMetadata = null;
-
-    try {
-      messageMetadata = MessageMetadata.fromMessage(message);
-
-      LOGGER.info(
-          "{} called for device: {} for organisation: {}",
-          messageMetadata.getMessageType(),
-          messageMetadata.getDeviceIdentification(),
-          messageMetadata.getOrganisationIdentification());
-
-      final String firmwareIdentification = (String) message.getObject();
-
-      if (this.firmwareService.isFirmwareFileAvailable(firmwareIdentification)) {
-        LOGGER.info(
-            "[{}] - Firmware file [{}] available. Updating firmware on device [{}]",
-            messageMetadata.getCorrelationUid(),
-            firmwareIdentification,
-            messageMetadata.getDeviceIdentification());
-        this.processUpdateFirmwareRequest(messageMetadata, firmwareIdentification);
-      } else {
-        LOGGER.info(
-            "[{}] - Firmware file [{}] not available. Sending GetFirmwareFile request to core.",
-            messageMetadata.getCorrelationUid(),
-            firmwareIdentification);
-        this.sendGetFirmwareFileRequest(messageMetadata, firmwareIdentification);
-      }
-    } catch (final JMSException exception) {
-      this.logJmsException(LOGGER, exception, messageMetadata);
-    }
-  }
-
-  @Override
   protected Serializable handleMessage(
-      final DlmsConnectionManager conn, final DlmsDevice device, final Serializable requestObject)
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final Serializable requestObject,
+      final MessageMetadata messageMetadata)
       throws OsgpException {
+    final String deviceIdentification = messageMetadata.getDeviceIdentification();
+    final String organisationIdentification = messageMetadata.getOrganisationIdentification();
+    final String correlationUid = messageMetadata.getCorrelationUid();
+    final String messageType = messageMetadata.getMessageType();
 
     this.assertRequestObjectType(String.class, requestObject);
 
+    LOGGER.info(
+        "{} called for device: {} for organisation: {}",
+        messageType,
+        deviceIdentification,
+        organisationIdentification);
+
     final String firmwareIdentification = (String) requestObject;
-    return this.configurationService.updateFirmware(conn, device, firmwareIdentification);
-  }
 
-  @SuppressWarnings(
-      "squid:S1193") // SilentException cannot be caught since it does not extend Exception.
-  private void processUpdateFirmwareRequest(
-      final MessageMetadata messageMetadata, final String firmwareIdentification) {
-
-    DlmsConnectionManager conn = null;
-    DlmsDevice device = null;
-
-    try {
-      final Serializable response;
-
-      device = this.domainHelperService.findDlmsDevice(messageMetadata);
-      conn = this.createConnectionForDevice(device, messageMetadata);
-
-      response = this.handleMessage(conn, device, firmwareIdentification);
-
-      // Send response
-      this.sendResponseMessage(
-          messageMetadata,
-          ResponseMessageResultType.OK,
-          null,
-          this.responseMessageSender,
-          response);
-    } catch (final Exception exception) {
-      // Return original request + exception
-      if (!(exception instanceof SilentException)) {
-        LOGGER.error("Unexpected exception during {}", this.messageType.name(), exception);
-      }
-
-      this.sendResponseMessage(
-          messageMetadata,
-          ResponseMessageResultType.NOT_OK,
-          exception,
-          this.responseMessageSender,
+    if (this.firmwareService.isFirmwareFileAvailable(firmwareIdentification)) {
+      LOGGER.info(
+          "[{}] - Firmware file [{}] available. Updating firmware on device [{}]",
+          correlationUid,
+          firmwareIdentification,
+          deviceIdentification);
+      return this.configurationService.updateFirmware(
+          conn, device, firmwareIdentification, messageMetadata);
+    } else {
+      LOGGER.info(
+          "[{}] - Firmware file [{}] not available. Sending GetFirmwareFile request to core.",
+          correlationUid,
           firmwareIdentification);
-    } finally {
-      this.doConnectionPostProcessing(device, conn);
+      final RequestMessage message =
+          new RequestMessage(
+              correlationUid,
+              organisationIdentification,
+              deviceIdentification,
+              firmwareIdentification);
+      this.osgpRequestMessageSender.send(
+          message, MessageType.GET_FIRMWARE_FILE.name(), messageMetadata);
+      return NO_RESPONSE;
     }
-  }
-
-  private void sendGetFirmwareFileRequest(
-      final MessageMetadata messageMetadata, final String firmwareIdentification) {
-    final RequestMessage message =
-        this.createRequestMessage(messageMetadata, firmwareIdentification);
-    this.osgpRequestMessageSender.send(
-        message, MessageType.GET_FIRMWARE_FILE.name(), messageMetadata);
-  }
-
-  private RequestMessage createRequestMessage(
-      final MessageMetadata messageMetadata, final Serializable messageData) {
-
-    return new RequestMessage(
-        messageMetadata.getCorrelationUid(),
-        messageMetadata.getOrganisationIdentification(),
-        messageMetadata.getDeviceIdentification(),
-        messageData);
   }
 }

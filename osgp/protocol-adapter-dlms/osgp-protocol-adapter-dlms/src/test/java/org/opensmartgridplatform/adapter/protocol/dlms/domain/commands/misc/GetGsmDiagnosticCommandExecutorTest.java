@@ -48,6 +48,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetGsmDiagnostic
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ModemRegistrationStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PacketSwitchedStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SignalQualityDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -67,9 +68,13 @@ public class GetGsmDiagnosticCommandExecutorTest {
   private final int classId = 99;
   private final String obisCode = "1.2.3.4.5.6";
   private final GetGsmDiagnosticRequestDto request = new GetGsmDiagnosticRequestDto();
+  private MessageMetadata messageMetadata;
 
   @BeforeEach
   public void setUp() {
+    this.messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+
     when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
   }
 
@@ -81,7 +86,8 @@ public class GetGsmDiagnosticCommandExecutorTest {
 
     // CALL
     try {
-      this.executor.execute(this.connectionManager, this.device, this.request);
+      this.executor.execute(
+          this.connectionManager, this.device, this.request, this.messageMetadata);
       fail("When no matching object is found, then execute should fail");
     } catch (final ProtocolAdapterException e) {
       assertThat(e.getMessage()).isEqualTo("Object not found");
@@ -164,7 +170,8 @@ public class GetGsmDiagnosticCommandExecutorTest {
 
     // CALL
     final GetGsmDiagnosticResponseDto result =
-        this.executor.execute(this.connectionManager, this.device, this.request);
+        this.executor.execute(
+            this.connectionManager, this.device, this.request, this.messageMetadata);
 
     // VERIFY calls to mocks
     verify(this.dlmsMessageListener)
@@ -220,7 +227,8 @@ public class GetGsmDiagnosticCommandExecutorTest {
 
     // CALL
     try {
-      this.executor.execute(this.connectionManager, this.device, this.request);
+      this.executor.execute(
+          this.connectionManager, this.device, this.request, this.messageMetadata);
       fail("When result contains failure, then execute should fail");
     } catch (final ProtocolAdapterException e) {
       assertThat(e.getMessage())

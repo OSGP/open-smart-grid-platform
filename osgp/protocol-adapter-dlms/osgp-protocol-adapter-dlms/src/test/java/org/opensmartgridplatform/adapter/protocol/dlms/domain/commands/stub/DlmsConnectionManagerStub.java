@@ -17,7 +17,7 @@ public class DlmsConnectionManagerStub extends DlmsConnectionManager {
   private final DlmsConnectionStub dlmsConnectionStub;
 
   public DlmsConnectionManagerStub(final DlmsConnectionStub dlmsConnectionStub) {
-    super(null, null, null, null);
+    super(null, null, null, null, null);
 
     this.dlmsConnectionStub = dlmsConnectionStub;
   }

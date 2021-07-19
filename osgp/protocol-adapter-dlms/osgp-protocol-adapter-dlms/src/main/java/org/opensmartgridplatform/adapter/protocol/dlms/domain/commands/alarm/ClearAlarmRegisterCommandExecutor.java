@@ -23,6 +23,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearAlarmRegisterRequestDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -66,7 +67,8 @@ public class ClearAlarmRegisterCommandExecutor
   public AccessResultCode execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final ClearAlarmRegisterRequestDto clearAlarmRegisterRequestDto)
+      final ClearAlarmRegisterRequestDto clearAlarmRegisterRequestDto,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     LOGGER.info(

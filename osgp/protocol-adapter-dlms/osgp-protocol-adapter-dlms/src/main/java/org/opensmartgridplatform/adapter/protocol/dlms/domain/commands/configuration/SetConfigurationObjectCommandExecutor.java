@@ -21,6 +21,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDataDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -54,7 +55,8 @@ public class SetConfigurationObjectCommandExecutor
   public AccessResultCode execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final ConfigurationObjectDto configurationToSet)
+      final ConfigurationObjectDto configurationToSet,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
     final Protocol protocol = Protocol.forDevice(device);
     final GetConfigurationObjectService getService =

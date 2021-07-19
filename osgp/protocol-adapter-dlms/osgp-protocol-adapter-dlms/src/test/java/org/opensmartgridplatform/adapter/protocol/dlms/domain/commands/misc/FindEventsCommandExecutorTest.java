@@ -45,6 +45,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventLogCategoryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FindEventsRequestDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -66,12 +67,15 @@ public class FindEventsCommandExecutorTest {
 
   private FindEventsRequestDto findEventsRequestDto;
   private DataObjectToEventListConverter dataObjectToEventListConverter;
+  private MessageMetadata messageMetadata;
 
   @BeforeEach
   public void before() throws ProtocolAdapterException, IOException {
 
     final DataObject fromDate = mock(DataObject.class);
     final DataObject toDate = mock(DataObject.class);
+    this.messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
 
     this.findEventsRequestDto =
         new FindEventsRequestDto(
@@ -110,7 +114,8 @@ public class FindEventsCommandExecutorTest {
         new FindEventsCommandExecutor(this.dlmsHelper, this.dataObjectToEventListConverter);
 
     final List<EventDto> events =
-        executor.execute(this.conn, this.dlmsDevice, this.findEventsRequestDto);
+        executor.execute(
+            this.conn, this.dlmsDevice, this.findEventsRequestDto, this.messageMetadata);
 
     assertThat(events.size()).isEqualTo(13);
 
@@ -132,7 +137,8 @@ public class FindEventsCommandExecutorTest {
         .isThrownBy(
             () -> {
               new FindEventsCommandExecutor(this.dlmsHelper, this.dataObjectToEventListConverter)
-                  .execute(this.conn, this.dlmsDevice, this.findEventsRequestDto);
+                  .execute(
+                      this.conn, this.dlmsDevice, this.findEventsRequestDto, this.messageMetadata);
             });
   }
 
@@ -145,7 +151,8 @@ public class FindEventsCommandExecutorTest {
         .isThrownBy(
             () -> {
               new FindEventsCommandExecutor(this.dlmsHelper, this.dataObjectToEventListConverter)
-                  .execute(this.conn, this.dlmsDevice, this.findEventsRequestDto);
+                  .execute(
+                      this.conn, this.dlmsDevice, this.findEventsRequestDto, this.messageMetadata);
             });
   }
 

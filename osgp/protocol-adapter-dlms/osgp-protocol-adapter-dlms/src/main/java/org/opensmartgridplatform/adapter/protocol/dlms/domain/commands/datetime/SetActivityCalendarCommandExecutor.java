@@ -30,6 +30,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActivityCalendar
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DayProfileDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SeasonProfileDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.WeekProfileDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,7 +84,8 @@ public class SetActivityCalendarCommandExecutor
   public AccessResultCode execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final ActivityCalendarDto activityCalendar)
+      final ActivityCalendarDto activityCalendar,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
     LOGGER.debug(
         "SetActivityCalendarCommandExecutor.execute {} called", activityCalendar.getCalendarName());
@@ -114,7 +116,8 @@ public class SetActivityCalendarCommandExecutor
     // In case of an exception include the activity calendar set here above
     // in the exception to throw
     try {
-      this.setActivityCalendarCommandActivationExecutor.execute(conn, device, null);
+      this.setActivityCalendarCommandActivationExecutor.execute(
+          conn, device, null, messageMetadata);
       LOGGER.info("Finished activating the passive to the active activity calendar");
 
     } catch (final ProtocolAdapterException e) {

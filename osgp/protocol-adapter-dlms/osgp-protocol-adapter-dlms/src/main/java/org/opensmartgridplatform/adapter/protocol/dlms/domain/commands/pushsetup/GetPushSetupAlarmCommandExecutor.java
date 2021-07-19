@@ -19,6 +19,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemObisCodeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupAlarmDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,10 @@ public class GetPushSetupAlarmCommandExecutor
 
   @Override
   public PushSetupAlarmDto execute(
-      final DlmsConnectionManager conn, final DlmsDevice device, final Void useless)
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final Void useless,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     conn.getDlmsMessageListener()
