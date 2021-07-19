@@ -26,3 +26,14 @@ GXF detailed documentation:
 
 GXF issue tracker:
 * [github.com/OSGP/Documentation/issues](https://github.com/OSGP/Documentation/issues)
+
+## License
+This project is licensed under the Apache 2.0 license - see the LICENSE file for details
+
+## Contributing
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+
+## Contact
+
+If you have a question, please read [GXF wiki contact page](https://documentation.gxf.lfenergy.org/Opensourcecommunity/Communication-and-contact.html) how to best contact us.
