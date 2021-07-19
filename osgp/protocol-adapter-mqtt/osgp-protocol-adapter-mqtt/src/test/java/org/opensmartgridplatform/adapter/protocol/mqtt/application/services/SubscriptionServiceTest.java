@@ -35,6 +35,7 @@ import org.opensmartgridplatform.adapter.protocol.mqtt.domain.valueobjects.MqttC
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class SubscriptionServiceTest {
@@ -53,6 +54,7 @@ class SubscriptionServiceTest {
   @Mock private MessageMetadata messageMetadata;
   @Captor private ArgumentCaptor<MqttDevice> deviceCaptor;
   @Mock private MqttClientAdapter mqttClientAdapter;
+  @Mock private MqttClient mqttClient;
   @Captor private ArgumentCaptor<ProtocolResponseMessage> protocolResponseMessageCaptor;
 
   private MqttClientDefaults mqttClientDefaults;
@@ -118,6 +120,32 @@ class SubscriptionServiceTest {
 
     // VERIFY
     verify(this.mqttClientAdapter).connect();
+  }
+
+  @Test
+  void subscribeExistingDeviceUsingExistingMqttClient() {
+    // SETUP
+    final String deviceIdentification = "test-metadata-device-id";
+    when(this.messageMetadata.getDeviceIdentification()).thenReturn(deviceIdentification);
+    final MqttDevice device = new MqttDevice(deviceIdentification);
+    device.setTopics(DEFAULT_TOPICS);
+    device.setQos(DEFAULT_QOS.name());
+
+    when(this.mqttDeviceRepository.findByDeviceIdentification(
+            this.messageMetadata.getDeviceIdentification()))
+        .thenReturn(device);
+    when(this.mqttClientAdapterFactory.create(
+            eq(device), eq(this.messageMetadata), eq(this.instance)))
+        .thenReturn(this.mqttClientAdapter);
+    ReflectionTestUtils.setField(
+        this.instance, SubscriptionService.class, "mqttClient", this.mqttClient, MqttClient.class);
+
+    // CALL
+    this.instance.subscribe(this.messageMetadata);
+
+    // VERIFY
+    verify(this.mqttClientAdapter)
+        .subscribe(this.mqttClient.getMqtt3AsyncClient(), DEFAULT_TOPICS, DEFAULT_QOS);
   }
 
   @Test
