@@ -275,7 +275,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
     try {
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
       if (responseData != null) {
         response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
@@ -316,7 +316,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
     try {
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
       if (responseData != null) {
         response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
@@ -392,7 +392,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     UpdateFirmwareResponse response = null;
     try {
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       this.throwExceptionIfResultNotOk(responseData, "updating firmware");
@@ -456,7 +456,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     try {
       response = new SetAdministrativeStatusResponse();
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
@@ -514,7 +514,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     GetAdministrativeStatusResponse response = null;
     try {
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       this.throwExceptionIfResultNotOk(responseData, "retrieving the administrative status");
@@ -579,7 +579,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     try {
       response = new SetSpecialDaysResponse();
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
@@ -643,7 +643,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     try {
       response = new SetConfigurationObjectResponse();
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
@@ -701,7 +701,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     try {
       response = new SetEncryptionKeyExchangeOnGMeterResponse();
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
@@ -757,7 +757,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     GetMbusEncryptionKeyStatusResponse response = null;
     try {
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       this.throwExceptionIfResultNotOk(responseData, "retrieving the M-Bus encryption key status.");
@@ -823,7 +823,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     GetMbusEncryptionKeyStatusByChannelResponse response = null;
     try {
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       this.throwExceptionIfResultNotOk(
@@ -898,7 +898,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     try {
       response = new SetPushSetupAlarmResponse();
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
@@ -966,7 +966,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     try {
       response = new SetPushSetupSmsResponse();
       final ResponseData meterResponseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
@@ -1030,7 +1030,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     try {
       response = new SetActivityCalendarResponse();
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
@@ -1091,7 +1091,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     try {
       response = new SetAlarmNotificationsResponse();
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
@@ -1151,7 +1151,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     ReplaceKeysResponse response = null;
     try {
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       this.throwExceptionIfResultNotOk(responseData, "replacing keys on the device");
@@ -1210,7 +1210,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     GenerateAndReplaceKeysResponse response = null;
     try {
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       response = new GenerateAndReplaceKeysResponse();
@@ -1243,7 +1243,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
     try {
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
       if (responseData != null) {
@@ -1318,7 +1318,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     SetClockConfigurationResponse response = null;
     try {
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       response = new SetClockConfigurationResponse();
@@ -1383,7 +1383,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     GetConfigurationObjectResponse response = null;
     try {
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(),
               org.opensmartgridplatform.domain.core.valueobjects.smartmetering
                   .GetConfigurationObjectResponse.class,
@@ -1453,7 +1453,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     ConfigureDefinableLoadProfileResponse response = null;
     try {
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       response = new ConfigureDefinableLoadProfileResponse();
@@ -1517,7 +1517,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     try {
       response = new SetMbusUserKeyByChannelResponse();
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
@@ -1579,7 +1579,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     try {
       response = new SetRandomisationSettingsResponse();
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
@@ -1635,7 +1635,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
       response = new GetKeysResponse();
 
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       this.throwExceptionIfResultNotOk(responseData, "getting keys");

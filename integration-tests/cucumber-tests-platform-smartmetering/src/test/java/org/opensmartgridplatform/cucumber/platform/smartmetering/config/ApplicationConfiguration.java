@@ -36,6 +36,12 @@ public class ApplicationConfiguration extends AbstractConfig {
   @Value("${jaxb2.marshaller.context.path.smartmetering.bundle}")
   public String contextPathSmartMeteringBundle;
 
+  @Value("${web.service.template.default.uri.smartmetering.common}")
+  public String webserviceTemplateDefaultUriSmartMeteringCommon;
+
+  @Value("${jaxb2.marshaller.context.path.smartmetering.common}")
+  public String contextPathSmartMeteringCommon;
+
   @Value("${web.service.template.default.uri.smartmetering.configuration}")
   public String webserviceTemplateDefaultUriSmartMeteringConfiguration;
 

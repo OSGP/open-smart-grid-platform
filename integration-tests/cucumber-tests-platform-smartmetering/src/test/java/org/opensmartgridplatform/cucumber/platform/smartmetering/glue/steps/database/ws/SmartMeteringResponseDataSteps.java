@@ -24,6 +24,7 @@ import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.database.core.BaseDeviceSteps;
 import org.opensmartgridplatform.cucumber.platform.glue.steps.database.ws.ResponseDataBuilder;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +65,28 @@ public class SmartMeteringResponseDataSteps extends BaseDeviceSteps {
     }
 
     return responseData;
+  }
+
+  @Then("^the response data record should be deleted$")
+  public void theResponseDataRecordShouldBeDeleted() {
+    final String correlationUid =
+        (String) ScenarioContext.current().get(PlatformSmartmeteringKeys.KEY_CORRELATION_UID);
+
+    final ResponseData responseData =
+        this.responseDataRepository.findByCorrelationUid(correlationUid);
+
+    assertThat(responseData).as("Response data should be deleted").isNull();
+  }
+
+  @Then("^the response data record should not be deleted$")
+  public void theResponseDataRecordShouldNotBeDeleted() {
+    final String correlationUid =
+        (String) ScenarioContext.current().get(PlatformSmartmeteringKeys.KEY_CORRELATION_UID);
+
+    final ResponseData responseData =
+        this.responseDataRepository.findByCorrelationUid(correlationUid);
+
+    assertThat(responseData).as("Response data should not be deleted").isNotNull();
   }
 
   @Then("^the response data record with correlation uid \\\"(.*)\\\" should be deleted$")

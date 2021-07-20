@@ -65,7 +65,45 @@ public class ResponseDataService {
       final Class<?> expectedClassType,
       final ComponentType componentType)
       throws CorrelationUidException {
+    final ResponseData responseData = this.get(correlationUid, expectedClassType, componentType);
+    this.remove(responseData);
+    return responseData;
+  }
 
+  public ResponseData get(
+      final String correlationUid,
+      final Class<?> expectedClassType,
+      final ComponentType componentType)
+      throws CorrelationUidException {
+
+    final ResponseData responseData = this.findResponseData(correlationUid, componentType);
+
+    this.validateResponseData(responseData, expectedClassType, componentType);
+
+    return responseData;
+  }
+
+  public ResponseData dequeue(final String correlationUid, final ComponentType componentType)
+      throws UnknownCorrelationUidException {
+    final ResponseData responseData = this.get(correlationUid, componentType);
+    this.remove(responseData);
+    return responseData;
+  }
+
+  public ResponseData get(final String correlationUid, final ComponentType componentType)
+      throws UnknownCorrelationUidException {
+    return this.findResponseData(correlationUid, componentType);
+  }
+
+  public void delete(final String correlationUid, final ComponentType componentType)
+      throws UnknownCorrelationUidException {
+    final ResponseData responseData = this.findResponseData(correlationUid, componentType);
+    this.remove(responseData);
+  }
+
+  private ResponseData findResponseData(
+      final String correlationUid, final ComponentType componentType)
+      throws UnknownCorrelationUidException {
     final ResponseData responseData =
         this.responseDataRepository.findByCorrelationUid(correlationUid);
 
@@ -74,12 +112,20 @@ public class ResponseDataService {
       throw new UnknownCorrelationUidException(componentType);
     }
 
+    return responseData;
+  }
+
+  private void validateResponseData(
+      final ResponseData responseData,
+      final Class<?> expectedClassType,
+      final ComponentType componentType)
+      throws CorrelationUidMismatchException {
     if (!this.isValidResponseType(responseData, expectedClassType)) {
       /**
        * Return null if data is not of the expected type. The response data will not be removed, so
        * it will be available for the right request type.
        */
-      String warningResultClassType;
+      final String warningResultClassType;
       if (responseData.getMessageData() == null) {
         warningResultClassType = "NULL";
       } else {
@@ -93,23 +139,6 @@ public class ResponseDataService {
 
       throw new CorrelationUidMismatchException(componentType);
     }
-
-    this.remove(responseData);
-    return responseData;
-  }
-
-  public ResponseData dequeue(final String correlationUid, final ComponentType componentType)
-      throws UnknownCorrelationUidException {
-    final ResponseData responseData =
-        this.responseDataRepository.findByCorrelationUid(correlationUid);
-
-    if (responseData == null) {
-      LOGGER.warn("No response data for correlation UID {}", correlationUid);
-      throw new UnknownCorrelationUidException(componentType);
-    }
-
-    this.remove(responseData);
-    return responseData;
   }
 
   /**
