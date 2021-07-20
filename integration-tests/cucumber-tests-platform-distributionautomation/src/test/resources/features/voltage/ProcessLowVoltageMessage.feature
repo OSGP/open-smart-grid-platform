@@ -12,6 +12,7 @@ Feature: DistributionAutomation Low voltage message processing
     And a feeder
       | substation identification | sub-1 |
       | feeder number             |     1 |
+      | field code                |    01 |
       | feeder name               | fdr-1 |
       | asset label               | lbl-1 |
     When MQTT device "TST-01" sends a measurement report
@@ -20,7 +21,7 @@ Feature: DistributionAutomation Low voltage message processing
       | substation identification    | sub-1        |
       | version                      |            2 |
       | substation name              | substation-1 |
-      | bay position                 |            1 |
+      | field code                   | 01           |
       | bay identification           | fdr-1        |
       | asset label                  | lbl-1        |
       | numberOfElements             |           51 |

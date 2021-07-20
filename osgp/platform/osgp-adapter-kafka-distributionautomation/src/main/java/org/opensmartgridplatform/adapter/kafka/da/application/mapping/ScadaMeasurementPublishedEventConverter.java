@@ -76,7 +76,9 @@ public class ScadaMeasurementPublishedEventConverter
     names.add(new Name(new NameType("gisbehuizingnummer"), source.getSubstationIdentification()));
     names.add(new Name(new NameType("versie"), source.getVersion()));
     names.add(new Name(new NameType("msr naam"), source.getSubstationName()));
-    names.add(new Name(new NameType("bay positie"), source.getFeeder()));
+    if (source.getFieldCode() != null) {
+      names.add(new Name(new NameType("veld code"), source.getFieldCode()));
+    }
     if (source.getBayIdentification() != null) {
       names.add(new Name(new NameType("bay identificatie"), source.getBayIdentification()));
     }

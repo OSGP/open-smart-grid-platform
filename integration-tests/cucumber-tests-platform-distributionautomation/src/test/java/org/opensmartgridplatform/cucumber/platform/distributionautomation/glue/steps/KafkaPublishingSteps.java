@@ -118,8 +118,8 @@ public class KafkaPublishingSteps {
     final String version = getString(parameters, PlatformDistributionAutomationKeys.VERSION);
     final String substationName =
         getString(parameters, PlatformDistributionAutomationKeys.SUBSTATION_NAME);
-    final String bayPosition =
-        getString(parameters, PlatformDistributionAutomationKeys.BAY_POSITION);
+    final String fieldCode =
+        getString(parameters, PlatformDistributionAutomationKeys.FEEDER_FIELD_CODE);
     final String bayIdentification =
         getString(parameters, PlatformDistributionAutomationKeys.BAY_IDENTIFICATION);
     final String assetLabel =
@@ -129,7 +129,7 @@ public class KafkaPublishingSteps {
     names.add(new Name(new NameType("gisbehuizingnummer"), substationIdentification));
     names.add(new Name(new NameType("versie"), version));
     names.add(new Name(new NameType("msr naam"), substationName));
-    names.add(new Name(new NameType("bay positie"), bayPosition));
+    names.add(new Name(new NameType("veld code"), fieldCode));
     names.add(new Name(new NameType("bay identificatie"), bayIdentification));
     if (assetLabel != null) {
       names.add(new Name(new NameType("functieplaatslabel"), assetLabel));
