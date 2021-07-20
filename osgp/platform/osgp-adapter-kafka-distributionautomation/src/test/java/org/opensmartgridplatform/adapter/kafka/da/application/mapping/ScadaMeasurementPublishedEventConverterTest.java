@@ -26,6 +26,7 @@ class ScadaMeasurementPublishedEventConverterTest {
   private static final String SUBSTATION_IDENTIFICATION = "TST-01-L-1V1";
   private static final String VERSION = "2";
   private static final String SUBSTATION_NAME = "Test location";
+  private static final String FIELD_CODE = "08";
   private static final String BAY_IDENTIFICATION = "03FQ03";
   private static final String ASSET_LABEL = "test asset label";
 
@@ -42,6 +43,7 @@ class ScadaMeasurementPublishedEventConverterTest {
             .version(null)
             .substationName(SUBSTATION_NAME)
             .feeder(String.valueOf(feeder))
+            .fieldCode(FIELD_CODE)
             .bayIdentification(BAY_IDENTIFICATION)
             .assetLabel(ASSET_LABEL)
             .createdUtcSeconds(utcSeconds)
@@ -75,6 +77,7 @@ class ScadaMeasurementPublishedEventConverterTest {
             .version(VERSION)
             .substationName(SUBSTATION_NAME)
             .feeder(String.valueOf(feeder))
+            .fieldCode(FIELD_CODE)
             .bayIdentification(BAY_IDENTIFICATION)
             .assetLabel(ASSET_LABEL)
             .createdUtcSeconds(utcSeconds)
@@ -100,8 +103,8 @@ class ScadaMeasurementPublishedEventConverterTest {
     names.add(new Name(new NameType("gisbehuizingnummer"), SUBSTATION_IDENTIFICATION));
     names.add(new Name(new NameType("versie"), version));
     names.add(new Name(new NameType("msr naam"), SUBSTATION_NAME));
-    names.add(new Name(new NameType("bay positie"), String.valueOf(feeder)));
     if (feeder != 100) {
+      names.add(new Name(new NameType("veld code"), FIELD_CODE));
       names.add(new Name(new NameType("bay identificatie"), BAY_IDENTIFICATION));
       names.add(new Name(new NameType("functieplaatslabel"), ASSET_LABEL));
     }

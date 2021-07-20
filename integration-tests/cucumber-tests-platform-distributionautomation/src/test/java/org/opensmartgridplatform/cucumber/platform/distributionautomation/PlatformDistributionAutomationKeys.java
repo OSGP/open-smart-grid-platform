@@ -11,17 +11,14 @@ package org.opensmartgridplatform.cucumber.platform.distributionautomation;
 public class PlatformDistributionAutomationKeys {
 
   public static final String BAY_IDENTIFICATION = "bay identification";
-  public static final String BAY_POSITION = "bay position";
   public static final String DESCRIPTION = "description";
   public static final String FEEDER_NUMBER = "feeder number";
+  public static final String FEEDER_FIELD_CODE = "field code";
   public static final String FEEDER_NAME = "feeder name";
   public static final String FEEDER_ASSET_LABEL = "asset label";
   public static final String INFORMATION_ELEMENT_VALUE = "InformationElementValue";
   public static final String INFORMATION_OBJECT_ADDRESS = "InformationObjectAddress";
   public static final String INFORMATION_OBJECT_TYPE = "InformationObjectType";
-  public static final String KIND = "kind";
-  public static final String MEASUREMENT = "measurement";
-  public static final String MESSAGE = "message";
   public static final String MQTT_HOST = "MqttHost";
   public static final String MQTT_PORT = "MqttPort";
   public static final String MQTT_QOS = "MqttQos";
