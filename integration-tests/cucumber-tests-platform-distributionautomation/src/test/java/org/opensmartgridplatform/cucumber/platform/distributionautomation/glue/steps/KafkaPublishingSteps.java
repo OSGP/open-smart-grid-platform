@@ -129,7 +129,9 @@ public class KafkaPublishingSteps {
     names.add(new Name(new NameType("gisbehuizingnummer"), substationIdentification));
     names.add(new Name(new NameType("versie"), version));
     names.add(new Name(new NameType("msr naam"), substationName));
-    names.add(new Name(new NameType("veld code"), fieldCode));
+    if (fieldCode != null) {
+      names.add(new Name(new NameType("veld code"), fieldCode));
+    }
     names.add(new Name(new NameType("bay identificatie"), bayIdentification));
     if (assetLabel != null) {
       names.add(new Name(new NameType("functieplaatslabel"), assetLabel));
