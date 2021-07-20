@@ -17,7 +17,7 @@ $$
         THEN
             ALTER TABLE feeder ADD COLUMN field_code CHARACTER VARYING(3);
 
-            COMMENT ON COLUMN feeder.asset_label IS 'A coding of the field with the feeder according to asset registration.';
+            COMMENT ON COLUMN feeder.field_code IS 'A coding of the field with the feeder according to asset registration.';
         END IF;
 
     END;
