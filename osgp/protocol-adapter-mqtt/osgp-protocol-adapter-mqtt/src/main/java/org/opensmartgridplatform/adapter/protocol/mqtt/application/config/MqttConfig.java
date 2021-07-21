@@ -30,6 +30,7 @@ public class MqttConfig extends AbstractConfig {
       @Value("${mqtt.default.qos:AT_LEAST_ONCE}") final String defaultQos,
       @Value("${mqtt.default.topics:+/measurement}") final String defaultTopics) {
 
-    return new MqttClientDefaults(defaultHost, defaultPort, defaultUsername, defaultPassword, defaultQos, defaultTopics);
+    return new MqttClientDefaults(
+        defaultHost, defaultPort, defaultUsername, defaultPassword, defaultQos, defaultTopics);
   }
 }
