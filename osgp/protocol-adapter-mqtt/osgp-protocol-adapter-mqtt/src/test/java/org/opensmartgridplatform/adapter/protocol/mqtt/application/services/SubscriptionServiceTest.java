@@ -42,6 +42,8 @@ class SubscriptionServiceTest {
 
   private static final String DEFAULT_HOST = "localhost";
   private static final int DEFAULT_PORT = 11111;
+  private static final String DEFAULT_USERNAME = null;
+  private static final String DEFAULT_PASSWORD = null;
   private static final String DEFAULT_TOPICS = "test-default-topics";
   private static final MqttQos DEFAULT_QOS = MqttQos.AT_MOST_ONCE;
 
@@ -63,7 +65,13 @@ class SubscriptionServiceTest {
   public void setUp() {
 
     this.mqttClientDefaults =
-        new MqttClientDefaults(DEFAULT_HOST, DEFAULT_PORT, DEFAULT_QOS.name(), DEFAULT_TOPICS);
+        new MqttClientDefaults(
+            DEFAULT_HOST,
+            DEFAULT_PORT,
+            DEFAULT_USERNAME,
+            DEFAULT_PASSWORD,
+            DEFAULT_QOS.name(),
+            DEFAULT_TOPICS);
 
     this.instance =
         new SubscriptionService(
@@ -112,8 +120,7 @@ class SubscriptionServiceTest {
     when(this.mqttDeviceRepository.findByDeviceIdentification(
             this.messageMetadata.getDeviceIdentification()))
         .thenReturn(device);
-    when(this.mqttClientAdapterFactory.create(
-            eq(device), eq(this.messageMetadata), eq(this.instance)))
+    when(this.mqttClientAdapterFactory.create(device, this.messageMetadata, this.instance))
         .thenReturn(this.mqttClientAdapter);
     // CALL
     this.instance.subscribe(this.messageMetadata);
@@ -134,8 +141,7 @@ class SubscriptionServiceTest {
     when(this.mqttDeviceRepository.findByDeviceIdentification(
             this.messageMetadata.getDeviceIdentification()))
         .thenReturn(device);
-    when(this.mqttClientAdapterFactory.create(
-            eq(device), eq(this.messageMetadata), eq(this.instance)))
+    when(this.mqttClientAdapterFactory.create(device, this.messageMetadata, this.instance))
         .thenReturn(this.mqttClientAdapter);
     ReflectionTestUtils.setField(
         this.instance, SubscriptionService.class, "mqttClient", this.mqttClient, MqttClient.class);

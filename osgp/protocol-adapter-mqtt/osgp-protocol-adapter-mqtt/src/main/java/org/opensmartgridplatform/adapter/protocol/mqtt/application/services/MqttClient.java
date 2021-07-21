@@ -12,8 +12,11 @@ package org.opensmartgridplatform.adapter.protocol.mqtt.application.services;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
+import com.hivemq.client.mqtt.mqtt3.Mqtt3ClientBuilder;
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAck;
 import java.util.UUID;
+import org.apache.commons.lang3.StringUtils;
+import org.opensmartgridplatform.adapter.protocol.mqtt.domain.valueobjects.MqttClientDefaults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,15 +27,27 @@ public class MqttClient {
   private Mqtt3AsyncClient client;
 
   public Mqtt3AsyncClient connect(
-      final String host, final int port, final MqttClientSslConfig mqttClientSslConfig) {
+      final MqttClientDefaults mqttClientDefaults, final MqttClientSslConfig mqttClientSslConfig) {
     final String id = UUID.randomUUID().toString();
-    this.client =
+    Mqtt3ClientBuilder clientBuilder =
         Mqtt3Client.builder()
             .identifier(id)
-            .serverHost(host)
-            .serverPort(port)
-            .sslConfig(mqttClientSslConfig)
-            .buildAsync();
+            .serverHost(mqttClientDefaults.getDefaultHost())
+            .serverPort(mqttClientDefaults.getDefaultPort())
+            .sslConfig(mqttClientSslConfig);
+
+    if (StringUtils.isNotEmpty(mqttClientDefaults.getDefaultUsername())) {
+      LOGGER.debug("Using username/password for MQTT connection");
+      clientBuilder =
+          clientBuilder
+              .simpleAuth()
+              .username(mqttClientDefaults.getDefaultUsername())
+              .password(mqttClientDefaults.getDefaultPassword().getBytes())
+              .applySimpleAuth();
+    }
+
+    this.client = clientBuilder.buildAsync();
+
     this.client.connectWith().send().whenComplete(MqttClient::onConnect);
 
     return this.client;
