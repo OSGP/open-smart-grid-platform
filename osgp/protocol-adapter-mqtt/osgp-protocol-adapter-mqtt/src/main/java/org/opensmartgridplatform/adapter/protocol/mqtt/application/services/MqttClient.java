@@ -33,7 +33,8 @@ public class MqttClient {
         Mqtt3Client.builder()
             .identifier(id)
             .serverHost(mqttClientDefaults.getDefaultHost())
-            .serverPort(mqttClientDefaults.getDefaultPort());
+            .serverPort(mqttClientDefaults.getDefaultPort())
+            .sslConfig(mqttClientSslConfig);
 
     if (StringUtils.isNotEmpty(mqttClientDefaults.getDefaultUsername())) {
       LOGGER.debug("Using username/password for MQTT connection");
@@ -41,11 +42,8 @@ public class MqttClient {
           clientBuilder
               .simpleAuth()
               .username(mqttClientDefaults.getDefaultUsername())
-              .password(mqttClientDefaults.getDefautlPassword().getBytes())
+              .password(mqttClientDefaults.getDefaultPassword().getBytes())
               .applySimpleAuth();
-    } else {
-      LOGGER.debug("Using SSL for MQTT connection");
-      clientBuilder = clientBuilder.sslConfig(mqttClientSslConfig);
     }
 
     this.client = clientBuilder.buildAsync();
