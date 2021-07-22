@@ -28,7 +28,7 @@ GXF issue tracker:
 * [github.com/OSGP/Documentation/issues](https://github.com/OSGP/Documentation/issues)
 
 ## License
-This project is licensed under the Apache 2.0 license - see the LICENSE file for details.
+This project is licensed under the Apache 2.0 license - see the [LICENSE](LICENSE) file for details.
 
 ## Contributing
 
