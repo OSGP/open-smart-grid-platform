@@ -16,7 +16,7 @@ This repository contains all code for the Grid eXchange Fabric (GXF) project, fo
 ## Grid eXchange Fabric information and news
 
 High-level project information and news can be found on the GXF section of the LF Energy website: 
-* [www.lfenergy.org/projects/gxf/](https://www.lfenergy.org/projects/gxf/)
+* [www.lfenergy.org/projects/gxf](https://www.lfenergy.org/projects/gxf/)
 
 GXF wiki with detailed project information:
 * [LF Energy wiki](https://wiki.lfenergy.org/display/HOME/Grid+eXchange+Fabric+-+GXF)
