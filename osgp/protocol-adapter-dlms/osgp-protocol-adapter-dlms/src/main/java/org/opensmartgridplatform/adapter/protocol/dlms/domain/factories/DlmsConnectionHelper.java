@@ -63,7 +63,6 @@ public class DlmsConnectionHelper {
         this.devicePingConfig.pingingEnabled() && StringUtils.hasText(device.getIpAddress());
     final boolean initializeInvocationCounter =
         device.needsInvocationCounter() && !device.isInvocationCounterInitialized();
-    final Duration waitBeforeInitializingInvocationCounter = NO_DELAY;
     final Duration waitBeforeCreatingTheConnection =
         initializeInvocationCounter ? this.delayBetweenDlmsConnections : NO_DELAY;
 
@@ -72,7 +71,7 @@ public class DlmsConnectionHelper {
         messageListener,
         pingDevice,
         initializeInvocationCounter,
-        waitBeforeInitializingInvocationCounter,
+        NO_DELAY,
         waitBeforeCreatingTheConnection);
   }
 

@@ -136,6 +136,7 @@ public class VoltageMessageProducer {
 
   private static void configureWithoutFeeder(final ScadaMeasurementPayload payload) {
     payload.setBayIdentification("");
+    payload.setFieldCode(null);
     payload.setAssetLabel(null);
   }
 
@@ -157,6 +158,7 @@ public class VoltageMessageProducer {
   }
 
   private static void addFeederData(final ScadaMeasurementPayload payload, final Feeder feeder) {
+    payload.setFieldCode(feeder.getFieldCode());
     payload.setBayIdentification(feeder.getName());
     payload.setAssetLabel(feeder.getAssetLabel());
   }

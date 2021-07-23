@@ -18,7 +18,7 @@ public class Measurement implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private List<MeasurementElement> measurementElements = new ArrayList<>();
+  private final ArrayList<MeasurementElement> measurementElements;
 
   public Measurement(final List<MeasurementElement> measurementElements) {
     this.measurementElements = new ArrayList<>(measurementElements);
