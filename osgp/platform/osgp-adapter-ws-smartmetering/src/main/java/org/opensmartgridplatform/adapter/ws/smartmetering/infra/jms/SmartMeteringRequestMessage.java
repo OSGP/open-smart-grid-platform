@@ -16,30 +16,13 @@ public class SmartMeteringRequestMessage extends RequestMessage {
 
   private static final long serialVersionUID = 8978488633831083383L;
 
-  private final String messageType;
-  private final Integer messagePriority;
-  private final Long scheduleTime;
-  private final boolean bypassRetry;
-
   private SmartMeteringRequestMessage(
-      final MessageMetadata deviceMessageMetadata,
-      final String ipAddress,
-      final Serializable request) {
-    super(
-        deviceMessageMetadata.getCorrelationUid(),
-        deviceMessageMetadata.getOrganisationIdentification(),
-        deviceMessageMetadata.getDeviceIdentification(),
-        ipAddress,
-        request);
-    this.messageType = deviceMessageMetadata.getMessageType();
-    this.messagePriority = deviceMessageMetadata.getMessagePriority();
-    this.scheduleTime = deviceMessageMetadata.getScheduleTime();
-    this.bypassRetry = deviceMessageMetadata.isBypassRetry();
+      final MessageMetadata messageMetadata, final Serializable request) {
+    super(messageMetadata, request);
   }
 
   public static class Builder {
     private MessageMetadata messageMetadata;
-    private String ipAddress;
     private Serializable request;
 
     public Builder() {
@@ -51,34 +34,13 @@ public class SmartMeteringRequestMessage extends RequestMessage {
       return this;
     }
 
-    public Builder ipAddress(final String ipAddress) {
-      this.ipAddress = ipAddress;
-      return this;
-    }
-
     public Builder request(final Serializable request) {
       this.request = request;
       return this;
     }
 
     public SmartMeteringRequestMessage build() {
-      return new SmartMeteringRequestMessage(this.messageMetadata, this.ipAddress, this.request);
+      return new SmartMeteringRequestMessage(this.messageMetadata, this.request);
     }
-  }
-
-  public Integer getMessagePriority() {
-    return this.messagePriority;
-  }
-
-  public String getMessageType() {
-    return this.messageType;
-  }
-
-  public Long getScheduleTime() {
-    return this.scheduleTime;
-  }
-
-  public boolean bypassRetry() {
-    return this.bypassRetry;
   }
 }

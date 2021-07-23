@@ -20,6 +20,7 @@
     <ref bean="responseUrlInterceptor"/>
     <ref bean="bypassRetryInterceptor"/>
     <ref bean="scheduleTimeInterceptor"/>
+    <ref bean="maxScheduleTimeInterceptor"/>
     <ref bean="organisationIdentificationInCertificateCnEndpointInterceptor"/>
     <ref bean="payloadValidatingInterceptor"/>
     <ref bean="webServiceMonitorInterceptor" />

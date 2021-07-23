@@ -37,6 +37,7 @@ public class ProtocolRequestMessage extends RequestMessage {
     this.domainVersion = builder.domainVersion;
     this.messageData = builder.request;
     this.scheduled = builder.scheduled;
+    this.maxScheduleTime = builder.maxScheduleTime;
     this.retryCount = builder.retryCount;
 
     this.messageType = builder.messageMetadata.getMessageType();
@@ -50,6 +51,7 @@ public class ProtocolRequestMessage extends RequestMessage {
     private String ipAddress;
     private Serializable request;
     private boolean scheduled;
+    private Long maxScheduleTime;
     private int retryCount;
 
     private MessageMetadata messageMetadata;
@@ -81,6 +83,11 @@ public class ProtocolRequestMessage extends RequestMessage {
 
     public Builder scheduled(final boolean scheduled) {
       this.scheduled = scheduled;
+      return this;
+    }
+
+    public Builder maxScheduleTime(final Long maxScheduleTime) {
+      this.maxScheduleTime = maxScheduleTime;
       return this;
     }
 
@@ -116,6 +123,10 @@ public class ProtocolRequestMessage extends RequestMessage {
 
   public boolean isScheduled() {
     return this.scheduled;
+  }
+
+  public Long getMaxScheduleTime() {
+    return this.maxScheduleTime;
   }
 
   public int getMessagePriority() {

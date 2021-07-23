@@ -24,6 +24,16 @@ public class OsgpCoreRequestMessageSender {
   @Qualifier("domainSmartMeteringOutboundOsgpCoreRequestsJmsTemplate")
   private JmsTemplate jmsTemplate;
 
+  public void send(final RequestMessage requestMessage) {
+    this.jmsTemplate.send(
+        session -> {
+          final ObjectMessage objectMessage =
+              session.createObjectMessage(requestMessage.getRequest());
+          requestMessage.getMessageMetadata().applyTo(objectMessage);
+          return objectMessage;
+        });
+  }
+
   public void send(
       final RequestMessage requestMessage,
       final String messageType,

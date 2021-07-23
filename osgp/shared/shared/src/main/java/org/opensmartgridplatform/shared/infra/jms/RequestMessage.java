@@ -15,10 +15,7 @@ public class RequestMessage implements Serializable {
   /** Serial Version UID. */
   private static final long serialVersionUID = 8377090502244471258L;
 
-  protected String correlationUid;
-  protected String organisationIdentification;
-  protected String deviceIdentification;
-  protected String ipAddress;
+  protected MessageMetadata messageMetadata;
   protected Serializable request;
 
   public RequestMessage(final CorrelationIds ids, final Serializable request) {
@@ -51,30 +48,44 @@ public class RequestMessage implements Serializable {
       final String deviceIdentification,
       final String ipAddress,
       final Serializable request) {
-    this.correlationUid = correlationUid;
-    this.organisationIdentification = organisationIdentification;
-    this.deviceIdentification = deviceIdentification;
-    this.ipAddress = ipAddress;
+    this(
+        new MessageMetadata.Builder()
+            .withCorrelationUid(correlationUid)
+            .withOrganisationIdentification(organisationIdentification)
+            .withDeviceIdentification(deviceIdentification)
+            .withIpAddress(ipAddress)
+            .build(),
+        request);
+  }
+
+  public RequestMessage(final MessageMetadata messageMetadata, final Serializable request) {
+    this.messageMetadata = messageMetadata;
     this.request = request;
   }
 
-  public String getCorrelationUid() {
-    return this.correlationUid;
-  }
-
-  public String getOrganisationIdentification() {
-    return this.organisationIdentification;
-  }
-
-  public String getDeviceIdentification() {
-    return this.deviceIdentification;
-  }
-
-  public String getIpAddress() {
-    return this.ipAddress;
+  public MessageMetadata getMessageMetadata() {
+    return this.messageMetadata;
   }
 
   public Serializable getRequest() {
     return this.request;
+  }
+
+  // Delegated getters for metadata
+
+  public String getCorrelationUid() {
+    return this.messageMetadata.getCorrelationUid();
+  }
+
+  public String getOrganisationIdentification() {
+    return this.messageMetadata.getOrganisationIdentification();
+  }
+
+  public String getDeviceIdentification() {
+    return this.messageMetadata.getDeviceIdentification();
+  }
+
+  public String getIpAddress() {
+    return this.messageMetadata.getIpAddress();
   }
 }

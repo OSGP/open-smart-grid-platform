@@ -79,7 +79,7 @@ public class WebServiceConfig extends AbstractConfig {
 
   private static final String MESSAGE_PRIORITY_HEADER = "MessagePriority";
   private static final String MESSAGE_SCHEDULETIME_HEADER = "ScheduleTime";
-  private static final String MESSAGE_MAXSCHEDULETIME_HEADER = "MaxScheduleTime";
+  public static final String MESSAGE_MAXSCHEDULETIME_HEADER = "MaxScheduleTime";
   private static final String MESSAGE_RESPONSE_URL_HEADER = "ResponseUrl";
   private static final String BYPASS_RETRY_HEADER = "BypassRetry";
 
@@ -273,7 +273,7 @@ public class WebServiceConfig extends AbstractConfig {
         new AnnotationMethodArgumentResolver(MESSAGE_SCHEDULETIME_HEADER, ScheduleTime.class));
     methodArgumentResolvers.add(
         new AnnotationMethodArgumentResolver(
-            MESSAGE_MAXSCHEDULETIME_HEADER, MaxScheduleTime.class));
+            MESSAGE_MAXSCHEDULETIME_HEADER, MaxScheduleTime.class, true));
     methodArgumentResolvers.add(
         new AnnotationMethodArgumentResolver(MESSAGE_RESPONSE_URL_HEADER, ResponseUrl.class));
     methodArgumentResolvers.add(
@@ -339,6 +339,12 @@ public class WebServiceConfig extends AbstractConfig {
   @Bean
   public SoapHeaderInterceptor scheduleTimeInterceptor() {
     return new SoapHeaderInterceptor(MESSAGE_SCHEDULETIME_HEADER, MESSAGE_SCHEDULETIME_HEADER);
+  }
+
+  @Bean
+  public SoapHeaderInterceptor maxScheduleTimeInterceptor() {
+    return new SoapHeaderInterceptor(
+        MESSAGE_MAXSCHEDULETIME_HEADER, MESSAGE_MAXSCHEDULETIME_HEADER);
   }
 
   @Bean

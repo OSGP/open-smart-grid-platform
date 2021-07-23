@@ -57,12 +57,12 @@ public class BundleService {
         this.correlationIdProviderService.getCorrelationId(
             organisationIdentification, deviceIdentification);
 
-    final MessageMetadata deviceMessageMetadata =
+    final MessageMetadata messageMetadata =
         requestMessageMetadata.newMessageMetadata(correlationUid);
 
     final SmartMeteringRequestMessage message =
         new SmartMeteringRequestMessage.Builder()
-            .messageMetadata(deviceMessageMetadata)
+            .messageMetadata(messageMetadata)
             .request(new BundleMessageRequest(actionList))
             .build();
 

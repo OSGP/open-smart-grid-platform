@@ -112,7 +112,8 @@ public class BundleSteps extends BaseBundleSteps {
     final BundleRequest request =
         (BundleRequest) ScenarioContext.current().get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
 
-    final BundleAsyncResponse asyncResponse = this.client.sendBundleRequest(request);
+    final BundleAsyncResponse asyncResponse =
+        this.client.sendBundleRequest(request, 12345L); // TODO proper test
 
     assertThat(asyncResponse).isNotNull();
     ScenarioContextHelper.saveAsyncResponse(asyncResponse);

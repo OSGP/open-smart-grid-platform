@@ -12,6 +12,7 @@ import java.io.Serializable;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -27,7 +28,7 @@ public class MessageMetadata implements Serializable {
   private String messageType;
   private String domain;
   private String domainVersion;
-  private String ipAddress;
+  @Setter private String ipAddress;
   private int messagePriority;
   private boolean scheduled;
   private Long scheduleTime;
@@ -86,6 +87,28 @@ public class MessageMetadata implements Serializable {
     metadata.jmsxDeliveryCount = metadata.getIntProperty(message, Constants.DELIVERY_COUNT, 0);
 
     return metadata;
+  }
+
+  public <T extends Message> void applyTo(final T message) throws JMSException {
+    message.setJMSCorrelationID(this.correlationUid);
+    message.setJMSType(this.messageType);
+    message.setJMSPriority(this.messagePriority);
+
+    if (this.deviceIdentification != null) {
+      message.setStringProperty(Constants.DEVICE_IDENTIFICATION, this.deviceIdentification);
+    }
+
+    if (this.organisationIdentification != null) {
+      message.setStringProperty(
+          Constants.ORGANISATION_IDENTIFICATION, this.organisationIdentification);
+    }
+    message.setBooleanProperty(Constants.BYPASS_RETRY, this.bypassRetry);
+    if (this.scheduleTime != null) {
+      message.setLongProperty(Constants.SCHEDULE_TIME, this.scheduleTime);
+    }
+    if (this.maxScheduleTime != null) {
+      message.setLongProperty(Constants.MAX_SCHEDULE_TIME, this.maxScheduleTime);
+    }
   }
 
   public static MessageMetadata.Builder newMessageMetadataBuilder() {

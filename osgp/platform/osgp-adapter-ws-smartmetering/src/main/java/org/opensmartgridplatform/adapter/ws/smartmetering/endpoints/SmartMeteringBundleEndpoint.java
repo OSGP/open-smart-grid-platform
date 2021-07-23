@@ -89,7 +89,7 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
             .withMessageType(MessageType.HANDLE_BUNDLED_ACTIONS)
             .withMessagePriority(messagePriority)
             .withScheduleTime(scheduleTime)
-            .withMaxScheduleTime(maxScheduleTime)
+            .withMaxScheduleTime("12345") // TODO from parameter
             .withBypassRetry(bypassRetry)
             .build();
 

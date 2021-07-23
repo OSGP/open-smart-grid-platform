@@ -18,4 +18,8 @@ public class MessageMetadataFactory {
         .withMessagePriority(deviceResponse.getMessagePriority())
         .build();
   }
+
+  private MessageMetadataFactory() {
+    // empty constructor
+  }
 }

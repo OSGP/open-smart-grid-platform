@@ -14,13 +14,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.validation.Identification;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 @Getter
 public class RequestMessageMetadata {
 
-  private final String deviceIdentification;
-  private final String organisationIdentification;
+  @Identification private final String deviceIdentification;
+  @Identification private final String organisationIdentification;
   private final MessageType messageType;
   private final DeviceFunction deviceFunction;
   private final int messagePriority;
@@ -47,7 +48,7 @@ public class RequestMessageMetadata {
             this.getMessageType().name())
         .withMessagePriority(this.getMessagePriority())
         .withScheduleTime(this.getScheduleTime())
-        // TODO: MaxScheduleTime
+        .withMaxScheduleTime(this.getMaxScheduleTime())
         .withBypassRetry(this.isBypassRetry())
         .build();
   }

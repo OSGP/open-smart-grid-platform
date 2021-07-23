@@ -9,6 +9,9 @@
  */
 package org.opensmartgridplatform.shared.infra.ws;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import javax.xml.namespace.QName;
 import org.springframework.ws.client.support.interceptor.ClientInterceptorAdapter;
 import org.springframework.ws.context.MessageContext;
@@ -114,6 +117,13 @@ public class OrganisationIdentificationClientInterceptor extends ClientIntercept
     final QName qualifiedUserHeaderName = new QName(this.namespace, this.userNameHeaderName);
     final SoapHeaderElement userElement = soapHeader.addHeaderElement(qualifiedUserHeaderName);
     userElement.setText(this.userName);
+
+    final Iterator<SoapHeaderElement> allAttributesIterator = soapHeader.examineAllHeaderElements();
+    final List<SoapHeaderElement> names = new ArrayList<>();
+    while (allAttributesIterator.hasNext()) {
+      names.add(allAttributesIterator.next());
+    }
+    System.out.println(names);
 
     return true;
   }

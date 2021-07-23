@@ -80,7 +80,7 @@ public abstract class AbstractScheduledTask extends AbstractEntity {
     this.domain = domain;
     this.domainVersion = domainVersion;
     this.scheduledTime = (Timestamp) scheduledTime.clone();
-    this.maxScheduledTime = (Timestamp) maxScheduledTime.clone();
+    this.maxScheduledTime = maxScheduledTime != null ? (Timestamp) maxScheduledTime.clone() : null;
     this.status = ScheduledTaskStatusType.NEW;
     this.retry = 0;
   }
