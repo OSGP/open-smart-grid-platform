@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.mqtt.application.services;
 
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.entities.MqttDevice;
+import org.opensmartgridplatform.adapter.protocol.mqtt.domain.valueobjects.MqttClientDefaults;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
@@ -19,12 +20,17 @@ import org.springframework.stereotype.Component;
 public class MqttClientAdapterFactory {
 
   @Autowired @Nullable private MqttClientSslConfig mqttClientSslConfig;
+  @Autowired private MqttClientDefaults mqttClientDefaults;
 
   public MqttClientAdapter create(
       final MqttDevice device,
       final MessageMetadata messageMetadata,
       final MqttClientEventHandler mqttClientEventHandler) {
     return new MqttClientAdapter(
-        device, messageMetadata, this.mqttClientSslConfig, mqttClientEventHandler);
+        device,
+        messageMetadata,
+        this.mqttClientDefaults,
+        this.mqttClientSslConfig,
+        mqttClientEventHandler);
   }
 }

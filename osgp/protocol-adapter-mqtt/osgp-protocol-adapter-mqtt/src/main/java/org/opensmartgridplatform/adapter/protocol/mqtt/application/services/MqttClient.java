@@ -26,14 +26,17 @@ public class MqttClient {
 
   private Mqtt3AsyncClient client;
 
-  public Mqtt3AsyncClient connect(
-      final MqttClientDefaults mqttClientDefaults, final MqttClientSslConfig mqttClientSslConfig) {
+  public static Mqtt3AsyncClient createClient(
+      final String host,
+      final int port,
+      final MqttClientDefaults mqttClientDefaults,
+      final MqttClientSslConfig mqttClientSslConfig) {
     final String id = UUID.randomUUID().toString();
     Mqtt3ClientBuilder clientBuilder =
         Mqtt3Client.builder()
             .identifier(id)
-            .serverHost(mqttClientDefaults.getDefaultHost())
-            .serverPort(mqttClientDefaults.getDefaultPort())
+            .serverHost(host)
+            .serverPort(port)
             .sslConfig(mqttClientSslConfig);
 
     if (StringUtils.isNotEmpty(mqttClientDefaults.getDefaultUsername())) {
@@ -46,7 +49,17 @@ public class MqttClient {
               .applySimpleAuth();
     }
 
-    this.client = clientBuilder.buildAsync();
+    return clientBuilder.buildAsync();
+  }
+
+  public Mqtt3AsyncClient connect(
+      final MqttClientDefaults mqttClientDefaults, final MqttClientSslConfig mqttClientSslConfig) {
+    this.client =
+        createClient(
+            mqttClientDefaults.getDefaultHost(),
+            mqttClientDefaults.getDefaultPort(),
+            mqttClientDefaults,
+            mqttClientSslConfig);
 
     this.client.connectWith().send().whenComplete(MqttClient::onConnect);
 

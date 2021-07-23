@@ -11,16 +11,16 @@ package org.opensmartgridplatform.adapter.protocol.mqtt.application.services;
 import com.hivemq.client.mqtt.MqttClientSslConfig;
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt3.Mqtt3AsyncClient;
-import com.hivemq.client.mqtt.mqtt3.Mqtt3Client;
 import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish;
-import java.util.UUID;
 import org.opensmartgridplatform.adapter.protocol.mqtt.domain.entities.MqttDevice;
+import org.opensmartgridplatform.adapter.protocol.mqtt.domain.valueobjects.MqttClientDefaults;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 public class MqttClientAdapter {
 
   private final MqttDevice device;
   private final MessageMetadata messageMetadata;
+  private final MqttClientDefaults mqttClientDefaults;
   private final MqttClientSslConfig mqttClientSslConfig;
   private final MqttClientEventHandler mqttClientEventHandler;
   private Mqtt3AsyncClient client;
@@ -28,23 +28,23 @@ public class MqttClientAdapter {
   public MqttClientAdapter(
       final MqttDevice device,
       final MessageMetadata messageMetadata,
+      final MqttClientDefaults mqttClientDefaults,
       final MqttClientSslConfig mqttClientSslConfig,
       final MqttClientEventHandler mqttClientEventHandler) {
     this.device = device;
     this.messageMetadata = messageMetadata;
+    this.mqttClientDefaults = mqttClientDefaults;
     this.mqttClientSslConfig = mqttClientSslConfig;
     this.mqttClientEventHandler = mqttClientEventHandler;
   }
 
   public void connect() {
-    final String id = UUID.randomUUID().toString();
     this.client =
-        Mqtt3Client.builder()
-            .identifier(id)
-            .serverHost(this.device.getHost())
-            .serverPort(this.device.getPort())
-            .sslConfig(this.mqttClientSslConfig)
-            .buildAsync();
+        MqttClient.createClient(
+            this.device.getHost(),
+            this.device.getPort(),
+            this.mqttClientDefaults,
+            this.mqttClientSslConfig);
     this.client
         .connectWith()
         .send()
