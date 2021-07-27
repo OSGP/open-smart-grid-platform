@@ -197,7 +197,7 @@ public class SecretManagementService {
    * attempt to replace the communication key that got aborted).<br>
    *
    * <p>The moment the new key is known to be transferred to the device, make sure to activate it by
-   * calling {@link #storeNewKeys(String, String, Map)}.
+   * calling {@link #activateNewKey(MessageMetadata, String, SecurityKeyType)}.
    *
    * @param messageMetadata the metadata of the request message
    * @param deviceIdentification DLMS device id
@@ -265,13 +265,14 @@ public class SecretManagementService {
   /**
    * Updates the state of a new key from 'new' to 'active'
    *
-   * <p>This method should be called to activate a new key stored with {@link #activeNewKeys(String,
-   * String, List)} after it has been confirmed to be set on the device.
+   * <p>This method should be called to activate a new key stored with {@link
+   * #storeNewKey(MessageMetadata, String, SecurityKeyType)} after it has been confirmed to be set
+   * on the device.
    *
    * @param messageMetadata the metadata of the request message
    * @param deviceIdentification DLMS device id
    * @param keyType type of key
-   * @see #activeNewKeys(String, String, List)
+   * @see #activateNewKeys(String, String, List)
    */
   public void activateNewKey(
       final MessageMetadata messageMetadata,
