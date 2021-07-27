@@ -25,6 +25,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmRegisterRes
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ReadAlarmRegisterDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +67,8 @@ public class ReadAlarmRegisterCommandExecutor
   public AlarmRegisterResponseDto execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final ReadAlarmRegisterRequestDto object)
+      final ReadAlarmRegisterRequestDto object,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
     return new AlarmRegisterResponseDto(this.retrieveAlarmRegister(conn));
   }

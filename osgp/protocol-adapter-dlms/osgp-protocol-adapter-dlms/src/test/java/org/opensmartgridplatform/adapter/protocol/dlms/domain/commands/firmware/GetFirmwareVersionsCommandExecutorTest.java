@@ -32,6 +32,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareModuleType;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
 public class GetFirmwareVersionsCommandExecutorTest {
@@ -54,10 +55,14 @@ public class GetFirmwareVersionsCommandExecutorTest {
 
   private DlmsConnectionManager connectionHolder;
 
+  private MessageMetadata messageMetadata;
+
   @BeforeEach
   public void setUp() {
     this.executor = new GetFirmwareVersionsCommandExecutor(this.helperService);
-    this.connectionHolder = new DlmsConnectionManager(null, null, this.listener, null);
+    this.connectionHolder = new DlmsConnectionManager(null, null, null, this.listener, null);
+    this.messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
   }
 
   @Test
@@ -93,7 +98,7 @@ public class GetFirmwareVersionsCommandExecutorTest {
         .thenReturn("string3");
 
     final List<FirmwareVersionDto> result =
-        this.executor.execute(this.connectionHolder, device, null);
+        this.executor.execute(this.connectionHolder, device, null, this.messageMetadata);
 
     Assertions.assertThat(result)
         .usingRecursiveFieldByFieldElementComparator()
@@ -144,7 +149,7 @@ public class GetFirmwareVersionsCommandExecutorTest {
         .thenReturn("string4");
 
     final List<FirmwareVersionDto> result =
-        this.executor.execute(this.connectionHolder, device, null);
+        this.executor.execute(this.connectionHolder, device, null, this.messageMetadata);
 
     Assertions.assertThat(result)
         .usingRecursiveFieldByFieldElementComparator()

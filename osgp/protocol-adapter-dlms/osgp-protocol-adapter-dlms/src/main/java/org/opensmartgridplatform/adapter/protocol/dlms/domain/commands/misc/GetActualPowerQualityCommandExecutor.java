@@ -34,6 +34,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemDateTimeDto
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PowerQualityValueDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -59,7 +60,8 @@ public class GetActualPowerQualityCommandExecutor
   public ActualPowerQualityResponseDto execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final ActualPowerQualityRequestDto actualPowerQualityRequestDto)
+      final ActualPowerQualityRequestDto actualPowerQualityRequestDto,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     final Profile profile = this.determineProfile(actualPowerQualityRequestDto.getProfileType());

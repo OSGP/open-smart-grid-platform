@@ -25,6 +25,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,14 +45,17 @@ public class Lls1Connector extends SecureDlmsConnector {
 
   @Override
   public DlmsConnection connect(
-      final DlmsDevice device, final DlmsMessageListener dlmsMessageListener) throws OsgpException {
+      final MessageMetadata messageMetadata,
+      final DlmsDevice device,
+      final DlmsMessageListener dlmsMessageListener)
+      throws OsgpException {
 
     // Make sure neither device or device.getIpAddress() is null.
     this.checkDevice(device);
     this.checkIpAddress(device);
 
     try {
-      return this.createConnection(device, dlmsMessageListener);
+      return this.createConnection(messageMetadata, device, dlmsMessageListener);
     } catch (final UnknownHostException e) {
       LOGGER.warn("The IP address is not found: {}", device.getIpAddress(), e);
       // Unknown IP, unrecoverable.
@@ -70,14 +74,16 @@ public class Lls1Connector extends SecureDlmsConnector {
 
   @Override
   protected void setSecurity(
-      final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder)
+      final MessageMetadata messageMetadata,
+      final DlmsDevice device,
+      final TcpConnectionBuilder tcpConnectionBuilder)
       throws OsgpException {
 
     final byte[] password;
     try {
       password =
           this.secretManagementService.getKey(
-              device.getDeviceIdentification(), SecurityKeyType.PASSWORD);
+              messageMetadata, device.getDeviceIdentification(), SecurityKeyType.PASSWORD);
     } catch (final EncrypterException e) {
       LOGGER.error("Error determining DLMS password setting up LLS1 connection", e);
       throw new FunctionalException(

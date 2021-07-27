@@ -26,6 +26,8 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
 class InvocationCounterManagerTest {
@@ -33,14 +35,21 @@ class InvocationCounterManagerTest {
       new AttributeAddress(1, new ObisCode(new byte[] {0, 0, 43, 1, 0, -1}), 2);
 
   private InvocationCounterManager manager;
+  private MessageMetadata messageMetadata;
 
   @Mock private DlmsConnectionFactory connectionFactory;
 
   @Mock private DlmsHelper dlmsHelper;
 
+  @Mock private DlmsDeviceRepository deviceRepository;
+
   @BeforeEach
   public void setUp() {
-    this.manager = new InvocationCounterManager(this.connectionFactory, this.dlmsHelper);
+    this.manager =
+        new InvocationCounterManager(
+            this.connectionFactory, this.dlmsHelper, this.deviceRepository);
+    this.messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
   }
 
   @Test
@@ -54,7 +63,7 @@ class InvocationCounterManagerTest {
             .build();
 
     final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
-    when(this.connectionFactory.getPublicClientConnection(device, null))
+    when(this.connectionFactory.getPublicClientConnection(this.messageMetadata, device, null))
         .thenReturn(connectionManager);
 
     final DataObject dataObject = DataObject.newUInteger32Data(invocationCounterValueOnDevice);
@@ -62,9 +71,14 @@ class InvocationCounterManagerTest {
             eq(connectionManager), refEq(ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE)))
         .thenReturn(dataObject);
 
-    this.manager.initializeInvocationCounter(device);
+    this.manager.initializeInvocationCounter(this.messageMetadata, device);
 
     assertThat(device.getInvocationCounter()).isEqualTo(invocationCounterValueOnDevice);
+
+    assertThat(device.getInvocationCounter())
+        .isEqualTo(Long.valueOf(dataObject.getValue().toString()));
+    verify(this.deviceRepository).save(device);
+
     verify(connectionManager).close();
   }
 }
