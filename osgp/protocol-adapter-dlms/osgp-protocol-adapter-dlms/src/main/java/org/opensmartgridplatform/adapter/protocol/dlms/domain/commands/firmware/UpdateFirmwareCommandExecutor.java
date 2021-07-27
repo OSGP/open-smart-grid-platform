@@ -12,6 +12,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractC
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.FirmwareFileCachingRepository;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.FirmwareImageIdentifierCachingRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ImageTransferException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
@@ -34,12 +35,16 @@ public class UpdateFirmwareCommandExecutor
 
   private static final String EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE =
       "Firmware file is not available.";
+  private static final String EXCEPTION_MSG_FIRMWARE_IMAGE_IDENTIFIER_NOT_AVAILABLE =
+      "Firmware Image Identifier is not available.";
 
   private final FirmwareFileCachingRepository firmwareFileCachingRepository;
+  private final FirmwareImageIdentifierCachingRepository firmwareImageIdentifierCachingRepository;
   private final ImageTransfer.ImageTranferProperties imageTransferProperties;
 
   public UpdateFirmwareCommandExecutor(
       final FirmwareFileCachingRepository firmwareFileCachingRepository,
+      final FirmwareImageIdentifierCachingRepository firmwareImageIdentifierCachingRepository,
       @Value("${command.updatefirmware.verificationstatuscheck.interval}")
           final int verificationStatusCheckInterval,
       @Value("${command.updatefirmware.verificationstatuscheck.timeout}")
@@ -50,6 +55,7 @@ public class UpdateFirmwareCommandExecutor
           final int initiationStatusCheckTimeout) {
     super(UpdateFirmwareRequestDto.class);
     this.firmwareFileCachingRepository = firmwareFileCachingRepository;
+    this.firmwareImageIdentifierCachingRepository = firmwareImageIdentifierCachingRepository;
 
     this.imageTransferProperties = new ImageTransfer.ImageTranferProperties();
     this.imageTransferProperties.setVerificationStatusCheckInterval(
@@ -69,7 +75,7 @@ public class UpdateFirmwareCommandExecutor
         new ImageTransfer(
             conn,
             this.imageTransferProperties,
-            firmwareIdentification,
+            this.getImageIdentifier(firmwareIdentification),
             this.getImageData(firmwareIdentification));
 
     try {
@@ -124,6 +130,18 @@ public class UpdateFirmwareCommandExecutor
     }
 
     return firmwareFile;
+  }
+
+  private byte[] getImageIdentifier(final String firmwareIdentification)
+      throws ProtocolAdapterException {
+    final byte[] firmwareImageIdentifier =
+        this.firmwareImageIdentifierCachingRepository.retrieve(firmwareIdentification);
+
+    if (firmwareImageIdentifier == null) {
+      throw new ProtocolAdapterException(EXCEPTION_MSG_FIRMWARE_IMAGE_IDENTIFIER_NOT_AVAILABLE);
+    }
+
+    return firmwareImageIdentifier;
   }
 
   @Override

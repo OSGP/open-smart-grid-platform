@@ -27,6 +27,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.Dlms
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.FirmwareFileCachingRepository;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.FirmwareImageIdentifierCachingRepository;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.ImageTransferAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.method.ImageTransferMethod;
@@ -36,6 +37,7 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
 
   private UpdateFirmwareCommandExecutor commandExecutor;
   @Mock private FirmwareFileCachingRepository firmwareFileCachingRepository;
+  @Mock private FirmwareImageIdentifierCachingRepository firmwareImageIdentifierCachingRepository;
   private final int verificationStatusCheckInterval = 1;
   private final int verificationStatusCheckTimeout = 2;
   private final int initiationStatusCheckInterval = 3;
@@ -49,6 +51,7 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
     this.commandExecutor =
         new UpdateFirmwareCommandExecutor(
             this.firmwareFileCachingRepository,
+            this.firmwareImageIdentifierCachingRepository,
             this.verificationStatusCheckInterval,
             this.verificationStatusCheckTimeout,
             this.initiationStatusCheckInterval,
@@ -67,7 +70,11 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
   void testExecute() throws Exception {
     final DlmsDevice device = new DlmsDevice();
     final String firmwareIdentification = RandomStringUtils.randomAlphabetic(10);
+
     final byte[] firmwareFile =
+        RandomStringUtils.randomAlphabetic(10).getBytes(StandardCharsets.UTF_8);
+
+    final byte[] firmwareImageIdentifier =
         RandomStringUtils.randomAlphabetic(10).getBytes(StandardCharsets.UTF_8);
 
     this.connectionStub.addReturnValue(
@@ -90,6 +97,8 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
 
     when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification))
         .thenReturn(firmwareFile);
+    when(this.firmwareImageIdentifierCachingRepository.retrieve(firmwareIdentification))
+        .thenReturn(firmwareImageIdentifier);
 
     this.commandExecutor.execute(this.connectionManagerStub, device, firmwareIdentification);
 

@@ -27,6 +27,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.FirmwareFileCachingRepository;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.FirmwareImageIdentifierCachingRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareFileDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -36,6 +37,8 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 public class FirmwareServiceTest {
 
   @Mock private FirmwareFileCachingRepository firmwareFileCachingRepository;
+
+  @Mock private FirmwareImageIdentifierCachingRepository firmwareImageIdentifierCachingRepository;
 
   @Mock private GetFirmwareVersionsCommandExecutor getFirmwareVersionsCommandExecutor;
 
@@ -65,9 +68,14 @@ public class FirmwareServiceTest {
     // Arrange
     final String firmwareIdentification = "fw";
     final byte[] firmwareFile = firmwareIdentification.getBytes();
+    final byte[] firmwareImageIdentifier = new byte[10];
     when(this.firmwareFileCachingRepository.isAvailable(firmwareIdentification)).thenReturn(true);
     when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification))
         .thenReturn(firmwareFile);
+    when(this.firmwareImageIdentifierCachingRepository.isAvailable(firmwareIdentification))
+        .thenReturn(true);
+    when(this.firmwareImageIdentifierCachingRepository.retrieve(firmwareIdentification))
+        .thenReturn(firmwareImageIdentifier);
 
     // Act
     this.firmwareService.updateFirmware(
@@ -121,11 +129,17 @@ public class FirmwareServiceTest {
     // Arrange
     final String firmwareIdentification = "fw";
     final byte[] firmwareFile = firmwareIdentification.getBytes();
+    final byte[] firmwareImageIdentifier = new byte[10];
+
     final FirmwareFileDto firmwareFileDto =
-        new FirmwareFileDto(firmwareIdentification, firmwareFile);
+        new FirmwareFileDto(firmwareIdentification, firmwareFile, firmwareImageIdentifier);
     when(this.firmwareFileCachingRepository.isAvailable(firmwareIdentification)).thenReturn(true);
     when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification))
         .thenReturn(firmwareFile);
+    when(this.firmwareImageIdentifierCachingRepository.isAvailable(firmwareIdentification))
+        .thenReturn(true);
+    when(this.firmwareImageIdentifierCachingRepository.retrieve(firmwareIdentification))
+        .thenReturn(firmwareImageIdentifier);
 
     // Act
     this.firmwareService.updateFirmware(
@@ -134,6 +148,8 @@ public class FirmwareServiceTest {
     // Assert
     verify(this.firmwareFileCachingRepository, times(1))
         .store(firmwareIdentification, firmwareFile);
+    verify(this.firmwareImageIdentifierCachingRepository, times(1))
+        .store(firmwareIdentification, firmwareImageIdentifier);
     verify(this.updateFirmwareCommandExecutor, times(1))
         .execute(this.dlmsConnectionManagerMock, this.dlmsDeviceMock, firmwareIdentification);
   }

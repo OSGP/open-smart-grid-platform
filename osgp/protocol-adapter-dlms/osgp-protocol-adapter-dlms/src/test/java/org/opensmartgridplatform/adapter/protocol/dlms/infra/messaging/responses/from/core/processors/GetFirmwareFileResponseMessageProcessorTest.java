@@ -171,7 +171,7 @@ public class GetFirmwareFileResponseMessageProcessorTest {
   }
 
   private FirmwareFileDto setupFirmwareFileDto() {
-    return new FirmwareFileDto("fw", "fw".getBytes());
+    return new FirmwareFileDto("fw", "fw".getBytes(), new byte[10]);
   }
 
   private ProtocolResponseMessage setupResponseMessage(final FirmwareFileDto firmwareFileDto) {

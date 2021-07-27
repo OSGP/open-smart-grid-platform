@@ -15,6 +15,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.FirmwareFileCachingRepository;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.FirmwareImageIdentifierCachingRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareFileDto;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
@@ -34,6 +35,8 @@ public class FirmwareService {
       "Firmware file %s is not available.";
 
   @Autowired private FirmwareFileCachingRepository firmwareRepository;
+
+  @Autowired private FirmwareImageIdentifierCachingRepository imageIdentifierRepository;
 
   @Autowired private GetFirmwareVersionsCommandExecutor getFirmwareVersionsCommandExecutor;
 
@@ -76,6 +79,8 @@ public class FirmwareService {
     }
     this.firmwareRepository.store(
         firmwareFileDto.getFirmwareIdentification(), firmwareFileDto.getFirmwareFile());
+    this.imageIdentifierRepository.store(
+        firmwareFileDto.getFirmwareIdentification(), firmwareFileDto.getImageIdentifier());
 
     return this.executeFirmwareUpdate(conn, device, firmwareFileDto.getFirmwareIdentification());
   }
