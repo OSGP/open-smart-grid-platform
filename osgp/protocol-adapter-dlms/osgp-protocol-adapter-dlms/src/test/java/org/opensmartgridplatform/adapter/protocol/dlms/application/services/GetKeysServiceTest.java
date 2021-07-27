@@ -30,7 +30,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysResponseD
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.KeyDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SecretTypeDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.opensmartgridplatform.shared.security.RsaEncrypter;
+import org.opensmartgridplatform.shared.security.RsaEncryptionService;
 
 @ExtendWith(MockitoExtension.class)
 class GetKeysServiceTest {
@@ -40,7 +40,7 @@ class GetKeysServiceTest {
 
   @InjectMocks private GetKeysService getKeysService;
   @Mock private SecretManagementService secretManagementService;
-  @Mock private RsaEncrypter rsaEncrypter;
+  @Mock private RsaEncryptionService rsaEncrypter;
 
   private static final GetKeysRequestDto REQUEST =
       new GetKeysRequestDto(
