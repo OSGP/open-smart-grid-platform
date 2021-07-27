@@ -46,7 +46,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class ReplaceKeyCommandExecutor
-    extends AbstractCommandExecutor<ReplaceKeyCommandExecutor.ReplaceKeyInput, DlmsDevice> {
+    extends AbstractCommandExecutor<ReplaceKeyInput, DlmsDevice> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ReplaceKeyCommandExecutor.class);
 
@@ -56,40 +56,6 @@ public class ReplaceKeyCommandExecutor
   @Autowired private SecretManagementService secretManagementService;
 
   @Autowired EncryptionHelperService encryptionService;
-
-  static class ReplaceKeyInput {
-    private final byte[] bytes;
-    private final KeyId keyId;
-    private final SecurityKeyType securityKeyType;
-    private final boolean isGenerated;
-
-    public ReplaceKeyInput(
-        final byte[] bytes,
-        final KeyId keyId,
-        final SecurityKeyType securityKeyType,
-        final boolean isGenerated) {
-      this.bytes = bytes;
-      this.keyId = keyId;
-      this.securityKeyType = securityKeyType;
-      this.isGenerated = isGenerated;
-    }
-
-    public byte[] getBytes() {
-      return this.bytes;
-    }
-
-    public KeyId getKeyId() {
-      return this.keyId;
-    }
-
-    public SecurityKeyType getSecurityKeyType() {
-      return this.securityKeyType;
-    }
-
-    public boolean isGenerated() {
-      return this.isGenerated;
-    }
-  }
 
   public ReplaceKeyCommandExecutor() {
     super(SetKeysRequestDto.class);
@@ -160,7 +126,7 @@ public class ReplaceKeyCommandExecutor
   public DlmsDevice execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final ReplaceKeyCommandExecutor.ReplaceKeyInput keyWrapper,
+      final ReplaceKeyInput keyWrapper,
       final MessageMetadata messageMetadata)
       throws OsgpException {
 
@@ -189,7 +155,7 @@ public class ReplaceKeyCommandExecutor
   private void sendToDevice(
       final DlmsConnectionManager conn,
       final String deviceIdentification,
-      final ReplaceKeyCommandExecutor.ReplaceKeyInput keyWrapper,
+      final ReplaceKeyInput keyWrapper,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
@@ -206,7 +172,7 @@ public class ReplaceKeyCommandExecutor
       conn.getDlmsMessageListener()
           .setDescription(
               "ReplaceKey for "
-                  + keyWrapper.securityKeyType
+                  + keyWrapper.getSecurityKeyType()
                   + " "
                   + keyWrapper.getKeyId()
                   + ", call method: "
@@ -220,9 +186,9 @@ public class ReplaceKeyCommandExecutor
             "AccessResultCode for replace keys was not SUCCESS: " + methodResultCode);
       }
 
-      if (keyWrapper.securityKeyType == SecurityKeyType.E_METER_AUTHENTICATION) {
+      if (keyWrapper.getSecurityKeyType() == SecurityKeyType.E_METER_AUTHENTICATION) {
         conn.getConnection().changeClientGlobalAuthenticationKey(decryptedKey);
-      } else if (keyWrapper.securityKeyType == SecurityKeyType.E_METER_ENCRYPTION) {
+      } else if (keyWrapper.getSecurityKeyType() == SecurityKeyType.E_METER_ENCRYPTION) {
         conn.getConnection().changeClientGlobalEncryptionKey(decryptedKey);
       }
     } catch (final IOException e) {
