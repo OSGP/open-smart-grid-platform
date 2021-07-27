@@ -95,6 +95,10 @@ public abstract class DlmsConnectionMessageProcessor {
     this.closeDlmsConnection(device, conn);
 
     this.throttlingService.closeConnection();
+
+    if (device.needsInvocationCounter()) {
+      this.updateInvocationCounterForDevice(device, conn);
+    }
   }
 
   protected void closeDlmsConnection(final DlmsDevice device, final DlmsConnectionManager conn) {
@@ -106,6 +110,28 @@ public abstract class DlmsConnectionMessageProcessor {
     } catch (final Exception e) {
       LOGGER.error("Error while closing connection", e);
     }
+  }
+
+  /* package private */
+  void updateInvocationCounterForDevice(final DlmsDevice device, final DlmsConnectionManager conn) {
+    if (!(conn.getDlmsMessageListener() instanceof InvocationCountingDlmsMessageListener)) {
+      LOGGER.error(
+          "updateInvocationCounterForDevice should only be called for devices with HLS 5 "
+              + "communication with an InvocationCountingDlmsMessageListener - device: {}, hls5: {}, "
+              + "listener: {}",
+          device.getDeviceIdentification(),
+          device.isHls5Active(),
+          conn.getDlmsMessageListener() == null
+              ? "null"
+              : conn.getDlmsMessageListener().getClass().getName());
+      return;
+    }
+
+    final InvocationCountingDlmsMessageListener dlmsMessageListener =
+        (InvocationCountingDlmsMessageListener) conn.getDlmsMessageListener();
+    final int numberOfSentMessages = dlmsMessageListener.getNumberOfSentMessages();
+    device.incrementInvocationCounter(numberOfSentMessages);
+    this.deviceRepository.save(device);
   }
 
   /**
