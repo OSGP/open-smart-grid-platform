@@ -20,7 +20,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysResponseD
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.KeyDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SecretTypeDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.opensmartgridplatform.shared.security.RsaEncrypter;
+import org.opensmartgridplatform.shared.security.RsaEncryptionService;
 import org.opensmartgridplatform.ws.schema.core.secret.management.SecretType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -29,11 +29,13 @@ import org.springframework.stereotype.Component;
 public class GetKeysService {
 
   private final SecretManagementService secretManagementService;
-  private final RsaEncrypter keyEncrypter;
+  private final RsaEncryptionService keyEncrypter;
 
   @Autowired
   public GetKeysService(
-      final SecretManagementService secretManagementService, final RsaEncrypter keyEncrypter) {
+      final SecretManagementService secretManagementService,
+      final RsaEncryptionService keyEncrypter) {
+
     this.secretManagementService = secretManagementService;
     this.keyEncrypter = keyEncrypter;
   }
@@ -67,9 +69,12 @@ public class GetKeysService {
   private KeyDto convertToKeyDtoWithEncryptedKey(
       final SecurityKeyType securityKeyType, final byte[] unencryptedKey) {
 
-    final byte[] encryptedKey = this.keyEncrypter.encrypt(unencryptedKey);
-
-    return new KeyDto(this.convertToSecretTypeDto(securityKeyType), encryptedKey);
+    if (unencryptedKey != null) {
+      final byte[] encryptedKey = this.keyEncrypter.encrypt(unencryptedKey);
+      return new KeyDto(this.convertToSecretTypeDto(securityKeyType), encryptedKey);
+    } else {
+      return new KeyDto(this.convertToSecretTypeDto(securityKeyType), null);
+    }
   }
 
   private SecurityKeyType convertToSecurityKeyType(final SecretTypeDto secretTypeDto) {

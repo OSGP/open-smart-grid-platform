@@ -39,6 +39,9 @@ public class FeederSteps {
             settings,
             PlatformDistributionAutomationKeys.FEEDER_NUMBER,
             PlatformDistributionAutomationDefaults.FEEDER_NUMBER));
+    feeder.setFieldCode(
+        ReadSettingsHelper.getString(
+            settings, PlatformDistributionAutomationKeys.FEEDER_FIELD_CODE));
     feeder.setName(
         ReadSettingsHelper.getString(
             settings,

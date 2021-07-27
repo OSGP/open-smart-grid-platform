@@ -1681,9 +1681,10 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
   private GetKeysResponseData reencryptKeyInGetKeysResponse(
       final GetKeysResponseData data, final RsaEncrypter applicationRsaEncrypter) {
 
-    final byte[] decryptedKey = this.gxfRsaDecrypter.decrypt(data.getSecretValue());
-
-    data.setSecretValue(applicationRsaEncrypter.encrypt(decryptedKey));
+    if (data.getSecretValue() != null) {
+      final byte[] decryptedKey = this.gxfRsaDecrypter.decrypt(data.getSecretValue());
+      data.setSecretValue(applicationRsaEncrypter.encrypt(decryptedKey));
+    }
 
     return data;
   }

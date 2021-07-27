@@ -23,11 +23,9 @@ public class MqttClientEnabledConfig {
   @Bean(destroyMethod = "disconnect")
   public MqttClient mqttClient(
       final MqttClientDefaults mqttClientDefaults, final MqttClientSslConfig mqttClientSslConfig) {
-    final String host = mqttClientDefaults.getDefaultHost();
-    final int port = mqttClientDefaults.getDefaultPort();
 
     final MqttClient client = new MqttClient();
-    client.connect(host, port, mqttClientSslConfig);
+    client.connect(mqttClientDefaults, mqttClientSslConfig);
     return client;
   }
 }

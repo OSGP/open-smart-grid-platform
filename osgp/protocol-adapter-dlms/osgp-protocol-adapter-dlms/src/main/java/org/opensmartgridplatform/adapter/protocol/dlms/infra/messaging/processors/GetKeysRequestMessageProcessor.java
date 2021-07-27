@@ -44,6 +44,7 @@ public class GetKeysRequestMessageProcessor extends DeviceRequestMessageProcesso
     this.assertRequestObjectType(GetKeysRequestDto.class, requestObject);
 
     final GetKeysRequestDto requestDto = (GetKeysRequestDto) requestObject;
+
     return this.configurationService.requestGetKeys(device, requestDto, messageMetadata);
   }
 }
