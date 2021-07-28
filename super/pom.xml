@@ -129,7 +129,7 @@
     <javax.xml.soap-api.version>1.4.0</javax.xml.soap-api.version>
     <!-- to avoid conflicts with spring-kafka-test the older kafka version 2.4.1 is used-->
     <kafka.version>2.4.1</kafka.version>
-    <avro.version>1.9.2</avro.version>
+    <avro.version>1.10.2</avro.version>
     <spring.kafka.version>2.4.7.RELEASE</spring.kafka.version>
     <!-- spring-kafka-test needs a 2.12 version of the scala libraries -->
     <scala.lang.version>2.12.11</scala.lang.version>
