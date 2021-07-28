@@ -124,10 +124,5 @@
         <module>cucumber-tests-platform-microgrids</module>
       </modules>
     </profile>
-
-    <profile>
-      <!-- Grid eXchange Fabric -->
-      <id>gxf</id>
-    </profile>
   </profiles>
 </project>
