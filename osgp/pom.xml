@@ -6,6 +6,13 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <parent>
+    <groupId>org.opensmartgridplatform</groupId>
+    <artifactId>super-osgp</artifactId>
+    <version>5.15.0-SNAPSHOT</version>
+    <relativePath>../super/pom.xml</relativePath>
+  </parent>
+
   <groupId>org.osgp</groupId>
   <artifactId>osgp</artifactId>
   <version>5.15.0-SNAPSHOT</version>
@@ -63,11 +70,6 @@
       <modules>
         <module>protocol-adapter-iec61850</module>
       </modules>
-    </profile>
-
-    <profile>
-      <!-- Grid eXchange Fabric -->
-      <id>gxf</id>
     </profile>
   </profiles>
 </project>
