@@ -54,7 +54,7 @@
     <spring.data.version>2.2.3.RELEASE</spring.data.version>
     <spring.data.commons.version>2.2.4.RELEASE</spring.data.commons.version>
     <spring.security.version>5.4.2</spring.security.version>
-    <spring.ws.version>3.0.10.RELEASE</spring.ws.version>
+    <spring.ws.version>3.1.1</spring.ws.version>
     <assertj.version>3.16.1</assertj.version>
     <xmlunit.version>1.6</xmlunit.version>
     <mockito.core.version>3.6.0</mockito.core.version>
