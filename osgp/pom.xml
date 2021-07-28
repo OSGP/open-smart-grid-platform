@@ -6,15 +6,10 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.opensmartgridplatform</groupId>
-    <artifactId>super-osgp</artifactId>
-    <version>5.15.0-SNAPSHOT</version>
-    <relativePath>../super/pom.xml</relativePath>
-  </parent>
-
+  <groupId>org.opensmartgridplatform</groupId>
   <artifactId>osgp</artifactId>
   <packaging>pom</packaging>
+  <version>5.15.0-SNAPSHOT</version>
 
   <modules>
     <module>platform</module>
@@ -70,4 +65,20 @@
       </modules>
     </profile>
   </profiles>
+
+  <build>
+    <plugins>
+      <plugin>
+        <!-- This plugin is disabled, because this module doesn't produce jar files and
+        therefor doesn't need dependency analysis -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+          <skipDeploy>true</skipDeploy>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>
