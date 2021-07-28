@@ -166,10 +166,5 @@
         <module>osgp-domain-microgrids</module>
       </modules>
     </profile>
-
-    <profile>
-      <!-- Grid eXchange Fabric -->
-      <id>gxf</id>
-    </profile>
   </profiles>
 </project>
