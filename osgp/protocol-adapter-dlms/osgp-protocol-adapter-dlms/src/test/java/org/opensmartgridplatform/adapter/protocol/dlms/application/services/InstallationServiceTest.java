@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -24,9 +25,15 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
 public class InstallationServiceTest {
+
+  private final MessageMetadata messageMetadata =
+      MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+  private final String deviceIdentification = "Test";
+
   @InjectMocks InstallationService testService;
   @Mock SecretManagementService secretManagementService;
   @Mock DlmsDeviceRepository dlmsDeviceRepository;
@@ -37,7 +44,7 @@ public class InstallationServiceTest {
   void addEMeter() throws FunctionalException {
     // GIVEN
     final SmartMeteringDeviceDto deviceDto = new SmartMeteringDeviceDto();
-    deviceDto.setDeviceIdentification("Test");
+    deviceDto.setDeviceIdentification(this.deviceIdentification);
     deviceDto.setMasterKey(new byte[16]);
     deviceDto.setAuthenticationKey(new byte[16]);
     deviceDto.setGlobalEncryptionUnicastKey(new byte[16]);
@@ -46,51 +53,55 @@ public class InstallationServiceTest {
     when(this.dlmsDeviceRepository.save(dlmsDevice)).thenReturn(dlmsDevice);
     when(this.encryptionHelperService.rsaDecrypt(any())).thenReturn(new byte[16]);
     // WHEN
-    this.testService.addMeter(deviceDto);
+    this.testService.addMeter(this.messageMetadata, deviceDto);
     // THEN
-    verify(this.secretManagementService, times(1)).storeNewKeys(any(), any());
-    verify(this.secretManagementService, times(1)).activateNewKeys(any(), any());
+    verify(this.secretManagementService, times(1))
+        .storeNewKeys(eq(this.messageMetadata), eq(this.deviceIdentification), any());
+    verify(this.secretManagementService, times(1))
+        .activateNewKeys(eq(this.messageMetadata), eq(this.deviceIdentification), any());
   }
 
   @Test
   void addGMeter() throws FunctionalException {
     // GIVEN
     final SmartMeteringDeviceDto deviceDto = new SmartMeteringDeviceDto();
-    deviceDto.setDeviceIdentification("Test");
+    deviceDto.setDeviceIdentification(this.deviceIdentification);
     deviceDto.setMbusDefaultKey(new byte[16]);
     final DlmsDevice dlmsDevice = new DlmsDevice();
     when(this.installationMapper.map(deviceDto, DlmsDevice.class)).thenReturn(dlmsDevice);
     when(this.dlmsDeviceRepository.save(dlmsDevice)).thenReturn(dlmsDevice);
     when(this.encryptionHelperService.rsaDecrypt(any())).thenReturn(new byte[16]);
     // WHEN
-    this.testService.addMeter(deviceDto);
+    this.testService.addMeter(this.messageMetadata, deviceDto);
     // THEN
-    verify(this.secretManagementService, times(1)).storeNewKeys(any(), any());
-    verify(this.secretManagementService, times(1)).activateNewKeys(any(), any());
+    verify(this.secretManagementService, times(1))
+        .storeNewKeys(eq(this.messageMetadata), eq(this.deviceIdentification), any());
+    verify(this.secretManagementService, times(1))
+        .activateNewKeys(eq(this.messageMetadata), eq(this.deviceIdentification), any());
   }
 
   @Test
   void addMeterNoKeys() {
     // GIVEN
     final SmartMeteringDeviceDto deviceDto = new SmartMeteringDeviceDto();
-    deviceDto.setDeviceIdentification("Test");
+    deviceDto.setDeviceIdentification(this.deviceIdentification);
     // WHEN
     Assertions.assertThatExceptionOfType(FunctionalException.class)
-        .isThrownBy(() -> this.testService.addMeter(deviceDto));
+        .isThrownBy(() -> this.testService.addMeter(this.messageMetadata, deviceDto));
   }
 
   @Test
   void addMeterRedundantKeys() {
     // GIVEN
     final SmartMeteringDeviceDto deviceDto = new SmartMeteringDeviceDto();
-    deviceDto.setDeviceIdentification("Test");
+    deviceDto.setDeviceIdentification(this.deviceIdentification);
     deviceDto.setMasterKey(new byte[16]);
     deviceDto.setAuthenticationKey(new byte[16]);
     deviceDto.setGlobalEncryptionUnicastKey(new byte[16]);
     deviceDto.setMbusDefaultKey(new byte[16]);
     // WHEN
     Assertions.assertThatExceptionOfType(FunctionalException.class)
-        .isThrownBy(() -> this.testService.addMeter(deviceDto));
+        .isThrownBy(() -> this.testService.addMeter(this.messageMetadata, deviceDto));
   }
 
   @Test
@@ -100,6 +111,6 @@ public class InstallationServiceTest {
     deviceDto.setMbusDefaultKey(new byte[16]);
     // WHEN
     Assertions.assertThatExceptionOfType(FunctionalException.class)
-        .isThrownBy(() -> this.testService.addMeter(deviceDto));
+        .isThrownBy(() -> this.testService.addMeter(this.messageMetadata, deviceDto));
   }
 }

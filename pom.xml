@@ -62,11 +62,6 @@
     <profile>
       <id>mg</id>
     </profile>
-
-    <profile>
-      <!-- Grid eXchange Fabric -->
-      <id>gxf</id>
-    </profile>
   </profiles>
 
   <distributionManagement>

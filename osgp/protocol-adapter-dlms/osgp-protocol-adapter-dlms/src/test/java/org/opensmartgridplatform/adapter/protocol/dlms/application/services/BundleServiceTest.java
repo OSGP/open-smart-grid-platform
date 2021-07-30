@@ -37,6 +37,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.FindEventsReques
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.OsgpResultTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
 public class BundleServiceTest {
@@ -49,12 +50,14 @@ public class BundleServiceTest {
 
   private final List<FaultResponseParameterDto> parameters = new ArrayList<>();
   private final ComponentType defaultComponent = ComponentType.PROTOCOL_DLMS;
+  private final MessageMetadata messageMetadata =
+      MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
 
   @Test
   public void testHappyFlow() {
     final List<ActionDto> actionDtoList = this.makeActions();
     final BundleMessagesRequestDto dto = new BundleMessagesRequestDto(actionDtoList);
-    final BundleMessagesRequestDto result = this.callExecutors(dto);
+    final BundleMessagesRequestDto result = this.callExecutors(dto, this.messageMetadata);
     this.assertResult(result);
   }
 
@@ -64,7 +67,7 @@ public class BundleServiceTest {
     final BundleMessagesRequestDto dto = new BundleMessagesRequestDto(actionDtoList);
     this.getStub(FindEventsRequestDto.class)
         .failWith(new ProtocolAdapterException("simulate error"));
-    final BundleMessagesRequestDto result = this.callExecutors(dto);
+    final BundleMessagesRequestDto result = this.callExecutors(dto, this.messageMetadata);
     this.assertResult(result);
   }
 
@@ -86,7 +89,7 @@ public class BundleServiceTest {
 
     try {
       // Execute all the actions
-      this.callExecutors(dto);
+      this.callExecutors(dto, this.messageMetadata);
       fail("A ConnectionException should be thrown");
     } catch (final ConnectionException connectionException) {
       // The execution is stopped. The number of responses is equal to the
@@ -100,7 +103,7 @@ public class BundleServiceTest {
 
     try {
       // Execute the remaining actions
-      this.callExecutors(dto);
+      this.callExecutors(dto, this.messageMetadata);
       assertThat(actionDtoList.size()).isEqualTo(dto.getAllResponses().size());
     } catch (final ConnectionException connectionException) {
       fail("A ConnectionException should not have been thrown.");
@@ -140,7 +143,8 @@ public class BundleServiceTest {
                 this.createAction(this.builder.makePeriodicMeterReadsRequestDataDto(), null)));
 
     final BundleMessagesRequestDto result =
-        this.bundleService.callExecutors(null, new DlmsDevice(), bundleMessagesRequest);
+        this.bundleService.callExecutors(
+            null, new DlmsDevice(), bundleMessagesRequest, this.messageMetadata);
 
     verify(this.bundleCommandExecutorMap)
         .getCommandExecutor(PeriodicMeterReadsRequestDataDto.class);
@@ -158,7 +162,8 @@ public class BundleServiceTest {
                     this.builder.makePeriodicMeterReadsRequestDataDto(), faultResponse)));
 
     final BundleMessagesRequestDto result =
-        this.bundleService.callExecutors(null, new DlmsDevice(), bundleMessagesRequest);
+        this.bundleService.callExecutors(
+            null, new DlmsDevice(), bundleMessagesRequest, this.messageMetadata);
 
     verify(this.bundleCommandExecutorMap)
         .getCommandExecutor(PeriodicMeterReadsRequestDataDto.class);
@@ -176,7 +181,8 @@ public class BundleServiceTest {
                     this.builder.makePeriodicMeterReadsRequestDataDto(), previousActionResponse)));
 
     final BundleMessagesRequestDto result =
-        this.bundleService.callExecutors(null, new DlmsDevice(), bundleMessagesRequest);
+        this.bundleService.callExecutors(
+            null, new DlmsDevice(), bundleMessagesRequest, this.messageMetadata);
 
     verify(this.bundleCommandExecutorMap, never())
         .getCommandExecutor(PeriodicMeterReadsRequestDataDto.class);
@@ -266,9 +272,10 @@ public class BundleServiceTest {
     }
   }
 
-  private BundleMessagesRequestDto callExecutors(final BundleMessagesRequestDto dto) {
+  private BundleMessagesRequestDto callExecutors(
+      final BundleMessagesRequestDto dto, final MessageMetadata messageMetadata) {
     final DlmsDevice device = new DlmsDevice();
-    return this.bundleService.callExecutors(null, device, dto);
+    return this.bundleService.callExecutors(null, device, dto, messageMetadata);
   }
 
   // ---- private helper methods

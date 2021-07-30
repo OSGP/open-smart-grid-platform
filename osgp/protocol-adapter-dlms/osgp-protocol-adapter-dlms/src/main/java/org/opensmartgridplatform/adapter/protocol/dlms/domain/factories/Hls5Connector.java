@@ -33,6 +33,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,23 +61,26 @@ public class Hls5Connector extends SecureDlmsConnector {
 
   @Override
   public DlmsConnection connect(
-      final DlmsDevice device, final DlmsMessageListener dlmsMessageListener) throws OsgpException {
+      final MessageMetadata messageMetadata,
+      final DlmsDevice device,
+      final DlmsMessageListener dlmsMessageListener)
+      throws OsgpException {
 
     // Make sure neither device or device.getIpAddress() is null.
     this.checkDevice(device);
     this.checkIpAddress(device);
 
     try {
-      return this.createConnection(device, dlmsMessageListener);
+      return this.createConnection(messageMetadata, device, dlmsMessageListener);
     } catch (final UnknownHostException e) { // Unknown IP, unrecoverable.
       LOGGER.error("The IP address is not found: {}", device.getIpAddress(), e);
       throw new TechnicalException(
           ComponentType.PROTOCOL_DLMS, "The IP address is not found: " + device.getIpAddress());
     } catch (final IOException e) { // Queue key recovery process
       if (this.secretManagementService.hasNewSecretOfType(
-          device.getDeviceIdentification(), E_METER_ENCRYPTION)) {
+          messageMetadata, device.getDeviceIdentification(), E_METER_ENCRYPTION)) {
         this.recoverKeyProcessInitiator.initiate(
-            device.getDeviceIdentification(), device.getIpAddress());
+            messageMetadata, device.getDeviceIdentification(), device.getIpAddress());
       }
 
       final String msg =
@@ -99,7 +103,9 @@ public class Hls5Connector extends SecureDlmsConnector {
 
   @Override
   protected void setSecurity(
-      final DlmsDevice device, final TcpConnectionBuilder tcpConnectionBuilder)
+      final MessageMetadata messageMetadata,
+      final DlmsDevice device,
+      final TcpConnectionBuilder tcpConnectionBuilder)
       throws OsgpException {
 
     final String deviceIdentification = device.getDeviceIdentification();
@@ -108,7 +114,9 @@ public class Hls5Connector extends SecureDlmsConnector {
     try {
       final Map<SecurityKeyType, byte[]> encryptedKeys =
           this.secretManagementService.getKeys(
-              deviceIdentification, Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION));
+              messageMetadata,
+              deviceIdentification,
+              Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION));
       dlmsAuthenticationKey = encryptedKeys.get(E_METER_AUTHENTICATION);
       dlmsEncryptionKey = encryptedKeys.get(E_METER_ENCRYPTION);
     } catch (final EncrypterException e) {
