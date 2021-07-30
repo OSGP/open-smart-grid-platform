@@ -69,6 +69,7 @@ class InvocationCounterManagerTest {
     this.manager.initializeInvocationCounter(this.messageMetadata, device);
 
     assertThat(device.getInvocationCounter()).isEqualTo(invocationCounterValueOnDevice);
+
     verify(connectionManager).close();
   }
 }
