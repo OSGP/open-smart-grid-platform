@@ -23,7 +23,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Dlm
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.InvocationCounterManager;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors.GetPowerQualityProfileRequestMessageProcessor;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
@@ -100,8 +99,7 @@ public class MessagingTestConfiguration extends AbstractConfig {
   }
 
   @Bean
-  public DlmsConnectionHelper dlmsConnectionHelper(
-      final DlmsDeviceRepository dlmsDeviceRepository) {
+  public DlmsConnectionHelper dlmsConnectionHelper() {
     final DevicePingConfig devicePingConfig =
         new DevicePingConfig() {
           @Override
