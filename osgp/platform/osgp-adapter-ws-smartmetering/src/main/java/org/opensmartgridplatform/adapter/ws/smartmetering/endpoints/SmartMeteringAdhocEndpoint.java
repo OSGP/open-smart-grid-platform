@@ -112,7 +112,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
     try {
       response = new SynchronizeTimeResponse();
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
@@ -174,7 +174,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
     try {
       response = new GetAllAttributeValuesResponse();
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
@@ -240,7 +240,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
     try {
       response = new GetSpecificAttributeValueResponse();
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
@@ -314,7 +314,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
     try {
       response = new GetAssociationLnObjectsResponse();
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
@@ -378,7 +378,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
     try {
       response = new ScanMbusChannelsResponse();
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       this.throwExceptionIfResultNotOk(responseData, "retrieving the scan m-bus channels response");

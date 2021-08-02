@@ -20,7 +20,9 @@ import org.springframework.xml.xsd.SimpleXsdSchema;
 @Configuration
 public class SmartmeteringWebServiceConfig {
 
-  private static final String COMMON_XSD_PATH = "schemas/common-ws-smartmetering.xsd";
+  private static final String COMMON_XSD_PATH = "schemas/base-ws-smartmetering.xsd";
+  private static final String SMART_METERING_COMMON_XSD_PATH =
+      "schemas/common-ws-smartmetering.xsd";
   private static final String SMART_METERING_INSTALLATION_XSD_PATH =
       "schemas/installation-ws-smartmetering.xsd";
   private static final String SMART_METERING_MANAGEMENT_XSD_PATH =
@@ -33,6 +35,7 @@ public class SmartmeteringWebServiceConfig {
   private static final String SMART_METERING_CONFIGURATION_XSD_PATH =
       "schemas/configuration-ws-smartmetering.xsd";
 
+  private static final String SMART_METERING_COMMON_WSDL_PATH = "SmartMeteringCommon.wsdl";
   private static final String SMART_METERING_INSTALLATION_WSDL_PATH =
       "SmartMeteringInstallation.wsdl";
   private static final String SMART_METERING_MANAGEMENT_WSDL_PATH = "SmartMeteringManagement.wsdl";
@@ -49,6 +52,7 @@ public class SmartmeteringWebServiceConfig {
     final Resource[] resources =
         new Resource[] {
           new ClassPathResource(COMMON_XSD_PATH),
+          new ClassPathResource(SMART_METERING_COMMON_XSD_PATH),
           new ClassPathResource(SMART_METERING_INSTALLATION_XSD_PATH),
           new ClassPathResource(SMART_METERING_MANAGEMENT_XSD_PATH),
           new ClassPathResource(SMART_METERING_BUNDLE_XSD_PATH),
@@ -60,9 +64,19 @@ public class SmartmeteringWebServiceConfig {
     return payloadValidatingInterceptor;
   }
 
-  @Bean(name = "common-ws-smartmetering")
+  @Bean(name = "common")
   public SimpleXsdSchema commonXsd() {
     return new SimpleXsdSchema(new ClassPathResource(COMMON_XSD_PATH));
+  }
+
+  @Bean(name = "SmartMeteringCommon")
+  public WsdlDefinition smartMeteringCommonWsdl() {
+    return new SimpleWsdl11Definition(new ClassPathResource(SMART_METERING_COMMON_WSDL_PATH));
+  }
+
+  @Bean(name = "common-ws-smartmetering")
+  public SimpleXsdSchema smartMeteringCommonXsd() {
+    return new SimpleXsdSchema(new ClassPathResource(SMART_METERING_COMMON_XSD_PATH));
   }
 
   @Bean(name = "SmartMeteringInstallation")
