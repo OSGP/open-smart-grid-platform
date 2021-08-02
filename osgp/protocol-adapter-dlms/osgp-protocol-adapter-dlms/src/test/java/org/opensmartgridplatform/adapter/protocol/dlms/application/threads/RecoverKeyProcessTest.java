@@ -33,6 +33,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Secr
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Hls5Connector;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.RecoverKeyException;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -49,6 +50,7 @@ public class RecoverKeyProcessTest {
   @Mock Hls5Connector hls5Connector;
   @Mock SecretManagementService secretManagementService;
   @Mock ThrottlingService throttlingService;
+  @Mock DlmsDeviceRepository dlmsDeviceRepository;
 
   private static final String DEVICE_IDENTIFICATION = "E000123456789";
   private static final String IP_ADDRESS = "1.1.1.1";
@@ -60,6 +62,7 @@ public class RecoverKeyProcessTest {
     this.recoverKeyProcess.setDeviceIdentification(DEVICE_IDENTIFICATION);
     this.recoverKeyProcess.setIpAddress(IP_ADDRESS);
     this.recoverKeyProcess.setMessageMetadata(MESSAGE_METADATA);
+    when(DEVICE.needsInvocationCounter()).thenReturn(true);
   }
 
   @Test
@@ -123,12 +126,15 @@ public class RecoverKeyProcessTest {
             MESSAGE_METADATA,
             DEVICE_IDENTIFICATION,
             Arrays.asList(E_METER_ENCRYPTION, E_METER_AUTHENTICATION));
+    verify(this.dlmsDeviceRepository).save(DEVICE);
   }
 
   @Test
   public void testWhenConnectionFailedThenConnectionClosedAtThrottlingService() throws Exception {
 
     // GIVEN
+    when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
+        .thenReturn(DEVICE);
     when(this.secretManagementService.hasNewSecretOfType(
             MESSAGE_METADATA, DEVICE_IDENTIFICATION, E_METER_AUTHENTICATION))
         .thenReturn(true);

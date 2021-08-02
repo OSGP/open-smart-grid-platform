@@ -21,7 +21,9 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Secr
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Hls5Connector;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.RecoverKeyException;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.InvocationCountingDlmsMessageListener;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @Slf4j
@@ -41,15 +43,19 @@ public class RecoverKeyProcess implements Runnable {
 
   private final ThrottlingService throttlingService;
 
+  private final DlmsDeviceRepository deviceRepository;
+
   public RecoverKeyProcess(
       final DomainHelperService domainHelperService,
       final Hls5Connector hls5Connector,
       final SecretManagementService secretManagementService,
-      final ThrottlingService throttlingService) {
+      final ThrottlingService throttlingService,
+      final DlmsDeviceRepository deviceRepository) {
     this.domainHelperService = domainHelperService;
     this.hls5Connector = hls5Connector;
     this.secretManagementService = secretManagementService;
     this.throttlingService = throttlingService;
+    this.deviceRepository = deviceRepository;
   }
 
   @Override
@@ -106,25 +112,39 @@ public class RecoverKeyProcess implements Runnable {
 
   private boolean canConnectUsingNewKeys(final DlmsDevice device) {
     DlmsConnection connection = null;
+    InvocationCountingDlmsMessageListener dlmsMessageListener = null;
     try {
       this.throttlingService.openConnection();
 
+      if (device.needsInvocationCounter()) {
+        dlmsMessageListener = new InvocationCountingDlmsMessageListener();
+      }
+
       connection =
           this.hls5Connector.connectUnchecked(
-              this.messageMetadata, device, null, this.secretManagementService::getNewKeys);
+              this.messageMetadata,
+              device,
+              dlmsMessageListener,
+              this.secretManagementService::getNewKeys);
       return connection != null;
     } catch (final Exception e) {
       log.warn("Connection exception: {}", e.getMessage(), e);
       return false;
     } finally {
-      this.throttlingService.closeConnection();
-
       if (connection != null) {
         try {
           connection.close();
         } catch (final IOException e) {
-          log.warn("Connection exception: {}", e.getMessage(), e);
+          log.warn("Closing connection exception: {}", e.getMessage(), e);
         }
+      }
+
+      this.throttlingService.closeConnection();
+
+      if (dlmsMessageListener != null) {
+        final int numberOfSentMessages = dlmsMessageListener.getNumberOfSentMessages();
+        device.incrementInvocationCounter(numberOfSentMessages);
+        this.deviceRepository.save(device);
       }
     }
   }

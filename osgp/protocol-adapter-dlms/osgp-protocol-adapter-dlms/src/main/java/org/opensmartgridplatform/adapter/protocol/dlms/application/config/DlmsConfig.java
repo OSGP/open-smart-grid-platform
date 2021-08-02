@@ -30,6 +30,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsDevi
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Hls5Connector;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Lls0Connector;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Lls1Connector;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.networking.DlmsChannelHandlerServer;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.networking.DlmsPushNotificationDecoder;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
@@ -162,9 +163,14 @@ public class DlmsConfig extends AbstractConfig {
       final DomainHelperService domainHelperService,
       final Hls5Connector hls5Connector,
       final SecretManagementService secretManagementService,
-      final ThrottlingService throttlingService) {
+      final ThrottlingService throttlingService,
+      final DlmsDeviceRepository deviceRepository) {
     return new RecoverKeyProcess(
-        domainHelperService, hls5Connector, secretManagementService, throttlingService);
+        domainHelperService,
+        hls5Connector,
+        secretManagementService,
+        throttlingService,
+        deviceRepository);
   }
 
   @Bean
