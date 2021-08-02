@@ -12,7 +12,7 @@
 
   <xsd:import
     namespace="http://www.opensmartgridplatform.org/schemas/common/2014/10"
-    schemaLocation="common.xsd" />
+    schemaLocation="base-ws-smartmetering.xsd" />
   <xsd:import
     namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-management/2014/10"
     schemaLocation="management-ws-smartmetering.xsd" />

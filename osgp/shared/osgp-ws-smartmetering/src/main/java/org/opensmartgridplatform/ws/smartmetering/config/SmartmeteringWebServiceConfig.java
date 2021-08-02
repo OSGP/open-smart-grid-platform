@@ -20,7 +20,7 @@ import org.springframework.xml.xsd.SimpleXsdSchema;
 @Configuration
 public class SmartmeteringWebServiceConfig {
 
-  private static final String COMMON_XSD_PATH = "schemas/common.xsd";
+  private static final String COMMON_XSD_PATH = "schemas/base-ws-smartmetering.xsd";
   private static final String SMART_METERING_COMMON_XSD_PATH =
       "schemas/common-ws-smartmetering.xsd";
   private static final String SMART_METERING_INSTALLATION_XSD_PATH =

@@ -6,7 +6,7 @@
             elementFormDefault="qualified"
             targetNamespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-monitoring/2014/10">
 
-  <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/common/2014/10" schemaLocation="common.xsd"/>
+  <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/common/2014/10" schemaLocation="base-ws-smartmetering.xsd"/>
 
   <!-- smart meter periodic -->
   <xsd:element name="PeriodicMeterReadsRequest">
