@@ -20,7 +20,7 @@ import org.springframework.xml.xsd.SimpleXsdSchema;
 @Configuration
 public class SmartmeteringNotificationWebServiceConfig {
 
-  private static final String COMMON_XSD_PATH = "schemas/common-ws-smartmetering.xsd";
+  private static final String COMMON_XSD_PATH = "schemas/base-ws-smartmetering.xsd";
 
   private static final String SMART_METERING_NOTIFICATION_XSD_PATH =
       "schemas/notification-ws-smartmetering.xsd";
@@ -44,7 +44,7 @@ public class SmartmeteringNotificationWebServiceConfig {
     return payloadValidatingInterceptor;
   }
 
-  @Bean(name = "common-ws-smartmetering")
+  @Bean(name = "common")
   public SimpleXsdSchema commonXsd() {
     return new SimpleXsdSchema(new ClassPathResource(COMMON_XSD_PATH));
   }
