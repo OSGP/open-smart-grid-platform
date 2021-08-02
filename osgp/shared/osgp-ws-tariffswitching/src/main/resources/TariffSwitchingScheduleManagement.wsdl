@@ -14,7 +14,7 @@
       xmlns:xsd="http://www.w3.org/2001/XMLSchema">
       <xsd:import
         namespace="http://www.opensmartgridplatform.org/schemas/tariffswitching/schedulemanagement/2014/10"
-        schemaLocation="schemas/ts-schedulemanagement.xsd" />
+        schemaLocation="schemas/schedulemanagement-ws-tariffswitching.xsd" />
     </xsd:schema>
   </wsdl:types>
 

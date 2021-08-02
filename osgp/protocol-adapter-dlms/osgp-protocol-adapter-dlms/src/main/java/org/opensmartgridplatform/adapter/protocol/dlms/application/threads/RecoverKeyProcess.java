@@ -13,6 +13,7 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Se
 
 import java.io.IOException;
 import java.util.Arrays;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.DlmsConnection;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
@@ -21,15 +22,18 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Thro
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Hls5Connector;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.RecoverKeyException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @Slf4j
 public class RecoverKeyProcess implements Runnable {
 
   private final DomainHelperService domainHelperService;
 
-  private String deviceIdentification;
+  @Setter private String deviceIdentification;
 
-  private String ipAddress;
+  @Setter private String ipAddress;
+
+  @Setter private MessageMetadata messageMetadata;
 
   private final Hls5Connector hls5Connector;
 
@@ -48,36 +52,36 @@ public class RecoverKeyProcess implements Runnable {
     this.throttlingService = throttlingService;
   }
 
-  public void setDeviceIdentification(final String deviceIdentification) {
-    this.deviceIdentification = deviceIdentification;
-  }
-
-  public void setIpAddress(final String ipAddress) {
-    this.ipAddress = ipAddress;
-  }
-
   @Override
   public void run() {
     this.checkState();
 
-    log.info("Attempting key recovery for device {}", this.deviceIdentification);
+    log.info(
+        "[{}] Attempting key recovery for device {}",
+        this.messageMetadata.getCorrelationUid(),
+        this.deviceIdentification);
 
     final DlmsDevice device = this.findDevice();
 
     if (!this.secretManagementService.hasNewSecretOfType(
-        this.deviceIdentification, E_METER_AUTHENTICATION)) {
-      log.error(
-          "Could not recover keys: device has no new authorisation key registered in secret-mgmt module");
+        this.messageMetadata, this.deviceIdentification, E_METER_AUTHENTICATION)) {
+      log.warn(
+          "[{}] Could not recover keys: device has no new authorisation key registered in secret-mgmt module",
+          this.messageMetadata.getCorrelationUid());
       return;
     }
     if (!this.canConnectUsingNewKeys(device)) {
-      log.error("Could not recover keys: could not connect to device using new keys");
+      log.warn(
+          "[{}] Could not recover keys: could not connect to device using new keys",
+          this.messageMetadata.getCorrelationUid());
       return;
     }
 
     try {
       this.secretManagementService.activateNewKeys(
-          this.deviceIdentification, Arrays.asList(E_METER_ENCRYPTION, E_METER_AUTHENTICATION));
+          this.messageMetadata,
+          this.deviceIdentification,
+          Arrays.asList(E_METER_ENCRYPTION, E_METER_AUTHENTICATION));
     } catch (final Exception e) {
       throw new RecoverKeyException(e);
     }
@@ -107,10 +111,10 @@ public class RecoverKeyProcess implements Runnable {
 
       connection =
           this.hls5Connector.connectUnchecked(
-              device, null, this.secretManagementService::getNewKeys);
+              this.messageMetadata, device, null, this.secretManagementService::getNewKeys);
       return connection != null;
     } catch (final Exception e) {
-      log.error("Connection exception: {}", e.getMessage(), e);
+      log.warn("Connection exception: {}", e.getMessage(), e);
       return false;
     } finally {
       this.throttlingService.closeConnection();

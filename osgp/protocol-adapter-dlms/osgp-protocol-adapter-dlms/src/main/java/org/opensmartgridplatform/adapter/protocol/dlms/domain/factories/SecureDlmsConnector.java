@@ -17,6 +17,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.InvocationCountingDlmsMessageListener;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 public abstract class SecureDlmsConnector extends Lls0Connector {
 
@@ -30,10 +31,12 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
   /**
    * Set the correct security attributes on the tcpConnectionBuilder.
    *
+   * @param messageMetadata the metadata of the request message
    * @param device The device to connect with.
    * @param tcpConnectionBuilder The connection builder instance.
    */
   protected abstract void setSecurity(
+      final MessageMetadata messageMetadata,
       final DlmsDevice device,
       final SecurityKeyProvider keyProvider,
       final TcpConnectionBuilder tcpConnectionBuilder)
@@ -42,6 +45,7 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
   /**
    * Create a connection with the device.
    *
+   * @param messageMetadata the metadata of the request message
    * @param device The device to connect with.
    * @param dlmsMessageListener Listener to set on the connection.
    * @return The connection.
@@ -49,6 +53,7 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
    * @throws OsgpException When there are problems reading the security and authorization keys.
    */
   DlmsConnection createConnection(
+      final MessageMetadata messageMetadata,
       final DlmsDevice device,
       final DlmsMessageListener dlmsMessageListener,
       final SecurityKeyProvider keyProvider)
@@ -68,7 +73,7 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
       tcpConnectionBuilder.useHdlc();
     }
 
-    this.setSecurity(device, keyProvider, tcpConnectionBuilder);
+    this.setSecurity(messageMetadata, device, keyProvider, tcpConnectionBuilder);
     this.setOptionalValues(device, tcpConnectionBuilder);
 
     if (device.isInDebugMode()

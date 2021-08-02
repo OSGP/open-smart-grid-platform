@@ -29,6 +29,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
 public class CoupleMbusDeviceByChannelCommandExecutorTest {
@@ -65,6 +66,9 @@ public class CoupleMbusDeviceByChannelCommandExecutorTest {
             version,
             deviceTypeIdentification);
 
+    final MessageMetadata messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+
     when(this.coupleMbusDeviceByChannelRequestDataDto.getChannel()).thenReturn(channel);
     when(this.deviceChannelsHelper.getMBusClientAttributeValues(this.conn, this.device, channel))
         .thenReturn(resultList);
@@ -72,7 +76,7 @@ public class CoupleMbusDeviceByChannelCommandExecutorTest {
 
     final CoupleMbusDeviceByChannelResponseDto responseDto =
         this.commandExecutor.execute(
-            this.conn, this.device, this.coupleMbusDeviceByChannelRequestDataDto);
+            this.conn, this.device, this.coupleMbusDeviceByChannelRequestDataDto, messageMetadata);
 
     assertThat(responseDto).isNotNull();
     assertThat(responseDto.getChannelElementValues()).isNotNull();

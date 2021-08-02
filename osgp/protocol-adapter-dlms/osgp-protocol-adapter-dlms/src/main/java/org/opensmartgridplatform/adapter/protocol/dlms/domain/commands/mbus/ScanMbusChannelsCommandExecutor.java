@@ -27,6 +27,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusShortEquipme
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ScanMbusChannelsRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ScanMbusChannelsResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,7 +114,10 @@ public class ScanMbusChannelsCommandExecutor
 
   @Override
   public ScanMbusChannelsResponseDto execute(
-      final DlmsConnectionManager conn, final DlmsDevice device, final Void mbusAttributesDto)
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final Void mbusAttributesDto,
+      final MessageMetadata messageMetadata)
       throws OsgpException {
 
     LOGGER.debug("retrieving mbus info on e-meter");

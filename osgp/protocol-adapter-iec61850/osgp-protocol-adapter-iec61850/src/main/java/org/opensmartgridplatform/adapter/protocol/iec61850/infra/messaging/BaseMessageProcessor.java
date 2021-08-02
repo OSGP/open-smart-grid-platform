@@ -17,7 +17,7 @@ import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.help
 import org.opensmartgridplatform.adapter.protocol.iec61850.infra.networking.services.Iec61850DeviceResponseHandler;
 import org.opensmartgridplatform.adapter.protocol.iec61850.services.DeviceResponseService;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -75,7 +75,7 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
    * osgp-core.
    */
   public void checkForRedelivery(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final OsgpException e,
       final DomainInformation domainInformation,
       final int jmsxDeliveryCount) {
@@ -144,18 +144,19 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
       ex = e;
     }
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceResponse.getDeviceIdentification(),
-            deviceResponse.getOrganisationIdentification(),
-            deviceResponse.getCorrelationUid(),
-            messageType,
-            deviceResponse.getMessagePriority());
+    final MessageMetadata deviceMessageMetadata =
+        new MessageMetadata.Builder(
+                deviceResponse.getCorrelationUid(),
+                deviceResponse.getOrganisationIdentification(),
+                deviceResponse.getDeviceIdentification(),
+                messageType)
+            .withMessagePriority(deviceResponse.getMessagePriority())
+            .build();
     final ProtocolResponseMessage protocolResponseMessage =
         new ProtocolResponseMessage.Builder()
             .domain(domainInformation.getDomain())
             .domainVersion(domainInformation.getDomainVersion())
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(deviceMessageMetadata)
             .result(result)
             .osgpException(ex)
             .retryCount(retryCount)
@@ -175,18 +176,19 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
 
     final int retryCount = Integer.MAX_VALUE;
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceResponse.getDeviceIdentification(),
-            deviceResponse.getOrganisationIdentification(),
-            deviceResponse.getCorrelationUid(),
-            messageType,
-            deviceResponse.getMessagePriority());
+    final MessageMetadata deviceMessageMetadata =
+        new MessageMetadata.Builder()
+            .withDeviceIdentification(deviceResponse.getDeviceIdentification())
+            .withOrganisationIdentification(deviceResponse.getOrganisationIdentification())
+            .withCorrelationUid(deviceResponse.getCorrelationUid())
+            .withMessageType(messageType)
+            .withMessagePriority(deviceResponse.getMessagePriority())
+            .build();
     final ProtocolResponseMessage protocolResponseMessage =
         new ProtocolResponseMessage.Builder()
             .domain(domainInformation.getDomain())
             .domainVersion(domainInformation.getDomainVersion())
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(deviceMessageMetadata)
             .result(ResponseMessageResultType.NOT_OK)
             .osgpException(e)
             .retryCount(retryCount)

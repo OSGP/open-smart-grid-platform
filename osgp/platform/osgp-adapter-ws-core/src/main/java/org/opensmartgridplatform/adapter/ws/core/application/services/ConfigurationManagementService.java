@@ -20,7 +20,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.validation.Identification;
@@ -75,18 +75,19 @@ public class ConfigurationManagementService {
         this.correlationIdProviderService.getCorrelationId(
             organisationIdentification, deviceIdentification);
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceIdentification,
-            organisationIdentification,
-            correlationUid,
-            MessageType.SET_CONFIGURATION.name(),
-            messagePriority,
-            scheduledTime == null ? null : scheduledTime.getMillis());
+    final MessageMetadata messageMetadata =
+        new MessageMetadata.Builder()
+            .withDeviceIdentification(deviceIdentification)
+            .withOrganisationIdentification(organisationIdentification)
+            .withCorrelationUid(correlationUid)
+            .withMessageType(MessageType.SET_CONFIGURATION.name())
+            .withMessagePriority(messagePriority)
+            .withScheduleTime(scheduledTime == null ? null : scheduledTime.getMillis())
+            .build();
 
     final CommonRequestMessage message =
         new CommonRequestMessage.Builder()
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(messageMetadata)
             .request(configuration)
             .build();
 
@@ -122,16 +123,17 @@ public class ConfigurationManagementService {
         this.correlationIdProviderService.getCorrelationId(
             organisationIdentification, deviceIdentification);
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceIdentification,
-            organisationIdentification,
-            correlationUid,
-            MessageType.GET_CONFIGURATION.name(),
-            messagePriority);
+    final MessageMetadata messageMetadata =
+        new MessageMetadata.Builder()
+            .withDeviceIdentification(deviceIdentification)
+            .withOrganisationIdentification(organisationIdentification)
+            .withCorrelationUid(correlationUid)
+            .withMessageType(MessageType.GET_CONFIGURATION.name())
+            .withMessagePriority(messagePriority)
+            .build();
 
     final CommonRequestMessage message =
-        new CommonRequestMessage.Builder().deviceMessageMetadata(deviceMessageMetadata).build();
+        new CommonRequestMessage.Builder().messageMetadata(messageMetadata).build();
 
     this.commonRequestMessageSender.send(message);
 
@@ -166,17 +168,18 @@ public class ConfigurationManagementService {
         this.correlationIdProviderService.getCorrelationId(
             organisationIdentification, deviceIdentification);
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceIdentification,
-            organisationIdentification,
-            correlationUid,
-            MessageType.SWITCH_CONFIGURATION_BANK.name(),
-            messagePriority);
+    final MessageMetadata messageMetadata =
+        new MessageMetadata.Builder()
+            .withDeviceIdentification(deviceIdentification)
+            .withOrganisationIdentification(organisationIdentification)
+            .withCorrelationUid(correlationUid)
+            .withMessageType(MessageType.SWITCH_CONFIGURATION_BANK.name())
+            .withMessagePriority(messagePriority)
+            .build();
 
     final CommonRequestMessage message =
         new CommonRequestMessage.Builder()
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(messageMetadata)
             .request(configurationBank)
             .build();
 

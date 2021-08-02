@@ -20,7 +20,7 @@
   </parent>
   <artifactId>parent-os-webapps</artifactId>
   <packaging>pom</packaging>
-  <name>os-webapps</name>
+  <name>parent-os-webapps</name>
   <description>Parent module</description>
   <distributionManagement>
     <site>

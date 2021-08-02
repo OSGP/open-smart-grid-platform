@@ -12,7 +12,7 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.endpoints;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.validation.Identification;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
@@ -38,15 +38,16 @@ public class RequestMessageMetadata {
     this.bypassRetry = builder.bypassRetry;
   }
 
-  public DeviceMessageMetadata newDeviceMessageMetadata(final String correlationUid) {
-    return new DeviceMessageMetadata(
-        this.getDeviceIdentification(),
-        this.getOrganisationIdentification(),
-        correlationUid,
-        this.getMessageType().name(),
-        this.getMessagePriority(),
-        this.getScheduleTime(),
-        this.isBypassRetry());
+  public MessageMetadata newMessageMetadata(final String correlationUid) {
+    return new MessageMetadata.Builder(
+            correlationUid,
+            this.getOrganisationIdentification(),
+            this.getDeviceIdentification(),
+            this.getMessageType().name())
+        .withMessagePriority(this.getMessagePriority())
+        .withScheduleTime(this.getScheduleTime())
+        .withBypassRetry(this.isBypassRetry())
+        .build();
   }
 
   public static Builder newBuilder() {

@@ -33,7 +33,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,8 +69,7 @@ public class MBusGatewayService {
    *     device and the channel
    */
   public void coupleMbusDevice(
-      final DeviceMessageMetadata deviceMessageMetadata,
-      final CoupleMbusDeviceRequestData requestData)
+      final MessageMetadata deviceMessageMetadata, final CoupleMbusDeviceRequestData requestData)
       throws FunctionalException {
 
     final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
@@ -107,15 +106,14 @@ public class MBusGatewayService {
           deviceMessageMetadata.getMessageType(),
           deviceMessageMetadata.getMessagePriority(),
           deviceMessageMetadata.getScheduleTime(),
-          deviceMessageMetadata.bypassRetry());
+          deviceMessageMetadata.isBypassRetry());
     } catch (final FunctionalException ex) {
       throw ex;
     }
   }
 
   public void decoupleMbusDevice(
-      final DeviceMessageMetadata deviceMessageMetadata,
-      final DecoupleMbusDeviceRequestData requestData)
+      final MessageMetadata deviceMessageMetadata, final DecoupleMbusDeviceRequestData requestData)
       throws FunctionalException {
 
     final String deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
@@ -152,12 +150,12 @@ public class MBusGatewayService {
           deviceMessageMetadata.getMessageType(),
           deviceMessageMetadata.getMessagePriority(),
           deviceMessageMetadata.getScheduleTime(),
-          deviceMessageMetadata.bypassRetry());
+          deviceMessageMetadata.isBypassRetry());
     }
   }
 
   public void decoupleMbusDeviceByChannel(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final DecoupleMbusDeviceByChannelRequestData requestData)
       throws FunctionalException {
 
@@ -184,7 +182,7 @@ public class MBusGatewayService {
         deviceMessageMetadata.getMessageType(),
         deviceMessageMetadata.getMessagePriority(),
         deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        deviceMessageMetadata.isBypassRetry());
   }
 
   private Optional<SmartMeter> findByMBusIdentificationNumber(
@@ -210,7 +208,7 @@ public class MBusGatewayService {
   }
 
   public void handleCoupleMbusDeviceResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final MbusChannelElementsResponseDto mbusChannelElementsResponseDto)
       throws FunctionalException {
 
@@ -222,7 +220,7 @@ public class MBusGatewayService {
   }
 
   public void coupleMbusDeviceByChannel(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final CoupleMbusDeviceByChannelRequestData requestData)
       throws FunctionalException {
 
@@ -249,11 +247,11 @@ public class MBusGatewayService {
         deviceMessageMetadata.getMessageType(),
         deviceMessageMetadata.getMessagePriority(),
         deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.bypassRetry());
+        deviceMessageMetadata.isBypassRetry());
   }
 
   public void handleCoupleMbusDeviceByChannelResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final CoupleMbusDeviceByChannelResponseDto coupleMbusDeviceByChannelResponseDto)
       throws FunctionalException {
 
@@ -323,7 +321,7 @@ public class MBusGatewayService {
    * @throws FunctionalException
    */
   public void handleDecoupleMbusDeviceResponse(
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata deviceMessageMetadata,
       final DecoupleMbusDeviceResponseDto decoupleMbusDeviceResponseDto)
       throws FunctionalException {
     final Optional<SmartMeter> mbusDeviceOnDeviceChannel =

@@ -17,7 +17,7 @@ import org.junit.runner.RunWith;
 @CucumberOptions(
     features = {
       "classpath:features/osgp-adapter-ws-distributionautomation",
-      "classpath:features/low-voltage"
+      "classpath:features/voltage"
     },
     tags = {"not @Skip", "not @NightlyBuildOnly"},
     glue = {

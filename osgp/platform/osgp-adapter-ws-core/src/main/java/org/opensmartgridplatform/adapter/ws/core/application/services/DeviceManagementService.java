@@ -62,7 +62,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.utils.SearchUtil;
@@ -644,17 +644,18 @@ public class DeviceManagementService {
     final EventNotificationMessageDataContainer eventNotificationMessageDataContainer =
         new EventNotificationMessageDataContainer(eventNotifications);
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceIdentification,
-            organisationIdentification,
-            correlationUid,
-            MessageType.SET_EVENT_NOTIFICATIONS.name(),
-            messagePriority);
+    final MessageMetadata messageMetadata =
+        new MessageMetadata.Builder()
+            .withDeviceIdentification(deviceIdentification)
+            .withOrganisationIdentification(organisationIdentification)
+            .withCorrelationUid(correlationUid)
+            .withMessageType(MessageType.SET_EVENT_NOTIFICATIONS.name())
+            .withMessagePriority(messagePriority)
+            .build();
 
     final CommonRequestMessage message =
         new CommonRequestMessage.Builder()
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(messageMetadata)
             .request(eventNotificationMessageDataContainer)
             .build();
 
@@ -909,17 +910,18 @@ public class DeviceManagementService {
         this.correlationIdProviderService.getCorrelationId(
             organisationIdentification, deviceIdentification);
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceIdentification,
-            organisationIdentification,
-            correlationUid,
-            MessageType.UPDATE_DEVICE_SSL_CERTIFICATION.name(),
-            messagePriority);
+    final MessageMetadata messageMetadata =
+        new MessageMetadata.Builder()
+            .withDeviceIdentification(deviceIdentification)
+            .withOrganisationIdentification(organisationIdentification)
+            .withCorrelationUid(correlationUid)
+            .withMessageType(MessageType.UPDATE_DEVICE_SSL_CERTIFICATION.name())
+            .withMessagePriority(messagePriority)
+            .build();
 
     final CommonRequestMessage message =
         new CommonRequestMessage.Builder()
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(messageMetadata)
             .request(certification)
             .build();
 
@@ -956,17 +958,18 @@ public class DeviceManagementService {
         this.correlationIdProviderService.getCorrelationId(
             organisationIdentification, deviceIdentification);
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceIdentification,
-            organisationIdentification,
-            correlationUid,
-            MessageType.SET_DEVICE_VERIFICATION_KEY.name(),
-            messagePriority);
+    final MessageMetadata messageMetadata =
+        new MessageMetadata.Builder()
+            .withDeviceIdentification(deviceIdentification)
+            .withOrganisationIdentification(organisationIdentification)
+            .withCorrelationUid(correlationUid)
+            .withMessageType(MessageType.SET_DEVICE_VERIFICATION_KEY.name())
+            .withMessagePriority(messagePriority)
+            .build();
 
     final CommonRequestMessage message =
         new CommonRequestMessage.Builder()
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(messageMetadata)
             .request(verificationKey)
             .build();
 
@@ -1008,16 +1011,17 @@ public class DeviceManagementService {
             org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus.valueOf(
                 deviceLifecycleStatus.name());
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceIdentification,
-            organisationIdentification,
-            correlationUid,
-            MessageType.SET_DEVICE_LIFECYCLE_STATUS.name());
+    final MessageMetadata messageMetadata =
+        new MessageMetadata.Builder()
+            .withDeviceIdentification(deviceIdentification)
+            .withOrganisationIdentification(organisationIdentification)
+            .withCorrelationUid(correlationUid)
+            .withMessageType(MessageType.SET_DEVICE_LIFECYCLE_STATUS.name())
+            .build();
 
     final CommonRequestMessage message =
         new CommonRequestMessage.Builder()
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(messageMetadata)
             .request(newDeviceLifecycleStatus)
             .build();
 
@@ -1053,16 +1057,17 @@ public class DeviceManagementService {
         this.correlationIdProviderService.getCorrelationId(
             organisationIdentification, deviceIdentification);
 
-    final DeviceMessageMetadata deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            deviceIdentification,
-            organisationIdentification,
-            correlationUid,
-            MessageType.UPDATE_DEVICE_CDMA_SETTINGS.name());
+    final MessageMetadata messageMetadata =
+        new MessageMetadata.Builder()
+            .withDeviceIdentification(deviceIdentification)
+            .withOrganisationIdentification(organisationIdentification)
+            .withCorrelationUid(correlationUid)
+            .withMessageType(MessageType.UPDATE_DEVICE_CDMA_SETTINGS.name())
+            .build();
 
     final CommonRequestMessage message =
         new CommonRequestMessage.Builder()
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(messageMetadata)
             .request(cdmaSettings)
             .build();
 

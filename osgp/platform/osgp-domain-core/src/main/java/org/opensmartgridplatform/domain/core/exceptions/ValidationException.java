@@ -22,7 +22,7 @@ public class ValidationException extends PlatformException {
 
   private static final String DEFAULT_MESSAGE = "Validation Exception";
 
-  private final transient Set<? extends ConstraintViolation<?>> constraintViolations;
+  private final transient Set<ConstraintViolation<?>> constraintViolations;
 
   public ValidationException() {
     super(DEFAULT_MESSAGE);
@@ -34,18 +34,20 @@ public class ValidationException extends PlatformException {
     this.constraintViolations = null;
   }
 
-  public ValidationException(final Set<? extends ConstraintViolation<?>> constraintViolations) {
+  public ValidationException(final Set<ConstraintViolation<?>> constraintViolations) {
     super(DEFAULT_MESSAGE + ", violations: " + convertToString(constraintViolations));
     this.constraintViolations = constraintViolations;
   }
 
   public ValidationException(
-      final String message, final Set<? extends ConstraintViolation<?>> constraintViolations) {
+      final String message, final Set<ConstraintViolation<?>> constraintViolations) {
     super(message);
     this.constraintViolations = constraintViolations;
   }
 
-  public Set<? extends ConstraintViolation<?>> getConstraintViolations() {
+  @SuppressWarnings(
+      "squid:S1452") // Wildcard necessary here, generic is used for very different classes
+  public Set<ConstraintViolation<?>> getConstraintViolations() {
     return this.constraintViolations;
   }
 
@@ -58,16 +60,18 @@ public class ValidationException extends PlatformException {
     if (this.constraintViolations != null && !this.constraintViolations.isEmpty()) {
       result.append(", violations: ");
       for (final ConstraintViolation<?> violation : this.constraintViolations) {
-        result.append(
-            violation.getPropertyPath() + ", invalid value: " + violation.getInvalidValue() + "; ");
+        result
+            .append(violation.getPropertyPath())
+            .append(", invalid value: ")
+            .append(violation.getInvalidValue())
+            .append("; ");
       }
     }
 
     return result.toString();
   }
 
-  private static String convertToString(
-      final Set<? extends ConstraintViolation<?>> constraintViolations) {
+  private static String convertToString(final Set<ConstraintViolation<?>> constraintViolations) {
     final StringBuilder violations = new StringBuilder();
 
     for (final ConstraintViolation<?> violation : constraintViolations) {

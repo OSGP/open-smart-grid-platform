@@ -14,7 +14,7 @@
       xmlns:xsd="http://www.w3.org/2001/XMLSchema">
       <xsd:import
         namespace="http://www.opensmartgridplatform.org/schemas/tariffswitching/adhocmanagement/2014/10"
-        schemaLocation="schemas/ts-adhocmanagement.xsd" />
+        schemaLocation="schemas/adhocmanagement-ws-tariffswitching.xsd" />
     </xsd:schema>
   </wsdl:types>
 

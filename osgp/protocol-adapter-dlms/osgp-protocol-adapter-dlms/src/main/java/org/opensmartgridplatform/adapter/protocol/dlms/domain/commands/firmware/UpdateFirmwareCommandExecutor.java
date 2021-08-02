@@ -8,23 +8,20 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware;
 
-import java.util.List;
-import javax.annotation.PostConstruct;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.FirmwareFileCachingRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ImageTransferException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -39,57 +36,36 @@ public class UpdateFirmwareCommandExecutor
   private static final String EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE =
       "Firmware file is not available.";
 
-  @Autowired private FirmwareFileCachingRepository firmwareFileCachingRepository;
+  private final FirmwareFileCachingRepository firmwareFileCachingRepository;
+  private final ImageTransfer.ImageTranferProperties imageTransferProperties;
 
-  @Autowired private GetFirmwareVersionsCommandExecutor getFirmwareVersionsCommandExecutor;
-
-  @Value("${command.updatefirmware.activationstatuscheck.interval}")
-  private int activationStatusCheckInterval;
-
-  @Value("${command.updatefirmware.activationstatuscheck.timeout}")
-  private int activationStatusCheckTimeout;
-
-  @Value("${command.updatefirmware.verificationstatuscheck.interval}")
-  private int verificationStatusCheckInterval;
-
-  @Value("${command.updatefirmware.verificationstatuscheck.timeout}")
-  private int verificationStatusCheckTimeout;
-
-  @Value("${command.updatefirmware.initiationstatuscheck.interval}")
-  private int initiationStatusCheckInterval;
-
-  @Value("${command.updatefirmware.initiationstatuscheck.timeout}")
-  private int initiationStatusCheckTimeout;
-
-  private ImageTransfer.ImageTranferProperties imageTransferProperties;
-
-  public UpdateFirmwareCommandExecutor() {
+  public UpdateFirmwareCommandExecutor(
+      final FirmwareFileCachingRepository firmwareFileCachingRepository,
+      @Value("${command.updatefirmware.verificationstatuscheck.interval}")
+          final int verificationStatusCheckInterval,
+      @Value("${command.updatefirmware.verificationstatuscheck.timeout}")
+          final int verificationStatusCheckTimeout,
+      @Value("${command.updatefirmware.initiationstatuscheck.interval}")
+          final int initiationStatusCheckInterval,
+      @Value("${command.updatefirmware.initiationstatuscheck.timeout}")
+          final int initiationStatusCheckTimeout) {
     super(UpdateFirmwareRequestDto.class);
-  }
+    this.firmwareFileCachingRepository = firmwareFileCachingRepository;
 
-  @PostConstruct
-  @Override
-  public void init() {
     this.imageTransferProperties = new ImageTransfer.ImageTranferProperties();
-    this.imageTransferProperties.setActivationStatusCheckInterval(
-        this.activationStatusCheckInterval);
-    this.imageTransferProperties.setActivationStatusCheckTimeout(this.activationStatusCheckTimeout);
     this.imageTransferProperties.setVerificationStatusCheckInterval(
-        this.verificationStatusCheckInterval);
-    this.imageTransferProperties.setVerificationStatusCheckTimeout(
-        this.verificationStatusCheckTimeout);
-    this.imageTransferProperties.setInitiationStatusCheckInterval(
-        this.initiationStatusCheckInterval);
-    this.imageTransferProperties.setInitiationStatusCheckTimeout(this.initiationStatusCheckTimeout);
-
-    super.init();
+        verificationStatusCheckInterval);
+    this.imageTransferProperties.setVerificationStatusCheckTimeout(verificationStatusCheckTimeout);
+    this.imageTransferProperties.setInitiationStatusCheckInterval(initiationStatusCheckInterval);
+    this.imageTransferProperties.setInitiationStatusCheckTimeout(initiationStatusCheckTimeout);
   }
 
   @Override
   public UpdateFirmwareResponseDto execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final String firmwareIdentification)
+      final String firmwareIdentification,
+      final MessageMetadata messageMetadata)
       throws OsgpException {
     final ImageTransfer transfer =
         new ImageTransfer(
@@ -102,8 +78,8 @@ public class UpdateFirmwareCommandExecutor
       this.prepare(transfer);
       this.transfer(transfer);
       this.verify(transfer);
-      final List<FirmwareVersionDto> firmwareVersions = this.activate(conn, device, transfer);
-      return new UpdateFirmwareResponseDto(firmwareIdentification, firmwareVersions);
+      this.activate(transfer);
+      return new UpdateFirmwareResponseDto(firmwareIdentification);
     } catch (final ImageTransferException | ProtocolAdapterException e) {
       throw new ProtocolAdapterException(EXCEPTION_MSG_UPDATE_FAILED, e);
     } finally {
@@ -134,12 +110,9 @@ public class UpdateFirmwareCommandExecutor
     }
   }
 
-  private List<FirmwareVersionDto> activate(
-      final DlmsConnectionManager conn, final DlmsDevice device, final ImageTransfer transfer)
-      throws OsgpException {
+  private void activate(final ImageTransfer transfer) throws OsgpException {
     if (transfer.imageIsVerified() && transfer.imageToActivateOk()) {
       transfer.activateImage();
-      return this.getFirmwareVersionsCommandExecutor.execute(conn, device, null);
     } else {
       throw new ProtocolAdapterException("An unknown error occurred while updating firmware.");
     }

@@ -35,6 +35,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFla
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 public abstract class SetConfigurationObjectCommandExecutorITBase {
 
@@ -45,6 +46,7 @@ public abstract class SetConfigurationObjectCommandExecutorITBase {
   @Captor ArgumentCaptor<SetParameter> setParameterArgumentCaptor;
 
   @Mock private DlmsMessageListener dlmsMessageListener;
+  MessageMetadata messageMetadata;
 
   public void setUp(
       final GetConfigurationObjectService getService,
@@ -54,6 +56,9 @@ public abstract class SetConfigurationObjectCommandExecutorITBase {
     protocolServices.add(getService);
     protocolServices.add(setService);
     final ProtocolServiceLookup protocolServiceLookup = new ProtocolServiceLookup(protocolServices);
+    this.messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+
     this.instance = new SetConfigurationObjectCommandExecutor(protocolServiceLookup);
 
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);

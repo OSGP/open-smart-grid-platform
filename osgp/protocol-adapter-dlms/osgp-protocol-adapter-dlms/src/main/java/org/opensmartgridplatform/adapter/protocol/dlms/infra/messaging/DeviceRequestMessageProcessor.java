@@ -12,6 +12,7 @@ import java.io.Serializable;
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -22,8 +23,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -33,10 +32,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * process should be passed in at construction. The Singleton instance is added to the HashMap of
  * MessageProcessors after dependency injection has completed.
  */
+@Slf4j
 public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessageProcessor
     implements MessageProcessor {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRequestMessageProcessor.class);
+  /** Constant to signal that message processor doesn't (have to) send a response. */
+  protected static final String NO_RESPONSE = "NO-RESPONSE";
 
   @Autowired protected DeviceResponseMessageSender responseMessageSender;
 
@@ -66,67 +67,83 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
     this.dlmsRequestMessageProcessorMap.addMessageProcessor(this.messageType, this);
   }
 
-  @SuppressWarnings("squid:S1193") // SilentException cannot be caught since
-  // it does not extend Exception.
   @Override
   public void processMessage(final ObjectMessage message) throws JMSException {
-    LOGGER.debug("Processing {} request message", this.messageType);
+    log.debug("Processing {} request message", this.messageType);
 
     MessageMetadata messageMetadata = null;
-    DlmsConnectionManager conn = null;
+    DlmsConnectionManager connectionManager = null;
     DlmsDevice device = null;
 
     try {
       messageMetadata = MessageMetadata.fromMessage(message);
 
-      /**
-       * The happy flow for addMeter requires that the dlmsDevice does not exist. Because the
-       * findDlmsDevice below throws a runtime exception, we skip this call in the addMeter flow.
-       * The AddMeterRequestMessageProcessor will throw the appropriate 'dlmsDevice already exists'
-       * error if the dlmsDevice does exists!
-       */
-      if (!MessageType.ADD_METER.name().equals(messageMetadata.getMessageType())) {
+      if (this.requiresExistingDevice()) {
         device = this.domainHelperService.findDlmsDevice(messageMetadata);
       }
 
-      LOGGER.info(
-          "{} called for device: {} for organisation: {}",
+      log.info(
+          "{} called for device: {} for organisation: {}, correlationUID={}",
           message.getJMSType(),
           messageMetadata.getDeviceIdentification(),
-          messageMetadata.getOrganisationIdentification());
+          messageMetadata.getOrganisationIdentification(),
+          messageMetadata.getCorrelationUid());
 
-      final Serializable response;
       if (this.usesDeviceConnection()) {
-        conn = this.createConnectionForDevice(device, messageMetadata);
-        response = this.handleMessage(conn, device, message.getObject());
-      } else {
-        response = this.handleMessage(device, message.getObject());
+        connectionManager = this.createConnectionForDevice(device, messageMetadata);
       }
 
-      // Send response
-      this.sendResponseMessage(
-          messageMetadata,
-          ResponseMessageResultType.OK,
-          null,
-          this.responseMessageSender,
-          response);
+      final Serializable response =
+          this.getResponse(connectionManager, device, message.getObject(), messageMetadata);
+      this.sendResponse(messageMetadata, response);
+
     } catch (final JMSException exception) {
-      this.logJmsException(LOGGER, exception, messageMetadata);
+      this.logJmsException(log, exception, messageMetadata);
     } catch (final Exception exception) {
-      // Return original request + exception
-      if (!(exception instanceof SilentException)) {
-        LOGGER.error("Unexpected exception during {}", this.messageType.name(), exception);
-      }
 
-      this.sendResponseMessage(
-          messageMetadata,
-          ResponseMessageResultType.NOT_OK,
-          exception,
-          this.responseMessageSender,
-          message.getObject());
+      this.sendErrorResponse(messageMetadata, exception, message.getObject());
+
     } finally {
-      this.doConnectionPostProcessing(device, conn);
+      this.doConnectionPostProcessing(device, connectionManager);
     }
+  }
+
+  protected Serializable getResponse(
+      final DlmsConnectionManager connectionManager,
+      final DlmsDevice device,
+      final Serializable request,
+      final MessageMetadata messageMetadata)
+      throws OsgpException {
+    if (connectionManager != null) {
+      return this.handleMessage(connectionManager, device, request, messageMetadata);
+    } else {
+      return this.handleMessage(device, request, messageMetadata);
+    }
+  }
+
+  protected void sendResponse(final MessageMetadata metadata, final Serializable response) {
+    if (!NO_RESPONSE.equals(response)) {
+      this.sendResponseMessage(
+          metadata, ResponseMessageResultType.OK, null, this.responseMessageSender, response);
+    }
+  }
+
+  protected void sendErrorResponse(
+      final MessageMetadata metadata, final Exception exception, final Serializable requestObject) {
+    // Return original request + exception
+    if (!(exception instanceof SilentException)) {
+      final String errorMessage =
+          String.format(
+              "Unexpected exception during %s, correlationUID=%s",
+              this.messageType.name(), metadata.getCorrelationUid());
+      log.error(errorMessage, exception);
+    }
+    this.sendResponseMessage(
+        metadata,
+        ResponseMessageResultType.NOT_OK,
+        exception,
+        this.responseMessageSender,
+        requestObject);
   }
 
   /**
@@ -137,17 +154,24 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
    * @param conn the connection to the device.
    * @param device the device.
    * @param requestObject Request data object.
+   * @param messageMetadata the metadata of the request message
    * @return A serializable object to be put on the response queue.
    */
   protected Serializable handleMessage(
-      final DlmsConnectionManager conn, final DlmsDevice device, final Serializable requestObject)
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final Serializable requestObject,
+      final MessageMetadata messageMetadata)
       throws OsgpException {
     throw new UnsupportedOperationException(
         "handleMessage(DlmsConnection, DlmsDevice, Serializable) should be overriden by a subclass, or "
             + "usesDeviceConnection should return false.");
   }
 
-  protected Serializable handleMessage(final DlmsDevice device, final Serializable requestObject)
+  protected Serializable handleMessage(
+      final DlmsDevice device,
+      final Serializable requestObject,
+      final MessageMetadata messageMetadata)
       throws OsgpException {
     throw new UnsupportedOperationException(
         "handleMessage(Serializable) should be overriden by a subclass, or usesDeviceConnection should return"
@@ -161,6 +185,10 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
    * @return Use device connection in handleMessage.
    */
   protected boolean usesDeviceConnection() {
+    return true;
+  }
+
+  protected boolean requiresExistingDevice() {
     return true;
   }
 }

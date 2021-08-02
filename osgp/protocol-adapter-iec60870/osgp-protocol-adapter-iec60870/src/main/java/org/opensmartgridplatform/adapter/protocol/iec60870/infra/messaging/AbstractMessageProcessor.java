@@ -17,7 +17,6 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.Loggi
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.PendingRequestsQueue;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.RequestMetadata;
 import org.opensmartgridplatform.shared.exceptionhandling.ProtocolAdapterException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
@@ -120,16 +119,14 @@ public abstract class AbstractMessageProcessor implements MessageProcessor {
       final MessageMetadata messageMetadata, final ProtocolAdapterException e) {
     LOGGER.warn("Error while processing message", e);
 
-    final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(messageMetadata);
-
     this.pendingRequestsQueue.remove(
-        deviceMessageMetadata.getDeviceIdentification(), deviceMessageMetadata.getCorrelationUid());
+        messageMetadata.getDeviceIdentification(), messageMetadata.getCorrelationUid());
 
     final ProtocolResponseMessage protocolResponseMessage =
         new ProtocolResponseMessage.Builder()
             .domain(messageMetadata.getDomain())
             .domainVersion(messageMetadata.getDomainVersion())
-            .deviceMessageMetadata(deviceMessageMetadata)
+            .messageMetadata(messageMetadata)
             .result(ResponseMessageResultType.NOT_OK)
             .osgpException(e)
             .retryCount(messageMetadata.getRetryCount())

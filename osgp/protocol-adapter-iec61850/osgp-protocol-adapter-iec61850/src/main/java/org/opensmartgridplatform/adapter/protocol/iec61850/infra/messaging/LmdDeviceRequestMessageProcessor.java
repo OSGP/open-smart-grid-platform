@@ -12,7 +12,7 @@ package org.opensmartgridplatform.adapter.protocol.iec61850.infra.messaging;
 import javax.annotation.PostConstruct;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.DeviceResponse;
 import org.opensmartgridplatform.adapter.protocol.iec61850.device.lmd.LmdDeviceService;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -44,9 +44,9 @@ public abstract class LmdDeviceRequestMessageProcessor extends BaseMessageProces
     this.iec61850RequestMessageProcessorMap.addMessageProcessor(this.messageType, this);
   }
 
-  protected static DeviceMessageMetadata getDeviceMessageMetadata(
+  protected static MessageMetadata getMessageMetadata(
       final DeviceResponse deviceResponse, final String messageType) {
-    return new DeviceMessageMetadata.Builder()
+    return new MessageMetadata.Builder()
         .withDeviceIdentification(deviceResponse.getDeviceIdentification())
         .withOrganisationIdentification(deviceResponse.getOrganisationIdentification())
         .withCorrelationUid(deviceResponse.getCorrelationUid())

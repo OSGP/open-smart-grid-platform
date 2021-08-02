@@ -24,6 +24,7 @@ import org.opensmartgridplatform.dlms.interfaceclass.attribute.MbusClientAttribu
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EncryptionKeyStatusTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusResponseDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -55,7 +56,8 @@ public class GetMbusEncryptionKeyStatusCommandExecutor
   public GetMbusEncryptionKeyStatusResponseDto execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final GetMbusEncryptionKeyStatusRequestDto request)
+      final GetMbusEncryptionKeyStatusRequestDto request,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     final EncryptionKeyStatusTypeDto encryptionKeyStatusType =

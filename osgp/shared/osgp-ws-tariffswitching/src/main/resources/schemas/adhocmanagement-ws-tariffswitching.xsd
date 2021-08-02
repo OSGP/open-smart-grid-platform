@@ -1,0 +1,139 @@
+<!--
+
+    Copyright 2015 Smart Society Services B.V.
+
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
+  xmlns:tns="http://www.opensmartgridplatform.org/schemas/tariffswitching/adhocmanagement/2014/10"
+  attributeFormDefault="unqualified" elementFormDefault="qualified"
+  targetNamespace="http://www.opensmartgridplatform.org/schemas/tariffswitching/adhocmanagement/2014/10">
+
+  <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/common/2014/10"
+    schemaLocation="common-ws-tariffswitching.xsd" />
+
+  <xsd:element name="GetDevicesRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Page" type="xsd:int" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="GetDevicesResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DevicePage" type="tns:DevicePage" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="GetStatusRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:Identification"
+          minOccurs="1" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="GetStatusAsyncResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="AsyncResponse" type="common:AsyncResponse" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="GetStatusAsyncRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="AsyncRequest" type="common:AsyncRequest" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="GetStatusResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType"
+          minOccurs="1" />
+        <xsd:element name="Description" type="xsd:string" />
+        <xsd:element name="DeviceStatus" type="tns:DeviceStatus" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="DeviceStatus">
+    <xsd:sequence>
+      <xsd:element maxOccurs="unbounded" name="TariffValues"
+        type="tns:TariffValue" />
+      <xsd:element name="PreferredLinkType" type="tns:LinkType"
+        minOccurs="1" maxOccurs="1" />
+      <xsd:element name="ActualLinkType" type="tns:LinkType"
+        minOccurs="1" maxOccurs="1" />
+      <xsd:element minOccurs="0" maxOccurs="8"
+        name="EventNotifications" type="tns:EventNotificationType" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Device">
+    <xsd:sequence>
+      <xsd:element name="DeviceUid" type="xsd:string" />
+      <xsd:element name="DeviceIdentification" type="common:Identification" />
+      <xsd:element name="DeviceType" type="xsd:string" />
+      <xsd:element name="Activated" type="xsd:boolean" />
+      <xsd:element name="HasSchedule" type="xsd:boolean" />
+      <xsd:element name="PublicKeyPresent" type="xsd:boolean" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="DevicePage">
+    <xsd:sequence>
+      <xsd:element name="TotalPages" type="xsd:int" />
+      <xsd:element maxOccurs="unbounded" name="Devices"
+        type="tns:Device" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="TariffValue">
+    <xsd:sequence>
+      <xsd:element minOccurs="0" name="Index">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:int">
+            <xsd:minInclusive value="0" />
+            <xsd:maxInclusive value="6" />
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="High" type="xsd:boolean" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:simpleType name="LinkType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="LINK_NOT_SET" />
+      <xsd:enumeration value="GPRS" />
+      <xsd:enumeration value="CDMA" />
+      <xsd:enumeration value="ETHERNET" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="EventNotificationType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="DIAG_EVENTS" />
+      <xsd:enumeration value="HARDWARE_FAILURE" />
+      <xsd:enumeration value="LIGHT_EVENTS" />
+      <xsd:enumeration value="TARIFF_EVENTS" />
+      <xsd:enumeration value="MONITOR_EVENTS" />
+      <xsd:enumeration value="FIRMWARE_EVENTS" />
+      <xsd:enumeration value="COMM_EVENTS" />
+      <xsd:enumeration value="SECURITY_EVENTS" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+</xsd:schema>

@@ -12,6 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -28,11 +29,13 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.InvocationCountingDlmsMessageListener;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.networking.ping.Pinger;
 
 @ExtendWith(MockitoExtension.class)
 class DlmsConnectionHelperTest {
   private DlmsConnectionHelper helper;
+  private MessageMetadata messageMetadata;
 
   @Mock private InvocationCounterManager invocationCounterManager;
 
@@ -46,7 +49,9 @@ class DlmsConnectionHelperTest {
   void setUp() {
     this.helper =
         new DlmsConnectionHelper(
-            this.invocationCounterManager, this.connectionFactory, this.devicePingConfig);
+            this.invocationCounterManager, this.connectionFactory, this.devicePingConfig, 0);
+    this.messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
   }
 
   @Test
@@ -58,7 +63,7 @@ class DlmsConnectionHelperTest {
     device.setIpAddress(deviceIpAddress);
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
-    this.helper.createConnectionForDevice(device, listener);
+    this.helper.createConnectionForDevice(this.messageMetadata, device, listener);
 
     verify(this.pinger).ping(deviceIpAddress);
   }
@@ -72,7 +77,7 @@ class DlmsConnectionHelperTest {
     device.setIpAddress(noIpAddress);
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
-    this.helper.createConnectionForDevice(device, listener);
+    this.helper.createConnectionForDevice(this.messageMetadata, device, listener);
 
     verifyNoInteractions(this.pinger);
     verifyNoMoreInteractions(this.devicePingConfig);
@@ -86,7 +91,7 @@ class DlmsConnectionHelperTest {
     device.setIpAddress(deviceIpAddress);
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
-    this.helper.createConnectionForDevice(device, listener);
+    this.helper.createConnectionForDevice(this.messageMetadata, device, listener);
 
     verifyNoInteractions(this.pinger);
     verifyNoMoreInteractions(this.devicePingConfig);
@@ -98,9 +103,11 @@ class DlmsConnectionHelperTest {
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
     final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
-    when(this.connectionFactory.getConnection(device, listener)).thenReturn(connectionManager);
+    when(this.connectionFactory.getConnection(this.messageMetadata, device, listener))
+        .thenReturn(connectionManager);
 
-    final DlmsConnectionManager result = this.helper.createConnectionForDevice(device, listener);
+    final DlmsConnectionManager result =
+        this.helper.createConnectionForDevice(this.messageMetadata, device, listener);
 
     assertThat(result).isSameAs(connectionManager);
   }
@@ -118,11 +125,12 @@ class DlmsConnectionHelperTest {
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
     final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
-    when(this.connectionFactory.getConnection(device, listener)).thenReturn(connectionManager);
+    when(this.connectionFactory.getConnection(this.messageMetadata, device, listener))
+        .thenReturn(connectionManager);
 
-    this.helper.createConnectionForDevice(device, listener);
+    this.helper.createConnectionForDevice(this.messageMetadata, device, listener);
 
-    verify(this.invocationCounterManager).initializeInvocationCounter(device);
+    verify(this.invocationCounterManager).initializeInvocationCounter(this.messageMetadata, device);
   }
 
   @Test
@@ -133,9 +141,11 @@ class DlmsConnectionHelperTest {
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
     final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
-    when(this.connectionFactory.getConnection(device, listener)).thenReturn(connectionManager);
+    when(this.connectionFactory.getConnection(this.messageMetadata, device, listener))
+        .thenReturn(connectionManager);
 
-    final DlmsConnectionManager result = this.helper.createConnectionForDevice(device, listener);
+    final DlmsConnectionManager result =
+        this.helper.createConnectionForDevice(this.messageMetadata, device, listener);
 
     assertThat(result).isSameAs(connectionManager);
 
@@ -143,7 +153,8 @@ class DlmsConnectionHelperTest {
   }
 
   @Test
-  void resetsInvocationCounterWhenInvocationCounterIsOutOfSyncForIskraDevice() throws Exception {
+  void initializesInvocationCounterWhenInvocationCounterIsOutOfSyncForIskraDevice()
+      throws Exception {
     final DlmsDevice device =
         new DlmsDeviceBuilder()
             .withHls5Active(true)
@@ -157,20 +168,24 @@ class DlmsConnectionHelperTest {
             "Error creating connection for device E0033006878667817 with Ip address:62.133.86.119 Port:4059 "
                 + "UseHdlc:false UseSn:false Message:UNKNOWN: Received an association response (AARE) with an"
                 + " error message. Result name REJECTED_PERMANENT. Assumed fault: user.");
-    doThrow(exception).when(this.connectionFactory).getConnection(device, listener);
+    doThrow(exception)
+        .when(this.connectionFactory)
+        .getConnection(this.messageMetadata, device, listener);
 
     try {
-      this.helper.createConnectionForDevice(device, listener);
+      this.helper.createConnectionForDevice(this.messageMetadata, device, listener);
       fail("Expected ConnectionException");
     } catch (final ConnectionException e) {
       // expected
     }
 
-    verify(this.invocationCounterManager).resetInvocationCounter(device);
+    verify(this.invocationCounterManager).initializeInvocationCounter(this.messageMetadata, device);
+    verify(this.connectionFactory, times(2)).getConnection(this.messageMetadata, device, listener);
   }
 
   @Test
-  void resetsInvocationCounterWhenInvocationCounterIsOutOfSyncForLAndGDevice() throws Exception {
+  void initializesInvocationCounterWhenInvocationCounterIsOutOfSyncForLAndGDevice()
+      throws Exception {
     final DlmsDevice device =
         new DlmsDeviceBuilder()
             .withHls5Active(true)
@@ -183,16 +198,19 @@ class DlmsConnectionHelperTest {
         new ConnectionException(
             "Error creating connection for device E0051004228715518 with Ip address:62.133.88.34 Port:null "
                 + "UseHdlc:false UseSn:false Message:Socket was closed by remote host.");
-    doThrow(exception).when(this.connectionFactory).getConnection(device, listener);
+    doThrow(exception)
+        .when(this.connectionFactory)
+        .getConnection(this.messageMetadata, device, listener);
 
     try {
-      this.helper.createConnectionForDevice(device, listener);
+      this.helper.createConnectionForDevice(this.messageMetadata, device, listener);
       fail("Expected ConnectionException");
     } catch (final ConnectionException e) {
       // expected
     }
 
-    verify(this.invocationCounterManager).resetInvocationCounter(device);
+    verify(this.invocationCounterManager).initializeInvocationCounter(this.messageMetadata, device);
+    verify(this.connectionFactory, times(2)).getConnection(this.messageMetadata, device, listener);
   }
 
   @Test
@@ -211,10 +229,12 @@ class DlmsConnectionHelperTest {
         new ConnectionException(
             "Error creating connection for device E0051004228715518 with Ip address:62.133.88.34 Port:null "
                 + "UseHdlc:false UseSn:false Message:Socket was closed by remote host.");
-    doThrow(exception).when(this.connectionFactory).getConnection(device, listener);
+    doThrow(exception)
+        .when(this.connectionFactory)
+        .getConnection(this.messageMetadata, device, listener);
 
     try {
-      this.helper.createConnectionForDevice(device, listener);
+      this.helper.createConnectionForDevice(this.messageMetadata, device, listener);
       fail("Expected ConnectionException");
     } catch (final ConnectionException e) {
       // expected

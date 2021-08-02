@@ -12,7 +12,7 @@
   xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
   xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-  <jxb:bindings schemaLocation="../schemas/pl-adhocmanagement.xsd">
+  <jxb:bindings schemaLocation="../schemas/adhocmanagement-ws-publiclighting.xsd">
     <jxb:schemaBindings>
       <jxb:package name="org.opensmartgridplatform.adapter.ws.schema.publiclighting.adhocmanagement"></jxb:package>
     </jxb:schemaBindings>

@@ -14,7 +14,7 @@
   xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
   xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-  <jxb:bindings schemaLocation="../schemas/notification.xsd">
+  <jxb:bindings schemaLocation="../schemas/notification-ws-microgrids.xsd">
     <jxb:schemaBindings>
       <jxb:package name="org.opensmartgridplatform.adapter.ws.schema.microgrids.notification"></jxb:package>
     </jxb:schemaBindings>

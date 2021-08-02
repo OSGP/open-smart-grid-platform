@@ -26,6 +26,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +47,10 @@ public class Lls1Connector extends SecureDlmsConnector {
 
   @Override
   public DlmsConnection connect(
-      final DlmsDevice device, final DlmsMessageListener dlmsMessageListener) throws OsgpException {
+      final MessageMetadata messageMetadata,
+      final DlmsDevice device,
+      final DlmsMessageListener dlmsMessageListener)
+      throws OsgpException {
 
     // Make sure neither device or device.getIpAddress() is null.
     this.checkDevice(device);
@@ -54,7 +58,7 @@ public class Lls1Connector extends SecureDlmsConnector {
 
     try {
       return this.createConnection(
-          device, dlmsMessageListener, this.secretManagementService::getKeys);
+          messageMetadata, device, dlmsMessageListener, this.secretManagementService::getKeys);
     } catch (final UnknownHostException e) {
       LOGGER.warn("The IP address is not found: {}", device.getIpAddress(), e);
       // Unknown IP, unrecoverable.
@@ -73,6 +77,7 @@ public class Lls1Connector extends SecureDlmsConnector {
 
   @Override
   protected void setSecurity(
+      final MessageMetadata messageMetadata,
       final DlmsDevice device,
       final SecurityKeyProvider keyProvider,
       final TcpConnectionBuilder tcpConnectionBuilder)
@@ -83,6 +88,7 @@ public class Lls1Connector extends SecureDlmsConnector {
       password =
           keyProvider
               .getKeys(
+                  messageMetadata,
                   device.getDeviceIdentification(),
                   Collections.singletonList(SecurityKeyType.PASSWORD))
               .get(SecurityKeyType.PASSWORD);

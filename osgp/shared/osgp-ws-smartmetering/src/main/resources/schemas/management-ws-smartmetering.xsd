@@ -1,0 +1,878 @@
+<!-- Copyright 2015 Smart Society Services B.V. Licensed under the Apache 
+  License, Version 2.0 (the "License"); you may not use this file except in 
+  compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:common="http://www.opensmartgridplatform.org/schemas/common/2014/10"
+            xmlns:tns="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-management/2014/10"
+            elementFormDefault="qualified"
+            targetNamespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-management/2014/10">
+
+  <xsd:import namespace="http://www.opensmartgridplatform.org/schemas/common/2014/10"
+              schemaLocation="common-ws-smartmetering.xsd"/>
+
+  <!-- Requests and Responses -->
+
+  <xsd:element name="GetDevicesRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Page" type="xsd:int"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="GetDevicesResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DevicePage" type="tns:DevicePage"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="GetOutagesRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Query">
+        <xsd:sequence>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <!-- Outage containing endTime and duration -->
+  <xsd:complexType name="Outage">
+    <xsd:sequence>
+      <xsd:element name="endTime" type="xsd:dateTime"/>
+      <xsd:element name="duration" type="xsd:unsignedInt" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="GetOutagesResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
+        <xsd:sequence>
+          <xsd:element name="Outages" type="tns:Outage"
+                       maxOccurs="unbounded" minOccurs="0"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="FindEventsRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
+        <xsd:element name="FindEventsRequestData" type="tns:FindEventsRequestData"
+                     maxOccurs="unbounded"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="FindEventsAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="FindEventsAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="FindEventsResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Events" type="tns:Event"
+                     maxOccurs="unbounded" minOccurs="0"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="FindEventsResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
+        <xsd:sequence>
+          <xsd:element name="Events" type="tns:Event"
+                       maxOccurs="unbounded" minOccurs="0"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="EnableDebuggingRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="EnableDebuggingAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="EnableDebuggingAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="EnableDebuggingResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType"/>
+        <xsd:element name="Description" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="DisableDebuggingRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="DisableDebuggingAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="DisableDebuggingAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="DisableDebuggingResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType"/>
+        <xsd:element name="Description" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="FindMessageLogsRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
+        <xsd:element name="Page" type="xsd:int"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="FindMessageLogsAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="FindMessageLogsAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="FindMessageLogsResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="MessageLogPage" type="tns:MessageLogPage"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="SetDeviceCommunicationSettingsRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
+        <xsd:element name="SetDeviceCommunicationSettingsData"
+                     type="tns:SetDeviceCommunicationSettingsData"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="SetDeviceCommunicationSettingsAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="SetDeviceCommunicationSettingsAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="SetDeviceCommunicationSettingsResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType"/>
+        <xsd:element name="Description" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="SetDeviceLifecycleStatusByChannelRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="GatewayDeviceIdentification"
+                     type="common:Identification"/>
+        <xsd:element name="SetDeviceLifecycleStatusByChannelRequestData"
+                     type="tns:SetDeviceLifecycleStatusByChannelRequestData"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetDeviceLifecycleStatusByChannelAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetDeviceLifecycleStatusByChannelAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="SetDeviceLifecycleStatusByChannelResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType"/>
+        <xsd:element name="SetDeviceLifecycleStatusByChannelResponseData"
+                     type="tns:SetDeviceLifecycleStatusByChannelResponseData"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- Data Types -->
+
+  <!-- Query for FindEventsRequest -->
+  <xsd:complexType name="FindEventsRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Query">
+        <xsd:sequence>
+          <xsd:element name="EventLogCategory" type="tns:EventLogCategory"/>
+          <xsd:element name="From" type="xsd:dateTime"/>
+          <xsd:element name="Until" type="xsd:dateTime"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <!-- Event containing Timestamp and EventType -->
+  <xsd:complexType name="Event">
+    <xsd:sequence>
+      <xsd:element name="timestamp" type="xsd:dateTime"/>
+      <xsd:element name="eventCode" type="xsd:int"/>
+      <xsd:element name="eventType" type="tns:EventType"/>
+      <xsd:element name="EventLogCategory" type="tns:EventLogCategory"/>
+      <xsd:element name="eventCounter" type="xsd:int" minOccurs="0"/>
+      <xsd:element name="eventDetails" type="tns:EventDetail"
+                   maxOccurs="unbounded" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- Certain events require or contain more details than just
+   a description and a category. For example, specification of
+   a particular channel number, alarm number, relay number,
+   port number, formula number, version number, etc -->
+  <xsd:complexType name="EventDetail">
+    <xsd:sequence>
+      <xsd:element name="name" type="xsd:string"/>
+      <xsd:element name="value" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- Event Log Categories -->
+  <xsd:simpleType name="EventLogCategory">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="STANDARD_EVENT_LOG"/>
+      <xsd:enumeration value="FRAUD_DETECTION_LOG"/>
+      <xsd:enumeration value="COMMUNICATION_SESSION_LOG"/>
+      <xsd:enumeration value="M_BUS_EVENT_LOG"/>
+      <xsd:enumeration value="POWER_QUALITY_EVENT_LOG"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Standard Event Log Event Types -->
+  <xsd:simpleType name="EventType">
+    <xsd:restriction base="xsd:string">
+      <!-- 255 - event log cleared -  -  -  -->
+      <xsd:enumeration value="EVENTLOG_CLEARED"/>
+      <!-- 1 - power down -  -  - SMART_METER_E -->
+      <xsd:enumeration value="POWER_FAILURE"/>
+      <!-- 1 - power down g -  -  - SMART_METER_G -->
+      <xsd:enumeration value="POWER_FAILURE_G"/>
+      <!-- 1 - power down w -  -  - SMART_METER_W -->
+      <xsd:enumeration value="POWER_FAILURE_W"/>
+      <!-- 2 - power up -  -  -  -->
+      <xsd:enumeration value="POWER_RETURNED"/>
+      <!-- 3 - daylight saving time enabled or disabled -  -  -  -->
+      <xsd:enumeration value="CLOCK_UPDATE"/>
+      <!-- 4 - clock adjusted old datetime -  -  -  -->
+      <xsd:enumeration value="CLOCK_ADJUSTED_OLD_TIME"/>
+      <!-- 5 - clock adjusted new datetime -  -  -  -->
+      <xsd:enumeration value="CLOCK_ADJUSTED_NEW_TIME"/>
+      <!-- 6 - clock invalid -  -  -  -->
+      <xsd:enumeration value="CLOCK_INVALID"/>
+      <!-- 7 - replace battery -  -  -  -->
+      <xsd:enumeration value="REPLACE_BATTERY"/>
+      <!-- 8 - battery voltage low -  -  -  -->
+      <xsd:enumeration value="BATTERY_VOLTAGE_LOW"/>
+      <!-- 9 - tou activated -  -  -  -->
+      <xsd:enumeration value="TARIFF_ACTIVATED"/>
+      <!-- 10 - error register cleared -  -  -  -->
+      <xsd:enumeration value="ERROR_REGISTER_CLEARED"/>
+      <!-- 11 - alarm register cleared -  -  -  -->
+      <xsd:enumeration value="ALARM_REGISTER_CLEARED"/>
+      <!-- 12 - program memory error -  -  -  -->
+      <xsd:enumeration value="HARDWARE_ERROR_PROGRAM_MEMORY"/>
+      <!-- 13 - ram error -  -  -  -->
+      <xsd:enumeration value="HARDWARE_ERROR_RAM"/>
+      <!-- 14 - nv memory error -  -  -  -->
+      <xsd:enumeration value="HARDWARE_ERROR_NV_MEMORY"/>
+      <!-- 15 - watchdog error -  -  -  -->
+      <xsd:enumeration value="WATCHDOG_ERROR"/>
+      <!-- 16 - measurement system error -  -  -  -->
+      <xsd:enumeration value="HARDWARE_ERROR_MEASUREMENT_SYSTEM"/>
+      <!-- 17 - firmware ready for activation -  -  -  -->
+      <xsd:enumeration value="FIRMWARE_READY_FOR_ACTIVATION"/>
+      <!-- 18 - firmware activated -  -  -  -->
+      <xsd:enumeration value="FIRMWARE_ACTIVATED"/>
+      <!-- 19 - passive tariff updated -  -  -  -->
+      <xsd:enumeration value="PASSIVE_TARIFF_UPDATED"/>
+      <!-- 20 - successful self check after firmware update -  -  -  -->
+      <xsd:enumeration value="SUCCESSFUL_SELFCHECK_AFTER_FIRMWARE_UPDATE"/>
+      <!-- 21 - communication module removed -  -  -  -->
+      <xsd:enumeration value="COMMUNICATION_MODULE_REMOVED"/>
+      <!-- 22 - communication module inserted -  -  -  -->
+      <xsd:enumeration value="COMMUNICATION_MODULE_INSERTED"/>
+      <!-- 40 - terminal cover removed -  -  -  -->
+      <xsd:enumeration value="TERMINAL_COVER_REMOVED"/>
+      <!-- 41 - terminal cover closed -  -  -  -->
+      <xsd:enumeration value="TERMINAL_COVER_CLOSED"/>
+      <!-- 42 - strong dc field detected -  -  -  -->
+      <xsd:enumeration value="STRONG_DC_FIELD_DETECTED"/>
+      <!-- 43 - no strong dc field anymore -  -  -  -->
+      <xsd:enumeration value="NO_STRONG_DC_FIELD_ANYMORE"/>
+      <!-- 44 - meter cover removed -  -  -  -->
+      <xsd:enumeration value="METER_COVER_REMOVED"/>
+      <!-- 45 - meter cover closed -  -  -  -->
+      <xsd:enumeration value="METER_COVER_CLOSED"/>
+      <!-- 46 - failed login attempt -  -  -  -->
+      <xsd:enumeration value="FAILED_LOGIN_ATTEMPT"/>
+      <!-- 47 - configuration changed -  -  -  -->
+      <xsd:enumeration value="CONFIGURATION_CHANGE"/>
+      <!-- 48 - module cover opened -  -  -  -->
+      <xsd:enumeration value="MODULE_COVER_OPENED"/>
+      <!-- 49 - module cover closed -  -  -  -->
+      <xsd:enumeration value="MODULE_COVER_CLOSED"/>
+      <!-- 71 - metrological maintenance -  -  -  -->
+      <xsd:enumeration value="METROLOGICAL_MAINTENANCE"/>
+      <!-- 72 - technical maintenance -  -  -  -->
+      <xsd:enumeration value="TECHNICAL_MAINTENANCE"/>
+      <!-- 73 - retrieve meter readings e -  -  -  -->
+      <xsd:enumeration value="RETRIEVE_METER_READINGS_E"/>
+      <!-- 74 - retrieve meter readings g -  -  -  -->
+      <xsd:enumeration value="RETRIEVE_METER_READINGS_G"/>
+      <!-- 75 - retrieve interval data e -  -  -  -->
+      <xsd:enumeration value="RETRIEVE_INTERVAL_DATA_E"/>
+      <!-- 76 - retrieve interval data g -  -  -  -->
+      <xsd:enumeration value="RETRIEVE_INTERVAL_DATA_G"/>
+      <!-- 77 - under voltage l1 -  -  -  -->
+      <xsd:enumeration value="UNDER_VOLTAGE_L1"/>
+      <!-- 78 - under voltage l2 -  -  -  -->
+      <xsd:enumeration value="UNDER_VOLTAGE_L2"/>
+      <!-- 79 - under voltage l3 -  -  -  -->
+      <xsd:enumeration value="UNDER_VOLTAGE_L3"/>
+      <!-- 80 - pv voltage sag l1 - DSMR -  -  -->
+      <xsd:enumeration value="PV_VOLTAGE_SAG_L1"/>
+      <!-- 81 - pv voltage sag l2 - DSMR -  -  -->
+      <xsd:enumeration value="PV_VOLTAGE_SAG_L2"/>
+      <!-- 82 - pv voltage sag l3 - DSMR -  -  -->
+      <xsd:enumeration value="PV_VOLTAGE_SAG_L3"/>
+      <!-- 83 - pv voltage swell l1 - DSMR -  -  -->
+      <xsd:enumeration value="PV_VOLTAGE_SWELL_L1"/>
+      <!-- 84 - pv voltage swell l2 - DSMR -  -  -->
+      <xsd:enumeration value="PV_VOLTAGE_SWELL_L2"/>
+      <!-- 85 - pv voltage swell l3"), - DSMR -  -  -->
+      <xsd:enumeration value="PV_VOLTAGE_SWELL_L3"/>
+      <!-- 80 - over voltage l1 - SMR -  -  -->
+      <xsd:enumeration value="OVER_VOLTAGE_L1"/>
+      <!-- 81 - over voltage l2 - SMR -  -  -->
+      <xsd:enumeration value="OVER_VOLTAGE_L2"/>
+      <!-- 82 - over voltage l3 - SMR -  -  -->
+      <xsd:enumeration value="OVER_VOLTAGE_L3"/>
+      <!-- 83 - voltage l1 normal - SMR -  -  -->
+      <xsd:enumeration value="VOLTAGE_L1_NORMAL"/>
+      <!-- 84 - voltage l2 normal - SMR -  -  -->
+      <xsd:enumeration value="VOLTAGE_L2_NORMAL"/>
+      <!-- 85 - voltage l3 normal - SMR -  -  -->
+      <xsd:enumeration value="VOLTAGE_L3_NORMAL"/>
+      <!-- 86 - phase outage l1 -  -  -  -->
+      <xsd:enumeration value="PHASE_OUTAGE_L1"/>
+      <!-- 87 - phase outage l2 -  -  -  -->
+      <xsd:enumeration value="PHASE_OUTAGE_L2"/>
+      <!-- 88 - phase outage l3 -  -  -  -->
+      <xsd:enumeration value="PHASE_OUTAGE_L3"/>
+      <!-- 89 - phase outage test -  -  -  -->
+      <xsd:enumeration value="PHASE_OUTAGE_TEST"/>
+      <!-- 90 - phase returned l1 -  -  -  -->
+      <xsd:enumeration value="PHASE_RETURNED_L1"/>
+      <!-- 91 - phase returned l2 -  -  -  -->
+      <xsd:enumeration value="PHASE_RETURNED_L2"/>
+      <!-- 92 - phase returned l3 -  -  -  -->
+      <xsd:enumeration value="PHASE_RETURNED_L3"/>
+      <!-- 100 - communication error mbus channel1 -  -  -  -->
+      <xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_1"/>
+      <!-- 101 - communication ok mbus channel1 -  -  -  -->
+      <xsd:enumeration value="COMMUNICATION_OK_M_BUS_CHANNEL_1"/>
+      <!-- 102 - replace battery mbus channel1 -  -  -  -->
+      <xsd:enumeration value="REPLACE_BATTERY_M_BUS_CHANNEL_1"/>
+      <!-- 103 - fraud attempt mbus channel1 -  -  -  -->
+      <xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_1"/>
+      <!-- 104 - clock adjusted mbus channel1 -  -  -  -->
+      <xsd:enumeration value="CLOCK_ADJUSTED_M_BUS_CHANNEL_1"/>
+      <!-- 105 - new mbus device discovered channel1 -  -  -  -->
+      <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_1"/>
+      <!-- 106 - permanent error from mbus device channel1 -  -  -  -->
+      <xsd:enumeration value="PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_1"/>
+      <!-- 110 - communication error mbus channel2 -  -  -  -->
+      <xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_2"/>
+      <!-- 111 - communication ok mbus channel2 -  -  -  -->
+      <xsd:enumeration value="COMMUNICATION_OK_M_BUS_CHANNEL_2"/>
+      <!-- 112 - replace battery mbus channel2 -  -  -  -->
+      <xsd:enumeration value="REPLACE_BATTERY_M_BUS_CHANNEL_2"/>
+      <!-- 113 - fraud attempt mbus channel2 -  -  -  -->
+      <xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_2"/>
+      <!-- 114 - clock adjusted mbus channel2 -  -  -  -->
+      <xsd:enumeration value="CLOCK_ADJUSTED_M_BUS_CHANNEL_2"/>
+      <!-- 115 - new mbus device discovered channel2 -  -  -  -->
+      <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_2"/>
+      <!-- 116 - permanent error from mbus device channel2 -  -  -  -->
+      <xsd:enumeration value="PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_2"/>
+      <!-- 120 - communication error mbus channel3 -  -  -  -->
+      <xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_3"/>
+      <!-- 121 - communication ok mbus channel3 -  -  -  -->
+      <xsd:enumeration value="COMMUNICATION_OK_M_BUS_CHANNEL_3"/>
+      <!-- 122 - replace battery mbus channel3 -  -  -  -->
+      <xsd:enumeration value="REPLACE_BATTERY_M_BUS_CHANNEL_3"/>
+      <!-- 123 - fraud attempt mbus channel3 -  -  -  -->
+      <xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_3"/>
+      <!-- 124 - clock adjusted mbus channel3 -  -  -  -->
+      <xsd:enumeration value="CLOCK_ADJUSTED_M_BUS_CHANNEL_3"/>
+      <!-- 125 - new mbus device discovered channel3 -  -  -  -->
+      <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_3"/>
+      <!-- 126 - permanent error from mbus device channel3 -  -  -  -->
+      <xsd:enumeration value="PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_3"/>
+      <!-- 130 - communication error mbus channel4 -  -  -  -->
+      <xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_4"/>
+      <!-- 131 - communication ok mbus channel4 -  -  -  -->
+      <xsd:enumeration value="COMMUNICATION_OK_M_BUS_CHANNEL_4"/>
+      <!-- 132 - replace battery mbus channel4 -  -  -  -->
+      <xsd:enumeration value="REPLACE_BATTERY_M_BUS_CHANNEL_4"/>
+      <!-- 133 - fraud attempt mbus channel4 -  -  -  -->
+      <xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_4"/>
+      <!-- 134 - clock adjusted mbus channel4 -  -  -  -->
+      <xsd:enumeration value="CLOCK_ADJUSTED_M_BUS_CHANNEL_4"/>
+      <!-- 135 - new mbus device discovered channel4 -  -  -  -->
+      <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4"/>
+      <!-- 136 - permanent error from mbus device channel4 -  -  -  -->
+      <xsd:enumeration value="PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_4"/>
+      <!-- 231 - manufacturer specific 231 -  -  -  -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_231"/>
+      <!-- 232 - manufacturer specific 232 -  -  -  -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_232"/>
+      <!-- 233 - manufacturer specific 233 -  -  -  -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_233"/>
+      <!-- 234 - manufacturer specific 234 -  -  -  -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_234"/>
+      <!-- 235 - manufacturer specific 235 -  -  -  -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_235"/>
+      <!-- 236 - manufacturer specific 236 -  -  -  -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_236"/>
+      <!-- 237 - manufacturer specific 237 -  -  -  -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_237"/>
+      <!-- 238 - manufacturer specific 238 -  -  -  -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_238"/>
+      <!-- 239 - manufacturer specific 239 -  -  -  -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_239"/>
+      <!-- 240 - manufacturer specific 240 -  -  -  -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_240"/>
+      <!-- 241 - manufacturer specific 241 -  -  -  -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_241"/>
+      <!-- 242 - manufacturer specific 242 -  -  -  -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_242"/>
+      <!-- 243 - manufacturer specific 243 -  -  -  -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_243"/>
+      <!-- 244 - manufacturer specific 244 -  -  -  -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_244"/>
+      <!-- 245 - manufacturer specific 245 -  -  -  -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_245"/>
+      <!-- 246 - manufacturer specific 246 -  -  -  -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_246"/>
+      <!-- 247 - manufacturer specific 247 -  -  -  -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_247"/>
+      <!-- 248 - manufacturer specific 248 -  -  -  -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_248"/>
+      <!-- 249 - manufacturer specific 249 -  -  -  -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_249"/>
+      <!-- 230 - fatal error iskr -  - Iskr -  -->
+      <xsd:enumeration value="FATAL_ERROR_ISKR"/>
+      <!-- 231 - billing reset iskr -  - Iskr -  -->
+      <xsd:enumeration value="BILLING_RESET_ISKR"/>
+      <!-- 232 - power down phase l1 iskr -  - Iskr -  -->
+      <xsd:enumeration value="POWER_DOWN_PHASE_L1_ISKR"/>
+      <!-- 233 - power down phase l2 iskr -  - Iskr -  -->
+      <xsd:enumeration value="POWER_DOWN_PHASE_L2_ISKR"/>
+      <!-- 234 - power down phase l3 iskr -  - Iskr -  -->
+      <xsd:enumeration value="POWER_DOWN_PHASE_L3_ISKR"/>
+      <!-- 235 - power restored phase l1 iskr -  - Iskr -  -->
+      <xsd:enumeration value="POWER_RESTORED_PHASE_L1_ISKR"/>
+      <!-- 236 - power restored phase l2 iskr -  - Iskr -  -->
+      <xsd:enumeration value="POWER_RESTORED_PHASE_L2_ISKR"/>
+      <!-- 237 - power restored phase l3 iskr -  - Iskr -  -->
+      <xsd:enumeration value="POWER_RESTORED_PHASE_L3_ISKR"/>
+      <!-- 244 - module cover opened iskr -  - Iskr -  -->
+      <xsd:enumeration value="MODULE_COVER_OPENED_ISKR"/>
+      <!-- 245 - module cover closed iskr -  - Iskr -  -->
+      <xsd:enumeration value="MODULE_COVER_CLOSED_ISKR"/>
+      <!-- the following events are System Events -->
+      <xsd:enumeration value="SET_MAINTENANCE_STATE_E_SUCCESS"/>
+      <xsd:enumeration value="SET_MAINTENANCE_STATE_G_SUCCESS"/>
+      <xsd:enumeration value="SET_MAINTENANCE_STATE_E_FAILED"/>
+      <xsd:enumeration value="SET_MAINTENANCE_STATE_G_FAILED"/>
+      <xsd:enumeration value="COMMUNICATION_NETWORK_INFORMATION_UPDATED"/>
+      <xsd:enumeration value="CLEAN_UP_M_BUS_CHANNEL"/>
+
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Data Types -->
+
+  <xsd:complexType name="Device">
+    <xsd:sequence>
+      <xsd:element name="DeviceUid" type="xsd:string"/>
+      <xsd:element name="DeviceIdentification" type="common:Identification"/>
+      <xsd:element name="DeviceType" type="xsd:string"/>
+      <xsd:element name="Activated" type="xsd:boolean"/>
+      <xsd:element name="HasSchedule" type="xsd:boolean"/>
+      <xsd:element name="PublicKeyPresent" type="xsd:boolean"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="DevicePage">
+    <xsd:sequence>
+      <xsd:element name="TotalPages" type="xsd:int"/>
+      <xsd:element maxOccurs="unbounded" name="Devices"
+                   type="tns:Device"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="MessageLog">
+    <xsd:sequence>
+      <xsd:element name="Timestamp" type="xsd:dateTime"/>
+      <xsd:element name="OrganisationIdentification" type="common:Identification"/>
+      <xsd:element name="DeviceIdentification" type="common:Identification"/>
+      <xsd:element name="DecodedMessage" type="xsd:string"/>
+      <xsd:element name="EncodedMessage" type="xsd:string"/>
+      <xsd:element name="Incoming" type="xsd:boolean"/>
+      <xsd:element name="Valid" type="xsd:boolean"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="MessageLogPage">
+    <xsd:sequence>
+      <xsd:element name="TotalPages" type="xsd:int"/>
+      <xsd:element maxOccurs="unbounded" name="MessageLogs"
+                   type="tns:MessageLog"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="SetDeviceCommunicationSettingsData">
+    <xsd:sequence>
+      <xsd:element type="xsd:integer" name="ChallengeLength"/>
+      <xsd:element type="xsd:boolean" name="WithListSupported"
+                   default="false"/>
+      <xsd:element type="xsd:boolean" name="SelectiveAccessSupported"
+                   default="false"/>
+      <xsd:element type="xsd:boolean" name="IpAddressIsStatic"
+                   default="false"/>
+      <xsd:element type="xsd:boolean" name="UseSn" default="false"/>
+      <xsd:element type="xsd:boolean" name="UseHdlc"
+                   default="false"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="SetDeviceLifecycleStatusByChannelRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Query">
+        <xsd:sequence>
+          <xsd:element name="DeviceLifecycleStatus" type="common:DeviceLifecycleStatus"/>
+          <xsd:element name="Channel" type="common:Channel"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="SetDeviceLifecycleStatusByChannelResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
+        <xsd:sequence>
+          <xsd:element name="GatewayDeviceIdentification"
+                       type="common:Identification"/>
+          <xsd:element name="MbusDeviceIdentification" type="common:Identification"/>
+          <xsd:element name="DeviceLifecycleStatus" type="common:DeviceLifecycleStatus"/>
+          <xsd:element name="Channel" type="common:Channel"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="GetGsmDiagnosticRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Query"/>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="GetGsmDiagnosticRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
+        <xsd:element name="GetGsmDiagnosticRequestData"
+          type="tns:GetGsmDiagnosticRequestData"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="GetGsmDiagnosticAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="GetGsmDiagnosticAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="GetGsmDiagnosticResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType"/>
+        <xsd:element name="GetGsmDiagnosticResponseData"
+          type="tns:GetGsmDiagnosticResponseData"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="GetGsmDiagnosticResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
+        <xsd:sequence>
+          <xsd:element name="Operator" type="xsd:string"/>
+          <xsd:element name="ModemRegistrationStatus" type="tns:ModemRegistrationStatus"/>
+          <xsd:element name="CircuitSwitchedStatus" type="tns:CircuitSwitchedStatus"/>
+          <xsd:element name="PacketSwitchedStatus" type="tns:PacketSwitchedStatus"/>
+          <xsd:element name="CellInfo" type="tns:CellInfo"/>
+          <xsd:element name="AdjacentCells" type="tns:AdjacentCellInfo" maxOccurs="unbounded"/>
+          <xsd:element name="CaptureTime" type="xsd:dateTime"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="CellInfo">
+    <xsd:sequence>
+      <xsd:element name="CellId" type="xsd:unsignedInt"/>
+      <xsd:element name="LocationId" type="xsd:unsignedShort"/>
+      <xsd:element name="SignalQuality" type="tns:SignalQuality"/>
+      <xsd:element name="BitErrorRate" type="tns:BitErrorRate"/>
+      <xsd:element name="MobileCountryCode" type="xsd:unsignedShort"/>
+      <xsd:element name="MobileNetworkCode" type="xsd:unsignedShort"/>
+      <xsd:element name="ChannelNumber" type="xsd:unsignedInt"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="AdjacentCellInfo">
+    <xsd:sequence>
+      <xsd:element name="CellId" type="xsd:unsignedInt"/>
+      <xsd:element name="SignalQuality" type="tns:SignalQuality"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:simpleType name="ModemRegistrationStatus">
+    <xsd:restriction base="xsd:string">
+      <!-- 0 - Not registered -->
+      <xsd:enumeration value="NOT_REGISTERED"/>
+      <!-- 1 - Registered home network -->
+      <xsd:enumeration value="REGISTERED_HOME_NETWORK"/>
+      <!-- 2 - Not registered, but MT is currently search new operator to register to -->
+      <xsd:enumeration value="NOT_REGISTERED_CURRENT_SEARCH_OPERATOR_TO_REGISTER_TO"/>
+      <!-- 3 - Registration denied -->
+      <xsd:enumeration value="REGISTRATION_DENIED"/>
+      <!-- 4 - Unknown -->
+      <xsd:enumeration value="UNKNOWN"/>
+      <!-- 5 - Registered roaming -->
+      <xsd:enumeration value="REGISTERED_ROAMING"/>
+      <!-- 6-255 - Reserved -->
+      <xsd:enumeration value="RESERVED"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="CircuitSwitchedStatus">
+    <xsd:restriction base="xsd:string">
+      <!-- 0 - Inactive -->
+      <xsd:enumeration value="INACTIVE"/>
+      <!-- 1 - Incoming call -->
+      <xsd:enumeration value="INCOMING_CALL"/>
+      <!-- 2 - Active -->
+      <xsd:enumeration value="ACTIVE"/>
+      <!-- 3-255 - Reserved -->
+      <xsd:enumeration value="RESERVED"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="PacketSwitchedStatus">
+    <xsd:restriction base="xsd:string">
+      <!-- 0 - Inactive -->
+      <xsd:enumeration value="INACTIVE"/>
+      <!-- 1 - GPRS -->
+      <xsd:enumeration value="GPRS"/>
+      <!-- 2 - EDGE -->
+      <xsd:enumeration value="EDGE"/>
+      <!-- 3 - UMTS -->
+      <xsd:enumeration value="UMTS"/>
+      <!-- 4 - HSDPA -->
+      <xsd:enumeration value="HSDPA"/>
+      <!-- 5 - LTE -->
+      <xsd:enumeration value="LTE"/>
+      <!-- 6 - CDMA -->
+      <xsd:enumeration value="CDMA"/>
+      <!-- 7 - LTE Cat M1 -->
+      <xsd:enumeration value="LTE_CAT_M_18"/>
+      <!-- 8 - LTE NB-IoT -->
+      <xsd:enumeration value="LTE_NB_IOT"/>
+      <!-- 9-255 - Reserved -->
+      <xsd:enumeration value="RESERVED"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="SignalQuality">
+    <xsd:restriction base="xsd:string">
+      <!-- 0 - -113 dBm or less -->
+      <xsd:enumeration value="MINUS_113_DBM_OR_LESS"/>
+      <!-- 1 - -111 dBm -->
+      <xsd:enumeration value="MINUS_111_DBM"/>
+      <!-- 2 - -109 dBm -->
+      <xsd:enumeration value="MINUS_109_DBM"/>
+      <!-- 3 - -107 dBm -->
+      <xsd:enumeration value="MINUS_107_DBM"/>
+      <!-- 4 - -105 dBm -->
+      <xsd:enumeration value="MINUS_105_DBM"/>
+      <!-- 5 - -103 dBm -->
+      <xsd:enumeration value="MINUS_103_DBM"/>
+      <!-- 6 - -101 dBm -->
+      <xsd:enumeration value="MINUS_101_DBM"/>
+      <!-- 7 - -99 dBm -->
+      <xsd:enumeration value="MINUS_99_DBM"/>
+      <!-- 8 - -97 dBm -->
+      <xsd:enumeration value="MINUS_97_DBM"/>
+      <!-- 9 - -95 dBm -->
+      <xsd:enumeration value="MINUS_95_DBM"/>
+      <!-- 10 - -93 dBm -->
+      <xsd:enumeration value="MINUS_93_DBM"/>
+      <!-- 11 - -91 dBm -->
+      <xsd:enumeration value="MINUS_91_DBM"/>
+      <!-- 12 - -89 dBm -->
+      <xsd:enumeration value="MINUS_89_DBM"/>
+      <!-- 13 - -87 dBm -->
+      <xsd:enumeration value="MINUS_87_DBM"/>
+      <!-- 14 - -85 dBm -->
+      <xsd:enumeration value="MINUS_85_DBM"/>
+      <!-- 15 - -83 dBm -->
+      <xsd:enumeration value="MINUS_83_DBM"/>
+      <!-- 16 - -81 dBm -->
+      <xsd:enumeration value="MINUS_81_DBM"/>
+      <!-- 17 - -79 dBm -->
+      <xsd:enumeration value="MINUS_79_DBM"/>
+      <!-- 18 - -77 dBm -->
+      <xsd:enumeration value="MINUS_77_DBM"/>
+      <!-- 19 - -75 dBm -->
+      <xsd:enumeration value="MINUS_75_DBM"/>
+      <!-- 20 - -73 dBm -->
+      <xsd:enumeration value="MINUS_73_DBM"/>
+      <!-- 21 - -71 dBm -->
+      <xsd:enumeration value="MINUS_71_DBM"/>
+      <!-- 22 - -69 dBm -->
+      <xsd:enumeration value="MINUS_69_DBM"/>
+      <!-- 23 - -67 dBm -->
+      <xsd:enumeration value="MINUS_67_DBM"/>
+      <!-- 24 - -65 dBm -->
+      <xsd:enumeration value="MINUS_65_DBM"/>
+      <!-- 25 - -63 dBm -->
+      <xsd:enumeration value="MINUS_63_DBM"/>
+      <!-- 26 - -61 dBm -->
+      <xsd:enumeration value="MINUS_61_DBM"/>
+      <!-- 27 - -59 dBm -->
+      <xsd:enumeration value="MINUS_59_DBM"/>
+      <!-- 28 - -57 dBm -->
+      <xsd:enumeration value="MINUS_57_DBM"/>
+      <!-- 29 - -55 dBm -->
+      <xsd:enumeration value="MINUS_55_DBM"/>
+      <!-- 30 - -53 dBm -->
+      <xsd:enumeration value="MINUS_53_DBM"/>
+      <!-- 31 - -51 dBm or greater -->
+      <xsd:enumeration value="MINUS_51_DBM_OR_GREATER"/>
+      <!-- 99 - not known or not detectable -->
+      <xsd:enumeration value="NOT_KNOWN_OR_NOT_DETECTABLE"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="BitErrorRate">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="RXQUAL_0"/>
+      <xsd:enumeration value="RXQUAL_1"/>
+      <xsd:enumeration value="RXQUAL_2"/>
+      <xsd:enumeration value="RXQUAL_3"/>
+      <xsd:enumeration value="RXQUAL_4"/>
+      <xsd:enumeration value="RXQUAL_5"/>
+      <xsd:enumeration value="RXQUAL_6"/>
+      <xsd:enumeration value="RXQUAL_7"/>
+      <!-- 99 - not known or not detectable -->
+      <xsd:enumeration value="NOT_KNOWN_OR_NOT_DETECTABLE"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+</xsd:schema>

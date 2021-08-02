@@ -8,9 +8,14 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.endpoints;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationDataLookupKey;
+import org.opensmartgridplatform.adapter.ws.domain.entities.ApplicationKeyConfiguration;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
+import org.opensmartgridplatform.adapter.ws.domain.repositories.ApplicationKeyConfigurationRepository;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.BypassRetry;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
@@ -46,6 +51,11 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.G
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionGasResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetKeysResponseData;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusByChannelAsyncRequest;
@@ -107,6 +117,8 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.S
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareResponse;
+import org.opensmartgridplatform.adapter.ws.smartmetering.application.ApplicationConstants;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping.ConfigurationMapper;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.services.RequestService;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
@@ -116,16 +128,20 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.Encrypti
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersionGasResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetFirmwareVersionQuery;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetKeysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetMbusUserKeyByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetRandomisationSettingsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareRequestData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.UpdateFirmwareResponse;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.shared.security.RsaEncrypter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
@@ -136,11 +152,17 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
   private static final String SMARTMETER_CONFIGURATION_NAMESPACE =
-      "http://www.opensmartgridplatform" + ".org/schemas/smartmetering/sm-configuration/2014/10";
+      "http://www.opensmartgridplatform.org/schemas/smartmetering/sm-configuration/2014/10";
 
   @Autowired private RequestService requestService;
 
   @Autowired private ConfigurationMapper configurationMapper;
+
+  @Autowired private ApplicationKeyConfigurationRepository applicationKeyConfigurationRepository;
+
+  @Autowired
+  @Qualifier("gxfDecrypter")
+  private RsaEncrypter gxfRsaDecrypter;
 
   public SmartMeteringConfigurationEndpoint() {
     // Default constructor
@@ -367,12 +389,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
         organisationIdentification,
         request.getDeviceIdentification());
 
-    final org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration
-            .UpdateFirmwareResponse
-        response =
-            new org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration
-                .UpdateFirmwareResponse();
-
+    UpdateFirmwareResponse response = null;
     try {
       final ResponseData responseData =
           this.responseDataService.dequeue(
@@ -380,20 +397,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
       this.throwExceptionIfResultNotOk(responseData, "updating firmware");
 
-      if (responseData != null) {
-        response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
-
-        if (responseData.getMessageData() != null) {
-          final List<FirmwareVersion> target = response.getFirmwareVersion();
-          final UpdateFirmwareResponse updateFirmwareResponse =
-              (UpdateFirmwareResponse) responseData.getMessageData();
-          target.addAll(
-              this.configurationMapper.mapAsList(
-                  updateFirmwareResponse.getFirmwareVersions(), FirmwareVersion.class));
-        } else {
-          log.info("Update Firmware response is null");
-        }
-      }
+      response = new UpdateFirmwareResponse();
+      response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
     } catch (final Exception e) {
       this.handleException(e);
     }
@@ -1585,5 +1590,136 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
       this.handleException(e);
     }
     return response;
+  }
+
+  @PayloadRoot(localPart = "GetKeysRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public GetKeysAsyncResponse getKeys(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final GetKeysRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
+
+    final GetKeysRequestData dataRequest =
+        this.configurationMapper.map(request.getGetKeysData(), GetKeysRequestData.class);
+
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
+            .withOrganisationIdentification(organisationIdentification)
+            .withDeviceIdentification(request.getDeviceIdentification())
+            .withDeviceFunction(DeviceFunction.GET_KEYS)
+            .withMessageType(MessageType.GET_KEYS)
+            .withMessagePriority(messagePriority)
+            .withScheduleTime(scheduleTime)
+            .withBypassRetry(bypassRetry)
+            .build();
+
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, dataRequest);
+
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+
+    return this.configurationMapper.map(asyncResponse, GetKeysAsyncResponse.class);
+  }
+
+  @PayloadRoot(localPart = "GetKeysAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+  @ResponsePayload
+  public GetKeysResponse getGetKeysResponse(@RequestPayload final GetKeysAsyncRequest request)
+      throws OsgpException {
+
+    GetKeysResponse response = null;
+    try {
+      response = new GetKeysResponse();
+
+      final ResponseData responseData =
+          this.responseDataService.dequeue(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+
+      this.throwExceptionIfResultNotOk(responseData, "getting keys");
+
+      response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+
+      if (responseData.getMessageData() != null) {
+        final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetKeysResponse
+            getKeysResponse =
+                (org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetKeysResponse)
+                    responseData.getMessageData();
+
+        final List<GetKeysResponseData> keysEncryptedWithGxfKey =
+            this.configurationMapper.mapAsList(
+                getKeysResponse.getKeys(), GetKeysResponseData.class);
+
+        final List<GetKeysResponseData> keysEncryptedForApplication =
+            this.reencryptKeysInGetKeysResponse(
+                keysEncryptedWithGxfKey, responseData.getOrganisationIdentification());
+
+        response.getGetKeysResponseData().addAll(keysEncryptedForApplication);
+      } else {
+        log.info("Get keys response is null");
+      }
+    } catch (final Exception e) {
+      this.handleException(e);
+    }
+    return response;
+  }
+
+  private List<GetKeysResponseData> reencryptKeysInGetKeysResponse(
+      final List<GetKeysResponseData> keysEncryptedWithGxfKey,
+      final String organisationIdentification)
+      throws OsgpException {
+    final RsaEncrypter applicationRsaEncrypter =
+        this.getRsaEncrypterForApplication(organisationIdentification);
+
+    return keysEncryptedWithGxfKey.stream()
+        .map(key -> this.reencryptKeyInGetKeysResponse(key, applicationRsaEncrypter))
+        .collect(Collectors.toList());
+  }
+
+  private GetKeysResponseData reencryptKeyInGetKeysResponse(
+      final GetKeysResponseData data, final RsaEncrypter applicationRsaEncrypter) {
+
+    if (data.getSecretValue() != null) {
+      final byte[] decryptedKey = this.gxfRsaDecrypter.decrypt(data.getSecretValue());
+      data.setSecretValue(applicationRsaEncrypter.encrypt(decryptedKey));
+    }
+
+    return data;
+  }
+
+  private RsaEncrypter getRsaEncrypterForApplication(final String organisationIdentification)
+      throws OsgpException {
+
+    final ApplicationKeyConfiguration applicationKeyConfiguration =
+        this.applicationKeyConfigurationRepository
+            .findById(
+                new ApplicationDataLookupKey(
+                    organisationIdentification, ApplicationConstants.APPLICATION_NAME))
+            .orElseThrow(
+                () ->
+                    new OsgpException(
+                        ComponentType.WS_SMART_METERING,
+                        "No public key found for application "
+                            + ApplicationConstants.APPLICATION_NAME
+                            + " and organisation "
+                            + organisationIdentification));
+
+    final String publicKeyLocation = applicationKeyConfiguration.getPublicKeyLocation();
+
+    try {
+      final Resource keyResource = new FileSystemResource(publicKeyLocation);
+      final RsaEncrypter applicationRsaEncrypter = new RsaEncrypter();
+      applicationRsaEncrypter.setPublicKeyStore(keyResource.getFile());
+      return applicationRsaEncrypter;
+    } catch (final IOException e) {
+      throw new OsgpException(
+          ComponentType.WS_SMART_METERING,
+          "Could not get public key file for application "
+              + ApplicationConstants.APPLICATION_NAME
+              + " and organisation "
+              + organisationIdentification);
+    }
   }
 }

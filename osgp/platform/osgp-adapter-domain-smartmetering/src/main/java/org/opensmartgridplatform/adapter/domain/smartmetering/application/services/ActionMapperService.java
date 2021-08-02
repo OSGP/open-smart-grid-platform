@@ -45,6 +45,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetConfi
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetFirmwareVersionGasRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetFirmwareVersionRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetGsmDiagnosticRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetKeysRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetOutagesRequestData;
@@ -90,6 +91,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetAssociationLn
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetConfigurationObjectRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetGsmDiagnosticRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetMbusEncryptionKeyStatusRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetOutagesRequestDto;
@@ -184,6 +186,7 @@ public class ActionMapperService {
     CLASS_MAP.put(
         SetRandomisationSettingsRequestData.class, SetRandomisationSettingsRequestDataDto.class);
     CLASS_MAP.put(GetGsmDiagnosticRequestData.class, GetGsmDiagnosticRequestDto.class);
+    CLASS_MAP.put(GetKeysRequestData.class, GetKeysRequestDto.class);
   }
 
   @Autowired
@@ -259,6 +262,7 @@ public class ActionMapperService {
     CLASS_TO_MAPPER_MAP.put(ActualPowerQualityRequest.class, this.monitoringMapper);
     CLASS_TO_MAPPER_MAP.put(SetRandomisationSettingsRequestData.class, this.configurationMapper);
     CLASS_TO_MAPPER_MAP.put(GetGsmDiagnosticRequestData.class, this.managementMapper);
+    CLASS_TO_MAPPER_MAP.put(GetKeysRequestData.class, this.configurationMapper);
   }
 
   public BundleMessagesRequestDto mapAllActions(

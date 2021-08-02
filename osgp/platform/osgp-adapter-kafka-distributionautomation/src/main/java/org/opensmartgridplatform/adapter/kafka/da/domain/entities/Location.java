@@ -25,13 +25,15 @@ import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 @EqualsAndHashCode(callSuper = false)
 public class Location extends AbstractEntity {
 
+  private static final long serialVersionUID = 326460826088775075L;
+
   @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private List<Feeder> feeders;
 
   @Column(length = 12, nullable = false)
   private String substationIdentification;
 
-  @Column(length = 32, nullable = false)
+  @Column(length = 64, nullable = false)
   private String name;
 
   public Optional<Feeder> getFeeder(final int feederNumber) {
@@ -39,7 +41,7 @@ public class Location extends AbstractEntity {
       return Optional.empty();
     }
 
-    final Predicate<Feeder> byFeederNumber = f -> f.getFeederNumber().intValue() == feederNumber;
+    final Predicate<Feeder> byFeederNumber = f -> f.getFeederNumber() == feederNumber;
 
     return this.getFeeders().stream().filter(byFeederNumber).findFirst();
   }

@@ -15,7 +15,7 @@
 
       <xsd:import
         namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-notification/2014/10"
-        schemaLocation="schemas/sm-notification.xsd" />
+        schemaLocation="schemas/notification-ws-smartmetering.xsd" />
     </xsd:schema>
   </wsdl:types>
 

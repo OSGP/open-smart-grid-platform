@@ -22,7 +22,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.ConnectionFailureException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
@@ -35,7 +35,7 @@ public class Iec61850DeviceResponseHandler implements DeviceResponseHandler {
 
   private final BaseMessageProcessor messageProcessor;
   private final Integer jmsxDeliveryCount;
-  private final DeviceMessageMetadata deviceMessageMetadata;
+  private final MessageMetadata messageMetadata;
   private final DomainInformation domainInformation;
   private final Integer retryCount;
   private final Boolean isScheduled;
@@ -49,13 +49,14 @@ public class Iec61850DeviceResponseHandler implements DeviceResponseHandler {
       final ResponseMessageSender responseMessageSender) {
     this.messageProcessor = messageProcessor;
     this.jmsxDeliveryCount = jmsxDeliveryCount;
-    this.deviceMessageMetadata =
-        new DeviceMessageMetadata(
-            requestMessageData.getDeviceIdentification(),
-            requestMessageData.getOrganisationIdentification(),
-            requestMessageData.getCorrelationUid(),
-            requestMessageData.getMessageType(),
-            requestMessageData.getMessagePriority());
+    this.messageMetadata =
+        new MessageMetadata.Builder()
+            .withCorrelationUid(requestMessageData.getCorrelationUid())
+            .withOrganisationIdentification(requestMessageData.getOrganisationIdentification())
+            .withDeviceIdentification(requestMessageData.getDeviceIdentification())
+            .withMessageType(requestMessageData.getMessageType())
+            .withMessagePriority(requestMessageData.getMessagePriority())
+            .build();
     this.domainInformation =
         new DomainInformation(
             requestMessageData.getDomain(), requestMessageData.getDomainVersion());
@@ -79,7 +80,7 @@ public class Iec61850DeviceResponseHandler implements DeviceResponseHandler {
         deviceResponse,
         this.responseMessageSender,
         this.domainInformation,
-        this.deviceMessageMetadata.getMessageType(),
+        this.messageMetadata.getMessageType(),
         this.retryCount,
         this.isScheduled);
   }
@@ -99,7 +100,7 @@ public class Iec61850DeviceResponseHandler implements DeviceResponseHandler {
     final ConnectionFailureException connectionFailureException =
         new ConnectionFailureException(ComponentType.PROTOCOL_IEC61850, t.getMessage());
     this.messageProcessor.checkForRedelivery(
-        this.deviceMessageMetadata,
+        this.messageMetadata,
         connectionFailureException,
         this.domainInformation,
         this.jmsxDeliveryCount);
@@ -123,7 +124,7 @@ public class Iec61850DeviceResponseHandler implements DeviceResponseHandler {
         new ProtocolResponseMessage.Builder()
             .domain(this.domainInformation.getDomain())
             .domainVersion(this.domainInformation.getDomainVersion())
-            .deviceMessageMetadata(this.deviceMessageMetadata)
+            .messageMetadata(this.messageMetadata)
             .result(ResponseMessageResultType.NOT_OK)
             .osgpException(ex)
             .retryCount(this.retryCount)
@@ -140,7 +141,7 @@ public class Iec61850DeviceResponseHandler implements DeviceResponseHandler {
     }
 
     if (t instanceof ServiceError) {
-      String message;
+      final String message;
       if (StringUtils.isEmpty(t.getMessage())) {
         message = "no specific service error code";
       } else if ("Error code=22".equals(t.getMessage())) {

@@ -18,7 +18,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -95,7 +95,7 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
   public void processMessage(final ObjectMessage message) throws JMSException {
     LOGGER.debug("Processing smart metering response message");
 
-    final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(message);
+    final MessageMetadata messageMetadata = MessageMetadata.fromMessage(message);
 
     final ResponseMessage responseMessage;
     OsgpException osgpException = null;
@@ -105,7 +105,7 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
       osgpException = responseMessage.getOsgpException();
     } catch (final JMSException e) {
       LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-      LOGGER.debug(deviceMessageMetadata.toString());
+      LOGGER.debug(messageMetadata.toString());
       LOGGER.debug("osgpException", osgpException);
       return;
     }
@@ -113,32 +113,32 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
     try {
 
       if (osgpException != null) {
-        this.handleError(osgpException, deviceMessageMetadata, responseMessage);
+        this.handleError(osgpException, messageMetadata, responseMessage);
       } else if (this.hasRegularResponseObject(responseMessage)) {
         LOGGER.info(
             "Calling application service function to handle response: {} with correlationUid: {}",
-            deviceMessageMetadata.getMessageType(),
-            deviceMessageMetadata.getCorrelationUid());
+            messageMetadata.getMessageType(),
+            messageMetadata.getCorrelationUid());
 
-        this.handleMessage(deviceMessageMetadata, responseMessage, osgpException);
+        this.handleMessage(messageMetadata, responseMessage, osgpException);
       } else {
         LOGGER.error(
             "No osgpException, yet dataObject ({}) is not of the regular type for handling response: {}",
             responseMessage.getDataObject() == null
                 ? null
                 : responseMessage.getDataObject().getClass().getName(),
-            deviceMessageMetadata.getMessageType());
+            messageMetadata.getMessageType());
 
         this.handleError(
             new TechnicalException(
                 ComponentType.DOMAIN_SMART_METERING,
                 "Unexpected response data handling request.",
                 null),
-            deviceMessageMetadata);
+            messageMetadata);
       }
 
     } catch (final Exception e) {
-      this.handleError(e, deviceMessageMetadata);
+      this.handleError(e, messageMetadata);
     }
   }
 
@@ -160,7 +160,7 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
   protected abstract boolean hasRegularResponseObject(final ResponseMessage responseMessage);
 
   protected abstract void handleMessage(
-      DeviceMessageMetadata deviceMessageMetadata,
+      MessageMetadata messageMetadata,
       final ResponseMessage responseMessage,
       final OsgpException osgpException)
       throws FunctionalException;
@@ -174,7 +174,7 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
    * own.
    *
    * @param e the exception.
-   * @param deviceMessageMetadata the device message metadata.
+   * @param messageMetadata the device message metadata.
    * @param responseMessage the response message.
    */
   /*
@@ -184,7 +184,7 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
   @SuppressWarnings("squid:S1130")
   protected void handleError(
       final Exception e,
-      final DeviceMessageMetadata deviceMessageMetadata,
+      final MessageMetadata messageMetadata,
       final ResponseMessage responseMessage)
       throws FunctionalException {
     if (responseMessage != null) {
@@ -192,7 +192,7 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
           "Handling error without using responseMessage for correlationUid: {}",
           responseMessage.getCorrelationUid());
     }
-    this.handleError(e, deviceMessageMetadata);
+    this.handleError(e, messageMetadata);
   }
 
   /**
@@ -200,26 +200,25 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
    * the web-service-adapter.
    *
    * @param e the exception.
-   * @param deviceMessageMetadata the device message metadata.
+   * @param messageMetadata the device message metadata.
    */
-  protected void handleError(final Exception e, final DeviceMessageMetadata deviceMessageMetadata) {
+  protected void handleError(final Exception e, final MessageMetadata messageMetadata) {
     LOGGER.info(
         "handeling error: {} for message type: {}",
         e.getMessage(),
-        deviceMessageMetadata.getMessageType());
+        messageMetadata.getMessageType());
     final OsgpException osgpException = this.ensureOsgpException(e);
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-            .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-            .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+            .withCorrelationUid(messageMetadata.getCorrelationUid())
+            .withOrganisationIdentification(messageMetadata.getOrganisationIdentification())
+            .withDeviceIdentification(messageMetadata.getDeviceIdentification())
             .withResult(ResponseMessageResultType.NOT_OK)
             .withOsgpException(osgpException)
-            .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+            .withMessagePriority(messageMetadata.getMessagePriority())
             .build();
-    this.webServiceResponseMessageSender.send(
-        responseMessage, deviceMessageMetadata.getMessageType());
+    this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
 
   protected OsgpException ensureOsgpException(final Exception e) {

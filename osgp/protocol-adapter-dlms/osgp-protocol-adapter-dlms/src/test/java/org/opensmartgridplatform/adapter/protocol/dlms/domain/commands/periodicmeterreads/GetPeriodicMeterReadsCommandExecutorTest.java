@@ -62,6 +62,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterRea
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseItemDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -82,15 +83,21 @@ class GetPeriodicMeterReadsCommandExecutorTest {
   private final long to = 2222222L;
   private final DateTime fromDateTime = new DateTime(this.from);
   private final DateTime toDateTime = new DateTime(this.to);
+  private MessageMetadata messageMetadata;
 
   @BeforeEach
   void setUp() {
+    this.messageMetadata =
+        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
     when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
   }
 
   @Test()
   void testExecuteNullRequest() {
-    assertThatThrownBy(() -> this.executor.execute(this.connectionManager, this.device, null))
+    assertThatThrownBy(
+            () ->
+                this.executor.execute(
+                    this.connectionManager, this.device, null, this.messageMetadata))
         .isInstanceOf(IllegalArgumentException.class);
   }
 
@@ -109,7 +116,7 @@ class GetPeriodicMeterReadsCommandExecutorTest {
 
     // CALL
     try {
-      this.executor.execute(this.connectionManager, this.device, request);
+      this.executor.execute(this.connectionManager, this.device, request, this.messageMetadata);
       fail("When no matching object is found, then execute should fail");
     } catch (final ProtocolAdapterException e) {
       assertThat(e.getMessage())
@@ -242,7 +249,7 @@ class GetPeriodicMeterReadsCommandExecutorTest {
 
     // CALL
     final PeriodicMeterReadsResponseDto result =
-        this.executor.execute(this.connectionManager, this.device, request);
+        this.executor.execute(this.connectionManager, this.device, request, this.messageMetadata);
 
     // VERIFY calls to mocks
     verify(this.dlmsMessageListener)

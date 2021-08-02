@@ -22,6 +22,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDt
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceResponseDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -46,7 +47,8 @@ public class DecoupleMBusDeviceCommandExecutor
   public DecoupleMbusDeviceResponseDto execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final DecoupleMbusDeviceDto decoupleMbusDto)
+      final DecoupleMbusDeviceDto decoupleMbusDto,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     final Short channel = decoupleMbusDto.getChannel();

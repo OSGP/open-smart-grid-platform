@@ -89,8 +89,6 @@
     <!-- Shared Libs -->
     <module>parent-pa-oslp</module>
     <module>oslp</module>
-    <module>../shared/shared</module>
-    <module>../shared/osgp-dto</module>
 
     <!-- Webapp, Dev-Sim for Protocol Adapter OSLP -->
     <module>web-device-simulator</module>

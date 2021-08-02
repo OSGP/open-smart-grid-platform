@@ -14,7 +14,7 @@
       xmlns:xsd="http://www.w3.org/2001/XMLSchema">
       <xsd:import
         namespace="http://www.opensmartgridplatform.org/schemas/netmanagement/osgp-notification/tariff-switching/2019/01"
-        schemaLocation="schemas/ts-notification.xsd" />
+        schemaLocation="schemas/notification-ws-tariffswitching.xsd" />
     </xsd:schema>
   </wsdl:types>
 

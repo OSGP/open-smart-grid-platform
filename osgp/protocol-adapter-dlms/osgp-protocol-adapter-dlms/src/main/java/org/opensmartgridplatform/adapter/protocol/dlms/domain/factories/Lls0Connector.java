@@ -20,6 +20,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessa
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +45,10 @@ public class Lls0Connector extends DlmsConnector {
 
   @Override
   public DlmsConnection connect(
-      final DlmsDevice device, final DlmsMessageListener dlmsMessageListener) throws OsgpException {
+      final MessageMetadata messageMetadata,
+      final DlmsDevice device,
+      final DlmsMessageListener dlmsMessageListener)
+      throws OsgpException {
 
     // Make sure neither device or device.getIpAddress() is null.
     this.checkDevice(device);

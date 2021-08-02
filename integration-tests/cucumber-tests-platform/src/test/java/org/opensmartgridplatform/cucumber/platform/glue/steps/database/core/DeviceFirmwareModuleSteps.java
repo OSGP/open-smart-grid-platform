@@ -13,12 +13,15 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getBool
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getNullOrNonEmptyString;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getString;
 
+import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import java.util.Map;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.domain.core.entities.Device;
+import org.opensmartgridplatform.domain.core.entities.DeviceFirmwareModule;
 import org.opensmartgridplatform.domain.core.entities.FirmwareModule;
+import org.opensmartgridplatform.domain.core.repositories.DeviceFirmwareModuleRepository;
 import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.FirmwareModuleRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleData;
@@ -29,6 +32,33 @@ public class DeviceFirmwareModuleSteps {
   @Autowired private DeviceRepository deviceRepository;
 
   @Autowired private FirmwareModuleRepository firmwareModuleRepository;
+  @Autowired private DeviceFirmwareModuleRepository deviceFirmwareModuleRepository;
+
+  @Given("^a device firmware version$")
+  public void aDeviceWithDeviceFirmwareVersion(final Map<String, String> settings)
+      throws Throwable {
+
+    final String deviceIdentification =
+        getString(
+            settings,
+            PlatformKeys.KEY_DEVICE_IDENTIFICATION,
+            PlatformDefaults.DEFAULT_DEVICE_IDENTIFICATION);
+    final Device device =
+        this.deviceRepository.findByDeviceIdentificationWithFirmwareModules(deviceIdentification);
+
+    final Map<FirmwareModule, String> configuredVersionsPerType =
+        this.getFirmwareModuleVersions(settings);
+
+    for (final Map.Entry<FirmwareModule, String> configuredVersionsPerTypeEntry :
+        configuredVersionsPerType.entrySet()) {
+      final DeviceFirmwareModule deviceFirmwareModule =
+          new DeviceFirmwareModule(
+              device,
+              configuredVersionsPerTypeEntry.getKey(),
+              configuredVersionsPerTypeEntry.getValue());
+      this.deviceFirmwareModuleRepository.save(deviceFirmwareModule);
+    }
+  }
 
   @Then("^the database should be updated with the device firmware version$")
   public void theDatabaseShouldBeUpdatedWithTheDeviceFirmwareVersion(

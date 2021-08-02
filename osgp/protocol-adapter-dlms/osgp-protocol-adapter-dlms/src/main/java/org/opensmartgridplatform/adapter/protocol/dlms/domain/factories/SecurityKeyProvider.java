@@ -14,6 +14,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 import java.util.List;
 import java.util.Map;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 /**
  * Functional interface used in connectors to obtain keys.
@@ -22,5 +23,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityK
  */
 @FunctionalInterface
 public interface SecurityKeyProvider {
-  Map<SecurityKeyType, byte[]> getKeys(String deviceIdentification, List<SecurityKeyType> keyTypes);
+  Map<SecurityKeyType, byte[]> getKeys(
+      final MessageMetadata messageMetadata,
+      String deviceIdentification,
+      List<SecurityKeyType> keyTypes);
 }

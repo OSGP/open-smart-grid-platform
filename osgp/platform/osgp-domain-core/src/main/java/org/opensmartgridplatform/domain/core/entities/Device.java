@@ -403,12 +403,6 @@ public class Device extends AbstractEntity {
     this.deviceModel = deviceModel;
   }
 
-  public void addFirmwareFile(final FirmwareFile firmwareFile, final String installedBy) {
-    final DeviceFirmwareFile newDeviceFirmware =
-        new DeviceFirmwareFile(this, firmwareFile, new Date(), installedBy);
-    this.deviceFirmwareFiles.add(newDeviceFirmware);
-  }
-
   public FirmwareFile getActiveFirmwareFile() {
     /*
      * In general it could be the case that active firmware modules come

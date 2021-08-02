@@ -20,7 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.ClientConnectionService;
-import org.opensmartgridplatform.shared.infra.jms.DeviceMessageMetadata;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.springframework.jms.IllegalStateException;
@@ -76,8 +76,8 @@ public class DeviceResponseMessageSenderTest {
   }
 
   private ProtocolResponseMessage createDefaultResponseMessage() {
-    final DeviceMessageMetadata metadata =
-        DeviceMessageMetadata.newBuilder()
+    final MessageMetadata metadata =
+        new MessageMetadata.Builder()
             .withDeviceIdentification("TEST-DEVICE-1")
             .withCorrelationUid("TEST-CORR-1")
             .withOrganisationIdentification("TEST-ORG-1")
@@ -85,7 +85,7 @@ public class DeviceResponseMessageSenderTest {
             .build();
 
     return new ProtocolResponseMessage.Builder()
-        .deviceMessageMetadata(metadata)
+        .messageMetadata(metadata)
         .domain("DistributionAutomation")
         .domainVersion("1.0")
         .result(ResponseMessageResultType.OK)
