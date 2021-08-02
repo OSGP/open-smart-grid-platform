@@ -10,8 +10,10 @@
 
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringcommon;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.Assert.assertThrows;
 
+import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.smcommon.DeleteResponseDataRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.smcommon.DeleteResponseDataResponse;
@@ -23,6 +25,11 @@ import org.springframework.ws.soap.client.SoapFaultClientException;
 public class CommonResponseDataSteps {
 
   @Autowired private SmartMeteringCommonClient client;
+
+  @Given("^no response data record$")
+  public void noResponseDataRecord() {
+    /* response data should not be created */
+  }
 
   @When("^the delete response data request with correlation uid \"([^\"]*)\"$")
   public void theDeleteResponseDataRequestWithCorrelationUid(final String correlationUid)

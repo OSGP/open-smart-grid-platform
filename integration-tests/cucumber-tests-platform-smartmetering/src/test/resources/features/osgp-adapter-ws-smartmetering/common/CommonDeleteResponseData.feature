@@ -16,8 +16,8 @@ Feature: SmartMetering Common - Delete Response Data
     Then the response data record with correlation uid "test-org-TEST1024000000001-NOW-666666666" should be deleted
 
   Scenario: Delete response data for data that does not exists
-    When the delete response data request with correlation uid "notexist" should throw SoapFault
-    Then the response data record with correlation uid "notexist" should be deleted
+    Given no response data record
+    Then the delete response data request with correlation uid "notexist" should throw SoapFault
 
   Scenario: Bundled requests should not delete response data
     Given a dlms device
