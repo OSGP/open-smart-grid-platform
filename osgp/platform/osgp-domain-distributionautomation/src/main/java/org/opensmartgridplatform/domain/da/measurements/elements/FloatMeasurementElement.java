@@ -8,15 +8,14 @@
  */
 package org.opensmartgridplatform.domain.da.measurements.elements;
 
-import java.io.Serializable;
 import java.util.Objects;
 import org.opensmartgridplatform.domain.da.measurements.MeasurementElement;
 
-public class FloatMeasurementElement implements MeasurementElement, Serializable {
+public class FloatMeasurementElement implements MeasurementElement {
 
   private static final long serialVersionUID = 1L;
 
-  private Float value;
+  private final Float value;
 
   public FloatMeasurementElement(final Float value) {
     this.value = value;

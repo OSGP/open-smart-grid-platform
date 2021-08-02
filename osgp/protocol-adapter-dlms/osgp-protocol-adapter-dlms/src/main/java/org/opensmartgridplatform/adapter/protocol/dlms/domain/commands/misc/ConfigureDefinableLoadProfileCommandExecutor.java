@@ -30,6 +30,7 @@ import org.opensmartgridplatform.dlms.interfaceclass.attribute.ProfileGenericAtt
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CaptureObjectDefinitionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DefinableLoadProfileConfigurationDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -79,7 +80,8 @@ public class ConfigureDefinableLoadProfileCommandExecutor
   public Void execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final DefinableLoadProfileConfigurationDto definableLoadProfileConfiguration)
+      final DefinableLoadProfileConfigurationDto definableLoadProfileConfiguration,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     if (definableLoadProfileConfiguration.hasCaptureObjects()) {

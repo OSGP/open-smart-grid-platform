@@ -21,6 +21,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDt
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ObisCodeValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecificAttributeValueRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,8 @@ public class GetSpecificAttributeValueCommandExecutor
   public String execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final SpecificAttributeValueRequestDto requestData)
+      final SpecificAttributeValueRequestDto requestData,
+      final MessageMetadata messageMetadata)
       throws FunctionalException {
 
     final ObisCodeValuesDto obisCodeValues = requestData.getObisCode();

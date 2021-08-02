@@ -50,13 +50,10 @@
     <osgp.dlms.version>5.15.0-SNAPSHOT</osgp.dlms.version>
     <osgp.shared.version>5.15.0-SNAPSHOT</osgp.shared.version>
     <osgp.jasper-interface.version>5.15.0-SNAPSHOT</osgp.jasper-interface.version>
-    <spring.version>5.3.1</spring.version>
+    <spring.version>5.3.2</spring.version>
     <spring.data.version>2.2.3.RELEASE</spring.data.version>
-    <spring.data.commons.version>2.2.3.RELEASE</spring.data.commons.version>
-    <spring.security.version>5.4.1</spring.security.version>
-    <spring.wscore.version>3.0.9.RELEASE</spring.wscore.version>
-    <spring.wssecurity.version>3.0.9.RELEASE</spring.wssecurity.version>
-    <spring.wssupport.version>3.0.9.RELEASE</spring.wssupport.version>
+    <spring.data.commons.version>2.2.4.RELEASE</spring.data.commons.version>
+    <spring.security.version>5.4.2</spring.security.version>
     <spring.ws.version>3.0.10.RELEASE</spring.ws.version>
     <assertj.version>3.16.1</assertj.version>
     <xmlunit.version>1.6</xmlunit.version>
@@ -133,7 +130,7 @@
     <!-- to avoid conflicts with spring-kafka-test the older kafka version 2.4.1 is used-->
     <kafka.version>2.4.1</kafka.version>
     <avro.version>1.9.2</avro.version>
-    <spring.kafka.version>2.4.6.RELEASE</spring.kafka.version>
+    <spring.kafka.version>2.4.7.RELEASE</spring.kafka.version>
     <!-- spring-kafka-test needs a 2.12 version of the scala libraries -->
     <scala.lang.version>2.12.11</scala.lang.version>
     <lombok.version>1.18.12</lombok.version>
@@ -443,7 +440,7 @@
       <dependency>
         <groupId>org.springframework.ws</groupId>
         <artifactId>spring-ws-core</artifactId>
-        <version>${spring.wscore.version}</version>
+        <version>${spring.ws.version}</version>
         <exclusions>
           <exclusion>
             <groupId>org.springframework</groupId>
@@ -454,12 +451,12 @@
       <dependency>
         <groupId>org.springframework.ws</groupId>
         <artifactId>spring-ws-security</artifactId>
-        <version>${spring.wssecurity.version}</version>
+        <version>${spring.ws.version}</version>
       </dependency>
       <dependency>
         <groupId>org.springframework.ws</groupId>
         <artifactId>spring-ws-support</artifactId>
-        <version>${spring.wssupport.version}</version>
+        <version>${spring.ws.version}</version>
       </dependency>
       <dependency>
         <groupId>org.springframework.ws</groupId>

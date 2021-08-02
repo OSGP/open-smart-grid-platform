@@ -19,6 +19,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MbusChannelElementsResponseDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -37,7 +38,8 @@ public class CoupleMBusDeviceCommandExecutor
   public MbusChannelElementsResponseDto execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final MbusChannelElementsDto requestDto)
+      final MbusChannelElementsDto requestDto,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     log.debug("retrieving mbus info on e-meter");

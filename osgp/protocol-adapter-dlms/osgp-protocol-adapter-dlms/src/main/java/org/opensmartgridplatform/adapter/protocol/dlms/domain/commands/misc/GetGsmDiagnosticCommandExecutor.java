@@ -47,6 +47,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetGsmDiagnostic
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ModemRegistrationStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PacketSwitchedStatusDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SignalQualityDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,7 +104,8 @@ public class GetGsmDiagnosticCommandExecutor
   public GetGsmDiagnosticResponseDto execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final GetGsmDiagnosticRequestDto getGsmDiagnosticQuery)
+      final GetGsmDiagnosticRequestDto getGsmDiagnosticQuery,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     final DlmsObject dlmsObject =

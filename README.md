@@ -16,7 +16,7 @@ This repository contains all code for the Grid eXchange Fabric (GXF) project, fo
 ## Grid eXchange Fabric information and news
 
 High-level project information and news can be found on the GXF section of the LF Energy website: 
-* [www.lfenergy.org/projects/gxf/](https://www.lfenergy.org/projects/gxf/)
+* [www.lfenergy.org/projects/gxf](https://www.lfenergy.org/projects/gxf/)
 
 GXF wiki with detailed project information:
 * [LF Energy wiki](https://wiki.lfenergy.org/display/HOME/Grid+eXchange+Fabric+-+GXF)
@@ -26,3 +26,14 @@ GXF detailed documentation:
 
 GXF issue tracker:
 * [github.com/OSGP/Documentation/issues](https://github.com/OSGP/Documentation/issues)
+
+## License
+This project is licensed under the Apache 2.0 license - see the [LICENSE](LICENSE) file for details.
+
+## Contributing
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+
+## Contact
+
+If you have a question, please read [GXF wiki contact page](https://documentation.gxf.lfenergy.org/Opensourcecommunity/Communication-and-contact.html) how to best contact us.

@@ -8,8 +8,10 @@
  */
 package org.opensmartgridplatform.domain.da.measurements;
 
+import java.io.Serializable;
+
 /**
  * Marker interface indicating an element that can be part of a collection of elements within a
  * {@link Measurement}
  */
-public interface MeasurementElement {}
+public interface MeasurementElement extends Serializable {}

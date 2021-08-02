@@ -29,6 +29,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.exceptionhandling.TechnicalException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -46,7 +47,8 @@ public class BundleService {
   public BundleMessagesRequestDto callExecutors(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final BundleMessagesRequestDto request) {
+      final BundleMessagesRequestDto request,
+      final MessageMetadata messageMetadata) {
 
     request.getActionList().stream()
         .filter(this::shouldExecute)
@@ -58,7 +60,7 @@ public class BundleService {
                 this.handleMissingExecutor(action, device);
 
               } else {
-                this.callExecutor(executor, action, conn, device);
+                this.callExecutor(executor, action, conn, device, messageMetadata);
               }
             });
 
@@ -102,7 +104,8 @@ public class BundleService {
       final CommandExecutor<?, ?> executor,
       final ActionDto action,
       final DlmsConnectionManager conn,
-      final DlmsDevice device) {
+      final DlmsDevice device,
+      final MessageMetadata messageMetadata) {
 
     final String executorName = executor.getClass().getSimpleName();
 
@@ -113,7 +116,7 @@ public class BundleService {
           device.getDeviceIdentification());
 
       final ActionResponseDto response =
-          executor.executeBundleAction(conn, device, action.getRequest());
+          executor.executeBundleAction(conn, device, action.getRequest(), messageMetadata);
       action.setResponse(response);
 
     } catch (final ConnectionException ce) {

@@ -22,6 +22,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDt
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdministrativeStatusTypeResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetAdministrativeStatusDataDto;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +63,10 @@ public class GetAdministrativeStatusCommandExecutor
 
   @Override
   public AdministrativeStatusTypeDto execute(
-      final DlmsConnectionManager conn, final DlmsDevice device, final Void useless)
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final Void useless,
+      final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     final AttributeAddress getParameter = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);

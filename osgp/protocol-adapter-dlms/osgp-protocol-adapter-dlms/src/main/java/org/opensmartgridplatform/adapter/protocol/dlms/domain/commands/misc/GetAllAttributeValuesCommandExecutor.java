@@ -26,6 +26,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetAllAttributeValuesRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +75,10 @@ public class GetAllAttributeValuesCommandExecutor
 
   @Override
   public String execute(
-      final DlmsConnectionManager conn, final DlmsDevice device, final DataObject object)
+      final DlmsConnectionManager conn,
+      final DlmsDevice device,
+      final DataObject object,
+      final MessageMetadata messageMetadata)
       throws OsgpException {
 
     final AttributeAddress attributeAddress =

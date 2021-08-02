@@ -84,7 +84,8 @@ public class SetConfigurationObjectCommandExecutorSmr5IT
     device.setProtocol(Protocol.SMR_5_0_0);
 
     // CALL
-    final AccessResultCode result = this.instance.execute(this.conn, device, configurationToSet);
+    final AccessResultCode result =
+        this.instance.execute(this.conn, device, configurationToSet, this.messageMetadata);
 
     // VERIFY
     assertThat(result).isEqualTo(AccessResultCode.SUCCESS);

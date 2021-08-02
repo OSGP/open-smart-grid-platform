@@ -16,6 +16,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,7 @@ public class DlmsConnectionFactory {
   /**
    * Returns an open connection to the device using the appropriate security settings.
    *
+   * @param messageMetadata the metadata of the request message
    * @param device The device to connect to. This reference can be updated when the invalid but
    *     correctable connection credentials are detected.
    * @param dlmsMessageListener A message listener that will be provided to the {@link
@@ -57,14 +59,18 @@ public class DlmsConnectionFactory {
    * @throws OsgpException in case of a TechnicalException or FunctionalException
    */
   public DlmsConnectionManager getConnection(
-      final DlmsDevice device, final DlmsMessageListener dlmsMessageListener) throws OsgpException {
+      final MessageMetadata messageMetadata,
+      final DlmsDevice device,
+      final DlmsMessageListener dlmsMessageListener)
+      throws OsgpException {
     return this.newConnectionWithSecurityLevel(
-        device, dlmsMessageListener, SecurityLevel.forDevice(device));
+        messageMetadata, device, dlmsMessageListener, SecurityLevel.forDevice(device));
   }
 
   /**
    * Returns an open connection to the device using its Public client association.
    *
+   * @param messageMetadata the metadata of the request message
    * @param device The device to connect to. This reference can be updated when the invalid but
    *     correctable connection credentials are detected.
    * @param dlmsMessageListener A message listener that will be provided to the {@link
@@ -76,11 +82,16 @@ public class DlmsConnectionFactory {
    * @throws OsgpException in case of a TechnicalException or FunctionalException
    */
   public DlmsConnectionManager getPublicClientConnection(
-      final DlmsDevice device, final DlmsMessageListener dlmsMessageListener) throws OsgpException {
-    return this.newConnectionWithSecurityLevel(device, dlmsMessageListener, SecurityLevel.LLS0);
+      final MessageMetadata messageMetadata,
+      final DlmsDevice device,
+      final DlmsMessageListener dlmsMessageListener)
+      throws OsgpException {
+    return this.newConnectionWithSecurityLevel(
+        messageMetadata, device, dlmsMessageListener, SecurityLevel.LLS0);
   }
 
   private DlmsConnectionManager newConnectionWithSecurityLevel(
+      final MessageMetadata messageMetadata,
       final DlmsDevice device,
       final DlmsMessageListener dlmsMessageListener,
       final SecurityLevel securityLevel)
@@ -88,6 +99,7 @@ public class DlmsConnectionFactory {
     final DlmsConnectionManager connectionManager =
         new DlmsConnectionManager(
             this.connectorFor(securityLevel),
+            messageMetadata,
             device,
             dlmsMessageListener,
             this.domainHelperService);
