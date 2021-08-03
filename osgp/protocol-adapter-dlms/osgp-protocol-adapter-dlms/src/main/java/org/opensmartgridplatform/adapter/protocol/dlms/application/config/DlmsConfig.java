@@ -22,12 +22,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import javax.inject.Provider;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcess;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsDeviceAssociation;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Hls5Connector;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Lls0Connector;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Lls1Connector;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.networking.DlmsChannelHandlerServer;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.networking.DlmsPushNotificationDecoder;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
@@ -124,20 +127,26 @@ public class DlmsConfig extends AbstractConfig {
   public Hls5Connector hls5Connector(
       final RecoverKeyProcessInitiator recoverKeyProcessInitiator,
       @Value("${jdlms.response_timeout}") final int responseTimeout,
-      @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress) {
+      @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress,
+      final SecretManagementService secretManagementService) {
     return new Hls5Connector(
         recoverKeyProcessInitiator,
         responseTimeout,
         logicalDeviceAddress,
-        DlmsDeviceAssociation.MANAGEMENT_CLIENT);
+        DlmsDeviceAssociation.MANAGEMENT_CLIENT,
+        secretManagementService);
   }
 
   @Bean
   public Lls1Connector lls1Connector(
       @Value("${jdlms.lls1.response.timeout}") final int responseTimeout,
-      @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress) {
+      @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress,
+      final SecretManagementService secretManagementService) {
     return new Lls1Connector(
-        responseTimeout, logicalDeviceAddress, DlmsDeviceAssociation.MANAGEMENT_CLIENT);
+        responseTimeout,
+        logicalDeviceAddress,
+        DlmsDeviceAssociation.MANAGEMENT_CLIENT,
+        secretManagementService);
   }
 
   @Bean
@@ -152,13 +161,16 @@ public class DlmsConfig extends AbstractConfig {
   @Scope("prototype")
   public RecoverKeyProcess recoverKeyProcess(
       final DomainHelperService domainHelperService,
-      @Value("${jdlms.response_timeout}") final int responseTimeout,
-      @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress) {
+      final Hls5Connector hls5Connector,
+      final SecretManagementService secretManagementService,
+      final ThrottlingService throttlingService,
+      final DlmsDeviceRepository deviceRepository) {
     return new RecoverKeyProcess(
         domainHelperService,
-        responseTimeout,
-        logicalDeviceAddress,
-        DlmsDeviceAssociation.MANAGEMENT_CLIENT);
+        hls5Connector,
+        secretManagementService,
+        throttlingService,
+        deviceRepository);
   }
 
   @Bean

@@ -14,19 +14,21 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.Dlms
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsDeviceAssociation;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Hls5Connector;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.SecurityKeyProvider;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 public class Hls5ConnectorStub extends Hls5Connector {
 
   public Hls5ConnectorStub() {
-    super(null, 0, 0, DlmsDeviceAssociation.PUBLIC_CLIENT);
+    super(null, 0, 0, DlmsDeviceAssociation.PUBLIC_CLIENT, null);
   }
 
   @Override
   protected void setSecurity(
       final MessageMetadata messageMetadata,
       final DlmsDevice device,
+      final SecurityKeyProvider keyProvider,
       final TcpConnectionBuilder tcpConnectionBuilder) {
     //
   }
