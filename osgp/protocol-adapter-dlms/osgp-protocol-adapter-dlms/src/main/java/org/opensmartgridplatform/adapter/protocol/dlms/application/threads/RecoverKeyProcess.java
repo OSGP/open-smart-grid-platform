@@ -12,62 +12,50 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Se
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_ENCRYPTION;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.util.encoders.Hex;
-import org.openmuc.jdlms.AuthenticationMechanism;
 import org.openmuc.jdlms.DlmsConnection;
-import org.openmuc.jdlms.SecuritySuite;
-import org.openmuc.jdlms.SecuritySuite.EncryptionMechanism;
-import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsDeviceAssociation;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Hls5Connector;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.RecoverKeyException;
-import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
-import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
-import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
-import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.InvocationCountingDlmsMessageListener;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Slf4j
 public class RecoverKeyProcess implements Runnable {
 
   private final DomainHelperService domainHelperService;
 
-  private final int responseTimeout;
-
-  private final int logicalDeviceAddress;
-
-  private final int clientId;
-
   @Setter private String deviceIdentification;
-
-  private DlmsDevice device;
 
   @Setter private String ipAddress;
 
   @Setter private MessageMetadata messageMetadata;
 
-  @Autowired private SecretManagementService secretManagementService;
+  private final Hls5Connector hls5Connector;
+
+  private final SecretManagementService secretManagementService;
+
+  private final ThrottlingService throttlingService;
+
+  private final DlmsDeviceRepository deviceRepository;
 
   public RecoverKeyProcess(
       final DomainHelperService domainHelperService,
-      final int responseTimeout,
-      final int logicalDeviceAddress,
-      final DlmsDeviceAssociation deviceAssociation) {
+      final Hls5Connector hls5Connector,
+      final SecretManagementService secretManagementService,
+      final ThrottlingService throttlingService,
+      final DlmsDeviceRepository deviceRepository) {
     this.domainHelperService = domainHelperService;
-    this.responseTimeout = responseTimeout;
-    this.logicalDeviceAddress = logicalDeviceAddress;
-    this.clientId = deviceAssociation.getClientId();
+    this.hls5Connector = hls5Connector;
+    this.secretManagementService = secretManagementService;
+    this.throttlingService = throttlingService;
+    this.deviceRepository = deviceRepository;
   }
 
   @Override
@@ -79,13 +67,7 @@ public class RecoverKeyProcess implements Runnable {
         this.messageMetadata.getCorrelationUid(),
         this.deviceIdentification);
 
-    try {
-      this.findDevice();
-    } catch (final Exception e) {
-      log.error("[{}] Could not find device", this.messageMetadata.getCorrelationUid(), e);
-      // why try to find device if you don't do anything with the result?!?
-      // shouldn't we throw an exception here?
-    }
+    final DlmsDevice device = this.findDevice();
 
     if (!this.secretManagementService.hasNewSecretOfType(
         this.messageMetadata, this.deviceIdentification, E_METER_AUTHENTICATION)) {
@@ -94,29 +76,27 @@ public class RecoverKeyProcess implements Runnable {
           this.messageMetadata.getCorrelationUid());
       return;
     }
-
-    if (this.canConnectUsingNewKeys()) {
-      final List<SecurityKeyType> keyTypesToActivate =
-          Arrays.asList(E_METER_ENCRYPTION, E_METER_AUTHENTICATION);
-      try {
-        this.secretManagementService.activateNewKeys(
-            this.messageMetadata, this.deviceIdentification, keyTypesToActivate);
-      } catch (final Exception e) {
-        throw new RecoverKeyException(e);
-      }
-    } else {
+    if (!this.canConnectUsingNewKeys(device)) {
       log.warn(
           "[{}] Could not recover keys: could not connect to device using new keys",
           this.messageMetadata.getCorrelationUid());
-      // shouldn't we try to connect using 'old' keys? or send key change to device again?
+      return;
+    }
+
+    try {
+      this.secretManagementService.activateNewKeys(
+          this.messageMetadata,
+          this.deviceIdentification,
+          Arrays.asList(E_METER_ENCRYPTION, E_METER_AUTHENTICATION));
+    } catch (final Exception e) {
+      throw new RecoverKeyException(e);
     }
   }
 
-  private void findDevice() throws OsgpException {
+  private DlmsDevice findDevice() {
     try {
-      this.device =
-          this.domainHelperService.findDlmsDevice(this.deviceIdentification, this.ipAddress);
-    } catch (final ProtocolAdapterException e) { // Thread can not recover from these exceptions.
+      return this.domainHelperService.findDlmsDevice(this.deviceIdentification, this.ipAddress);
+    } catch (final Exception e) {
       throw new RecoverKeyException(e);
     }
   }
@@ -130,11 +110,23 @@ public class RecoverKeyProcess implements Runnable {
     }
   }
 
-  private boolean canConnectUsingNewKeys() {
+  private boolean canConnectUsingNewKeys(final DlmsDevice device) {
     DlmsConnection connection = null;
+    InvocationCountingDlmsMessageListener dlmsMessageListener = null;
     try {
-      connection = this.createConnectionUsingNewKeys();
-      return true;
+      this.throttlingService.openConnection();
+
+      if (device.needsInvocationCounter()) {
+        dlmsMessageListener = new InvocationCountingDlmsMessageListener();
+      }
+
+      connection =
+          this.hls5Connector.connectUnchecked(
+              this.messageMetadata,
+              device,
+              dlmsMessageListener,
+              this.secretManagementService::getNewKeys);
+      return connection != null;
     } catch (final Exception e) {
       log.warn("Connection exception: {}", e.getMessage(), e);
       return false;
@@ -143,54 +135,17 @@ public class RecoverKeyProcess implements Runnable {
         try {
           connection.close();
         } catch (final IOException e) {
-          log.warn("Connection exception: {}", e.getMessage(), e);
+          log.warn("Closing connection exception: {}", e.getMessage(), e);
         }
       }
-    }
-  }
 
-  /**
-   * Create a connection with the device.
-   *
-   * @return The connection.
-   * @throws IOException When there are problems in connecting to or communicating with the device.
-   */
-  private DlmsConnection createConnectionUsingNewKeys() throws IOException, FunctionalException {
-    final Map<SecurityKeyType, byte[]> keys =
-        this.secretManagementService.getNewKeys(
-            this.messageMetadata,
-            this.deviceIdentification,
-            Arrays.asList(E_METER_AUTHENTICATION, E_METER_ENCRYPTION));
-    final byte[] authenticationKey = Hex.decode(keys.get(E_METER_AUTHENTICATION));
-    final byte[] encryptionKey = Hex.decode(keys.get(E_METER_ENCRYPTION));
+      this.throttlingService.closeConnection();
 
-    final SecuritySuite securitySuite =
-        SecuritySuite.builder()
-            .setAuthenticationKey(authenticationKey)
-            .setAuthenticationMechanism(AuthenticationMechanism.HLS5_GMAC)
-            .setGlobalUnicastEncryptionKey(encryptionKey)
-            .setEncryptionMechanism(EncryptionMechanism.AES_GCM_128)
-            .build();
-
-    final TcpConnectionBuilder tcpConnectionBuilder =
-        new TcpConnectionBuilder(InetAddress.getByName(this.device.getIpAddress()))
-            .setSecuritySuite(securitySuite)
-            .setResponseTimeout(this.responseTimeout)
-            .setLogicalDeviceId(this.logicalDeviceAddress)
-            .setClientId(this.clientId);
-
-    final Integer challengeLength = this.device.getChallengeLength();
-
-    try {
-      if (challengeLength != null) {
-        tcpConnectionBuilder.setChallengeLength(challengeLength);
+      if (dlmsMessageListener != null) {
+        final int numberOfSentMessages = dlmsMessageListener.getNumberOfSentMessages();
+        device.incrementInvocationCounter(numberOfSentMessages);
+        this.deviceRepository.save(device);
       }
-    } catch (final IllegalArgumentException e) {
-      log.error("Exception occurred: Invalid key format");
-      throw new FunctionalException(
-          FunctionalExceptionType.INVALID_DLMS_KEY_FORMAT, ComponentType.PROTOCOL_DLMS, e);
     }
-
-    return tcpConnectionBuilder.build();
   }
 }

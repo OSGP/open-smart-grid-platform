@@ -38,6 +38,7 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
   protected abstract void setSecurity(
       final MessageMetadata messageMetadata,
       final DlmsDevice device,
+      final SecurityKeyProvider keyProvider,
       final TcpConnectionBuilder tcpConnectionBuilder)
       throws OsgpException;
 
@@ -54,7 +55,8 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
   DlmsConnection createConnection(
       final MessageMetadata messageMetadata,
       final DlmsDevice device,
-      final DlmsMessageListener dlmsMessageListener)
+      final DlmsMessageListener dlmsMessageListener,
+      final SecurityKeyProvider keyProvider)
       throws IOException, OsgpException {
 
     // Setup connection to device
@@ -71,7 +73,7 @@ public abstract class SecureDlmsConnector extends Lls0Connector {
       tcpConnectionBuilder.useHdlc();
     }
 
-    this.setSecurity(messageMetadata, device, tcpConnectionBuilder);
+    this.setSecurity(messageMetadata, device, keyProvider, tcpConnectionBuilder);
     this.setOptionalValues(device, tcpConnectionBuilder);
 
     if (device.isInDebugMode()

@@ -121,7 +121,7 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
         organisationIdentification);
 
     final ResponseData responseData =
-        this.responseDataService.dequeue(
+        this.responseDataService.get(
             request.getCorrelationUid(),
             BundleMessagesResponse.class,
             ComponentType.WS_SMART_METERING);

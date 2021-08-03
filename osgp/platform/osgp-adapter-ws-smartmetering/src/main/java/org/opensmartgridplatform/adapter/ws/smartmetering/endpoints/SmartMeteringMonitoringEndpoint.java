@@ -178,7 +178,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
     PeriodicMeterReadsResponse response = null;
     try {
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(),
               PeriodicMeterReadsContainer.class,
               ComponentType.WS_SMART_METERING);
@@ -212,7 +212,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
     PeriodicMeterReadsGasResponse response = null;
     try {
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(),
               PeriodicMeterReadsContainerGas.class,
               ComponentType.WS_SMART_METERING);
@@ -331,7 +331,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
     ActualMeterReadsResponse response = null;
     try {
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), MeterReads.class, ComponentType.WS_SMART_METERING);
 
       this.throwExceptionIfResultNotOk(responseData, "retrieving the actual meter reads");
@@ -360,7 +360,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
     ActualMeterReadsGasResponse response = null;
     try {
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), MeterReadsGas.class, ComponentType.WS_SMART_METERING);
 
       this.throwExceptionIfResultNotOk(responseData, "retrieving the actual meter reads for gas");
@@ -427,7 +427,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
     ReadAlarmRegisterResponse response = null;
     try {
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), AlarmRegister.class, ComponentType.WS_SMART_METERING);
 
       this.throwExceptionIfResultNotOk(responseData, "retrieving the alarm register");
@@ -465,7 +465,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
     RetrievePushNotificationAlarmResponse response = null;
     try {
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(),
               PushNotificationAlarm.class,
               ComponentType.WS_SMART_METERING);
@@ -541,7 +541,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
     GetPowerQualityProfileResponse response = null;
     try {
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(),
               org.opensmartgridplatform.domain.core.valueobjects.smartmetering
                   .GetPowerQualityProfileResponse.class,
@@ -619,7 +619,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
       response = new ClearAlarmRegisterResponse();
 
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       this.throwExceptionIfResultNotOk(responseData, "Retrieving clear alarm register");
@@ -694,7 +694,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
     ActualPowerQualityResponse response = null;
     try {
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       this.throwExceptionIfResultNotOk(responseData, "retrieving actual power data");

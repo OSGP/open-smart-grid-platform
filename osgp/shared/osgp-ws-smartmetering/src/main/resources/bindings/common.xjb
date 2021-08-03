@@ -12,7 +12,7 @@
   xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
   xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-  <jxb:bindings schemaLocation="../schemas/common-ws-smartmetering.xsd">
+  <jxb:bindings schemaLocation="../schemas/base-ws-smartmetering.xsd">
     <jxb:schemaBindings>
       <jxb:package name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.common"></jxb:package>
     </jxb:schemaBindings>

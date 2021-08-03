@@ -294,7 +294,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
       response = new EnableDebuggingResponse();
 
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       this.throwExceptionIfResultNotOk(responseData, "Enable Debugging");
@@ -361,7 +361,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
       response = new DisableDebuggingResponse();
 
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       this.throwExceptionIfResultNotOk(responseData, "Disable Debugging");
@@ -451,7 +451,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
       final Page<DeviceLogItem> page =
           (Page<DeviceLogItem>)
               this.responseDataService
-                  .dequeue(request.getCorrelationUid(), Page.class, ComponentType.WS_SMART_METERING)
+                  .get(request.getCorrelationUid(), Page.class, ComponentType.WS_SMART_METERING)
                   .getMessageData();
 
       // Map to output
@@ -529,7 +529,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
       response = new SetDeviceCommunicationSettingsResponse();
 
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       this.throwExceptionIfResultNotOk(responseData, "Set device communication settings");
@@ -606,7 +606,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
       response = new SetDeviceLifecycleStatusByChannelResponse();
 
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       this.throwExceptionIfResultNotOk(responseData, "Set device lifecycle status by channel");
@@ -683,7 +683,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
       response = new GetGsmDiagnosticResponse();
 
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       this.throwExceptionIfResultNotOk(responseData, "Get gsm diagnostic");

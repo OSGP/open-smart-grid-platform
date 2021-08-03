@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Platform version: ${display.version} -->
+
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:smcommon="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-common/2014/10"
+  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:tns="http://www.opensmartgridplatform.org/definitions/smartmetering/sm-common-v1.0"
+  targetNamespace="http://www.opensmartgridplatform.org/definitions/smartmetering/sm-common-v1.0">
+
+  <wsdl:types>
+    <xsd:schema
+      targetNamespace="http://www.opensmartgridplatform.org/definitions/smartmetering/sm-common/imports"
+      xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+      <xsd:import
+        namespace="http://www.opensmartgridplatform.org/schemas/smartmetering/sm-common/2014/10"
+        schemaLocation="schemas/common-ws-smartmetering.xsd" />
+    </xsd:schema>
+  </wsdl:types>
+
+  <wsdl:message name="DeleteResponseDataRequest">
+    <wsdl:part element="smcommon:DeleteResponseDataRequest" name="DeleteResponseDataRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="DeleteResponseDataResponse">
+    <wsdl:part element="smcommon:DeleteResponseDataResponse" name="DeleteResponseDataResponse">
+    </wsdl:part>
+  </wsdl:message>
+
+
+  <wsdl:portType name="SmartMeteringCommonPort">
+
+    <wsdl:operation name="DeleteResponseData">
+      <wsdl:input message="tns:DeleteResponseDataRequest" name="DeleteResponseDataRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:DeleteResponseDataResponse" name="DeleteResponseDataResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+  </wsdl:portType>
+
+  <wsdl:binding name="SmartMeteringCommonPortSoap11" type="tns:SmartMeteringCommonPort">
+
+    <soap:binding style="document"
+      transport="http://schemas.xmlsoap.org/soap/http" />
+
+    <wsdl:operation name="DeleteResponseData">
+      <soap:operation soapAction="" />
+      <wsdl:input name="DeleteResponseDataRequest">
+      </wsdl:input>
+      <wsdl:output name="DeleteResponseDataResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+
+  </wsdl:binding>
+
+  <wsdl:service name="SmartMeteringCommonPortService">
+    <wsdl:port binding="tns:SmartMeteringCommonPortSoap11"
+      name="SmartMeteringCommonPortSoap11">
+      <soap:address
+        location="http://localhost:8080/osgp-adapter-ws-smartmetering/smartMetering/commonService/" />
+    </wsdl:port>
+  </wsdl:service>
+
+</wsdl:definitions>

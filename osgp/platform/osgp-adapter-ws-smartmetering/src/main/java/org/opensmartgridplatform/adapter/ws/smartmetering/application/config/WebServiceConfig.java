@@ -56,6 +56,9 @@ public class WebServiceConfig extends AbstractConfig {
   @Value("${jaxb2.marshaller.context.path.smartmetering.bundle}")
   private String marshallerContextPathBundle;
 
+  @Value("${jaxb2.marshaller.context.path.smartmetering.common}")
+  private String marshallerContextPathCommon;
+
   @Value("${jaxb2.marshaller.context.path.smartmetering.configuration}")
   private String marshallerContextPathConfiguration;
 
@@ -122,6 +125,20 @@ public class WebServiceConfig extends AbstractConfig {
   }
 
   /**
+   * Method for creating the Marshaller for smart metering common.
+   *
+   * @return Jaxb2Marshaller
+   */
+  @Bean
+  public Jaxb2Marshaller smartMeteringCommonMarshaller() {
+    final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+
+    marshaller.setContextPath(this.marshallerContextPathCommon);
+
+    return marshaller;
+  }
+
+  /**
    * Method for creating the Marshaller for smart metering bundle.
    *
    * @return Jaxb2Marshaller
@@ -144,6 +161,17 @@ public class WebServiceConfig extends AbstractConfig {
   public MarshallingPayloadMethodProcessor smartMeteringBundleMarshallingPayloadMethodProcessor() {
     return new MarshallingPayloadMethodProcessor(
         this.smartMeteringBundleMarshaller(), this.smartMeteringBundleMarshaller());
+  }
+
+  /**
+   * Method for creating the Marshalling Payload Method Processor for Smart Metering common.
+   *
+   * @return MarshallingPayloadMethodProcessor
+   */
+  @Bean
+  public MarshallingPayloadMethodProcessor smartMeteringCommonMarshallingPayloadMethodProcessor() {
+    return new MarshallingPayloadMethodProcessor(
+        this.smartMeteringCommonMarshaller(), this.smartMeteringCommonMarshaller());
   }
 
   /**
@@ -264,6 +292,7 @@ public class WebServiceConfig extends AbstractConfig {
     // SMART METERING
     methodArgumentResolvers.add(this.smartMeteringManagementMarshallingPayloadMethodProcessor());
     methodArgumentResolvers.add(this.smartMeteringBundleMarshallingPayloadMethodProcessor());
+    methodArgumentResolvers.add(this.smartMeteringCommonMarshallingPayloadMethodProcessor());
     methodArgumentResolvers.add(this.smartMeteringInstallationMarshallingPayloadMethodProcessor());
     methodArgumentResolvers.add(this.smartMeteringMonitoringMarshallingPayloadMethodProcessor());
     methodArgumentResolvers.add(this.smartMeteringAdhocMarshallingPayloadMethodProcessor());
@@ -293,6 +322,7 @@ public class WebServiceConfig extends AbstractConfig {
     // SMART METERING
     methodReturnValueHandlers.add(this.smartMeteringManagementMarshallingPayloadMethodProcessor());
     methodReturnValueHandlers.add(this.smartMeteringBundleMarshallingPayloadMethodProcessor());
+    methodReturnValueHandlers.add(this.smartMeteringCommonMarshallingPayloadMethodProcessor());
     methodReturnValueHandlers.add(
         this.smartMeteringInstallationMarshallingPayloadMethodProcessor());
     methodReturnValueHandlers.add(this.smartMeteringMonitoringMarshallingPayloadMethodProcessor());

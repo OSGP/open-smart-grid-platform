@@ -153,7 +153,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
     try {
       response = new AddDeviceResponse();
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       this.throwExceptionIfResultNotOk(responseData, "Add Device");
@@ -227,7 +227,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
     try {
       response = new CoupleMbusDeviceResponse();
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       this.throwExceptionIfResultNotOk(responseData, "Couple Mbus Device");
@@ -303,7 +303,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
     try {
       response = new DecoupleMbusDeviceResponse();
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       this.throwExceptionIfResultNotOk(responseData, "Decouple Mbus Device");
@@ -380,7 +380,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
     try {
       response = new CoupleMbusDeviceByChannelResponse();
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       this.throwExceptionIfResultNotOk(responseData, "Couple Mbus Device By Channel");
@@ -461,7 +461,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
     DecoupleMbusDeviceByChannelResponse response = null;
     try {
       final ResponseData responseData =
-          this.responseDataService.dequeue(
+          this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
       this.throwExceptionIfResultNotOk(responseData, "Decouple Mbus Device By Channel");
