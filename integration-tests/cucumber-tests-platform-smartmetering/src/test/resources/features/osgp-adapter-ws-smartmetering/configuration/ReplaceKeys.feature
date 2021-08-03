@@ -4,11 +4,10 @@ Feature: SmartMetering Configuration - Replace Keys
   I want to be able to replace the keys on a device
   So I can ensure secure device communication according to requirements
 
-  Background: 
+  Scenario: Replace keys on a device
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-  Scenario: Replace keys on a device
     When the replace keys request is received
       | DeviceIdentification | TEST1024000000001                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
       | Master_key           | 6fa7f5f19812391b2803a142f17c67aa0e3fc23b537ae6f9cd34a850d4fd5f4d60a3b2bdd6f8cb356e00e6c4e104fb5ea521eeabd8cb69d8f7a5cbe2b20e010c089ee346aaa13c9abdc5e0c9ba0fcafff53d2dcd3c1b7a8ee3c3f76e0d00fcd043940586f055c5e19a0fa7eeff6a7894e128029eaf11c1734565f3f5b614bfab9ea5ce24bf34d2e59878dc2401bd175333315ce197d4243dced9c4e28a23bc91dca432985debe81cf5912df7e99b28f596f335e80678d7b5d1edc93be8bf22d77b2e172ccd7c6907454a983999840bf540343d281e8f9871386f005fe40065fcbe218bdc605be4e759cb1b8d5760eab7b8ceb95cfae2224c15045834962f9b6b |
@@ -17,14 +16,36 @@ Feature: SmartMetering Configuration - Replace Keys
     Then the replace keys response should be returned
       | DeviceIdentification | TEST1024000000001 |
       | Result               | OK                |
-    And the new keys are stored in the osgp_adapter_protocol_dlms database security_key table
+    And the new keys are stored in the secret management database encrypted_secret table
     And the stored keys are not equal to the received keys
 
   @ResetKeysOnDevice
   Scenario: Replace keys with generated ones on a device
+    Given a dlms device
+      | DeviceIdentification | TEST1024000000001 |
+      | DeviceType           | SMART_METER_E     |
     When the generate and replace keys request is received
       | DeviceIdentification | TEST1024000000001 |
     Then the generate and replace keys response should be returned
       | DeviceIdentification | TEST1024000000001 |
       | Result               | OK                |
-    And the new keys are stored in the osgp_adapter_protocol_dlms database security_key table
+    And the new keys are stored in the secret management database encrypted_secret table
+
+  @RecoverKeys
+  Scenario: Recover keys after a (simulated) failed key change
+    #Try to connect using incorrect (swapped) keys and then try to recover the correct new keys
+    Given a dlms device
+      | DeviceIdentification | TEST1024000000001 |
+      | DeviceType           | SMART_METER_E     |
+      | Authentication_key   | 867424ac75b6d53c89276d304608321f0a1f6e401f453f84adf3477c7ee1623c |
+      | Encryption_key       | c19fe80a22a0f6c5cdaad0826c4d204f23694ded08d811b66e9b845d9f2157d2 |
+    And new keys are registered in the secret management database
+      | DeviceIdentification | TEST1024000000001 |
+      | Authentication_key   | c19fe80a22a0f6c5cdaad0826c4d204f23694ded08d811b66e9b845d9f2157d2 |
+      | Encryption_key       | 867424ac75b6d53c89276d304608321f0a1f6e401f453f84adf3477c7ee1623c |
+    When the get actual meter reads request is received
+      | DeviceIdentification | TEST1024000000001 |
+    Then after 15 seconds, the new keys are recovered
+      | DeviceIdentification | TEST1024000000001 |
+      | Authentication_key   | c19fe80a22a0f6c5cdaad0826c4d204f23694ded08d811b66e9b845d9f2157d2 |
+      | Encryption_key       | 867424ac75b6d53c89276d304608321f0a1f6e401f453f84adf3477c7ee1623c |
