@@ -213,17 +213,8 @@ public class DeviceResponseMessageService {
 
     final Serializable messageData = message.getDataObject();
 
-    final MessageMetadata messageMetadata =
-        new MessageMetadata.Builder()
-            .withDeviceIdentification(message.getDeviceIdentification())
-            .withOrganisationIdentification(message.getOrganisationIdentification())
-            .withCorrelationUid(message.getCorrelationUid())
-            .withMessageType(message.getMessageType())
-            .withMessagePriority(message.getMessagePriority())
-            .build();
-
     return new ProtocolRequestMessage.Builder()
-        .messageMetadata(messageMetadata)
+        .messageMetadata(message.messageMetadata())
         .domain(message.getDomain())
         .domainVersion(message.getDomainVersion())
         .ipAddress(getIpAddress(device))
@@ -246,14 +237,7 @@ public class DeviceResponseMessageService {
     final Timestamp scheduleTimeStamp =
         new Timestamp(message.getRetryHeader().getScheduledRetryTime().getTime());
 
-    final MessageMetadata messageMetadata =
-        new MessageMetadata.Builder()
-            .withDeviceIdentification(message.getDeviceIdentification())
-            .withOrganisationIdentification(message.getOrganisationIdentification())
-            .withCorrelationUid(message.getCorrelationUid())
-            .withMessageType(message.getMessageType())
-            .withMessagePriority(message.getMessagePriority())
-            .build();
+    final MessageMetadata messageMetadata = message.messageMetadata();
 
     final ScheduledTask task =
         new ScheduledTask(

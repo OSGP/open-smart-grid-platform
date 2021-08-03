@@ -93,17 +93,10 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
       final Session session)
       throws JMSException {
     final ObjectMessage objectMessage = session.createObjectMessage(requestMessage.getRequest());
-    objectMessage.setJMSCorrelationID(requestMessage.getCorrelationUid());
-    objectMessage.setJMSType(requestMessage.getMessageType());
-    objectMessage.setJMSPriority(requestMessage.getMessagePriority());
+    requestMessage.getMessageMetadata().applyTo(objectMessage);
     objectMessage.setStringProperty(Constants.DOMAIN, requestMessage.getDomain());
     objectMessage.setStringProperty(Constants.DOMAIN_VERSION, requestMessage.getDomainVersion());
-    objectMessage.setStringProperty(
-        Constants.ORGANISATION_IDENTIFICATION, requestMessage.getOrganisationIdentification());
 
-    final String deviceIdentification = requestMessage.getDeviceIdentification();
-    objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION, deviceIdentification);
-    objectMessage.setStringProperty(Constants.IP_ADDRESS, requestMessage.getIpAddress());
     objectMessage.setBooleanProperty(Constants.IS_SCHEDULED, requestMessage.isScheduled());
     if (requestMessage.getMaxScheduleTime() != null) {
       objectMessage.setLongProperty(
@@ -112,6 +105,7 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
     objectMessage.setIntProperty(Constants.RETRY_COUNT, requestMessage.getRetryCount());
     objectMessage.setBooleanProperty(Constants.BYPASS_RETRY, requestMessage.bypassRetry());
 
+    final String deviceIdentification = requestMessage.getDeviceIdentification();
     if (!protocolInfo.isParallelRequestsAllowed()) {
       final String messageGroupId =
           ProtocolRequestMessageSender.this.getMessageGroupId(deviceIdentification);

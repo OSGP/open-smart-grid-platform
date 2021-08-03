@@ -9,7 +9,6 @@
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.services;
 
 import java.util.List;
-import org.opensmartgridplatform.adapter.ws.smartmetering.endpoints.RequestMessageMetadata;
 import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -41,11 +40,11 @@ public class BundleService {
   }
 
   public String enqueueBundleRequest(
-      final RequestMessageMetadata requestMessageMetadata, final List<ActionRequest> actionList)
+      final MessageMetadata messageMetadata, final List<ActionRequest> actionList)
       throws FunctionalException {
-    final String organisationIdentification =
-        requestMessageMetadata.getOrganisationIdentification();
-    final String deviceIdentification = requestMessageMetadata.getDeviceIdentification();
+
+    final String organisationIdentification = messageMetadata.getOrganisationIdentification();
+    final String deviceIdentification = messageMetadata.getDeviceIdentification();
 
     final Organisation organisation =
         this.domainHelperService.findOrganisation(organisationIdentification);
@@ -57,12 +56,9 @@ public class BundleService {
         this.correlationIdProviderService.getCorrelationId(
             organisationIdentification, deviceIdentification);
 
-    final MessageMetadata messageMetadata =
-        requestMessageMetadata.newMessageMetadata(correlationUid);
-
     final SmartMeteringRequestMessage message =
         new SmartMeteringRequestMessage.Builder()
-            .messageMetadata(messageMetadata)
+            .messageMetadata(messageMetadata.builder().withCorrelationUid(correlationUid).build())
             .request(new BundleMessageRequest(actionList))
             .build();
 

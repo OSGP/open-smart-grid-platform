@@ -12,23 +12,24 @@ import java.io.Serializable;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 @Getter
 public class MessageMetadata implements Serializable {
+
   /** Generated serial version uid */
-  private static final long serialVersionUID = 5481771135195782979L;
+  private static final long serialVersionUID = 6199157947591260015L;
 
   private String deviceIdentification;
+
   private String organisationIdentification;
   private String correlationUid;
   private String messageType;
   private String domain;
   private String domainVersion;
-  @Setter private String ipAddress;
+  private String ipAddress;
   private int messagePriority;
   private boolean scheduled;
   private Long scheduleTime;
@@ -89,29 +90,50 @@ public class MessageMetadata implements Serializable {
     return metadata;
   }
 
-  public <T extends Message> void applyTo(final T message) throws JMSException {
+  public void applyTo(final Message message) throws JMSException {
+
     message.setJMSCorrelationID(this.correlationUid);
     message.setJMSType(this.messageType);
     message.setJMSPriority(this.messagePriority);
 
-    if (this.deviceIdentification != null) {
+    if (StringUtils.isNotBlank(this.deviceIdentification)) {
       message.setStringProperty(Constants.DEVICE_IDENTIFICATION, this.deviceIdentification);
     }
-
-    if (this.organisationIdentification != null) {
+    if (StringUtils.isNotBlank(this.organisationIdentification)) {
       message.setStringProperty(
           Constants.ORGANISATION_IDENTIFICATION, this.organisationIdentification);
     }
-    message.setBooleanProperty(Constants.BYPASS_RETRY, this.bypassRetry);
+
+    if (StringUtils.isNotBlank(this.domain)) {
+      message.setStringProperty(Constants.DOMAIN, this.domain);
+    }
+    if (StringUtils.isNotBlank(this.domainVersion)) {
+      message.setStringProperty(Constants.DOMAIN_VERSION, this.domainVersion);
+    }
+
+    if (StringUtils.isNotBlank(this.ipAddress)) {
+      message.setStringProperty(Constants.IP_ADDRESS, this.ipAddress);
+    }
+
     if (this.scheduleTime != null) {
       message.setLongProperty(Constants.SCHEDULE_TIME, this.scheduleTime);
     }
     if (this.maxScheduleTime != null) {
       message.setLongProperty(Constants.MAX_SCHEDULE_TIME, this.maxScheduleTime);
     }
+    message.setBooleanProperty(Constants.IS_SCHEDULED, this.scheduled);
+
+    message.setIntProperty(Constants.RETRY_COUNT, this.retryCount);
+    message.setBooleanProperty(Constants.BYPASS_RETRY, this.bypassRetry);
+
+    /*
+     * Not setting the jmsxDeliveryCount as int property named Constants.DELIVERY_COUNT, because
+     * this is not some metadata to be transferred over to new JMS messages. This delivery count is
+     * incremented by the message queue environment when a message is re-delivered to a consumer.
+     */
   }
 
-  public static MessageMetadata.Builder newMessageMetadataBuilder() {
+  public static MessageMetadata.Builder newBuilder() {
     return new Builder();
   }
 
@@ -137,6 +159,10 @@ public class MessageMetadata implements Serializable {
   private boolean getBooleanProperty(
       final Message message, final String name, final boolean defaultValue) throws JMSException {
     return message.propertyExists(name) ? message.getBooleanProperty(name) : defaultValue;
+  }
+
+  public Builder builder() {
+    return new Builder(this);
   }
 
   @Override

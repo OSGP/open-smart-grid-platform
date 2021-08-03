@@ -13,9 +13,10 @@ import java.io.Serializable;
 public class RequestMessage implements Serializable {
 
   /** Serial Version UID. */
-  private static final long serialVersionUID = 8377090502244471258L;
+  private static final long serialVersionUID = 3099016879238320945L;
 
   protected MessageMetadata messageMetadata;
+
   protected Serializable request;
 
   public RequestMessage(final CorrelationIds ids, final Serializable request) {
@@ -49,7 +50,7 @@ public class RequestMessage implements Serializable {
       final String ipAddress,
       final Serializable request) {
     this(
-        new MessageMetadata.Builder()
+        MessageMetadata.newBuilder()
             .withCorrelationUid(correlationUid)
             .withOrganisationIdentification(organisationIdentification)
             .withDeviceIdentification(deviceIdentification)

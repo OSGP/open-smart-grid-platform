@@ -56,8 +56,7 @@ public abstract class SetConfigurationObjectCommandExecutorITBase {
     protocolServices.add(getService);
     protocolServices.add(setService);
     final ProtocolServiceLookup protocolServiceLookup = new ProtocolServiceLookup(protocolServices);
-    this.messageMetadata =
-        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+    this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
 
     this.instance = new SetConfigurationObjectCommandExecutor(protocolServiceLookup);
 

@@ -86,20 +86,21 @@ public class BundleService {
     final SmartMeter smartMeter =
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
-    messageMetadata.setIpAddress(smartMeter.getIpAddress());
     final BundleMessagesRequestDto bundleMessageDataContainerDto =
         this.actionMapperService.mapAllActions(bundleMessageDataContainer, smartMeter);
 
     LOGGER.info("Sending request message to core.");
 
     final RequestMessage requestMessage =
-        new RequestMessage(messageMetadata, bundleMessageDataContainerDto);
+        new RequestMessage(
+            messageMetadata.builder().withIpAddress(smartMeter.getIpAddress()).build(),
+            bundleMessageDataContainerDto);
     this.osgpCoreRequestMessageSender.send(requestMessage);
   }
 
   @Transactional(value = "transactionManager")
   public void handleBundleResponse(
-      final MessageMetadata deviceMessageMetadata,
+      final MessageMetadata messageMetadata,
       final ResponseMessageResultType responseMessageResultType,
       final OsgpException osgpException,
       final BundleMessagesRequestDto bundleResponseMessageDataContainerDto)
@@ -107,34 +108,26 @@ public class BundleService {
 
     LOGGER.info(
         "handleBundle response for organisationIdentification: {} for deviceIdentification: {}",
-        deviceMessageMetadata.getOrganisationIdentification(),
-        deviceMessageMetadata.getDeviceIdentification());
+        messageMetadata.getOrganisationIdentification(),
+        messageMetadata.getDeviceIdentification());
 
-    this.checkIfAdditionalActionIsNeeded(
-        deviceMessageMetadata, bundleResponseMessageDataContainerDto);
+    this.checkIfAdditionalActionIsNeeded(messageMetadata, bundleResponseMessageDataContainerDto);
 
     // convert bundleResponseMessageDataContainerDto back to core object
     final BundleMessagesResponse bundleResponseMessageDataContainer =
         this.actionMapperResponseService.mapAllActions(bundleResponseMessageDataContainerDto);
 
-    // Send the response final containing the events final to the
-    // webservice-adapter
-
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-            .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-            .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+            .withMessageMetadata(messageMetadata)
             .withResult(responseMessageResultType)
             .withOsgpException(osgpException)
             .withDataObject(bundleResponseMessageDataContainer)
-            .withMessagePriority(deviceMessageMetadata.getMessagePriority())
             .build();
 
-    LOGGER.info("Send response for CorrelationUID: {}", deviceMessageMetadata.getCorrelationUid());
-    this.webServiceResponseMessageSender.send(
-        responseMessage, deviceMessageMetadata.getMessageType());
-    LOGGER.info("Response sent for CorrelationUID: {}", deviceMessageMetadata.getCorrelationUid());
+    LOGGER.info("Send response for CorrelationUID: {}", messageMetadata.getCorrelationUid());
+    this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
+    LOGGER.info("Response sent for CorrelationUID: {}", messageMetadata.getCorrelationUid());
   }
 
   private void checkIfAdditionalActionIsNeeded(

@@ -34,7 +34,15 @@ public class ScheduledTask extends AbstractScheduledTask {
       final String domainVersion,
       final Serializable messageData,
       final Timestamp scheduledTime) {
-    this(messageMetadata, domain, domainVersion, messageData, scheduledTime, null);
+    this(
+        messageMetadata,
+        domain,
+        domainVersion,
+        messageData,
+        scheduledTime,
+        messageMetadata.getMaxScheduleTime() == null
+            ? null
+            : new Timestamp(messageMetadata.getMaxScheduleTime()));
   }
 
   public ScheduledTask(
@@ -43,9 +51,9 @@ public class ScheduledTask extends AbstractScheduledTask {
       final String domainVersion,
       final Serializable messageData,
       final Timestamp scheduledTime,
-      final Timestamp maxScheduledTime) {
+      final Timestamp maxScheduleTime) {
 
-    super(messageMetadata, domain, domainVersion, scheduledTime, maxScheduledTime);
+    super(messageMetadata, domain, domainVersion, scheduledTime, maxScheduleTime);
     this.messageData = messageData;
   }
 

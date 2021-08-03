@@ -25,12 +25,12 @@ public class ScheduledTaskWithoutData extends AbstractScheduledTask {
   }
 
   public ScheduledTaskWithoutData(
-      final MessageMetadata deviceMessageMetadata,
+      final MessageMetadata messageMetadata,
       final String domain,
       final String domainVersion,
       final Timestamp scheduledTime,
-      final Timestamp maxScheduledTime) {
+      final Timestamp maxScheduleTime) {
 
-    super(deviceMessageMetadata, domain, domainVersion, scheduledTime, maxScheduledTime);
+    super(messageMetadata, domain, domainVersion, scheduledTime, maxScheduleTime);
   }
 }

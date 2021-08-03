@@ -15,9 +15,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation which indicates that a method parameter should be bound to the MaxScheduleTime in
- * SoapHeader.
+ * Annotation which indicates that a method parameter should be bound to the MessageMetadata
+ * collected from the SoapHeader.
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface MaxScheduleTime {}
+public @interface MessageMetadata {}

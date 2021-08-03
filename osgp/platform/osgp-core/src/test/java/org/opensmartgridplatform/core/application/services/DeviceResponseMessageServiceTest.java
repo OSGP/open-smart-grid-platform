@@ -135,7 +135,7 @@ public class DeviceResponseMessageServiceTest {
     verify(this.scheduledTaskService).saveScheduledTask(scheduledTask);
 
     // check if the scheduled time is updated to the message retry time
-    assertThat(scheduledTask.getscheduledTime())
+    assertThat(scheduledTask.getScheduledTime())
         .isEqualTo(new Timestamp(scheduledRetryTime.getTime()));
     assertThat(scheduledTask.getErrorLog().contains(expectedMessage)).isTrue();
   }

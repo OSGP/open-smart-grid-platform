@@ -92,30 +92,39 @@ public class ScheduledTaskExecutorService {
         this.deviceRepository.findByDeviceIdentification(scheduledTask.getDeviceIdentification());
 
     final MessageMetadata messageMetadata =
-        new MessageMetadata.Builder()
-            .withDeviceIdentification(scheduledTask.getDeviceIdentification())
-            .withOrganisationIdentification(scheduledTask.getOrganisationIdentification())
-            .withCorrelationUid(scheduledTask.getCorrelationId())
-            .withMessageType(scheduledTask.getMessageType())
-            .withMessagePriority(scheduledTask.getMessagePriority())
-            // TODO MaxScheduledTime
-            .build();
+        messageMetadataFromScheduledTaskForDevice(scheduledTask, device);
 
-    final String ipAddress;
-    if (device.getNetworkAddress() == null) {
-      ipAddress = null;
-    } else {
-      ipAddress = device.getNetworkAddress().getHostAddress();
-    }
-
-    return new ProtocolRequestMessage.Builder()
+    return ProtocolRequestMessage.newBuilder()
         .messageMetadata(messageMetadata)
-        .domain(scheduledTask.getDomain())
-        .domainVersion(scheduledTask.getDomainVersion())
-        .ipAddress(ipAddress)
         .request(scheduledTask.getMessageData())
-        .retryCount(scheduledTask.getRetry())
-        .scheduled(true)
         .build();
+  }
+
+  private static MessageMetadata messageMetadataFromScheduledTaskForDevice(
+      final ScheduledTask scheduledTask, final Device device) {
+
+    return MessageMetadata.newBuilder()
+        .withDeviceIdentification(scheduledTask.getDeviceIdentification())
+        .withOrganisationIdentification(scheduledTask.getOrganisationIdentification())
+        .withCorrelationUid(scheduledTask.getCorrelationId())
+        .withMessageType(scheduledTask.getMessageType())
+        .withDomain(scheduledTask.getDomain())
+        .withDomainVersion(scheduledTask.getDomainVersion())
+        .withIpAddress(getIpAddress(device))
+        .withMessagePriority(scheduledTask.getMessagePriority())
+        .withScheduled(true)
+        .withMaxScheduleTime(
+            scheduledTask.getMaxScheduleTime() == null
+                ? null
+                : scheduledTask.getMaxScheduleTime().getTime())
+        .withRetryCount(scheduledTask.getRetry())
+        .build();
+  }
+
+  private static String getIpAddress(final Device device) {
+    if (device.getIpAddress() == null && device.getGatewayDevice() != null) {
+      return device.getGatewayDevice().getIpAddress();
+    }
+    return device.getIpAddress();
   }
 }

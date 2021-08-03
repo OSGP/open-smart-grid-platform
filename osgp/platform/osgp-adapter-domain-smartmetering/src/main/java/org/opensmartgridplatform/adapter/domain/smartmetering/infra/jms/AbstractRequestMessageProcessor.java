@@ -55,19 +55,10 @@ public abstract class AbstractRequestMessageProcessor {
    * the web-service-adapter.
    *
    * @param e The exception.
-   * @param correlationUid The correlation UID.
-   * @param organisationIdentification The organisation identification.
-   * @param deviceIdentification The device identification.
-   * @param messageType The message type.
-   * @param messagePriority The priority of the message.
+   * @param messageMetadata The metadata for the message for which an error is handled.
    */
-  protected void handleError(
-      final Exception e,
-      final String correlationUid,
-      final String organisationIdentification,
-      final String deviceIdentification,
-      final String messageType,
-      final int messagePriority) {
+  protected void handleError(final Exception e, final MessageMetadata messageMetadata) {
+    final String messageType = messageMetadata.getMessageType();
     LOGGER.error("handling error: {} for message type: {}", e.getMessage(), messageType, e);
     OsgpException osgpException = null;
     if (e instanceof OsgpException) {
@@ -82,12 +73,9 @@ public abstract class AbstractRequestMessageProcessor {
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(correlationUid)
-            .withOrganisationIdentification(organisationIdentification)
-            .withDeviceIdentification(deviceIdentification)
+            .withMessageMetadata(messageMetadata)
             .withResult(ResponseMessageResultType.NOT_OK)
             .withOsgpException(osgpException)
-            .withMessagePriority(messagePriority)
             .build();
     this.responseMessageSender.send(responseMessage, messageType);
   }

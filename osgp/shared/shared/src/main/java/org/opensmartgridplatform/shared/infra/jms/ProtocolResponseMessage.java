@@ -14,9 +14,10 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 public class ProtocolResponseMessage extends ResponseMessage {
 
   /** Serial Version UID. */
-  private static final long serialVersionUID = -7720502773704936266L;
+  private static final long serialVersionUID = -201486545329144973L;
 
   private final String domain;
+
   private final String domainVersion;
 
   private final int retryCount;
@@ -26,6 +27,32 @@ public class ProtocolResponseMessage extends ResponseMessage {
     this.domain = builder.domain;
     this.domainVersion = builder.domainVersion;
     this.retryCount = builder.retryCount;
+  }
+
+  public String getDomain() {
+    return this.domain;
+  }
+
+  public int getRetryCount() {
+    return this.retryCount;
+  }
+
+  public String getDomainVersion() {
+    return this.domainVersion;
+  }
+
+  @Override
+  public MessageMetadata messageMetadata() {
+    return super.messageMetadata()
+        .builder()
+        .withDomain(this.domain)
+        .withDomainVersion(this.domainVersion)
+        .withRetryCount(this.retryCount)
+        .build();
+  }
+
+  public static Builder newBuilder() {
+    return new Builder();
   }
 
   public static class Builder {
@@ -39,6 +66,9 @@ public class ProtocolResponseMessage extends ResponseMessage {
 
     public Builder messageMetadata(final MessageMetadata messageMetadata) {
       this.superBuilder.withMessageMetadata(messageMetadata);
+      this.domain = messageMetadata.getDomain();
+      this.domainVersion = messageMetadata.getDomainVersion();
+      this.retryCount = messageMetadata.getRetryCount();
       return this;
     }
 
@@ -95,21 +125,5 @@ public class ProtocolResponseMessage extends ResponseMessage {
     public ProtocolResponseMessage build() {
       return new ProtocolResponseMessage(this);
     }
-  }
-
-  public static Builder newBuilder() {
-    return new Builder();
-  }
-
-  public String getDomain() {
-    return this.domain;
-  }
-
-  public int getRetryCount() {
-    return this.retryCount;
-  }
-
-  public String getDomainVersion() {
-    return this.domainVersion;
   }
 }

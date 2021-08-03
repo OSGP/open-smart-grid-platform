@@ -48,8 +48,7 @@ class InvocationCounterManagerTest {
     this.manager =
         new InvocationCounterManager(
             this.connectionFactory, this.dlmsHelper, this.deviceRepository);
-    this.messageMetadata =
-        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+    this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
   }
 
   @Test

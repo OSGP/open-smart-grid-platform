@@ -107,16 +107,16 @@ public class Constants {
   /** JMS constant for message field: MaxScheduleTime. */
   public static final String MAX_SCHEDULE_TIME = "MaxScheduleTime";
 
-  /** JMS constant for message field: ScheduleTime. */
+  /** JMS constant for message field: Scheduled. */
   public static final String IS_SCHEDULED = "Scheduled";
 
-  /** JMS constant for message field: ScheduleTime. */
+  /** JMS constant for message field: DeviceType. */
   public static final String DEVICE_TYPE = "DeviceType";
 
   /** JMS constant for message field: RetryCount. */
   public static final String RETRY_COUNT = "RetryCount";
 
-  /** JMS constant for message field: RetryCount. */
+  /** JMS constant for message field: InnerRetryCount. */
   public static final String INNER_RETRY_COUNT = "InnerRetryCount";
 
   /** JMS constant for message field: MaxRetries. */

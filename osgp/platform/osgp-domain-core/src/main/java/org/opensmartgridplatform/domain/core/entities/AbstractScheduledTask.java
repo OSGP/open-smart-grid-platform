@@ -47,7 +47,7 @@ public abstract class AbstractScheduledTask extends AbstractEntity {
   protected Timestamp scheduledTime;
 
   @Column(length = 255)
-  protected Timestamp maxScheduledTime;
+  protected Timestamp maxScheduleTime;
 
   @Column(name = "status")
   protected ScheduledTaskStatusType status;
@@ -66,21 +66,21 @@ public abstract class AbstractScheduledTask extends AbstractEntity {
   }
 
   protected AbstractScheduledTask(
-      final MessageMetadata deviceMessageMetadata,
+      final MessageMetadata messageMetadata,
       final String domain,
       final String domainVersion,
       final Timestamp scheduledTime,
-      final Timestamp maxScheduledTime) {
+      final Timestamp maxScheduleTime) {
 
-    this.correlationUid = deviceMessageMetadata.getCorrelationUid();
-    this.organisationIdentification = deviceMessageMetadata.getOrganisationIdentification();
-    this.deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
-    this.messageType = deviceMessageMetadata.getMessageType();
-    this.messagePriority = deviceMessageMetadata.getMessagePriority();
+    this.correlationUid = messageMetadata.getCorrelationUid();
+    this.organisationIdentification = messageMetadata.getOrganisationIdentification();
+    this.deviceIdentification = messageMetadata.getDeviceIdentification();
+    this.messageType = messageMetadata.getMessageType();
+    this.messagePriority = messageMetadata.getMessagePriority();
     this.domain = domain;
     this.domainVersion = domainVersion;
     this.scheduledTime = (Timestamp) scheduledTime.clone();
-    this.maxScheduledTime = maxScheduledTime != null ? (Timestamp) maxScheduledTime.clone() : null;
+    this.maxScheduleTime = maxScheduleTime != null ? (Timestamp) maxScheduleTime.clone() : null;
     this.status = ScheduledTaskStatusType.NEW;
     this.retry = 0;
   }
@@ -113,12 +113,12 @@ public abstract class AbstractScheduledTask extends AbstractEntity {
     return this.errorLog;
   }
 
-  public Timestamp getscheduledTime() {
-    return (Timestamp) this.scheduledTime.clone();
+  public Timestamp getScheduledTime() {
+    return this.scheduledTime == null ? null : (Timestamp) this.scheduledTime.clone();
   }
 
-  public Timestamp getMaxScheduledTime() {
-    return (Timestamp) this.maxScheduledTime.clone();
+  public Timestamp getMaxScheduleTime() {
+    return this.maxScheduleTime == null ? null : (Timestamp) this.maxScheduleTime.clone();
   }
 
   public Integer getMessagePriority() {

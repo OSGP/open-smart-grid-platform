@@ -17,7 +17,7 @@ import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriori
 public class ResponseMessage implements Serializable {
 
   /** Serial Version UID. */
-  private static final long serialVersionUID = -214808702310700742L;
+  private static final long serialVersionUID = -2560046328200588103L;
 
   protected static final boolean DEFAULT_BYPASS_RETRY = false;
 
@@ -69,6 +69,27 @@ public class ResponseMessage implements Serializable {
       final String stringValue = dataObject.toString();
       return stringValue.substring(0, Math.min(stringValue.length(), 40));
     }
+  }
+
+  public boolean bypassRetry() {
+    return this.bypassRetry;
+  }
+
+  public MessageMetadata messageMetadata() {
+    return MessageMetadata.newBuilder()
+        .withDeviceIdentification(this.deviceIdentification)
+        .withOrganisationIdentification(this.organisationIdentification)
+        .withCorrelationUid(this.correlationUid)
+        .withMessageType(this.messageType)
+        .withMessagePriority(this.messagePriority)
+        .withScheduled(this.scheduled)
+        .withMaxScheduleTime(this.maxScheduleTime)
+        .withBypassRetry(this.bypassRetry)
+        .build();
+  }
+
+  public static Builder newResponseMessageBuilder() {
+    return new Builder();
   }
 
   public static class Builder {
@@ -161,7 +182,7 @@ public class ResponseMessage implements Serializable {
       this.messagePriority = messageMetadata.getMessagePriority();
       this.bypassRetry = messageMetadata.isBypassRetry();
       this.scheduled = messageMetadata.isScheduled();
-      // TODO MaxScheduledTime
+      this.maxScheduleTime = messageMetadata.getMaxScheduleTime();
       this.retryHeader = new RetryHeader();
       return this;
     }
@@ -169,13 +190,5 @@ public class ResponseMessage implements Serializable {
     public ResponseMessage build() {
       return new ResponseMessage(this);
     }
-  }
-
-  public static Builder newResponseMessageBuilder() {
-    return new Builder();
-  }
-
-  public boolean bypassRetry() {
-    return this.bypassRetry;
   }
 }
