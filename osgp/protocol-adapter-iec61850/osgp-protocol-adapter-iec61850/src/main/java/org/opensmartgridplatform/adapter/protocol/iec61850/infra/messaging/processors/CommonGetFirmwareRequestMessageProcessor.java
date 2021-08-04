@@ -28,7 +28,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
-import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -110,25 +109,24 @@ public class CommonGetFirmwareRequestMessageProcessor extends SsldDeviceRequestM
               ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
     }
 
-    final MessageMetadata deviceMessageMetadata =
-        new MessageMetadata.Builder()
+    final MessageMetadata messageMetadata =
+        MessageMetadata.newBuilder()
             .withDeviceIdentification(deviceResponse.getDeviceIdentification())
             .withOrganisationIdentification(deviceResponse.getOrganisationIdentification())
             .withCorrelationUid(deviceResponse.getCorrelationUid())
             .withMessageType(messageType)
+            .withDomain(domainInformation.getDomain())
+            .withDomainVersion(domainInformation.getDomainVersion())
             .withMessagePriority(deviceResponse.getMessagePriority())
+            .withScheduled(isScheduled)
+            .withRetryCount(retryCount)
             .build();
     final ProtocolResponseMessage responseMessage =
-        new ProtocolResponseMessage.Builder()
-            .domain(domainInformation.getDomain())
-            .domainVersion(domainInformation.getDomainVersion())
-            .messageMetadata(deviceMessageMetadata)
+        ProtocolResponseMessage.newBuilder()
+            .messageMetadata(messageMetadata)
             .result(result)
             .osgpException(osgpException)
             .dataObject((Serializable) firmwareVersions)
-            .retryCount(retryCount)
-            .scheduled(isScheduled)
-            .retryHeader(new RetryHeader())
             .build();
 
     responseMessageSender.send(responseMessage);

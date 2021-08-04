@@ -18,12 +18,10 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 @Getter
 public class MessageMetadata implements Serializable {
-
   /** Generated serial version uid */
-  private static final long serialVersionUID = 6199157947591260015L;
+  private static final long serialVersionUID = 5481771135195782979L;
 
   private String deviceIdentification;
-
   private String organisationIdentification;
   private String correlationUid;
   private String messageType;

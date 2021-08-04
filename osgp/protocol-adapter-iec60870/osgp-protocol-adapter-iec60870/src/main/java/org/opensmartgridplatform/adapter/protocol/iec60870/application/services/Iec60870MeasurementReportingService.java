@@ -12,7 +12,6 @@ import org.opensmartgridplatform.adapter.protocol.iec60870.domain.services.Measu
 import org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects.ResponseMetadata;
 import org.opensmartgridplatform.adapter.protocol.iec60870.infra.messaging.DeviceResponseMessageSender;
 import org.opensmartgridplatform.dto.da.measurements.MeasurementReportDto;
-import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,17 +27,14 @@ public class Iec60870MeasurementReportingService implements MeasurementReporting
   @Override
   public void send(
       final MeasurementReportDto measurementReportDto, final ResponseMetadata responseMetadata) {
-    final MessageMetadata deviceMessageMetadata =
-        new MessageMetadata.Builder()
-            .withBypassRetry(true)
-            .withCorrelationUid(responseMetadata.getCorrelationUid())
-            .withDeviceIdentification(responseMetadata.getDeviceIdentification())
-            .withMessageType(MESSAGE_TYPE)
-            .withOrganisationIdentification(responseMetadata.getOrganisationIdentification())
-            .build();
     final ProtocolResponseMessage responseMessage =
         ProtocolResponseMessage.newBuilder()
-            .messageMetadata(deviceMessageMetadata)
+            .messageMetadata(
+                responseMetadata
+                    .asMessageMetadata()
+                    .builder()
+                    .withMessageType(MESSAGE_TYPE)
+                    .build())
             .domain(responseMetadata.getDomainInfo().getDomain())
             .domainVersion(responseMetadata.getDomainInfo().getDomainVersion())
             .dataObject(measurementReportDto)

@@ -17,36 +17,38 @@ import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriori
 public class ResponseMessage implements Serializable {
 
   /** Serial Version UID. */
-  private static final long serialVersionUID = -2560046328200588103L;
+  private static final long serialVersionUID = -214808702310700742L;
 
   protected static final boolean DEFAULT_BYPASS_RETRY = false;
 
-  private final String messageType;
-  private final String correlationUid;
-  private final String organisationIdentification;
   private final String deviceIdentification;
-  private final ResponseMessageResultType result;
-  private final OsgpException osgpException;
-  private final Serializable dataObject;
+  private final String organisationIdentification;
+  private final String correlationUid;
+  private final String messageType;
   private final int messagePriority;
   private final boolean scheduled;
   private final Long maxScheduleTime;
   private final boolean bypassRetry;
+
   private final RetryHeader retryHeader;
 
+  private final ResponseMessageResultType result;
+  private final OsgpException osgpException;
+  private final Serializable dataObject;
+
   protected ResponseMessage(final Builder builder) {
-    this.messageType = builder.messageType;
-    this.correlationUid = builder.correlationUid;
-    this.organisationIdentification = builder.organisationIdentification;
     this.deviceIdentification = builder.deviceIdentification;
-    this.result = builder.result;
-    this.osgpException = builder.osgpException;
-    this.dataObject = builder.dataObject;
+    this.organisationIdentification = builder.organisationIdentification;
+    this.correlationUid = builder.correlationUid;
+    this.messageType = builder.messageType;
     this.messagePriority = builder.messagePriority;
     this.scheduled = builder.scheduled;
     this.maxScheduleTime = builder.maxScheduleTime;
     this.bypassRetry = builder.bypassRetry;
     this.retryHeader = builder.retryHeader;
+    this.result = builder.result;
+    this.osgpException = builder.osgpException;
+    this.dataObject = builder.dataObject;
   }
 
   @Override
@@ -175,14 +177,14 @@ public class ResponseMessage implements Serializable {
     }
 
     public Builder withMessageMetadata(final MessageMetadata messageMetadata) {
-      this.messageType = messageMetadata.getMessageType();
-      this.correlationUid = messageMetadata.getCorrelationUid();
-      this.organisationIdentification = messageMetadata.getOrganisationIdentification();
       this.deviceIdentification = messageMetadata.getDeviceIdentification();
+      this.organisationIdentification = messageMetadata.getOrganisationIdentification();
+      this.correlationUid = messageMetadata.getCorrelationUid();
+      this.messageType = messageMetadata.getMessageType();
       this.messagePriority = messageMetadata.getMessagePriority();
-      this.bypassRetry = messageMetadata.isBypassRetry();
       this.scheduled = messageMetadata.isScheduled();
       this.maxScheduleTime = messageMetadata.getMaxScheduleTime();
+      this.bypassRetry = messageMetadata.isBypassRetry();
       this.retryHeader = new RetryHeader();
       return this;
     }

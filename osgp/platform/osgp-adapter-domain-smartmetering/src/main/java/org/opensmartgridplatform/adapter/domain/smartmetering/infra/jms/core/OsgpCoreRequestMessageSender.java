@@ -29,7 +29,7 @@ public class OsgpCoreRequestMessageSender {
         session -> {
           final ObjectMessage objectMessage =
               session.createObjectMessage(requestMessage.getRequest());
-          requestMessage.getMessageMetadata().applyTo(objectMessage);
+          requestMessage.messageMetadata().applyTo(objectMessage);
           return objectMessage;
         });
   }

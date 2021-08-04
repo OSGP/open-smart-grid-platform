@@ -24,7 +24,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
-import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -113,19 +112,21 @@ public class PublicLightingGetLightSensorStatusRequestMessageProcessor
       return;
     }
 
-    final MessageMetadata messageMetadata = getMessageMetadata(response, messageType);
+    final MessageMetadata messageMetadata =
+        getMessageMetadata(response, messageType)
+            .builder()
+            .withDomain(domainInformation.getDomain())
+            .withDomainVersion(domainInformation.getDomainVersion())
+            .withScheduled(isScheduled)
+            .withRetryCount(retryCount)
+            .build();
 
     final ProtocolResponseMessage protocolResponseMessage =
-        new ProtocolResponseMessage.Builder()
-            .domain(domainInformation.getDomain())
-            .domainVersion(domainInformation.getDomainVersion())
+        ProtocolResponseMessage.newBuilder()
             .messageMetadata(messageMetadata)
             .result(ResponseMessageResultType.OK)
             .osgpException(null)
-            .retryCount(retryCount)
             .dataObject(response.getLightSensorStatus())
-            .scheduled(isScheduled)
-            .retryHeader(new RetryHeader())
             .build();
     responseMessageSender.send(protocolResponseMessage);
   }

@@ -9,15 +9,16 @@
 package org.opensmartgridplatform.shared.infra.jms;
 
 import java.io.Serializable;
+import lombok.Getter;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 
+@Getter
 public class ProtocolResponseMessage extends ResponseMessage {
 
   /** Serial Version UID. */
-  private static final long serialVersionUID = -201486545329144973L;
+  private static final long serialVersionUID = -7720502773704936266L;
 
   private final String domain;
-
   private final String domainVersion;
 
   private final int retryCount;
@@ -27,18 +28,6 @@ public class ProtocolResponseMessage extends ResponseMessage {
     this.domain = builder.domain;
     this.domainVersion = builder.domainVersion;
     this.retryCount = builder.retryCount;
-  }
-
-  public String getDomain() {
-    return this.domain;
-  }
-
-  public int getRetryCount() {
-    return this.retryCount;
-  }
-
-  public String getDomainVersion() {
-    return this.domainVersion;
   }
 
   @Override

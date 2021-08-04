@@ -36,7 +36,7 @@ public class SmartMeteringRequestMessageSender {
   public void send(final SmartMeteringRequestMessage requestMessage) {
     LOGGER.debug("Sending smart metering request message to the queue");
 
-    if (requestMessage.getMessageMetadata().getMessageType() == null) {
+    if (requestMessage.messageMetadata().getMessageType() == null) {
       LOGGER.error("MessageType is null");
       return;
     }
@@ -68,7 +68,7 @@ public class SmartMeteringRequestMessageSender {
         session -> {
           final ObjectMessage objectMessage =
               session.createObjectMessage(requestMessage.getRequest());
-          requestMessage.getMessageMetadata().applyTo(objectMessage);
+          requestMessage.messageMetadata().applyTo(objectMessage);
           return objectMessage;
         });
   }

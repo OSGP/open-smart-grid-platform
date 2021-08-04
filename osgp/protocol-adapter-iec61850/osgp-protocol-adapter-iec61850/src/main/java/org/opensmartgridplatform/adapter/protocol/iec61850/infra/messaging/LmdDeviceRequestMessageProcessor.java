@@ -46,7 +46,7 @@ public abstract class LmdDeviceRequestMessageProcessor extends BaseMessageProces
 
   protected static MessageMetadata getMessageMetadata(
       final DeviceResponse deviceResponse, final String messageType) {
-    return new MessageMetadata.Builder()
+    return MessageMetadata.newBuilder()
         .withDeviceIdentification(deviceResponse.getDeviceIdentification())
         .withOrganisationIdentification(deviceResponse.getOrganisationIdentification())
         .withCorrelationUid(deviceResponse.getCorrelationUid())

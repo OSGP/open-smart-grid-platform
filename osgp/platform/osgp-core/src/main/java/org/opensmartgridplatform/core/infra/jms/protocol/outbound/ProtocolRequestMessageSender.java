@@ -93,7 +93,7 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
       final Session session)
       throws JMSException {
     final ObjectMessage objectMessage = session.createObjectMessage(requestMessage.getRequest());
-    requestMessage.getMessageMetadata().applyTo(objectMessage);
+    requestMessage.messageMetadata().applyTo(objectMessage);
     objectMessage.setStringProperty(Constants.DOMAIN, requestMessage.getDomain());
     objectMessage.setStringProperty(Constants.DOMAIN_VERSION, requestMessage.getDomainVersion());
 

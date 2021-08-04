@@ -15,9 +15,20 @@ public class RequestMessage implements Serializable {
   /** Serial Version UID. */
   private static final long serialVersionUID = 3099016879238320945L;
 
-  protected MessageMetadata messageMetadata;
+  protected final String deviceIdentification;
+  protected final String organisationIdentification;
+  protected final String correlationUid;
+  protected final String ipAddress;
+  protected final Serializable request;
 
-  protected Serializable request;
+  public RequestMessage(final MessageMetadata messageMetadata, final Serializable request) {
+    this(
+        messageMetadata.getCorrelationUid(),
+        messageMetadata.getOrganisationIdentification(),
+        messageMetadata.getDeviceIdentification(),
+        messageMetadata.getIpAddress(),
+        request);
+  }
 
   public RequestMessage(final CorrelationIds ids, final Serializable request) {
     this(
@@ -49,44 +60,39 @@ public class RequestMessage implements Serializable {
       final String deviceIdentification,
       final String ipAddress,
       final Serializable request) {
-    this(
-        MessageMetadata.newBuilder()
-            .withCorrelationUid(correlationUid)
-            .withOrganisationIdentification(organisationIdentification)
-            .withDeviceIdentification(deviceIdentification)
-            .withIpAddress(ipAddress)
-            .build(),
-        request);
-  }
-
-  public RequestMessage(final MessageMetadata messageMetadata, final Serializable request) {
-    this.messageMetadata = messageMetadata;
+    this.correlationUid = correlationUid;
+    this.organisationIdentification = organisationIdentification;
+    this.deviceIdentification = deviceIdentification;
+    this.ipAddress = ipAddress;
     this.request = request;
   }
 
-  public MessageMetadata getMessageMetadata() {
-    return this.messageMetadata;
+  public String getDeviceIdentification() {
+    return this.deviceIdentification;
+  }
+
+  public String getOrganisationIdentification() {
+    return this.organisationIdentification;
+  }
+
+  public String getCorrelationUid() {
+    return this.correlationUid;
+  }
+
+  public String getIpAddress() {
+    return this.ipAddress;
   }
 
   public Serializable getRequest() {
     return this.request;
   }
 
-  // Delegated getters for metadata
-
-  public String getCorrelationUid() {
-    return this.messageMetadata.getCorrelationUid();
-  }
-
-  public String getOrganisationIdentification() {
-    return this.messageMetadata.getOrganisationIdentification();
-  }
-
-  public String getDeviceIdentification() {
-    return this.messageMetadata.getDeviceIdentification();
-  }
-
-  public String getIpAddress() {
-    return this.messageMetadata.getIpAddress();
+  public MessageMetadata messageMetadata() {
+    return MessageMetadata.newBuilder()
+        .withDeviceIdentification(this.deviceIdentification)
+        .withOrganisationIdentification(this.organisationIdentification)
+        .withCorrelationUid(this.correlationUid)
+        .withIpAddress(this.ipAddress)
+        .build();
   }
 }

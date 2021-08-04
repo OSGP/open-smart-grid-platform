@@ -93,7 +93,7 @@ public class DomainResponseMessageSender implements DomainResponseService {
     final OsgpException ex = ensureOsgpException(e);
 
     return ResponseMessage.newResponseMessageBuilder()
-        .withMessageMetadata(protocolRequestMessage.getMessageMetadata())
+        .withMessageMetadata(protocolRequestMessage.messageMetadata())
         .withResult(ResponseMessageResultType.NOT_OK)
         .withOsgpException(ex)
         .build();

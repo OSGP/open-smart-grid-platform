@@ -144,24 +144,23 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
       ex = e;
     }
 
-    final MessageMetadata deviceMessageMetadata =
-        new MessageMetadata.Builder(
-                deviceResponse.getCorrelationUid(),
-                deviceResponse.getOrganisationIdentification(),
-                deviceResponse.getDeviceIdentification(),
-                messageType)
+    final MessageMetadata messageMetadata =
+        MessageMetadata.newBuilder()
+            .withDeviceIdentification(deviceResponse.getDeviceIdentification())
+            .withOrganisationIdentification(deviceResponse.getOrganisationIdentification())
+            .withCorrelationUid(deviceResponse.getCorrelationUid())
+            .withMessageType(messageType)
+            .withDomain(domainInformation.getDomain())
+            .withDomainVersion(domainInformation.getDomainVersion())
             .withMessagePriority(deviceResponse.getMessagePriority())
+            .withScheduled(isScheduled)
+            .withRetryCount(retryCount)
             .build();
     final ProtocolResponseMessage protocolResponseMessage =
-        new ProtocolResponseMessage.Builder()
-            .domain(domainInformation.getDomain())
-            .domainVersion(domainInformation.getDomainVersion())
-            .messageMetadata(deviceMessageMetadata)
+        ProtocolResponseMessage.newBuilder()
+            .messageMetadata(messageMetadata)
             .result(result)
             .osgpException(ex)
-            .retryCount(retryCount)
-            .retryHeader(new RetryHeader())
-            .scheduled(isScheduled)
             .build();
     responseMessageSender.send(protocolResponseMessage);
   }

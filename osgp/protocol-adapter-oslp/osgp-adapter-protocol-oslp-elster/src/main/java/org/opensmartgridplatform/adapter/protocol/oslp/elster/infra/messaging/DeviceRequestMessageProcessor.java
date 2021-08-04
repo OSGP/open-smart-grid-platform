@@ -100,15 +100,17 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
     }
 
     final MessageMetadata messageMetadata =
-        MessageMetadataFactory.from(deviceResponse, messageType);
+        MessageMetadataFactory.from(deviceResponse, messageType)
+            .builder()
+            .withDomain(domain)
+            .withDomainVersion(domainVersion)
+            .withRetryCount(retryCount)
+            .build();
     final ProtocolResponseMessage responseMessage =
         ProtocolResponseMessage.newBuilder()
-            .domain(domain)
-            .domainVersion(domainVersion)
             .messageMetadata(messageMetadata)
             .result(result)
             .osgpException(ex)
-            .retryCount(retryCount)
             .build();
 
     responseMessageSender.send(responseMessage);
@@ -213,12 +215,9 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
   private ProtocolResponseMessage createProtocolResponseMessage(
       final MessageMetadata messageMetadata, final OsgpException ex) {
     return ProtocolResponseMessage.newBuilder()
-        .domain(messageMetadata.getDomain())
-        .domainVersion(messageMetadata.getDomainVersion())
         .messageMetadata(messageMetadata)
         .result(ResponseMessageResultType.NOT_OK)
         .osgpException(ex)
-        .retryCount(messageMetadata.getRetryCount())
         .build();
   }
 

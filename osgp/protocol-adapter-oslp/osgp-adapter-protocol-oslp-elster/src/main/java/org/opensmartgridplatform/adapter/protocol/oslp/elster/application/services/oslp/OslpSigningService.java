@@ -234,21 +234,21 @@ public class OslpSigningService {
     final UnsignedOslpEnvelopeDto unsignedOslpEnvelopeDto =
         (UnsignedOslpEnvelopeDto) responseMessage.getDataObject();
     final MessageMetadata messageMetadata =
-        new MessageMetadata.Builder()
+        MessageMetadata.newBuilder()
             .withDeviceIdentification(deviceIdentification)
             .withOrganisationIdentification(unsignedOslpEnvelopeDto.getOrganisationIdentification())
             .withCorrelationUid(unsignedOslpEnvelopeDto.getCorrelationUid())
             .withMessageType(unsignedOslpEnvelopeDto.getMessageType())
+            .withDomain(unsignedOslpEnvelopeDto.getDomain())
+            .withDomainVersion(unsignedOslpEnvelopeDto.getDomainVersion())
             .withMessagePriority(responseMessage.getMessagePriority())
+            .withScheduled(unsignedOslpEnvelopeDto.isScheduled())
             .build();
     final ProtocolResponseMessage protocolResponseMessage =
         ProtocolResponseMessage.newBuilder()
-            .domain(unsignedOslpEnvelopeDto.getDomain())
-            .domainVersion(unsignedOslpEnvelopeDto.getDomainVersion())
             .messageMetadata(messageMetadata)
             .result(responseMessage.getResult())
             .osgpException(responseMessage.getOsgpException())
-            .scheduled(unsignedOslpEnvelopeDto.isScheduled())
             .build();
     this.deviceResponseMessageSender.send(protocolResponseMessage);
   }

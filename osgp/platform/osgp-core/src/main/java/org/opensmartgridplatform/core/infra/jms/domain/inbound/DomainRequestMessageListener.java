@@ -88,13 +88,16 @@ public class DomainRequestMessageListener implements MessageListener {
   public ProtocolRequestMessage createProtocolRequestMessage(final Message message)
       throws JMSException {
 
-    final MessageMetadata messageMetadata = MessageMetadata.fromMessage(message);
+    final MessageMetadata messageMetadata =
+        MessageMetadata.fromMessage(message)
+            .builder()
+            .withDomain(this.domainInfo.getDomain())
+            .withDomainVersion(this.domainInfo.getDomainVersion())
+            .build();
     final Serializable messageData = ((ObjectMessage) message).getObject();
 
     return ProtocolRequestMessage.newBuilder()
         .messageMetadata(messageMetadata)
-        .domain(this.domainInfo.getDomain())
-        .domainVersion(this.domainInfo.getDomainVersion())
         .request(messageData)
         .build();
   }
