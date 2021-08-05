@@ -84,7 +84,7 @@ public class UpdateFirmwareCommandExecutor
         new ImageTransfer(
             conn,
             this.imageTransferProperties,
-            this.getImageIdentifier(firmwareIdentification, device, new FirmwareFile(imageData)),
+            this.getImageIdentifier(firmwareIdentification, device, imageData),
             imageData);
 
     try {
@@ -171,10 +171,10 @@ public class UpdateFirmwareCommandExecutor
   }
 
   private byte[] getImageIdentifier(
-      final String firmwareIdentification, final DlmsDevice device, final FirmwareFile firmwareFile)
+      final String firmwareIdentification, final DlmsDevice device, final byte[] imageData)
       throws ProtocolAdapterException {
     if (this.isMbusDevice(device)) {
-      return firmwareFile.createImageIdentifierForMbusDevice();
+      return new FirmwareFile(imageData).createImageIdentifierForMbusDevice();
     } else {
       return this.getImageIdentifierFromCache(firmwareIdentification);
     }
