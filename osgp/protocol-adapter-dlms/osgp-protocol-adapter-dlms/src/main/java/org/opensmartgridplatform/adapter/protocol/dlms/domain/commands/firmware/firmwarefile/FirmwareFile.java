@@ -173,6 +173,10 @@ public class FirmwareFile {
     firmwareFileHeader.setFirmwareFileHeaderAddressField(firmwareFileHeaderAddressField);
   }
 
+  public String getHeaderHex() {
+    return Hex.toHexString(this.readBytes(this.imageData, 0, 35));
+  }
+
   private byte[] readBytes(final byte[] bytes, final int begin, final int end) {
     return Arrays.copyOfRange(bytes, begin, end);
   }

@@ -16,12 +16,12 @@ public class FirmwareFileDto implements Serializable {
 
   private final String firmwareIdentification;
   private final byte[] firmwareFile;
-  private final byte[] imageIdentifier;
+  private final String imageIdentifier;
 
   public FirmwareFileDto(
       final String firmwareIdentification,
       final byte[] firmwareFile,
-      final byte[] imageIdentifier) {
+      final String imageIdentifier) {
     this.firmwareIdentification = firmwareIdentification;
     this.firmwareFile = firmwareFile;
     this.imageIdentifier = imageIdentifier;
@@ -38,10 +38,7 @@ public class FirmwareFileDto implements Serializable {
     return this.firmwareFile.clone();
   }
 
-  public byte[] getImageIdentifier() {
-    if (this.imageIdentifier == null) {
-      return new byte[] {};
-    }
-    return this.imageIdentifier.clone();
+  public String getImageIdentifier() {
+    return this.imageIdentifier;
   }
 }

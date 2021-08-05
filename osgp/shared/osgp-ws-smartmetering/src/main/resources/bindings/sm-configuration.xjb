@@ -17,11 +17,6 @@
       <jxb:package name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration"></jxb:package>
     </jxb:schemaBindings>
 
-    <jxb:bindings
-      node="//xs:complexType[@name='UpdateFirmwareRequestData']//xs:element[@name='FirmwareVersion']">
-      <jxb:property name="firmwareVersions" />
-    </jxb:bindings>
-
   </jxb:bindings>
 
 </jxb:bindings>

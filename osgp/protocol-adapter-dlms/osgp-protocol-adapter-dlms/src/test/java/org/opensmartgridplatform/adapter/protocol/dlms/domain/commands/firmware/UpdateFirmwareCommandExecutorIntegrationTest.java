@@ -83,8 +83,7 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
     final byte[] firmwareFile =
         RandomStringUtils.randomAlphabetic(10).getBytes(StandardCharsets.UTF_8);
 
-    final byte[] firmwareImageIdentifier =
-        RandomStringUtils.randomAlphabetic(10).getBytes(StandardCharsets.UTF_8);
+    final String firmwareImageIdentifier = "496d6167654964656e746966696572";
 
     this.connectionStub.addReturnValue(
         this.createAttributeAddressForImageTransfer(ImageTransferAttribute.IMAGE_TRANSFER_ENABLED),

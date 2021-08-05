@@ -987,9 +987,8 @@ public class ConfigurationService {
     final SmartMeter smartMeter =
         this.domainHelperService.findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
 
-    final String firmwareFileIdentifier =
-        this.firmwareService.determineFirmwareFileIdentifier(
-            smartMeter, updateFirmwareRequestData.getVersionByModuleType());
+    final String firmwareIdentification = updateFirmwareRequestData.getFirmwareIdentification();
+    this.firmwareService.checkFirmwareFileSupportsDeviceModel(smartMeter, firmwareIdentification);
 
     this.osgpCoreRequestMessageSender.send(
         new RequestMessage(
@@ -997,7 +996,7 @@ public class ConfigurationService {
             deviceMessageMetadata.getOrganisationIdentification(),
             deviceMessageMetadata.getDeviceIdentification(),
             smartMeter.getIpAddress(),
-            firmwareFileIdentifier),
+            firmwareIdentification),
         deviceMessageMetadata.getMessageType(),
         deviceMessageMetadata.getMessagePriority(),
         deviceMessageMetadata.getScheduleTime(),

@@ -14,20 +14,20 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class FirmwareImageIdentifierCachingRepository implements CachingRepository<String, byte[]> {
+public class FirmwareImageIdentifierCachingRepository implements CachingRepository<String, String> {
 
-  private Map<String, byte[]> cache = new ConcurrentHashMap<>();
+  private Map<String, String> cache = new ConcurrentHashMap<>();
 
   public FirmwareImageIdentifierCachingRepository() {
     // Public constructor
   }
 
-  protected FirmwareImageIdentifierCachingRepository(final Map<String, byte[]> cache) {
+  protected FirmwareImageIdentifierCachingRepository(final Map<String, String> cache) {
     // Protected constructor for testing
     this.cache = cache;
   }
 
-  protected Map<String, byte[]> getCache() {
+  protected Map<String, String> getCache() {
     return Collections.unmodifiableMap(this.cache);
   }
 
@@ -37,12 +37,12 @@ public class FirmwareImageIdentifierCachingRepository implements CachingReposito
   }
 
   @Override
-  public byte[] retrieve(final String key) {
+  public String retrieve(final String key) {
     return this.cache.get(key);
   }
 
   @Override
-  public void store(final String key, final byte[] value) {
+  public void store(final String key, final String value) {
     this.cache.put(key, value);
   }
 }

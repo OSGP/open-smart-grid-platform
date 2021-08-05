@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware;
 
+import org.bouncycastle.util.encoders.Hex;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.MacGenerationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.FirmwareFile;
@@ -182,14 +183,13 @@ public class UpdateFirmwareCommandExecutor
 
   private byte[] getImageIdentifierFromCache(final String firmwareIdentification)
       throws ProtocolAdapterException {
-    final byte[] firmwareImageIdentifier =
+    final String firmwareImageIdentifier =
         this.firmwareImageIdentifierCachingRepository.retrieve(firmwareIdentification);
 
     if (firmwareImageIdentifier == null) {
       throw new ProtocolAdapterException(EXCEPTION_MSG_FIRMWARE_IMAGE_IDENTIFIER_NOT_AVAILABLE);
     }
-
-    return firmwareImageIdentifier;
+    return Hex.decode(firmwareImageIdentifier);
   }
 
   @Override

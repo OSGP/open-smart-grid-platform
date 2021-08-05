@@ -78,7 +78,7 @@ public class FirmwareServiceTest {
   public void updateFirmwareShouldCallExecutorWhenFirmwareFileInCache() throws OsgpException {
     // Arrange
     final byte[] firmwareFile = firmwareIdentification.getBytes();
-    final byte[] firmwareImageIdentifier = new byte[10];
+    final String firmwareImageIdentifier = "496d6167654964656e746966696572";
     final MessageMetadata messageMetadata =
         MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
 
@@ -156,7 +156,7 @@ public class FirmwareServiceTest {
       throws OsgpException {
     // Arrange
     final byte[] firmwareFile = firmwareIdentification.getBytes();
-    final byte[] firmwareImageIdentifier = new byte[10];
+    final String firmwareImageIdentifier = "496d6167654964656e746966696572";
 
     final FirmwareFileDto firmwareFileDto =
         new FirmwareFileDto(firmwareIdentification, firmwareFile, firmwareImageIdentifier);
