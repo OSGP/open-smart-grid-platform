@@ -341,7 +341,7 @@ public class DeviceChannelsHelper {
   private boolean checkChannelIdentificationValues(
       final ChannelElementValuesDto channelElementValues) {
     return (channelElementValues.getIdentificationNumber() == null
-        || "00000000".equals(channelElementValues.getIdentificationNumber())
+        || "0".equals(channelElementValues.getIdentificationNumber())
             && (channelElementValues.getPrimaryAddress() == 0));
   }
 
