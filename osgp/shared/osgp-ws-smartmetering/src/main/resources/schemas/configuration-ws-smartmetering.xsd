@@ -65,10 +65,11 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:Identification"/>
-        <xsd:element name="FirmwareVersion" type="tns:FirmwareVersion" maxOccurs="unbounded"/>
+        <xsd:element name="FirmwareIdentification" type="common:Identification"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
+
   <xsd:element name="UpdateFirmwareAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>

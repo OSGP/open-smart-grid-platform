@@ -176,4 +176,45 @@ public class FirmwareFile {
   private byte[] readBytes(final byte[] bytes, final int begin, final int end) {
     return Arrays.copyOfRange(bytes, begin, end);
   }
+
+  public byte[] createImageIdentifierForMbusDevice() {
+    /*
+     * The Identifier for firmware image of M-Bus device has the following content
+     * - MAN (3 bytes) Manufacturer code according to FLAG (https://www.dlms.com/flag-id/flag-id-list)
+     * - DEV (4 bytes) M-Bus DEV code (letters "MBUS")
+     * - M-Bus Short ID (8 bytes)
+     *   - (3 bytes) Identification Number
+     *   - (3 bytes) Manufacturer ID
+     *   - (1 bytes) Version
+     *   - (1 byte ) DeviceType
+     * - M-Bus FW ID (4 bytes)
+     */
+    final FirmwareFileHeader header = this.getHeader();
+    final FirmwareFileHeaderAddressField addressField = header.getFirmwareFileHeaderAddressField();
+    final int imageIdentifierSize = 19;
+    if (log.isDebugEnabled()) {
+      log.debug("creating image identifier for M-Bus device from firmware file header information");
+      log.debug("MbusManufacturerId " + Arrays.toString(addressField.getMbusManufacturerId()));
+      log.debug("MBUS " + Arrays.toString("MBUS".getBytes()));
+      log.debug(
+          "MbusDeviceIdentificationNumber "
+              + Arrays.toString(addressField.getMbusDeviceIdentificationNumber()));
+      log.debug("MbusManufacturerId " + Arrays.toString(addressField.getMbusManufacturerId()));
+      log.debug("MbusVersion " + Arrays.toString(addressField.getMbusVersion()));
+      log.debug("MbusDeviceType " + Arrays.toString(addressField.getMbusDeviceType()));
+      log.debug("FirmwareImageVersion " + Arrays.toString(header.getFirmwareImageVersion()));
+      log.debug("Total size of image identifier : " + imageIdentifierSize + " bytes");
+    }
+
+    final ByteBuffer imageIdentifier = ByteBuffer.allocate(imageIdentifierSize);
+    imageIdentifier.put(addressField.getMbusManufacturerId());
+    imageIdentifier.put("MBUS".getBytes());
+    imageIdentifier.put(addressField.getMbusDeviceIdentificationNumber());
+    imageIdentifier.put(addressField.getMbusManufacturerId());
+    imageIdentifier.put(addressField.getMbusVersion());
+    imageIdentifier.put(addressField.getMbusDeviceType());
+    imageIdentifier.put(header.getFirmwareImageVersion());
+
+    return imageIdentifier.array();
+  }
 }

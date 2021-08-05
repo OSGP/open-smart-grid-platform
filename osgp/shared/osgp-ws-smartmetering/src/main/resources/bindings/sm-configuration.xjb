@@ -22,10 +22,6 @@
       <jxb:property name="firmwareVersions" />
     </jxb:bindings>
 
-    <jxb:bindings node="//xs:element[@name='UpdateFirmwareRequest']//xs:element[@name='FirmwareVersion']">
-      <jxb:property name="firmwareVersions" />
-    </jxb:bindings>
-
   </jxb:bindings>
 
 </jxb:bindings>

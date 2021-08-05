@@ -23,6 +23,7 @@ import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.MacGenerationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionManagerStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -39,6 +40,7 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
   private UpdateFirmwareCommandExecutor commandExecutor;
   @Mock private FirmwareFileCachingRepository firmwareFileCachingRepository;
   @Mock private FirmwareImageIdentifierCachingRepository firmwareImageIdentifierCachingRepository;
+  @Mock private MacGenerationService macGenerationService;
   private final int verificationStatusCheckInterval = 1;
   private final int verificationStatusCheckTimeout = 2;
   private final int initiationStatusCheckInterval = 3;
@@ -54,6 +56,7 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
         new UpdateFirmwareCommandExecutor(
             this.firmwareFileCachingRepository,
             this.firmwareImageIdentifierCachingRepository,
+            this.macGenerationService,
             this.verificationStatusCheckInterval,
             this.verificationStatusCheckTimeout,
             this.initiationStatusCheckInterval,
