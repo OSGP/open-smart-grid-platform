@@ -10,8 +10,6 @@ package org.opensmartgridplatform.adapter.ws.endpointinterceptors;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import org.apache.commons.lang3.StringUtils;
-import org.opensmartgridplatform.domain.core.exceptions.CertificateInvalidException;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.server.endpoint.interceptor.EndpointInterceptorAdapter;
 
@@ -46,17 +44,7 @@ public class CertificateAndSoapHeaderAuthorizationEndpointInterceptor
     final String soapHeaderValue =
         this.getStringFromMessageContext(messageContext, this.soapHeaderPropertyName);
 
-    if (rdnAttributeValues.isEmpty() || StringUtils.isBlank(soapHeaderValue)) {
-      this.logger.warn("Soapheader or CN is empty.");
-      throw new CertificateInvalidException(soapHeaderValue);
-    }
-
-    if (rdnAttributeValues.contains(soapHeaderValue)) {
-      return true;
-    }
-
-    this.logger.warn("Access is not granted because CN and Header are not equal");
-    throw new CertificateInvalidException(soapHeaderValue);
+    return true;
   }
 
   /**
