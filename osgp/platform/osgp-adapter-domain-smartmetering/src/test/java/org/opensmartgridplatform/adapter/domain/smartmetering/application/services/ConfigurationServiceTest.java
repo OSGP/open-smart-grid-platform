@@ -14,6 +14,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.Serializable;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,7 +40,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.KeyDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SecretTypeDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 
@@ -49,18 +51,20 @@ class ConfigurationServiceTest {
   private static final String CORRELATION_UID = "123";
   private static final String MESSAGE_TYPE = "message-type";
   private static final int PRIORITY = 1;
-  private static final Long SCHEDULE_TIME = 1000L;
+  private static final Long SCHEDULE_TIME = System.currentTimeMillis();
+  private static final Long MAX_SCHEDULE_TIME = SCHEDULE_TIME + 10000;
   private static final boolean BYPASS_RETRY = true;
-  private static final byte[] KEY_1 = new byte[] {1, 2, 3};
-  private static final byte[] KEY_2 = new byte[] {4, 5, 6};
-  private static final MessageMetadata deviceMessageMetadata =
-      new MessageMetadata.Builder()
+  private static final byte[] KEY_1 = {1, 2, 3};
+  private static final byte[] KEY_2 = {4, 5, 6};
+  private static final MessageMetadata messageMetadata =
+      MessageMetadata.newBuilder()
           .withDeviceIdentification(DEVICE_IDENTIFICATION)
           .withOrganisationIdentification(ORGANISATION_IDENTIFICATION)
           .withCorrelationUid(CORRELATION_UID)
           .withMessageType(MESSAGE_TYPE)
           .withMessagePriority(PRIORITY)
           .withScheduleTime(SCHEDULE_TIME)
+          .withMaxScheduleTime(MAX_SCHEDULE_TIME)
           .withBypassRetry(BYPASS_RETRY)
           .build();
   private static final SmartMeter device =
@@ -74,13 +78,25 @@ class ConfigurationServiceTest {
               new KeyDto(SecretTypeDto.E_METER_AUTHENTICATION_KEY, KEY_1),
               new KeyDto(SecretTypeDto.E_METER_MASTER_KEY, KEY_2)));
 
+  private static final String IP_ADDRESS;
+
+  static {
+    try {
+      device.setNetworkAddress(InetAddress.getByAddress(new byte[] {127, 0, 0, 1}));
+      IP_ADDRESS = device.getIpAddress();
+    } catch (final UnknownHostException e) {
+      throw new AssertionError(e);
+    }
+  }
+
   @InjectMocks private ConfigurationService instance;
 
   @Mock private DomainHelperService domainHelperService;
   @Mock private OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
   @Mock private WebServiceResponseMessageSender webServiceResponseMessageSender;
 
-  @Captor private ArgumentCaptor<RequestMessage> requestMessageCaptor;
+  @Captor private ArgumentCaptor<MessageMetadata> messageMetadataCaptor;
+  @Captor private ArgumentCaptor<Serializable> requestMessageCaptor;
   @Captor private ArgumentCaptor<ResponseMessage> responseMessageCaptor;
 
   @Test
@@ -90,32 +106,25 @@ class ConfigurationServiceTest {
     when(this.domainHelperService.findSmartMeter(DEVICE_IDENTIFICATION)).thenReturn(device);
 
     // CALL
-    this.instance.getKeys(deviceMessageMetadata, getKeysRequestData);
+    this.instance.getKeys(messageMetadata, getKeysRequestData);
 
     // VERIFY
-    final GetKeysRequestDto expectedGetKeysRequestDto =
+    final GetKeysRequestDto expectedRequestDto =
         new GetKeysRequestDto(
             Arrays.asList(
                 SecretTypeDto.E_METER_AUTHENTICATION_KEY, SecretTypeDto.E_METER_MASTER_KEY));
-    final RequestMessage expectedRequestMessage =
-        new RequestMessage(
-            CORRELATION_UID,
-            ORGANISATION_IDENTIFICATION,
-            DEVICE_IDENTIFICATION,
-            null,
-            expectedGetKeysRequestDto);
+    final MessageMetadata expectedMessageMetadata =
+        messageMetadata.builder().withIpAddress(IP_ADDRESS).build();
 
     verify(this.osgpCoreRequestMessageSender)
-        .send(
-            this.requestMessageCaptor.capture(),
-            eq(MESSAGE_TYPE),
-            eq(PRIORITY),
-            eq(SCHEDULE_TIME),
-            eq(BYPASS_RETRY));
+        .send(this.requestMessageCaptor.capture(), this.messageMetadataCaptor.capture());
 
     assertThat(this.requestMessageCaptor.getValue())
         .usingRecursiveComparison()
-        .isEqualTo(expectedRequestMessage);
+        .isEqualTo(expectedRequestDto);
+
+    assertThat(this.messageMetadataCaptor.getValue())
+        .isEqualToComparingFieldByField(expectedMessageMetadata);
   }
 
   @Test
@@ -123,7 +132,7 @@ class ConfigurationServiceTest {
 
     // CALL
     this.instance.handleGetKeysResponse(
-        deviceMessageMetadata, ResponseMessageResultType.OK, null, getKeysResponseDto);
+        messageMetadata, ResponseMessageResultType.OK, null, getKeysResponseDto);
 
     // VERIFY
     final GetKeysResponse expectedGetKeysResponse =
@@ -133,10 +142,7 @@ class ConfigurationServiceTest {
                 new GetKeysResponseData(SecretType.E_METER_MASTER_KEY, KEY_2)));
     final ResponseMessage expectedResponseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(CORRELATION_UID)
-            .withOrganisationIdentification(ORGANISATION_IDENTIFICATION)
-            .withDeviceIdentification(DEVICE_IDENTIFICATION)
-            .withMessagePriority(PRIORITY)
+            .withMessageMetadata(messageMetadata)
             .withDataObject(expectedGetKeysResponse)
             .withResult(ResponseMessageResultType.OK)
             .build();

@@ -37,17 +37,16 @@ public abstract class AbstractRequestMessageProcessor {
     this.componentType = ComponentType.DOMAIN_SMART_METERING;
   }
 
-  protected void handleMessage(final MessageMetadata deviceMessageMetadata, final Object dataObject)
+  protected void handleMessage(final MessageMetadata messageMetadata, final Object dataObject)
       throws FunctionalException {
     throw new UnsupportedOperationException(
         String.format(
-            ERROR_MSG_UNSUPPORTED_OPERATION, "handleMessage(deviceMessageMetadata, dataObject)"));
+            ERROR_MSG_UNSUPPORTED_OPERATION, "handleMessage(messageMetadata, dataObject)"));
   }
 
-  protected void handleMessage(final MessageMetadata deviceMessageMetadata)
-      throws FunctionalException {
+  protected void handleMessage(final MessageMetadata messageMetadata) throws FunctionalException {
     throw new UnsupportedOperationException(
-        String.format(ERROR_MSG_UNSUPPORTED_OPERATION, "handleMessage(deviceMessageMetadata)"));
+        String.format(ERROR_MSG_UNSUPPORTED_OPERATION, "handleMessage(messageMetadata)"));
   }
 
   /**

@@ -13,7 +13,7 @@ import java.io.Serializable;
 public class RequestMessage implements Serializable {
 
   /** Serial Version UID. */
-  private static final long serialVersionUID = 3099016879238320945L;
+  private static final long serialVersionUID = 8377090502244471258L;
 
   protected final String deviceIdentification;
   protected final String organisationIdentification;

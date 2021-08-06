@@ -213,14 +213,15 @@ public class DeviceResponseMessageService {
 
     final Serializable messageData = message.getDataObject();
 
-    return new ProtocolRequestMessage.Builder()
-        .messageMetadata(message.messageMetadata())
-        .domain(message.getDomain())
-        .domainVersion(message.getDomainVersion())
-        .ipAddress(getIpAddress(device))
+    return ProtocolRequestMessage.newBuilder()
+        .messageMetadata(
+            message
+                .messageMetadata()
+                .builder()
+                .withIpAddress(getIpAddress(device))
+                .withRetryCount(message.getRetryCount() + 1)
+                .build())
         .request(messageData)
-        .scheduled(message.isScheduled())
-        .retryCount(message.getRetryCount() + 1)
         .build();
   }
 

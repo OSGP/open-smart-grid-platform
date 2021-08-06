@@ -28,7 +28,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceLifecyc
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
@@ -75,7 +74,7 @@ public class BundleService {
 
   @Transactional(value = "transactionManager")
   public void handleBundle(
-      final MessageMetadata messageMetadata, final BundleMessageRequest bundleMessageDataContainer)
+      final MessageMetadata messageMetadata, final BundleMessageRequest bundleMessageRequest)
       throws FunctionalException {
 
     LOGGER.info(
@@ -86,16 +85,13 @@ public class BundleService {
     final SmartMeter smartMeter =
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
-    final BundleMessagesRequestDto bundleMessageDataContainerDto =
-        this.actionMapperService.mapAllActions(bundleMessageDataContainer, smartMeter);
+    final BundleMessagesRequestDto requestDto =
+        this.actionMapperService.mapAllActions(bundleMessageRequest, smartMeter);
 
     LOGGER.info("Sending request message to core.");
 
-    final RequestMessage requestMessage =
-        new RequestMessage(
-            messageMetadata.builder().withIpAddress(smartMeter.getIpAddress()).build(),
-            bundleMessageDataContainerDto);
-    this.osgpCoreRequestMessageSender.send(requestMessage);
+    this.osgpCoreRequestMessageSender.send(
+        requestDto, messageMetadata.builder().withIpAddress(smartMeter.getIpAddress()).build());
   }
 
   @Transactional(value = "transactionManager")
@@ -103,7 +99,7 @@ public class BundleService {
       final MessageMetadata messageMetadata,
       final ResponseMessageResultType responseMessageResultType,
       final OsgpException osgpException,
-      final BundleMessagesRequestDto bundleResponseMessageDataContainerDto)
+      final BundleMessagesRequestDto bundleMessagesRequestDto)
       throws FunctionalException {
 
     LOGGER.info(
@@ -111,18 +107,19 @@ public class BundleService {
         messageMetadata.getOrganisationIdentification(),
         messageMetadata.getDeviceIdentification());
 
-    this.checkIfAdditionalActionIsNeeded(messageMetadata, bundleResponseMessageDataContainerDto);
+    this.checkIfAdditionalActionIsNeeded(messageMetadata, bundleMessagesRequestDto);
 
-    // convert bundleResponseMessageDataContainerDto back to core object
-    final BundleMessagesResponse bundleResponseMessageDataContainer =
-        this.actionMapperResponseService.mapAllActions(bundleResponseMessageDataContainerDto);
+    // Convert bundleMessagesRequestDto (containing the list of actions from the request, along with
+    // their respective responses) back to core object.
+    final BundleMessagesResponse bundleMessagesResponse =
+        this.actionMapperResponseService.mapAllActions(bundleMessagesRequestDto);
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
             .withMessageMetadata(messageMetadata)
             .withResult(responseMessageResultType)
             .withOsgpException(osgpException)
-            .withDataObject(bundleResponseMessageDataContainer)
+            .withDataObject(bundleMessagesResponse)
             .build();
 
     LOGGER.info("Send response for CorrelationUID: {}", messageMetadata.getCorrelationUid());
@@ -131,29 +128,29 @@ public class BundleService {
   }
 
   private void checkIfAdditionalActionIsNeeded(
-      final MessageMetadata deviceMessageMetadata,
-      final BundleMessagesRequestDto bundleResponseMessageDataContainerDto)
+      final MessageMetadata messageMetadata,
+      final BundleMessagesRequestDto bundleMessagesRequestDto)
       throws FunctionalException {
 
-    for (final ActionResponseDto action : bundleResponseMessageDataContainerDto.getAllResponses()) {
+    for (final ActionResponseDto action : bundleMessagesRequestDto.getAllResponses()) {
       if (action instanceof CoupleMbusDeviceByChannelResponseDto) {
         this.mBusGatewayService.handleCoupleMbusDeviceByChannelResponse(
-            deviceMessageMetadata, (CoupleMbusDeviceByChannelResponseDto) action);
+            messageMetadata, (CoupleMbusDeviceByChannelResponseDto) action);
       } else if (action instanceof DecoupleMbusDeviceResponseDto) {
         this.mBusGatewayService.handleDecoupleMbusDeviceResponse(
-            deviceMessageMetadata, (DecoupleMbusDeviceResponseDto) action);
+            messageMetadata, (DecoupleMbusDeviceResponseDto) action);
       } else if (action instanceof SetDeviceLifecycleStatusByChannelResponseDto) {
         this.managementService.setDeviceLifecycleStatusByChannel(
             (SetDeviceLifecycleStatusByChannelResponseDto) action);
       } else if (action instanceof EventMessageDataResponseDto) {
         this.eventService.addEventTypeToEvents(
-            deviceMessageMetadata, (EventMessageDataResponseDto) action);
+            messageMetadata, (EventMessageDataResponseDto) action);
       } else if (action instanceof FirmwareVersionResponseDto) {
         final List<FirmwareVersion> firmwareVersions =
             this.configurationMapper.mapAsList(
                 ((FirmwareVersionResponseDto) action).getFirmwareVersions(), FirmwareVersion.class);
         this.firmwareService.saveFirmwareVersionsReturnedFromDevice(
-            deviceMessageMetadata.getDeviceIdentification(), firmwareVersions);
+            messageMetadata.getDeviceIdentification(), firmwareVersions);
       } else if (action instanceof FirmwareVersionGasResponseDto) {
         final FirmwareVersionGasResponseDto firmwareVersionGasResponseDto =
             (FirmwareVersionGasResponseDto) action;

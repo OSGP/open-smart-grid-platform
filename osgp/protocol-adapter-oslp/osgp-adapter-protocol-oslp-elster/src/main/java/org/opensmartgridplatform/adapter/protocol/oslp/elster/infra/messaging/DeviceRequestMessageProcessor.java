@@ -138,16 +138,18 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
     }
 
     final MessageMetadata messageMetadata =
-        MessageMetadataFactory.from(deviceResponse, messageType);
+        MessageMetadataFactory.from(deviceResponse, messageType)
+            .builder()
+            .withDomain(domain)
+            .withDomainVersion(domainVersion)
+            .withScheduled(isScheduled)
+            .withRetryCount(retryCount)
+            .build();
     final ProtocolResponseMessage responseMessage =
         ProtocolResponseMessage.newBuilder()
-            .domain(domain)
-            .domainVersion(domainVersion)
             .messageMetadata(messageMetadata)
             .result(result)
             .osgpException(ex)
-            .scheduled(isScheduled)
-            .retryCount(retryCount)
             .build();
 
     responseMessageSender.send(responseMessage);
@@ -169,21 +171,21 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         new TechnicalException(ComponentType.PROTOCOL_OSLP, UNEXPECTED_EXCEPTION);
 
     final MessageMetadata messageMetadata =
-        new MessageMetadata.Builder()
+        MessageMetadata.newBuilder()
             .withDeviceIdentification(deviceIdentification)
             .withOrganisationIdentification(organisationIdentification)
             .withCorrelationUid(correlationUid)
             .withMessageType(messageType)
+            .withDomain(domain)
+            .withDomainVersion(domainVersion)
             .withMessagePriority(messagePriority)
+            .withRetryCount(retryCount)
             .build();
     final ProtocolResponseMessage protocolResponseMessage =
         ProtocolResponseMessage.newBuilder()
-            .domain(domain)
-            .domainVersion(domainVersion)
             .messageMetadata(messageMetadata)
             .result(ResponseMessageResultType.NOT_OK)
             .osgpException(ex)
-            .retryCount(retryCount)
             .build();
 
     this.responseMessageSender.send(protocolResponseMessage);
@@ -240,16 +242,18 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             StringUtils.isBlank(t.getMessage()) ? UNEXPECTED_EXCEPTION : t.getMessage());
 
     final MessageMetadata messageMetadata =
-        MessageMetadataFactory.from(deviceResponse, messageType);
+        MessageMetadataFactory.from(deviceResponse, messageType)
+            .builder()
+            .withDomain(domain)
+            .withDomainVersion(domainVersion)
+            .withScheduled(isScheduled)
+            .withRetryCount(retryCount)
+            .build();
     final ProtocolResponseMessage responseMessage =
         ProtocolResponseMessage.newBuilder()
-            .domain(domain)
-            .domainVersion(domainVersion)
             .messageMetadata(messageMetadata)
             .result(result)
             .osgpException(ex)
-            .scheduled(isScheduled)
-            .retryCount(retryCount)
             .build();
 
     this.responseMessageSender.send(responseMessage);

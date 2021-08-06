@@ -82,12 +82,12 @@ public class DeviceResponseMessageSenderTest {
             .withCorrelationUid("TEST-CORR-1")
             .withOrganisationIdentification("TEST-ORG-1")
             .withMessageType("GET_MEASUREMENT_REPORT")
+            .withDomain("DistributionAutomation")
+            .withDomainVersion("1.0")
             .build();
 
     return new ProtocolResponseMessage.Builder()
         .messageMetadata(metadata)
-        .domain("DistributionAutomation")
-        .domainVersion("1.0")
         .result(ResponseMessageResultType.OK)
         .build();
   }

@@ -24,7 +24,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
-import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -181,18 +180,17 @@ public abstract class BaseMessageProcessor implements MessageProcessor {
             .withOrganisationIdentification(deviceResponse.getOrganisationIdentification())
             .withCorrelationUid(deviceResponse.getCorrelationUid())
             .withMessageType(messageType)
+            .withDomain(domainInformation.getDomain())
+            .withDomainVersion(domainInformation.getDomainVersion())
             .withMessagePriority(deviceResponse.getMessagePriority())
+            .withScheduled(isScheduled)
+            .withRetryCount(retryCount)
             .build();
     final ProtocolResponseMessage protocolResponseMessage =
         new ProtocolResponseMessage.Builder()
-            .domain(domainInformation.getDomain())
-            .domainVersion(domainInformation.getDomainVersion())
             .messageMetadata(deviceMessageMetadata)
             .result(ResponseMessageResultType.NOT_OK)
             .osgpException(e)
-            .retryCount(retryCount)
-            .retryHeader(new RetryHeader())
-            .scheduled(isScheduled)
             .build();
     this.responseMessageSender.send(protocolResponseMessage);
   }

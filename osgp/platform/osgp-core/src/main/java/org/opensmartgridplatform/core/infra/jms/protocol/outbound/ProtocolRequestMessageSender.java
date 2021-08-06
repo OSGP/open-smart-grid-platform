@@ -94,16 +94,6 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
       throws JMSException {
     final ObjectMessage objectMessage = session.createObjectMessage(requestMessage.getRequest());
     requestMessage.messageMetadata().applyTo(objectMessage);
-    objectMessage.setStringProperty(Constants.DOMAIN, requestMessage.getDomain());
-    objectMessage.setStringProperty(Constants.DOMAIN_VERSION, requestMessage.getDomainVersion());
-
-    objectMessage.setBooleanProperty(Constants.IS_SCHEDULED, requestMessage.isScheduled());
-    if (requestMessage.getMaxScheduleTime() != null) {
-      objectMessage.setLongProperty(
-          Constants.MAX_SCHEDULE_TIME, requestMessage.getMaxScheduleTime());
-    }
-    objectMessage.setIntProperty(Constants.RETRY_COUNT, requestMessage.getRetryCount());
-    objectMessage.setBooleanProperty(Constants.BYPASS_RETRY, requestMessage.bypassRetry());
 
     final String deviceIdentification = requestMessage.getDeviceIdentification();
     if (!protocolInfo.isParallelRequestsAllowed()) {

@@ -34,10 +34,10 @@ public class BundleMessageProcessor extends BaseRequestMessageProcessor {
   }
 
   @Override
-  protected void handleMessage(final MessageMetadata deviceMessageMetadata, final Object dataObject)
+  protected void handleMessage(final MessageMetadata messageMetadata, final Object dataObject)
       throws FunctionalException {
 
     final BundleMessageRequest data = (BundleMessageRequest) dataObject;
-    this.bundleService.handleBundle(deviceMessageMetadata, data);
+    this.bundleService.handleBundle(messageMetadata, data);
   }
 }

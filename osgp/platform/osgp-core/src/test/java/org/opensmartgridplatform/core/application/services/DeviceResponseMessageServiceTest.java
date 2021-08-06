@@ -36,16 +36,18 @@ import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
 @ExtendWith(MockitoExtension.class)
 public class DeviceResponseMessageServiceTest {
 
+  private static final String DOMAIN = "Domain";
+  private static final String DOMAIN_VERSION = "1.0";
   private static final MessageMetadata MESSAGE_METADATA =
       new MessageMetadata.Builder()
           .withDeviceIdentification("deviceId")
           .withOrganisationIdentification("organisationId")
           .withCorrelationUid("correlationId")
           .withMessageType("messageType")
+          .withDomain(DOMAIN)
+          .withDomainVersion(DOMAIN_VERSION)
           .withMessagePriority(4)
           .build();
-  private static final String DOMAIN = "Domain";
-  private static final String DOMAIN_VERSION = "1.0";
   private static final String DATA_OBJECT = "data object";
   private static final Timestamp SCHEDULED_TIME =
       new Timestamp(Calendar.getInstance().getTime().getTime());
@@ -73,16 +75,13 @@ public class DeviceResponseMessageServiceTest {
 
     final ProtocolResponseMessage message =
         new ProtocolResponseMessage.Builder()
-            .messageMetadata(MESSAGE_METADATA)
-            .domain(DOMAIN)
-            .domainVersion(DOMAIN_VERSION)
+            .messageMetadata(MESSAGE_METADATA.builder().withScheduled(true).build())
             .result(result)
             .dataObject(DATA_OBJECT)
-            .scheduled(true)
             .retryHeader(retryHeader)
             .build();
     final ScheduledTask scheduledTask =
-        new ScheduledTask(MESSAGE_METADATA, DOMAIN, DOMAIN, DATA_OBJECT, SCHEDULED_TIME);
+        new ScheduledTask(MESSAGE_METADATA, DOMAIN, DOMAIN_VERSION, DATA_OBJECT, SCHEDULED_TIME);
 
     when(this.scheduledTaskService.findByCorrelationUid(anyString())).thenReturn(scheduledTask);
     this.deviceResponseMessageService.processMessage(message);
@@ -114,17 +113,14 @@ public class DeviceResponseMessageServiceTest {
 
     final ProtocolResponseMessage message =
         new ProtocolResponseMessage.Builder()
-            .messageMetadata(MESSAGE_METADATA)
-            .domain(DOMAIN)
-            .domainVersion(DOMAIN_VERSION)
+            .messageMetadata(MESSAGE_METADATA.builder().withScheduled(true).build())
             .result(result)
             .dataObject(DATA_OBJECT)
-            .scheduled(true)
             .retryHeader(retryHeader)
             .osgpException(exception)
             .build();
     final ScheduledTask scheduledTask =
-        new ScheduledTask(MESSAGE_METADATA, DOMAIN, DOMAIN, DATA_OBJECT, SCHEDULED_TIME);
+        new ScheduledTask(MESSAGE_METADATA, DOMAIN, DOMAIN_VERSION, DATA_OBJECT, SCHEDULED_TIME);
 
     when(this.scheduledTaskService.findByCorrelationUid(anyString())).thenReturn(scheduledTask);
     this.deviceResponseMessageService.processMessage(message);
@@ -137,7 +133,7 @@ public class DeviceResponseMessageServiceTest {
     // check if the scheduled time is updated to the message retry time
     assertThat(scheduledTask.getScheduledTime())
         .isEqualTo(new Timestamp(scheduledRetryTime.getTime()));
-    assertThat(scheduledTask.getErrorLog().contains(expectedMessage)).isTrue();
+    assertThat(scheduledTask.getErrorLog()).contains(expectedMessage);
   }
 
   /**
@@ -157,15 +153,12 @@ public class DeviceResponseMessageServiceTest {
   public void testProcessScheduledMessageSuccess() {
     final ProtocolResponseMessage message =
         new ProtocolResponseMessage.Builder()
-            .messageMetadata(MESSAGE_METADATA)
-            .domain(DOMAIN)
-            .domainVersion(DOMAIN_VERSION)
+            .messageMetadata(MESSAGE_METADATA.builder().withScheduled(true).build())
             .result(ResponseMessageResultType.OK)
             .dataObject(DATA_OBJECT)
-            .scheduled(true)
             .build();
     final ScheduledTask scheduledTask =
-        new ScheduledTask(MESSAGE_METADATA, DOMAIN, DOMAIN, DATA_OBJECT, SCHEDULED_TIME);
+        new ScheduledTask(MESSAGE_METADATA, DOMAIN, DOMAIN_VERSION, DATA_OBJECT, SCHEDULED_TIME);
     scheduledTask.setPending();
     when(this.scheduledTaskService.findByCorrelationUid(anyString())).thenReturn(scheduledTask);
     this.deviceResponseMessageService.processMessage(message);

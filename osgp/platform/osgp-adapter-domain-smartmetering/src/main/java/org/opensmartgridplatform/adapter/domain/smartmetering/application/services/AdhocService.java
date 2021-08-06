@@ -16,6 +16,7 @@ import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AssociationLnListType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ScanMbusChannelsResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SpecificAttributeValueRequest;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SynchronizeTimeRequestData;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AssociationLnListTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetAllAttributeValuesRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetAssociationLnObjectsRequestDto;
@@ -27,7 +28,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SynchronizeTimeR
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
@@ -65,46 +65,34 @@ public class AdhocService {
   }
 
   public void synchronizeTime(
-      final MessageMetadata deviceMessageMetadata,
-      final org.opensmartgridplatform.domain.core.valueobjects.smartmetering
-              .SynchronizeTimeRequestData
-          synchronizeTimeRequestDataValueObject)
+      final MessageMetadata messageMetadata,
+      final SynchronizeTimeRequestData synchronizeTimeRequestData)
       throws FunctionalException {
 
     LOGGER.debug(
         "synchronizeTime for organisationIdentification: {} for deviceIdentification: {}",
-        deviceMessageMetadata.getOrganisationIdentification(),
-        deviceMessageMetadata.getDeviceIdentification());
+        messageMetadata.getOrganisationIdentification(),
+        messageMetadata.getDeviceIdentification());
 
-    final SmartMeter smartMeteringDevice =
-        this.domainHelperService.findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+    final SmartMeter smartMeter =
+        this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
-    final SynchronizeTimeRequestDto synchronizeTimeRequestDto =
+    final SynchronizeTimeRequestDto requestDto =
         this.mapperFactory
             .getMapperFacade()
-            .map(synchronizeTimeRequestDataValueObject, SynchronizeTimeRequestDto.class);
+            .map(synchronizeTimeRequestData, SynchronizeTimeRequestDto.class);
 
     this.osgpCoreRequestMessageSender.send(
-        new RequestMessage(
-            deviceMessageMetadata.getCorrelationUid(),
-            deviceMessageMetadata.getOrganisationIdentification(),
-            deviceMessageMetadata.getDeviceIdentification(),
-            smartMeteringDevice.getIpAddress(),
-            synchronizeTimeRequestDto),
-        deviceMessageMetadata.getMessageType(),
-        deviceMessageMetadata.getMessagePriority(),
-        deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.isBypassRetry());
+        requestDto, messageMetadata.builder().withIpAddress(smartMeter.getIpAddress()).build());
   }
 
   public void handleSynchronizeTimeResponse(
-      final MessageMetadata deviceMessageMetadata,
+      final MessageMetadata messageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception) {
 
     LOGGER.debug(
-        "handleSynchronizeTimeResponse for MessageType: {}",
-        deviceMessageMetadata.getMessageType());
+        "handleSynchronizeTimeResponse for MessageType: {}", messageMetadata.getMessageType());
 
     ResponseMessageResultType result = deviceResult;
     if (exception != null) {
@@ -114,52 +102,39 @@ public class AdhocService {
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-            .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-            .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+            .withMessageMetadata(messageMetadata)
             .withResult(result)
             .withOsgpException(exception)
-            .withMessagePriority(deviceMessageMetadata.getMessagePriority())
             .build();
-    this.webServiceResponseMessageSender.send(
-        responseMessage, deviceMessageMetadata.getMessageType());
+    this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
 
-  public void getAllAttributeValues(final MessageMetadata deviceMessageMetadata)
+  public void getAllAttributeValues(final MessageMetadata messageMetadata)
       throws FunctionalException {
 
     LOGGER.debug(
         "retrieveAllAttributeValues for organisationIdentification: {} for deviceIdentification: {}",
-        deviceMessageMetadata.getOrganisationIdentification(),
-        deviceMessageMetadata.getDeviceIdentification());
+        messageMetadata.getOrganisationIdentification(),
+        messageMetadata.getDeviceIdentification());
 
-    final SmartMeter smartMeteringDevice =
-        this.domainHelperService.findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+    final SmartMeter smartMeter =
+        this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
     final GetAllAttributeValuesRequestDto requestDto = new GetAllAttributeValuesRequestDto();
 
     this.osgpCoreRequestMessageSender.send(
-        new RequestMessage(
-            deviceMessageMetadata.getCorrelationUid(),
-            deviceMessageMetadata.getOrganisationIdentification(),
-            deviceMessageMetadata.getDeviceIdentification(),
-            smartMeteringDevice.getIpAddress(),
-            requestDto),
-        deviceMessageMetadata.getMessageType(),
-        deviceMessageMetadata.getMessagePriority(),
-        deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.isBypassRetry());
+        requestDto, messageMetadata.builder().withIpAddress(smartMeter.getIpAddress()).build());
   }
 
   public void handleGetAllAttributeValuesResponse(
-      final MessageMetadata deviceMessageMetadata,
+      final MessageMetadata messageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception,
       final String resultData) {
 
     LOGGER.debug(
         "handleGetAllAttributeValuesResponse for MessageType: {}",
-        deviceMessageMetadata.getMessageType());
+        messageMetadata.getMessageType());
 
     ResponseMessageResultType result = deviceResult;
     if (exception != null) {
@@ -169,45 +144,32 @@ public class AdhocService {
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-            .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-            .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+            .withMessageMetadata(messageMetadata)
             .withResult(result)
             .withOsgpException(exception)
             .withDataObject(resultData)
-            .withMessagePriority(deviceMessageMetadata.getMessagePriority())
             .build();
-    this.webServiceResponseMessageSender.send(
-        responseMessage, deviceMessageMetadata.getMessageType());
+    this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
 
-  public void getAssociationLnObjects(final MessageMetadata deviceMessageMetadata)
+  public void getAssociationLnObjects(final MessageMetadata messageMetadata)
       throws FunctionalException {
     LOGGER.debug(
         "getAssociationLnObjects for organisationIdentification: {} for deviceIdentification: {}",
-        deviceMessageMetadata.getOrganisationIdentification(),
-        deviceMessageMetadata.getDeviceIdentification());
+        messageMetadata.getOrganisationIdentification(),
+        messageMetadata.getDeviceIdentification());
 
-    final SmartMeter smartMeteringDevice =
-        this.domainHelperService.findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+    final SmartMeter smartMeter =
+        this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
     final GetAssociationLnObjectsRequestDto requestDto = new GetAssociationLnObjectsRequestDto();
 
     this.osgpCoreRequestMessageSender.send(
-        new RequestMessage(
-            deviceMessageMetadata.getCorrelationUid(),
-            deviceMessageMetadata.getOrganisationIdentification(),
-            deviceMessageMetadata.getDeviceIdentification(),
-            smartMeteringDevice.getIpAddress(),
-            requestDto),
-        deviceMessageMetadata.getMessageType(),
-        deviceMessageMetadata.getMessagePriority(),
-        deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.isBypassRetry());
+        requestDto, messageMetadata.builder().withIpAddress(smartMeter.getIpAddress()).build());
   }
 
   public void handleGetAssocationLnObjectsResponse(
-      final MessageMetadata deviceMessageMetadata,
+      final MessageMetadata messageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception,
       final AssociationLnListTypeDto resultData) {
@@ -223,29 +185,25 @@ public class AdhocService {
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-            .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-            .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+            .withMessageMetadata(messageMetadata)
             .withResult(result)
             .withOsgpException(exception)
             .withDataObject(associationLnListValueDomain)
-            .withMessagePriority(deviceMessageMetadata.getMessagePriority())
             .build();
-    this.webServiceResponseMessageSender.send(
-        responseMessage, deviceMessageMetadata.getMessageType());
+    this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
 
   public void getSpecificAttributeValue(
-      final MessageMetadata deviceMessageMetadata, final SpecificAttributeValueRequest request)
+      final MessageMetadata messageMetadata, final SpecificAttributeValueRequest request)
       throws FunctionalException {
 
     LOGGER.debug(
         "getSpecificAttributeValue for organisationIdentification: {} for deviceIdentification: {}",
-        deviceMessageMetadata.getOrganisationIdentification(),
-        deviceMessageMetadata.getDeviceIdentification());
+        messageMetadata.getOrganisationIdentification(),
+        messageMetadata.getDeviceIdentification());
 
-    final SmartMeter smartMeteringDevice =
-        this.domainHelperService.findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+    final SmartMeter smartMeter =
+        this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
     final SpecificAttributeValueRequestDto requestDto =
         new SpecificAttributeValueRequestDto(
@@ -256,26 +214,17 @@ public class AdhocService {
                 .map(request.getObisCode(), ObisCodeValuesDto.class));
 
     this.osgpCoreRequestMessageSender.send(
-        new RequestMessage(
-            deviceMessageMetadata.getCorrelationUid(),
-            deviceMessageMetadata.getOrganisationIdentification(),
-            deviceMessageMetadata.getDeviceIdentification(),
-            smartMeteringDevice.getIpAddress(),
-            requestDto),
-        deviceMessageMetadata.getMessageType(),
-        deviceMessageMetadata.getMessagePriority(),
-        deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.isBypassRetry());
+        requestDto, messageMetadata.builder().withIpAddress(smartMeter.getIpAddress()).build());
   }
 
   public void handleGetSpecificAttributeValueResponse(
-      final MessageMetadata deviceMessageMetadata,
+      final MessageMetadata messageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception,
       final String resultData) {
     LOGGER.debug(
         "handleGetSpecificAttributeValueResponse for MessageType: {}",
-        deviceMessageMetadata.getMessageType());
+        messageMetadata.getMessageType());
 
     ResponseMessageResultType result = deviceResult;
     if (exception != null) {
@@ -285,52 +234,37 @@ public class AdhocService {
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-            .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-            .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+            .withMessageMetadata(messageMetadata)
             .withResult(result)
             .withOsgpException(exception)
             .withDataObject(resultData)
-            .withMessagePriority(deviceMessageMetadata.getMessagePriority())
             .build();
-    this.webServiceResponseMessageSender.send(
-        responseMessage, deviceMessageMetadata.getMessageType());
+    this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
 
-  public void scanMbusChannels(final MessageMetadata deviceMessageMetadata)
-      throws FunctionalException {
+  public void scanMbusChannels(final MessageMetadata messageMetadata) throws FunctionalException {
 
     LOGGER.debug(
         "ScanMbusChannels for organisationIdentification: {} for deviceIdentification: {}",
-        deviceMessageMetadata.getOrganisationIdentification(),
-        deviceMessageMetadata.getDeviceIdentification());
+        messageMetadata.getOrganisationIdentification(),
+        messageMetadata.getDeviceIdentification());
 
-    final SmartMeter smartMeteringDevice =
-        this.domainHelperService.findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+    final SmartMeter smartMeter =
+        this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
     final ScanMbusChannelsRequestDataDto requestDto = new ScanMbusChannelsRequestDataDto();
 
     this.osgpCoreRequestMessageSender.send(
-        new RequestMessage(
-            deviceMessageMetadata.getCorrelationUid(),
-            deviceMessageMetadata.getOrganisationIdentification(),
-            deviceMessageMetadata.getDeviceIdentification(),
-            smartMeteringDevice.getIpAddress(),
-            requestDto),
-        deviceMessageMetadata.getMessageType(),
-        deviceMessageMetadata.getMessagePriority(),
-        deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.isBypassRetry());
+        requestDto, messageMetadata.builder().withIpAddress(smartMeter.getIpAddress()).build());
   }
 
   public void handleScanMbusChannelsResponse(
-      final MessageMetadata deviceMessageMetadata,
+      final MessageMetadata messageMetadata,
       final ResponseMessageResultType deviceResult,
       final OsgpException exception,
       final ScanMbusChannelsResponseDto resultData) {
     LOGGER.debug(
-        "handleScanMbusChannelsResponse for MessageType: {}",
-        deviceMessageMetadata.getMessageType());
+        "handleScanMbusChannelsResponse for MessageType: {}", messageMetadata.getMessageType());
 
     ResponseMessageResultType result = deviceResult;
     if (exception != null) {
@@ -343,15 +277,11 @@ public class AdhocService {
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-            .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-            .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+            .withMessageMetadata(messageMetadata)
             .withResult(result)
             .withOsgpException(exception)
             .withDataObject(scanMbusChannelsResponseData)
-            .withMessagePriority(deviceMessageMetadata.getMessagePriority())
             .build();
-    this.webServiceResponseMessageSender.send(
-        responseMessage, deviceMessageMetadata.getMessageType());
+    this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
 }

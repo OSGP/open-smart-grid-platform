@@ -41,15 +41,15 @@ public class RequestMessageMetadata {
   }
 
   public MessageMetadata newMessageMetadata(final String correlationUid) {
-    return new MessageMetadata.Builder(
-            correlationUid,
-            this.getOrganisationIdentification(),
-            this.getDeviceIdentification(),
-            this.getMessageType().name())
-        .withMessagePriority(this.getMessagePriority())
-        .withScheduleTime(this.getScheduleTime())
-        .withMaxScheduleTime(this.getMaxScheduleTime())
-        .withBypassRetry(this.isBypassRetry())
+    return MessageMetadata.newBuilder()
+        .withDeviceIdentification(this.deviceIdentification)
+        .withOrganisationIdentification(this.organisationIdentification)
+        .withCorrelationUid(correlationUid)
+        .withMessageType(this.messageType.name())
+        .withMessagePriority(this.messagePriority)
+        .withScheduleTime(this.scheduleTime)
+        .withMaxScheduleTime(this.maxScheduleTime)
+        .withBypassRetry(this.bypassRetry)
         .build();
   }
 

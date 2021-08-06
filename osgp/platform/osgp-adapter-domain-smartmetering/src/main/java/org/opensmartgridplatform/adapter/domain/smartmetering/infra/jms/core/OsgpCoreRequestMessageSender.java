@@ -8,9 +8,9 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core;
 
+import java.io.Serializable;
 import javax.jms.ObjectMessage;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
@@ -24,42 +24,11 @@ public class OsgpCoreRequestMessageSender {
   @Qualifier("domainSmartMeteringOutboundOsgpCoreRequestsJmsTemplate")
   private JmsTemplate jmsTemplate;
 
-  public void send(final RequestMessage requestMessage) {
+  public void send(final Serializable request, final MessageMetadata messageMetadata) {
     this.jmsTemplate.send(
         session -> {
-          final ObjectMessage objectMessage =
-              session.createObjectMessage(requestMessage.getRequest());
-          requestMessage.messageMetadata().applyTo(objectMessage);
-          return objectMessage;
-        });
-  }
-
-  public void send(
-      final RequestMessage requestMessage,
-      final String messageType,
-      final int messagePriority,
-      final Long scheduleTime,
-      final boolean bypassRetry) {
-
-    this.jmsTemplate.send(
-        session -> {
-          final ObjectMessage objectMessage = session.createObjectMessage();
-
-          objectMessage.setJMSType(messageType);
-          objectMessage.setJMSPriority(messagePriority);
-          objectMessage.setJMSCorrelationID(requestMessage.getCorrelationUid());
-          objectMessage.setStringProperty(
-              Constants.ORGANISATION_IDENTIFICATION,
-              requestMessage.getOrganisationIdentification());
-          objectMessage.setStringProperty(
-              Constants.DEVICE_IDENTIFICATION, requestMessage.getDeviceIdentification());
-          objectMessage.setBooleanProperty(Constants.BYPASS_RETRY, bypassRetry);
-          if (scheduleTime != null) {
-            objectMessage.setLongProperty(Constants.SCHEDULE_TIME, scheduleTime);
-          }
-          objectMessage.setStringProperty(Constants.IP_ADDRESS, requestMessage.getIpAddress());
-          objectMessage.setObject(requestMessage.getRequest());
-
+          final ObjectMessage objectMessage = session.createObjectMessage(request);
+          messageMetadata.applyTo(objectMessage);
           return objectMessage;
         });
   }

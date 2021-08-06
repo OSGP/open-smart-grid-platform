@@ -57,7 +57,7 @@ public class BundleService {
             organisationIdentification, deviceIdentification);
 
     final SmartMeteringRequestMessage message =
-        new SmartMeteringRequestMessage.Builder()
+        SmartMeteringRequestMessage.newBuilder()
             .messageMetadata(messageMetadata.builder().withCorrelationUid(correlationUid).build())
             .request(new BundleMessageRequest(actionList))
             .build();

@@ -92,11 +92,11 @@ public class OsgpCoreResponseSteps {
         new MessageMetadata.Builder()
             .withDeviceIdentification(deviceIdentification)
             .withMessageType(MessageType.CONNECT.name())
+            .withDomain(domainInfo.getDomain())
+            .withDomainVersion(domainInfo.getDomainVersion())
             .build();
     return ProtocolResponseMessage.newBuilder()
         .messageMetadata(deviceMessageMetadata)
-        .domain(domainInfo.getDomain())
-        .domainVersion(domainInfo.getDomainVersion())
         .result(ResponseMessageResultType.OK)
         .build();
   }
@@ -109,11 +109,11 @@ public class OsgpCoreResponseSteps {
         new MessageMetadata.Builder()
             .withDeviceIdentification(deviceIdentification)
             .withMessageType(MessageType.GET_LIGHT_SENSOR_STATUS.name())
+            .withDomain(domainInfo.getDomain())
+            .withDomainVersion(domainInfo.getDomainVersion())
             .build();
     return ProtocolResponseMessage.newBuilder()
         .messageMetadata(deviceMessageMetadata)
-        .domain(domainInfo.getDomain())
-        .domainVersion(domainInfo.getDomainVersion())
         .dataObject(new LightSensorStatusDto(LightSensorStatusTypeDto.valueOf(map.get("status"))))
         .result(ResponseMessageResultType.OK)
         .build();

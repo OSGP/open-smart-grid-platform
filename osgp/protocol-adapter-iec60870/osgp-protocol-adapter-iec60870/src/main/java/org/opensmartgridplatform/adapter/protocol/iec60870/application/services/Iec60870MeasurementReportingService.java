@@ -34,9 +34,9 @@ public class Iec60870MeasurementReportingService implements MeasurementReporting
                     .asMessageMetadata()
                     .builder()
                     .withMessageType(MESSAGE_TYPE)
+                    .withDomain(responseMetadata.getDomainInfo().getDomain())
+                    .withDomainVersion(responseMetadata.getDomainInfo().getDomainVersion())
                     .build())
-            .domain(responseMetadata.getDomainInfo().getDomain())
-            .domainVersion(responseMetadata.getDomainInfo().getDomainVersion())
             .dataObject(measurementReportDto)
             .result(ResponseMessageResultType.OK)
             .build();

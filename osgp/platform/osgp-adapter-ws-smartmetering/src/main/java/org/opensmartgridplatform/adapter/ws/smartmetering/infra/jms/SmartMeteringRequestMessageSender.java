@@ -36,7 +36,7 @@ public class SmartMeteringRequestMessageSender {
   public void send(final SmartMeteringRequestMessage requestMessage) {
     LOGGER.debug("Sending smart metering request message to the queue");
 
-    if (requestMessage.messageMetadata().getMessageType() == null) {
+    if (requestMessage.getMessageType() == null) {
       LOGGER.error("MessageType is null");
       return;
     }

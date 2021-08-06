@@ -70,7 +70,7 @@ public class RequestService {
         requestMessageMetadata.newMessageMetadata(correlationUid);
 
     final SmartMeteringRequestMessage message =
-        new SmartMeteringRequestMessage.Builder()
+        SmartMeteringRequestMessage.newBuilder()
             .messageMetadata(messageMetadata)
             .request(requestData)
             .build();
