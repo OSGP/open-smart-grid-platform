@@ -321,11 +321,11 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | 8 | unsigned             | 66        |
       | 9 | unsigned             | 3         |
     And the values for classid 72 obiscode "0-2:24.1.0" on device simulator "TEST1024000000001" are
-      | 5 | unsigned             | 3        |
-      | 6 | double-long-unsigned | 12056731 |
-      | 7 | long-unsigned        | 12514    |
-      | 8 | unsigned             | 66       |
-      | 9 | unsigned             | 3        |
+      | 5 | unsigned             | 3         |
+      | 6 | double-long-unsigned | 302343985 |
+      | 7 | long-unsigned        | 12514     |
+      | 8 | unsigned             | 66        |
+      | 9 | unsigned             | 3         |
 
   # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
   # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
