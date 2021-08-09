@@ -98,6 +98,7 @@ public class FirmwareFile extends AbstractEntity {
     this.file = builder.file;
     this.hash = builder.hash;
     this.active = builder.active;
+    this.imageIdentifier = builder.imageIdentifier;
   }
 
   public void updateFirmwareModuleData(final Map<FirmwareModule, String> versionsByModule) {

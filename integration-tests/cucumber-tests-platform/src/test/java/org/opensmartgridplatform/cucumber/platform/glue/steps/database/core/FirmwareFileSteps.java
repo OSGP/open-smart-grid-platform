@@ -140,6 +140,9 @@ public class FirmwareFileSteps {
       }
     }
 
+    final String imageIdentifier =
+        getString(settings, PlatformKeys.FIRMWARE_FILE_IMAGE_IDENTIFIER, null);
+
     FirmwareFile firmwareFile =
         new FirmwareFile.Builder()
             .withIdentification(identification)
@@ -158,6 +161,7 @@ public class FirmwareFileSteps {
                 getBoolean(
                     settings, PlatformKeys.FIRMWARE_ACTIVE, PlatformDefaults.FIRMWARE_ACTIVE))
             .withFile(file)
+            .withImageIdentifier(imageIdentifier)
             .build();
 
     if (!isForSmartMeters) {

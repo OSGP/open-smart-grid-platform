@@ -52,12 +52,26 @@ public class FirmwareService {
     // Parameterless constructor required for transactions...
   }
 
-  public void checkFirmwareFileSupportsDeviceModel(
-      final SmartMeter smartMeter, final String firmwareIdentification) throws FunctionalException {
-
-    final DeviceModel deviceModel = this.determineDeviceModel(smartMeter);
+  public FirmwareFile getFirmwareFile(final String firmwareIdentification)
+      throws FunctionalException {
     final FirmwareFile firmware =
         this.firmwareFileRepository.findByIdentification(firmwareIdentification);
+    if (firmware == null) {
+      throw new FunctionalException(
+          FunctionalExceptionType.UNKNOWN_FIRMWARE,
+          ComponentType.DOMAIN_SMART_METERING,
+          new OsgpException(
+              ComponentType.DOMAIN_SMART_METERING,
+              String.format(
+                  "No firmware file found with Identification %s", firmwareIdentification)));
+    }
+    return firmware;
+  }
+
+  public void checkFirmwareFileSupportsDeviceModel(
+      final SmartMeter smartMeter, final FirmwareFile firmware) throws FunctionalException {
+
+    final DeviceModel deviceModel = this.determineDeviceModel(smartMeter);
     final List<String> deviceModelCodes =
         firmware.getDeviceModels().stream()
             .map(dm -> dm.getModelCode())
@@ -72,7 +86,7 @@ public class FirmwareService {
                   "DeviceModel %s of smartmeter %s is not in list of devicemodels supported by firmware file %s : %s",
                   smartMeter.getDeviceModel().getModelCode(),
                   smartMeter.getDeviceIdentification(),
-                  firmwareIdentification,
+                  firmware.getIdentification(),
                   deviceModelCodes)));
     }
   }
