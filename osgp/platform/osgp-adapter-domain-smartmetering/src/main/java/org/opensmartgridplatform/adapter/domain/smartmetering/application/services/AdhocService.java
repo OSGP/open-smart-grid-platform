@@ -10,7 +10,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.servi
 
 import ma.glasnost.orika.MapperFactory;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
-import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
+import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.JmsMessageSender;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AssociationLnListType;
@@ -48,7 +48,7 @@ public class AdhocService {
 
   @Autowired
   @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
-  private OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
+  private JmsMessageSender osgpCoreRequestMessageSender;
 
   @Autowired
   @Qualifier(value = "domainSmartMeteringOutboundWebServiceResponsesMessageSender")

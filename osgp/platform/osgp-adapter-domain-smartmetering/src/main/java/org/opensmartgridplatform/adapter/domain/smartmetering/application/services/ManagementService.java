@@ -9,7 +9,7 @@
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ManagementMapper;
-import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
+import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.JmsMessageSender;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.repositories.SmartMeterRepository;
@@ -51,7 +51,7 @@ public class ManagementService {
 
   @Autowired
   @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
-  private OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
+  private JmsMessageSender osgpCoreRequestMessageSender;
 
   @Autowired
   @Qualifier(value = "domainSmartMeteringOutboundWebServiceResponsesMessageSender")

@@ -11,23 +11,27 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core;
 import java.io.Serializable;
 import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.stereotype.Component;
 
-// Send request message to the requests queue of OSGP Core.
-@Component(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
-public class OsgpCoreRequestMessageSender {
+/** Generic JMS Message Sender */
+public class JmsMessageSender {
 
-  @Autowired
-  @Qualifier("domainSmartMeteringOutboundOsgpCoreRequestsJmsTemplate")
-  private JmsTemplate jmsTemplate;
+  private final JmsTemplate jmsTemplate;
 
-  public void send(final Serializable request, final MessageMetadata messageMetadata) {
+  public JmsMessageSender(final JmsTemplate jmsTemplate) {
+    this.jmsTemplate = jmsTemplate;
+  }
+
+  /**
+   * Sends an object message over the configured jmsTemplate.
+   *
+   * @param payload the payload of the message
+   * @param messageMetadata Metadata to be set as message properties
+   */
+  public void send(final Serializable payload, final MessageMetadata messageMetadata) {
     this.jmsTemplate.send(
         session -> {
-          final ObjectMessage objectMessage = session.createObjectMessage(request);
+          final ObjectMessage objectMessage = session.createObjectMessage(payload);
           messageMetadata.applyTo(objectMessage);
           return objectMessage;
         });

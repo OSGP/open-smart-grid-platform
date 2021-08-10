@@ -23,7 +23,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
+import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.JmsMessageSender;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.repositories.DeviceAuthorizationRepository;
@@ -60,7 +60,7 @@ public class InstallationServiceTest {
   @Mock private DeviceModelRepository deviceModelRepository;
   @Mock private OrganisationRepository organisationRepository;
   @Mock private DeviceAuthorizationRepository deviceAuthorizationRepository;
-  @Mock private OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
+  @Mock private JmsMessageSender osgpCoreRequestMessageSender;
 
   @Mock private MessageMetadata deviceMessageMetadata;
   @Mock private AddSmartMeterRequest addSmartMeterRequest;

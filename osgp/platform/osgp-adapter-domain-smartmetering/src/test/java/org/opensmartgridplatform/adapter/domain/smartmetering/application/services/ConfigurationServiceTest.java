@@ -25,7 +25,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
+import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.JmsMessageSender;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.valueobjects.Address;
@@ -92,7 +92,7 @@ class ConfigurationServiceTest {
   @InjectMocks private ConfigurationService instance;
 
   @Mock private DomainHelperService domainHelperService;
-  @Mock private OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
+  @Mock private JmsMessageSender osgpCoreRequestMessageSender;
   @Mock private WebServiceResponseMessageSender webServiceResponseMessageSender;
 
   @Captor private ArgumentCaptor<MessageMetadata> messageMetadataCaptor;
