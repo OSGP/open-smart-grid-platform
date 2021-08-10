@@ -10,9 +10,6 @@
 package org.opensmartgridplatform.shared.infra.ws;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
@@ -47,11 +44,5 @@ public class WebServiceMessageCallbackHeaderFieldsAdder implements WebServiceMes
                   header.addHeaderElement(new QName(NAMESPACE, k.getKey()));
               headerElement.setText(k.getValue());
             });
-    final Iterator<SoapHeaderElement> allAttributesIterator = header.examineAllHeaderElements();
-    final List<SoapHeaderElement> names = new ArrayList<>();
-    while (allAttributesIterator.hasNext()) {
-      names.add(allAttributesIterator.next());
-    }
-    System.out.println(names);
   }
 }

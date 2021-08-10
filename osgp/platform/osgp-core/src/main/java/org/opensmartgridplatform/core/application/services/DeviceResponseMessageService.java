@@ -10,12 +10,15 @@ package org.opensmartgridplatform.core.application.services;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Date;
 import javax.persistence.OptimisticLockException;
 import org.opensmartgridplatform.core.domain.model.domain.DomainResponseService;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.ScheduledTask;
 import org.opensmartgridplatform.domain.core.valueobjects.ScheduledTaskStatusType;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolRequestMessage;
@@ -74,7 +77,13 @@ public class DeviceResponseMessageService {
         this.handleProtocolResponseMessage(message);
       }
     } catch (final FunctionalException e) {
-      LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
+      LOGGER.error(
+          "Exception processing protocol response message with correlation uid [{}]",
+          message.getCorrelationUid(),
+          e);
+      if (FunctionalExceptionType.MAX_SCHEDULE_TIME_EXCEEDED == e.getExceptionType()) {
+        this.handleMaxScheduleTimeExceeded(message, e);
+      }
     }
   }
 
@@ -116,7 +125,9 @@ public class DeviceResponseMessageService {
     return false;
   }
 
-  private void handleScheduledTask(final ProtocolResponseMessage message) {
+  private void handleScheduledTask(final ProtocolResponseMessage message)
+      throws FunctionalException {
+
     final ScheduledTask scheduledTask =
         this.scheduledTaskService.findByCorrelationUid(message.getCorrelationUid());
 
@@ -132,14 +143,16 @@ public class DeviceResponseMessageService {
       this.domainResponseMessageSender.send(message);
       this.scheduledTaskService.deleteScheduledTask(scheduledTask);
     } else {
-
       this.handleUnsuccessfulScheduledTask(message, scheduledTask);
     }
   }
 
   private void handleUnsuccessfulScheduledTask(
-      final ProtocolResponseMessage message, final ScheduledTask scheduledTask) {
-    if (this.mustBeRetried(message)) {
+      final ProtocolResponseMessage message, final ScheduledTask scheduledTask)
+      throws FunctionalException {
+
+    final boolean allowRetryAttempt = !this.alreadyHasMaxScheduleTimeExceededException(message);
+    if (allowRetryAttempt && this.mustBeRetried(message)) {
       this.handleMessageRetry(message, scheduledTask);
     } else {
       this.domainResponseMessageSender.send(message);
@@ -147,11 +160,55 @@ public class DeviceResponseMessageService {
     }
   }
 
+  private boolean alreadyHasMaxScheduleTimeExceededException(
+      final ProtocolResponseMessage message) {
+
+    if (!(message.getOsgpException() instanceof FunctionalException)) {
+      return false;
+    }
+    final FunctionalException functionalException =
+        (FunctionalException) message.getOsgpException();
+    return FunctionalExceptionType.MAX_SCHEDULE_TIME_EXCEEDED
+        == functionalException.getExceptionType();
+  }
+
   private void handleMessageRetry(
-      final ProtocolResponseMessage message, final ScheduledTask scheduledTask) {
+      final ProtocolResponseMessage message, final ScheduledTask scheduledTask)
+      throws FunctionalException {
+
+    final Date scheduledRetryTime = message.getRetryHeader().getScheduledRetryTime();
+    final Long maxScheduleTime = message.getMaxScheduleTime();
+
+    if (this.timeForRetryExceedsMaxScheduleTime(scheduledRetryTime, maxScheduleTime)) {
+      this.scheduledTaskService.deleteScheduledTask(scheduledTask);
+      throw new FunctionalException(
+          FunctionalExceptionType.MAX_SCHEDULE_TIME_EXCEEDED,
+          ComponentType.OSGP_CORE,
+          message.getOsgpException());
+    }
+
     scheduledTask.setFailed(this.determineErrorMessage(message));
-    scheduledTask.retryOn(message.getRetryHeader().getScheduledRetryTime());
+    scheduledTask.retryOn(scheduledRetryTime);
     this.scheduledTaskService.saveScheduledTask(scheduledTask);
+  }
+
+  private boolean timeForRetryExceedsMaxScheduleTime(
+      final Date scheduledRetryTime, final Long maxScheduleTime) {
+
+    if (maxScheduleTime == null) {
+      // No max schedule time that can be exceeded for any actual schedule time.
+      return false;
+    }
+
+    if (System.currentTimeMillis() > maxScheduleTime) {
+      /*
+       *  No need to check the scheduledRetryTime, as it will never result in a message being
+       *  scheduled and executed before maxScheduleTime, since the latter is already in the past.
+       */
+      return true;
+    }
+
+    return scheduledRetryTime.getTime() > maxScheduleTime;
   }
 
   private boolean mustBeRetried(final ProtocolResponseMessage message) {
@@ -178,7 +235,9 @@ public class DeviceResponseMessageService {
 
   private void handleProtocolResponseMessage(final ProtocolResponseMessage message)
       throws FunctionalException {
-    if (this.mustBeRetried(message)) {
+
+    final boolean allowRetryAttempt = !this.alreadyHasMaxScheduleTimeExceededException(message);
+    if (allowRetryAttempt && this.mustBeRetried(message)) {
       // Create scheduled task for retries.
       LOGGER.info(
           "Creating a scheduled retry task for message of type {} for device {}.",
@@ -186,7 +245,7 @@ public class DeviceResponseMessageService {
           message.getDeviceIdentification());
       final ScheduledTask task = this.createScheduledRetryTask(message);
       this.scheduledTaskService.saveScheduledTask(task);
-    } else if (this.shouldRetryBasedOnMessage(message)) {
+    } else if (allowRetryAttempt && this.shouldRetryBasedOnMessage(message)) {
       // Immediate retry based on error message. Should be deprecated.
       LOGGER.info(
           "Retrying: {} for device {} for {} time",
@@ -206,8 +265,18 @@ public class DeviceResponseMessageService {
     }
   }
 
-  private ProtocolRequestMessage createProtocolRequestMessage(
-      final ProtocolResponseMessage message) {
+  private ProtocolRequestMessage createProtocolRequestMessage(final ProtocolResponseMessage message)
+      throws FunctionalException {
+
+    final Date scheduledRetryTime = new Date(); // retry is performed now, with the created message
+    final Long maxScheduleTime = message.getMaxScheduleTime();
+    if (this.timeForRetryExceedsMaxScheduleTime(scheduledRetryTime, maxScheduleTime)) {
+      throw new FunctionalException(
+          FunctionalExceptionType.MAX_SCHEDULE_TIME_EXCEEDED,
+          ComponentType.OSGP_CORE,
+          message.getOsgpException());
+    }
+
     final Device device =
         this.deviceService.findByDeviceIdentification(message.getDeviceIdentification());
 
@@ -232,11 +301,21 @@ public class DeviceResponseMessageService {
     return device.getIpAddress();
   }
 
-  private ScheduledTask createScheduledRetryTask(final ProtocolResponseMessage message) {
+  private ScheduledTask createScheduledRetryTask(final ProtocolResponseMessage message)
+      throws FunctionalException {
+
+    final Date scheduledRetryTime = message.getRetryHeader().getScheduledRetryTime();
+    final Long maxScheduleTime = message.getMaxScheduleTime();
+
+    if (this.timeForRetryExceedsMaxScheduleTime(scheduledRetryTime, maxScheduleTime)) {
+      throw new FunctionalException(
+          FunctionalExceptionType.MAX_SCHEDULE_TIME_EXCEEDED,
+          ComponentType.OSGP_CORE,
+          message.getOsgpException());
+    }
 
     final Serializable messageData = message.getDataObject();
-    final Timestamp scheduleTimeStamp =
-        new Timestamp(message.getRetryHeader().getScheduledRetryTime().getTime());
+    final Timestamp scheduleTimeStamp = new Timestamp(scheduledRetryTime.getTime());
 
     final MessageMetadata messageMetadata = message.messageMetadata();
 
@@ -250,5 +329,19 @@ public class DeviceResponseMessageService {
     task.retryOn(scheduleTimeStamp);
 
     return task;
+  }
+
+  private void handleMaxScheduleTimeExceeded(
+      final ProtocolResponseMessage message,
+      final FunctionalException maxScheduleTimeExceededException) {
+
+    final ProtocolResponseMessage maxScheduleTimeExceededResponseMessage =
+        ProtocolResponseMessage.newBuilder()
+            .messageMetadata(message.messageMetadata())
+            .result(ResponseMessageResultType.NOT_OK)
+            .osgpException(maxScheduleTimeExceededException)
+            .dataObject(message.getDataObject())
+            .build();
+    this.domainResponseMessageSender.send(maxScheduleTimeExceededResponseMessage);
   }
 }

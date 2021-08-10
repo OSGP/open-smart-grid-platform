@@ -19,6 +19,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetSpecif
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.adhoc.GetSpecificAttributeValueResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.BundleAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.installation.AddDeviceAsyncRequest;
@@ -31,10 +32,13 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.Actu
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.helpers.SettingsHelper;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringbundle.BundleSteps;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringconfiguration.GetAdministrativeStatus;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.SmartMeteringAdHocRequestClient;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.SmartMeteringAdHocResponseClient;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.adhoc.SpecificAttributeValueRequestFactory;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.BundleRequestFactory;
+import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.SmartMeteringBundleClient;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.GetAdministrativeStatusRequestFactory;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.configuration.SmartMeteringConfigurationClient;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.installation.AddDeviceRequestFactory;
@@ -58,6 +62,8 @@ public class FunctionalExceptionsSteps {
 
   @Autowired private GetAdministrativeStatus getAdministrativeStatus;
 
+  @Autowired private BundleSteps bundleSteps;
+
   @Autowired private SmartMeteringConfigurationClient smartMeteringConfigurationClient;
 
   @Autowired private SmartMeteringInstallationClient smartMeteringInstallationClient;
@@ -66,6 +72,8 @@ public class FunctionalExceptionsSteps {
   private SmartMeteringMonitoringRequestClient<
           ActualMeterReadsGasAsyncResponse, ActualMeterReadsGasRequest>
       actualMeterReadsGasRequestClient;
+
+  @Autowired private SmartMeteringBundleClient smartMeteringBundleClient;
 
   @Autowired
   private SmartMeteringMonitoringResponseClient<
@@ -211,6 +219,25 @@ public class FunctionalExceptionsSteps {
 
     try {
       this.getSpecificAttributeValueResponseClient.getResponse(asyncRequest);
+    } catch (final Exception exception) {
+      ScenarioContext.current().put(PlatformKeys.RESPONSE, exception);
+    }
+  }
+
+  @When("^the bundle request generating an error is received$")
+  public void theBundleRequestGeneratingAnErrorIsReceived(final Map<String, String> settings)
+      throws Throwable {
+
+    this.bundleSteps.theBundleRequestIsReceived(settings);
+
+    final BundleAsyncRequest asyncRequest = BundleRequestFactory.fromScenarioContext();
+
+    if (this.useLongWaitTime) {
+      this.smartMeteringConfigurationClient.setWaitFailMillis(LONG_WAIT_TIME);
+    }
+
+    try {
+      this.smartMeteringBundleClient.retrieveBundleResponse(asyncRequest);
     } catch (final Exception exception) {
       ScenarioContext.current().put(PlatformKeys.RESPONSE, exception);
     }
