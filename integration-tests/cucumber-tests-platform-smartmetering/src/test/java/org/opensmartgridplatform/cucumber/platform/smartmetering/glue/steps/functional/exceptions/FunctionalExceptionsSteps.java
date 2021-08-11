@@ -224,11 +224,11 @@ public class FunctionalExceptionsSteps {
     }
   }
 
-  @When("^the bundle request generating an error is received$")
-  public void theBundleRequestGeneratingAnErrorIsReceived(final Map<String, String> settings)
-      throws Throwable {
+  @When("^the bundle request generating an error is received with headers$")
+  public void theBundleRequestGeneratingAnErrorIsReceivedWithHeaders(
+      final Map<String, String> settings) throws Throwable {
 
-    this.bundleSteps.theBundleRequestIsReceived(settings);
+    this.bundleSteps.theBundleRequestIsReceivedWithHeaders(settings);
 
     final BundleAsyncRequest asyncRequest = BundleRequestFactory.fromScenarioContext();
 

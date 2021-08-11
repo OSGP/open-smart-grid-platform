@@ -13,7 +13,7 @@ Feature: SmartMetering functional exceptions max schedule time exceeded
     Given a bundle request
       | DeviceIdentification | TEST1024000000001 |
     And the bundle request contains a get administrative status action
-    When the bundle request generating an error is received
+    When the bundle request generating an error is received with headers
       | MaxScheduleTime | now - 5 minutes |
     Then a SOAP fault should have been returned
       | Code    |                        417 |
@@ -23,6 +23,6 @@ Feature: SmartMetering functional exceptions max schedule time exceeded
     Given a bundle request
       | DeviceIdentification | TEST1024000000001 |
     And the bundle request contains a get administrative status action
-    When the bundle request is received
+    When the bundle request is received with headers
       | MaxScheduleTime | tomorrow at noon |
     Then the bundle response should contain a get administrative status response

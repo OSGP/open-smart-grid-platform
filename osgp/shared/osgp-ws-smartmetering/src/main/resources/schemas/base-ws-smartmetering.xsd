@@ -13,6 +13,7 @@
   <xsd:element name="MessagePriority" type="tns:MessagePriority"/>
   <xsd:element name="BypassRetry" type="tns:BypassRetry"/>
   <xsd:element name="ScheduleTime" type="tns:ScheduleTime"/>
+  <xsd:element name="MaxScheduleTime" type="tns:MaxScheduleTime"/>
   <xsd:element name="ResponseUrl" type="tns:ResponseUrl"/>
 
   <xsd:simpleType name="MessagePriority">
@@ -27,11 +28,21 @@
   </xsd:simpleType>
 
   <xsd:simpleType name="ScheduleTime">
-    <xsd:restriction base="xsd:dateTime"/>
+    <xsd:annotation>
+      <xsd:documentation>
+        Milliseconds since 1970-01-01T00:00:00Z
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:long" />
   </xsd:simpleType>
 
   <xsd:simpleType name="MaxScheduleTime">
-    <xsd:restriction base="xsd:dateTime"/>
+    <xsd:annotation>
+      <xsd:documentation>
+        Milliseconds since 1970-01-01T00:00:00Z
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:long" />
   </xsd:simpleType>
 
   <xsd:simpleType name="Identification">

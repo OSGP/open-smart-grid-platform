@@ -113,7 +113,19 @@ public class BundleSteps extends BaseBundleSteps {
   }
 
   @When("^the bundle request is received$")
-  public void theBundleRequestIsReceived(final Map<String, String> settings) throws Throwable {
+  public void theBundleRequestIsReceived() throws Throwable {
+    final BundleRequest request =
+        (BundleRequest) ScenarioContext.current().get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
+
+    final BundleAsyncResponse asyncResponse = this.client.sendBundleRequest(request);
+
+    assertThat(asyncResponse).isNotNull();
+    ScenarioContextHelper.saveAsyncResponse(asyncResponse);
+  }
+
+  @When("^the bundle request is received with headers$")
+  public void theBundleRequestIsReceivedWithHeaders(final Map<String, String> settings)
+      throws Throwable {
     final BundleRequest request =
         (BundleRequest) ScenarioContext.current().get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
 
