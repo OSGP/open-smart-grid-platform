@@ -53,9 +53,7 @@ public class MacGenerationServiceTest {
   void calculateMac() throws IOException, ProtocolAdapterException {
 
     when(this.secretManagementService.getKey(
-            messageMetadata,
-            deviceIdentification,
-            SecurityKeyType.G_METER_FIRMWARE_UPDATE_AUTHENTICATION))
+            messageMetadata, deviceIdentification, SecurityKeyType.G_METER_FIRMWARE_UPDATE))
         .thenReturn(this.firmwareUpdateAuthenticationKey);
 
     final FirmwareFile firmwareFile = this.createFirmwareFile();
@@ -68,9 +66,7 @@ public class MacGenerationServiceTest {
   @Test
   void testNoKey() throws IOException, ProtocolAdapterException {
     when(this.secretManagementService.getKey(
-            messageMetadata,
-            deviceIdentification,
-            SecurityKeyType.G_METER_FIRMWARE_UPDATE_AUTHENTICATION))
+            messageMetadata, deviceIdentification, SecurityKeyType.G_METER_FIRMWARE_UPDATE))
         .thenReturn(null);
 
     final FirmwareFile firmwareFile = this.createFirmwareFile();
@@ -83,8 +79,7 @@ public class MacGenerationServiceTest {
                   messageMetadata, deviceIdentification, firmwareFile);
             });
     assertThat(exception)
-        .hasMessageContaining(
-            "No key of type G_METER_FIRMWARE_UPDATE_AUTHENTICATION found for device");
+        .hasMessageContaining("No key of type G_METER_FIRMWARE_UPDATE found for device");
   }
 
   @Test
