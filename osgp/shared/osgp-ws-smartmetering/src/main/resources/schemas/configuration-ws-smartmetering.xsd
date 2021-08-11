@@ -1311,7 +1311,7 @@
       <xsd:enumeration value="E_METER_ENCRYPTION_KEY_BROADCAST"/>
       <xsd:enumeration value="G_METER_MASTER_KEY"/>
       <xsd:enumeration value="G_METER_ENCRYPTION_KEY"/>
-      <xsd:enumeration value="G_METER_FIRMWARE_UPDATE_AUTHENTICATION_KEY"/>
+      <xsd:enumeration value="G_METER_FIRMWARE_UPDATE_KEY"/>
       <xsd:enumeration value="G_METER_OPTICAL_PORT_KEY"/>
     </xsd:restriction>
   </xsd:simpleType>
