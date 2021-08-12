@@ -9,7 +9,6 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware;
 
 import java.util.Arrays;
-import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.MacGenerationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
@@ -42,48 +41,38 @@ public class UpdateFirmwareCommandExecutor
   private static final String EXCEPTION_MSG_FIRMWARE_IMAGE_IDENTIFIER_NOT_AVAILABLE =
       "Firmware Image Identifier is not available.";
 
-  @Value("${command.updatefirmware.verificationstatuscheck.interval}")
-  int verificationStatusCheckInterval;
+  private DlmsDeviceRepository dlmsDeviceRepository;
 
-  @Value("${command.updatefirmware.verificationstatuscheck.timeout}")
-  int verificationStatusCheckTimeout;
-
-  @Value("${command.updatefirmware.initiationstatuscheck.interval}")
-  int initiationStatusCheckInterval;
-
-  @Value("${command.updatefirmware.initiationstatuscheck.timeout}")
-  int initiationStatusCheckTimeout;
-
-  private ImageTransfer.ImageTranferProperties imageTransferProperties;
-
-  private final DlmsDeviceRepository dlmsDeviceRepository;
   private final FirmwareFileCachingRepository firmwareFileCachingRepository;
   private final FirmwareImageIdentifierCachingRepository firmwareImageIdentifierCachingRepository;
+  private final ImageTransfer.ImageTranferProperties imageTransferProperties;
   private final MacGenerationService macGenerationService;
 
   public UpdateFirmwareCommandExecutor(
       final DlmsDeviceRepository dlmsDeviceRepository,
       final FirmwareFileCachingRepository firmwareFileCachingRepository,
       final FirmwareImageIdentifierCachingRepository firmwareImageIdentifierCachingRepository,
-      final MacGenerationService macGenerationService) {
+      final MacGenerationService macGenerationService,
+      @Value("${command.updatefirmware.verificationstatuscheck.interval}")
+          final int verificationStatusCheckInterval,
+      @Value("${command.updatefirmware.verificationstatuscheck.timeout}")
+          final int verificationStatusCheckTimeout,
+      @Value("${command.updatefirmware.initiationstatuscheck.interval}")
+          final int initiationStatusCheckInterval,
+      @Value("${command.updatefirmware.initiationstatuscheck.timeout}")
+          final int initiationStatusCheckTimeout) {
     super(UpdateFirmwareRequestDto.class);
     this.dlmsDeviceRepository = dlmsDeviceRepository;
     this.firmwareFileCachingRepository = firmwareFileCachingRepository;
     this.firmwareImageIdentifierCachingRepository = firmwareImageIdentifierCachingRepository;
     this.macGenerationService = macGenerationService;
-  }
 
-  @Override
-  @PostConstruct
-  public void init() {
     this.imageTransferProperties = new ImageTransfer.ImageTranferProperties();
     this.imageTransferProperties.setVerificationStatusCheckInterval(
-        this.verificationStatusCheckInterval);
-    this.imageTransferProperties.setVerificationStatusCheckTimeout(
-        this.verificationStatusCheckTimeout);
-    this.imageTransferProperties.setInitiationStatusCheckInterval(
-        this.initiationStatusCheckInterval);
-    this.imageTransferProperties.setInitiationStatusCheckTimeout(this.initiationStatusCheckTimeout);
+        verificationStatusCheckInterval);
+    this.imageTransferProperties.setVerificationStatusCheckTimeout(verificationStatusCheckTimeout);
+    this.imageTransferProperties.setInitiationStatusCheckInterval(initiationStatusCheckInterval);
+    this.imageTransferProperties.setInitiationStatusCheckTimeout(initiationStatusCheckTimeout);
   }
 
   @Override

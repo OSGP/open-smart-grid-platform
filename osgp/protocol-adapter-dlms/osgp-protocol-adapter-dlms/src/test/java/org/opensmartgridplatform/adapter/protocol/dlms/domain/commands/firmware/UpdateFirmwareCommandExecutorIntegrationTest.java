@@ -44,6 +44,7 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 class UpdateFirmwareCommandExecutorIntegrationTest {
 
   private UpdateFirmwareCommandExecutor commandExecutor;
+
   @Mock private DlmsDeviceRepository dlmsDeviceRepository;
   @Mock private FirmwareFileCachingRepository firmwareFileCachingRepository;
   @Mock private FirmwareImageIdentifierCachingRepository firmwareImageIdentifierCachingRepository;
@@ -53,6 +54,11 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
   private DlmsConnectionStub connectionStub;
   private MessageMetadata messageMetadata;
 
+  private final int verificationStatusCheckInterval = 1;
+  private final int verificationStatusCheckTimeout = 2;
+  private final int initiationStatusCheckInterval = 3;
+  private final int initiationStatusCheckTimeout = 4;
+
   @BeforeEach
   void setUp() {
     this.commandExecutor =
@@ -60,7 +66,11 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
             this.dlmsDeviceRepository,
             this.firmwareFileCachingRepository,
             this.firmwareImageIdentifierCachingRepository,
-            this.macGenerationService);
+            this.macGenerationService,
+            this.verificationStatusCheckInterval,
+            this.verificationStatusCheckTimeout,
+            this.initiationStatusCheckInterval,
+            this.initiationStatusCheckTimeout);
 
     this.connectionStub = new DlmsConnectionStub();
     this.connectionManagerStub = new DlmsConnectionManagerStub(this.connectionStub);
