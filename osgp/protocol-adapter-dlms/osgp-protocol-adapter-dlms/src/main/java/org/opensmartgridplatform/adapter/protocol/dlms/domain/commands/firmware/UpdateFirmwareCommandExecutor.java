@@ -9,8 +9,8 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware;
 
 import java.util.Arrays;
+import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.util.encoders.Hex;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.MacGenerationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.FirmwareFile;
@@ -42,38 +42,48 @@ public class UpdateFirmwareCommandExecutor
   private static final String EXCEPTION_MSG_FIRMWARE_IMAGE_IDENTIFIER_NOT_AVAILABLE =
       "Firmware Image Identifier is not available.";
 
-  private DlmsDeviceRepository dlmsDeviceRepository;
+  @Value("${command.updatefirmware.verificationstatuscheck.interval}")
+  int verificationStatusCheckInterval;
 
+  @Value("${command.updatefirmware.verificationstatuscheck.timeout}")
+  int verificationStatusCheckTimeout;
+
+  @Value("${command.updatefirmware.initiationstatuscheck.interval}")
+  int initiationStatusCheckInterval;
+
+  @Value("${command.updatefirmware.initiationstatuscheck.timeout}")
+  int initiationStatusCheckTimeout;
+
+  private ImageTransfer.ImageTranferProperties imageTransferProperties;
+
+  private final DlmsDeviceRepository dlmsDeviceRepository;
   private final FirmwareFileCachingRepository firmwareFileCachingRepository;
   private final FirmwareImageIdentifierCachingRepository firmwareImageIdentifierCachingRepository;
-  private final ImageTransfer.ImageTranferProperties imageTransferProperties;
   private final MacGenerationService macGenerationService;
 
   public UpdateFirmwareCommandExecutor(
       final DlmsDeviceRepository dlmsDeviceRepository,
       final FirmwareFileCachingRepository firmwareFileCachingRepository,
       final FirmwareImageIdentifierCachingRepository firmwareImageIdentifierCachingRepository,
-      final MacGenerationService macGenerationService,
-      @Value("${command.updatefirmware.verificationstatuscheck.interval}")
-          final int verificationStatusCheckInterval,
-      @Value("${command.updatefirmware.verificationstatuscheck.timeout}")
-          final int verificationStatusCheckTimeout,
-      @Value("${command.updatefirmware.initiationstatuscheck.interval}")
-          final int initiationStatusCheckInterval,
-      @Value("${command.updatefirmware.initiationstatuscheck.timeout}")
-          final int initiationStatusCheckTimeout) {
+      final MacGenerationService macGenerationService) {
     super(UpdateFirmwareRequestDto.class);
     this.dlmsDeviceRepository = dlmsDeviceRepository;
     this.firmwareFileCachingRepository = firmwareFileCachingRepository;
     this.firmwareImageIdentifierCachingRepository = firmwareImageIdentifierCachingRepository;
     this.macGenerationService = macGenerationService;
+  }
 
+  @Override
+  @PostConstruct
+  public void init() {
     this.imageTransferProperties = new ImageTransfer.ImageTranferProperties();
     this.imageTransferProperties.setVerificationStatusCheckInterval(
-        verificationStatusCheckInterval);
-    this.imageTransferProperties.setVerificationStatusCheckTimeout(verificationStatusCheckTimeout);
-    this.imageTransferProperties.setInitiationStatusCheckInterval(initiationStatusCheckInterval);
-    this.imageTransferProperties.setInitiationStatusCheckTimeout(initiationStatusCheckTimeout);
+        this.verificationStatusCheckInterval);
+    this.imageTransferProperties.setVerificationStatusCheckTimeout(
+        this.verificationStatusCheckTimeout);
+    this.imageTransferProperties.setInitiationStatusCheckInterval(
+        this.initiationStatusCheckInterval);
+    this.imageTransferProperties.setInitiationStatusCheckTimeout(this.initiationStatusCheckTimeout);
   }
 
   @Override
@@ -92,7 +102,7 @@ public class UpdateFirmwareCommandExecutor
         new ImageTransfer(
             conn,
             this.imageTransferProperties,
-            this.getImageIdentifier(firmwareIdentification, device, firmwareFile),
+            this.getImageIdentifier(firmwareIdentification, firmwareFile),
             firmwareFile.getByteArray());
 
     try {
@@ -155,11 +165,10 @@ public class UpdateFirmwareCommandExecutor
       throw new ProtocolAdapterException(EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE);
     }
 
-    FirmwareFile firmwareFile = new FirmwareFile(firmwareFileByteArray);
+    final FirmwareFile firmwareFile = new FirmwareFile(firmwareFileByteArray);
     if (firmwareFile.isMbusFirmware()) {
-      firmwareFile =
-          this.addMac(
-              messageMetadata, updateFirmwareRequestDto.getDeviceIdentification(), firmwareFile);
+      this.addMac(
+          messageMetadata, updateFirmwareRequestDto.getDeviceIdentification(), firmwareFile);
     }
 
     return firmwareFile;
@@ -187,11 +196,11 @@ public class UpdateFirmwareCommandExecutor
     return firmwareFile;
   }
 
-  private byte[] getImageIdentifier(
-      final String firmwareIdentification, final DlmsDevice device, final FirmwareFile firmwareFile)
+  private String getImageIdentifier(
+      final String firmwareIdentification, final FirmwareFile firmwareFile)
       throws ProtocolAdapterException {
 
-    byte[] imageIdentifier = null;
+    String imageIdentifier = null;
 
     if (firmwareFile.isMbusFirmware()) {
 
@@ -205,12 +214,12 @@ public class UpdateFirmwareCommandExecutor
 
       imageIdentifier = this.getImageIdentifierFromCache(firmwareIdentification);
     }
-    log.debug("FW ImageIdentifier: {}", Arrays.toString(imageIdentifier));
+    log.debug("FW ImageIdentifier: {}", imageIdentifier);
 
     return imageIdentifier;
   }
 
-  private byte[] getImageIdentifierFromCache(final String firmwareIdentification)
+  private String getImageIdentifierFromCache(final String firmwareIdentification)
       throws ProtocolAdapterException {
     final String firmwareImageIdentifier =
         this.firmwareImageIdentifierCachingRepository.retrieve(firmwareIdentification);
@@ -218,7 +227,7 @@ public class UpdateFirmwareCommandExecutor
     if (firmwareImageIdentifier == null) {
       throw new ProtocolAdapterException(EXCEPTION_MSG_FIRMWARE_IMAGE_IDENTIFIER_NOT_AVAILABLE);
     }
-    return Hex.decode(firmwareImageIdentifier);
+    return firmwareImageIdentifier;
   }
 
   @Override

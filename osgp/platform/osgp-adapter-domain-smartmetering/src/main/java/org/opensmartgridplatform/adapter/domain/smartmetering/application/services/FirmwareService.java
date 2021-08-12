@@ -74,7 +74,7 @@ public class FirmwareService {
     final DeviceModel deviceModel = this.determineDeviceModel(smartMeter);
     final List<String> deviceModelCodes =
         firmware.getDeviceModels().stream()
-            .map(dm -> dm.getModelCode())
+            .map(DeviceModel::getModelCode)
             .collect(Collectors.toList());
     if (!deviceModelCodes.contains(deviceModel.getModelCode())) {
       throw new FunctionalException(

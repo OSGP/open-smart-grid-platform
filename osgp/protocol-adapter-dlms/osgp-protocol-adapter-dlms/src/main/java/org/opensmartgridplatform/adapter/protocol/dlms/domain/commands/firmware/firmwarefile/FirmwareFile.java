@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
@@ -192,18 +193,15 @@ public class FirmwareFile {
     return Arrays.copyOfRange(bytes, begin, end);
   }
 
-  public byte[] createImageIdentifierForMbusDevice() {
-    /*
-     * The Identifier for firmware image of M-Bus device has the following content
-     * - MAN (3 bytes) Manufacturer code according to FLAG (https://www.dlms.com/flag-id/flag-id-list)
-     * - DEV (4 bytes) M-Bus DEV code (letters "MBUS")
-     * - M-Bus Short ID (8 bytes)
-     *   - (3 bytes) Identification Number
-     *   - (3 bytes) Manufacturer ID
-     *   - (1 bytes) Version
-     *   - (1 byte ) DeviceType
-     * - M-Bus FW ID (4 bytes)
-     */
+  /**
+   * The Identifier for firmware image of M-Bus device has the following content - MAN (3 bytes)
+   * Manufacturer code according to FLAG (https://www.dlms.com/flag-id/flag-id-list) - DEV (4 bytes)
+   * M-Bus DEV code (letters "MBUS") - M-Bus Short ID (8 bytes) - (3 bytes) Identification Number -
+   * (3 bytes) Manufacturer ID - (1 bytes) Version - (1 byte ) DeviceType - M-Bus FW ID (4 bytes)
+   *
+   * @return String representation of the image identifier (UTF-8 encoded)
+   */
+  public String createImageIdentifierForMbusDevice() {
     final FirmwareFileHeader header = this.getHeader();
     final FirmwareFileHeaderAddressField addressField = header.getFirmwareFileHeaderAddressField();
     final int imageIdentifierSize = 19;
@@ -230,6 +228,6 @@ public class FirmwareFile {
     imageIdentifier.put(addressField.getMbusDeviceType());
     imageIdentifier.put(header.getFirmwareImageVersion());
 
-    return imageIdentifier.array();
+    return new String(imageIdentifier.array(), StandardCharsets.UTF_8);
   }
 }

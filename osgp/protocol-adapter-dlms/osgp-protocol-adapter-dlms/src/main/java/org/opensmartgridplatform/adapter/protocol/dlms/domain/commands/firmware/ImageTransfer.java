@@ -61,7 +61,7 @@ class ImageTransfer {
   private static final ExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadExecutor();
 
   private final ImageTranferProperties properties;
-  private final byte[] imageIdentifier;
+  private final String imageIdentifier;
   private final byte[] imageData;
   private final DlmsConnectionManager connector;
   private final CosemObjectAccessor imageTransferCosem;
@@ -71,7 +71,7 @@ class ImageTransfer {
   public ImageTransfer(
       final DlmsConnectionManager connector,
       final ImageTranferProperties properties,
-      final byte[] imageIdentifier,
+      final String imageIdentifier,
       final byte[] imageData) {
     this.properties = properties;
     this.imageIdentifier = imageIdentifier;
@@ -139,7 +139,8 @@ class ImageTransfer {
    */
   public void initiateImageTransfer() throws ProtocolAdapterException {
     final List<DataObject> params = new ArrayList<>();
-    params.add(DataObject.newOctetStringData(this.imageIdentifier));
+    params.add(
+        DataObject.newOctetStringData(this.imageIdentifier.getBytes(StandardCharsets.UTF_8)));
     params.add(DataObject.newUInteger32Data(this.getImageSize()));
     final DataObject parameter = DataObject.newStructureData(params);
 
@@ -267,7 +268,7 @@ class ImageTransfer {
         final String imageDescription =
             this.describeImageInfo(
                 this.imageData.length,
-                new String(this.imageIdentifier, StandardCharsets.UTF_8),
+                this.imageIdentifier,
                 Arrays.copyOf(this.imageData, imageSignature.length));
         log.info(
             "Retrieved an image to activate info element ({}) with value not matching the image being "
