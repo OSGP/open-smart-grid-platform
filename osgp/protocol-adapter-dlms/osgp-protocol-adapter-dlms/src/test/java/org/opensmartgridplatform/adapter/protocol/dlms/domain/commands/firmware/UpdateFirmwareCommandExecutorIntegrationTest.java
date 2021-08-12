@@ -48,10 +48,6 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
   @Mock private FirmwareFileCachingRepository firmwareFileCachingRepository;
   @Mock private FirmwareImageIdentifierCachingRepository firmwareImageIdentifierCachingRepository;
   @Mock private MacGenerationService macGenerationService;
-  private final int verificationStatusCheckInterval = 1;
-  private final int verificationStatusCheckTimeout = 2;
-  private final int initiationStatusCheckInterval = 3;
-  private final int initiationStatusCheckTimeout = 4;
 
   private DlmsConnectionManagerStub connectionManagerStub;
   private DlmsConnectionStub connectionStub;
@@ -64,11 +60,7 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
             this.dlmsDeviceRepository,
             this.firmwareFileCachingRepository,
             this.firmwareImageIdentifierCachingRepository,
-            this.macGenerationService,
-            this.verificationStatusCheckInterval,
-            this.verificationStatusCheckTimeout,
-            this.initiationStatusCheckInterval,
-            this.initiationStatusCheckTimeout);
+            this.macGenerationService);
 
     this.connectionStub = new DlmsConnectionStub();
     this.connectionManagerStub = new DlmsConnectionManagerStub(this.connectionStub);
