@@ -36,6 +36,7 @@ public class JasperWirelessTestConfig {
   private static final String PROPERTY_NAME_CONTROLCENTER_USERNAME = "jwcc.username";
   private static final String PROPERTY_NAME_CONTROLCENTER_PASSWORD = "jwcc.password";
   private static final String PROPERTY_NAME_CONTROLCENTER_API_VERSION = "jwcc.api_version";
+  private static final String PROPERTY_NAME_CONTROLCENTER_VALIDITY_PERIOD = "jwcc.validity_period";
 
   @Resource private Environment environment;
 
@@ -89,5 +90,11 @@ public class JasperWirelessTestConfig {
   @Bean
   public CorrelationIdProviderService correlationIdProviderService() {
     return new CorrelationIdProviderService();
+  }
+
+  @Bean
+  public short jasperGetValidityPeriod() {
+    return Short.parseShort(
+        this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_VALIDITY_PERIOD));
   }
 }
