@@ -63,6 +63,9 @@ public class JasperWirelessConfig extends AbstractConfig {
   @Value("${jwcc.api_version}")
   private String apiVersion;
 
+  @Value("${jwcc.validity_period:0}")
+  private String validityPeriod;
+
   @Bean
   public Jaxb2Marshaller marshaller() {
     final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
@@ -72,7 +75,7 @@ public class JasperWirelessConfig extends AbstractConfig {
 
   @Bean
   SaajSoapMessageFactory messageFactory() throws OsgpJasperException {
-    SaajSoapMessageFactory saajSoapMessageFactory;
+    final SaajSoapMessageFactory saajSoapMessageFactory;
     try {
       saajSoapMessageFactory = new SaajSoapMessageFactory(MessageFactory.newInstance());
       saajSoapMessageFactory.setSoapVersion(SoapVersion.SOAP_11);
@@ -135,6 +138,11 @@ public class JasperWirelessConfig extends AbstractConfig {
   @Bean
   public int jasperGetSessionRetries() {
     return Integer.parseInt(this.retries);
+  }
+
+  @Bean
+  public short jasperGetValidityPeriod() {
+    return Short.parseShort(this.validityPeriod);
   }
 
   @Bean
