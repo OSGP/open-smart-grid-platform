@@ -66,7 +66,11 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
             this.dlmsDeviceRepository,
             this.firmwareFileCachingRepository,
             this.firmwareImageIdentifierCachingRepository,
-            this.macGenerationService);
+            this.macGenerationService,
+            this.verificationStatusCheckInterval,
+            this.verificationStatusCheckTimeout,
+            this.initiationStatusCheckInterval,
+            this.initiationStatusCheckTimeout);
 
     this.connectionStub = new DlmsConnectionStub();
     this.connectionManagerStub = new DlmsConnectionManagerStub(this.connectionStub);
