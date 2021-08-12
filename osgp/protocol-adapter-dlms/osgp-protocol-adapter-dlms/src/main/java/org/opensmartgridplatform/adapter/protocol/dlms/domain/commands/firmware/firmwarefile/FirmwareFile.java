@@ -37,11 +37,22 @@ public class FirmwareFile {
 
   public FirmwareFile(final byte[] imageData) {
     this.imageData = imageData;
+  }
+
+  public boolean isMbusFirmware() {
+    return this.imageData.length >= 35
+        && this.getHeader()
+            .getFirmwareImageMagicNumberHex()
+            .equalsIgnoreCase(FIRMWARE_IMAGE_MAGIC_NUMBER)
+        && this.getHeader().getHeaderVersionInt() == HEADER_VERSION;
+  }
+
+  public void checkLengths() {
     final FirmwareFileHeader header = this.getHeader();
     final Integer firmwareImageLength = header.getFirmwareImageLengthInt();
     final Integer securityLength = header.getSecurityLengthInt();
     final Integer headerLength = header.getHeaderLengthInt();
-    if (imageData.length != (firmwareImageLength + securityLength + headerLength)) {
+    if (this.imageData.length != (firmwareImageLength + securityLength + headerLength)) {
       log.warn(
           "Byte array length doesn't match lengths defined in header: "
               + "\nByte array length : {}"
@@ -50,7 +61,7 @@ public class FirmwareFile {
               + "\nFirmwareImage : {}"
               + "\nSecurity : {}"
               + "\nTotal of {}  bytes.",
-          imageData.length,
+          this.imageData.length,
           headerLength,
           firmwareImageLength,
           securityLength,

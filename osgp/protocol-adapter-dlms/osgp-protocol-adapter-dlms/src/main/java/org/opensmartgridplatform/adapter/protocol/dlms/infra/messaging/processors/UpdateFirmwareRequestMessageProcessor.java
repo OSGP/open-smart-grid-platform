@@ -15,6 +15,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessageSender;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -52,7 +53,7 @@ public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageP
     final String correlationUid = messageMetadata.getCorrelationUid();
     final String messageType = messageMetadata.getMessageType();
 
-    this.assertRequestObjectType(String.class, requestObject);
+    this.assertRequestObjectType(UpdateFirmwareRequestDto.class, requestObject);
 
     LOGGER.info(
         "{} called for device: {} for organisation: {}",
@@ -60,7 +61,9 @@ public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageP
         deviceIdentification,
         organisationIdentification);
 
-    final String firmwareIdentification = (String) requestObject;
+    final UpdateFirmwareRequestDto updateFirmwareRequestDto =
+        (UpdateFirmwareRequestDto) requestObject;
+    final String firmwareIdentification = updateFirmwareRequestDto.getFirmwareIdentification();
 
     if (this.firmwareService.isFirmwareFileAvailable(firmwareIdentification)) {
       LOGGER.info(
@@ -69,7 +72,7 @@ public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageP
           firmwareIdentification,
           deviceIdentification);
       return this.configurationService.updateFirmware(
-          conn, device, firmwareIdentification, messageMetadata);
+          conn, device, updateFirmwareRequestDto, messageMetadata);
     } else {
       LOGGER.info(
           "[{}] - Firmware file [{}] not available. Sending GetFirmwareFile request to core.",
@@ -80,7 +83,7 @@ public class UpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageP
               correlationUid,
               organisationIdentification,
               deviceIdentification,
-              firmwareIdentification);
+              updateFirmwareRequestDto);
       this.osgpRequestMessageSender.send(
           message, MessageType.GET_FIRMWARE_FILE.name(), messageMetadata);
       return NO_RESPONSE;

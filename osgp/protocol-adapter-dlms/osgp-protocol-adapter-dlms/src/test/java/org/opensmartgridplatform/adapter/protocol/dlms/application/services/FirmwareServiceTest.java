@@ -10,6 +10,8 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -31,6 +33,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.Firmw
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.FirmwareImageIdentifierCachingRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareFileDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
@@ -54,11 +57,15 @@ public class FirmwareServiceTest {
 
   private static MessageMetadata messageMetadata;
   private static final String firmwareIdentification = "fw";
+  private static final String deviceIdentification = "device-1";
+  private static UpdateFirmwareRequestDto updateFirmwareRequestDto;
 
   @BeforeAll
   public static void init() {
     messageMetadata =
         MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+    updateFirmwareRequestDto =
+        new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
   }
 
   @Test
@@ -94,7 +101,7 @@ public class FirmwareServiceTest {
     this.firmwareService.updateFirmware(
         this.dlmsConnectionManagerMock,
         this.dlmsDeviceMock,
-        firmwareIdentification,
+        updateFirmwareRequestDto,
         messageMetadata);
 
     // Assert
@@ -102,7 +109,7 @@ public class FirmwareServiceTest {
         .execute(
             this.dlmsConnectionManagerMock,
             this.dlmsDeviceMock,
-            firmwareIdentification,
+            updateFirmwareRequestDto,
             messageMetadata);
   }
 
@@ -118,7 +125,7 @@ public class FirmwareServiceTest {
               this.firmwareService.updateFirmware(
                   this.dlmsConnectionManagerMock,
                   this.dlmsDeviceMock,
-                  firmwareIdentification,
+                  updateFirmwareRequestDto,
                   messageMetadata);
 
               // Assert
@@ -136,7 +143,7 @@ public class FirmwareServiceTest {
       this.firmwareService.updateFirmware(
           this.dlmsConnectionManagerMock,
           this.dlmsDeviceMock,
-          firmwareIdentification,
+          updateFirmwareRequestDto,
           messageMetadata);
     } catch (final ProtocolAdapterException e) {
       // Ignore exception.
@@ -147,7 +154,7 @@ public class FirmwareServiceTest {
         .execute(
             this.dlmsConnectionManagerMock,
             this.dlmsDeviceMock,
-            firmwareIdentification,
+            updateFirmwareRequestDto,
             messageMetadata);
   }
 
@@ -159,7 +166,8 @@ public class FirmwareServiceTest {
     final String firmwareImageIdentifier = "496d6167654964656e746966696572";
 
     final FirmwareFileDto firmwareFileDto =
-        new FirmwareFileDto(firmwareIdentification, firmwareFile, firmwareImageIdentifier);
+        new FirmwareFileDto(
+            firmwareIdentification, deviceIdentification, firmwareFile, firmwareImageIdentifier);
     final MessageMetadata messageMetadata =
         MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
 
@@ -182,10 +190,10 @@ public class FirmwareServiceTest {
         .store(firmwareIdentification, firmwareImageIdentifier);
     verify(this.updateFirmwareCommandExecutor, times(1))
         .execute(
-            this.dlmsConnectionManagerMock,
-            this.dlmsDeviceMock,
-            firmwareIdentification,
-            messageMetadata);
+            same(this.dlmsConnectionManagerMock),
+            same(this.dlmsDeviceMock),
+            any(UpdateFirmwareRequestDto.class),
+            same(messageMetadata));
   }
 
   @Test

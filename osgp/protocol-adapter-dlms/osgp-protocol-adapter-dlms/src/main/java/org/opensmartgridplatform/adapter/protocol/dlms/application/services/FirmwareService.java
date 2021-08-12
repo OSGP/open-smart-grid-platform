@@ -19,6 +19,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.Firmw
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareFileDto;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareVersionDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -55,15 +56,15 @@ public class FirmwareService {
   public UpdateFirmwareResponseDto updateFirmware(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final String firmwareIdentification,
+      final UpdateFirmwareRequestDto updateFirmwareRequestDto,
       final MessageMetadata messageMetadata)
       throws OsgpException {
     LOGGER.info(
         "Updating firmware of device {} to firmware with identification {}",
         device,
-        firmwareIdentification);
+        updateFirmwareRequestDto.getFirmwareIdentification());
 
-    return this.executeFirmwareUpdate(conn, device, firmwareIdentification, messageMetadata);
+    return this.executeFirmwareUpdate(conn, device, updateFirmwareRequestDto, messageMetadata);
   }
 
   public UpdateFirmwareResponseDto updateFirmware(
@@ -89,7 +90,11 @@ public class FirmwareService {
         firmwareFileDto.getFirmwareIdentification(), firmwareFileDto.getImageIdentifier());
 
     return this.executeFirmwareUpdate(
-        conn, device, firmwareFileDto.getFirmwareIdentification(), messageMetadata);
+        conn,
+        device,
+        new UpdateFirmwareRequestDto(
+            firmwareFileDto.getFirmwareIdentification(), firmwareFileDto.getDeviceIdentification()),
+        messageMetadata);
   }
 
   public boolean isFirmwareFileAvailable(final String firmwareIdentification) {
@@ -99,15 +104,17 @@ public class FirmwareService {
   private UpdateFirmwareResponseDto executeFirmwareUpdate(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final String firmwareIdentification,
+      final UpdateFirmwareRequestDto updateFirmwareRequestDto,
       final MessageMetadata messageMetadata)
       throws OsgpException {
-    if (this.firmwareRepository.isAvailable(firmwareIdentification)) {
+    if (this.firmwareRepository.isAvailable(updateFirmwareRequestDto.getFirmwareIdentification())) {
       return this.updateFirmwareCommandExecutor.execute(
-          conn, device, firmwareIdentification, messageMetadata);
+          conn, device, updateFirmwareRequestDto, messageMetadata);
     } else {
       throw new ProtocolAdapterException(
-          String.format(EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE, firmwareIdentification));
+          String.format(
+              EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE,
+              updateFirmwareRequestDto.getFirmwareIdentification()));
     }
   }
 }

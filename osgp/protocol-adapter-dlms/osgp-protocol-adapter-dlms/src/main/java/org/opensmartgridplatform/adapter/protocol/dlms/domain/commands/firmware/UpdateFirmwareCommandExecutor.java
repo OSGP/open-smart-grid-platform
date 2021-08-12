@@ -8,12 +8,15 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware;
 
+import java.util.Arrays;
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Hex;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.MacGenerationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.FirmwareFile;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.FirmwareFileCachingRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.FirmwareImageIdentifierCachingRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ImageTransferException;
@@ -24,16 +27,13 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRe
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class UpdateFirmwareCommandExecutor
-    extends AbstractCommandExecutor<String, UpdateFirmwareResponseDto> {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(UpdateFirmwareCommandExecutor.class);
+    extends AbstractCommandExecutor<UpdateFirmwareRequestDto, UpdateFirmwareResponseDto> {
 
   private static final String EXCEPTION_MSG_UPDATE_FAILED = "Upgrade of firmware did not succeed.";
 
@@ -42,12 +42,15 @@ public class UpdateFirmwareCommandExecutor
   private static final String EXCEPTION_MSG_FIRMWARE_IMAGE_IDENTIFIER_NOT_AVAILABLE =
       "Firmware Image Identifier is not available.";
 
+  private DlmsDeviceRepository dlmsDeviceRepository;
+
   private final FirmwareFileCachingRepository firmwareFileCachingRepository;
   private final FirmwareImageIdentifierCachingRepository firmwareImageIdentifierCachingRepository;
   private final ImageTransfer.ImageTranferProperties imageTransferProperties;
   private final MacGenerationService macGenerationService;
 
   public UpdateFirmwareCommandExecutor(
+      final DlmsDeviceRepository dlmsDeviceRepository,
       final FirmwareFileCachingRepository firmwareFileCachingRepository,
       final FirmwareImageIdentifierCachingRepository firmwareImageIdentifierCachingRepository,
       final MacGenerationService macGenerationService,
@@ -60,6 +63,7 @@ public class UpdateFirmwareCommandExecutor
       @Value("${command.updatefirmware.initiationstatuscheck.timeout}")
           final int initiationStatusCheckTimeout) {
     super(UpdateFirmwareRequestDto.class);
+    this.dlmsDeviceRepository = dlmsDeviceRepository;
     this.firmwareFileCachingRepository = firmwareFileCachingRepository;
     this.firmwareImageIdentifierCachingRepository = firmwareImageIdentifierCachingRepository;
     this.macGenerationService = macGenerationService;
@@ -76,17 +80,20 @@ public class UpdateFirmwareCommandExecutor
   public UpdateFirmwareResponseDto execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final String firmwareIdentification,
+      final UpdateFirmwareRequestDto updateFirmwareRequestDto,
       final MessageMetadata messageMetadata)
       throws OsgpException {
 
-    final byte[] imageData = this.getImageData(firmwareIdentification, device, messageMetadata);
+    final String firmwareIdentification = updateFirmwareRequestDto.getFirmwareIdentification();
+    final FirmwareFile firmwareFile =
+        this.getFirmwareFile(updateFirmwareRequestDto, messageMetadata);
+
     final ImageTransfer transfer =
         new ImageTransfer(
             conn,
             this.imageTransferProperties,
-            this.getImageIdentifier(firmwareIdentification, device, imageData),
-            imageData);
+            this.getImageIdentifier(firmwareIdentification, device, firmwareFile),
+            firmwareFile.getByteArray());
 
     try {
       this.prepare(transfer);
@@ -99,10 +106,6 @@ public class UpdateFirmwareCommandExecutor
     } finally {
       transfer.setImageTransferEnabled(false);
     }
-  }
-
-  private boolean isMbusDevice(final DlmsDevice device) {
-    return device.getMbusIdentificationNumber() != null;
   }
 
   private void prepare(final ImageTransfer transfer) throws ProtocolAdapterException {
@@ -118,7 +121,7 @@ public class UpdateFirmwareCommandExecutor
       transfer.transferImageBlocks();
       transfer.transferMissingImageBlocks();
     } else {
-      LOGGER.info("The current ImageTransferStatus is not INITIATED");
+      log.info("The current ImageTransferStatus is not INITIATED");
     }
   }
 
@@ -136,49 +139,75 @@ public class UpdateFirmwareCommandExecutor
     }
   }
 
-  private byte[] getImageData(
-      final String firmwareIdentification,
-      final DlmsDevice device,
+  private FirmwareFile getFirmwareFile(
+      final UpdateFirmwareRequestDto updateFirmwareRequestDto,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
-    byte[] firmwareFile = this.firmwareFileCachingRepository.retrieve(firmwareIdentification);
 
-    if (firmwareFile == null) {
+    log.debug(
+        "Getting FW file from caching repository for firmware {}",
+        updateFirmwareRequestDto.getFirmwareIdentification());
+    final byte[] firmwareFileByteArray =
+        this.firmwareFileCachingRepository.retrieve(
+            updateFirmwareRequestDto.getFirmwareIdentification());
+
+    if (firmwareFileByteArray == null) {
       throw new ProtocolAdapterException(EXCEPTION_MSG_FIRMWARE_FILE_NOT_AVAILABLE);
     }
 
-    if (this.isMbusDevice(device)) {
-      firmwareFile = this.addMac(messageMetadata, device, firmwareFile);
+    FirmwareFile firmwareFile = new FirmwareFile(firmwareFileByteArray);
+    if (firmwareFile.isMbusFirmware()) {
+      firmwareFile =
+          this.addMac(
+              messageMetadata, updateFirmwareRequestDto.getDeviceIdentification(), firmwareFile);
     }
 
     return firmwareFile;
   }
 
-  private byte[] addMac(
+  private FirmwareFile addMac(
       final MessageMetadata messageMetadata,
-      final DlmsDevice device,
-      final byte[] firmwareFileByteArray)
+      final String deviceIdentification,
+      final FirmwareFile firmwareFile)
       throws ProtocolAdapterException {
-    final FirmwareFile firmwareFile = new FirmwareFile(firmwareFileByteArray);
 
-    final int mbusDeviceIdentificationNumber = device.getMbusIdentificationNumber().intValue();
+    log.debug("Adding MAC to FW file for M-Bus device");
+    final DlmsDevice mbusDevice =
+        this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
+    final int mbusDeviceIdentificationNumber = mbusDevice.getMbusIdentificationNumber().intValue();
     firmwareFile.setMbusDeviceIdentificationNumber(mbusDeviceIdentificationNumber);
     final byte[] calculatedMac =
         this.macGenerationService.calculateMac(
-            messageMetadata, device.getDeviceIdentification(), firmwareFile);
+            messageMetadata, mbusDevice.getDeviceIdentification(), firmwareFile);
+
+    log.debug("Calculated MAC: {}", Arrays.toString(calculatedMac));
+
     firmwareFile.setSecurityByteArray(calculatedMac);
 
-    return firmwareFile.getByteArray();
+    return firmwareFile;
   }
 
   private byte[] getImageIdentifier(
-      final String firmwareIdentification, final DlmsDevice device, final byte[] imageData)
+      final String firmwareIdentification, final DlmsDevice device, final FirmwareFile firmwareFile)
       throws ProtocolAdapterException {
-    if (this.isMbusDevice(device)) {
-      return new FirmwareFile(imageData).createImageIdentifierForMbusDevice();
+
+    byte[] imageIdentifier = null;
+
+    if (firmwareFile.isMbusFirmware()) {
+
+      imageIdentifier = firmwareFile.createImageIdentifierForMbusDevice();
+
     } else {
-      return this.getImageIdentifierFromCache(firmwareIdentification);
+
+      log.debug(
+          "Getting FW ImageIdentifier from caching repository for firmware {}",
+          firmwareIdentification);
+
+      imageIdentifier = this.getImageIdentifierFromCache(firmwareIdentification);
     }
+    log.debug("FW ImageIdentifier: {}", Arrays.toString(imageIdentifier));
+
+    return imageIdentifier;
   }
 
   private byte[] getImageIdentifierFromCache(final String firmwareIdentification)
@@ -193,9 +222,9 @@ public class UpdateFirmwareCommandExecutor
   }
 
   @Override
-  public String fromBundleRequestInput(final ActionRequestDto bundleInput)
+  public UpdateFirmwareRequestDto fromBundleRequestInput(final ActionRequestDto bundleInput)
       throws ProtocolAdapterException {
-    return ((UpdateFirmwareRequestDto) bundleInput).getFirmwareIdentification();
+    return (UpdateFirmwareRequestDto) bundleInput;
   }
 
   @Override
