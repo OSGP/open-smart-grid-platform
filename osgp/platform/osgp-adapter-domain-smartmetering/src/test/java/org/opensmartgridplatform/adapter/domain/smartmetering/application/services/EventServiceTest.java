@@ -228,6 +228,320 @@ public class EventServiceTest {
     this.assertEventType(237, "", "", "Iskr", EventTypeDto.POWER_RESTORED_PHASE_L3_ISKR);
     this.assertEventType(244, "", "", "Iskr", EventTypeDto.MODULE_COVER_OPENED_ISKR);
     this.assertEventType(245, "", "", "Iskr", EventTypeDto.MODULE_COVER_CLOSED_ISKR);
+
+    this.assertEventType(0xFFFF, "", "", "", EventTypeDto.AUXILIARY_EVENTLOG_CLEARED);
+    this.assertEventType(0x1000, "", "", "", EventTypeDto.MBUS_FW_UPGRADE_SUCCESSFUL_CHANNEL_1);
+    this.assertEventType(
+        0x1001, "", "", "", EventTypeDto.MBUS_FW_UPGRADE_BLOCK_SIZE_NOT_SUPPORTED_CHANNEL_1);
+    this.assertEventType(
+        0x1002, "", "", "", EventTypeDto.MBUS_FW_UPGRADE_IMAGE_SIZE_TOO_BIG_CHANNEL_1);
+    this.assertEventType(
+        0x1003, "", "", "", EventTypeDto.MBUS_FW_UPGRADE_INVALID_BLOCK_NUMBER_CHANNEL_1);
+    this.assertEventType(
+        0x1004, "", "", "", EventTypeDto.MBUS_FW_UPGRADE_DATA_RECEIVE_ERROR_CHANNEL_1);
+    this.assertEventType(
+        0x1005, "", "", "", EventTypeDto.MBUS_FW_UPGRADE_IMAGE_NOT_COMPLETE_ERROR_CHANNEL_1);
+    this.assertEventType(
+        0x1006, "", "", "", EventTypeDto.MBUS_FW_UPGRADE_INVALID_SECURITY_ERROR_CHANNEL_1);
+    this.assertEventType(
+        0x1007,
+        "",
+        "",
+        "",
+        EventTypeDto.MBUS_FW_UPGRADE_INVALID_FIRMWARE_FOR_THIS_DEVICE_CHANNEL_1);
+    this.assertEventType(0x1100, "", "", "", EventTypeDto.MBUS_FW_UPGRADE_SUCCESSFUL_CHANNEL_2);
+    this.assertEventType(
+        0x1101, "", "", "", EventTypeDto.MBUS_FW_UPGRADE_BLOCK_SIZE_NOT_SUPPORTED_CHANNEL_2);
+    this.assertEventType(
+        0x1102, "", "", "", EventTypeDto.MBUS_FW_UPGRADE_IMAGE_SIZE_TOO_BIG_CHANNEL_2);
+    this.assertEventType(
+        0x1103, "", "", "", EventTypeDto.MBUS_FW_UPGRADE_INVALID_BLOCK_NUMBER_CHANNEL_2);
+    this.assertEventType(
+        0x1104, "", "", "", EventTypeDto.MBUS_FW_UPGRADE_DATA_RECEIVE_ERROR_CHANNEL_2);
+    this.assertEventType(
+        0x1105, "", "", "", EventTypeDto.MBUS_FW_UPGRADE_IMAGE_NOT_COMPLETE_ERROR_CHANNEL_2);
+    this.assertEventType(
+        0x1106, "", "", "", EventTypeDto.MBUS_FW_UPGRADE_INVALID_SECURITY_ERROR_CHANNEL_2);
+    this.assertEventType(
+        0x1107,
+        "",
+        "",
+        "",
+        EventTypeDto.MBUS_FW_UPGRADE_INVALID_FIRMWARE_FOR_THIS_DEVICE_CHANNEL_2);
+    this.assertEventType(0x1200, "", "", "", EventTypeDto.MBUS_FW_UPGRADE_SUCCESSFUL_CHANNEL_3);
+    this.assertEventType(
+        0x1201, "", "", "", EventTypeDto.MBUS_FW_UPGRADE_BLOCK_SIZE_NOT_SUPPORTED_CHANNEL_3);
+    this.assertEventType(
+        0x1202, "", "", "", EventTypeDto.MBUS_FW_UPGRADE_IMAGE_SIZE_TOO_BIG_CHANNEL_3);
+    this.assertEventType(
+        0x1203, "", "", "", EventTypeDto.MBUS_FW_UPGRADE_INVALID_BLOCK_NUMBER_CHANNEL_3);
+    this.assertEventType(
+        0x1204, "", "", "", EventTypeDto.MBUS_FW_UPGRADE_DATA_RECEIVE_ERROR_CHANNEL_3);
+    this.assertEventType(
+        0x1205, "", "", "", EventTypeDto.MBUS_FW_UPGRADE_IMAGE_NOT_COMPLETE_ERROR_CHANNEL_3);
+    this.assertEventType(
+        0x1206, "", "", "", EventTypeDto.MBUS_FW_UPGRADE_INVALID_SECURITY_ERROR_CHANNEL_3);
+    this.assertEventType(
+        0x1207,
+        "",
+        "",
+        "",
+        EventTypeDto.MBUS_FW_UPGRADE_INVALID_FIRMWARE_FOR_THIS_DEVICE_CHANNEL_3);
+    this.assertEventType(0x1300, "", "", "", EventTypeDto.MBUS_FW_UPGRADE_SUCCESSFUL_CHANNEL_4);
+    this.assertEventType(
+        0x1301, "", "", "", EventTypeDto.MBUS_FW_UPGRADE_BLOCK_SIZE_NOT_SUPPORTED_CHANNEL_4);
+    this.assertEventType(
+        0x1302, "", "", "", EventTypeDto.MBUS_FW_UPGRADE_IMAGE_SIZE_TOO_BIG_CHANNEL_4);
+    this.assertEventType(
+        0x1303, "", "", "", EventTypeDto.MBUS_FW_UPGRADE_INVALID_BLOCK_NUMBER_CHANNEL_4);
+    this.assertEventType(
+        0x1304, "", "", "", EventTypeDto.MBUS_FW_UPGRADE_DATA_RECEIVE_ERROR_CHANNEL_4);
+    this.assertEventType(
+        0x1305, "", "", "", EventTypeDto.MBUS_FW_UPGRADE_IMAGE_NOT_COMPLETE_ERROR_CHANNEL_4);
+    this.assertEventType(
+        0x1306, "", "", "", EventTypeDto.MBUS_FW_UPGRADE_INVALID_SECURITY_ERROR_CHANNEL_4);
+    this.assertEventType(
+        0x1307,
+        "",
+        "",
+        "",
+        EventTypeDto.MBUS_FW_UPGRADE_INVALID_FIRMWARE_FOR_THIS_DEVICE_CHANNEL_4);
+
+    this.assertEventType(0x8080, "", "", "", EventTypeDto.MBUS_STATUS_BIT_0_BATTERY_LOW_CHANNEL_1);
+    this.assertEventType(
+        0x8081, "", "", "", EventTypeDto.MBUS_STATUS_BIT_1_BATTERY_CONSUMPTION_TOO_HIGH_CHANNEL_1);
+    this.assertEventType(0x8082, "", "", "", EventTypeDto.MBUS_STATUS_BIT_2_REVERSE_FLOW_CHANNEL_1);
+    this.assertEventType(0x8083, "", "", "", EventTypeDto.MBUS_STATUS_BIT_3_TAMPER_P2_CHANNEL_1);
+    this.assertEventType(0x8084, "", "", "", EventTypeDto.MBUS_STATUS_BIT_4_TAMPER_P0_CHANNEL_1);
+    this.assertEventType(0x8085, "", "", "", EventTypeDto.MBUS_STATUS_BIT_5_TAMPER_CASE_CHANNEL_1);
+    this.assertEventType(
+        0x8086, "", "", "", EventTypeDto.MBUS_STATUS_BIT_6_TAMPER_MAGNETIC_CHANNEL_1);
+    this.assertEventType(
+        0x8087, "", "", "", EventTypeDto.MBUS_STATUS_BIT_7_TEMP_OUT_OF_RANGE_CHANNEL_1);
+    this.assertEventType(
+        0x8088, "", "", "", EventTypeDto.MBUS_STATUS_BIT_8_CLOCK_SYNC_ERROR_CHANNEL_1);
+    this.assertEventType(0x8089, "", "", "", EventTypeDto.MBUS_STATUS_BIT_9_SW_ERROR_CHANNEL_1);
+    this.assertEventType(
+        0x808A, "", "", "", EventTypeDto.MBUS_STATUS_BIT_10_WATCHDOG_ERROR_CHANNEL_1);
+    this.assertEventType(
+        0x808B, "", "", "", EventTypeDto.MBUS_STATUS_BIT_11_SYSTEM_HW_ERROR_CHANNEL_1);
+    this.assertEventType(
+        0x808C, "", "", "", EventTypeDto.MBUS_STATUS_BIT_12_CFG_CALIBRATION_ERROR_CHANNEL_1);
+    this.assertEventType(
+        0x808D, "", "", "", EventTypeDto.MBUS_STATUS_BIT_13_HIGH_FLOW_GREATER_THAN_QMAX_CHANNEL_1);
+    this.assertEventType(
+        0x808E, "", "", "", EventTypeDto.MBUS_STATUS_BIT_14_TEMP_SENSOR_ERROR_CHANNEL_1);
+    this.assertEventType(0x808F, "", "", "", EventTypeDto.MBUS_STATUS_BIT_15_RESERVED_CHANNEL_1);
+    this.assertEventType(0x8090, "", "", "", EventTypeDto.MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_1);
+    this.assertEventType(
+        0x8091, "", "", "", EventTypeDto.MBUS_STATUS_BIT_17_NEW_KEY_ACCEPTED_CHANNEL_1);
+    this.assertEventType(
+        0x8092, "", "", "", EventTypeDto.MBUS_STATUS_BIT_18_NEW_KEY_REJECTED_CHANNEL_1);
+    this.assertEventType(0x8093, "", "", "", EventTypeDto.MBUS_STATUS_BIT_18_RESERVED_CHANNEL_1);
+    this.assertEventType(
+        0x8094, "", "", "", EventTypeDto.MBUS_STATUS_BIT_20_MANUFACTURER_SPECIFIC_CHANNEL_1);
+    this.assertEventType(
+        0x8095, "", "", "", EventTypeDto.MBUS_STATUS_BIT_21_MANUFACTURER_SPECIFIC_CHANNEL_1);
+    this.assertEventType(
+        0x8096, "", "", "", EventTypeDto.MBUS_STATUS_BIT_22_MANUFACTURER_SPECIFIC_CHANNEL_1);
+    this.assertEventType(
+        0x8097, "", "", "", EventTypeDto.MBUS_STATUS_BIT_23_MANUFACTURER_SPECIFIC_CHANNEL_1);
+    this.assertEventType(
+        0x8098, "", "", "", EventTypeDto.MBUS_STATUS_BIT_24_MANUFACTURER_SPECIFIC_CHANNEL_1);
+    this.assertEventType(
+        0x8099, "", "", "", EventTypeDto.MBUS_STATUS_BIT_25_MANUFACTURER_SPECIFIC_CHANNEL_1);
+    this.assertEventType(
+        0x809A, "", "", "", EventTypeDto.MBUS_STATUS_BIT_26_MANUFACTURER_SPECIFIC_CHANNEL_1);
+    this.assertEventType(
+        0x809B, "", "", "", EventTypeDto.MBUS_STATUS_BIT_27_MANUFACTURER_SPECIFIC_CHANNEL_1);
+    this.assertEventType(
+        0x809C, "", "", "", EventTypeDto.MBUS_STATUS_BIT_28_MANUFACTURER_SPECIFIC_CHANNEL_1);
+    this.assertEventType(
+        0x809D, "", "", "", EventTypeDto.MBUS_STATUS_BIT_29_MANUFACTURER_SPECIFIC_CHANNEL_1);
+    this.assertEventType(
+        0x809E, "", "", "", EventTypeDto.MBUS_STATUS_BIT_30_MANUFACTURER_SPECIFIC_CHANNEL_1);
+    this.assertEventType(
+        0x809F, "", "", "", EventTypeDto.MBUS_STATUS_BIT_31_MANUFACTURER_SPECIFIC_CHANNEL_1);
+    this.assertEventType(0x80A0, "", "", "", EventTypeDto.KEY_SENT_TO_MBUS_DEVICE_ON_CHANNEL_1);
+    this.assertEventType(
+        0x80A1, "", "", "", EventTypeDto.KEY_ACKNOWLEDGED_BY_MBUS_DEVICE_ON_CHANNEL_1);
+
+    this.assertEventType(0x8180, "", "", "", EventTypeDto.MBUS_STATUS_BIT_0_BATTERY_LOW_CHANNEL_2);
+    this.assertEventType(
+        0x8181, "", "", "", EventTypeDto.MBUS_STATUS_BIT_1_BATTERY_CONSUMPTION_TOO_HIGH_CHANNEL_2);
+    this.assertEventType(0x8182, "", "", "", EventTypeDto.MBUS_STATUS_BIT_2_REVERSE_FLOW_CHANNEL_2);
+    this.assertEventType(0x8183, "", "", "", EventTypeDto.MBUS_STATUS_BIT_3_TAMPER_P2_CHANNEL_2);
+    this.assertEventType(0x8184, "", "", "", EventTypeDto.MBUS_STATUS_BIT_4_TAMPER_P0_CHANNEL_2);
+    this.assertEventType(0x8185, "", "", "", EventTypeDto.MBUS_STATUS_BIT_5_TAMPER_CASE_CHANNEL_2);
+    this.assertEventType(
+        0x8186, "", "", "", EventTypeDto.MBUS_STATUS_BIT_6_TAMPER_MAGNETIC_CHANNEL_2);
+    this.assertEventType(
+        0x8187, "", "", "", EventTypeDto.MBUS_STATUS_BIT_7_TEMP_OUT_OF_RANGE_CHANNEL_2);
+    this.assertEventType(
+        0x8188, "", "", "", EventTypeDto.MBUS_STATUS_BIT_8_CLOCK_SYNC_ERROR_CHANNEL_2);
+    this.assertEventType(0x8189, "", "", "", EventTypeDto.MBUS_STATUS_BIT_9_SW_ERROR_CHANNEL_2);
+    this.assertEventType(
+        0x818A, "", "", "", EventTypeDto.MBUS_STATUS_BIT_10_WATCHDOG_ERROR_CHANNEL_2);
+    this.assertEventType(
+        0x818B, "", "", "", EventTypeDto.MBUS_STATUS_BIT_11_SYSTEM_HW_ERROR_CHANNEL_2);
+    this.assertEventType(
+        0x818C, "", "", "", EventTypeDto.MBUS_STATUS_BIT_12_CFG_CALIBRATION_ERROR_CHANNEL_2);
+    this.assertEventType(
+        0x818D, "", "", "", EventTypeDto.MBUS_STATUS_BIT_13_HIGH_FLOW_GREATER_THAN_QMAX_CHANNEL_2);
+    this.assertEventType(
+        0x818E, "", "", "", EventTypeDto.MBUS_STATUS_BIT_14_TEMP_SENSOR_ERROR_CHANNEL_2);
+    this.assertEventType(0x818F, "", "", "", EventTypeDto.MBUS_STATUS_BIT_15_RESERVED_CHANNEL_2);
+    this.assertEventType(0x8190, "", "", "", EventTypeDto.MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_2);
+    this.assertEventType(
+        0x8191, "", "", "", EventTypeDto.MBUS_STATUS_BIT_17_NEW_KEY_ACCEPTED_CHANNEL_2);
+    this.assertEventType(
+        0x8192, "", "", "", EventTypeDto.MBUS_STATUS_BIT_18_NEW_KEY_REJECTED_CHANNEL_2);
+    this.assertEventType(0x8193, "", "", "", EventTypeDto.MBUS_STATUS_BIT_18_RESERVED_CHANNEL_2);
+    this.assertEventType(
+        0x8194, "", "", "", EventTypeDto.MBUS_STATUS_BIT_20_MANUFACTURER_SPECIFIC_CHANNEL_2);
+    this.assertEventType(
+        0x8195, "", "", "", EventTypeDto.MBUS_STATUS_BIT_21_MANUFACTURER_SPECIFIC_CHANNEL_2);
+    this.assertEventType(
+        0x8196, "", "", "", EventTypeDto.MBUS_STATUS_BIT_22_MANUFACTURER_SPECIFIC_CHANNEL_2);
+    this.assertEventType(
+        0x8197, "", "", "", EventTypeDto.MBUS_STATUS_BIT_23_MANUFACTURER_SPECIFIC_CHANNEL_2);
+    this.assertEventType(
+        0x8198, "", "", "", EventTypeDto.MBUS_STATUS_BIT_24_MANUFACTURER_SPECIFIC_CHANNEL_2);
+    this.assertEventType(
+        0x8199, "", "", "", EventTypeDto.MBUS_STATUS_BIT_25_MANUFACTURER_SPECIFIC_CHANNEL_2);
+    this.assertEventType(
+        0x819A, "", "", "", EventTypeDto.MBUS_STATUS_BIT_26_MANUFACTURER_SPECIFIC_CHANNEL_2);
+    this.assertEventType(
+        0x819B, "", "", "", EventTypeDto.MBUS_STATUS_BIT_27_MANUFACTURER_SPECIFIC_CHANNEL_2);
+    this.assertEventType(
+        0x819C, "", "", "", EventTypeDto.MBUS_STATUS_BIT_28_MANUFACTURER_SPECIFIC_CHANNEL_2);
+    this.assertEventType(
+        0x819D, "", "", "", EventTypeDto.MBUS_STATUS_BIT_29_MANUFACTURER_SPECIFIC_CHANNEL_2);
+    this.assertEventType(
+        0x819E, "", "", "", EventTypeDto.MBUS_STATUS_BIT_30_MANUFACTURER_SPECIFIC_CHANNEL_2);
+    this.assertEventType(
+        0x819F, "", "", "", EventTypeDto.MBUS_STATUS_BIT_31_MANUFACTURER_SPECIFIC_CHANNEL_2);
+    this.assertEventType(0x81A0, "", "", "", EventTypeDto.KEY_SENT_TO_MBUS_DEVICE_ON_CHANNEL_2);
+    this.assertEventType(
+        0x81A1, "", "", "", EventTypeDto.KEY_ACKNOWLEDGED_BY_MBUS_DEVICE_ON_CHANNEL_2);
+
+    this.assertEventType(0x8280, "", "", "", EventTypeDto.MBUS_STATUS_BIT_0_BATTERY_LOW_CHANNEL_3);
+    this.assertEventType(
+        0x8281, "", "", "", EventTypeDto.MBUS_STATUS_BIT_1_BATTERY_CONSUMPTION_TOO_HIGH_CHANNEL_3);
+    this.assertEventType(0x8282, "", "", "", EventTypeDto.MBUS_STATUS_BIT_2_REVERSE_FLOW_CHANNEL_3);
+    this.assertEventType(0x8283, "", "", "", EventTypeDto.MBUS_STATUS_BIT_3_TAMPER_P2_CHANNEL_3);
+    this.assertEventType(0x8284, "", "", "", EventTypeDto.MBUS_STATUS_BIT_4_TAMPER_P0_CHANNEL_3);
+    this.assertEventType(0x8285, "", "", "", EventTypeDto.MBUS_STATUS_BIT_5_TAMPER_CASE_CHANNEL_3);
+    this.assertEventType(
+        0x8286, "", "", "", EventTypeDto.MBUS_STATUS_BIT_6_TAMPER_MAGNETIC_CHANNEL_3);
+    this.assertEventType(
+        0x8287, "", "", "", EventTypeDto.MBUS_STATUS_BIT_7_TEMP_OUT_OF_RANGE_CHANNEL_3);
+    this.assertEventType(
+        0x8288, "", "", "", EventTypeDto.MBUS_STATUS_BIT_8_CLOCK_SYNC_ERROR_CHANNEL_3);
+    this.assertEventType(0x8289, "", "", "", EventTypeDto.MBUS_STATUS_BIT_9_SW_ERROR_CHANNEL_3);
+    this.assertEventType(
+        0x828A, "", "", "", EventTypeDto.MBUS_STATUS_BIT_10_WATCHDOG_ERROR_CHANNEL_3);
+    this.assertEventType(
+        0x828B, "", "", "", EventTypeDto.MBUS_STATUS_BIT_11_SYSTEM_HW_ERROR_CHANNEL_3);
+    this.assertEventType(
+        0x828C, "", "", "", EventTypeDto.MBUS_STATUS_BIT_12_CFG_CALIBRATION_ERROR_CHANNEL_3);
+    this.assertEventType(
+        0x828D, "", "", "", EventTypeDto.MBUS_STATUS_BIT_13_HIGH_FLOW_GREATER_THAN_QMAX_CHANNEL_3);
+    this.assertEventType(
+        0x828E, "", "", "", EventTypeDto.MBUS_STATUS_BIT_14_TEMP_SENSOR_ERROR_CHANNEL_3);
+    this.assertEventType(0x828F, "", "", "", EventTypeDto.MBUS_STATUS_BIT_15_RESERVED_CHANNEL_3);
+    this.assertEventType(0x8290, "", "", "", EventTypeDto.MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_3);
+    this.assertEventType(
+        0x8291, "", "", "", EventTypeDto.MBUS_STATUS_BIT_17_NEW_KEY_ACCEPTED_CHANNEL_3);
+    this.assertEventType(
+        0x8292, "", "", "", EventTypeDto.MBUS_STATUS_BIT_18_NEW_KEY_REJECTED_CHANNEL_3);
+    this.assertEventType(0x8293, "", "", "", EventTypeDto.MBUS_STATUS_BIT_18_RESERVED_CHANNEL_3);
+    this.assertEventType(
+        0x8294, "", "", "", EventTypeDto.MBUS_STATUS_BIT_20_MANUFACTURER_SPECIFIC_CHANNEL_3);
+    this.assertEventType(
+        0x8295, "", "", "", EventTypeDto.MBUS_STATUS_BIT_21_MANUFACTURER_SPECIFIC_CHANNEL_3);
+    this.assertEventType(
+        0x8296, "", "", "", EventTypeDto.MBUS_STATUS_BIT_22_MANUFACTURER_SPECIFIC_CHANNEL_3);
+    this.assertEventType(
+        0x8297, "", "", "", EventTypeDto.MBUS_STATUS_BIT_23_MANUFACTURER_SPECIFIC_CHANNEL_3);
+    this.assertEventType(
+        0x8298, "", "", "", EventTypeDto.MBUS_STATUS_BIT_24_MANUFACTURER_SPECIFIC_CHANNEL_3);
+    this.assertEventType(
+        0x8299, "", "", "", EventTypeDto.MBUS_STATUS_BIT_25_MANUFACTURER_SPECIFIC_CHANNEL_3);
+    this.assertEventType(
+        0x829A, "", "", "", EventTypeDto.MBUS_STATUS_BIT_26_MANUFACTURER_SPECIFIC_CHANNEL_3);
+    this.assertEventType(
+        0x829B, "", "", "", EventTypeDto.MBUS_STATUS_BIT_27_MANUFACTURER_SPECIFIC_CHANNEL_3);
+    this.assertEventType(
+        0x829C, "", "", "", EventTypeDto.MBUS_STATUS_BIT_28_MANUFACTURER_SPECIFIC_CHANNEL_3);
+    this.assertEventType(
+        0x829D, "", "", "", EventTypeDto.MBUS_STATUS_BIT_29_MANUFACTURER_SPECIFIC_CHANNEL_3);
+    this.assertEventType(
+        0x829E, "", "", "", EventTypeDto.MBUS_STATUS_BIT_30_MANUFACTURER_SPECIFIC_CHANNEL_3);
+    this.assertEventType(
+        0x829F, "", "", "", EventTypeDto.MBUS_STATUS_BIT_31_MANUFACTURER_SPECIFIC_CHANNEL_3);
+    this.assertEventType(0x82A0, "", "", "", EventTypeDto.KEY_SENT_TO_MBUS_DEVICE_ON_CHANNEL_3);
+    this.assertEventType(
+        0x82A1, "", "", "", EventTypeDto.KEY_ACKNOWLEDGED_BY_MBUS_DEVICE_ON_CHANNEL_3);
+
+    this.assertEventType(0x8380, "", "", "", EventTypeDto.MBUS_STATUS_BIT_0_BATTERY_LOW_CHANNEL_4);
+    this.assertEventType(
+        0x8381, "", "", "", EventTypeDto.MBUS_STATUS_BIT_1_BATTERY_CONSUMPTION_TOO_HIGH_CHANNEL_4);
+    this.assertEventType(0x8382, "", "", "", EventTypeDto.MBUS_STATUS_BIT_2_REVERSE_FLOW_CHANNEL_4);
+    this.assertEventType(0x8383, "", "", "", EventTypeDto.MBUS_STATUS_BIT_3_TAMPER_P2_CHANNEL_4);
+    this.assertEventType(0x8384, "", "", "", EventTypeDto.MBUS_STATUS_BIT_4_TAMPER_P0_CHANNEL_4);
+    this.assertEventType(0x8385, "", "", "", EventTypeDto.MBUS_STATUS_BIT_5_TAMPER_CASE_CHANNEL_4);
+    this.assertEventType(
+        0x8386, "", "", "", EventTypeDto.MBUS_STATUS_BIT_6_TAMPER_MAGNETIC_CHANNEL_4);
+    this.assertEventType(
+        0x8387, "", "", "", EventTypeDto.MBUS_STATUS_BIT_7_TEMP_OUT_OF_RANGE_CHANNEL_4);
+    this.assertEventType(
+        0x8388, "", "", "", EventTypeDto.MBUS_STATUS_BIT_8_CLOCK_SYNC_ERROR_CHANNEL_4);
+    this.assertEventType(0x8389, "", "", "", EventTypeDto.MBUS_STATUS_BIT_9_SW_ERROR_CHANNEL_4);
+    this.assertEventType(
+        0x838A, "", "", "", EventTypeDto.MBUS_STATUS_BIT_10_WATCHDOG_ERROR_CHANNEL_4);
+    this.assertEventType(
+        0x838B, "", "", "", EventTypeDto.MBUS_STATUS_BIT_11_SYSTEM_HW_ERROR_CHANNEL_4);
+    this.assertEventType(
+        0x838C, "", "", "", EventTypeDto.MBUS_STATUS_BIT_12_CFG_CALIBRATION_ERROR_CHANNEL_4);
+    this.assertEventType(
+        0x838D, "", "", "", EventTypeDto.MBUS_STATUS_BIT_13_HIGH_FLOW_GREATER_THAN_QMAX_CHANNEL_4);
+    this.assertEventType(
+        0x838E, "", "", "", EventTypeDto.MBUS_STATUS_BIT_14_TEMP_SENSOR_ERROR_CHANNEL_4);
+    this.assertEventType(0x838F, "", "", "", EventTypeDto.MBUS_STATUS_BIT_15_RESERVED_CHANNEL_4);
+    this.assertEventType(0x8390, "", "", "", EventTypeDto.MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_4);
+    this.assertEventType(
+        0x8391, "", "", "", EventTypeDto.MBUS_STATUS_BIT_17_NEW_KEY_ACCEPTED_CHANNEL_4);
+    this.assertEventType(
+        0x8392, "", "", "", EventTypeDto.MBUS_STATUS_BIT_18_NEW_KEY_REJECTED_CHANNEL_4);
+    this.assertEventType(0x8393, "", "", "", EventTypeDto.MBUS_STATUS_BIT_18_RESERVED_CHANNEL_4);
+    this.assertEventType(
+        0x8394, "", "", "", EventTypeDto.MBUS_STATUS_BIT_20_MANUFACTURER_SPECIFIC_CHANNEL_4);
+    this.assertEventType(
+        0x8395, "", "", "", EventTypeDto.MBUS_STATUS_BIT_21_MANUFACTURER_SPECIFIC_CHANNEL_4);
+    this.assertEventType(
+        0x8396, "", "", "", EventTypeDto.MBUS_STATUS_BIT_22_MANUFACTURER_SPECIFIC_CHANNEL_4);
+    this.assertEventType(
+        0x8397, "", "", "", EventTypeDto.MBUS_STATUS_BIT_23_MANUFACTURER_SPECIFIC_CHANNEL_4);
+    this.assertEventType(
+        0x8398, "", "", "", EventTypeDto.MBUS_STATUS_BIT_24_MANUFACTURER_SPECIFIC_CHANNEL_4);
+    this.assertEventType(
+        0x8399, "", "", "", EventTypeDto.MBUS_STATUS_BIT_25_MANUFACTURER_SPECIFIC_CHANNEL_4);
+    this.assertEventType(
+        0x839A, "", "", "", EventTypeDto.MBUS_STATUS_BIT_26_MANUFACTURER_SPECIFIC_CHANNEL_4);
+    this.assertEventType(
+        0x839B, "", "", "", EventTypeDto.MBUS_STATUS_BIT_27_MANUFACTURER_SPECIFIC_CHANNEL_4);
+    this.assertEventType(
+        0x839C, "", "", "", EventTypeDto.MBUS_STATUS_BIT_28_MANUFACTURER_SPECIFIC_CHANNEL_4);
+    this.assertEventType(
+        0x839D, "", "", "", EventTypeDto.MBUS_STATUS_BIT_29_MANUFACTURER_SPECIFIC_CHANNEL_4);
+    this.assertEventType(
+        0x839E, "", "", "", EventTypeDto.MBUS_STATUS_BIT_30_MANUFACTURER_SPECIFIC_CHANNEL_4);
+    this.assertEventType(
+        0x839F, "", "", "", EventTypeDto.MBUS_STATUS_BIT_31_MANUFACTURER_SPECIFIC_CHANNEL_4);
+    this.assertEventType(0x83A0, "", "", "", EventTypeDto.KEY_SENT_TO_MBUS_DEVICE_ON_CHANNEL_4);
+    this.assertEventType(
+        0x83A1, "", "", "", EventTypeDto.KEY_ACKNOWLEDGED_BY_MBUS_DEVICE_ON_CHANNEL_4);
   }
 
   private void assertEventType(

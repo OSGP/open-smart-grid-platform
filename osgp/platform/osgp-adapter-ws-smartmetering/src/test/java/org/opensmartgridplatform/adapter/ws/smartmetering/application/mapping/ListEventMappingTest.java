@@ -453,6 +453,14 @@ public class ListEventMappingTest {
               null,
               EventLogCategory.M_BUS_EVENT_LOG));
 
+  private static final List<Event> AUXILIARY_EVENTS =
+      Arrays.asList(
+          new Event(
+              DateTime.now(),
+              EventType.AUXILIARY_EVENTLOG_CLEARED,
+              null,
+              EventLogCategory.AUXILIARY_EVENT_LOG));
+
   private final ManagementMapper managementMapper = new ManagementMapper();
 
   private void checkEventsMappedFromWsSchema(
@@ -637,6 +645,23 @@ public class ListEventMappingTest {
         this.managementMapper.mapAsList(mappedStandardEvents, Event.class);
 
     this.checkEventsMappedFromWsSchema(mappedStandardEvents, standardEvents);
+  }
+
+  @Test
+  public void testMappingForListOfAuxiliaryEvents() {
+
+    final List<org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event>
+        mappedAuxiliaryEvents =
+            this.managementMapper.mapAsList(
+                AUXILIARY_EVENTS,
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event.class);
+
+    this.checkEventsMappedToWsSchema(AUXILIARY_EVENTS, mappedAuxiliaryEvents);
+
+    final List<Event> auxiliaryEvents =
+        this.managementMapper.mapAsList(mappedAuxiliaryEvents, Event.class);
+
+    this.checkEventsMappedFromWsSchema(mappedAuxiliaryEvents, auxiliaryEvents);
   }
 
   /** Tests if mapping a List, typed to Event, succeeds if the List is null. */
