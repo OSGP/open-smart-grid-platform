@@ -234,7 +234,7 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:sequence>
-          <xsd:element name="LogTime" type="xsd:dateTime" />
+          <xsd:element name="Timestamp" type="xsd:dateTime" />
           <xsd:element name="SystemEvent" type="common:SystemEventType" />
           <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
           <xsd:element name="Reason" type="xsd:string" />
