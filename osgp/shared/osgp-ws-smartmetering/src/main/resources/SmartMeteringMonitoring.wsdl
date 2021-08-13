@@ -486,12 +486,12 @@
     <wsdl:operation name="GetSystemEvent">
       <soap:operation soapAction=""/>
       <wsdl:input name="GetSystemEventAsyncRequest">
-        <soap:header message="tns:ActionHeader" part="org"
-          use="literal"/>
-        <soap:header message="tns:ActionHeader" part="user"
-          use="literal"/>
-        <soap:header message="tns:ActionHeader" part="app"
-          use="literal"/>
+        <soap:header message="tns:SoapHeaders" part="org"
+          use="literal" />
+        <soap:header message="tns:SoapHeaders" part="user"
+          use="literal" />
+        <soap:header message="tns:SoapHeaders" part="app"
+          use="literal" />
         <soap:body use="literal"/>
       </wsdl:input>
       <wsdl:output name="GetSystemEventResponse">
