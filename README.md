@@ -12,7 +12,6 @@ This repository contains all code for the Grid eXchange Fabric (GXF) project, fo
 - integration-tests. This project contains all the tests to verify the platform.
 - public-lighting-demo-app. This project contains a simple demo app for the platform.
 
-
 ## Grid eXchange Fabric information and news
 
 High-level project information and news can be found on the GXF section of the LF Energy website: 
