@@ -55,7 +55,7 @@ public class FirmwareService {
   public FirmwareFile getFirmwareFile(final String firmwareIdentification)
       throws FunctionalException {
     final FirmwareFile firmware =
-        this.firmwareFileRepository.findByIdentification(firmwareIdentification);
+        this.firmwareFileRepository.findByIdentificationOnly(firmwareIdentification);
     if (firmware == null) {
       throw new FunctionalException(
           FunctionalExceptionType.UNKNOWN_FIRMWARE,
