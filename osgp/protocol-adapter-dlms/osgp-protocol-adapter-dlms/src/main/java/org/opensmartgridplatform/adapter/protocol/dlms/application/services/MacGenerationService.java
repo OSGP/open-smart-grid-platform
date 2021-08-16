@@ -72,16 +72,14 @@ public class MacGenerationService {
 
     final byte[] decryptedFirmwareUpdateAuthenticationKey =
         this.secretManagementService.getKey(
-            messageMetadata,
-            deviceIdentification,
-            SecurityKeyType.G_METER_FIRMWARE_UPDATE_AUTHENTICATION);
+            messageMetadata, deviceIdentification, SecurityKeyType.G_METER_FIRMWARE_UPDATE);
 
     if (decryptedFirmwareUpdateAuthenticationKey == null
         || decryptedFirmwareUpdateAuthenticationKey.length == 0) {
       throw new ProtocolAdapterException(
           String.format(
               "No key of type %s found for device %s",
-              SecurityKeyType.G_METER_FIRMWARE_UPDATE_AUTHENTICATION, deviceIdentification));
+              SecurityKeyType.G_METER_FIRMWARE_UPDATE, deviceIdentification));
     }
 
     final CipherParameters cipherParameters =

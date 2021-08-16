@@ -33,6 +33,7 @@ import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.FirmwareFileRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareFileDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ObjectMessageBuilder;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
@@ -64,12 +65,14 @@ public class GetFirmwareFileMessageProcessorTest {
     final String firmwareFileIdentification = "fw";
     final byte[] firmwareFileBytes = firmwareFileIdentification.getBytes();
 
+    final UpdateFirmwareRequestDto updateFirmwareRequestDto =
+        new UpdateFirmwareRequestDto(firmwareFileIdentification, deviceIdentification);
     final RequestMessage requestMessage =
         new RequestMessage(
             correlationUid,
             organisationIdentification,
             deviceIdentification,
-            firmwareFileIdentification);
+            updateFirmwareRequestDto);
     final ObjectMessage message =
         new ObjectMessageBuilder()
             .withCorrelationUid(correlationUid)
@@ -105,12 +108,14 @@ public class GetFirmwareFileMessageProcessorTest {
             nullable(ProtocolInfo.class),
             any(MessageMetadata.class));
 
-    final byte[] actualFile =
-        ((FirmwareFileDto) responseMessageArgumentCaptor.getValue().getDataObject())
-            .getFirmwareFile();
+    final FirmwareFileDto actualFirmwareFileDto =
+        (FirmwareFileDto) responseMessageArgumentCaptor.getValue().getDataObject();
     final String actualMessageType = messageTypeCaptor.getValue();
 
-    assertThat(actualFile).isEqualTo(expectedFile);
+    assertThat(actualFirmwareFileDto.getFirmwareFile()).isEqualTo(expectedFile);
+    assertThat(actualFirmwareFileDto.getDeviceIdentification()).isEqualTo(deviceIdentification);
+    assertThat(actualFirmwareFileDto.getFirmwareIdentification())
+        .isEqualTo(firmwareFileIdentification);
     assertThat(actualMessageType).isEqualTo(expectedMessageType);
   }
 }

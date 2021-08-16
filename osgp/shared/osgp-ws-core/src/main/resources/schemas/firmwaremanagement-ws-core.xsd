@@ -499,6 +499,7 @@
       <xsd:element name="Active" type="xsd:boolean" />
       <xsd:element name="FirmwareModuleData" type="tns:FirmwareModuleData" />
       <xsd:element name="File" minOccurs="0" type="xsd:base64Binary" />
+      <xsd:element name="ImageIdentifier" minOccurs="0" type="xsd:string" />
     </xsd:sequence>
   </xsd:complexType>
 

@@ -765,6 +765,7 @@ public class FirmwareManagementService {
       final FirmwareFileRequest firmwareFileRequest,
       final byte[] file) {
     existingFirmwareFile.setDescription(firmwareFileRequest.getDescription());
+    existingFirmwareFile.setImageIdentifier(firmwareFileRequest.getImageIdentifier());
     // A file can only be uploaded once
     // - directly at creation of the FirmwareFile record
     // - or as is processed here in a update action of the FirmwareFile record
@@ -790,6 +791,7 @@ public class FirmwareManagementService {
         .withDescription(firmwareFileRequest.getDescription())
         .withPushToNewDevices(firmwareFileRequest.isPushToNewDevices())
         .withFile(file)
+        .withImageIdentifier(firmwareFileRequest.getImageIdentifier())
         .build();
   }
 

@@ -38,6 +38,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRes
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RetryHeaderFactory;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessageSender;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ObjectMessageBuilder;
@@ -89,9 +90,12 @@ public class UpdateFirmwareRequestMessageProcessorTest {
       throws JMSException {
     // Arrange
     final String firmwareIdentification = "unavailable";
+    final String deviceIdentification = "unavailableEither";
+    final UpdateFirmwareRequestDto updateFirmwareRequestDto =
+        new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
     final ObjectMessage message =
         new ObjectMessageBuilder()
-            .withObject(firmwareIdentification)
+            .withObject(updateFirmwareRequestDto)
             .withCorrelationUid("123456")
             .build();
     when(this.firmwareService.isFirmwareFileAvailable(firmwareIdentification)).thenReturn(false);
@@ -109,9 +113,12 @@ public class UpdateFirmwareRequestMessageProcessorTest {
       throws JMSException {
     // Arrange
     final String firmwareIdentification = "unavailable";
+    final String deviceIdentification = "unavailableEither";
+    final UpdateFirmwareRequestDto updateFirmwareRequestDto =
+        new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
     final ObjectMessage message =
         new ObjectMessageBuilder()
-            .withObject(firmwareIdentification)
+            .withObject(updateFirmwareRequestDto)
             .withCorrelationUid("123456")
             .build();
     when(this.firmwareService.isFirmwareFileAvailable(firmwareIdentification)).thenReturn(true);
@@ -129,9 +136,12 @@ public class UpdateFirmwareRequestMessageProcessorTest {
       throws JMSException, OsgpException {
     // Arrange
     final String firmwareIdentification = "available";
+    final String deviceIdentification = "availableToo";
+    final UpdateFirmwareRequestDto updateFirmwareRequestDto =
+        new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
     final ObjectMessage message =
         new ObjectMessageBuilder()
-            .withObject(firmwareIdentification)
+            .withObject(updateFirmwareRequestDto)
             .withCorrelationUid("123456")
             .build();
     when(this.firmwareService.isFirmwareFileAvailable(firmwareIdentification)).thenReturn(true);
@@ -144,7 +154,7 @@ public class UpdateFirmwareRequestMessageProcessorTest {
         .updateFirmware(
             nullable(DlmsConnectionManager.class),
             same(this.device),
-            same(firmwareIdentification),
+            same(updateFirmwareRequestDto),
             any(MessageMetadata.class));
   }
 
@@ -153,9 +163,12 @@ public class UpdateFirmwareRequestMessageProcessorTest {
       throws JMSException, OsgpException {
     // Arrange
     final String firmwareIdentification = "unavailable";
+    final String deviceIdentification = "unavailableEither";
+    final UpdateFirmwareRequestDto updateFirmwareRequestDto =
+        new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
     final ObjectMessage message =
         new ObjectMessageBuilder()
-            .withObject(firmwareIdentification)
+            .withObject(updateFirmwareRequestDto)
             .withCorrelationUid("123456")
             .build();
     when(this.firmwareService.isFirmwareFileAvailable(firmwareIdentification)).thenReturn(false);
@@ -168,7 +181,7 @@ public class UpdateFirmwareRequestMessageProcessorTest {
         .updateFirmware(
             nullable(DlmsConnectionManager.class),
             same(this.device),
-            same(firmwareIdentification),
+            same(updateFirmwareRequestDto),
             any(MessageMetadata.class));
   }
 }

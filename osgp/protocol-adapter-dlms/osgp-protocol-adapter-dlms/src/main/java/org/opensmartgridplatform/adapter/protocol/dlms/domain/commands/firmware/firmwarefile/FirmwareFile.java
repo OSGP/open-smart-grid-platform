@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
@@ -37,11 +38,22 @@ public class FirmwareFile {
 
   public FirmwareFile(final byte[] imageData) {
     this.imageData = imageData;
+  }
+
+  public boolean isMbusFirmware() {
+    return this.imageData.length >= 35
+        && this.getHeader()
+            .getFirmwareImageMagicNumberHex()
+            .equalsIgnoreCase(FIRMWARE_IMAGE_MAGIC_NUMBER)
+        && this.getHeader().getHeaderVersionInt() == HEADER_VERSION;
+  }
+
+  public void checkLengths() {
     final FirmwareFileHeader header = this.getHeader();
     final Integer firmwareImageLength = header.getFirmwareImageLengthInt();
     final Integer securityLength = header.getSecurityLengthInt();
     final Integer headerLength = header.getHeaderLengthInt();
-    if (imageData.length != (firmwareImageLength + securityLength + headerLength)) {
+    if (this.imageData.length != (firmwareImageLength + securityLength + headerLength)) {
       log.warn(
           "Byte array length doesn't match lengths defined in header: "
               + "\nByte array length : {}"
@@ -50,7 +62,7 @@ public class FirmwareFile {
               + "\nFirmwareImage : {}"
               + "\nSecurity : {}"
               + "\nTotal of {}  bytes.",
-          imageData.length,
+          this.imageData.length,
           headerLength,
           firmwareImageLength,
           securityLength,
@@ -173,7 +185,49 @@ public class FirmwareFile {
     firmwareFileHeader.setFirmwareFileHeaderAddressField(firmwareFileHeaderAddressField);
   }
 
+  public String getHeaderHex() {
+    return Hex.toHexString(this.readBytes(this.imageData, 0, 35));
+  }
+
   private byte[] readBytes(final byte[] bytes, final int begin, final int end) {
     return Arrays.copyOfRange(bytes, begin, end);
+  }
+
+  /**
+   * The Identifier for firmware image of M-Bus device has the following content - MAN (3 bytes)
+   * Manufacturer code according to FLAG (https://www.dlms.com/flag-id/flag-id-list) - DEV (4 bytes)
+   * M-Bus DEV code (letters "MBUS") - M-Bus Short ID (8 bytes) - (3 bytes) Identification Number -
+   * (3 bytes) Manufacturer ID - (1 bytes) Version - (1 byte ) DeviceType - M-Bus FW ID (4 bytes)
+   *
+   * @return String representation of the image identifier (UTF-8 encoded)
+   */
+  public String createImageIdentifierForMbusDevice() {
+    final FirmwareFileHeader header = this.getHeader();
+    final FirmwareFileHeaderAddressField addressField = header.getFirmwareFileHeaderAddressField();
+    final int imageIdentifierSize = 19;
+    if (log.isDebugEnabled()) {
+      log.debug("creating image identifier for M-Bus device from firmware file header information");
+      log.debug("MbusManufacturerId " + Arrays.toString(addressField.getMbusManufacturerId()));
+      log.debug("MBUS " + Arrays.toString("MBUS".getBytes()));
+      log.debug(
+          "MbusDeviceIdentificationNumber "
+              + Arrays.toString(addressField.getMbusDeviceIdentificationNumber()));
+      log.debug("MbusManufacturerId " + Arrays.toString(addressField.getMbusManufacturerId()));
+      log.debug("MbusVersion " + Arrays.toString(addressField.getMbusVersion()));
+      log.debug("MbusDeviceType " + Arrays.toString(addressField.getMbusDeviceType()));
+      log.debug("FirmwareImageVersion " + Arrays.toString(header.getFirmwareImageVersion()));
+      log.debug("Total size of image identifier : " + imageIdentifierSize + " bytes");
+    }
+
+    final ByteBuffer imageIdentifier = ByteBuffer.allocate(imageIdentifierSize);
+    imageIdentifier.put(addressField.getMbusManufacturerId());
+    imageIdentifier.put("MBUS".getBytes());
+    imageIdentifier.put(addressField.getMbusDeviceIdentificationNumber());
+    imageIdentifier.put(addressField.getMbusManufacturerId());
+    imageIdentifier.put(addressField.getMbusVersion());
+    imageIdentifier.put(addressField.getMbusDeviceType());
+    imageIdentifier.put(header.getFirmwareImageVersion());
+
+    return new String(imageIdentifier.array(), StandardCharsets.UTF_8);
   }
 }

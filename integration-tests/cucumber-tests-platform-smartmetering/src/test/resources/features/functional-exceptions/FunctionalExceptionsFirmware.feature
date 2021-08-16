@@ -14,19 +14,20 @@ Feature: SmartMetering functional exceptions regarding firmware
       | ManufacturerCode     | KAIF              |
       | DeviceModelCode      | MA105             |
     And a firmware
-      | FirmwareModuleVersionComm | x                  |
-      | FirmwareModuleVersionMa   | y                  |
-      | FirmwareModuleVersionFunc | z                  |
-      | FirmwareModuleVersionMbus |                    |
-      | FirmwareModuleVersionSec  |                    |
-      | FirmwareFilename          | KFPP_V060100FF.bin |
-      | ModelCode                 | MA105              |
-      | FirmwareIsForSmartMeters  | true               |
+      | FirmwareFileIdentification  | TEST_FW_FILE_000X                        |
+      | FirmwareFile                | 57696520646974206c656573742069732067656b |
+      | FirmwareModuleVersionComm   | x                                        |
+      | FirmwareModuleVersionMa     | y                                        |
+      | FirmwareModuleVersionFunc   | z                                        |
+      | FirmwareModuleVersionMbus   |                                          |
+      | FirmwareModuleVersionSec    |                                          |
+      | FirmwareFilename            | KFPP_V060100FF.bin                       |
+      | ModelCode                   | MA105                                    |
+      | FirmwareFileImageIdentifier | 496d6167654964656e746966696572           |
+      | FirmwareIsForSmartMeters    | true                                     |
     When the request for a firmware upgrade is received
-      | DeviceIdentification      | TEST1024000000002      |
-      | FirmwareModuleVersionComm | Telit 10.00.154        |
-      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
-      | FirmwareModuleVersionFunc | M57 4836               |
+      | DeviceIdentification        | TEST1024000000002  |
+      | FirmwareFileIdentification  | TEST_FW_FILE_0001  |
     Then retrieving the update firmware response results in an exception
     And a SOAP fault should have been returned
       | Code    |              701 |
@@ -41,19 +42,20 @@ Feature: SmartMetering functional exceptions regarding firmware
       | DeviceType           | SMART_METER_E     |
       | ManufacturerCode     | KAIF              |
     And a firmware
-      | FirmwareModuleVersionComm | Telit 10.00.154        |
-      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
-      | FirmwareModuleVersionFunc | M57 4836               |
-      | FirmwareModuleVersionMbus |                        |
-      | FirmwareModuleVersionSec  |                        |
-      | FirmwareFilename          | KFPP_V060100FF.bin     |
-      | ModelCode                 | MA105                  |
-      | FirmwareIsForSmartMeters  | true                   |
+     | FirmwareFileIdentification  | TEST_FW_FILE_0001                        |
+      | FirmwareFile                | 57696520646974206c656573742069732067656b |
+      | FirmwareModuleVersionComm   | Telit 10.00.154                          |
+      | FirmwareModuleVersionMa     | BL_012 XMX_N42_GprsV09                   |
+      | FirmwareModuleVersionFunc   | M57 4836                                 |
+      | FirmwareModuleVersionMbus   |                                          |
+      | FirmwareModuleVersionSec    |                                          |
+      | FirmwareFilename            | KFPP_V060100FF.bin                       |
+      | ModelCode                   | MA105                                    |
+      | FirmwareFileImageIdentifier | 496d6167654964656e746966696572           |
+      | FirmwareIsForSmartMeters    | true                                     |
     When the request for a firmware upgrade is received
-      | DeviceIdentification      | TEST1024000000002      |
-      | FirmwareModuleVersionComm | Telit 10.00.154        |
-      | FirmwareModuleVersionMa   | BL_012 XMX_N42_GprsV09 |
-      | FirmwareModuleVersionFunc | M57 4836               |
+      | DeviceIdentification        | TEST1024000000002     |
+      | FirmwareFileIdentification  | TEST_FW_FILE_0001     |
     Then retrieving the update firmware response results in an exception
     And a SOAP fault should have been returned
       | Code    |                 601 |

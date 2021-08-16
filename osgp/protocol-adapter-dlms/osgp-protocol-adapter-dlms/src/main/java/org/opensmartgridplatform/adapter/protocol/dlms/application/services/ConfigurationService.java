@@ -62,6 +62,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetRandomisation
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDayDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -429,15 +430,16 @@ public class ConfigurationService {
   public UpdateFirmwareResponseDto updateFirmware(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final String firmwareIdentifier,
+      final UpdateFirmwareRequestDto updateFirmwareRequestDto,
       final MessageMetadata messageMetadata)
       throws OsgpException {
     LOGGER.info(
-        "Updating firmware of device {} to firmware with identifier {}",
+        "Updating firmware of device {} to firmware with identification {}",
         device,
-        firmwareIdentifier);
+        updateFirmwareRequestDto.getFirmwareIdentification());
 
-    return this.firmwareService.updateFirmware(conn, device, firmwareIdentifier, messageMetadata);
+    return this.firmwareService.updateFirmware(
+        conn, device, updateFirmwareRequestDto, messageMetadata);
   }
 
   public GetConfigurationObjectResponseDto requestGetConfigurationObject(
