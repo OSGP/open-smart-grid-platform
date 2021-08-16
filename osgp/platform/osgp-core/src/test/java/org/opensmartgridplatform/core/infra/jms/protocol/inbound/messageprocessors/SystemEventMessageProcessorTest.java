@@ -18,7 +18,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
-import java.util.Date;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,8 +26,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.Answer;
-import org.opensmartgridplatform.core.application.services.EventNotificationMessageService;
 import org.opensmartgridplatform.core.domain.model.domain.DomainRequestService;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
@@ -40,7 +37,6 @@ import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.DomainInfoRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
-import org.opensmartgridplatform.domain.core.valueobjects.EventType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SystemEventDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ObjectMessageBuilder;
@@ -54,8 +50,6 @@ class SystemEventMessageProcessorTest {
   @Mock private SystemEventDto systemEventDto;
 
   @Mock private DeviceRepository deviceRepository;
-
-  @Mock private EventNotificationMessageService eventNotificationMessageService;
 
   @Mock private DeviceAuthorizationRepository deviceAuthorizationRepository;
 
@@ -100,16 +94,6 @@ class SystemEventMessageProcessorTest {
 
     when(this.deviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION))
         .thenReturn(this.device);
-    when(this.deviceRepository.save(this.device))
-        .thenAnswer((Answer<Void>) invocationOnMock -> null);
-    doNothing()
-        .when(this.eventNotificationMessageService)
-        .handleEvent(
-            any(String.class),
-            any(Date.class),
-            any(EventType.class),
-            any(String.class),
-            any(Integer.class));
     when(this.deviceAuthorizationRepository.findByDeviceAndFunctionGroup(
             this.device, DeviceFunctionGroup.OWNER))
         .thenReturn(Collections.singletonList(this.deviceAuthorization));
@@ -143,7 +127,6 @@ class SystemEventMessageProcessorTest {
     reset(this.deviceAuthorizationRepository);
     reset(this.deviceAuthorization);
     reset(this.deviceRepository);
-    reset(this.eventNotificationMessageService);
     reset(this.domainInfoRepository);
     reset(this.domainInfo);
     reset(this.domainRequestService);
@@ -157,6 +140,11 @@ class SystemEventMessageProcessorTest {
 
   @Test
   void testUnknownDeviceAuthorization() {
+    reset(this.deviceAuthorization);
+    reset(this.organisation);
+    reset(this.domainInfoRepository);
+    reset(this.domainInfo);
+    reset(this.domainRequestService);
     when(this.deviceAuthorizationRepository.findByDeviceAndFunctionGroup(
             this.device, DeviceFunctionGroup.OWNER))
         .thenReturn(null);

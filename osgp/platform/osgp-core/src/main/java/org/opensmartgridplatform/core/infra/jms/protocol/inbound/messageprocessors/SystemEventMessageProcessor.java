@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Optional;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
-import org.opensmartgridplatform.core.application.services.EventNotificationMessageService;
 import org.opensmartgridplatform.core.domain.model.domain.DomainRequestService;
 import org.opensmartgridplatform.core.infra.jms.protocol.inbound.AbstractProtocolRequestMessageProcessor;
 import org.opensmartgridplatform.domain.core.entities.Device;
@@ -25,7 +24,6 @@ import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.DomainInfoRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
-import org.opensmartgridplatform.domain.core.valueobjects.EventType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SystemEventDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
@@ -45,8 +43,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class SystemEventMessageProcessor extends AbstractProtocolRequestMessageProcessor {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SystemEventMessageProcessor.class);
-
-  @Autowired private EventNotificationMessageService eventNotificationMessageService;
 
   @Autowired private DomainRequestService domainRequestService;
 
@@ -78,8 +74,6 @@ public class SystemEventMessageProcessor extends AbstractProtocolRequestMessageP
       final Device device = this.getDevice(metadata.getDeviceIdentification());
 
       final SystemEventDto systemEvent = (SystemEventDto) dataObject;
-
-      this.storeSystemEvent(systemEvent);
 
       final String ownerIdentification = this.getOrganisationIdentificationOfOwner(device);
 
@@ -150,22 +144,6 @@ public class SystemEventMessageProcessor extends AbstractProtocolRequestMessageP
     return domainInfos.stream()
         .filter(d -> "SMART_METERING".equals(d.getDomain()) && "1.0".equals(d.getDomainVersion()))
         .findFirst();
-  }
-
-  private void storeSystemEvent(final SystemEventDto systemEvent) {
-    try {
-      this.eventNotificationMessageService.handleEvent(
-          systemEvent.getDeviceIdentification(),
-          systemEvent.getTimestamp(),
-          EventType.SYSTEM_EVENT,
-          systemEvent.getReason(),
-          0);
-    } catch (final UnknownEntityException uee) {
-      LOGGER.warn(
-          "Unable to store event for SystemEvent from unknown device: {}", systemEvent, uee);
-    } catch (final Exception e) {
-      LOGGER.error("Error storing event for SystemEvent: {}", systemEvent, e);
-    }
   }
 
   private String getOrganisationIdentificationOfOwner(final Device device) throws OsgpException {
