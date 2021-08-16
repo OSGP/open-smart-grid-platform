@@ -110,6 +110,17 @@
       name="ActualMeterReadsGasResponse" />
   </wsdl:message>
 
+  <wsdl:message name="GetSystemEventAsyncRequest">
+    <wsdl:part element="smmon:GetSystemEventAsyncRequest"
+      name="GetSystemEventAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetSystemEventResponse">
+    <wsdl:part element="smmon:GetSystemEventResponse"
+      name="GetSystemEventResponse">
+    </wsdl:part>
+  </wsdl:message>
+
   <!-- READ ALARM REGISTER -->
   <wsdl:message name="ReadAlarmRegisterRequest">
     <wsdl:part element="smmon:ReadAlarmRegisterRequest" name="AlarmRegisterRequest" />
@@ -277,6 +288,15 @@
       </wsdl:input>
       <wsdl:output message="tns:ActualMeterReadsGasResponse"
         name="ActualMeterReadsGasResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetSystemEvent">
+      <wsdl:input message="tns:GetSystemEventAsyncRequest"
+        name="GetSystemEventAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:GetSystemEventResponse"
+        name="GetSystemEventResponse">
       </wsdl:output>
     </wsdl:operation>
 
@@ -460,6 +480,22 @@
       </wsdl:input>
       <wsdl:output name="ActualMeterReadsGasResponse">
         <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetSystemEvent">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="GetSystemEventAsyncRequest">
+        <soap:header message="tns:SoapHeaders" part="org"
+          use="literal" />
+        <soap:header message="tns:SoapHeaders" part="user"
+          use="literal" />
+        <soap:header message="tns:SoapHeaders" part="app"
+          use="literal" />
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="GetSystemEventResponse">
+        <soap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 

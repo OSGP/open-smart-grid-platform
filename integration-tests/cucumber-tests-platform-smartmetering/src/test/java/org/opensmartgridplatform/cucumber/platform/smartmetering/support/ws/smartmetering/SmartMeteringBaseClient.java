@@ -10,6 +10,7 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.sma
 
 import java.util.concurrent.TimeUnit;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.Notification;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.NotificationType;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.notification.NotificationService;
 import org.opensmartgridplatform.cucumber.platform.support.ws.BaseClient;
 import org.slf4j.Logger;
@@ -59,5 +60,38 @@ public abstract class SmartMeteringBaseClient extends BaseClient {
               + nextWait
               + " milliseconds");
     }
+  }
+
+  protected Notification waitForNotification(final NotificationType notificationType) {
+    final int nextWait = this.getNextWait();
+    LOGGER.info(
+        "Waiting for a notification for notification type {} for at most {} milliseconds.",
+        notificationType,
+        nextWait);
+
+    final Notification notification =
+        this.notificationService.getNotification(notificationType, nextWait, TimeUnit.MILLISECONDS);
+
+    if (notification == null) {
+      throw new AssertionError(
+          "Did not receive a notification for notification type: "
+              + notificationType
+              + " within "
+              + nextWait
+              + " milliseconds");
+    }
+    return notification;
+  }
+
+  protected Notification waitForNotification(final int nextWait) {
+    LOGGER.info("Waiting for a notification for at most {} milliseconds.", nextWait);
+
+    final Notification notification =
+        this.notificationService.getNotification(nextWait, TimeUnit.MILLISECONDS);
+
+    if (notification == null) {
+      LOGGER.info("Did not receive a notification within " + nextWait + " milliseconds");
+    }
+    return notification;
   }
 }

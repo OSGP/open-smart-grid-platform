@@ -11,7 +11,9 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.servi
 import ma.glasnost.orika.MapperFactory;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SystemEvent;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushNotificationAlarmDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.SystemEventDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
@@ -52,6 +54,31 @@ public class NotificationService {
             .withDeviceIdentification(messageMetadata.getDeviceIdentification())
             .withResult(ResponseMessageResultType.OK)
             .withDataObject(pushNotificationAlarmDomain)
+            .withMessagePriority(messageMetadata.getMessagePriority())
+            .build();
+    this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
+  }
+
+  public void handleSystemEvent(
+      final MessageMetadata messageMetadata, final SystemEventDto systemEventDto) {
+
+    LOGGER.info("handleSystemEvent for MessageType: {}", messageMetadata.getMessageType());
+
+    final SystemEvent systemEvent =
+        this.mapperFactory.getMapperFacade().map(systemEventDto, SystemEvent.class);
+
+    /*
+     * Send the systemEvent as a response message to the web service, so
+     * it can be handled similar to response messages based on earlier web service
+     * requests.
+     */
+    final ResponseMessage responseMessage =
+        ResponseMessage.newResponseMessageBuilder()
+            .withCorrelationUid(messageMetadata.getCorrelationUid())
+            .withOrganisationIdentification(messageMetadata.getOrganisationIdentification())
+            .withDeviceIdentification(messageMetadata.getDeviceIdentification())
+            .withResult(ResponseMessageResultType.OK)
+            .withDataObject(systemEvent)
             .withMessagePriority(messageMetadata.getMessagePriority())
             .build();
     this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
