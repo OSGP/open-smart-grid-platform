@@ -50,8 +50,7 @@ class SystemEventMappingTest {
   void testWithNonEmptyVelue() {
     // build test data
     final String deviceId = "deviceId";
-    final SystemEventTypeDto systemEventType =
-        SystemEventTypeDto.INVOCATION_COUNTER_THRESHOLD_REACHED;
+    final SystemEventTypeDto systemEventType = SystemEventTypeDto.MAX_FRAMECOUNTER;
     final Date timestamp = new Date();
     final String reason = "reason123";
     final SystemEventDto systemEventDto =

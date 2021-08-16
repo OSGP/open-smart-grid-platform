@@ -31,20 +31,20 @@ public class SystemEventService {
 
   private final ExecutorService systemEventExecutorService;
   private final OsgpRequestMessageSender osgpRequestMessageSender;
-  private final long invocationCounterEventThreshold;
+  private final long maxFramecounterThreshold;
 
   @Autowired
   public SystemEventService(
       final ExecutorService systemEventExecutorService,
       final OsgpRequestMessageSender osgpRequestMessageSender,
-      @Value("${invocation_counter.event.threshold}") final long invocationCounterEventThreshold) {
+      @Value("${framecounter.max.threshold}") final long maxFramecounterThreshold) {
     this.systemEventExecutorService = systemEventExecutorService;
     this.osgpRequestMessageSender = osgpRequestMessageSender;
-    this.invocationCounterEventThreshold = invocationCounterEventThreshold;
+    this.maxFramecounterThreshold = maxFramecounterThreshold;
   }
 
   public void verifyMaxValueReachedEvent(final DlmsDevice device) {
-    if (device.getInvocationCounter() <= this.invocationCounterEventThreshold) {
+    if (device.getInvocationCounter() <= this.maxFramecounterThreshold) {
       return;
     }
 
@@ -52,16 +52,16 @@ public class SystemEventService {
         () -> {
           final String message =
               String.format(
-                  "InvocationCounter for device %s, has a higher value %s then the max value threshold configured %s, a event will be published",
+                  "Framecounter for device %s, has a higher value %s then the max value threshold configured %s, a event will be published",
                   device.getDeviceIdentification(),
                   device.getInvocationCounter(),
-                  this.invocationCounterEventThreshold);
+                  this.maxFramecounterThreshold);
           log.info(message);
 
           final SystemEventDto systemEventDto =
               new SystemEventDto(
                   device.getDeviceIdentification(),
-                  SystemEventTypeDto.INVOCATION_COUNTER_THRESHOLD_REACHED,
+                  SystemEventTypeDto.MAX_FRAMECOUNTER,
                   new Date(),
                   message);
 
