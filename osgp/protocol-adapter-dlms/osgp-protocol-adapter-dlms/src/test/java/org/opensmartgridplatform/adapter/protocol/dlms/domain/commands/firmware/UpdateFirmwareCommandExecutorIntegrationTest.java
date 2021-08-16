@@ -13,8 +13,6 @@ import static org.mockito.Mockito.when;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +23,6 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.MethodResult;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.ObisCode;
-import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.MacGenerationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionManagerStub;
@@ -175,20 +172,8 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
     assertThat(this.connectionStub.hasMethodBeenInvoked(ImageTransferMethod.IMAGE_ACTIVATE))
         .isTrue();
 
-    this.assertSetParameter(
-        ImageTransferAttribute.IMAGE_TRANSFER_ENABLED,
-        Collections.singletonList(DataObject.newBoolData(false)));
-  }
-
-  private void assertSetParameter(
-      final ImageTransferAttribute imageTransferEnabled, final List<DataObject> expectedValues) {
-    final List<SetParameter> setParameters =
-        this.connectionStub.getSetParameters(imageTransferEnabled);
-    assertThat(setParameters.size()).isEqualTo(expectedValues.size());
-
-    assertThat(setParameters.stream().map(SetParameter::getData).collect(Collectors.toList()))
-        .usingRecursiveComparison()
-        .isEqualTo(expectedValues);
+    assertThat(this.connectionStub.getSetParameters(ImageTransferAttribute.IMAGE_TRANSFER_ENABLED))
+        .isEmpty();
   }
 
   public AttributeAddress createAttributeAddressForImageTransfer(
