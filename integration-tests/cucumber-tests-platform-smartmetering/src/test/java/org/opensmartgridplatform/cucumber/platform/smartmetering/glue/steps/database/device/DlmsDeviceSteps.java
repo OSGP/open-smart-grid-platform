@@ -21,6 +21,7 @@ import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.SMART
 import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.SMART_METER_G;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.KEY_DEVICE_AUTHENTICATIONKEY;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.KEY_DEVICE_ENCRYPTIONKEY;
+import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.KEY_DEVICE_FIRMWARE_UPDATE_KEY;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.MBUS_USER_KEY;
 import static org.opensmartgridplatform.secretmanagement.application.domain.SecretType.E_METER_AUTHENTICATION_KEY;
@@ -141,6 +142,9 @@ public class DlmsDeviceSteps {
     this.securityKeyTypesByInputName.put(MBUS_USER_KEY, G_METER_ENCRYPTION);
     this.securityKeyTypesByInputName.put(
         PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY, G_METER_MASTER);
+    this.securityKeyTypesByInputName.put(
+        PlatformSmartmeteringKeys.KEY_DEVICE_FIRMWARE_UPDATE_KEY,
+        SecurityKeyType.G_METER_FIRMWARE_UPDATE);
   }
 
   @Given("^a dlms device$")
@@ -623,6 +627,10 @@ public class DlmsDeviceSteps {
        */
       if (inputSettings.containsKey(MBUS_USER_KEY)) {
         secretBuilders.add(this.getAppropriateSecretBuilder(MBUS_USER_KEY, inputSettings));
+      }
+      if (inputSettings.containsKey(KEY_DEVICE_FIRMWARE_UPDATE_KEY)) {
+        secretBuilders.add(
+            this.getAppropriateSecretBuilder(KEY_DEVICE_FIRMWARE_UPDATE_KEY, inputSettings));
       }
     } else if (this.isESmartMeter(deviceType)) {
       secretBuilders.add(this.getAppropriateSecretBuilder(KEY_DEVICE_ENCRYPTIONKEY, inputSettings));
