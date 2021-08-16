@@ -11,6 +11,8 @@ package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.mockito.Mockito;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.DevicePingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.messaging.OutboundLogItemRequestsMessagingConfig;
@@ -18,6 +20,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.config.messag
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.MonitoringService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SystemEventService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
@@ -25,6 +28,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.InvocationCounterManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors.GetPowerQualityProfileRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessageSender;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessorMap;
@@ -59,6 +63,8 @@ import stub.DlmsPersistenceConfigStub;
 })
 public class MessagingTestConfiguration extends AbstractConfig {
 
+  private final long invocationCounterEventThreshold = 10;
+
   // JMS
 
   @Bean
@@ -89,6 +95,11 @@ public class MessagingTestConfiguration extends AbstractConfig {
   }
 
   @Bean
+  public OsgpRequestMessageSender osgpRequestMessageSender() {
+    return new OsgpRequestMessageSender();
+  }
+
+  @Bean
   public DlmsConnectionFactory dlmsConnectionFactory() {
     return new DlmsConnectionFactoryStub();
   }
@@ -96,6 +107,19 @@ public class MessagingTestConfiguration extends AbstractConfig {
   @Bean
   public InvocationCounterManager invocationCounterManager() {
     return new InvocationCounterManager(this.dlmsConnectionFactory(), this.dlmsHelper());
+  }
+
+  @Bean
+  public ExecutorService executorService() {
+    return Executors.newSingleThreadExecutor();
+  }
+
+  @Bean
+  public SystemEventService systemEventService() {
+    return new SystemEventService(
+        this.executorService(),
+        this.osgpRequestMessageSender(),
+        this.invocationCounterEventThreshold);
   }
 
   @Bean
@@ -113,7 +137,11 @@ public class MessagingTestConfiguration extends AbstractConfig {
           }
         };
     return new DlmsConnectionHelper(
-        this.invocationCounterManager(), this.dlmsConnectionFactory(), devicePingConfig, 0);
+        this.invocationCounterManager(),
+        this.dlmsConnectionFactory(),
+        this.systemEventService(),
+        devicePingConfig,
+        0);
   }
 
   @Bean

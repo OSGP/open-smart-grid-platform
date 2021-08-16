@@ -15,6 +15,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.Notification;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.NotificationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -24,7 +25,7 @@ public class NotificationService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(NotificationService.class);
 
-  private BlockingQueue<Notification> queue = new LinkedBlockingQueue<>();
+  private final BlockingQueue<Notification> queue = new LinkedBlockingQueue<>();
 
   public void handleNotification(
       final Notification notification, final String organisationIdentification) {
@@ -92,6 +93,46 @@ public class NotificationService {
           "An exception occurred getting a notification for correlation UID {}", correlationUid, e);
     } catch (final TimeoutException e) {
       LOGGER.trace("getNotification for correlation UID {} timed out", correlationUid, e);
+    }
+    return null;
+  }
+
+  public Notification getNotification(
+      final NotificationType notificationType, final long timeout, final TimeUnit unit) {
+    final long maxTimeout = unit.toMillis(timeout);
+    try {
+      return CompletableFuture.supplyAsync(
+              () -> {
+                final long startTime = System.currentTimeMillis();
+                long remaining = maxTimeout;
+                while (remaining > 0) {
+                  try {
+                    final Notification notification =
+                        this.queue.poll(remaining, TimeUnit.MILLISECONDS);
+                    if (notification != null
+                        && notificationType == notification.getNotificationType()) {
+                      return notification;
+                    }
+                    final long elapsed = System.currentTimeMillis() - startTime;
+                    remaining = maxTimeout - elapsed;
+                  } catch (final InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new CompletionException(e);
+                  }
+                }
+                return null;
+              })
+          .get(maxTimeout, TimeUnit.MILLISECONDS);
+    } catch (final InterruptedException e) {
+      Thread.currentThread().interrupt();
+      LOGGER.trace("getNotification for notification type {} was interrupted", notificationType, e);
+    } catch (final ExecutionException e) {
+      LOGGER.error(
+          "An exception occurred getting a notification for notification type {}",
+          notificationType,
+          e);
+    } catch (final TimeoutException e) {
+      LOGGER.trace("getNotification for notification type {} timed out", notificationType, e);
     }
     return null;
   }

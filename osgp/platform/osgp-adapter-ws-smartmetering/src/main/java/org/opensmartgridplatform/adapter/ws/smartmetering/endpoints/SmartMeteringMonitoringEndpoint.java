@@ -36,6 +36,8 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.Clea
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetPowerQualityProfileResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetSystemEventAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.GetSystemEventResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasAsyncRequest;
@@ -704,6 +706,37 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
               responseData.getMessageData(),
               org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring
                   .ActualPowerQualityResponse.class);
+    } catch (final Exception e) {
+      this.handleRetrieveException(e, request, organisationIdentification);
+    }
+    return response;
+  }
+
+  @PayloadRoot(
+      localPart = "GetSystemEventAsyncRequest",
+      namespace = SMARTMETER_MONITORING_NAMESPACE)
+  @ResponsePayload
+  public GetSystemEventResponse getSystemEventResponse(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final GetSystemEventAsyncRequest request)
+      throws OsgpException {
+
+    log.debug(
+        "Incoming GetSystemEventAsyncRequest for meter: {}.", request.getDeviceIdentification());
+
+    GetSystemEventResponse response = null;
+    try {
+      final ResponseData responseData =
+          this.responseDataService.get(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+
+      this.throwExceptionIfResultNotOk(responseData, "retrieving actual power data");
+
+      response =
+          this.monitoringMapper.map(
+              responseData.getMessageData(),
+              org.opensmartgridplatform.adapter.ws.schema.smartmetering.monitoring
+                  .GetSystemEventResponse.class);
     } catch (final Exception e) {
       this.handleRetrieveException(e, request, organisationIdentification);
     }

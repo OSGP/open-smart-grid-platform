@@ -18,6 +18,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import java.net.InetSocketAddress;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import javax.inject.Provider;
@@ -187,5 +188,10 @@ public class DlmsConfig extends AbstractConfig {
   public ScheduledExecutorService scheduledExecutorService(
       @Value("${executor.scheduled.poolsize}") final int poolsize) {
     return Executors.newScheduledThreadPool(poolsize);
+  }
+
+  @Bean(name = "systemEventExecutorService")
+  public ExecutorService systemEventExecutorService() {
+    return Executors.newSingleThreadExecutor();
   }
 }

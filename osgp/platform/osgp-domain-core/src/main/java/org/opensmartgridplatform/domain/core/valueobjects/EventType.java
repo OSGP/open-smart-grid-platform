@@ -55,9 +55,10 @@ public enum EventType {
   NTP_SYNC_SUCCESS(43),
   AUTHENTICATION_FAIL(44),
   LIGHT_SENSOR_REPORTS_DARK(45),
-  LIGHT_SENSOR_REPORTS_LIGHT(46);
+  LIGHT_SENSOR_REPORTS_LIGHT(46),
+  SYSTEM_EVENT(47);
 
-  private int value;
+  private final int value;
 
   EventType(final int value) {
     this.value = value;
