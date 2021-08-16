@@ -102,8 +102,6 @@ public class UpdateFirmwareCommandExecutor
       return new UpdateFirmwareResponseDto(firmwareIdentification);
     } catch (final ImageTransferException | ProtocolAdapterException e) {
       throw new ProtocolAdapterException(EXCEPTION_MSG_UPDATE_FAILED, e);
-    } finally {
-      transfer.setImageTransferEnabled(false);
     }
   }
 
