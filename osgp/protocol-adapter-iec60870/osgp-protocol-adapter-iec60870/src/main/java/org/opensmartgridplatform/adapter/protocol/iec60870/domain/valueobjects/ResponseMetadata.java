@@ -8,6 +8,8 @@
  */
 package org.opensmartgridplatform.adapter.protocol.iec60870.domain.valueobjects;
 
+import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+
 /**
  * A value object, containing the relevant information for sending responses to the platform:
  *
@@ -96,6 +98,18 @@ public class ResponseMetadata {
 
   public DeviceType getDeviceType() {
     return this.deviceType;
+  }
+
+  public MessageMetadata asMessageMetadata() {
+    return MessageMetadata.newBuilder()
+        .withDeviceIdentification(this.deviceIdentification)
+        .withOrganisationIdentification(this.organisationIdentification)
+        .withCorrelationUid(this.correlationUid)
+        .withMessageType(this.messageType)
+        .withDomain(this.domainInfo.getDomain())
+        .withDomainVersion(this.domainInfo.getDomainVersion())
+        .withBypassRetry(true)
+        .build();
   }
 
   public static class Builder {

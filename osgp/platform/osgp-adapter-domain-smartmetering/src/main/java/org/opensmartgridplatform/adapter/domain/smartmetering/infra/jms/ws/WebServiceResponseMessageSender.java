@@ -56,14 +56,9 @@ public class WebServiceResponseMessageSender implements NotificationResponseMess
       final Session session, final ResponseMessage responseMessage, final String messageType)
       throws JMSException {
     final ObjectMessage objectMessage = session.createObjectMessage(responseMessage);
+    responseMessage.messageMetadata().applyTo(objectMessage);
 
-    objectMessage.setJMSPriority(responseMessage.getMessagePriority());
-    objectMessage.setJMSCorrelationID(responseMessage.getCorrelationUid());
     objectMessage.setJMSType(messageType);
-    objectMessage.setStringProperty(
-        Constants.ORGANISATION_IDENTIFICATION, responseMessage.getOrganisationIdentification());
-    objectMessage.setStringProperty(
-        Constants.DEVICE_IDENTIFICATION, responseMessage.getDeviceIdentification());
     objectMessage.setStringProperty(Constants.RESULT, responseMessage.getResult().toString());
     if (responseMessage.getOsgpException() == null) {
       objectMessage.setObject(responseMessage.getDataObject());

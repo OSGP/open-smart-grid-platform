@@ -10,7 +10,6 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.infra.jms;
 
 import javax.jms.ObjectMessage;
 import org.apache.commons.lang3.StringUtils;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,20 +68,7 @@ public class SmartMeteringRequestMessageSender {
         session -> {
           final ObjectMessage objectMessage =
               session.createObjectMessage(requestMessage.getRequest());
-          objectMessage.setJMSCorrelationID(requestMessage.getCorrelationUid());
-          objectMessage.setJMSType(requestMessage.getMessageType());
-          objectMessage.setJMSPriority(requestMessage.getMessagePriority());
-          objectMessage.setStringProperty(
-              Constants.ORGANISATION_IDENTIFICATION,
-              requestMessage.getOrganisationIdentification());
-          objectMessage.setStringProperty(
-              Constants.DEVICE_IDENTIFICATION, requestMessage.getDeviceIdentification());
-          objectMessage.setBooleanProperty(Constants.BYPASS_RETRY, requestMessage.bypassRetry());
-
-          if (requestMessage.getScheduleTime() != null) {
-            objectMessage.setLongProperty(
-                Constants.SCHEDULE_TIME, requestMessage.getScheduleTime());
-          }
+          requestMessage.messageMetadata().applyTo(objectMessage);
           return objectMessage;
         });
   }

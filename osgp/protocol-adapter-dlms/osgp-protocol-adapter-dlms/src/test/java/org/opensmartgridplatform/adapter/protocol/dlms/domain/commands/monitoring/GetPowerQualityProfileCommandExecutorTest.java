@@ -43,8 +43,7 @@ public class GetPowerQualityProfileCommandExecutorTest {
 
   @BeforeAll
   public static void init() {
-    messageMetadata =
-        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+    messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
   }
 
   @Test

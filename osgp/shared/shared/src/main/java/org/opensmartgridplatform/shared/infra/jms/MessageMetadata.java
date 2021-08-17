@@ -11,8 +11,12 @@ package org.opensmartgridplatform.shared.infra.jms;
 import java.io.Serializable;
 import javax.jms.JMSException;
 import javax.jms.Message;
+import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
+@Getter
 public class MessageMetadata implements Serializable {
   /** Generated serial version uid */
   private static final long serialVersionUID = 5481771135195782979L;
@@ -27,6 +31,7 @@ public class MessageMetadata implements Serializable {
   private int messagePriority;
   private boolean scheduled;
   private Long scheduleTime;
+  private Long maxScheduleTime;
   private boolean bypassRetry;
   private int retryCount;
   private int jmsxDeliveryCount;
@@ -46,12 +51,13 @@ public class MessageMetadata implements Serializable {
     this.messagePriority = builder.messagePriority;
     this.scheduled = builder.scheduled;
     this.scheduleTime = builder.scheduleTime;
+    this.maxScheduleTime = builder.maxScheduleTime;
     this.bypassRetry = builder.bypassRetry;
     this.retryCount = builder.retryCount;
     this.jmsxDeliveryCount = builder.jmsxDeliveryCount;
   }
 
-  public static final MessageMetadata fromMessage(final Message message) throws JMSException {
+  public static MessageMetadata fromMessage(final Message message) throws JMSException {
 
     final MessageMetadata metadata = new MessageMetadata();
     metadata.correlationUid = message.getJMSCorrelationID();
@@ -72,6 +78,7 @@ public class MessageMetadata implements Serializable {
         metadata.getStringProperty(message, Constants.IP_ADDRESS, StringUtils.EMPTY);
 
     metadata.scheduleTime = metadata.getLongProperty(message, Constants.SCHEDULE_TIME, null);
+    metadata.maxScheduleTime = metadata.getLongProperty(message, Constants.MAX_SCHEDULE_TIME, null);
     metadata.scheduled = metadata.getBooleanProperty(message, Constants.IS_SCHEDULED, false);
 
     metadata.retryCount = metadata.getIntProperty(message, Constants.RETRY_COUNT, 0);
@@ -81,60 +88,51 @@ public class MessageMetadata implements Serializable {
     return metadata;
   }
 
-  public static MessageMetadata.Builder newMessageMetadataBuilder() {
+  public void applyTo(final Message message) throws JMSException {
+
+    message.setJMSCorrelationID(this.correlationUid);
+    message.setJMSType(this.messageType);
+    message.setJMSPriority(this.messagePriority);
+
+    if (StringUtils.isNotBlank(this.deviceIdentification)) {
+      message.setStringProperty(Constants.DEVICE_IDENTIFICATION, this.deviceIdentification);
+    }
+    if (StringUtils.isNotBlank(this.organisationIdentification)) {
+      message.setStringProperty(
+          Constants.ORGANISATION_IDENTIFICATION, this.organisationIdentification);
+    }
+
+    if (StringUtils.isNotBlank(this.domain)) {
+      message.setStringProperty(Constants.DOMAIN, this.domain);
+    }
+    if (StringUtils.isNotBlank(this.domainVersion)) {
+      message.setStringProperty(Constants.DOMAIN_VERSION, this.domainVersion);
+    }
+
+    if (StringUtils.isNotBlank(this.ipAddress)) {
+      message.setStringProperty(Constants.IP_ADDRESS, this.ipAddress);
+    }
+
+    if (this.scheduleTime != null) {
+      message.setLongProperty(Constants.SCHEDULE_TIME, this.scheduleTime);
+    }
+    if (this.maxScheduleTime != null) {
+      message.setLongProperty(Constants.MAX_SCHEDULE_TIME, this.maxScheduleTime);
+    }
+    message.setBooleanProperty(Constants.IS_SCHEDULED, this.scheduled);
+
+    message.setIntProperty(Constants.RETRY_COUNT, this.retryCount);
+    message.setBooleanProperty(Constants.BYPASS_RETRY, this.bypassRetry);
+
+    /*
+     * Not setting the jmsxDeliveryCount as int property named Constants.DELIVERY_COUNT, because
+     * this is not some metadata to be transferred over to new JMS messages. This delivery count is
+     * incremented by the message queue environment when a message is re-delivered to a consumer.
+     */
+  }
+
+  public static MessageMetadata.Builder newBuilder() {
     return new Builder();
-  }
-
-  public String getDeviceIdentification() {
-    return this.deviceIdentification;
-  }
-
-  public String getOrganisationIdentification() {
-    return this.organisationIdentification;
-  }
-
-  public String getCorrelationUid() {
-    return this.correlationUid;
-  }
-
-  public String getDomain() {
-    return this.domain;
-  }
-
-  public String getDomainVersion() {
-    return this.domainVersion;
-  }
-
-  public String getIpAddress() {
-    return this.ipAddress;
-  }
-
-  public String getMessageType() {
-    return this.messageType;
-  }
-
-  public int getMessagePriority() {
-    return this.messagePriority;
-  }
-
-  public Long getScheduleTime() {
-    return this.scheduleTime;
-  }
-
-  public boolean isScheduled() {
-    return this.scheduled;
-  }
-
-  public int getRetryCount() {
-    return this.retryCount;
-  }
-
-  public boolean isBypassRetry() {
-    return this.bypassRetry;
-  }
-
-  public int getJmsxDeliveryCount() {
-    return this.jmsxDeliveryCount;
   }
 
   private String getStringProperty(
@@ -161,35 +159,13 @@ public class MessageMetadata implements Serializable {
     return message.propertyExists(name) ? message.getBooleanProperty(name) : defaultValue;
   }
 
+  public Builder builder() {
+    return new Builder(this);
+  }
+
   @Override
   public String toString() {
-    return "MessageMetadata [correlationUid="
-        + this.correlationUid
-        + ", organisationIdentification="
-        + this.organisationIdentification
-        + ", deviceIdentification="
-        + this.deviceIdentification
-        + ", messageType="
-        + this.messageType
-        + ", domain="
-        + this.domain
-        + ", domainVersion="
-        + this.domainVersion
-        + ", ipAddress="
-        + this.ipAddress
-        + ", messagePriority="
-        + this.messagePriority
-        + ", scheduled="
-        + this.scheduled
-        + ", scheduleTime="
-        + this.scheduleTime
-        + ", bypassRetry="
-        + this.bypassRetry
-        + ", retryCount="
-        + this.retryCount
-        + ", jmsxDeliveryCount="
-        + this.jmsxDeliveryCount
-        + "]";
+    return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
   }
 
   public static class Builder {
@@ -203,6 +179,7 @@ public class MessageMetadata implements Serializable {
     private String ipAddress = StringUtils.EMPTY;
     private int messagePriority = 0;
     private Long scheduleTime = null;
+    private Long maxScheduleTime = null;
     private boolean scheduled = false;
     private int retryCount = 0;
     private boolean bypassRetry = false;
@@ -219,6 +196,7 @@ public class MessageMetadata implements Serializable {
       this.messagePriority = otherMetadata.getMessagePriority();
       this.scheduled = otherMetadata.isScheduled();
       this.scheduleTime = otherMetadata.getScheduleTime();
+      this.maxScheduleTime = otherMetadata.getMaxScheduleTime();
       this.bypassRetry = otherMetadata.isBypassRetry();
       this.retryCount = otherMetadata.getRetryCount();
       this.jmsxDeliveryCount = otherMetadata.getJmsxDeliveryCount();
@@ -279,6 +257,11 @@ public class MessageMetadata implements Serializable {
 
     public Builder withScheduleTime(final Long scheduleTime) {
       this.scheduleTime = scheduleTime;
+      return this;
+    }
+
+    public Builder withMaxScheduleTime(final Long maxScheduleTime) {
+      this.maxScheduleTime = maxScheduleTime;
       return this;
     }
 

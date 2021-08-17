@@ -89,7 +89,7 @@ class BundleMessageProcessorTest {
 
     this.messageProcessor.processMessage(this.message);
 
-    verify(this.retryHeaderFactory, times(1)).createEmtpyRetryHeader();
+    verify(this.retryHeaderFactory, times(1)).createEmptyRetryHeader();
   }
 
   @Test
@@ -143,7 +143,7 @@ class BundleMessageProcessorTest {
 
     this.messageProcessor.processMessage(this.message);
 
-    verify(this.retryHeaderFactory).createEmtpyRetryHeader();
+    verify(this.retryHeaderFactory).createEmptyRetryHeader();
   }
 
   private void prepareBundleServiceMockWithRequestAndResponse(final ActionResponseDto response)

@@ -72,8 +72,7 @@ public class GetGsmDiagnosticCommandExecutorTest {
 
   @BeforeEach
   public void setUp() {
-    this.messageMetadata =
-        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+    this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
 
     when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
   }

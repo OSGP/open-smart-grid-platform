@@ -9,7 +9,7 @@
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ManagementMapper;
-import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
+import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.JmsMessageSender;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.repositories.SmartMeterRepository;
@@ -30,7 +30,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceLifecyc
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
@@ -52,7 +51,7 @@ public class ManagementService {
 
   @Autowired
   @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
-  private OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
+  private JmsMessageSender osgpCoreRequestMessageSender;
 
   @Autowired
   @Qualifier(value = "domainSmartMeteringOutboundWebServiceResponsesMessageSender")
@@ -84,20 +83,10 @@ public class ManagementService {
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
     LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
-    final RequestMessage requestMessage =
-        new RequestMessage(
-            messageMetadata.getCorrelationUid(),
-            messageMetadata.getOrganisationIdentification(),
-            messageMetadata.getDeviceIdentification(),
-            smartMeter.getIpAddress(),
-            this.managementMapper.map(
-                findEventsQueryMessageDataContainer, FindEventsRequestList.class));
+    final FindEventsRequestList requestDto =
+        this.managementMapper.map(findEventsQueryMessageDataContainer, FindEventsRequestList.class);
     this.osgpCoreRequestMessageSender.send(
-        requestMessage,
-        messageMetadata.getMessageType(),
-        messageMetadata.getMessagePriority(),
-        messageMetadata.getScheduleTime(),
-        messageMetadata.isBypassRetry());
+        requestDto, messageMetadata.builder().withIpAddress(smartMeter.getIpAddress()).build());
   }
 
   public void handleFindEventsResponse(
@@ -115,13 +104,10 @@ public class ManagementService {
     // Send the response containing the events to the webservice-adapter
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(messageMetadata.getCorrelationUid())
-            .withOrganisationIdentification(messageMetadata.getOrganisationIdentification())
-            .withDeviceIdentification(messageMetadata.getDeviceIdentification())
+            .withMessageMetadata(messageMetadata)
             .withResult(ResponseMessageResultType.NOT_OK)
             .withOsgpException(osgpException)
             .withDataObject(eventMessageDataContainer)
-            .withMessagePriority(messageMetadata.getMessagePriority())
             .build();
     this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
@@ -181,24 +167,15 @@ public class ManagementService {
         messageMetadata.getOrganisationIdentification(),
         messageMetadata.getDeviceIdentification());
 
-    final SetDeviceCommunicationSettingsRequestDto setDeviceCommunicationSettingsRequestDto =
+    final SetDeviceCommunicationSettingsRequestDto requestDto =
         this.managementMapper.map(
             setDeviceCommunicationSettingsRequest, SetDeviceCommunicationSettingsRequestDto.class);
 
-    final SmartMeter smartMeteringDevice =
+    final SmartMeter smartMeter =
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
     this.osgpCoreRequestMessageSender.send(
-        new RequestMessage(
-            messageMetadata.getCorrelationUid(),
-            messageMetadata.getOrganisationIdentification(),
-            messageMetadata.getDeviceIdentification(),
-            smartMeteringDevice.getIpAddress(),
-            setDeviceCommunicationSettingsRequestDto),
-        messageMetadata.getMessageType(),
-        messageMetadata.getMessagePriority(),
-        messageMetadata.getScheduleTime(),
-        messageMetadata.isBypassRetry());
+        requestDto, messageMetadata.builder().withIpAddress(smartMeter.getIpAddress()).build());
   }
 
   public void handleSetDeviceCommunicationSettingsResponse(
@@ -225,20 +202,11 @@ public class ManagementService {
 
     final SetDeviceLifecycleStatusByChannelRequestDataDto requestDto =
         this.managementMapper.map(request, SetDeviceLifecycleStatusByChannelRequestDataDto.class);
-    final SmartMeter smartMeteringDevice =
+    final SmartMeter smartMeter =
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
     this.osgpCoreRequestMessageSender.send(
-        new RequestMessage(
-            messageMetadata.getCorrelationUid(),
-            messageMetadata.getOrganisationIdentification(),
-            messageMetadata.getDeviceIdentification(),
-            smartMeteringDevice.getIpAddress(),
-            requestDto),
-        messageMetadata.getMessageType(),
-        messageMetadata.getMessagePriority(),
-        messageMetadata.getScheduleTime(),
-        messageMetadata.isBypassRetry());
+        requestDto, messageMetadata.builder().withIpAddress(smartMeter.getIpAddress()).build());
   }
 
   public void handleSetDeviceLifecycleStatusByChannelResponse(
@@ -253,20 +221,15 @@ public class ManagementService {
 
     this.setDeviceLifecycleStatusByChannel(responseDto);
 
-    final String gatewayDeviceIdentification = messageMetadata.getDeviceIdentification();
-
     final SetDeviceLifecycleStatusByChannelResponseData responseData =
         this.managementMapper.map(responseDto, SetDeviceLifecycleStatusByChannelResponseData.class);
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(messageMetadata.getCorrelationUid())
-            .withOrganisationIdentification(messageMetadata.getOrganisationIdentification())
-            .withDeviceIdentification(gatewayDeviceIdentification)
+            .withMessageMetadata(messageMetadata)
             .withResult(result)
             .withOsgpException(osgpException)
             .withDataObject(responseData)
-            .withMessagePriority(messageMetadata.getMessagePriority())
             .build();
     this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
@@ -293,20 +256,11 @@ public class ManagementService {
 
     final GetGsmDiagnosticRequestDto requestDto =
         this.managementMapper.map(request, GetGsmDiagnosticRequestDto.class);
-    final SmartMeter smartMeteringDevice =
+    final SmartMeter smartMeter =
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
     this.osgpCoreRequestMessageSender.send(
-        new RequestMessage(
-            messageMetadata.getCorrelationUid(),
-            messageMetadata.getOrganisationIdentification(),
-            messageMetadata.getDeviceIdentification(),
-            smartMeteringDevice.getIpAddress(),
-            requestDto),
-        messageMetadata.getMessageType(),
-        messageMetadata.getMessagePriority(),
-        messageMetadata.getScheduleTime(),
-        messageMetadata.isBypassRetry());
+        requestDto, messageMetadata.builder().withIpAddress(smartMeter.getIpAddress()).build());
   }
 
   public void handleGetGsmDiagnosticResponse(
@@ -318,42 +272,26 @@ public class ManagementService {
     LOGGER.info(
         "handleGetGsmDiagnosticResponse for MessageType: {}", messageMetadata.getMessageType());
 
-    final String deviceIdentification = messageMetadata.getDeviceIdentification();
-
     final GetGsmDiagnosticResponseData responseData =
         this.managementMapper.map(responseDto, GetGsmDiagnosticResponseData.class);
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(messageMetadata.getCorrelationUid())
-            .withOrganisationIdentification(messageMetadata.getOrganisationIdentification())
-            .withDeviceIdentification(deviceIdentification)
+            .withMessageMetadata(messageMetadata)
             .withResult(result)
             .withOsgpException(osgpException)
             .withDataObject(responseData)
-            .withMessagePriority(messageMetadata.getMessagePriority())
             .build();
     this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
 
   private void sendMetadataOnlyRequestMessage(final MessageMetadata messageMetadata)
       throws FunctionalException {
-    final SmartMeter smartMeteringDevice =
+    final SmartMeter smartMeter =
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
     LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
-    final RequestMessage requestMessage =
-        new RequestMessage(
-            messageMetadata.getCorrelationUid(),
-            messageMetadata.getOrganisationIdentification(),
-            messageMetadata.getDeviceIdentification(),
-            smartMeteringDevice.getIpAddress());
-    this.osgpCoreRequestMessageSender.send(
-        requestMessage,
-        messageMetadata.getMessageType(),
-        messageMetadata.getMessagePriority(),
-        messageMetadata.getScheduleTime(),
-        messageMetadata.isBypassRetry());
+    this.osgpCoreRequestMessageSender.send(smartMeter.getIpAddress(), messageMetadata);
   }
 
   private void handleMetadataOnlyResponseMessage(
@@ -369,12 +307,9 @@ public class ManagementService {
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(messageMetadata.getCorrelationUid())
-            .withOrganisationIdentification(messageMetadata.getOrganisationIdentification())
-            .withDeviceIdentification(messageMetadata.getDeviceIdentification())
+            .withMessageMetadata(messageMetadata)
             .withResult(result)
             .withOsgpException(exception)
-            .withMessagePriority(messageMetadata.getMessagePriority())
             .build();
     this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }

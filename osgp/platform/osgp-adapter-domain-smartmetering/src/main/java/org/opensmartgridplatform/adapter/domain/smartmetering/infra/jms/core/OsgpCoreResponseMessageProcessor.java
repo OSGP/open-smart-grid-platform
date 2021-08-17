@@ -211,12 +211,9 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(messageMetadata.getCorrelationUid())
-            .withOrganisationIdentification(messageMetadata.getOrganisationIdentification())
-            .withDeviceIdentification(messageMetadata.getDeviceIdentification())
+            .withMessageMetadata(messageMetadata)
             .withResult(ResponseMessageResultType.NOT_OK)
             .withOsgpException(osgpException)
-            .withMessagePriority(messageMetadata.getMessagePriority())
             .build();
     this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }

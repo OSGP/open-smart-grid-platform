@@ -65,13 +65,8 @@ public class DomainResponseMessageSender implements DomainResponseService {
           @Override
           public Message createMessage(final Session session) throws JMSException {
             final ObjectMessage objectMessage = session.createObjectMessage(message);
+            message.messageMetadata().applyTo(objectMessage);
             objectMessage.setJMSType(messageType);
-            objectMessage.setJMSPriority(message.getMessagePriority());
-            objectMessage.setJMSCorrelationID(message.getCorrelationUid());
-            objectMessage.setStringProperty(
-                Constants.ORGANISATION_IDENTIFICATION, message.getOrganisationIdentification());
-            objectMessage.setStringProperty(
-                Constants.DEVICE_IDENTIFICATION, message.getDeviceIdentification());
             objectMessage.setStringProperty(Constants.RESULT, message.getResult().toString());
             if (message.getOsgpException() != null) {
               objectMessage.setStringProperty(
@@ -86,13 +81,10 @@ public class DomainResponseMessageSender implements DomainResponseService {
       final ProtocolResponseMessage protocolResponseMessage) {
 
     return ResponseMessage.newResponseMessageBuilder()
-        .withCorrelationUid(protocolResponseMessage.getCorrelationUid())
-        .withOrganisationIdentification(protocolResponseMessage.getOrganisationIdentification())
-        .withDeviceIdentification(protocolResponseMessage.getDeviceIdentification())
+        .withMessageMetadata(protocolResponseMessage.messageMetadata())
         .withResult(protocolResponseMessage.getResult())
         .withOsgpException(protocolResponseMessage.getOsgpException())
         .withDataObject(protocolResponseMessage.getDataObject())
-        .withMessagePriority(protocolResponseMessage.getMessagePriority())
         .build();
   }
 
@@ -101,12 +93,9 @@ public class DomainResponseMessageSender implements DomainResponseService {
     final OsgpException ex = ensureOsgpException(e);
 
     return ResponseMessage.newResponseMessageBuilder()
-        .withCorrelationUid(protocolRequestMessage.getCorrelationUid())
-        .withOrganisationIdentification(protocolRequestMessage.getOrganisationIdentification())
-        .withDeviceIdentification(protocolRequestMessage.getDeviceIdentification())
+        .withMessageMetadata(protocolRequestMessage.messageMetadata())
         .withResult(ResponseMessageResultType.NOT_OK)
         .withOsgpException(ex)
-        .withMessagePriority(protocolRequestMessage.getMessagePriority())
         .build();
   }
 

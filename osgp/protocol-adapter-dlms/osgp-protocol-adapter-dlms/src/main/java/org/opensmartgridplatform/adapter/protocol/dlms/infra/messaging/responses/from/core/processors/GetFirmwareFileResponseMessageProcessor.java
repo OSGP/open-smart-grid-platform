@@ -137,7 +137,7 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
 
   private MessageMetadata messageMetadataFromResponseMessage(
       final ResponseMessage responseMessage) {
-    return MessageMetadata.newMessageMetadataBuilder()
+    return MessageMetadata.newBuilder()
         .withCorrelationUid(responseMessage.getCorrelationUid())
         .withDeviceIdentification(responseMessage.getDeviceIdentification())
         .withMessageType(responseMessage.getMessageType())
