@@ -23,13 +23,16 @@ import org.springframework.context.annotation.Configuration;
 public class MqttClientEnabledConfig {
 
   private static final Logger LOG = LoggerFactory.getLogger(MqttClientEnabledConfig.class);
-  
+
   @Bean(destroyMethod = "disconnect")
   public MqttClient mqttClient(
       final MqttClientDefaults mqttClientDefaults, final MqttClientSslConfig mqttClientSslConfig) {
 
     final MqttClient client = new MqttClient();
-    LOG.info("Connecting to MQTT client with address: {}:{}", mqttClientDefaults.getDefaultHost(),mqttClientDefaults.getDefaultPort());
+    LOG.info(
+        "Connecting to MQTT client with address: {}:{}",
+        mqttClientDefaults.getDefaultHost(),
+        mqttClientDefaults.getDefaultPort());
     client.connect(mqttClientDefaults, mqttClientSslConfig);
     return client;
   }
