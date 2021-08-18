@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Hex;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.enums.AddressType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 /**
@@ -45,7 +46,8 @@ public class FirmwareFile {
         && this.getHeader()
             .getFirmwareImageMagicNumberHex()
             .equalsIgnoreCase(FIRMWARE_IMAGE_MAGIC_NUMBER)
-        && this.getHeader().getHeaderVersionInt() == HEADER_VERSION;
+        && this.getHeader().getHeaderVersionInt() == HEADER_VERSION
+        && this.getHeader().getAddressTypeEnum() == AddressType.MBUS_ADDRESS;
   }
 
   public void checkLengths() {
