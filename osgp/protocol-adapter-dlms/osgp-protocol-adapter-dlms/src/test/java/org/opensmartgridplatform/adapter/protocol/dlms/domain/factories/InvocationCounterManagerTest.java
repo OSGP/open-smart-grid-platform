@@ -43,8 +43,7 @@ class InvocationCounterManagerTest {
   @BeforeEach
   public void setUp() {
     this.manager = new InvocationCounterManager(this.connectionFactory, this.dlmsHelper);
-    this.messageMetadata =
-        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+    this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
   }
 
   @Test

@@ -67,7 +67,7 @@ public class CoupleMbusDeviceByChannelCommandExecutorTest {
             deviceTypeIdentification);
 
     final MessageMetadata messageMetadata =
-        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+        MessageMetadata.newBuilder().withCorrelationUid("123456").build();
 
     when(this.coupleMbusDeviceByChannelRequestDataDto.getChannel()).thenReturn(channel);
     when(this.deviceChannelsHelper.getMBusClientAttributeValues(this.conn, this.device, channel))

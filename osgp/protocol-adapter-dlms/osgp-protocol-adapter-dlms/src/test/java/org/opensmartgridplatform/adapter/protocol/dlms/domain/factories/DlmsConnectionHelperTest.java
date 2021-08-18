@@ -50,8 +50,7 @@ class DlmsConnectionHelperTest {
     this.helper =
         new DlmsConnectionHelper(
             this.invocationCounterManager, this.connectionFactory, this.devicePingConfig, 0);
-    this.messageMetadata =
-        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+    this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
   }
 
   @Test

@@ -76,8 +76,7 @@ public class SetRandomisationSettingsCommandExecutorTest {
     final Protocol smr51 = Protocol.SMR_5_1;
     this.device = this.createDlmsDevice(smr51);
 
-    this.messageMetadata =
-        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+    this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
 
     final AttributeAddress address = new AttributeAddress(1, new ObisCode("0.1.94.31.12.255"), 1);
 

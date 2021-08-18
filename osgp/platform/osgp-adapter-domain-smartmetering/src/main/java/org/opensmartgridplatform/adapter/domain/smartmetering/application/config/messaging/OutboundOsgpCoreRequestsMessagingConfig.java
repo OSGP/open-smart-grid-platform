@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.confi
 
 import javax.jms.ConnectionFactory;
 import javax.net.ssl.SSLException;
+import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.JmsMessageSender;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationFactory;
 import org.opensmartgridplatform.shared.application.config.messaging.JmsConfigurationNames;
@@ -18,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.jms.core.JmsTemplate;
 
 /** Configuration class for outbound requests to OSGP Core. */
 @Configuration
@@ -27,7 +27,7 @@ public class OutboundOsgpCoreRequestsMessagingConfig {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(OutboundOsgpCoreRequestsMessagingConfig.class);
 
-  private JmsConfigurationFactory jmsConfigurationFactory;
+  private final JmsConfigurationFactory jmsConfigurationFactory;
 
   public OutboundOsgpCoreRequestsMessagingConfig(
       final Environment environment, final DefaultJmsConfiguration defaultJmsConfiguration)
@@ -47,9 +47,9 @@ public class OutboundOsgpCoreRequestsMessagingConfig {
     return this.jmsConfigurationFactory.getPooledConnectionFactory();
   }
 
-  @Bean(name = "domainSmartMeteringOutboundOsgpCoreRequestsJmsTemplate")
-  public JmsTemplate jmsTemplate() {
-    LOGGER.info("Initializing domainSmartMeteringOutboundOsgpCoreRequestsJmsTemplate bean.");
-    return this.jmsConfigurationFactory.initJmsTemplate();
+  @Bean(name = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
+  public JmsMessageSender domainSmartMeteringOutboundOsgpCoreRequestsMessageSender() {
+    LOGGER.info("Initializing domainSmartMeteringOutboundOsgpCoreRequestsMessageSender bean.");
+    return new JmsMessageSender(this.jmsConfigurationFactory.initJmsTemplate());
   }
 }

@@ -159,17 +159,19 @@ public class PublicLightingGetStatusRequestMessageProcessor extends DeviceReques
               ComponentType.UNKNOWN, "Exception occurred while getting device status", e);
     }
 
-    final MessageMetadata deviceMessageMetadata =
-        MessageMetadataFactory.from(deviceResponse, messageType);
+    final MessageMetadata messageMetadata =
+        MessageMetadataFactory.from(deviceResponse, messageType)
+            .builder()
+            .withDomain(domain)
+            .withDomainVersion(domainVersion)
+            .withRetryCount(retryCount)
+            .build();
     final ProtocolResponseMessage responseMessage =
         ProtocolResponseMessage.newBuilder()
-            .domain(domain)
-            .domainVersion(domainVersion)
-            .messageMetadata(deviceMessageMetadata)
+            .messageMetadata(messageMetadata)
             .result(result)
             .osgpException(osgpException)
             .dataObject(status)
-            .retryCount(retryCount)
             .build();
 
     responseMessageSender.send(responseMessage);

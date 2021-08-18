@@ -92,15 +92,11 @@ public class GetFirmwareFileMessageProcessor extends AbstractProtocolRequestMess
       final FirmwareFileDto firmwareFileDto) {
 
     final ProtocolResponseMessage responseMessage =
-        new ProtocolResponseMessage.Builder()
+        ProtocolResponseMessage.newBuilder()
             .messageMetadata(metadata)
-            .domain(metadata.getDomain())
-            .domainVersion(metadata.getDomainVersion())
             .result(ResponseMessageResultType.OK)
             .osgpException(null)
             .dataObject(firmwareFileDto)
-            .retryCount(metadata.getRetryCount())
-            .scheduled(metadata.isScheduled())
             .build();
 
     this.protocolResponseMessageSender.send(
@@ -113,15 +109,11 @@ public class GetFirmwareFileMessageProcessor extends AbstractProtocolRequestMess
       final OsgpException exception) {
 
     final ProtocolResponseMessage responseMessage =
-        new ProtocolResponseMessage.Builder()
+        ProtocolResponseMessage.newBuilder()
             .messageMetadata(metadata)
-            .domain(metadata.getDomain())
-            .domainVersion(metadata.getDomainVersion())
             .result(ResponseMessageResultType.NOT_OK)
             .osgpException(exception)
             .dataObject(null)
-            .retryCount(metadata.getRetryCount())
-            .scheduled(metadata.isScheduled())
             .build();
 
     this.protocolResponseMessageSender.send(
