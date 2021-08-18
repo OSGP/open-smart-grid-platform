@@ -9,10 +9,11 @@
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
-import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
+import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.JmsMessageSender;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.entities.Device;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPowerQualityResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AlarmRegister;
@@ -45,7 +46,6 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
@@ -66,7 +66,7 @@ public class MonitoringService {
 
   @Autowired
   @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
-  private OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
+  private JmsMessageSender osgpCoreRequestMessageSender;
 
   @Autowired private MonitoringMapper monitoringMapper;
 
@@ -107,7 +107,7 @@ public class MonitoringService {
             ComponentType.DOMAIN_SMART_METERING,
             new AssertionError("Meter for gas reads should have a channel configured."));
       }
-      final PeriodicMeterReadsRequestDto periodicMeterReadsQuery =
+      final PeriodicMeterReadsRequestDto requestDto =
           new PeriodicMeterReadsRequestDto(
               PeriodTypeDto.valueOf(periodicMeterReadsValueQuery.getPeriodType().name()),
               periodicMeterReadsValueQuery.getBeginDate(),
@@ -128,30 +128,19 @@ public class MonitoringService {
                 "Meter for gas reads should have an energy meter as gateway device."));
       }
       this.osgpCoreRequestMessageSender.send(
-          new RequestMessage(
-              messageMetadata.getCorrelationUid(),
-              messageMetadata.getOrganisationIdentification(),
-              gatewayDevice.getDeviceIdentification(),
-              gatewayDevice.getIpAddress(),
-              periodicMeterReadsQuery),
-          messageMetadata.getMessageType(),
-          messageMetadata.getMessagePriority(),
-          messageMetadata.getScheduleTime(),
-          messageMetadata.isBypassRetry());
+          requestDto,
+          messageMetadata
+              .builder()
+              .withDeviceIdentification(gatewayDevice.getDeviceIdentification())
+              .withIpAddress(gatewayDevice.getIpAddress())
+              .build());
     } else {
 
+      final PeriodicMeterReadsRequestDto requestDto =
+          this.monitoringMapper.map(
+              periodicMeterReadsValueQuery, PeriodicMeterReadsRequestDto.class);
       this.osgpCoreRequestMessageSender.send(
-          new RequestMessage(
-              messageMetadata.getCorrelationUid(),
-              messageMetadata.getOrganisationIdentification(),
-              messageMetadata.getDeviceIdentification(),
-              smartMeter.getIpAddress(),
-              this.monitoringMapper.map(
-                  periodicMeterReadsValueQuery, PeriodicMeterReadsRequestDto.class)),
-          messageMetadata.getMessageType(),
-          messageMetadata.getMessagePriority(),
-          messageMetadata.getScheduleTime(),
-          messageMetadata.isBypassRetry());
+          requestDto, messageMetadata.builder().withIpAddress(smartMeter.getIpAddress()).build());
     }
   }
 
@@ -172,15 +161,12 @@ public class MonitoringService {
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(messageMetadata.getCorrelationUid())
-            .withOrganisationIdentification(messageMetadata.getOrganisationIdentification())
-            .withDeviceIdentification(messageMetadata.getDeviceIdentification())
+            .withMessageMetadata(messageMetadata)
             .withResult(result)
             .withOsgpException(exception)
             .withDataObject(
                 this.monitoringMapper.map(
                     periodMeterReadsValueDTO, PeriodicMeterReadsContainer.class))
-            .withMessagePriority(messageMetadata.getMessagePriority())
             .build();
     this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
@@ -202,23 +188,18 @@ public class MonitoringService {
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(messageMetadata.getCorrelationUid())
-            .withOrganisationIdentification(messageMetadata.getOrganisationIdentification())
-            .withDeviceIdentification(messageMetadata.getDeviceIdentification())
+            .withMessageMetadata(messageMetadata)
             .withResult(result)
             .withOsgpException(exception)
             .withDataObject(
                 this.monitoringMapper.map(
                     periodMeterReadsValueDTO, PeriodicMeterReadsContainerGas.class))
-            .withMessagePriority(messageMetadata.getMessagePriority())
             .build();
     this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
 
   public void requestActualMeterReads(
-      final MessageMetadata messageMetadata,
-      final org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery
-          actualMeterReadsQuery)
+      final MessageMetadata messageMetadata, final ActualMeterReadsQuery actualMeterReadsQuery)
       throws FunctionalException {
 
     LOGGER.info(
@@ -257,29 +238,19 @@ public class MonitoringService {
             new AssertionError(
                 "Meter for gas reads should have an energy meter as gateway device."));
       }
+      final ActualMeterReadsQueryDto requestDto =
+          new ActualMeterReadsQueryDto(ChannelDto.fromNumber(smartMeter.getChannel()));
       this.osgpCoreRequestMessageSender.send(
-          new RequestMessage(
-              messageMetadata.getCorrelationUid(),
-              messageMetadata.getOrganisationIdentification(),
-              gatewayDevice.getDeviceIdentification(),
-              gatewayDevice.getIpAddress(),
-              new ActualMeterReadsQueryDto(ChannelDto.fromNumber(smartMeter.getChannel()))),
-          messageMetadata.getMessageType(),
-          messageMetadata.getMessagePriority(),
-          messageMetadata.getScheduleTime(),
-          messageMetadata.isBypassRetry());
+          requestDto,
+          messageMetadata
+              .builder()
+              .withDeviceIdentification(gatewayDevice.getDeviceIdentification())
+              .withIpAddress(gatewayDevice.getIpAddress())
+              .build());
     } else {
       this.osgpCoreRequestMessageSender.send(
-          new RequestMessage(
-              messageMetadata.getCorrelationUid(),
-              messageMetadata.getOrganisationIdentification(),
-              messageMetadata.getDeviceIdentification(),
-              smartMeter.getIpAddress(),
-              new ActualMeterReadsQueryDto()),
-          messageMetadata.getMessageType(),
-          messageMetadata.getMessagePriority(),
-          messageMetadata.getScheduleTime(),
-          messageMetadata.isBypassRetry());
+          new ActualMeterReadsQueryDto(),
+          messageMetadata.builder().withIpAddress(smartMeter.getIpAddress()).build());
     }
   }
 
@@ -300,13 +271,10 @@ public class MonitoringService {
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(messageMetadata.getCorrelationUid())
-            .withOrganisationIdentification(messageMetadata.getOrganisationIdentification())
-            .withDeviceIdentification(messageMetadata.getDeviceIdentification())
+            .withMessageMetadata(messageMetadata)
             .withResult(result)
             .withOsgpException(exception)
             .withDataObject(this.monitoringMapper.map(actualMeterReadsDto, MeterReads.class))
-            .withMessagePriority(messageMetadata.getMessagePriority())
             .build();
     this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
@@ -328,13 +296,10 @@ public class MonitoringService {
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(messageMetadata.getCorrelationUid())
-            .withOrganisationIdentification(messageMetadata.getOrganisationIdentification())
-            .withDeviceIdentification(messageMetadata.getDeviceIdentification())
+            .withMessageMetadata(messageMetadata)
             .withResult(result)
             .withOsgpException(exception)
             .withDataObject(this.monitoringMapper.map(actualMeterReadsGas, MeterReadsGas.class))
-            .withMessagePriority(messageMetadata.getMessagePriority())
             .build();
     this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
@@ -354,20 +319,8 @@ public class MonitoringService {
     final ActualPowerQualityRequestDto requestDto =
         this.monitoringMapper.map(request, ActualPowerQualityRequestDto.class);
 
-    final RequestMessage requestMessage =
-        new RequestMessage(
-            messageMetadata.getCorrelationUid(),
-            messageMetadata.getOrganisationIdentification(),
-            messageMetadata.getDeviceIdentification(),
-            smartMeter.getIpAddress(),
-            requestDto);
-
     this.osgpCoreRequestMessageSender.send(
-        requestMessage,
-        messageMetadata.getMessageType(),
-        messageMetadata.getMessagePriority(),
-        messageMetadata.getScheduleTime(),
-        messageMetadata.isBypassRetry());
+        requestDto, messageMetadata.builder().withIpAddress(smartMeter.getIpAddress()).build());
   }
 
   public void handleActualPowerQualityResponse(
@@ -391,13 +344,10 @@ public class MonitoringService {
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(messageMetadata.getCorrelationUid())
-            .withOrganisationIdentification(messageMetadata.getOrganisationIdentification())
-            .withDeviceIdentification(messageMetadata.getDeviceIdentification())
+            .withMessageMetadata(messageMetadata)
             .withResult(result)
             .withOsgpException(exception)
             .withDataObject(actualPowerQualityResponse)
-            .withMessagePriority(messageMetadata.getMessagePriority())
             .build();
     this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
@@ -412,24 +362,15 @@ public class MonitoringService {
         messageMetadata.getOrganisationIdentification(),
         messageMetadata.getDeviceIdentification());
 
-    final SmartMeter smartMeteringDevice =
+    final SmartMeter smartMeter =
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
-    final ReadAlarmRegisterRequestDto readAlarmRegisterRequestDto =
+    final ReadAlarmRegisterRequestDto requestDto =
         this.monitoringMapper.map(
             readAlarmRegisterRequestValueObject, ReadAlarmRegisterRequestDto.class);
 
     this.osgpCoreRequestMessageSender.send(
-        new RequestMessage(
-            messageMetadata.getCorrelationUid(),
-            messageMetadata.getOrganisationIdentification(),
-            messageMetadata.getDeviceIdentification(),
-            smartMeteringDevice.getIpAddress(),
-            readAlarmRegisterRequestDto),
-        messageMetadata.getMessageType(),
-        messageMetadata.getMessagePriority(),
-        messageMetadata.getScheduleTime(),
-        messageMetadata.isBypassRetry());
+        requestDto, messageMetadata.builder().withIpAddress(smartMeter.getIpAddress()).build());
   }
 
   public void handleReadAlarmRegisterResponse(
@@ -452,13 +393,10 @@ public class MonitoringService {
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(messageMetadata.getCorrelationUid())
-            .withOrganisationIdentification(messageMetadata.getOrganisationIdentification())
-            .withDeviceIdentification(messageMetadata.getDeviceIdentification())
+            .withMessageMetadata(messageMetadata)
             .withResult(result)
             .withOsgpException(exception)
             .withDataObject(alarmRegisterValueDomain)
-            .withMessagePriority(messageMetadata.getMessagePriority())
             .build();
     this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
@@ -478,20 +416,8 @@ public class MonitoringService {
     final ConfigureDefinableLoadProfileRequestDto requestDto =
         this.monitoringMapper.map(request, ConfigureDefinableLoadProfileRequestDto.class);
 
-    final RequestMessage requestMessage =
-        new RequestMessage(
-            messageMetadata.getCorrelationUid(),
-            messageMetadata.getOrganisationIdentification(),
-            messageMetadata.getDeviceIdentification(),
-            smartMeter.getIpAddress(),
-            requestDto);
-
     this.osgpCoreRequestMessageSender.send(
-        requestMessage,
-        messageMetadata.getMessageType(),
-        messageMetadata.getMessagePriority(),
-        messageMetadata.getScheduleTime(),
-        messageMetadata.isBypassRetry());
+        requestDto, messageMetadata.builder().withIpAddress(smartMeter.getIpAddress()).build());
   }
 
   public void handleGetPowerQualityProfileResponse(
@@ -515,13 +441,10 @@ public class MonitoringService {
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(messageMetadata.getCorrelationUid())
-            .withOrganisationIdentification(messageMetadata.getOrganisationIdentification())
-            .withDeviceIdentification(messageMetadata.getDeviceIdentification())
+            .withMessageMetadata(messageMetadata)
             .withResult(result)
             .withOsgpException(exception)
             .withDataObject(getPowerQualityProfileResponse)
-            .withMessagePriority(messageMetadata.getMessagePriority())
             .build();
     this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
@@ -536,24 +459,15 @@ public class MonitoringService {
         messageMetadata.getOrganisationIdentification(),
         messageMetadata.getDeviceIdentification());
 
-    final SmartMeter smartMeteringDevice =
+    final SmartMeter smartMeter =
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
-    final ClearAlarmRegisterRequestDto clearAlarmRegisterRequestDto =
+    final ClearAlarmRegisterRequestDto requestDto =
         this.monitoringMapper.map(
             clearAlarmRegisterRequestValueObject, ClearAlarmRegisterRequestDto.class);
 
     this.osgpCoreRequestMessageSender.send(
-        new RequestMessage(
-            messageMetadata.getCorrelationUid(),
-            messageMetadata.getOrganisationIdentification(),
-            messageMetadata.getDeviceIdentification(),
-            smartMeteringDevice.getIpAddress(),
-            clearAlarmRegisterRequestDto),
-        messageMetadata.getMessageType(),
-        messageMetadata.getMessagePriority(),
-        messageMetadata.getScheduleTime(),
-        messageMetadata.isBypassRetry());
+        requestDto, messageMetadata.builder().withIpAddress(smartMeter.getIpAddress()).build());
   }
 
   public void handleClearAlarmRegisterResponse(
@@ -581,12 +495,9 @@ public class MonitoringService {
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(messageMetadata.getCorrelationUid())
-            .withOrganisationIdentification(messageMetadata.getOrganisationIdentification())
-            .withDeviceIdentification(messageMetadata.getDeviceIdentification())
+            .withMessageMetadata(messageMetadata)
             .withResult(result)
             .withOsgpException(exception)
-            .withMessagePriority(messageMetadata.getMessagePriority())
             .build();
     this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }

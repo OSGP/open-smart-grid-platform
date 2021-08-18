@@ -26,7 +26,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
-import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
 import org.springframework.util.StringUtils;
 
 public class Iec61850DeviceResponseHandler implements DeviceResponseHandler {
@@ -121,16 +120,18 @@ public class Iec61850DeviceResponseHandler implements DeviceResponseHandler {
     final OsgpException ex = this.ensureOsgpException(t);
 
     final ProtocolResponseMessage protocolResponseMessage =
-        new ProtocolResponseMessage.Builder()
-            .domain(this.domainInformation.getDomain())
-            .domainVersion(this.domainInformation.getDomainVersion())
-            .messageMetadata(this.messageMetadata)
+        ProtocolResponseMessage.newBuilder()
+            .messageMetadata(
+                this.messageMetadata
+                    .builder()
+                    .withDomain(this.domainInformation.getDomain())
+                    .withDomainVersion(this.domainInformation.getDomainVersion())
+                    .withScheduled(this.isScheduled)
+                    .withRetryCount(this.retryCount)
+                    .build())
             .result(ResponseMessageResultType.NOT_OK)
             .osgpException(ex)
-            .retryCount(this.retryCount)
             .dataObject(this.messageData)
-            .scheduled(this.isScheduled)
-            .retryHeader(new RetryHeader())
             .build();
     this.responseMessageSender.send(protocolResponseMessage);
   }

@@ -51,7 +51,7 @@ public class BundleServiceTest {
   private final List<FaultResponseParameterDto> parameters = new ArrayList<>();
   private final ComponentType defaultComponent = ComponentType.PROTOCOL_DLMS;
   private final MessageMetadata messageMetadata =
-      MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+      MessageMetadata.newBuilder().withCorrelationUid("123456").build();
 
   @Test
   public void testHappyFlow() {

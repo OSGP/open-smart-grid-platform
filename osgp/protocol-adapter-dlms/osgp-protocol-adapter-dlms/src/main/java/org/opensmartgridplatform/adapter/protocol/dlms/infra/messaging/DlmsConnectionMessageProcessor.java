@@ -177,20 +177,16 @@ public abstract class DlmsConnectionMessageProcessor {
     if (this.shouldRetry(result, exception, responseObject)) {
       retryHeader = this.retryHeaderFactory.createRetryHeader(messageMetadata.getRetryCount());
     } else {
-      retryHeader = this.retryHeaderFactory.createEmtpyRetryHeader();
+      retryHeader = this.retryHeaderFactory.createEmptyRetryHeader();
     }
 
     final ProtocolResponseMessage responseMessage =
         new ProtocolResponseMessage.Builder()
             .messageMetadata(messageMetadata)
-            .domain(messageMetadata.getDomain())
-            .domainVersion(messageMetadata.getDomainVersion())
             .result(result)
             .osgpException(osgpException)
             .dataObject(responseObject)
-            .retryCount(messageMetadata.getRetryCount())
             .retryHeader(retryHeader)
-            .scheduled(messageMetadata.isScheduled())
             .build();
 
     responseMessageSender.send(responseMessage);

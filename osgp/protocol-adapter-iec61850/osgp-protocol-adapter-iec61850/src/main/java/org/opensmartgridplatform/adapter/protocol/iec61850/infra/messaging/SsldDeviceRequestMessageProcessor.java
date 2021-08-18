@@ -20,7 +20,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
-import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,25 +76,24 @@ public abstract class SsldDeviceRequestMessageProcessor extends BaseMessageProce
     final GetStatusDeviceResponse response = (GetStatusDeviceResponse) deviceResponse;
     final DeviceStatusDto status = response.getDeviceStatus();
 
-    final MessageMetadata deviceMessageMetadata =
-        new MessageMetadata.Builder()
+    final MessageMetadata messageMetadata =
+        MessageMetadata.newBuilder()
             .withDeviceIdentification(deviceResponse.getDeviceIdentification())
             .withOrganisationIdentification(deviceResponse.getOrganisationIdentification())
             .withCorrelationUid(deviceResponse.getCorrelationUid())
             .withMessageType(messageType)
+            .withDomain(domainInformation.getDomain())
+            .withDomainVersion(domainInformation.getDomainVersion())
             .withMessagePriority(response.getMessagePriority())
+            .withScheduled(isScheduled)
+            .withRetryCount(retryCount)
             .build();
     final ProtocolResponseMessage protocolResponseMessage =
-        new ProtocolResponseMessage.Builder()
-            .domain(domainInformation.getDomain())
-            .domainVersion(domainInformation.getDomainVersion())
-            .messageMetadata(deviceMessageMetadata)
+        ProtocolResponseMessage.newBuilder()
+            .messageMetadata(messageMetadata)
             .result(ResponseMessageResultType.OK)
             .osgpException(null)
-            .retryCount(retryCount)
             .dataObject(status)
-            .scheduled(isScheduled)
-            .retryHeader(new RetryHeader())
             .build();
     responseMessageSender.send(protocolResponseMessage);
   }

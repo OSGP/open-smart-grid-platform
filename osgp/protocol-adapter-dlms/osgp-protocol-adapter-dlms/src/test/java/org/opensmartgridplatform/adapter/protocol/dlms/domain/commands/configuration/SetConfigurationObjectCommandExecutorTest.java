@@ -47,7 +47,7 @@ public class SetConfigurationObjectCommandExecutorTest {
     final DlmsDevice device = new DlmsDevice();
     final Protocol protocol = Protocol.DSMR_4_2_2;
     final MessageMetadata messageMetadata =
-        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+        MessageMetadata.newBuilder().withCorrelationUid("123456").build();
     device.setProtocol(protocol);
 
     when(this.protocolServiceLookup.lookupGetService(protocol)).thenReturn(this.getService);

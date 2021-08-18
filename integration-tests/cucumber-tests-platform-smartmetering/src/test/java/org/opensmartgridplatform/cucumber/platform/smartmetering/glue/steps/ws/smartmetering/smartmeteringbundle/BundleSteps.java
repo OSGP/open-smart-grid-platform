@@ -14,8 +14,11 @@ import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getStri
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActionResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.Actions;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ActualMeterReadsResponse;
@@ -52,7 +55,9 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.Synchron
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Action;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
+import org.opensmartgridplatform.cucumber.core.DateTimeHelper;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
+import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.ScenarioContextHelper;
@@ -116,6 +121,51 @@ public class BundleSteps extends BaseBundleSteps {
 
     assertThat(asyncResponse).isNotNull();
     ScenarioContextHelper.saveAsyncResponse(asyncResponse);
+  }
+
+  @When("^the bundle request is received with headers$")
+  public void theBundleRequestIsReceivedWithHeaders(final Map<String, String> settings)
+      throws Throwable {
+    final BundleRequest request =
+        (BundleRequest) ScenarioContext.current().get(PlatformSmartmeteringKeys.BUNDLE_REQUEST);
+
+    /*
+     * Scenarios containing this step may include a data table with two columns. The first column
+     * should have the local part of the name of a SOAP header element and the second column should
+     * have the text value for the named SOAP header element.
+     *
+     * These headers can be picked up by classes like those in osgp-adapter-ws-shared package
+     * org.opensmartgridplatform.adapter.ws.endpointinterceptors, for instance the MessageMetadata
+     * handling SoapHeaderMessageMetadataInterceptor or configurations of the more generic
+     * SoapHeaderInterceptor.
+     */
+    final BundleAsyncResponse asyncResponse =
+        this.client.sendBundleRequest(request, this.additionalSoapHeaders(settings));
+
+    assertThat(asyncResponse).isNotNull();
+    ScenarioContextHelper.saveAsyncResponse(asyncResponse);
+  }
+
+  private Map<String, String> additionalSoapHeaders(final Map<String, String> settings) {
+    /*
+     * These date/time headers are interpreted as a number of milliseconds since the epoch.
+     * Since it is hard to come up with nice values for hard coded numbers of milliseconds that make
+     * sense in the test steps, these values can be specified in a format the DateTimeHelper
+     * understands.
+     */
+    final Set<String> dateTimeInMillisHeaders =
+        new TreeSet<>(Arrays.asList("MaxScheduleTime", "ScheduleTime"));
+    final Map<String, String> extraHeaders = new HashMap<>();
+    settings.forEach(
+        (localPartOfName, value) -> {
+          if (dateTimeInMillisHeaders.contains(localPartOfName)) {
+            extraHeaders.put(
+                localPartOfName, Long.toString(DateTimeHelper.getDateTime(value).getMillis()));
+          } else {
+            extraHeaders.put(localPartOfName, value);
+          }
+        });
+    return extraHeaders;
   }
 
   @Then(
@@ -195,7 +245,6 @@ public class BundleSteps extends BaseBundleSteps {
 
     final FaultResponse faultResponse = (FaultResponse) response;
 
-    assertThat(faultResponse.getMessage())
-        .containsSubsequence(values.get(PlatformSmartmeteringKeys.MESSAGE));
+    assertThat(faultResponse.getMessage()).containsSubsequence(values.get(PlatformKeys.MESSAGE));
   }
 }

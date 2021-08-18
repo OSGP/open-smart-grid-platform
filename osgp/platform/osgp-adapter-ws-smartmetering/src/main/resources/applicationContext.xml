@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:jpa="http://www.springframework.org/schema/data/jpa"
   xmlns:sws="http://www.springframework.org/schema/web-services"
   xsi:schemaLocation="
@@ -20,6 +20,8 @@
     <ref bean="responseUrlInterceptor"/>
     <ref bean="bypassRetryInterceptor"/>
     <ref bean="scheduleTimeInterceptor"/>
+    <ref bean="maxScheduleTimeInterceptor"/>
+    <ref bean="messageMetadataInterceptor"/>
     <ref bean="organisationIdentificationInCertificateCnEndpointInterceptor"/>
     <ref bean="payloadValidatingInterceptor"/>
     <ref bean="webServiceMonitorInterceptor" />

@@ -9,8 +9,10 @@
 package org.opensmartgridplatform.shared.infra.jms;
 
 import java.io.Serializable;
+import lombok.Getter;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 
+@Getter
 public class ProtocolResponseMessage extends ResponseMessage {
 
   /** Serial Version UID. */
@@ -28,6 +30,20 @@ public class ProtocolResponseMessage extends ResponseMessage {
     this.retryCount = builder.retryCount;
   }
 
+  @Override
+  public MessageMetadata messageMetadata() {
+    return super.messageMetadata()
+        .builder()
+        .withDomain(this.domain)
+        .withDomainVersion(this.domainVersion)
+        .withRetryCount(this.retryCount)
+        .build();
+  }
+
+  public static Builder newBuilder() {
+    return new Builder();
+  }
+
   public static class Builder {
 
     private final ResponseMessage.Builder superBuilder =
@@ -39,6 +55,9 @@ public class ProtocolResponseMessage extends ResponseMessage {
 
     public Builder messageMetadata(final MessageMetadata messageMetadata) {
       this.superBuilder.withMessageMetadata(messageMetadata);
+      this.domain = messageMetadata.getDomain();
+      this.domainVersion = messageMetadata.getDomainVersion();
+      this.retryCount = messageMetadata.getRetryCount();
       return this;
     }
 
@@ -77,6 +96,11 @@ public class ProtocolResponseMessage extends ResponseMessage {
       return this;
     }
 
+    public Builder maxScheduleTime(final Long maxScheduleTime) {
+      this.superBuilder.withMaxScheduleTime(maxScheduleTime);
+      return this;
+    }
+
     public Builder retryCount(final int retryCount) {
       this.retryCount = retryCount;
       return this;
@@ -90,21 +114,5 @@ public class ProtocolResponseMessage extends ResponseMessage {
     public ProtocolResponseMessage build() {
       return new ProtocolResponseMessage(this);
     }
-  }
-
-  public static Builder newBuilder() {
-    return new Builder();
-  }
-
-  public String getDomain() {
-    return this.domain;
-  }
-
-  public int getRetryCount() {
-    return this.retryCount;
-  }
-
-  public String getDomainVersion() {
-    return this.domainVersion;
   }
 }

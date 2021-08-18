@@ -15,46 +15,120 @@ public class ProtocolRequestMessage extends RequestMessage {
 
   private static final long serialVersionUID = -6951175556510738951L;
 
+  private final String messageType;
   private final String domain;
   private final String domainVersion;
-  private final String messageType;
-  private final Serializable messageData;
+  private final int messagePriority;
   private final boolean scheduled;
-  private final int retryCount;
-  private int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
+  private final Long scheduleTime;
+  private final Long maxScheduleTime;
   private final boolean bypassRetry;
+  private final int retryCount;
 
   private ProtocolRequestMessage(final Builder builder) {
     super(
-        builder.messageMetadata.getCorrelationUid(),
-        builder.messageMetadata.getOrganisationIdentification(),
-        builder.messageMetadata.getDeviceIdentification(),
+        builder.correlationUid,
+        builder.organisationIdentification,
+        builder.deviceIdentification,
         builder.ipAddress,
         builder.request);
 
+    this.messageType = builder.messageType;
     this.domain = builder.domain;
     this.domainVersion = builder.domainVersion;
-    this.messageData = builder.request;
+    this.messagePriority = builder.messagePriority;
     this.scheduled = builder.scheduled;
+    this.scheduleTime = builder.scheduleTime;
+    this.maxScheduleTime = builder.maxScheduleTime;
+    this.bypassRetry = builder.bypassRetry;
     this.retryCount = builder.retryCount;
+  }
 
-    this.messageType = builder.messageMetadata.getMessageType();
-    this.messagePriority = builder.messageMetadata.getMessagePriority();
-    this.bypassRetry = builder.messageMetadata.isBypassRetry();
+  public String getDomain() {
+    return this.domain;
+  }
+
+  public int getRetryCount() {
+    return this.retryCount;
+  }
+
+  public String getDomainVersion() {
+    return this.domainVersion;
+  }
+
+  public String getMessageType() {
+    return this.messageType;
+  }
+
+  public boolean isScheduled() {
+    return this.scheduled;
+  }
+
+  public Long getScheduleTime() {
+    return this.scheduleTime;
+  }
+
+  public Long getMaxScheduleTime() {
+    return this.maxScheduleTime;
+  }
+
+  public int getMessagePriority() {
+    return this.messagePriority;
+  }
+
+  public boolean bypassRetry() {
+    return this.bypassRetry;
+  }
+
+  @Override
+  public MessageMetadata messageMetadata() {
+    return super.messageMetadata()
+        .builder()
+        .withMessageType(this.messageType)
+        .withDomain(this.domain)
+        .withDomainVersion(this.domainVersion)
+        .withMessagePriority(this.messagePriority)
+        .withScheduled(this.scheduled)
+        .withMaxScheduleTime(this.maxScheduleTime)
+        .withBypassRetry(this.bypassRetry)
+        .withRetryCount(this.retryCount)
+        .build();
+  }
+
+  public static Builder newBuilder() {
+    return new Builder();
   }
 
   public static class Builder {
+
+    private String deviceIdentification;
+    private String organisationIdentification;
+    private String correlationUid;
+    private String messageType;
     private String domain;
     private String domainVersion;
     private String ipAddress;
-    private Serializable request;
+    private int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
     private boolean scheduled;
+    private Long scheduleTime;
+    private Long maxScheduleTime;
+    private boolean bypassRetry;
     private int retryCount;
-
-    private MessageMetadata messageMetadata;
+    private Serializable request;
 
     public Builder messageMetadata(final MessageMetadata messageMetadata) {
-      this.messageMetadata = messageMetadata;
+      this.deviceIdentification = messageMetadata.getDeviceIdentification();
+      this.organisationIdentification = messageMetadata.getOrganisationIdentification();
+      this.correlationUid = messageMetadata.getCorrelationUid();
+      this.messageType = messageMetadata.getMessageType();
+      this.domain = messageMetadata.getDomain();
+      this.domainVersion = messageMetadata.getDomainVersion();
+      this.ipAddress = messageMetadata.getIpAddress();
+      this.messagePriority = messageMetadata.getMessagePriority();
+      this.scheduled = messageMetadata.isScheduled();
+      this.maxScheduleTime = messageMetadata.getMaxScheduleTime();
+      this.bypassRetry = messageMetadata.isBypassRetry();
+      this.retryCount = messageMetadata.getRetryCount();
       return this;
     }
 
@@ -83,6 +157,11 @@ public class ProtocolRequestMessage extends RequestMessage {
       return this;
     }
 
+    public Builder maxScheduleTime(final Long maxScheduleTime) {
+      this.maxScheduleTime = maxScheduleTime;
+      return this;
+    }
+
     public Builder retryCount(final int retryCount) {
       this.retryCount = retryCount;
       return this;
@@ -91,37 +170,5 @@ public class ProtocolRequestMessage extends RequestMessage {
     public ProtocolRequestMessage build() {
       return new ProtocolRequestMessage(this);
     }
-  }
-
-  public String getDomain() {
-    return this.domain;
-  }
-
-  public int getRetryCount() {
-    return this.retryCount;
-  }
-
-  public String getDomainVersion() {
-    return this.domainVersion;
-  }
-
-  public String getMessageType() {
-    return this.messageType;
-  }
-
-  public Serializable getMessageData() {
-    return this.messageData;
-  }
-
-  public boolean isScheduled() {
-    return this.scheduled;
-  }
-
-  public int getMessagePriority() {
-    return this.messagePriority;
-  }
-
-  public boolean bypassRetry() {
-    return this.bypassRetry;
   }
 }

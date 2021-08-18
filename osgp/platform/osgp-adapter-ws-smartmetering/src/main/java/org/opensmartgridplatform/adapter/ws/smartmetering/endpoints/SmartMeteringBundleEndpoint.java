@@ -11,21 +11,16 @@ package org.opensmartgridplatform.adapter.ws.smartmetering.endpoints;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.ws.domain.entities.ResponseData;
-import org.opensmartgridplatform.adapter.ws.endpointinterceptors.BypassRetry;
-import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
+import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessageMetadata;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.ResponseUrl;
-import org.opensmartgridplatform.adapter.ws.endpointinterceptors.ScheduleTime;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.Actions;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.BundleAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.BundleAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.BundleRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.BundleResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Action;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.services.ActionMapperResponseService;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.services.ActionMapperService;
 import org.opensmartgridplatform.adapter.ws.smartmetering.application.services.BundleService;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActionRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.BundleMessagesResponse;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
@@ -64,48 +59,37 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
   @PayloadRoot(localPart = "BundleRequest", namespace = NAMESPACE)
   @ResponsePayload
   public BundleAsyncResponse bundleRequest(
-      @OrganisationIdentification final String organisationIdentification,
-      @MessagePriority final String messagePriority,
       @ResponseUrl final String responseUrl,
-      @ScheduleTime final String scheduleTime,
-      @BypassRetry final String bypassRetry,
+      @MessageMetadata
+          final org.opensmartgridplatform.shared.infra.jms.MessageMetadata messageMetadata,
       @RequestPayload final BundleRequest request)
       throws OsgpException {
 
-    log.info(
-        "Incoming BundleRequest with responseUrl {} and actions {}. [deviceId={} | organisationId={}]",
-        responseUrl,
-        request.getActions().getActionList(),
-        request.getDeviceIdentification(),
-        organisationIdentification);
+    final String organisationIdentification = messageMetadata.getOrganisationIdentification();
+    final String deviceIdentification = request.getDeviceIdentification();
 
-    final RequestMessageMetadata requestMessageMetadata =
-        RequestMessageMetadata.newBuilder()
-            .withOrganisationIdentification(organisationIdentification)
-            .withDeviceIdentification(request.getDeviceIdentification())
-            .withDeviceFunction(DeviceFunction.HANDLE_BUNDLED_ACTIONS)
-            .withMessageType(MessageType.HANDLE_BUNDLED_ACTIONS)
-            .withMessagePriority(messagePriority)
-            .withScheduleTime(scheduleTime)
-            .withBypassRetry(bypassRetry)
-            .build();
+    log.info(
+        "Incoming BundleRequest with responseUrl {} and {} actions. [deviceId={} | organisationId={}]",
+        responseUrl,
+        request.getActions().getActionList().size(),
+        deviceIdentification,
+        organisationIdentification);
 
     BundleAsyncResponse response = null;
     try {
-      // Create response.
       response = new BundleAsyncResponse();
 
-      // Get the request parameters, make sure that date time are in UTC.
-      final String deviceIdentification = request.getDeviceIdentification();
-
-      final Actions actions = request.getActions();
-      final List<? extends Action> actionList = actions.getActionList();
-
       final List<ActionRequest> actionRequestList =
-          this.actionMapperService.mapAllActions(actionList);
+          this.actionMapperService.mapAllActions(request.getActions().getActionList());
 
       final String correlationUid =
-          this.bundleService.enqueueBundleRequest(requestMessageMetadata, actionRequestList);
+          this.bundleService.enqueueBundleRequest(
+              messageMetadata
+                  .builder()
+                  .withDeviceIdentification(deviceIdentification)
+                  .withMessageType(MessageType.HANDLE_BUNDLED_ACTIONS.name())
+                  .build(),
+              actionRequestList);
 
       log.info(
           "BundleRequest placed on queue [correlationId={} | deviceId={} | organisationId={}]",

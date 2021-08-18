@@ -8,7 +8,6 @@
  */
 package org.opensmartgridplatform.adapter.domain.smartmetering.application.services;
 
-import lombok.extern.slf4j.Slf4j;
 import ma.glasnost.orika.MapperFactory;
 import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.DeviceModel;
@@ -33,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
 @Service(value = "domainSmartMeteringSmartMeterService")
 @Transactional(value = "transactionManager")
 public class SmartMeterService {

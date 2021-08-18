@@ -65,8 +65,7 @@ public class GetActualPowerQualityCommandExecutorTest {
 
   @BeforeEach
   public void before() throws ProtocolAdapterException, IOException {
-    this.messageMetadata =
-        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+    this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
 
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
   }

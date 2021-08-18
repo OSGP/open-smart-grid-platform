@@ -239,8 +239,6 @@ public class DeviceManagementService {
 
     final ProtocolResponseMessage responseMessage =
         ProtocolResponseMessage.newBuilder()
-            .domain(messageMetadata.getDomain())
-            .domainVersion(messageMetadata.getDomainVersion())
             .messageMetadata(messageMetadata)
             .result(result)
             .osgpException(osgpException)
@@ -290,18 +288,17 @@ public class DeviceManagementService {
   }
 
   private MessageMetadata getMessageMetadataFromDeviceRequest(final DeviceRequest deviceRequest) {
-    final MessageMetadata.Builder messageMetadataBuilder =
-        MessageMetadata.newMessageMetadataBuilder()
-            .withCorrelationUid(deviceRequest.getCorrelationUid())
-            .withOrganisationIdentification(deviceRequest.getOrganisationIdentification())
-            .withDeviceIdentification(deviceRequest.getDeviceIdentification())
-            .withMessageType(deviceRequest.getMessageType())
-            .withDomain(deviceRequest.getDomain())
-            .withDomainVersion(deviceRequest.getDomainVersion())
-            .withIpAddress(deviceRequest.getIpAddress())
-            .withMessagePriority(deviceRequest.getMessagePriority())
-            .withScheduled(deviceRequest.isScheduled())
-            .withRetryCount(deviceRequest.getRetryCount());
-    return messageMetadataBuilder.build();
+    return MessageMetadata.newBuilder()
+        .withCorrelationUid(deviceRequest.getCorrelationUid())
+        .withOrganisationIdentification(deviceRequest.getOrganisationIdentification())
+        .withDeviceIdentification(deviceRequest.getDeviceIdentification())
+        .withMessageType(deviceRequest.getMessageType())
+        .withDomain(deviceRequest.getDomain())
+        .withDomainVersion(deviceRequest.getDomainVersion())
+        .withIpAddress(deviceRequest.getIpAddress())
+        .withMessagePriority(deviceRequest.getMessagePriority())
+        .withScheduled(deviceRequest.isScheduled())
+        .withRetryCount(deviceRequest.getRetryCount())
+        .build();
   }
 }
