@@ -157,10 +157,8 @@ public class SubscriptionService implements MqttClientEventHandler {
         messageMetadata.getDeviceIdentification(),
         payload);
     final ResponseMessage responseMessage =
-        new ProtocolResponseMessage.Builder()
+        ProtocolResponseMessage.newBuilder()
             .messageMetadata(messageMetadata)
-            .domain(messageMetadata.getDomain())
-            .domainVersion(messageMetadata.getDomainVersion())
             .dataObject(payload)
             .result(ResponseMessageResultType.OK)
             .build();

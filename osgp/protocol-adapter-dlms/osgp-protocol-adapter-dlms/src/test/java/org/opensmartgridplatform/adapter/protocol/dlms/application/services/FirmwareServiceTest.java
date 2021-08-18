@@ -62,8 +62,7 @@ public class FirmwareServiceTest {
 
   @BeforeAll
   public static void init() {
-    messageMetadata =
-        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+    messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
     updateFirmwareRequestDto =
         new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
   }
@@ -87,7 +86,7 @@ public class FirmwareServiceTest {
     final byte[] firmwareFile = firmwareIdentification.getBytes();
     final String firmwareImageIdentifier = "496d6167654964656e746966696572";
     final MessageMetadata messageMetadata =
-        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+        MessageMetadata.newBuilder().withCorrelationUid("123456").build();
 
     when(this.firmwareFileCachingRepository.isAvailable(firmwareIdentification)).thenReturn(true);
     when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification))
@@ -169,7 +168,7 @@ public class FirmwareServiceTest {
         new FirmwareFileDto(
             firmwareIdentification, deviceIdentification, firmwareFile, firmwareImageIdentifier);
     final MessageMetadata messageMetadata =
-        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+        MessageMetadata.newBuilder().withCorrelationUid("123456").build();
 
     when(this.firmwareFileCachingRepository.isAvailable(firmwareIdentification)).thenReturn(true);
     when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification))

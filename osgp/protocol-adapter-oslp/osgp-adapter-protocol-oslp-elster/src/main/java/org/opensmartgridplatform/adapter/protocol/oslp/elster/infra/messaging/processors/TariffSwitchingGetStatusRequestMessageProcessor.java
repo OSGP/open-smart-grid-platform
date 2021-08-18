@@ -156,16 +156,18 @@ public class TariffSwitchingGetStatusRequestMessageProcessor extends DeviceReque
               ComponentType.UNKNOWN, "Exception occurred while getting device status", e);
     }
     final MessageMetadata messageMetadata =
-        MessageMetadataFactory.from(deviceResponse, messageType);
+        MessageMetadataFactory.from(deviceResponse, messageType)
+            .builder()
+            .withDomain(domain)
+            .withDomainVersion(domainVersion)
+            .withRetryCount(retryCount)
+            .build();
     final ProtocolResponseMessage responseMessage =
         ProtocolResponseMessage.newBuilder()
-            .domain(domain)
-            .domainVersion(domainVersion)
             .messageMetadata(messageMetadata)
             .result(result)
             .osgpException(osgpException)
             .dataObject(status)
-            .retryCount(retryCount)
             .build();
 
     responseMessageSender.send(responseMessage);

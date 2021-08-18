@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.bundle;
 
+import java.util.Map;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.BundleAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.BundleAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.BundleRequest;
@@ -15,6 +16,7 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.BundleRe
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.SmartMeteringBaseClient;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.opensmartgridplatform.shared.infra.ws.DefaultWebServiceTemplateFactory;
+import org.opensmartgridplatform.shared.infra.ws.WebServiceMessageCallbackHeaderFieldsAdder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.WebServiceTemplate;
@@ -27,6 +29,14 @@ public class SmartMeteringBundleClient extends SmartMeteringBaseClient {
   public BundleAsyncResponse sendBundleRequest(final BundleRequest request)
       throws WebServiceSecurityException {
     return (BundleAsyncResponse) this.getTemplate().marshalSendAndReceive(request);
+  }
+
+  public BundleAsyncResponse sendBundleRequest(
+      final BundleRequest request, final Map<String, String> extraHeaders)
+      throws WebServiceSecurityException {
+    final WebServiceMessageCallbackHeaderFieldsAdder messageCallback =
+        new WebServiceMessageCallbackHeaderFieldsAdder(extraHeaders);
+    return (BundleAsyncResponse) this.getTemplate().marshalSendAndReceive(request, messageCallback);
   }
 
   public BundleResponse retrieveBundleResponse(final BundleAsyncRequest asyncRequest)

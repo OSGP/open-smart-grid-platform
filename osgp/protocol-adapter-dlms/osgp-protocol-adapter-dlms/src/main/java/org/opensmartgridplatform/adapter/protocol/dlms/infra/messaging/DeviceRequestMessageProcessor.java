@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 
 import java.io.Serializable;
+import java.time.Instant;
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
@@ -17,6 +18,9 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Doma
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.SilentException;
+import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
@@ -78,6 +82,21 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
     try {
       messageMetadata = MessageMetadata.fromMessage(message);
 
+      if (this.maxScheduleTimeExceeded(messageMetadata)) {
+        log.info(
+            "Processing message of type {} for correlation UID {} exceeded max schedule time: {} ({})",
+            messageMetadata.getMessageType(),
+            messageMetadata.getCorrelationUid(),
+            messageMetadata.getMaxScheduleTime(),
+            Instant.ofEpochMilli(messageMetadata.getMaxScheduleTime()));
+        this.sendErrorResponse(
+            messageMetadata,
+            new FunctionalException(
+                FunctionalExceptionType.MAX_SCHEDULE_TIME_EXCEEDED, ComponentType.PROTOCOL_DLMS),
+            message.getObject());
+        return;
+      }
+
       if (this.requiresExistingDevice()) {
         device = this.domainHelperService.findDlmsDevice(messageMetadata);
       }
@@ -106,6 +125,11 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
     } finally {
       this.doConnectionPostProcessing(device, connectionManager);
     }
+  }
+
+  private boolean maxScheduleTimeExceeded(final MessageMetadata messageMetadata) {
+    final Long maxScheduleTime = messageMetadata.getMaxScheduleTime();
+    return maxScheduleTime != null && System.currentTimeMillis() > maxScheduleTime;
   }
 
   protected Serializable getResponse(

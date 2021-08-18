@@ -41,7 +41,7 @@ public class MacGenerationServiceTest {
   private static final int mbusDeviceIdentificationNumber = Integer.parseInt("10000540", 16);
   private static final String deviceIdentification = "G0035161000054016";
   private static final MessageMetadata messageMetadata =
-      MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+      MessageMetadata.newBuilder().withCorrelationUid("123456").build();
 
   @BeforeAll
   public static void init() throws IOException {

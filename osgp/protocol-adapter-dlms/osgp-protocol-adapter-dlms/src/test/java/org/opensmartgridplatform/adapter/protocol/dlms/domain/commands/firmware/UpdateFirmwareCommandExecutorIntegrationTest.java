@@ -1,5 +1,11 @@
 /*
  * Copyright 2021 Alliander N.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware;
 
@@ -92,8 +98,7 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
             ImageTransferAttribute.IMAGE_FIRST_NOT_TRANSFERRED_BLOCK_NUMBER),
         DataObject.newUInteger32Data(100));
 
-    this.messageMetadata =
-        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+    this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
 
     final MethodResult methodResult = mock(MethodResult.class);
     when(methodResult.getResultCode()).thenReturn(MethodResultCode.SUCCESS);

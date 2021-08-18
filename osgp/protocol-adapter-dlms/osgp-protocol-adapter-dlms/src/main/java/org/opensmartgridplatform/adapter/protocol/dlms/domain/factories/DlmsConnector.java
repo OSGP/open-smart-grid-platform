@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -36,7 +37,7 @@ public abstract class DlmsConnector {
   }
 
   protected void checkIpAddress(final DlmsDevice device) throws FunctionalException {
-    if (device.getIpAddress() == null) {
+    if (StringUtils.isBlank(device.getIpAddress())) {
       final String errorMessage =
           String.format(
               "Unable to get connection for device %s, because the IP address:%s is not valid or empty",

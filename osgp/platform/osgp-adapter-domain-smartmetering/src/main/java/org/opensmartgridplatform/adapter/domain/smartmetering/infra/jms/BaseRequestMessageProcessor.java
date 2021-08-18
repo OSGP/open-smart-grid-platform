@@ -72,33 +72,26 @@ public abstract class BaseRequestMessageProcessor extends AbstractRequestMessage
   public void processMessage(final ObjectMessage message) throws JMSException {
     Object dataObject = null;
 
-    final MessageMetadata deviceMessageMetadata = MessageMetadata.fromMessage(message);
+    final MessageMetadata messageMetadata = MessageMetadata.fromMessage(message);
 
     try {
       dataObject = message.getObject();
     } catch (final JMSException e) {
       LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-      LOGGER.debug("device metadata: {}", deviceMessageMetadata);
+      LOGGER.debug("message metadata: {}", messageMetadata);
       return;
     }
 
     try {
-      LOGGER.info(
-          "Calling application service function: {}", deviceMessageMetadata.getMessageType());
+      LOGGER.info("Calling application service function: {}", messageMetadata.getMessageType());
       if (this.messageContainsDataObject()) {
-        this.handleMessage(deviceMessageMetadata, dataObject);
+        this.handleMessage(messageMetadata, dataObject);
       } else {
-        this.handleMessage(deviceMessageMetadata);
+        this.handleMessage(messageMetadata);
       }
 
     } catch (final Exception e) {
-      this.handleError(
-          e,
-          deviceMessageMetadata.getCorrelationUid(),
-          deviceMessageMetadata.getOrganisationIdentification(),
-          deviceMessageMetadata.getDeviceIdentification(),
-          deviceMessageMetadata.getMessageType(),
-          deviceMessageMetadata.getMessagePriority());
+      this.handleError(e, messageMetadata);
     }
   }
 }

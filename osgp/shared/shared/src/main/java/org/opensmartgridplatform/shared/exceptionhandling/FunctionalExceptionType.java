@@ -64,6 +64,7 @@ public enum FunctionalExceptionType {
       415, "SET_SCHEDULE_WITH_ASTRONOMICAL_OFFSETS_IN_PROGRESS"),
   OPERATION_NOT_SUPPORTED_BY_PLATFORM_FOR_PROTOCOL(
       416, "OPERATION_NOT_SUPPORTED_BY_PLATFORM_FOR_PROTOCOL"),
+  MAX_SCHEDULE_TIME_EXCEEDED(417, "MAX_SCHEDULE_TIME_EXCEEDED"),
 
   // Manufacturer exceptions
   UNKNOWN_MANUFACTURER(501, "UNKNOWN_MANUFACTURER"),
@@ -94,7 +95,7 @@ public enum FunctionalExceptionType {
   private final int code;
   private final String message;
 
-  private FunctionalExceptionType(final int code, final String message) {
+  FunctionalExceptionType(final int code, final String message) {
     this.code = code;
     this.message = message;
   }

@@ -156,13 +156,16 @@ public class CommonGetConfigurationRequestMessageProcessor extends DeviceRequest
 
     final ProtocolResponseMessage responseMessage =
         ProtocolResponseMessage.newBuilder()
-            .domain(domain)
-            .domainVersion(domainVersion)
-            .messageMetadata(MessageMetadataFactory.from(deviceResponse, messageType))
+            .messageMetadata(
+                MessageMetadataFactory.from(deviceResponse, messageType)
+                    .builder()
+                    .withDomain(domain)
+                    .withDomainVersion(domainVersion)
+                    .withRetryCount(retryCount)
+                    .build())
             .result(result)
             .osgpException(osgpException)
             .dataObject(configuration)
-            .retryCount(retryCount)
             .build();
 
     responseMessageSender.send(responseMessage);

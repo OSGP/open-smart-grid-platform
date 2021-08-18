@@ -57,7 +57,7 @@ public class DomainRequestMessageListener implements MessageListener {
         LOGGER.info(
             "Scheduled task for device [{}] at [{}] created.",
             scheduledTask.getDeviceIdentification(),
-            scheduledTask.getscheduledTime());
+            scheduledTask.getScheduledTime());
       } else {
         final ProtocolRequestMessage protocolRequestMessage =
             this.createProtocolRequestMessage(message);
@@ -74,13 +74,11 @@ public class DomainRequestMessageListener implements MessageListener {
   public ScheduledTask createScheduledTask(final Message message) throws JMSException {
 
     final Serializable messageData = ((ObjectMessage) message).getObject();
-    final Timestamp scheduleTimeStamp =
-        new Timestamp(message.getLongProperty(Constants.SCHEDULE_TIME));
-
-    final MessageMetadata deviceMessageMetadata = MessageMetadata.fromMessage(message);
+    final MessageMetadata messageMetadata = MessageMetadata.fromMessage(message);
+    final Timestamp scheduleTimeStamp = new Timestamp(messageMetadata.getScheduleTime());
 
     return new ScheduledTask(
-        deviceMessageMetadata,
+        messageMetadata,
         this.domainInfo.getDomain(),
         this.domainInfo.getDomainVersion(),
         messageData,
@@ -90,15 +88,16 @@ public class DomainRequestMessageListener implements MessageListener {
   public ProtocolRequestMessage createProtocolRequestMessage(final Message message)
       throws JMSException {
 
-    final MessageMetadata messageMetadata = MessageMetadata.fromMessage(message);
-    final String ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
+    final MessageMetadata messageMetadata =
+        MessageMetadata.fromMessage(message)
+            .builder()
+            .withDomain(this.domainInfo.getDomain())
+            .withDomainVersion(this.domainInfo.getDomainVersion())
+            .build();
     final Serializable messageData = ((ObjectMessage) message).getObject();
 
-    return new ProtocolRequestMessage.Builder()
+    return ProtocolRequestMessage.newBuilder()
         .messageMetadata(messageMetadata)
-        .domain(this.domainInfo.getDomain())
-        .domainVersion(this.domainInfo.getDomainVersion())
-        .ipAddress(ipAddress)
         .request(messageData)
         .build();
   }
