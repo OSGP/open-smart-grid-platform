@@ -74,8 +74,7 @@ public class FindEventsCommandExecutorTest {
 
     final DataObject fromDate = mock(DataObject.class);
     final DataObject toDate = mock(DataObject.class);
-    this.messageMetadata =
-        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+    this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
 
     this.findEventsRequestDto =
         new FindEventsRequestDto(

@@ -49,8 +49,7 @@ public class SetAlarmNotificationsCommandExecutorTest {
   public void setUp() {
     this.setParametersReceived = new ArrayList<>();
     this.device = new DlmsDevice("SuperAwesomeHeroicRockstarDevice");
-    this.messageMetadata =
-        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+    this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
 
     final DlmsObjectConfigConfiguration dlmsObjectConfigConfiguration =
         new DlmsObjectConfigConfiguration();

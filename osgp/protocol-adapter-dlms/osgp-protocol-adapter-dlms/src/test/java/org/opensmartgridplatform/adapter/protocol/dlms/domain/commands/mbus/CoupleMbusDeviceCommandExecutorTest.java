@@ -72,8 +72,7 @@ public class CoupleMbusDeviceCommandExecutorTest {
                 this.manufacturerIdentification,
                 this.version,
                 this.deviceTypeIdentification));
-    this.messageMetadata =
-        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+    this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
   }
 
   @Test

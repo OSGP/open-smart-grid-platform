@@ -63,8 +63,7 @@ public class SecretManagementServiceTest {
   public static void init() {
     TYPED_SECRET.setType(KEY_TYPE.toSecretType());
     TYPED_SECRET.setSecret(HEX_SOAP_SECRET);
-    messageMetadata =
-        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+    messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
   }
 
   @Test

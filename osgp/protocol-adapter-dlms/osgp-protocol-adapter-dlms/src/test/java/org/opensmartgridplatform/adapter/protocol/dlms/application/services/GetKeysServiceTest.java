@@ -47,18 +47,17 @@ class GetKeysServiceTest {
           Arrays.asList(
               SecretTypeDto.E_METER_MASTER_KEY, SecretTypeDto.E_METER_AUTHENTICATION_KEY));
 
-  private static final byte[] KEY_1_UNENCRYPTED = new byte[] {1, 2, 3};
-  private static final byte[] KEY_2_UNENCRYPTED = new byte[] {4, 5, 6};
+  private static final byte[] KEY_1_UNENCRYPTED = {1, 2, 3};
+  private static final byte[] KEY_2_UNENCRYPTED = {4, 5, 6};
 
-  private static final byte[] KEY_1_ENCRYPTED = new byte[] {99, 88, 77};
-  private static final byte[] KEY_2_ENCRYPTED = new byte[] {66, 55, 44};
+  private static final byte[] KEY_1_ENCRYPTED = {99, 88, 77};
+  private static final byte[] KEY_2_ENCRYPTED = {66, 55, 44};
 
   private static MessageMetadata messageMetadata;
 
   @BeforeAll
   public static void init() {
-    messageMetadata =
-        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+    messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
   }
 
   @Test

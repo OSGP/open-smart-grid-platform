@@ -16,13 +16,11 @@ import javax.jms.ObjectMessage;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.NotSupportedException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,24 +67,19 @@ public class DeviceRequestMessageListener implements MessageListener {
   private void sendException(
       final ObjectMessage objectMessage, final Exception exception, final String errorMessage) {
     try {
-      final String domain = objectMessage.getStringProperty(Constants.DOMAIN);
-      final String domainVersion = objectMessage.getStringProperty(Constants.DOMAIN_VERSION);
       final ResponseMessageResultType result = ResponseMessageResultType.NOT_OK;
       final OsgpException osgpException =
           new OsgpException(ComponentType.PROTOCOL_OSLP, errorMessage, exception);
       final Serializable dataObject = objectMessage.getObject();
 
-      final MessageMetadata messageMetadata = MessageMetadata.fromMessage(objectMessage);
+      final MessageMetadata messageMetadata =
+          MessageMetadata.fromMessage(objectMessage).builder().withScheduled(false).build();
       final ProtocolResponseMessage protocolResponseMessage =
-          new ProtocolResponseMessage.Builder()
+          ProtocolResponseMessage.newBuilder()
               .messageMetadata(messageMetadata)
-              .domain(domain)
-              .domainVersion(domainVersion)
               .result(result)
               .osgpException(osgpException)
               .dataObject(dataObject)
-              .scheduled(false)
-              .retryHeader(new RetryHeader())
               .build();
 
       this.deviceResponseMessageSender.send(protocolResponseMessage);

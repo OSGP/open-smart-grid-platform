@@ -57,8 +57,7 @@ class DlmsConnectionHelperTest {
             this.systemEventService,
             this.devicePingConfig,
             0);
-    this.messageMetadata =
-        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+    this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
   }
 
   @Test

@@ -31,7 +31,7 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 public class InstallationServiceTest {
 
   private final MessageMetadata messageMetadata =
-      MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+      MessageMetadata.newBuilder().withCorrelationUid("123456").build();
   private final String deviceIdentification = "Test";
 
   @InjectMocks InstallationService testService;
