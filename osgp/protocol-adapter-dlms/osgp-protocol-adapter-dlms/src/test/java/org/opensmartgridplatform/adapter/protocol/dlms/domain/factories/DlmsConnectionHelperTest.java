@@ -24,7 +24,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.DevicePingConfig;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SystemEventService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
@@ -40,8 +39,6 @@ class DlmsConnectionHelperTest {
 
   @Mock private InvocationCounterManager invocationCounterManager;
 
-  @Mock private SystemEventService systemEventService;
-
   @Mock private DlmsConnectionFactory connectionFactory;
 
   @Mock private DevicePingConfig devicePingConfig;
@@ -52,22 +49,8 @@ class DlmsConnectionHelperTest {
   void setUp() {
     this.helper =
         new DlmsConnectionHelper(
-            this.invocationCounterManager,
-            this.connectionFactory,
-            this.systemEventService,
-            this.devicePingConfig,
-            0);
+            this.invocationCounterManager, this.connectionFactory, this.devicePingConfig, 0);
     this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
-  }
-
-  @Test
-  void callSystemEventService() throws Exception {
-    final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true).build();
-    final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
-
-    this.helper.createConnectionForDevice(this.messageMetadata, device, listener);
-
-    verify(this.systemEventService).verifyMaxValueReachedEvent(device);
   }
 
   @Test

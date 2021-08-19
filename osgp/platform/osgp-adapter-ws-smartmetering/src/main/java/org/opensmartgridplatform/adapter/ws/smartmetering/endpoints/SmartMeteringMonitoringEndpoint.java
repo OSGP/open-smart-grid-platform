@@ -730,7 +730,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
           this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
-      this.throwExceptionIfResultNotOk(responseData, "retrieving actual power data");
+      this.throwExceptionIfResultNotOk(responseData, "retrieving system event data");
 
       response =
           this.monitoringMapper.map(

@@ -112,7 +112,7 @@ public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessage
           this.responseMessageSender,
           message.getObject());
     } finally {
-      this.doConnectionPostProcessing(device, conn);
+      this.doConnectionPostProcessing(device, conn, messageMetadata);
     }
   }
 

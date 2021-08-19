@@ -10,7 +10,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
 import java.time.Duration;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.DevicePingConfig;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SystemEventService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
@@ -35,7 +34,6 @@ public class DlmsConnectionHelper {
 
   private final InvocationCounterManager invocationCounterManager;
   private final DlmsConnectionFactory connectionFactory;
-  private final SystemEventService systemEventService;
   private final DevicePingConfig devicePingConfig;
   private final Duration delayBetweenDlmsConnections;
 
@@ -43,13 +41,11 @@ public class DlmsConnectionHelper {
   public DlmsConnectionHelper(
       final InvocationCounterManager invocationCounterManager,
       final DlmsConnectionFactory connectionFactory,
-      final SystemEventService systemEventService,
       final DevicePingConfig devicePingConfig,
       @Value("${dlms.connections.delay.seconds:30}") final int secondsBetweenDlmsConnections) {
 
     this.invocationCounterManager = invocationCounterManager;
     this.connectionFactory = connectionFactory;
-    this.systemEventService = systemEventService;
     this.devicePingConfig = devicePingConfig;
     this.delayBetweenDlmsConnections =
         secondsBetweenDlmsConnections < 1
@@ -114,8 +110,6 @@ public class DlmsConnectionHelper {
       this.delay(waitBeforeInitializingInvocationCounter);
       this.invocationCounterManager.initializeInvocationCounter(messageMetadata, device);
     }
-
-    this.systemEventService.verifyMaxValueReachedEvent(device);
 
     try {
       this.delay(waitBeforeCreatingTheConnection);

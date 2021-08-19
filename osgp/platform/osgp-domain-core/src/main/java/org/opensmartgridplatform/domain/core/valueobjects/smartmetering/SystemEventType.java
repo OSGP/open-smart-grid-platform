@@ -10,5 +10,5 @@
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
 public enum SystemEventType {
-  MAX_FRAMECOUNTER
+  INVOCATION_COUNTER_THRESHOLD_REACHED
 }

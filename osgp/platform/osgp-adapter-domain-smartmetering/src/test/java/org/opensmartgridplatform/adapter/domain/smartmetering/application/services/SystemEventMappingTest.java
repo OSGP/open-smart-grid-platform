@@ -24,7 +24,7 @@ class SystemEventMappingTest {
   private final MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
 
   // Test if mapping a SystemEvent object succeeds with null
-  // variables
+  // variables, although it
   @Test
   void testWithNullVariables() {
     // build test data
@@ -47,10 +47,11 @@ class SystemEventMappingTest {
 
   // is not empty
   @Test
-  void testWithNonEmptyVelue() {
+  void testWithNonEmptyValue() {
     // build test data
     final String deviceId = "deviceId";
-    final SystemEventTypeDto systemEventType = SystemEventTypeDto.MAX_FRAMECOUNTER;
+    final SystemEventTypeDto systemEventType =
+        SystemEventTypeDto.INVOCATION_COUNTER_THRESHOLD_REACHED;
     final Date timestamp = new Date();
     final String reason = "reason123";
     final SystemEventDto systemEventDto =

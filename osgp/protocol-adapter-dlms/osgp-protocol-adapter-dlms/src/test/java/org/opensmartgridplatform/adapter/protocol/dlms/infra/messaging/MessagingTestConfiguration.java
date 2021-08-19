@@ -11,8 +11,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import org.mockito.Mockito;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.DevicePingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.messaging.OutboundLogItemRequestsMessagingConfig;
@@ -20,7 +18,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.config.messag
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.MonitoringService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SystemEventService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
@@ -31,6 +28,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processor
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessageSender;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
+import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
+import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderUUIDService;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.networking.ping.Pinger;
@@ -100,6 +99,11 @@ public class MessagingTestConfiguration extends AbstractConfig {
   }
 
   @Bean
+  public CorrelationIdProviderService correlationIdProviderService() {
+    return new CorrelationIdProviderUUIDService();
+  }
+
+  @Bean
   public DlmsConnectionFactory dlmsConnectionFactory() {
     return new DlmsConnectionFactoryStub();
   }
@@ -107,19 +111,6 @@ public class MessagingTestConfiguration extends AbstractConfig {
   @Bean
   public InvocationCounterManager invocationCounterManager() {
     return new InvocationCounterManager(this.dlmsConnectionFactory(), this.dlmsHelper());
-  }
-
-  @Bean
-  public ExecutorService executorService() {
-    return Executors.newSingleThreadExecutor();
-  }
-
-  @Bean
-  public SystemEventService systemEventService() {
-    return new SystemEventService(
-        this.executorService(),
-        this.osgpRequestMessageSender(),
-        this.invocationCounterEventThreshold);
   }
 
   @Bean
@@ -137,11 +128,7 @@ public class MessagingTestConfiguration extends AbstractConfig {
           }
         };
     return new DlmsConnectionHelper(
-        this.invocationCounterManager(),
-        this.dlmsConnectionFactory(),
-        this.systemEventService(),
-        devicePingConfig,
-        0);
+        this.invocationCounterManager(), this.dlmsConnectionFactory(), devicePingConfig, 0);
   }
 
   @Bean

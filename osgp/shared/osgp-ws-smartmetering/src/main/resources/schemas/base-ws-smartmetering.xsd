@@ -238,7 +238,7 @@
   <!-- System Events -->
   <xsd:simpleType name="SystemEventType">
     <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="MAX_FRAMECOUNTER"/>
+      <xsd:enumeration value="INVOCATION_COUNTER_THRESHOLD_REACHED"/>
     </xsd:restriction>
   </xsd:simpleType>
 

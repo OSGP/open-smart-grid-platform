@@ -20,8 +20,8 @@ Feature: SmartMetering Monitoring - System Events
       | BeginDate            | 2015-09-01T00:00:00.000Z |
       | EndDate              | 2015-09-01T01:00:00.000Z |
     Then a system event should be returned
-      | DeviceIdentification | TEST1027000000001 |
-      | SystemEventType      | MAX_FRAMECOUNTER  |
+      | DeviceIdentification | TEST1027000000001                     |
+      | SystemEventType      | INVOCATION_COUNTER_THRESHOLD_REACHED  |
     And the "INTERVAL" meter reads result should be returned
       | DeviceIdentification | TEST1027000000001 |
 

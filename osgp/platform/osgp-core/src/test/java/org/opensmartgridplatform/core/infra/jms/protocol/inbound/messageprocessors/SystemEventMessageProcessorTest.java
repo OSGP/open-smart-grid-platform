@@ -9,15 +9,12 @@
  */
 package org.opensmartgridplatform.core.infra.jms.protocol.inbound.messageprocessors;
 
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,17 +24,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.core.domain.model.domain.DomainRequestService;
-import org.opensmartgridplatform.domain.core.entities.Device;
-import org.opensmartgridplatform.domain.core.entities.DeviceAuthorization;
 import org.opensmartgridplatform.domain.core.entities.DomainInfo;
-import org.opensmartgridplatform.domain.core.entities.Organisation;
-import org.opensmartgridplatform.domain.core.exceptions.UnknownEntityException;
-import org.opensmartgridplatform.domain.core.repositories.DeviceAuthorizationRepository;
-import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.DomainInfoRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunctionGroup;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SystemEventDto;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ObjectMessageBuilder;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
@@ -49,14 +40,6 @@ class SystemEventMessageProcessorTest {
 
   @Mock private SystemEventDto systemEventDto;
 
-  @Mock private DeviceRepository deviceRepository;
-
-  @Mock private DeviceAuthorizationRepository deviceAuthorizationRepository;
-
-  @Mock private DeviceAuthorization deviceAuthorization;
-
-  @Mock private Organisation organisation;
-
   @Mock private DomainInfoRepository domainInfoRepository;
 
   @Mock private DomainInfo domainInfo;
@@ -65,14 +48,15 @@ class SystemEventMessageProcessorTest {
 
   @InjectMocks private SystemEventMessageProcessor systemEventMessageProcessor;
   private ObjectMessage message;
-  private Device device;
 
   @BeforeEach
-  public void init() throws JMSException, UnknownEntityException {
+  public void init() throws JMSException {
 
     final String correlationUid = "corr-uid-1";
     final String organisationIdentification = "test-org";
     final String ipAddress = "127.0.0.1";
+    final String domain = "SMART_METERING";
+    final String domainVersion = "1.0";
 
     final RequestMessage requestMessage =
         new RequestMessage(
@@ -89,21 +73,11 @@ class SystemEventMessageProcessorTest {
             .withDeviceIdentification(DEVICE_IDENTIFICATION)
             .withObject(requestMessage)
             .build();
+    this.message.setStringProperty(Constants.DOMAIN, domain);
+    this.message.setStringProperty(Constants.DOMAIN_VERSION, domainVersion);
 
-    this.device = new Device(DEVICE_IDENTIFICATION);
-
-    when(this.deviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION))
-        .thenReturn(this.device);
-    when(this.deviceAuthorizationRepository.findByDeviceAndFunctionGroup(
-            this.device, DeviceFunctionGroup.OWNER))
-        .thenReturn(Collections.singletonList(this.deviceAuthorization));
-    when(this.deviceAuthorization.getOrganisation()).thenReturn(this.organisation);
-    when(this.organisation.getOrganisationIdentification())
-        .thenReturn(requestMessage.getOrganisationIdentification());
-    when(this.domainInfoRepository.findAll())
-        .thenReturn(Collections.singletonList(this.domainInfo));
-    when(this.domainInfo.getDomain()).thenReturn("SMART_METERING");
-    when(this.domainInfo.getDomainVersion()).thenReturn("1.0");
+    when(this.domainInfoRepository.findByDomainAndDomainVersion(domain, domainVersion))
+        .thenReturn(this.domainInfo);
     doNothing()
         .when(this.domainRequestService)
         .send(any(RequestMessage.class), any(String.class), any(DomainInfo.class));
@@ -119,39 +93,5 @@ class SystemEventMessageProcessorTest {
             any(RequestMessage.class),
             eq(DeviceFunction.SYSTEM_EVENT.name()),
             any(DomainInfo.class));
-  }
-
-  @Test
-  void testUnknownDevice() {
-    reset(this.organisation);
-    reset(this.deviceAuthorizationRepository);
-    reset(this.deviceAuthorization);
-    reset(this.deviceRepository);
-    reset(this.domainInfoRepository);
-    reset(this.domainInfo);
-    reset(this.domainRequestService);
-    when(this.deviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION)).thenReturn(null);
-    assertThatExceptionOfType(JMSException.class)
-        .isThrownBy(
-            () -> {
-              this.systemEventMessageProcessor.processMessage(this.message);
-            });
-  }
-
-  @Test
-  void testUnknownDeviceAuthorization() {
-    reset(this.deviceAuthorization);
-    reset(this.organisation);
-    reset(this.domainInfoRepository);
-    reset(this.domainInfo);
-    reset(this.domainRequestService);
-    when(this.deviceAuthorizationRepository.findByDeviceAndFunctionGroup(
-            this.device, DeviceFunctionGroup.OWNER))
-        .thenReturn(null);
-    assertThatExceptionOfType(JMSException.class)
-        .isThrownBy(
-            () -> {
-              this.systemEventMessageProcessor.processMessage(this.message);
-            });
   }
 }
