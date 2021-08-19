@@ -1,10 +1,10 @@
 @SmartMetering @Platform @SmartMeteringMonitoring
 Feature: SmartMetering Monitoring - System Events
   As a grid operator
-  I want to be able to recieve system events
-  So they can recieve information about the system
+  I want to be able to receive system events
+  So that I am aware of and can possibly act upon these events
 
-  Scenario: Recieve a system event when a device is used with a to high invocation counter
+  Scenario: Receive a system event when the invocation counter with a device reaches a threshold value
     Given a dlms device
       | DeviceIdentification     | TEST1027000000001 |
       | DeviceType               | SMART_METER_E     |
@@ -25,7 +25,7 @@ Feature: SmartMetering Monitoring - System Events
     And the "INTERVAL" meter reads result should be returned
       | DeviceIdentification | TEST1027000000001 |
 
-  Scenario: Do not recieve a system event when a device is used with a to low invocation counter
+  Scenario: No system event occurs when the invocation counter with a device is in normal operation range
     Given a dlms device
       | DeviceIdentification     | TEST1027000000001 |
       | DeviceType               | SMART_METER_E     |
