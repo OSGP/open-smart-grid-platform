@@ -18,8 +18,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 
 @Configuration
-@Conditional(MqttClientSslEnabledCondition.class)
-public class MqttClientSslEnabledConfig {
+@Conditional(MqttClientSslCertfileEnabledCondition.class)
+public class MqttClientSslCertfileEnabledConfig {
   @Bean
   public MqttClientSslConfig mqttClientSslConfig(
       @Value("${mqtt.client.ssl.certFile.location}") final Resource certFileLocation) {
