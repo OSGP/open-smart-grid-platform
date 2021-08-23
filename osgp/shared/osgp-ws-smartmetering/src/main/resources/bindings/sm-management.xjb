@@ -103,6 +103,44 @@
     <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='PV_VOLTAGE_SWELL_L3']">
           <jxb:typesafeEnumMember name="PV_VOLTAGE_SWELL_L3"/>
     </jxb:bindings>
+
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='MBUS_STATUS_BIT_3_TAMPER_P2_CHANNEL_1']">
+      <jxb:typesafeEnumMember name="MBUS_STATUS_BIT_3_TAMPER_P2_CHANNEL_1"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='MBUS_STATUS_BIT_4_TAMPER_P0_CHANNEL_1']">
+      <jxb:typesafeEnumMember name="MBUS_STATUS_BIT_4_TAMPER_P0_CHANNEL_1"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_1']">
+      <jxb:typesafeEnumMember name="MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_1"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='MBUS_STATUS_BIT_3_TAMPER_P2_CHANNEL_2']">
+      <jxb:typesafeEnumMember name="MBUS_STATUS_BIT_3_TAMPER_P2_CHANNEL_2"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='MBUS_STATUS_BIT_4_TAMPER_P0_CHANNEL_2']">
+      <jxb:typesafeEnumMember name="MBUS_STATUS_BIT_4_TAMPER_P0_CHANNEL_2"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_2']">
+      <jxb:typesafeEnumMember name="MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_2"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='MBUS_STATUS_BIT_3_TAMPER_P2_CHANNEL_3']">
+      <jxb:typesafeEnumMember name="MBUS_STATUS_BIT_3_TAMPER_P2_CHANNEL_3"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='MBUS_STATUS_BIT_4_TAMPER_P0_CHANNEL_3']">
+      <jxb:typesafeEnumMember name="MBUS_STATUS_BIT_4_TAMPER_P0_CHANNEL_3"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_3']">
+      <jxb:typesafeEnumMember name="MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_3"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='MBUS_STATUS_BIT_3_TAMPER_P2_CHANNEL_4']">
+      <jxb:typesafeEnumMember name="MBUS_STATUS_BIT_3_TAMPER_P2_CHANNEL_4"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='MBUS_STATUS_BIT_4_TAMPER_P0_CHANNEL_4']">
+      <jxb:typesafeEnumMember name="MBUS_STATUS_BIT_4_TAMPER_P0_CHANNEL_4"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_4']">
+      <jxb:typesafeEnumMember name="MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_4"/>
+    </jxb:bindings>
+
   </jxb:bindings>
 
 </jxb:bindings>

@@ -71,6 +71,8 @@ public class FindEventsCommandExecutor
         EventLogCategoryDto.M_BUS_EVENT_LOG, new ObisCode("0.0.99.98.3.255"));
     EVENT_LOG_CATEGORY_OBISCODE_MAP.put(
         EventLogCategoryDto.POWER_QUALITY_EVENT_LOG, new ObisCode("0.0.99.98.5.255"));
+    EVENT_LOG_CATEGORY_OBISCODE_MAP.put(
+        EventLogCategoryDto.AUXILIARY_EVENT_LOG, new ObisCode("0.0.99.98.6.255"));
   }
 
   @Autowired
