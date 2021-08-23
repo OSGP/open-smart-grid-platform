@@ -83,7 +83,8 @@ public class MacGenerationServiceTest {
                   messageMetadata, deviceIdentification, firmwareFile);
             });
     assertThat(exception)
-        .hasMessageContaining("No key of type G_METER_FIRMWARE_UPDATE found for device");
+        .hasMessageContaining(
+            "No key of type G_METER_FIRMWARE_UPDATE_AUTHENTICATION found for device");
   }
 
   @Test
@@ -109,7 +110,7 @@ public class MacGenerationServiceTest {
     this.assertExceptionContainsMessageOnCalculateMac(
         ProtocolAdapterException.class,
         clonedByteArray,
-        "Unexpected FirmwareImageMagicNumber in header FW file");
+        "Unexpected FirmwareImageMagicNumber in header firmware file");
   }
 
   @Test
@@ -120,7 +121,7 @@ public class MacGenerationServiceTest {
     this.assertExceptionContainsMessageOnCalculateMac(
         ProtocolAdapterException.class,
         clonedByteArray,
-        "Unexpected HeaderVersion in header FW file");
+        "Unexpected HeaderVersion in header firmware file");
   }
 
   @Test
@@ -131,7 +132,7 @@ public class MacGenerationServiceTest {
     this.assertExceptionContainsMessageOnCalculateMac(
         ProtocolAdapterException.class,
         clonedByteArray,
-        "Unexpected length of header in header FW file");
+        "Unexpected length of header in header firmware file");
   }
 
   @Test
@@ -142,7 +143,7 @@ public class MacGenerationServiceTest {
     this.assertExceptionContainsMessageOnCalculateMac(
         ProtocolAdapterException.class,
         clonedByteArray,
-        "Unexpected length of address in header FW file");
+        "Unexpected length of address in header firmware file");
   }
 
   @Test
@@ -171,7 +172,7 @@ public class MacGenerationServiceTest {
     this.assertExceptionContainsMessageOnCalculateMac(
         ProtocolAdapterException.class,
         clonedByteArray,
-        "Unexpected type of security in header FW file");
+        "Unexpected type of security in header firmware file");
   }
 
   @Test
@@ -182,7 +183,7 @@ public class MacGenerationServiceTest {
     this.assertExceptionContainsMessageOnCalculateMac(
         ProtocolAdapterException.class,
         clonedByteArray,
-        "Unexpected length of security in header FW file");
+        "Unexpected length of security in header firmware file");
   }
 
   @Test
@@ -193,7 +194,7 @@ public class MacGenerationServiceTest {
     this.assertExceptionContainsMessageOnCalculateMac(
         ProtocolAdapterException.class,
         clonedByteArray,
-        "Unexpected type of activation in header FW file");
+        "Unexpected type of activation in header firmware file");
   }
 
   @Test
