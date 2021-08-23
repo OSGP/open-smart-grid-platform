@@ -22,9 +22,9 @@ import org.springframework.core.io.Resource;
 public class MqttClientSslKeystoreEnabledConfig {
   @Bean
   public MqttClientSslConfig mqttClientSslConfig(
-      @Value("${mqtt.simulator.client.ssl.truststore.location}") final Resource truststoreLocation,
-      @Value("${mqtt.simulator.client.ssl.truststore.password}") final String truststorePassword,
-      @Value("${mqtt.simulator.client.ssl.truststore.type}") final String truststoreType) {
+      @Value("${mqtt.client.ssl.truststore.location}") final Resource truststoreLocation,
+      @Value("${mqtt.client.ssl.truststore.password}") final String truststorePassword,
+      @Value("${mqtt.client.ssl.truststore.type}") final String truststoreType) {
 
     return MqttClientSslConfigFactory.getMqttClientSslConfig(
         truststoreLocation, truststorePassword, truststoreType);
