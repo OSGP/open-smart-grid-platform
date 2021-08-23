@@ -71,12 +71,9 @@ public class NotificationService {
      */
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(messageMetadata.getCorrelationUid())
-            .withOrganisationIdentification(messageMetadata.getOrganisationIdentification())
-            .withDeviceIdentification(messageMetadata.getDeviceIdentification())
+            .withMessageMetadata(messageMetadata)
             .withResult(ResponseMessageResultType.OK)
             .withDataObject(systemEvent)
-            .withMessagePriority(messageMetadata.getMessagePriority())
             .build();
     this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
