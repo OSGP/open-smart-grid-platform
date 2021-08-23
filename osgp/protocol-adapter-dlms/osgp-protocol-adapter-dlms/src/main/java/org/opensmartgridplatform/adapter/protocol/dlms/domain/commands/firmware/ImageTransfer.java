@@ -33,7 +33,7 @@ import org.opensmartgridplatform.dlms.interfaceclass.method.ImageTransferMethod;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 
 @Slf4j
-class ImageTransfer {
+public class ImageTransfer {
 
   private static final double LOGGER_PERCENTAGE_STEP = 5.0;
 
@@ -503,7 +503,7 @@ class ImageTransfer {
     return true;
   }
 
-  static class ImageTranferProperties {
+  public static class ImageTranferProperties {
     private int verificationStatusCheckInterval;
     private int verificationStatusCheckTimeout;
     private int initiationStatusCheckInterval;

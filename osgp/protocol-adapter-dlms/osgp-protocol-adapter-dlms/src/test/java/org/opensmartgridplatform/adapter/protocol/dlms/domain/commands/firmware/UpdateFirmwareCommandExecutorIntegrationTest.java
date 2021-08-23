@@ -30,7 +30,9 @@ import org.openmuc.jdlms.MethodResult;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.config.UpdateFirmwareConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.MacGenerationService;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.ImageTransfer.ImageTranferProperties;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionManagerStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -52,6 +54,7 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
   @Mock private FirmwareFileCachingRepository firmwareFileCachingRepository;
   @Mock private FirmwareImageIdentifierCachingRepository firmwareImageIdentifierCachingRepository;
   @Mock private MacGenerationService macGenerationService;
+  @Mock private UpdateFirmwareConfig updateFirmwareConfig;
 
   private DlmsConnectionManagerStub connectionManagerStub;
   private DlmsConnectionStub connectionStub;
@@ -64,17 +67,6 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
 
   @BeforeEach
   void setUp() {
-    this.commandExecutor =
-        new UpdateFirmwareCommandExecutor(
-            this.dlmsDeviceRepository,
-            this.firmwareFileCachingRepository,
-            this.firmwareImageIdentifierCachingRepository,
-            this.macGenerationService,
-            this.verificationStatusCheckInterval,
-            this.verificationStatusCheckTimeout,
-            this.initiationStatusCheckInterval,
-            this.initiationStatusCheckTimeout);
-
     this.connectionStub = new DlmsConnectionStub();
     this.connectionManagerStub = new DlmsConnectionManagerStub(this.connectionStub);
 
@@ -102,7 +94,25 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
 
     final MethodResult methodResult = mock(MethodResult.class);
     when(methodResult.getResultCode()).thenReturn(MethodResultCode.SUCCESS);
+
+    final ImageTranferProperties imageTransferProperties =
+        new ImageTransfer.ImageTranferProperties();
+    imageTransferProperties.setVerificationStatusCheckInterval(
+        this.verificationStatusCheckInterval);
+    imageTransferProperties.setVerificationStatusCheckTimeout(this.verificationStatusCheckTimeout);
+    imageTransferProperties.setInitiationStatusCheckInterval(this.initiationStatusCheckInterval);
+    imageTransferProperties.setInitiationStatusCheckTimeout(this.initiationStatusCheckTimeout);
+    when(this.updateFirmwareConfig.imageTranferProperties()).thenReturn(imageTransferProperties);
+
     this.connectionStub.setDefaultMethodResult(methodResult);
+
+    this.commandExecutor =
+        new UpdateFirmwareCommandExecutor(
+            this.dlmsDeviceRepository,
+            this.firmwareFileCachingRepository,
+            this.firmwareImageIdentifierCachingRepository,
+            this.macGenerationService,
+            this.updateFirmwareConfig);
   }
 
   @Test
@@ -132,7 +142,7 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
     verify(this.firmwareImageIdentifierCachingRepository, times(1))
         .retrieve(firmwareIdentification);
 
-    this.doAsserts();
+    this.assertImageTransferRelatedInteractionWithConnection();
   }
 
   @Test
@@ -165,10 +175,10 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
     verify(this.firmwareFileCachingRepository, times(1)).retrieve(firmwareIdentification);
     verify(this.firmwareImageIdentifierCachingRepository, never()).retrieve(firmwareIdentification);
 
-    this.doAsserts();
+    this.assertImageTransferRelatedInteractionWithConnection();
   }
 
-  private void doAsserts() {
+  private void assertImageTransferRelatedInteractionWithConnection() {
     assertThat(
             this.connectionStub.hasMethodBeenInvoked(ImageTransferMethod.IMAGE_TRANSFER_INITIATE))
         .isTrue();

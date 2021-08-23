@@ -22,11 +22,14 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
  * This Firmware file is defined according to the Smart Meter Requirements 5.1, Supplement 4, P2
  * Companion Standard, Section 7. Firmware Upgrade
  *
+ * <p>The header has a fixed length of 35 positions
+ *
  * <p>Fixed values are
  *
  * <ul>
  *   <li>Firmware image magic number: 53h 4Dh 52h 35h
  *   <li>Header Version: 00h
+ *   <li>Address Type: 01h (for M-Bus device firmware)
  * </ul>
  */
 @Slf4j
@@ -34,6 +37,7 @@ public class FirmwareFile {
 
   private byte[] imageData;
 
+  private static final int HEADER_LENGTH = 35;
   public static final String FIRMWARE_IMAGE_MAGIC_NUMBER = "534d5235";
   public static final int HEADER_VERSION = 0;
 
@@ -42,7 +46,7 @@ public class FirmwareFile {
   }
 
   public boolean isMbusFirmware() {
-    return this.imageData.length >= 35
+    return this.imageData.length >= HEADER_LENGTH
         && this.getHeader()
             .getFirmwareImageMagicNumberHex()
             .equalsIgnoreCase(FIRMWARE_IMAGE_MAGIC_NUMBER)
@@ -173,7 +177,7 @@ public class FirmwareFile {
     firmwareFileHeader.setAddressType(this.readBytes(this.imageData, 19, 20));
     this.setAddressField(firmwareFileHeader);
     firmwareFileHeader.setActivationType(this.readBytes(this.imageData, 28, 29));
-    firmwareFileHeader.setActivationTime(this.readBytes(this.imageData, 29, 35));
+    firmwareFileHeader.setActivationTime(this.readBytes(this.imageData, 29, HEADER_LENGTH));
     return firmwareFileHeader;
   }
 
@@ -188,7 +192,7 @@ public class FirmwareFile {
   }
 
   public String getHeaderHex() {
-    return Hex.toHexString(this.readBytes(this.imageData, 0, 35));
+    return Hex.toHexString(this.readBytes(this.imageData, 0, HEADER_LENGTH));
   }
 
   private byte[] readBytes(final byte[] bytes, final int begin, final int end) {
@@ -196,34 +200,37 @@ public class FirmwareFile {
   }
 
   /**
-   * The Identifier for firmware image of M-Bus device has the following content - MAN (3 bytes)
-   * Manufacturer code according to FLAG (https://www.dlms.com/flag-id/flag-id-list) - DEV (4 bytes)
-   * M-Bus DEV code (letters "MBUS") - M-Bus Short ID (8 bytes) - (3 bytes) Identification Number -
-   * (3 bytes) Manufacturer ID - (1 bytes) Version - (1 byte ) DeviceType - M-Bus FW ID (4 bytes)
+   * The Identifier for firmware image of M-Bus device has the following content
+   *
+   * <ul>
+   *   <li>MAN (3 bytes) Manufacturer code according to FLAG
+   *       (https://www.dlms.com/flag-id/flag-id-list)
+   *   <li>DEV (4 bytes) M-Bus DEV code (letters "MBUS" (utf-8))
+   *   <li>M-Bus Short ID
+   *       <ul>
+   *         <li>Identification Number (3 bytes)
+   *         <li>Manufacturer ID (3 bytes)
+   *         <li>Version (1 bytes)
+   *         <li>DeviceType (1 bytes)
+   *         <li>M-Bus FW ID (4 bytes)
+   *       </ul>
+   * </ul>
    *
    * @return String representation of the image identifier (UTF-8 encoded)
    */
   public String createImageIdentifierForMbusDevice() {
+
     final FirmwareFileHeader header = this.getHeader();
-    final FirmwareFileHeaderAddressField addressField = header.getFirmwareFileHeaderAddressField();
     final int imageIdentifierSize = 19;
+
     if (log.isDebugEnabled()) {
-      log.debug("creating image identifier for M-Bus device from firmware file header information");
-      log.debug("MbusManufacturerId " + Arrays.toString(addressField.getMbusManufacturerId()));
-      log.debug("MBUS " + Arrays.toString("MBUS".getBytes()));
-      log.debug(
-          "MbusDeviceIdentificationNumber "
-              + Arrays.toString(addressField.getMbusDeviceIdentificationNumber()));
-      log.debug("MbusManufacturerId " + Arrays.toString(addressField.getMbusManufacturerId()));
-      log.debug("MbusVersion " + Arrays.toString(addressField.getMbusVersion()));
-      log.debug("MbusDeviceType " + Arrays.toString(addressField.getMbusDeviceType()));
-      log.debug("FirmwareImageVersion " + Arrays.toString(header.getFirmwareImageVersion()));
-      log.debug("Total size of image identifier : " + imageIdentifierSize + " bytes");
+      this.logImageIdentifierDetails(header, imageIdentifierSize);
     }
 
+    final FirmwareFileHeaderAddressField addressField = header.getFirmwareFileHeaderAddressField();
     final ByteBuffer imageIdentifier = ByteBuffer.allocate(imageIdentifierSize);
     imageIdentifier.put(addressField.getMbusManufacturerId());
-    imageIdentifier.put("MBUS".getBytes());
+    imageIdentifier.put("MBUS".getBytes(StandardCharsets.UTF_8));
     imageIdentifier.put(addressField.getMbusDeviceIdentificationNumber());
     imageIdentifier.put(addressField.getMbusManufacturerId());
     imageIdentifier.put(addressField.getMbusVersion());
@@ -231,5 +238,21 @@ public class FirmwareFile {
     imageIdentifier.put(header.getFirmwareImageVersion());
 
     return new String(imageIdentifier.array(), StandardCharsets.UTF_8);
+  }
+
+  private void logImageIdentifierDetails(
+      final FirmwareFileHeader header, final int imageIdentifierSize) {
+    final FirmwareFileHeaderAddressField addressField = header.getFirmwareFileHeaderAddressField();
+    log.debug("creating image identifier for M-Bus device from firmware file header information");
+    log.debug("MbusManufacturerId " + Arrays.toString(addressField.getMbusManufacturerId()));
+    log.debug("MBUS " + Arrays.toString("MBUS".getBytes(StandardCharsets.UTF_8)));
+    log.debug(
+        "MbusDeviceIdentificationNumber "
+            + Arrays.toString(addressField.getMbusDeviceIdentificationNumber()));
+    log.debug("MbusManufacturerId " + Arrays.toString(addressField.getMbusManufacturerId()));
+    log.debug("MbusVersion " + Arrays.toString(addressField.getMbusVersion()));
+    log.debug("MbusDeviceType " + Arrays.toString(addressField.getMbusDeviceType()));
+    log.debug("FirmwareImageVersion " + Arrays.toString(header.getFirmwareImageVersion()));
+    log.debug("Total size of image identifier : " + imageIdentifierSize + " bytes");
   }
 }

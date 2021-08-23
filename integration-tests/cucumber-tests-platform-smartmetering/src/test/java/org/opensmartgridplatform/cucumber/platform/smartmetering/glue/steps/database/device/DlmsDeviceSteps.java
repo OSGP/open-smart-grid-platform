@@ -144,7 +144,7 @@ public class DlmsDeviceSteps {
         PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY, G_METER_MASTER);
     this.securityKeyTypesByInputName.put(
         PlatformSmartmeteringKeys.KEY_DEVICE_FIRMWARE_UPDATE_KEY,
-        SecurityKeyType.G_METER_FIRMWARE_UPDATE);
+        SecurityKeyType.G_METER_FIRMWARE_UPDATE_AUTHENTICATION);
   }
 
   @Given("^a dlms device$")

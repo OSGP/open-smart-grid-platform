@@ -817,12 +817,12 @@ public class ConfigurationService {
         smartMeter, this.firmwareService.getFirmwareFile(firmwareIdentification));
 
     /*
-     * The request here is applicable for a E-meter or G-meter. The assumption here
+     * The request here is applicable for an E-meter or G-meter. The assumption here
      * is that an E-meter has no gateway device and the G-meter always has one.
      * Therefore no distinction has to be made between requests for E or G-meters.
      * In case the device to be updated has a gateway device the request will be
-     * sent to this gateway device. The UpdateFirmwareRequestDto contain the
-     * Identification of the device to be updated
+     * sent to this gateway device. The UpdateFirmwareRequestDto contains the
+     * identification of the device to be updated
      */
     String deviceIdentification;
     String ipAddress;

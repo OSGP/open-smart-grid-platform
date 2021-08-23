@@ -42,7 +42,7 @@ Feature: SmartMetering functional exceptions regarding firmware
       | DeviceType           | SMART_METER_E     |
       | ManufacturerCode     | KAIF              |
     And a firmware
-     | FirmwareFileIdentification  | TEST_FW_FILE_0001                        |
+      | FirmwareFileIdentification  | TEST_FW_FILE_0001                        |
       | FirmwareFile                | 57696520646974206c656573742069732067656b |
       | FirmwareModuleVersionComm   | Telit 10.00.154                          |
       | FirmwareModuleVersionMa     | BL_012 XMX_N42_GprsV09                   |

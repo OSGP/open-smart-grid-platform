@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware
 
 import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.config.UpdateFirmwareConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.MacGenerationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.FirmwareFile;
@@ -26,7 +27,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRe
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -53,26 +53,14 @@ public class UpdateFirmwareCommandExecutor
       final FirmwareFileCachingRepository firmwareFileCachingRepository,
       final FirmwareImageIdentifierCachingRepository firmwareImageIdentifierCachingRepository,
       final MacGenerationService macGenerationService,
-      @Value("${command.updatefirmware.verificationstatuscheck.interval}")
-          final int verificationStatusCheckInterval,
-      @Value("${command.updatefirmware.verificationstatuscheck.timeout}")
-          final int verificationStatusCheckTimeout,
-      @Value("${command.updatefirmware.initiationstatuscheck.interval}")
-          final int initiationStatusCheckInterval,
-      @Value("${command.updatefirmware.initiationstatuscheck.timeout}")
-          final int initiationStatusCheckTimeout) {
+      final UpdateFirmwareConfig updateFirmwareConfig) {
     super(UpdateFirmwareRequestDto.class);
     this.dlmsDeviceRepository = dlmsDeviceRepository;
     this.firmwareFileCachingRepository = firmwareFileCachingRepository;
     this.firmwareImageIdentifierCachingRepository = firmwareImageIdentifierCachingRepository;
     this.macGenerationService = macGenerationService;
 
-    this.imageTransferProperties = new ImageTransfer.ImageTranferProperties();
-    this.imageTransferProperties.setVerificationStatusCheckInterval(
-        verificationStatusCheckInterval);
-    this.imageTransferProperties.setVerificationStatusCheckTimeout(verificationStatusCheckTimeout);
-    this.imageTransferProperties.setInitiationStatusCheckInterval(initiationStatusCheckInterval);
-    this.imageTransferProperties.setInitiationStatusCheckTimeout(initiationStatusCheckTimeout);
+    this.imageTransferProperties = updateFirmwareConfig.imageTranferProperties();
   }
 
   @Override
@@ -142,7 +130,7 @@ public class UpdateFirmwareCommandExecutor
       throws ProtocolAdapterException {
 
     log.debug(
-        "Getting FW file from caching repository for firmware {}",
+        "Getting firmware file from caching repository for firmware {}",
         updateFirmwareRequestDto.getFirmwareIdentification());
     final byte[] firmwareFileByteArray =
         this.firmwareFileCachingRepository.retrieve(
@@ -167,11 +155,18 @@ public class UpdateFirmwareCommandExecutor
       final FirmwareFile firmwareFile)
       throws ProtocolAdapterException {
 
-    log.debug("Adding MAC to FW file for M-Bus device");
+    log.debug("Adding MAC to firmware file for M-Bus device");
     final DlmsDevice mbusDevice =
         this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
-    final int mbusDeviceIdentificationNumber = mbusDevice.getMbusIdentificationNumber().intValue();
-    firmwareFile.setMbusDeviceIdentificationNumber(mbusDeviceIdentificationNumber);
+
+    final Long mbusIdentificationNumber =
+        Long.parseLong(String.valueOf(mbusDevice.getMbusIdentificationNumber()), 16);
+    log.debug(
+        "Setting M-Bus device Identification number: {} (hex:{})",
+        mbusIdentificationNumber.intValue(),
+        mbusDevice.getMbusIdentificationNumber());
+    firmwareFile.setMbusDeviceIdentificationNumber(mbusIdentificationNumber.intValue());
+
     final byte[] calculatedMac =
         this.macGenerationService.calculateMac(
             messageMetadata, mbusDevice.getDeviceIdentification(), firmwareFile);
@@ -196,12 +191,12 @@ public class UpdateFirmwareCommandExecutor
     } else {
 
       log.debug(
-          "Getting FW ImageIdentifier from caching repository for firmware {}",
+          "Getting firmware ImageIdentifier from caching repository for firmware {}",
           firmwareIdentification);
 
       imageIdentifier = this.getImageIdentifierFromCache(firmwareIdentification);
     }
-    log.debug("FW ImageIdentifier: {}", imageIdentifier);
+    log.debug("Firmware ImageIdentifier: {}", imageIdentifier);
 
     return imageIdentifier;
   }
