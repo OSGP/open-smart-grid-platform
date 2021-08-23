@@ -10,13 +10,14 @@
 <jxb:bindings version="2.0" xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
   xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-  <jxb:globalBindings typesafeEnumMemberName="generateName" choiceContentProperty="true"/>
+  <jxb:globalBindings typesafeEnumMemberName="generateName" choiceContentProperty="true" typesafeEnumMaxMembers="512"/>
 
   <jxb:bindings schemaLocation="../schemas/management-ws-smartmetering.xsd">
     <jxb:schemaBindings>
       <jxb:package
         name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.management"></jxb:package>
     </jxb:schemaBindings>
+
     <!-- the following bindings are needed because the XJC transformer will change L1 to L_1 etc -->
     <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='POWER_DOWN_PHASE_L1_ISKR']">
         <jxb:typesafeEnumMember name="POWER_DOWN_PHASE_L1_ISKR"/>
