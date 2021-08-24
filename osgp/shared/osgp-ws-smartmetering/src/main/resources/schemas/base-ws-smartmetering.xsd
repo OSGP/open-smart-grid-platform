@@ -235,6 +235,13 @@
     </xsd:restriction>
   </xsd:simpleType>
 
+  <!-- System Events -->
+  <xsd:simpleType name="SystemEventType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="INVOCATION_COUNTER_THRESHOLD_REACHED"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
   <xsd:simpleType name="OsgpUnitType">
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="UNDEFINED">

@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 
 import java.io.Serializable;
 import javax.jms.JMSException;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SystemEventService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
@@ -48,6 +49,8 @@ public abstract class DlmsConnectionMessageProcessor {
 
   @Autowired protected ThrottlingService throttlingService;
 
+  @Autowired private SystemEventService systemEventService;
+
   public DlmsConnectionManager createConnectionForDevice(
       final DlmsDevice device, final MessageMetadata messageMetadata) throws OsgpException {
 
@@ -83,7 +86,9 @@ public abstract class DlmsConnectionMessageProcessor {
   }
 
   protected void doConnectionPostProcessing(
-      final DlmsDevice device, final DlmsConnectionManager conn) {
+      final DlmsDevice device,
+      final DlmsConnectionManager conn,
+      final MessageMetadata messageMetadata) {
     if (conn == null) {
       /*
        * No connection (possible and perfectly valid if an operation was handled that
@@ -99,6 +104,8 @@ public abstract class DlmsConnectionMessageProcessor {
 
     if (device.needsInvocationCounter()) {
       this.updateInvocationCounterForDevice(device, conn);
+
+      this.systemEventService.verifySystemEventThresholdReachedEvent(device, messageMetadata);
     }
   }
 

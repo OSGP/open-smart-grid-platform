@@ -25,8 +25,11 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.InvocationCounterManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.processors.GetPowerQualityProfileRequestMessageProcessor;
+import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.requests.to.core.OsgpRequestMessageSender;
 import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.application.config.messaging.DefaultJmsConfiguration;
+import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderService;
+import org.opensmartgridplatform.shared.domain.services.CorrelationIdProviderUUIDService;
 import org.opensmartgridplatform.shared.infra.jms.BaseMessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.networking.ping.Pinger;
@@ -59,6 +62,8 @@ import stub.DlmsPersistenceConfigStub;
 })
 public class MessagingTestConfiguration extends AbstractConfig {
 
+  private final long invocationCounterEventThreshold = 10;
+
   // JMS
 
   @Bean
@@ -86,6 +91,16 @@ public class MessagingTestConfiguration extends AbstractConfig {
   @Bean
   public DlmsHelper dlmsHelper() {
     return new DlmsHelper();
+  }
+
+  @Bean
+  public OsgpRequestMessageSender osgpRequestMessageSender() {
+    return new OsgpRequestMessageSender();
+  }
+
+  @Bean
+  public CorrelationIdProviderService correlationIdProviderService() {
+    return new CorrelationIdProviderUUIDService();
   }
 
   @Bean
