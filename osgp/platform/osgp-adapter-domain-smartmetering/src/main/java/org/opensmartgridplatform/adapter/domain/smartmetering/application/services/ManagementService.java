@@ -91,7 +91,7 @@ public class ManagementService {
 
   public void handleFindEventsResponse(
       final MessageMetadata messageMetadata,
-      final ResponseMessageResultType responseMessageResultType,
+      final ResponseMessageResultType resultType,
       final OsgpException osgpException,
       final EventMessageDataResponseDto eventMessageDataContainerDto)
       throws FunctionalException {
@@ -105,7 +105,7 @@ public class ManagementService {
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
             .withMessageMetadata(messageMetadata)
-            .withResult(ResponseMessageResultType.NOT_OK)
+            .withResult(resultType)
             .withOsgpException(osgpException)
             .withDataObject(eventMessageDataContainer)
             .build();
