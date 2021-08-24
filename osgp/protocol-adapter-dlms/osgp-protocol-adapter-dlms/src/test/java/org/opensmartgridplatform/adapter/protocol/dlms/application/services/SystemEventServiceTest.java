@@ -99,6 +99,7 @@ class SystemEventServiceTest {
 
     final MessageMetadata messageMetadata =
         new Builder()
+            .withIpAddress("127.0-.0.1")
             .withOrganisationIdentification("org-id")
             .withDomain("domain")
             .withDomainVersion("1.0")
@@ -124,11 +125,10 @@ class SystemEventServiceTest {
     final RequestMessage requestMessage = requestMessageCaptor.getValue();
     assertThat(requestMessage.getDeviceIdentification())
         .isEqualTo(device.getDeviceIdentification());
-    assertThat(requestMessage.getDeviceIdentification())
-        .isEqualTo(device.getDeviceIdentification());
     assertThat(requestMessage.getCorrelationUid()).isEqualTo("corr-id");
-    assertThat(requestMessage.getOrganisationIdentification()).isEqualTo("no-organisation");
-    assertThat(requestMessage.getIpAddress()).isNull();
+    assertThat(requestMessage.getOrganisationIdentification())
+        .isEqualTo(messageMetadata.getOrganisationIdentification());
+    assertThat(requestMessage.getIpAddress()).isEqualTo(messageMetadata.getIpAddress());
     assertThat(requestMessage.getRequest()).isInstanceOf(SystemEventDto.class);
 
     final SystemEventDto systemEventDto = (SystemEventDto) requestMessage.getRequest();
@@ -141,8 +141,9 @@ class SystemEventServiceTest {
     final MessageMetadata metadata = messageMetadataCaptor.getValue();
     assertThat(metadata.getDeviceIdentification()).isEqualTo(device.getDeviceIdentification());
     assertThat(metadata.getCorrelationUid()).isEqualTo("corr-id");
-    assertThat(metadata.getOrganisationIdentification()).isEqualTo("no-organisation");
-    assertThat(metadata.getIpAddress()).isNull();
+    assertThat(metadata.getOrganisationIdentification())
+        .isEqualTo(messageMetadata.getOrganisationIdentification());
+    assertThat(metadata.getIpAddress()).isEqualTo(messageMetadata.getIpAddress());
     assertThat(metadata.getMessagePriority()).isEqualTo(MessagePriorityEnum.HIGH.getPriority());
     assertThat(metadata.getMessageType()).isEqualTo(MessageType.SYSTEM_EVENT.name());
     assertThat(metadata.getDomain()).isEqualTo(messageMetadata.getDomain());
