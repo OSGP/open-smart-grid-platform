@@ -128,6 +128,34 @@ public class FindEventsCommandExecutorTest {
   }
 
   @Test
+  public void testRetrievalOfAuxiliaryLogEvents() throws ProtocolAdapterException {
+    this.findEventsRequestDto =
+        new FindEventsRequestDto(
+            EventLogCategoryDto.AUXILIARY_EVENT_LOG, DateTime.now().minusDays(70), DateTime.now());
+
+    when(this.getResult.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
+    when(this.getResult.getResultData()).thenReturn(this.resultData);
+    when(this.resultData.getValue()).thenReturn(this.generateDataObjectsAuxiliary());
+
+    final FindEventsCommandExecutor executor =
+        new FindEventsCommandExecutor(this.dlmsHelper, this.dataObjectToEventListConverter);
+
+    final List<EventDto> events =
+        executor.execute(
+            this.conn, this.dlmsDevice, this.findEventsRequestDto, this.messageMetadata);
+
+    assertThat(events.size()).isEqualTo(34);
+
+    int firstEventCode = 33664;
+    for (final EventDto event : events) {
+      assertThat(event.getEventCode()).isEqualTo(firstEventCode++);
+    }
+
+    verify(this.dlmsHelper, times(events.size()))
+        .convertDataObjectToDateTime(any(DataObject.class));
+  }
+
+  @Test
   public void testOtherReasonResult() throws ProtocolAdapterException {
 
     when(this.getResult.getResultCode()).thenReturn(AccessResultCode.OTHER_REASON);
@@ -165,6 +193,25 @@ public class FindEventsCommandExecutorTest {
               final DataObject eventCode = DataObject.newInteger16Data((short) code);
               final DataObject eventTime =
                   DataObject.newDateTimeData(new CosemDateTime(2018, 12, 31, 23, code - 60, 0, 0));
+
+              final DataObject struct = DataObject.newStructureData(eventTime, eventCode);
+
+              dataObjects.add(struct);
+            });
+
+    return dataObjects;
+  }
+
+  private List<DataObject> generateDataObjectsAuxiliary() {
+
+    final List<DataObject> dataObjects = new ArrayList<>();
+
+    IntStream.rangeClosed(33664, 33697)
+        .forEach(
+            code -> {
+              final DataObject eventCode = DataObject.newUInteger16Data((int) code);
+              final DataObject eventTime =
+                  DataObject.newDateTimeData(new CosemDateTime(2018, 12, 31, 23, code % 60, 0, 0));
 
               final DataObject struct = DataObject.newStructureData(eventTime, eventCode);
 

@@ -53,6 +53,6 @@ Feature: SmartMetering Management - Find Events
     When receiving a find auxiliary events request
       | DeviceIdentification | TEST1024000000001        |
       | BeginDate            | 2015-09-01T00:00:00.000Z |
-      | EndDate              | 2015-09-05T00:00:00.000Z |
+      | EndDate              | 2015-10-01T00:00:00.000Z |
     Then 169 auxiliary events should be returned
       | DeviceIdentification | TEST1024000000001 |
