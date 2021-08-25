@@ -17,6 +17,7 @@ import org.opensmartgridplatform.shared.test.DefaultValue;
 public class DlmsDeviceBuilder {
   private static long counter = 0L;
 
+  private DefaultValue<String> deviceIdentification = notSet();
   private DefaultValue<Boolean> lls1Active = notSet();
   private DefaultValue<Boolean> hls3Active = notSet();
   private DefaultValue<Boolean> hls4Active = notSet();
@@ -27,6 +28,7 @@ public class DlmsDeviceBuilder {
   public DlmsDevice build() {
     counter += 1;
     final DlmsDevice device = new DlmsDevice();
+    device.setDeviceIdentification(this.deviceIdentification.orElse("device-" + counter));
     device.setLls1Active(this.lls1Active.orElse(false));
     device.setHls3Active(this.hls3Active.orElse(false));
     device.setHls4Active(this.hls4Active.orElse(false));
@@ -34,6 +36,11 @@ public class DlmsDeviceBuilder {
     device.setProtocol(this.protocol.orElse("protocol" + counter), "protocolVersion" + counter);
     device.setInvocationCounter(this.invocationCounter.orElse(100L + counter));
     return device;
+  }
+
+  public DlmsDeviceBuilder withDeviceIdentification(final String deviceIdentification) {
+    this.deviceIdentification = setTo(deviceIdentification);
+    return this;
   }
 
   public DlmsDeviceBuilder withLls1Active(final boolean lls1Active) {

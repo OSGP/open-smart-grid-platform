@@ -236,6 +236,7 @@ public class PlatformKeys extends Keys {
   public static final String KEY_SUPPLIER = "Supplier";
   public static final String KEY_SYSTEM_ID = "SystemId";
   public static final String KEY_SYSTEM_TYPE = "SystemType";
+  public static final String KEY_SYSTEM_EVENT_TYPE = "SystemEventType";
   public static final String KEY_TECHNICAL_INSTALLATION_DATE = "TechnicalInstallationDate";
 
   public static final String KEY_TIME = "Time";

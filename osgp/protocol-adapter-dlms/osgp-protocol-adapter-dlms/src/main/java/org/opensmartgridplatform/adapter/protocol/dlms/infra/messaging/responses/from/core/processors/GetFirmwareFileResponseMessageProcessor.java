@@ -94,7 +94,7 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
           this.responseMessageSender,
           this.getFirmwareIdentification(message));
     } finally {
-      this.doConnectionPostProcessing(device, conn);
+      this.doConnectionPostProcessing(device, conn, messageMetadata);
     }
   }
 

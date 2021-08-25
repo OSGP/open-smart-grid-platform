@@ -222,6 +222,27 @@
     </xsd:complexContent>
   </xsd:complexType>
 
+
+  <xsd:element name="GetSystemEventAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GetSystemEventResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:sequence>
+          <xsd:element name="Timestamp" type="xsd:dateTime" />
+          <xsd:element name="SystemEventType" type="common:SystemEventType" />
+          <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+          <xsd:element name="Reason" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
   <xsd:element name="ReadAlarmRegisterRequest">
     <xsd:complexType>
       <xsd:sequence>
