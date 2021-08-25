@@ -9,6 +9,8 @@
 package org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.monitoring;
 
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.AsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.Notification;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.NotificationType;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.SmartMeteringBaseClient;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.opensmartgridplatform.shared.infra.ws.DefaultWebServiceTemplateFactory;
@@ -33,5 +35,17 @@ public class SmartMeteringMonitoringResponseClient<T, V extends AsyncRequest>
 
     this.waitForNotification(request.getCorrelationUid());
     return (T) this.getTemplate().marshalSendAndReceive(request);
+  }
+
+  public T getResponse(final V request, final NotificationType notificationType)
+      throws WebServiceSecurityException {
+    final Notification notification = this.waitForNotification(notificationType);
+    request.setCorrelationUid(notification.getCorrelationUid());
+    return (T) this.getTemplate().marshalSendAndReceive(request);
+  }
+
+  public boolean hasMoreResponses() throws WebServiceSecurityException {
+    final Notification notification = this.waitForNotification(5000);
+    return notification != null;
   }
 }

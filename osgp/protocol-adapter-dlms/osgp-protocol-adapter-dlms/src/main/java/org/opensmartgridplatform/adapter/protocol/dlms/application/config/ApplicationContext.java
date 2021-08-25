@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @ComponentScan(
     basePackages = {
       "org.opensmartgridplatform.adapter.protocol.dlms",
+      "org.opensmartgridplatform.shared.domain.services",
       "org.opensmartgridplatform.shared.security"
     })
 @EnableTransactionManagement()

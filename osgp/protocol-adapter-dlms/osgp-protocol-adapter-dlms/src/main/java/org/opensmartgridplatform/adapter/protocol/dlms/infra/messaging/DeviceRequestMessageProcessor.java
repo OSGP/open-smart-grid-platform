@@ -123,7 +123,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
       this.sendErrorResponse(messageMetadata, exception, message.getObject());
 
     } finally {
-      this.doConnectionPostProcessing(device, connectionManager);
+      this.doConnectionPostProcessing(device, connectionManager, messageMetadata);
     }
   }
 

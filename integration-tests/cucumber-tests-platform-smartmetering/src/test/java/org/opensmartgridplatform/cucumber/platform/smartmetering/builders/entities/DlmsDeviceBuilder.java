@@ -43,6 +43,7 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
   private String mbusManufacturerIdentification = null;
   private String protocolName = PlatformSmartmeteringDefaults.PROTOCOL;
   private String protocolVersion = PlatformSmartmeteringDefaults.PROTOCOL_VERSION;
+  private Long invocationCounter = PlatformSmartmeteringDefaults.INVOCATION_COUNTER;
 
   public DlmsDeviceBuilder setDeviceIdentification(final String deviceIdentification) {
     this.deviceIdentification = deviceIdentification;
@@ -155,6 +156,11 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     return this;
   }
 
+  public DlmsDeviceBuilder setInvocationCounter(final Long invocationCounter) {
+    this.invocationCounter = invocationCounter;
+    return this;
+  }
+
   @Override
   public DlmsDeviceBuilder withSettings(final Map<String, String> inputSettings) {
     if (inputSettings.containsKey(PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION)) {
@@ -229,6 +235,10 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
       this.setMbusManufacturerIdentification(
           inputSettings.get(PlatformSmartmeteringKeys.MBUS_MANUFACTURER_IDENTIFICATION));
     }
+    if (inputSettings.containsKey(PlatformSmartmeteringKeys.INVOCATION_COUNTER)) {
+      this.setInvocationCounter(
+          getLong(inputSettings, PlatformSmartmeteringKeys.INVOCATION_COUNTER));
+    }
 
     /**
      * For port/logical_id we want to be able to override the default value to be null to enable
@@ -277,7 +287,7 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     dlmsDevice.setMbusIdentificationNumber(this.mbusIdentificationNumber);
     dlmsDevice.setMbusManufacturerIdentification(this.mbusManufacturerIdentification);
     dlmsDevice.setProtocol(this.protocolName, this.protocolVersion);
-    dlmsDevice.setInvocationCounter(0L);
+    dlmsDevice.setInvocationCounter(this.invocationCounter);
 
     return dlmsDevice;
   }
