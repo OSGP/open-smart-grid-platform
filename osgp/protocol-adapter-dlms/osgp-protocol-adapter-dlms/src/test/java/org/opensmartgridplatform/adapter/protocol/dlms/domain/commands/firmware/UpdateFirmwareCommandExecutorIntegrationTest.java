@@ -32,7 +32,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.UpdateFirmwareConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.MacGenerationService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.ImageTransfer.ImageTranferProperties;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.ImageTransfer.ImageTransferProperties;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionManagerStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -95,14 +95,14 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
     final MethodResult methodResult = mock(MethodResult.class);
     when(methodResult.getResultCode()).thenReturn(MethodResultCode.SUCCESS);
 
-    final ImageTranferProperties imageTransferProperties =
-        new ImageTransfer.ImageTranferProperties();
+    final ImageTransferProperties imageTransferProperties =
+        new ImageTransfer.ImageTransferProperties();
     imageTransferProperties.setVerificationStatusCheckInterval(
         this.verificationStatusCheckInterval);
     imageTransferProperties.setVerificationStatusCheckTimeout(this.verificationStatusCheckTimeout);
     imageTransferProperties.setInitiationStatusCheckInterval(this.initiationStatusCheckInterval);
     imageTransferProperties.setInitiationStatusCheckTimeout(this.initiationStatusCheckTimeout);
-    when(this.updateFirmwareConfig.imageTranferProperties()).thenReturn(imageTransferProperties);
+    when(this.updateFirmwareConfig.imageTransferProperties()).thenReturn(imageTransferProperties);
 
     this.connectionStub.setDefaultMethodResult(methodResult);
 

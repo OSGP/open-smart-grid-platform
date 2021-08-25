@@ -14,6 +14,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.config.Update
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.MacGenerationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.FirmwareFile;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.IdentificationNumber;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
@@ -40,12 +41,16 @@ public class UpdateFirmwareCommandExecutor
       "Firmware file is not available.";
   private static final String EXCEPTION_MSG_FIRMWARE_IMAGE_IDENTIFIER_NOT_AVAILABLE =
       "Firmware Image Identifier is not available.";
+  private static final String EXCEPTION_MSG_DEVICE_NOT_AVAILABLE_IN_DATABASE =
+      "Device {} not available in database.";
+  private static final String EXCEPTION_MSG_DEVICE_HAS_NO_MBUS_IDENTIFICATION_NUMBER =
+      "Device {} has no M-Bus identification number.";
 
   private DlmsDeviceRepository dlmsDeviceRepository;
 
   private final FirmwareFileCachingRepository firmwareFileCachingRepository;
   private final FirmwareImageIdentifierCachingRepository firmwareImageIdentifierCachingRepository;
-  private final ImageTransfer.ImageTranferProperties imageTransferProperties;
+  private final ImageTransfer.ImageTransferProperties imageTransferProperties;
   private final MacGenerationService macGenerationService;
 
   public UpdateFirmwareCommandExecutor(
@@ -60,7 +65,7 @@ public class UpdateFirmwareCommandExecutor
     this.firmwareImageIdentifierCachingRepository = firmwareImageIdentifierCachingRepository;
     this.macGenerationService = macGenerationService;
 
-    this.imageTransferProperties = updateFirmwareConfig.imageTranferProperties();
+    this.imageTransferProperties = updateFirmwareConfig.imageTransferProperties();
   }
 
   @Override
@@ -158,13 +163,26 @@ public class UpdateFirmwareCommandExecutor
     log.debug("Adding MAC to firmware file for M-Bus device");
     final DlmsDevice mbusDevice =
         this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
+    if (mbusDevice == null) {
+      throw new ProtocolAdapterException(
+          String.format(EXCEPTION_MSG_DEVICE_NOT_AVAILABLE_IN_DATABASE, deviceIdentification));
+    }
+
+    final Long hexNotationOfTheMbusIdentificationNumber = mbusDevice.getMbusIdentificationNumber();
+    if (hexNotationOfTheMbusIdentificationNumber == null) {
+      throw new ProtocolAdapterException(
+          String.format(
+              EXCEPTION_MSG_DEVICE_HAS_NO_MBUS_IDENTIFICATION_NUMBER, deviceIdentification));
+    }
 
     final Long mbusIdentificationNumber =
-        Long.parseLong(String.valueOf(mbusDevice.getMbusIdentificationNumber()), 16);
+        new IdentificationNumber(String.format("%08d", hexNotationOfTheMbusIdentificationNumber))
+            .getIdentificationNumber();
     log.debug(
         "Setting M-Bus device Identification number: {} (hex:{})",
         mbusIdentificationNumber.intValue(),
-        mbusDevice.getMbusIdentificationNumber());
+        hexNotationOfTheMbusIdentificationNumber);
+
     firmwareFile.setMbusDeviceIdentificationNumber(mbusIdentificationNumber.intValue());
 
     final byte[] calculatedMac =

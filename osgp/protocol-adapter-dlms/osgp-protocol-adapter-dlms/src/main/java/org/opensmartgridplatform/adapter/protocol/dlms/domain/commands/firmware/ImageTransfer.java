@@ -60,7 +60,7 @@ public class ImageTransfer {
   private static final ObisCode OBIS_CODE = new ObisCode("0.0.44.0.0.255");
   private static final ExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadExecutor();
 
-  private final ImageTranferProperties properties;
+  private final ImageTransferProperties properties;
   private final String imageIdentifier;
   private final byte[] imageData;
   private final DlmsConnectionManager connector;
@@ -70,7 +70,7 @@ public class ImageTransfer {
 
   public ImageTransfer(
       final DlmsConnectionManager connector,
-      final ImageTranferProperties properties,
+      final ImageTransferProperties properties,
       final String imageIdentifier,
       final byte[] imageData) {
     this.properties = properties;
@@ -503,7 +503,7 @@ public class ImageTransfer {
     return true;
   }
 
-  public static class ImageTranferProperties {
+  public static class ImageTransferProperties {
     private int verificationStatusCheckInterval;
     private int verificationStatusCheckTimeout;
     private int initiationStatusCheckInterval;

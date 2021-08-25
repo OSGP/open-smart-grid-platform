@@ -9,7 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.application.config;
 
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.ImageTransfer;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.ImageTransfer.ImageTranferProperties;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.ImageTransfer.ImageTransferProperties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,9 +30,9 @@ public class UpdateFirmwareConfig {
   private int initiationStatusCheckTimeout;
 
   @Bean
-  public ImageTranferProperties imageTranferProperties() {
-    final ImageTranferProperties imageTransferProperties =
-        new ImageTransfer.ImageTranferProperties();
+  public ImageTransferProperties imageTransferProperties() {
+    final ImageTransferProperties imageTransferProperties =
+        new ImageTransfer.ImageTransferProperties();
     imageTransferProperties.setVerificationStatusCheckInterval(
         this.verificationStatusCheckInterval);
     imageTransferProperties.setVerificationStatusCheckTimeout(this.verificationStatusCheckTimeout);
