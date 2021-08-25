@@ -17,7 +17,7 @@ public class MqttClientSslKeystoreEnabledCondition implements Condition {
 
   @Override
   public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
-    return "true".equalsIgnoreCase(context.getEnvironment().getProperty("mqtt.client.ssl.enabled"))
-        && context.getEnvironment().getProperty("mqtt.client.ssl.truststore.location") != null;
+    return context.getEnvironment().getProperty("mqtt.client.ssl.config", MqttSslConfigEnum.class)
+        == MqttSslConfigEnum.KEYSTORE;
   }
 }
