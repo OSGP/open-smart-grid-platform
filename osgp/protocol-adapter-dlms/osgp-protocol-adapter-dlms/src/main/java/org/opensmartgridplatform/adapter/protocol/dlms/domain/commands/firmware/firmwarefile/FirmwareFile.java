@@ -216,9 +216,9 @@ public class FirmwareFile {
    *       </ul>
    * </ul>
    *
-   * @return String representation of the image identifier (UTF-8 encoded)
+   * @return byte[] image identifier
    */
-  public String createImageIdentifierForMbusDevice() {
+  public byte[] createImageIdentifierForMbusDevice() {
 
     final FirmwareFileHeader header = this.getHeader();
     final int imageIdentifierSize = 19;
@@ -237,7 +237,7 @@ public class FirmwareFile {
     imageIdentifier.put(addressField.getMbusDeviceType());
     imageIdentifier.put(header.getFirmwareImageVersion());
 
-    return new String(imageIdentifier.array(), StandardCharsets.UTF_8);
+    return imageIdentifier.array();
   }
 
   private void logImageIdentifierDetails(

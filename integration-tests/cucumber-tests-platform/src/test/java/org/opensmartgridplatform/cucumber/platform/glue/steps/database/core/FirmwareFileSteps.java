@@ -140,8 +140,8 @@ public class FirmwareFileSteps {
       }
     }
 
-    final String imageIdentifier =
-        getString(settings, PlatformKeys.FIRMWARE_FILE_IMAGE_IDENTIFIER, null);
+    final byte[] imageIdentifier =
+        getHexDecoded(settings, PlatformKeys.FIRMWARE_FILE_IMAGE_IDENTIFIER, null);
 
     FirmwareFile firmwareFile =
         new FirmwareFile.Builder()

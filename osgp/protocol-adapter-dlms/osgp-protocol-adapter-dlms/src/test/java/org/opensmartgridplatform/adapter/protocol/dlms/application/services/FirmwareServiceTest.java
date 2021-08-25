@@ -17,6 +17,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.bouncycastle.util.encoders.Hex;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -84,7 +85,7 @@ public class FirmwareServiceTest {
   public void updateFirmwareShouldCallExecutorWhenFirmwareFileInCache() throws OsgpException {
     // Arrange
     final byte[] firmwareFile = firmwareIdentification.getBytes();
-    final String firmwareImageIdentifier = "496d6167654964656e746966696572";
+    final byte[] firmwareImageIdentifier = Hex.decode("496d6167654964656e746966696572");
     final MessageMetadata messageMetadata =
         MessageMetadata.newBuilder().withCorrelationUid("123456").build();
 
@@ -162,7 +163,7 @@ public class FirmwareServiceTest {
       throws OsgpException {
     // Arrange
     final byte[] firmwareFile = firmwareIdentification.getBytes();
-    final String firmwareImageIdentifier = "496d6167654964656e746966696572";
+    final byte[] firmwareImageIdentifier = Hex.decode("496d6167654964656e746966696572");
 
     final FirmwareFileDto firmwareFileDto =
         new FirmwareFileDto(

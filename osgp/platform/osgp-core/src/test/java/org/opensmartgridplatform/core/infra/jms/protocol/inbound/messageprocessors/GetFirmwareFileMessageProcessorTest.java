@@ -87,7 +87,7 @@ public class GetFirmwareFileMessageProcessorTest {
 
     when(this.firmwareFileMock.getFilename()).thenReturn(firmwareFileIdentification);
     when(this.firmwareFileMock.getFile()).thenReturn(firmwareFileBytes);
-    when(this.firmwareFileRepository.findByIdentification(firmwareFileIdentification))
+    when(this.firmwareFileRepository.findByIdentificationOnly(firmwareFileIdentification))
         .thenReturn(this.firmwareFileMock);
 
     final byte[] expectedFile = firmwareFileBytes;

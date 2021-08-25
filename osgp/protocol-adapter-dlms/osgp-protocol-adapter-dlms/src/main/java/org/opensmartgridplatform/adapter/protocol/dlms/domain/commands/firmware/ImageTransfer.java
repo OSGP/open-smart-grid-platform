@@ -8,7 +8,6 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -61,7 +60,7 @@ public class ImageTransfer {
   private static final ExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadExecutor();
 
   private final ImageTransferProperties properties;
-  private final String imageIdentifier;
+  private final byte[] imageIdentifier;
   private final byte[] imageData;
   private final DlmsConnectionManager connector;
   private final CosemObjectAccessor imageTransferCosem;
@@ -71,7 +70,7 @@ public class ImageTransfer {
   public ImageTransfer(
       final DlmsConnectionManager connector,
       final ImageTransferProperties properties,
-      final String imageIdentifier,
+      final byte[] imageIdentifier,
       final byte[] imageData) {
     this.properties = properties;
     this.imageIdentifier = imageIdentifier;
@@ -139,8 +138,7 @@ public class ImageTransfer {
    */
   public void initiateImageTransfer() throws ProtocolAdapterException {
     final List<DataObject> params = new ArrayList<>();
-    params.add(
-        DataObject.newOctetStringData(this.imageIdentifier.getBytes(StandardCharsets.UTF_8)));
+    params.add(DataObject.newOctetStringData(this.imageIdentifier));
     params.add(DataObject.newUInteger32Data(this.getImageSize()));
     final DataObject parameter = DataObject.newStructureData(params);
 
@@ -251,20 +249,18 @@ public class ImageTransfer {
       final long imageToActivateSize = imageToActivateDetails.get(0).getValue();
       final byte[] imageToActivateIdentificationBytes = imageToActivateDetails.get(1).getValue();
       final byte[] imageSignature = imageToActivateDetails.get(2).getValue();
-      final String imageToActivateIdentification =
-          new String(imageToActivateIdentificationBytes, StandardCharsets.UTF_8);
-      if (imageToActivateIdentification.equals(this.imageIdentifier)
+      if (Arrays.equals(imageToActivateIdentificationBytes, this.imageIdentifier)
           && this.isSignature(imageSignature)
           && imageToActivateSize == this.imageData.length) {
         final String imageDescription =
             this.describeImageInfo(
-                imageToActivateSize, imageToActivateIdentification, imageSignature);
+                imageToActivateSize, imageToActivateIdentificationBytes, imageSignature);
         log.info("Found matching image to activate info element ({})", imageDescription);
         return true;
       } else {
         final String imageToActivateDescription =
             this.describeImageInfo(
-                imageToActivateSize, imageToActivateIdentification, imageSignature);
+                imageToActivateSize, imageToActivateIdentificationBytes, imageSignature);
         final String imageDescription =
             this.describeImageInfo(
                 this.imageData.length,
@@ -288,10 +284,10 @@ public class ImageTransfer {
   }
 
   private String describeImageInfo(
-      final long size, final String identification, final byte[] signature) {
+      final long size, final byte[] identification, final byte[] signature) {
     return String.format(
         "size=%d, identification=%s, signature=%s",
-        size, identification, Arrays.toString(signature));
+        size, Arrays.toString(identification), Arrays.toString(signature));
   }
 
   /** The image is activated. */

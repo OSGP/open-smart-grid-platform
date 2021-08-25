@@ -17,7 +17,7 @@ public class FirmwareFileRequest {
   private final String fileName;
   private final boolean pushToNewDevices;
   private final boolean active;
-  private final String imageIdentifier;
+  private final byte[] imageIdentifier;
 
   public FirmwareFileRequest(
       final String identification,
@@ -25,7 +25,7 @@ public class FirmwareFileRequest {
       final String fileName,
       final boolean pushToNewDevices,
       final boolean active,
-      final String imageIdentifier) {
+      final byte[] imageIdentifier) {
     this.identification = identification;
     this.description = description;
     this.fileName = fileName;

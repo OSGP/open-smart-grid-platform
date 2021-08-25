@@ -16,8 +16,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.nio.charset.StandardCharsets;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
+import org.bouncycastle.util.encoders.Hex;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -181,7 +183,11 @@ public class GetFirmwareFileResponseMessageProcessorTest {
   }
 
   private FirmwareFileDto setupFirmwareFileDto() {
-    return new FirmwareFileDto("fw", "device-1", "fw".getBytes(), "496d6167654964656e746966696572");
+    return new FirmwareFileDto(
+        "fw",
+        "device-1",
+        "fw".getBytes(StandardCharsets.UTF_8),
+        Hex.decode("496d6167654964656e746966696572"));
   }
 
   private ProtocolResponseMessage setupResponseMessage(final FirmwareFileDto firmwareFileDto) {

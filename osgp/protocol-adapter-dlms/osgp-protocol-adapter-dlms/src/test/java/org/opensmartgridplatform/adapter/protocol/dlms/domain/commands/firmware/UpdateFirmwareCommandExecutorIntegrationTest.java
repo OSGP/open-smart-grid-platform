@@ -20,6 +20,7 @@ import static org.mockito.Mockito.when;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.bouncycastle.util.encoders.Hex;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -124,7 +125,7 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
     final byte[] firmwareFile =
         RandomStringUtils.randomAlphabetic(100).getBytes(StandardCharsets.UTF_8);
 
-    final String firmwareImageIdentifier = "496d6167654964656e746966696572";
+    final byte[] firmwareImageIdentifier = Hex.decode("496d6167654964656e746966696572");
 
     when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification))
         .thenReturn(firmwareFile);

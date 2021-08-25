@@ -196,11 +196,11 @@ public class UpdateFirmwareCommandExecutor
     return firmwareFile;
   }
 
-  private String getImageIdentifier(
+  private byte[] getImageIdentifier(
       final String firmwareIdentification, final FirmwareFile firmwareFile)
       throws ProtocolAdapterException {
 
-    String imageIdentifier = null;
+    byte[] imageIdentifier = null;
 
     if (firmwareFile.isMbusFirmware()) {
 
@@ -214,14 +214,14 @@ public class UpdateFirmwareCommandExecutor
 
       imageIdentifier = this.getImageIdentifierFromCache(firmwareIdentification);
     }
-    log.debug("Firmware ImageIdentifier: {}", imageIdentifier);
+    log.debug("Firmware ImageIdentifier: {}", Arrays.toString(imageIdentifier));
 
     return imageIdentifier;
   }
 
-  private String getImageIdentifierFromCache(final String firmwareIdentification)
+  private byte[] getImageIdentifierFromCache(final String firmwareIdentification)
       throws ProtocolAdapterException {
-    final String firmwareImageIdentifier =
+    final byte[] firmwareImageIdentifier =
         this.firmwareImageIdentifierCachingRepository.retrieve(firmwareIdentification);
 
     if (firmwareImageIdentifier == null) {

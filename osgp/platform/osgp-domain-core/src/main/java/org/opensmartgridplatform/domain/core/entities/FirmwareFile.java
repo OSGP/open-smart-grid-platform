@@ -84,7 +84,7 @@ public class FirmwareFile extends AbstractEntity {
 
   @Column private boolean active;
 
-  @Column private String imageIdentifier;
+  @Column private byte[] imageIdentifier;
 
   protected FirmwareFile() {
     // Default constructor
@@ -115,7 +115,7 @@ public class FirmwareFile extends AbstractEntity {
     return this.identification;
   }
 
-  public String getImageIdentifier() {
+  public byte[] getImageIdentifier() {
     return this.imageIdentifier;
   }
 
@@ -323,7 +323,7 @@ public class FirmwareFile extends AbstractEntity {
     this.pushToNewDevices = pushToNewDevices;
   }
 
-  public void setImageIdentifier(final String imageIdentifier) {
+  public void setImageIdentifier(final byte[] imageIdentifier) {
     this.imageIdentifier = imageIdentifier;
   }
 
@@ -357,8 +357,8 @@ public class FirmwareFile extends AbstractEntity {
         + this.pushToNewDevices
         + ", file="
         + Arrays.toString(this.file)
-        + ", imageIdentifier (hex)="
-        + this.imageIdentifier
+        + ", imageIdentifier="
+        + Arrays.toString(this.imageIdentifier)
         + ", hash="
         + this.hash
         + "]";
@@ -373,7 +373,7 @@ public class FirmwareFile extends AbstractEntity {
     private byte[] file;
     private String hash;
     private boolean active;
-    private String imageIdentifier;
+    private byte[] imageIdentifier;
 
     public Builder withIdentification(final String identification) {
       if (identification != null) {
@@ -402,7 +402,7 @@ public class FirmwareFile extends AbstractEntity {
       return this;
     }
 
-    public Builder withImageIdentifier(final String imageIdentifier) {
+    public Builder withImageIdentifier(final byte[] imageIdentifier) {
       this.imageIdentifier = imageIdentifier;
       return this;
     }
