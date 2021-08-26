@@ -157,24 +157,24 @@
   </wsdl:message>
 
 
-  <wsdl:message name="ClearMbusStatusByChannelRequest">
-    <wsdl:part element="smman:ClearMbusStatusByChannelRequest"
-      name="ClearMbusStatusByChannelRequest">
+  <wsdl:message name="ClearMbusStatusRequest">
+    <wsdl:part element="smman:ClearMbusStatusRequest"
+      name="ClearMbusStatusRequest">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="ClearMbusStatusByChannelAsyncResponse">
-    <wsdl:part element="smman:ClearMbusStatusByChannelAsyncResponse"
-      name="ClearMbusStatusByChannelAsyncResponse">
+  <wsdl:message name="ClearMbusStatusAsyncResponse">
+    <wsdl:part element="smman:ClearMbusStatusAsyncResponse"
+      name="ClearMbusStatusAsyncResponse">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="ClearMbusStatusByChannelAsyncRequest">
-    <wsdl:part element="smman:ClearMbusStatusByChannelAsyncRequest"
-      name="ClearMbusStatusByChannelAsyncRequest">
+  <wsdl:message name="ClearMbusStatusAsyncRequest">
+    <wsdl:part element="smman:ClearMbusStatusAsyncRequest"
+      name="ClearMbusStatusAsyncRequest">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="ClearMbusStatusByChannelResponse">
-    <wsdl:part element="smman:ClearMbusStatusByChannelResponse"
-      name="ClearMbusStatusByChannelResponse">
+  <wsdl:message name="ClearMbusStatusResponse">
+    <wsdl:part element="smman:ClearMbusStatusResponse"
+      name="ClearMbusStatusResponse">
     </wsdl:part>
   </wsdl:message>
 
@@ -306,20 +306,20 @@
       </wsdl:output>
     </wsdl:operation>
 
-    <wsdl:operation name="ClearMbusStatusByChannel">
-      <wsdl:input message="tns:ClearMbusStatusByChannelRequest"
-        name="ClearMbusStatusByChannelRequest">
+    <wsdl:operation name="ClearMbusStatus">
+      <wsdl:input message="tns:ClearMbusStatusRequest"
+        name="ClearMbusStatusRequest">
       </wsdl:input>
-      <wsdl:output message="tns:ClearMbusStatusByChannelAsyncResponse"
-        name="ClearMbusStatusByChannelAsyncResponse">
+      <wsdl:output message="tns:ClearMbusStatusAsyncResponse"
+        name="ClearMbusStatusAsyncResponse">
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="GetClearMbusStatusByChannelResponse">
-      <wsdl:input message="tns:ClearMbusStatusByChannelAsyncRequest"
-        name="ClearMbusStatusByChannelAsyncRequest">
+    <wsdl:operation name="GetClearMbusStatusResponse">
+      <wsdl:input message="tns:ClearMbusStatusAsyncRequest"
+        name="ClearMbusStatusAsyncRequest">
       </wsdl:input>
-      <wsdl:output message="tns:ClearMbusStatusByChannelResponse"
-        name="ClearMbusStatusByChannelResponse">
+      <wsdl:output message="tns:ClearMbusStatusResponse"
+        name="ClearMbusStatusResponse">
       </wsdl:output>
     </wsdl:operation>
 
@@ -554,9 +554,9 @@
     </wsdl:operation>
 
 
-    <wsdl:operation name="ClearMbusStatusByChannel">
+    <wsdl:operation name="ClearMbusStatus">
       <soap:operation soapAction="" />
-      <wsdl:input name="ClearMbusStatusByChannelRequest">
+      <wsdl:input name="ClearMbusStatusRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
           use="literal" />
         <soap:header message="tns:ActionHeader" part="UserName"
@@ -565,14 +565,14 @@
           use="literal" />
         <soap:body use="literal" />
       </wsdl:input>
-      <wsdl:output name="ClearMbusStatusByChannelAsyncResponse">
+      <wsdl:output name="ClearMbusStatusAsyncResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
 
-    <wsdl:operation name="GetClearMbusStatusByChannelResponse">
+    <wsdl:operation name="GetClearMbusStatusResponse">
       <soap:operation soapAction="" />
-      <wsdl:input name="ClearMbusStatusByChannelAsyncRequest">
+      <wsdl:input name="ClearMbusStatusAsyncRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
           use="literal" />
         <soap:header message="tns:ActionHeader" part="UserName"
@@ -581,7 +581,7 @@
           use="literal" />
         <soap:body use="literal" />
       </wsdl:input>
-      <wsdl:output name="ClearMbusStatusByChannelResponse">
+      <wsdl:output name="ClearMbusStatusResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
