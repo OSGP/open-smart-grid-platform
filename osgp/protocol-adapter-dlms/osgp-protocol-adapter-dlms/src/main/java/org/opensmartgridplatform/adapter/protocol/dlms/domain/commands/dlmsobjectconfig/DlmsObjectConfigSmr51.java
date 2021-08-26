@@ -18,7 +18,6 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dl
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.CommunicationMethod;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsClock;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsData;
@@ -55,7 +54,7 @@ public class DlmsObjectConfigSmr51 extends DlmsObjectConfigSmr50 {
 
     final List<DlmsCaptureObject> captureObjectsAuxiliaryEvents =
         Arrays.asList(
-            DlmsCaptureObject.create(this.getClock()),
+            DlmsCaptureObject.create(this.getClock(objectList)),
             DlmsCaptureObject.create(auxiliaryEventLogCode));
     objectList.add(
         new DlmsProfile(
@@ -68,9 +67,10 @@ public class DlmsObjectConfigSmr51 extends DlmsObjectConfigSmr50 {
     return objectList;
   }
 
-  private DlmsObject getClock() {
-    final Optional<DlmsObject> clockOptional = this.findObject(DlmsObjectType.CLOCK, null);
-
-    return clockOptional.orElse(new DlmsClock("0.0.1.0.0.255"));
+  private DlmsObject getClock(final List<DlmsObject> objectList) {
+    return objectList.stream()
+        .filter(object -> object.getType() == DlmsObjectType.CLOCK)
+        .findAny()
+        .orElse(new DlmsClock("0.0.1.0.0.255"));
   }
 }

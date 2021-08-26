@@ -36,8 +36,11 @@ import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.DataObjectToEventListConverter;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigConfiguration;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
@@ -49,11 +52,13 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class FindEventsCommandExecutorTest {
+class FindEventsCommandExecutorTest {
+
+  private final DlmsDevice DLMS_DEVICE_5_1 = this.createDlmsDevice(Protocol.SMR_5_1);
+
+  private final DlmsDevice DLMS_DEVICE_5_0 = this.createDlmsDevice(Protocol.SMR_5_0_0);
 
   @Mock private DlmsHelper dlmsHelper;
-
-  @Mock private DlmsDevice dlmsDevice;
 
   @Mock private DlmsConnectionManager conn;
 
@@ -66,8 +71,10 @@ public class FindEventsCommandExecutorTest {
   @Mock private GetResult getResult;
 
   private FindEventsRequestDto findEventsRequestDto;
-  private DataObjectToEventListConverter dataObjectToEventListConverter;
+
   private MessageMetadata messageMetadata;
+
+  private FindEventsCommandExecutor executor;
 
   @BeforeEach
   public void before() throws ProtocolAdapterException, IOException {
@@ -82,7 +89,15 @@ public class FindEventsCommandExecutorTest {
             DateTime.now().minusDays(70),
             DateTime.now());
 
-    this.dataObjectToEventListConverter = new DataObjectToEventListConverter(this.dlmsHelper);
+    final DataObjectToEventListConverter dataObjectToEventListConverter =
+        new DataObjectToEventListConverter(this.dlmsHelper);
+    final DlmsObjectConfigService dlmsObjectConfigService =
+        new DlmsObjectConfigService(
+            this.dlmsHelper, new DlmsObjectConfigConfiguration().getDlmsObjectConfigs());
+
+    this.executor =
+        new FindEventsCommandExecutor(
+            this.dlmsHelper, dataObjectToEventListConverter, dlmsObjectConfigService);
 
     when(this.dlmsHelper.asDataObject(this.findEventsRequestDto.getFrom())).thenReturn(fromDate);
     when(this.dlmsHelper.asDataObject(this.findEventsRequestDto.getUntil())).thenReturn(toDate);
@@ -94,28 +109,24 @@ public class FindEventsCommandExecutorTest {
   }
 
   @AfterEach
-  public void after() throws ProtocolAdapterException, IOException {
+  public void after() throws ProtocolAdapterException {
     verify(this.dlmsHelper).asDataObject(this.findEventsRequestDto.getFrom());
     verify(this.dlmsHelper).asDataObject(this.findEventsRequestDto.getUntil());
-    verify(this.conn).getDlmsMessageListener();
-    verify(this.conn).getConnection();
-    verify(this.dlmsConnection).get(any(AttributeAddress.class));
   }
 
   @Test
-  public void testRetrievalOfPowerQualityEvents() throws ProtocolAdapterException {
-
+  void testRetrievalOfPowerQualityEvents() throws ProtocolAdapterException, IOException {
+    // SETUP
     when(this.getResult.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
     when(this.getResult.getResultData()).thenReturn(this.resultData);
     when(this.resultData.getValue()).thenReturn(this.generateDataObjects());
 
-    final FindEventsCommandExecutor executor =
-        new FindEventsCommandExecutor(this.dlmsHelper, this.dataObjectToEventListConverter);
-
+    // CALL
     final List<EventDto> events =
-        executor.execute(
-            this.conn, this.dlmsDevice, this.findEventsRequestDto, this.messageMetadata);
+        this.executor.execute(
+            this.conn, this.DLMS_DEVICE_5_1, this.findEventsRequestDto, this.messageMetadata);
 
+    // VERIFY
     assertThat(events.size()).isEqualTo(13);
 
     int firstEventCode = 77;
@@ -125,10 +136,14 @@ public class FindEventsCommandExecutorTest {
 
     verify(this.dlmsHelper, times(events.size()))
         .convertDataObjectToDateTime(any(DataObject.class));
+    verify(this.conn).getDlmsMessageListener();
+    verify(this.conn).getConnection();
+    verify(this.dlmsConnection).get(any(AttributeAddress.class));
   }
 
   @Test
-  public void testRetrievalOfAuxiliaryLogEvents() throws ProtocolAdapterException {
+  void testRetrievalOfAuxiliaryLogEvents() throws ProtocolAdapterException, IOException {
+    // SETUP
     this.findEventsRequestDto =
         new FindEventsRequestDto(
             EventLogCategoryDto.AUXILIARY_EVENT_LOG, DateTime.now().minusDays(70), DateTime.now());
@@ -137,13 +152,12 @@ public class FindEventsCommandExecutorTest {
     when(this.getResult.getResultData()).thenReturn(this.resultData);
     when(this.resultData.getValue()).thenReturn(this.generateDataObjectsAuxiliary());
 
-    final FindEventsCommandExecutor executor =
-        new FindEventsCommandExecutor(this.dlmsHelper, this.dataObjectToEventListConverter);
-
+    // CALL
     final List<EventDto> events =
-        executor.execute(
-            this.conn, this.dlmsDevice, this.findEventsRequestDto, this.messageMetadata);
+        this.executor.execute(
+            this.conn, this.DLMS_DEVICE_5_1, this.findEventsRequestDto, this.messageMetadata);
 
+    // VERIFY
     assertThat(events.size()).isEqualTo(34);
 
     int firstEventCode = 33664;
@@ -153,34 +167,67 @@ public class FindEventsCommandExecutorTest {
 
     verify(this.dlmsHelper, times(events.size()))
         .convertDataObjectToDateTime(any(DataObject.class));
+    verify(this.conn).getDlmsMessageListener();
+    verify(this.conn).getConnection();
+    verify(this.dlmsConnection).get(any(AttributeAddress.class));
   }
 
   @Test
-  public void testOtherReasonResult() throws ProtocolAdapterException {
+  void testRetrievalOfEventsForWrongCombinationOfProtocolAndLogType() {
+    // SETUP
+    this.findEventsRequestDto =
+        new FindEventsRequestDto(
+            EventLogCategoryDto.AUXILIARY_EVENT_LOG, DateTime.now().minusDays(70), DateTime.now());
 
+    when(this.getResult.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
+    when(this.getResult.getResultData()).thenReturn(this.resultData);
+    when(this.resultData.getValue()).thenReturn(this.generateDataObjectsAuxiliary());
+
+    // CALL
+    assertThatExceptionOfType(ProtocolAdapterException.class)
+        .isThrownBy(
+            () -> {
+              this.executor.execute(
+                  this.conn, this.DLMS_DEVICE_5_0, this.findEventsRequestDto, this.messageMetadata);
+            });
+  }
+
+  @Test
+  void testOtherReasonResult() throws IOException {
+    // SETUP
     when(this.getResult.getResultCode()).thenReturn(AccessResultCode.OTHER_REASON);
 
+    // CALL
     assertThatExceptionOfType(ProtocolAdapterException.class)
         .isThrownBy(
             () -> {
-              new FindEventsCommandExecutor(this.dlmsHelper, this.dataObjectToEventListConverter)
-                  .execute(
-                      this.conn, this.dlmsDevice, this.findEventsRequestDto, this.messageMetadata);
+              this.executor.execute(
+                  this.conn, this.DLMS_DEVICE_5_1, this.findEventsRequestDto, this.messageMetadata);
             });
+
+    // VERIFY
+    verify(this.conn).getDlmsMessageListener();
+    verify(this.conn).getConnection();
+    verify(this.dlmsConnection).get(any(AttributeAddress.class));
   }
 
   @Test
-  public void testEmptyGetResult() throws ProtocolAdapterException, IOException {
-
+  void testEmptyGetResult() throws IOException {
+    // SETUP
     when(this.dlmsConnection.get(any(AttributeAddress.class))).thenReturn(null);
 
+    // CALL
     assertThatExceptionOfType(ProtocolAdapterException.class)
         .isThrownBy(
             () -> {
-              new FindEventsCommandExecutor(this.dlmsHelper, this.dataObjectToEventListConverter)
-                  .execute(
-                      this.conn, this.dlmsDevice, this.findEventsRequestDto, this.messageMetadata);
+              this.executor.execute(
+                  this.conn, this.DLMS_DEVICE_5_1, this.findEventsRequestDto, this.messageMetadata);
             });
+
+    // VERIFY
+    verify(this.conn).getDlmsMessageListener();
+    verify(this.conn).getConnection();
+    verify(this.dlmsConnection).get(any(AttributeAddress.class));
   }
 
   private List<DataObject> generateDataObjects() {
@@ -219,5 +266,12 @@ public class FindEventsCommandExecutorTest {
             });
 
     return dataObjects;
+  }
+
+  private DlmsDevice createDlmsDevice(final Protocol protocol) {
+    final DlmsDevice device = new DlmsDevice();
+    device.setDeviceIdentification("123456789012");
+    device.setProtocol(protocol);
+    return device;
   }
 }
