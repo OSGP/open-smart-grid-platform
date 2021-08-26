@@ -15,11 +15,9 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 
 public class MqttClientSslDisabledCondition implements Condition {
 
-  private static final String FALSE = "false";
-
   @Override
   public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
-    return FALSE.equalsIgnoreCase(
-        context.getEnvironment().getProperty("mqtt.client.ssl.enabled", FALSE));
+    return context.getEnvironment().getProperty("mqtt.client.ssl.config", MqttSslConfigEnum.class)
+        == MqttSslConfigEnum.DISABLED;
   }
 }

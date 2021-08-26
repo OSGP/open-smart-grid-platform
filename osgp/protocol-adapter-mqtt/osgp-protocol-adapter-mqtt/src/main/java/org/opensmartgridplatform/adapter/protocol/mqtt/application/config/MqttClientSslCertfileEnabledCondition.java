@@ -17,7 +17,7 @@ public class MqttClientSslCertfileEnabledCondition implements Condition {
 
   @Override
   public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
-    return "true".equalsIgnoreCase(context.getEnvironment().getProperty("mqtt.client.ssl.enabled"))
-        && context.getEnvironment().getProperty("mqtt.client.ssl.certFile.location") != null;
+    return context.getEnvironment().getProperty("mqtt.client.ssl.config", MqttSslConfigEnum.class)
+        == MqttSslConfigEnum.CERT_FILE;
   }
 }
