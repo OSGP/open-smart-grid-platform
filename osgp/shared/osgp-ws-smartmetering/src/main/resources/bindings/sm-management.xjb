@@ -141,6 +141,19 @@
       <jxb:typesafeEnumMember name="MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_4"/>
     </jxb:bindings>
 
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='MBUS_STATUS_BIT_25_USAGE_P0_CHANNEL_1_LAGY']">
+      <jxb:typesafeEnumMember name="MBUS_STATUS_BIT_25_USAGE_P0_CHANNEL_1_LAGY"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='MBUS_STATUS_BIT_25_USAGE_P0_CHANNEL_2_LAGY']">
+      <jxb:typesafeEnumMember name="MBUS_STATUS_BIT_25_USAGE_P0_CHANNEL_2_LAGY"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='MBUS_STATUS_BIT_25_USAGE_P0_CHANNEL_3_LAGY']">
+      <jxb:typesafeEnumMember name="MBUS_STATUS_BIT_25_USAGE_P0_CHANNEL_3_LAGY"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='MBUS_STATUS_BIT_25_USAGE_P0_CHANNEL_4_LAGY']">
+      <jxb:typesafeEnumMember name="MBUS_STATUS_BIT_25_USAGE_P0_CHANNEL_4_LAGY"/>
+    </jxb:bindings>
+
   </jxb:bindings>
 
 </jxb:bindings>
