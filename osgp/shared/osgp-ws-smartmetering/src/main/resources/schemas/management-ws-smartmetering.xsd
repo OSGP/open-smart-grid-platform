@@ -270,6 +270,41 @@
     </xsd:complexType>
   </xsd:element>
 
+
+  <xsd:element name="ClearMbusStatusByChannelRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="GatewayDeviceIdentification"
+          type="common:Identification"/>
+        <xsd:element name="ClearMbusStatusByChannelRequestData"
+          type="tns:ClearMbusStatusByChannelRequestData"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ClearMbusStatusByChannelAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ClearMbusStatusByChannelAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ClearMbusStatusByChannelResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType"/>
+        <xsd:element name="ClearMbusStatusByChannelResponseData"
+          type="tns:ClearMbusStatusByChannelResponseData"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
   <!-- Data Types -->
 
   <!-- Query for FindEventsRequest -->
@@ -647,9 +682,33 @@
       <xsd:extension base="common:Response">
         <xsd:sequence>
           <xsd:element name="GatewayDeviceIdentification"
-                       type="common:Identification"/>
+            type="common:Identification"/>
           <xsd:element name="MbusDeviceIdentification" type="common:Identification"/>
           <xsd:element name="DeviceLifecycleStatus" type="common:DeviceLifecycleStatus"/>
+          <xsd:element name="Channel" type="common:Channel"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+
+  <xsd:complexType name="ClearMbusStatusByChannelRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Query">
+        <xsd:sequence>
+          <xsd:element name="Channel" type="common:Channel"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="ClearMbusStatusByChannelResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
+        <xsd:sequence>
+          <xsd:element name="GatewayDeviceIdentification"
+            type="common:Identification"/>
+          <xsd:element name="MbusDeviceIdentification" type="common:Identification"/>
           <xsd:element name="Channel" type="common:Channel"/>
         </xsd:sequence>
       </xsd:extension>
