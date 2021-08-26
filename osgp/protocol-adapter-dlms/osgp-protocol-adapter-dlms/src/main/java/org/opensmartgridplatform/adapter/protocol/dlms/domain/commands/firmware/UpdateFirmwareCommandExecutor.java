@@ -10,7 +10,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware
 
 import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.config.UpdateFirmwareConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.MacGenerationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.FirmwareFile;
@@ -58,14 +57,13 @@ public class UpdateFirmwareCommandExecutor
       final FirmwareFileCachingRepository firmwareFileCachingRepository,
       final FirmwareImageIdentifierCachingRepository firmwareImageIdentifierCachingRepository,
       final MacGenerationService macGenerationService,
-      final UpdateFirmwareConfig updateFirmwareConfig) {
+      final ImageTransfer.ImageTransferProperties imageTransferProperties) {
     super(UpdateFirmwareRequestDto.class);
     this.dlmsDeviceRepository = dlmsDeviceRepository;
     this.firmwareFileCachingRepository = firmwareFileCachingRepository;
     this.firmwareImageIdentifierCachingRepository = firmwareImageIdentifierCachingRepository;
     this.macGenerationService = macGenerationService;
-
-    this.imageTransferProperties = updateFirmwareConfig.imageTransferProperties();
+    this.imageTransferProperties = imageTransferProperties;
   }
 
   @Override

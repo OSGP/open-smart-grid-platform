@@ -8,15 +8,11 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories;
 
-import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class FirmwareImageIdentifierCachingRepository implements CachingRepository<String, byte[]> {
-
-  private Map<String, byte[]> cache = new ConcurrentHashMap<>();
+public class FirmwareImageIdentifierCachingRepository extends ByteArrayCachingRepository {
 
   public FirmwareImageIdentifierCachingRepository() {
     // Public constructor
@@ -24,25 +20,6 @@ public class FirmwareImageIdentifierCachingRepository implements CachingReposito
 
   protected FirmwareImageIdentifierCachingRepository(final Map<String, byte[]> cache) {
     // Protected constructor for testing
-    this.cache = cache;
-  }
-
-  protected Map<String, byte[]> getCache() {
-    return Collections.unmodifiableMap(this.cache);
-  }
-
-  @Override
-  public boolean isAvailable(final String key) {
-    return this.cache.containsKey(key);
-  }
-
-  @Override
-  public byte[] retrieve(final String key) {
-    return this.cache.get(key);
-  }
-
-  @Override
-  public void store(final String key, final byte[] value) {
-    this.cache.put(key, value);
+    super(cache);
   }
 }

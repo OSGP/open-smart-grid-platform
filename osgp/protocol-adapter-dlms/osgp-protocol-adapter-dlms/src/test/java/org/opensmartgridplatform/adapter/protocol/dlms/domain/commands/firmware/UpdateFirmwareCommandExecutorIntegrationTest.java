@@ -103,7 +103,6 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
     imageTransferProperties.setVerificationStatusCheckTimeout(this.verificationStatusCheckTimeout);
     imageTransferProperties.setInitiationStatusCheckInterval(this.initiationStatusCheckInterval);
     imageTransferProperties.setInitiationStatusCheckTimeout(this.initiationStatusCheckTimeout);
-    when(this.updateFirmwareConfig.imageTransferProperties()).thenReturn(imageTransferProperties);
 
     this.connectionStub.setDefaultMethodResult(methodResult);
 
@@ -113,7 +112,7 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
             this.firmwareFileCachingRepository,
             this.firmwareImageIdentifierCachingRepository,
             this.macGenerationService,
-            this.updateFirmwareConfig);
+            imageTransferProperties);
   }
 
   @Test
