@@ -207,12 +207,6 @@ public class FindAuxillaryEventsReads extends AbstractFindEventsReads {
         addSetting(settings, PlatformKeys.KEY_EVENTS_NODELIST_EXPECTED, "true"));
   }
 
-  @Then("^auxiliary events for all types should be returned$")
-  public void auxiliaryEventsForAllTypesShouldBeReturned(final Map<String, String> settings)
-      throws Throwable {
-    super.eventsForAllTypesShouldBeReturned(settings);
-  }
-
   @Then("^(\\d++) auxiliary events should be returned$")
   public void numberOfEventsShouldBeReturned(
       final int numberOfEvents, final Map<String, String> settings) throws Throwable {
