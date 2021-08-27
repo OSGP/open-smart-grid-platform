@@ -13,6 +13,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.Assertions;
@@ -25,6 +26,8 @@ import org.opensmartgridplatform.domain.core.entities.DeviceModel;
 import org.opensmartgridplatform.domain.core.entities.Manufacturer;
 import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDetailDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDetailNameTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventTypeDto;
@@ -33,7 +36,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionTyp
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
-public class EventServiceTest {
+class EventServiceTest {
 
   @Mock private DomainHelperService domainHelperService;
 
@@ -59,28 +62,29 @@ public class EventServiceTest {
   }
 
   @Test
-  public void testWrongEventCode() {
+  void testWrongEventCode() {
     final FunctionalException functionalException =
         Assertions.assertThrows(
             FunctionalException.class,
             () -> {
-              this.assertEventType(266, "SMART_METER_E", "SMR", "iskr", EventTypeDto.POWER_FAILURE);
+              final ProtocolInfo protocolInfo = mock(ProtocolInfo.class);
+              when(protocolInfo.getProtocol()).thenReturn("SMR");
+              when(this.smartMeter.getProtocolInfo()).thenReturn(protocolInfo);
+
+              final EventDto event = new EventDto(new DateTime(), 266, 2, "STANDARD_EVENT_LOG");
+              final ArrayList<EventDto> events = new ArrayList<>();
+              events.add(event);
+              final EventMessageDataResponseDto responseDto =
+                  new EventMessageDataResponseDto(events);
+
+              this.eventService.enrichEvents(this.deviceMessageMetadata, responseDto);
             });
     assertThat(functionalException.getExceptionType())
         .isEqualTo(FunctionalExceptionType.VALIDATION_ERROR);
   }
 
   @Test
-  public void testDeviceType() throws FunctionalException {
-    this.assertEventType(1, "XXXXXXX", "SMR", "iskr", EventTypeDto.POWER_FAILURE);
-    this.assertEventType(1, "SMART_METER_E", "SMR", "iskr", EventTypeDto.POWER_FAILURE);
-    this.assertEventType(1, "SMART_METER_G", "SMR", "iskr", EventTypeDto.POWER_FAILURE_G);
-    this.assertEventType(1, "SMART_METER_W", "SMR", "iskr", EventTypeDto.POWER_FAILURE_W);
-    this.assertEventType(2, "XXXXXXX", "SMR", "iskr", EventTypeDto.POWER_RETURNED);
-  }
-
-  @Test
-  public void testProtocolNoMatch() throws FunctionalException {
+  void testProtocolNoMatch() throws FunctionalException {
     this.assertEventType(1, "SMART_METER_E", "XXX", "iskr", EventTypeDto.POWER_FAILURE);
     this.assertEventType(80, "SMART_METER_E", "DSMR", "iskr", EventTypeDto.PV_VOLTAGE_SAG_L1);
     this.assertEventType(81, "SMART_METER_E", "DSMR", "iskr", EventTypeDto.PV_VOLTAGE_SAG_L2);
@@ -102,16 +106,9 @@ public class EventServiceTest {
   }
 
   @Test
-  public void testManufacturerNoMatch() throws FunctionalException {
-    this.assertEventType(1, "SMART_METER_E", "SMR", "XXX", EventTypeDto.POWER_FAILURE);
-  }
-
-  @Test
-  public void testAddEventTypeToEvents() throws FunctionalException {
+  void testAddEventTypeToEvents() throws FunctionalException {
     this.assertEventType(255, "", "", "", EventTypeDto.EVENTLOG_CLEARED);
     this.assertEventType(1, "SMART_METER_E", "", "", EventTypeDto.POWER_FAILURE);
-    this.assertEventType(1, "SMART_METER_G", "", "", EventTypeDto.POWER_FAILURE_G);
-    this.assertEventType(1, "SMART_METER_W", "", "", EventTypeDto.POWER_FAILURE_W);
     this.assertEventType(2, "", "", "", EventTypeDto.POWER_RETURNED);
     this.assertEventType(3, "", "", "", EventTypeDto.CLOCK_UPDATE);
     this.assertEventType(4, "", "", "", EventTypeDto.CLOCK_ADJUSTED_OLD_TIME);
@@ -199,6 +196,7 @@ public class EventServiceTest {
     this.assertEventType(134, "", "", "", EventTypeDto.CLOCK_ADJUSTED_M_BUS_CHANNEL_4);
     this.assertEventType(135, "", "", "", EventTypeDto.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4);
     this.assertEventType(136, "", "", "", EventTypeDto.PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_4);
+    this.assertEventType(230, "", "", "", EventTypeDto.MANUFACTURER_SPECIFIC_230);
     this.assertEventType(231, "", "", "", EventTypeDto.MANUFACTURER_SPECIFIC_231);
     this.assertEventType(232, "", "", "", EventTypeDto.MANUFACTURER_SPECIFIC_232);
     this.assertEventType(233, "", "", "", EventTypeDto.MANUFACTURER_SPECIFIC_233);
@@ -218,16 +216,6 @@ public class EventServiceTest {
     this.assertEventType(247, "", "", "", EventTypeDto.MANUFACTURER_SPECIFIC_247);
     this.assertEventType(248, "", "", "", EventTypeDto.MANUFACTURER_SPECIFIC_248);
     this.assertEventType(249, "", "", "", EventTypeDto.MANUFACTURER_SPECIFIC_249);
-    this.assertEventType(230, "", "", "Iskr", EventTypeDto.FATAL_ERROR_ISKR);
-    this.assertEventType(231, "", "", "Iskr", EventTypeDto.BILLING_RESET_ISKR);
-    this.assertEventType(232, "", "", "Iskr", EventTypeDto.POWER_DOWN_PHASE_L1_ISKR);
-    this.assertEventType(233, "", "", "Iskr", EventTypeDto.POWER_DOWN_PHASE_L2_ISKR);
-    this.assertEventType(234, "", "", "Iskr", EventTypeDto.POWER_DOWN_PHASE_L3_ISKR);
-    this.assertEventType(235, "", "", "Iskr", EventTypeDto.POWER_RESTORED_PHASE_L1_ISKR);
-    this.assertEventType(236, "", "", "Iskr", EventTypeDto.POWER_RESTORED_PHASE_L2_ISKR);
-    this.assertEventType(237, "", "", "Iskr", EventTypeDto.POWER_RESTORED_PHASE_L3_ISKR);
-    this.assertEventType(244, "", "", "Iskr", EventTypeDto.MODULE_COVER_OPENED_ISKR);
-    this.assertEventType(245, "", "", "Iskr", EventTypeDto.MODULE_COVER_CLOSED_ISKR);
 
     this.assertEventType(0xFFFF, "", "", "", EventTypeDto.AUXILIARY_EVENTLOG_CLEARED);
     this.assertEventType(0x1000, "", "", "", EventTypeDto.MBUS_FW_UPGRADE_SUCCESSFUL_CHANNEL_1);
@@ -551,23 +539,35 @@ public class EventServiceTest {
       final String manufacturerCode,
       final EventTypeDto expectedEventTypeDto)
       throws FunctionalException {
-    when(this.smartMeter.getDeviceType()).thenReturn(deviceType);
     final ProtocolInfo protocolInfo = mock(ProtocolInfo.class);
     when(protocolInfo.getProtocol()).thenReturn(protocol);
     when(this.smartMeter.getProtocolInfo()).thenReturn(protocolInfo);
+
+    when(this.smartMeter.getDeviceType()).thenReturn(deviceType);
     final DeviceModel deviceModel = mock(DeviceModel.class);
     final Manufacturer manufacturer = mock(Manufacturer.class);
     when(manufacturer.getCode()).thenReturn(manufacturerCode);
     when(deviceModel.getManufacturer()).thenReturn(manufacturer);
     when(this.smartMeter.getDeviceModel()).thenReturn(deviceModel);
+
     final EventDto event = new EventDto(new DateTime(), eventCode, 2, "STANDARD_EVENT_LOG");
     final ArrayList<EventDto> events = new ArrayList<>();
     events.add(event);
     final EventMessageDataResponseDto responseDto = new EventMessageDataResponseDto(events);
 
-    this.eventService.addEventTypeToEvents(this.deviceMessageMetadata, responseDto);
+    this.eventService.enrichEvents(this.deviceMessageMetadata, responseDto);
 
-    assertThat(responseDto.getEvents().get(0).getEventTypeDto()).isEqualTo(expectedEventTypeDto);
-    assertThat(responseDto.getEvents().get(0).getEventCode()).isEqualTo(eventCode);
+    assertThat(responseDto.getEvents().size()).isOne();
+    final EventDto eventDto = responseDto.getEvents().get(0);
+    assertThat(eventDto.getEventTypeDto()).isEqualTo(expectedEventTypeDto);
+    assertThat(eventDto.getEventCode()).isEqualTo(eventCode);
+    final List<EventDetailDto> eventDetails = eventDto.getEventDetails();
+    assertThat(eventDetails.size()).isEqualTo(3);
+    assertThat(eventDto.getEventDetailValue(EventDetailNameTypeDto.MANUFACTURER_CODE))
+        .isEqualTo(manufacturerCode);
+    assertThat(eventDto.getEventDetailValue(EventDetailNameTypeDto.DEVICE_TYPE))
+        .isEqualTo(deviceType);
+    assertThat(eventDto.getEventDetailValue(EventDetailNameTypeDto.PROTOCOL_NAME))
+        .isEqualTo(protocol);
   }
 }

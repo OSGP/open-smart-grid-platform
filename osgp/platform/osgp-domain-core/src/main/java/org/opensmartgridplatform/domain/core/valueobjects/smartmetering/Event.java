@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
+import java.util.List;
 import lombok.Getter;
 import lombok.ToString;
 import org.joda.time.DateTime;
@@ -22,16 +23,19 @@ public class Event implements Serializable {
   private final EventType eventType;
   private final Integer eventCounter;
   private final EventLogCategory eventLogCategory;
+  private final List<EventDetail> eventDetails;
 
   public Event(
       final DateTime timestamp,
       final EventType eventType,
       final Integer eventCounter,
-      final EventLogCategory eventLogCategory) {
+      final EventLogCategory eventLogCategory,
+      final List<EventDetail> eventDetails) {
     this.timestamp = timestamp;
     this.eventType = eventType;
     this.eventCounter = eventCounter;
     this.eventLogCategory = eventLogCategory;
+    this.eventDetails = eventDetails;
   }
 
   public Integer getEventCode() {

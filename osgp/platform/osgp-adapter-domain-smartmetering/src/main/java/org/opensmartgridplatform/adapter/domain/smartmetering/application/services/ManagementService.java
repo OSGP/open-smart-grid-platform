@@ -96,7 +96,7 @@ public class ManagementService {
       final EventMessageDataResponseDto eventMessageDataContainerDto)
       throws FunctionalException {
 
-    this.eventService.addEventTypeToEvents(messageMetadata, eventMessageDataContainerDto);
+    this.eventService.enrichEvents(messageMetadata, eventMessageDataContainerDto);
 
     final EventMessagesResponse eventMessageDataContainer =
         this.managementMapper.map(eventMessageDataContainerDto, EventMessagesResponse.class);

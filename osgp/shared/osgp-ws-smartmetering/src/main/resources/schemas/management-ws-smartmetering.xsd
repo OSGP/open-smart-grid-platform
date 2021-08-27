@@ -328,10 +328,6 @@
       <xsd:enumeration value="EVENTLOG_CLEARED"/>
       <!-- 1 - power down -  -  - SMART_METER_E -->
       <xsd:enumeration value="POWER_FAILURE"/>
-      <!-- 1 - power down g -  -  - SMART_METER_G -->
-      <xsd:enumeration value="POWER_FAILURE_G"/>
-      <!-- 1 - power down w -  -  - SMART_METER_W -->
-      <xsd:enumeration value="POWER_FAILURE_W"/>
       <!-- 2 - power up -  -  -  -->
       <xsd:enumeration value="POWER_RETURNED"/>
       <!-- 3 - daylight saving time enabled or disabled -  -  -  -->
@@ -506,6 +502,8 @@
       <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4"/>
       <!-- 136 - permanent error from mbus device channel4 -  -  -  -->
       <xsd:enumeration value="PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_4"/>
+      <!-- 230 - manufacturer specific 230 -  -  -  -->
+      <xsd:enumeration value="MANUFACTURER_SPECIFIC_230"/>
       <!-- 231 - manufacturer specific 231 -  -  -  -->
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_231"/>
       <!-- 232 - manufacturer specific 232 -  -  -  -->
@@ -544,26 +542,6 @@
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_248"/>
       <!-- 249 - manufacturer specific 249 -  -  -  -->
       <xsd:enumeration value="MANUFACTURER_SPECIFIC_249"/>
-      <!-- 230 - fatal error iskr -  - Iskr -  -->
-      <xsd:enumeration value="FATAL_ERROR_ISKR"/>
-      <!-- 231 - billing reset iskr -  - Iskr -  -->
-      <xsd:enumeration value="BILLING_RESET_ISKR"/>
-      <!-- 232 - power down phase l1 iskr -  - Iskr -  -->
-      <xsd:enumeration value="POWER_DOWN_PHASE_L1_ISKR"/>
-      <!-- 233 - power down phase l2 iskr -  - Iskr -  -->
-      <xsd:enumeration value="POWER_DOWN_PHASE_L2_ISKR"/>
-      <!-- 234 - power down phase l3 iskr -  - Iskr -  -->
-      <xsd:enumeration value="POWER_DOWN_PHASE_L3_ISKR"/>
-      <!-- 235 - power restored phase l1 iskr -  - Iskr -  -->
-      <xsd:enumeration value="POWER_RESTORED_PHASE_L1_ISKR"/>
-      <!-- 236 - power restored phase l2 iskr -  - Iskr -  -->
-      <xsd:enumeration value="POWER_RESTORED_PHASE_L2_ISKR"/>
-      <!-- 237 - power restored phase l3 iskr -  - Iskr -  -->
-      <xsd:enumeration value="POWER_RESTORED_PHASE_L3_ISKR"/>
-      <!-- 244 - module cover opened iskr -  - Iskr -  -->
-      <xsd:enumeration value="MODULE_COVER_OPENED_ISKR"/>
-      <!-- 245 - module cover closed iskr -  - Iskr -  -->
-      <xsd:enumeration value="MODULE_COVER_CLOSED_ISKR"/>
 
       <!-- Auxiliary Events SMR5.1 -->
 
@@ -913,98 +891,6 @@
       <xsd:enumeration value="KEY_SENT_TO_MBUS_DEVICE_ON_CHANNEL_4"/>
       <!-- 0x83A1 - Key is acknowledged by the M-Bus device on channel 4 -->
       <xsd:enumeration value="KEY_ACKNOWLEDGED_BY_MBUS_DEVICE_ON_CHANNEL_4"/>
-
-      <!-- Auxiliary logs - Manufacturer specific events channel 1 -->
-      <xsd:enumeration value="MBUS_STATUS_BIT_20_POWERFAIL_CHANNEL_1_FLO"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_20_BATTERY_CHANGED_CHANNEL_1_LAGY"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_21_MAX_FLOW_ERROR_CHANNEL_1_FLO"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_21_CLOCK_INVALID_CHANNEL_1_LAGY"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_21_BOTTOM_TAMPER_CHANNEL_1_GWI"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_22_MIN_TEMPERATURE_ALARM_CHANNEL_1_FLO"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_22_MEASUREMENT_DATA_CORRUPTION_ERROR_CHANNEL_1_LAGY"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_22_MID_TAMPER_CHANNEL_1_GWI"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_23_HIGH_TEMPERATUR_ALARM_CHANNEL_1_FLO"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_23_SENSOR_DEGRADATION_ERROR_CHANNEL_1_LAGY"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_23_BATTERY_COMPLETELY_EMPTY_ALARM_CHANNEL_1_GWI"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_24_PULSE_ERROR_CHANNEL_1_FLO"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_24_DISPLAY_ERROR_CHANNEL_1_LAGY"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_24_BATTERY_REMOVED_ALARM_CHANNEL_1_GWI"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_25_CONSUMPTION_ERROR_CHANNEL_1_FLO"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_25_USAGE_P0_CHANNEL_1_LAGY"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_25_INTERNAL_INDEX_MBUS_COMMUNICATION_ERROR_CHANNEL_1_GWI"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_26_USAGE_TESTMODE_CHANNEL_1_LAGY"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_26_RESET_REQUESTED_CHANNEL_1_GWI"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_27_SETTING_WAS_RESET_TO_DEFAULT_CHANNEL_1_GWI"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_30_MEASUREMENT_DATA_CORRUPTION_ERROR_CHANNEL_1_FLO"/>
-
-      <!-- Auxiliary logs - Manufacturer specific events channel 2 -->
-      <xsd:enumeration value="MBUS_STATUS_BIT_20_POWERFAIL_CHANNEL_2_FLO"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_20_BATTERY_CHANGED_CHANNEL_2_LAGY"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_21_MAX_FLOW_ERROR_CHANNEL_2_FLO"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_21_CLOCK_INVALID_CHANNEL_2_LAGY"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_21_BOTTOM_TAMPER_CHANNEL_2_GWI"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_22_MIN_TEMPERATURE_ALARM_CHANNEL_2_FLO"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_22_MEASUREMENT_DATA_CORRUPTION_ERROR_CHANNEL_2_LAGY"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_22_MID_TAMPER_CHANNEL_2_GWI"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_23_HIGH_TEMPERATUR_ALARM_CHANNEL_2_FLO"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_23_SENSOR_DEGRADATION_ERROR_CHANNEL_2_LAGY"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_23_BATTERY_COMPLETELY_EMPTY_ALARM_CHANNEL_2_GWI"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_24_PULSE_ERROR_CHANNEL_2_FLO"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_24_DISPLAY_ERROR_CHANNEL_2_LAGY"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_24_BATTERY_REMOVED_ALARM_CHANNEL_2_GWI"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_25_CONSUMPTION_ERROR_CHANNEL_2_FLO"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_25_USAGE_P0_CHANNEL_2_LAGY"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_25_INTERNAL_INDEX_MBUS_COMMUNICATION_ERROR_CHANNEL_2_GWI"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_26_USAGE_TESTMODE_CHANNEL_2_LAGY"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_26_RESET_REQUESTED_CHANNEL_2_GWI"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_27_SETTING_WAS_RESET_TO_DEFAULT_CHANNEL_2_GWI"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_30_MEASUREMENT_DATA_CORRUPTION_ERROR_CHANNEL_2_FLO"/>
-
-      <!-- Auxiliary logs - Manufacturer specific events channel 3 -->
-      <xsd:enumeration value="MBUS_STATUS_BIT_20_POWERFAIL_CHANNEL_3_FLO"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_20_BATTERY_CHANGED_CHANNEL_3_LAGY"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_21_MAX_FLOW_ERROR_CHANNEL_3_FLO"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_21_CLOCK_INVALID_CHANNEL_3_LAGY"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_21_BOTTOM_TAMPER_CHANNEL_3_GWI"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_22_MIN_TEMPERATURE_ALARM_CHANNEL_3_FLO"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_22_MEASUREMENT_DATA_CORRUPTION_ERROR_CHANNEL_3_LAGY"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_22_MID_TAMPER_CHANNEL_3_GWI"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_23_HIGH_TEMPERATUR_ALARM_CHANNEL_3_FLO"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_23_SENSOR_DEGRADATION_ERROR_CHANNEL_3_LAGY"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_23_BATTERY_COMPLETELY_EMPTY_ALARM_CHANNEL_3_GWI"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_24_PULSE_ERROR_CHANNEL_3_FLO"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_24_DISPLAY_ERROR_CHANNEL_3_LAGY"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_24_BATTERY_REMOVED_ALARM_CHANNEL_3_GWI"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_25_CONSUMPTION_ERROR_CHANNEL_3_FLO"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_25_USAGE_P0_CHANNEL_3_LAGY"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_25_INTERNAL_INDEX_MBUS_COMMUNICATION_ERROR_CHANNEL_3_GWI"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_26_USAGE_TESTMODE_CHANNEL_3_LAGY"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_26_RESET_REQUESTED_CHANNEL_3_GWI"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_27_SETTING_WAS_RESET_TO_DEFAULT_CHANNEL_3_GWI"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_30_MEASUREMENT_DATA_CORRUPTION_ERROR_CHANNEL_3_FLO"/>
-
-      <!-- Auxiliary logs - Manufacturer specific events channel 4 -->
-      <xsd:enumeration value="MBUS_STATUS_BIT_20_POWERFAIL_CHANNEL_4_FLO"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_20_BATTERY_CHANGED_CHANNEL_4_LAGY"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_21_MAX_FLOW_ERROR_CHANNEL_4_FLO"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_21_CLOCK_INVALID_CHANNEL_4_LAGY"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_21_BOTTOM_TAMPER_CHANNEL_4_GWI"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_22_MIN_TEMPERATURE_ALARM_CHANNEL_4_FLO"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_22_MEASUREMENT_DATA_CORRUPTION_ERROR_CHANNEL_4_LAGY"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_22_MID_TAMPER_CHANNEL_4_GWI"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_23_HIGH_TEMPERATUR_ALARM_CHANNEL_4_FLO"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_23_SENSOR_DEGRADATION_ERROR_CHANNEL_4_LAGY"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_23_BATTERY_COMPLETELY_EMPTY_ALARM_CHANNEL_4_GWI"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_24_PULSE_ERROR_CHANNEL_4_FLO"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_24_DISPLAY_ERROR_CHANNEL_4_LAGY"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_24_BATTERY_REMOVED_ALARM_CHANNEL_4_GWI"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_25_CONSUMPTION_ERROR_CHANNEL_4_FLO"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_25_USAGE_P0_CHANNEL_4_LAGY"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_25_INTERNAL_INDEX_MBUS_COMMUNICATION_ERROR_CHANNEL_4_GWI"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_26_USAGE_TESTMODE_CHANNEL_4_LAGY"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_26_RESET_REQUESTED_CHANNEL_4_GWI"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_27_SETTING_WAS_RESET_TO_DEFAULT_CHANNEL_4_GWI"/>
-      <xsd:enumeration value="MBUS_STATUS_BIT_30_MEASUREMENT_DATA_CORRUPTION_ERROR_CHANNEL_4_FLO"/>
 
       <!-- the following events are System Events -->
       <xsd:enumeration value="SET_MAINTENANCE_STATE_E_SUCCESS"/>

@@ -13,9 +13,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.FindEventsRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.FindEventsResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.EventDetail;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.bundle.FindEventsRequestBuilder;
 
 public class BundledFindEventsSteps extends BaseBundleSteps {
@@ -36,10 +39,25 @@ public class BundledFindEventsSteps extends BaseBundleSteps {
     this.addActionToBundleRequest(action);
   }
 
-  @Then("^the bundle response should contain a find events response$")
-  public void theBundleResponseShouldContainAFindEventsResponse() throws Throwable {
+  @Then("^the bundle response should contain a find events response with (\\d++) events$")
+  public void theBundleResponseShouldContainAFindEventsResponse(
+      final int nrOfEvents, final Map<String, String> parameters) throws Throwable {
     final Response response = this.getNextBundleResponse();
 
-    assertThat(response instanceof FindEventsResponse).as("Not a valid response").isTrue();
+    assertThat(response).isInstanceOf(FindEventsResponse.class);
+
+    final FindEventsResponse findEventsResponse = (FindEventsResponse) response;
+    assertThat(findEventsResponse.getEvents().size()).isEqualTo(nrOfEvents);
+
+    for (final Event event : findEventsResponse.getEvents()) {
+      final Map<String, String> eventDetails =
+          event.getEventDetails().stream()
+              .collect(Collectors.toMap(EventDetail::getName, EventDetail::getValue));
+
+      parameters.forEach(
+          (key, value) -> {
+            assertThat(eventDetails).containsEntry(key, value);
+          });
+    }
   }
 }
