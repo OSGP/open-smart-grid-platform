@@ -17,17 +17,20 @@ public class FirmwareFileRequest {
   private final String fileName;
   private final boolean pushToNewDevices;
   private final boolean active;
+  private final byte[] imageIdentifier;
 
   public FirmwareFileRequest(
       final String identification,
       final String description,
       final String fileName,
       final boolean pushToNewDevices,
-      final boolean active) {
+      final boolean active,
+      final byte[] imageIdentifier) {
     this.identification = identification;
     this.description = description;
     this.fileName = fileName;
     this.pushToNewDevices = pushToNewDevices;
     this.active = active;
+    this.imageIdentifier = imageIdentifier;
   }
 }

@@ -56,6 +56,9 @@ public interface FirmwareFileRepository extends JpaRepository<FirmwareFile, Long
           + "WHERE ff.identification = :identification")
   FirmwareFile findByIdentification(@Param("identification") String identification);
 
+  @Query("SELECT ff FROM FirmwareFile ff WHERE ff.identification = :identification")
+  FirmwareFile findByIdentificationOnly(@Param("identification") String identification);
+
   @Query("SELECT ff FROM FirmwareFile ff WHERE :deviceModel MEMBER OF ff.deviceModels")
   List<FirmwareFile> findByDeviceModel(@Param("deviceModel") DeviceModel deviceModel);
 }

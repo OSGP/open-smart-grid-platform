@@ -118,55 +118,55 @@ public class MacGenerationService {
     if (!FirmwareFile.FIRMWARE_IMAGE_MAGIC_NUMBER.equals(header.getFirmwareImageMagicNumberHex())) {
       throw new ProtocolAdapterException(
           String.format(
-              "Unexpected FirmwareImageMagicNumber in header FW file: %s. Expected: %s.",
+              "Unexpected FirmwareImageMagicNumber in header firmware file: %s. Expected: %s.",
               header.getFirmwareImageMagicNumberHex(), FirmwareFile.FIRMWARE_IMAGE_MAGIC_NUMBER));
     }
     if (FirmwareFile.HEADER_VERSION != header.getHeaderVersionInt()) {
       throw new ProtocolAdapterException(
           String.format(
-              "Unexpected HeaderVersion in header FW file: %d. Expected: %d.",
+              "Unexpected HeaderVersion in header firmware file: %d. Expected: %d.",
               header.getHeaderVersionInt(), FirmwareFile.HEADER_VERSION));
     }
     if (header.getHeaderLengthInt() != HEADER_LENGTH) {
       throw new ProtocolAdapterException(
           String.format(
-              "Unexpected length of header in header FW file: %d. Expected: %d.",
+              "Unexpected length of header in header firmware file: %d. Expected: %d.",
               header.getHeaderLengthInt(), HEADER_LENGTH));
     }
     if (header.getAddressLengthInt() != ADDRESS_LENGTH) {
       throw new ProtocolAdapterException(
           String.format(
-              "Unexpected length of address in header FW file: %d. Expected: %d.",
+              "Unexpected length of address in header firmware file: %d. Expected: %d.",
               header.getAddressLengthInt(), ADDRESS_LENGTH));
     }
     if (header.getAddressTypeEnum() != AddressType.MBUS_ADDRESS) {
       throw new ProtocolAdapterException(
           String.format(
-              "Unexpected type of address in header FW file: %s. Expected: %s.",
+              "Unexpected type of address in header firmware file: %s. Expected: %s.",
               header.getAddressTypeEnum(), AddressType.MBUS_ADDRESS.name()));
     }
     if (header.getSecurityTypeEnum() != SecurityType.GMAC) {
       throw new ProtocolAdapterException(
           String.format(
-              "Unexpected type of security in header FW file: %s. Expected: %s.",
+              "Unexpected type of security in header firmware file: %s. Expected: %s.",
               header.getSecurityTypeEnum(), SecurityType.GMAC.name()));
     }
     if (header.getMbusDeviceType() != DeviceType.GAS) {
       throw new ProtocolAdapterException(
           String.format(
-              "Unexpected type of device in header FW file: %s. Expected: %s.",
+              "Unexpected type of device in header firmware file: %s. Expected: %s.",
               header.getMbusDeviceType(), DeviceType.GAS.name()));
     }
     if (header.getSecurityLengthInt() != SECURITY_LENGTH) {
       throw new ProtocolAdapterException(
           String.format(
-              "Unexpected length of security in header FW file: %d. Expected: %d.",
+              "Unexpected length of security in header firmware file: %d. Expected: %d.",
               header.getSecurityLengthInt(), SECURITY_LENGTH));
     }
     if (header.getActivationTypeEnum() != ActivationType.MASTER_INITIATED_ACTIVATION) {
       throw new ProtocolAdapterException(
           String.format(
-              "Unexpected type of activation in header FW file: %s. Expected: %s.",
+              "Unexpected type of activation in header firmware file: %s. Expected: %s.",
               header.getActivationTypeEnum(), ActivationType.MASTER_INITIATED_ACTIVATION));
     }
   }

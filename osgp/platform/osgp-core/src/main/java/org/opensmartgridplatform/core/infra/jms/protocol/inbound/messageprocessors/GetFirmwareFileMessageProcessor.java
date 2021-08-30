@@ -20,6 +20,7 @@ import org.opensmartgridplatform.domain.core.repositories.DeviceRepository;
 import org.opensmartgridplatform.domain.core.repositories.FirmwareFileRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareFileDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -67,13 +68,20 @@ public class GetFirmwareFileMessageProcessor extends AbstractProtocolRequestMess
       device = this.deviceRepository.findByDeviceIdentification(metadata.getDeviceIdentification());
 
       final RequestMessage requestMessage = (RequestMessage) message.getObject();
-      firmwareFileIdentification = (String) requestMessage.getRequest();
+
+      final UpdateFirmwareRequestDto updateFirmwareRequestDto =
+          (UpdateFirmwareRequestDto) requestMessage.getRequest();
+      firmwareFileIdentification = updateFirmwareRequestDto.getFirmwareIdentification();
 
       final FirmwareFile firmwareFile =
-          this.firmwareFileRepository.findByIdentification(firmwareFileIdentification);
+          this.firmwareFileRepository.findByIdentificationOnly(firmwareFileIdentification);
 
       final FirmwareFileDto firmwareFileDto =
-          new FirmwareFileDto(firmwareFile.getIdentification(), firmwareFile.getFile());
+          new FirmwareFileDto(
+              firmwareFileIdentification,
+              updateFirmwareRequestDto.getDeviceIdentification(),
+              firmwareFile.getFile(),
+              firmwareFile.getImageIdentifier());
 
       this.sendSuccesResponse(metadata, device.getProtocolInfo(), firmwareFileDto);
 

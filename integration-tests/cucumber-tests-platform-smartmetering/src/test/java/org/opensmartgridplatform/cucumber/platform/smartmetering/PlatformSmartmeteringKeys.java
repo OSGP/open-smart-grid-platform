@@ -64,6 +64,7 @@ public class PlatformSmartmeteringKeys
   public static final String KEY_DEVICE_AUTHENTICATIONKEY = "Authentication_key";
   public static final String KEY_DEVICE_ENCRYPTIONKEY = "Encryption_key";
   public static final String KEY_DEVICE_ENCRYPTION_KEY_STATUS = "EncryptionKeyStatus";
+  public static final String KEY_DEVICE_FIRMWARE_UPDATE_KEY = "FirmwareUpdateKey";
   public static final String MBUS_DEFAULT_KEY = "MbusDefaultKey";
   public static final String MBUS_USER_KEY = "MbusUserKey";
   public static final String PASSWORD = "Password";

@@ -8,23 +8,17 @@
  */
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
-import org.opensmartgridplatform.domain.core.valueobjects.FirmwareModuleType;
-import org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 
 public class UpdateFirmwareRequestData implements ActionRequest {
 
   private static final long serialVersionUID = 1537858643381805500L;
 
-  private final List<FirmwareVersion> firmwareVersions;
+  private final String firmwareIdentification;
 
-  public UpdateFirmwareRequestData(final List<FirmwareVersion> firmwareVersions) {
-    this.firmwareVersions = new ArrayList<>(firmwareVersions);
+  public UpdateFirmwareRequestData(final String firmwareIdentification) {
+    this.firmwareIdentification = firmwareIdentification;
   }
 
   @Override
@@ -32,27 +26,8 @@ public class UpdateFirmwareRequestData implements ActionRequest {
     // No validation needed
   }
 
-  public List<FirmwareVersion> getFirmwareVersions() {
-    return new ArrayList<>(this.firmwareVersions);
-  }
-
-  /**
-   * Returns a map of version information by firmware module type.
-   *
-   * <p>If the list of firmware versions as returned by {@link #getFirmwareVersions()} contains
-   * multiple versions for the same module type, the last version will be reflected in the value
-   * from this map.
-   *
-   * @return a map of version by module type
-   */
-  public Map<FirmwareModuleType, String> getVersionByModuleType() {
-    final Map<FirmwareModuleType, String> versionByModuleType =
-        new EnumMap<>(FirmwareModuleType.class);
-    for (final FirmwareVersion firmwareVersion : this.firmwareVersions) {
-      versionByModuleType.put(
-          firmwareVersion.getFirmwareModuleType(), firmwareVersion.getVersion());
-    }
-    return versionByModuleType;
+  public String getFirmwareIdentification() {
+    return this.firmwareIdentification;
   }
 
   @Override
