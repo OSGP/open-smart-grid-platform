@@ -270,7 +270,6 @@
     </xsd:complexType>
   </xsd:element>
 
-
   <xsd:element name="ClearMbusStatusRequest">
     <xsd:complexType>
       <xsd:sequence>
@@ -688,7 +687,6 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-
 
   <xsd:complexType name="ClearMbusStatusRequestData">
     <xsd:complexContent>

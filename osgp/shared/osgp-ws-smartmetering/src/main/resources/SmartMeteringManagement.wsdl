@@ -156,7 +156,6 @@
     </wsdl:part>
   </wsdl:message>
 
-
   <wsdl:message name="ClearMbusStatusRequest">
     <wsdl:part element="smman:ClearMbusStatusRequest"
       name="ClearMbusStatusRequest">
