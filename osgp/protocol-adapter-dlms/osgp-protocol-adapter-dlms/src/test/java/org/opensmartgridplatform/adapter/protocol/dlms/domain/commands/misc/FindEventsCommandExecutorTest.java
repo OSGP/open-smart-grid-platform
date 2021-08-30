@@ -256,7 +256,7 @@ class FindEventsCommandExecutorTest {
     IntStream.rangeClosed(33664, 33697)
         .forEach(
             code -> {
-              final DataObject eventCode = DataObject.newUInteger16Data((int) code);
+              final DataObject eventCode = DataObject.newUInteger16Data(code);
               final DataObject eventTime =
                   DataObject.newDateTimeData(new CosemDateTime(2018, 12, 31, 23, code % 60, 0, 0));
 

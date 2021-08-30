@@ -65,19 +65,24 @@ public class EventService {
   private void enrichEventDetails(final EventDto eventDto, final SmartMeter smartMeter) {
     if (smartMeter.getDeviceModel() != null
         && smartMeter.getDeviceModel().getManufacturer() != null) {
-      eventDto.addEventDetail(
-          new EventDetailDto(
-              EventDetailNameTypeDto.MANUFACTURER_CODE,
-              smartMeter.getDeviceModel().getManufacturer().getCode()));
+      this.addEventDetail(
+          eventDto,
+          EventDetailNameTypeDto.MANUFACTURER_CODE,
+          smartMeter.getDeviceModel().getManufacturer().getCode());
     }
-    if (smartMeter.getDeviceType() != null) {
-      eventDto.addEventDetail(
-          new EventDetailDto(EventDetailNameTypeDto.DEVICE_TYPE, smartMeter.getDeviceType()));
-    }
+    this.addEventDetail(eventDto, EventDetailNameTypeDto.DEVICE_TYPE, smartMeter.getDeviceType());
     if (smartMeter.getProtocolInfo() != null) {
-      eventDto.addEventDetail(
-          new EventDetailDto(
-              EventDetailNameTypeDto.PROTOCOL_NAME, smartMeter.getProtocolInfo().getProtocol()));
+      this.addEventDetail(
+          eventDto,
+          EventDetailNameTypeDto.PROTOCOL_NAME,
+          smartMeter.getProtocolInfo().getProtocol());
+    }
+  }
+
+  private void addEventDetail(
+      final EventDto eventDto, final EventDetailNameTypeDto detailNameType, final String value) {
+    if (value != null) {
+      eventDto.addEventDetail(new EventDetailDto(detailNameType, value));
     }
   }
 

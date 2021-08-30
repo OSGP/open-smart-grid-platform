@@ -96,11 +96,8 @@ public class DataObjectToEventListConverter {
     if (!eventData.get(1).isNumber()) {
       throw new ProtocolAdapterException(EVENT_DATA_VALUE_IS_NOT_A_NUMBER);
     }
-    if (eventData.get(1).getValue() instanceof Short) {
-      return ((Short) eventData.get(1).getValue()).intValue();
-    }
-
-    return eventData.get(1).getValue();
+    final Number codeValue = eventData.get(1).getValue();
+    return codeValue.intValue();
   }
 
   private Integer extractEventCounter(

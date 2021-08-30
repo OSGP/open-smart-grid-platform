@@ -47,7 +47,7 @@ public class BundledFindEventsSteps extends BaseBundleSteps {
     assertThat(response).isInstanceOf(FindEventsResponse.class);
 
     final FindEventsResponse findEventsResponse = (FindEventsResponse) response;
-    assertThat(findEventsResponse.getEvents().size()).isEqualTo(nrOfEvents);
+    assertThat(findEventsResponse.getEvents()).hasSize(nrOfEvents);
 
     for (final Event event : findEventsResponse.getEvents()) {
       final Map<String, String> eventDetails =
