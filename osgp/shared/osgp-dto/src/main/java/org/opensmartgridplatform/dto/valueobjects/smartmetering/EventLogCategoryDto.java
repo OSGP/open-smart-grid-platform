@@ -13,7 +13,8 @@ public enum EventLogCategoryDto {
   FRAUD_DETECTION_LOG(2),
   COMMUNICATION_SESSION_LOG(3),
   M_BUS_EVENT_LOG(2),
-  POWER_QUALITY_EVENT_LOG(2);
+  POWER_QUALITY_EVENT_LOG(2),
+  AUXILIARY_EVENT_LOG(2);
 
   private final int numberOfEventLogElements;
 

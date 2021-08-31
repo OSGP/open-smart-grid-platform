@@ -10,32 +10,15 @@
 <jxb:bindings version="2.0" xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
   xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-  <jxb:globalBindings typesafeEnumMemberName="generateName" choiceContentProperty="true"/>
+  <jxb:globalBindings typesafeEnumMemberName="generateName" choiceContentProperty="true" typesafeEnumMaxMembers="512"/>
 
   <jxb:bindings schemaLocation="../schemas/management-ws-smartmetering.xsd">
     <jxb:schemaBindings>
       <jxb:package
         name="org.opensmartgridplatform.adapter.ws.schema.smartmetering.management"></jxb:package>
     </jxb:schemaBindings>
+
     <!-- the following bindings are needed because the XJC transformer will change L1 to L_1 etc -->
-    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='POWER_DOWN_PHASE_L1_ISKR']">
-        <jxb:typesafeEnumMember name="POWER_DOWN_PHASE_L1_ISKR"/>
-    </jxb:bindings>
-    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='POWER_DOWN_PHASE_L2_ISKR']">
-        <jxb:typesafeEnumMember name="POWER_DOWN_PHASE_L2_ISKR"/>
-    </jxb:bindings>
-    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='POWER_DOWN_PHASE_L3_ISKR']">
-        <jxb:typesafeEnumMember name="POWER_DOWN_PHASE_L3_ISKR"/>
-    </jxb:bindings>
-    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='POWER_RESTORED_PHASE_L1_ISKR']">
-       <jxb:typesafeEnumMember name="POWER_RESTORED_PHASE_L1_ISKR"/>
-    </jxb:bindings>
-    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='POWER_RESTORED_PHASE_L2_ISKR']">
-       <jxb:typesafeEnumMember name="POWER_RESTORED_PHASE_L2_ISKR"/>
-    </jxb:bindings>
-    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='POWER_RESTORED_PHASE_L3_ISKR']">
-        <jxb:typesafeEnumMember name="POWER_RESTORED_PHASE_L3_ISKR"/>
-    </jxb:bindings>
     <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='PHASE_RETURNED_L1']">
        <jxb:typesafeEnumMember name="PHASE_RETURNED_L1"/>
     </jxb:bindings>
@@ -102,6 +85,44 @@
     <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='PV_VOLTAGE_SWELL_L3']">
           <jxb:typesafeEnumMember name="PV_VOLTAGE_SWELL_L3"/>
     </jxb:bindings>
+
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='MBUS_STATUS_BIT_3_TAMPER_P2_CHANNEL_1']">
+      <jxb:typesafeEnumMember name="MBUS_STATUS_BIT_3_TAMPER_P2_CHANNEL_1"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='MBUS_STATUS_BIT_4_TAMPER_P0_CHANNEL_1']">
+      <jxb:typesafeEnumMember name="MBUS_STATUS_BIT_4_TAMPER_P0_CHANNEL_1"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_1']">
+      <jxb:typesafeEnumMember name="MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_1"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='MBUS_STATUS_BIT_3_TAMPER_P2_CHANNEL_2']">
+      <jxb:typesafeEnumMember name="MBUS_STATUS_BIT_3_TAMPER_P2_CHANNEL_2"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='MBUS_STATUS_BIT_4_TAMPER_P0_CHANNEL_2']">
+      <jxb:typesafeEnumMember name="MBUS_STATUS_BIT_4_TAMPER_P0_CHANNEL_2"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_2']">
+      <jxb:typesafeEnumMember name="MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_2"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='MBUS_STATUS_BIT_3_TAMPER_P2_CHANNEL_3']">
+      <jxb:typesafeEnumMember name="MBUS_STATUS_BIT_3_TAMPER_P2_CHANNEL_3"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='MBUS_STATUS_BIT_4_TAMPER_P0_CHANNEL_3']">
+      <jxb:typesafeEnumMember name="MBUS_STATUS_BIT_4_TAMPER_P0_CHANNEL_3"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_3']">
+      <jxb:typesafeEnumMember name="MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_3"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='MBUS_STATUS_BIT_3_TAMPER_P2_CHANNEL_4']">
+      <jxb:typesafeEnumMember name="MBUS_STATUS_BIT_3_TAMPER_P2_CHANNEL_4"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='MBUS_STATUS_BIT_4_TAMPER_P0_CHANNEL_4']">
+      <jxb:typesafeEnumMember name="MBUS_STATUS_BIT_4_TAMPER_P0_CHANNEL_4"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_4']">
+      <jxb:typesafeEnumMember name="MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_4"/>
+    </jxb:bindings>
+
   </jxb:bindings>
 
 </jxb:bindings>

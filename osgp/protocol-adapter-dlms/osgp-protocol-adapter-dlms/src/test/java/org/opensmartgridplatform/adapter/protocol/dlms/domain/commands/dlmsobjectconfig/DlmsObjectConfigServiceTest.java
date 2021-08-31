@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Fail.fail;
 import static org.mockito.Mockito.when;
 
@@ -85,6 +86,7 @@ class DlmsObjectConfigServiceTest {
           new DlmsCaptureObject(this.clock1, 2),
           new DlmsCaptureObject(this.register, 2),
           DlmsCaptureObject.createWithChannel(this.registerWithChannel, 1, 2));
+
   private final DlmsProfile profileCombined =
       new DlmsProfile(
           DlmsObjectType.DAILY_LOAD_PROFILE,
@@ -356,6 +358,26 @@ class DlmsObjectConfigServiceTest {
     } catch (final ProtocolAdapterException e) {
       assertThat(e.getMessage()).contains("Did not find GSM_DIAGNOSTIC");
     }
+  }
+
+  @Test
+  public void testFindDlmsObject() throws ProtocolAdapterException {
+    // CALL
+    final DlmsObject dlmsObject =
+        this.service.findDlmsObject(this.device422, DlmsObjectType.ACTIVE_ENERGY_IMPORT);
+
+    // VERIFY
+    assertThat(dlmsObject).isNotNull();
+    assertThat(dlmsObject.getType()).isEqualTo(DlmsObjectType.ACTIVE_ENERGY_IMPORT);
+  }
+
+  @Test
+  public void testFindDlmsObjectWithWrongProtocol() {
+    assertThatExceptionOfType(ProtocolAdapterException.class)
+        .isThrownBy(
+            () -> {
+              this.service.findDlmsObject(this.device51, DlmsObjectType.AMR_STATUS);
+            });
   }
 
   private ObisCode getObisCodeWithChannel(final String obisAsString, final Integer channel) {

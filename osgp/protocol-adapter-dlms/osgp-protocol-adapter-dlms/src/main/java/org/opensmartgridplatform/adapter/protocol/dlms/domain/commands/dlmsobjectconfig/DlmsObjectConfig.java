@@ -56,6 +56,7 @@ public abstract class DlmsObjectConfig {
         .filter(
             o2 ->
                 !(o2 instanceof DlmsProfile)
+                    || filterMedium == null
                     || ((DlmsProfile) o2).getMedium() == Medium.COMBINED
                     || ((DlmsProfile) o2).getMedium() == filterMedium)
         .findAny();

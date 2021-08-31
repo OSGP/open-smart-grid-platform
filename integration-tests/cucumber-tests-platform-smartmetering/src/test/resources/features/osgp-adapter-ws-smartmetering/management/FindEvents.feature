@@ -48,3 +48,17 @@ Feature: SmartMetering Management - Find Events
       | EndDate              | 2015-09-05T00:00:00.000Z |
     Then 29 mbus events should be returned
       | DeviceIdentification | TEST1024000000001 |
+
+  Scenario: find auxiliary events from a device
+    Given a dlms device
+      | DeviceIdentification | TEST1027000000001 |
+      | DeviceType           | SMART_METER_E     |
+      | Protocol             | SMR               |
+      | ProtocolVersion      |               5.1 |
+      | Port                 |              1027 |
+    When receiving a find auxiliary events request
+      | DeviceIdentification | TEST1027000000001        |
+      | BeginDate            | 2015-09-01T00:00:00.000Z |
+      | EndDate              | 2015-10-01T00:00:00.000Z |
+    Then 169 auxiliary events should be returned
+      | DeviceIdentification | TEST1027000000001 |

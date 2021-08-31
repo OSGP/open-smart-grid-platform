@@ -54,7 +54,7 @@ public class FindEventsRequestBuilder {
   private EventLogCategory getEventLogCategory(final Map<String, String> parameters) {
     return getEnum(
         parameters,
-        PlatformSmartmeteringKeys.EVENT_TYPE,
+        PlatformSmartmeteringKeys.EVENT_LOG_CATEGORY,
         EventLogCategory.class,
         DEFAULT_EVENT_LOG_CATEGORY);
   }
