@@ -167,7 +167,7 @@ Feature: SmartMetering Configuration - Firmware
       | FirmwareModuleVersionMa     | BL_012 XMX_N42_GprsV09 |
       | FirmwareModuleVersionFunc   | M57 4836               |
 
-  @NightlyBuildOnly @UpdateFirmware
+  @NightlyBuildOnly @UpdateFirmware_ERROR
   Scenario: update of firmware, firmware has no imageIdentifier 
     Given a manufacturer
       | ManufacturerCode | KAIF  |
