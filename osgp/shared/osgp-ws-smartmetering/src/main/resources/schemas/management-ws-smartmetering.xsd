@@ -273,6 +273,7 @@
   <xsd:element name="ClearMbusStatusRequest">
     <xsd:complexType>
       <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
         <xsd:element name="ClearMbusStatusRequestData"
           type="tns:ClearMbusStatusRequestData"/>
       </xsd:sequence>

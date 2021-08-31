@@ -19,6 +19,11 @@ import org.opensmartgridplatform.adapter.ws.endpointinterceptors.ResponseUrl;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.ScheduleTime;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMbusStatusAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMbusStatusAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMbusStatusRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMbusStatusResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMbusStatusResponseData;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.DevicePage;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.DisableDebuggingAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.DisableDebuggingAsyncResponse;
@@ -692,6 +697,83 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
           this.managementMapper.map(
               responseData.getMessageData(), GetGsmDiagnosticResponseData.class));
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+
+    } catch (final ConstraintViolationException e) {
+      throw new FunctionalException(
+          FunctionalExceptionType.VALIDATION_ERROR,
+          ComponentType.WS_SMART_METERING,
+          new ValidationException(e.getConstraintViolations()));
+    } catch (final Exception e) {
+      this.handleException(e);
+    }
+    return response;
+  }
+
+  @PayloadRoot(localPart = "ClearMBusStatusRequest", namespace = NAMESPACE)
+  @ResponsePayload
+  public ClearMbusStatusAsyncResponse clearMBusStatus(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final ClearMbusStatusRequest request,
+      @MessagePriority final String messagePriority,
+      @ScheduleTime final String scheduleTime,
+      @ResponseUrl final String responseUrl,
+      @BypassRetry final String bypassRetry)
+      throws OsgpException {
+
+    final org.opensmartgridplatform.domain.core.valueobjects.smartmetering
+            .ClearMBusStatusRequestData
+        requestData =
+            this.managementMapper.map(
+                request.getClearMbusStatusRequestData(),
+                org.opensmartgridplatform.domain.core.valueobjects.smartmetering
+                    .ClearMBusStatusRequestData.class);
+
+    final RequestMessageMetadata requestMessageMetadata =
+        RequestMessageMetadata.newBuilder()
+            .withOrganisationIdentification(organisationIdentification)
+            .withDeviceIdentification(request.getDeviceIdentification())
+            .withDeviceFunction(DeviceFunction.CLEAR_MBUS_STATUS)
+            .withMessageType(MessageType.CLEAR_MBUS_STATUS)
+            .withMessagePriority(messagePriority)
+            .withScheduleTime(scheduleTime)
+            .withBypassRetry(bypassRetry)
+            .build();
+
+    final AsyncResponse asyncResponse =
+        this.requestService.enqueueAndSendRequest(requestMessageMetadata, requestData);
+
+    this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
+
+    return this.managementMapper.map(asyncResponse, ClearMbusStatusAsyncResponse.class);
+  }
+
+  @PayloadRoot(localPart = "ClearMBusStatusAsyncRequest", namespace = NAMESPACE)
+  @ResponsePayload
+  public ClearMbusStatusResponse clearMBusStatusResponse(
+      @OrganisationIdentification final String organisationIdentification,
+      @RequestPayload final ClearMbusStatusAsyncRequest request)
+      throws OsgpException {
+
+    log.info(
+        "Clear MBus Status response for organisation: {} and device: {}.",
+        organisationIdentification,
+        request.getDeviceIdentification());
+
+    ClearMbusStatusResponse response = null;
+    try {
+
+      response = new ClearMbusStatusResponse();
+
+      final ResponseData responseData =
+          this.responseDataService.get(
+              request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
+
+      this.throwExceptionIfResultNotOk(responseData, "Clear MBus Status");
+
+      response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
+      response.setClearMbusStatusResponseData(
+          this.managementMapper.map(
+              responseData.getMessageData(), ClearMbusStatusResponseData.class));
 
     } catch (final ConstraintViolationException e) {
       throw new FunctionalException(
