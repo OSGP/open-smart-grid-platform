@@ -16,6 +16,8 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dl
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ACTIVE_ENERGY_IMPORT_RATE_2;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ALARM_FILTER;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.AMR_STATUS;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.COMMUNICATION_SESSIONS_EVENT_CODE;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.COMMUNICATION_SESSIONS_EVENT_LOG;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.DAILY_LOAD_PROFILE;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.EXTERNAL_TRIGGER_CSD;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.EXTERNAL_TRIGGER_SMS;
@@ -105,6 +107,8 @@ public class DlmsObjectConfigDsmr422 extends DlmsObjectConfig {
     final DlmsObject fraudDetectionEventLogCode =
         new DlmsData(FRAUD_DETECTION_EVENT_CODE, "0.0.96.11.1.255");
     final DlmsObject mbusEventLogCode = new DlmsData(MBUS_EVENT_CODE, "0.0.96.11.3.255");
+    final DlmsObject communicationSessionsEventLogCode =
+        new DlmsData(COMMUNICATION_SESSIONS_EVENT_CODE, "0.0.96.11.4.255");
 
     objectList.addAll(
         Arrays.asList(standardEventLogCode, fraudDetectionEventLogCode, mbusEventLogCode));
@@ -223,6 +227,18 @@ public class DlmsObjectConfigDsmr422 extends DlmsObjectConfig {
     objectList.add(
         new DlmsProfile(
             MBUS_EVENT_LOG, "0.0.99.98.3.255", captureObjectsMBusEvents, ASYNCHRONOUSLY, ABSTRACT));
+
+    final List<DlmsCaptureObject> captureObjectsCommunicationSessionsEvents =
+        Arrays.asList(
+            DlmsCaptureObject.create(clock),
+            DlmsCaptureObject.create(communicationSessionsEventLogCode));
+    objectList.add(
+        new DlmsProfile(
+            COMMUNICATION_SESSIONS_EVENT_LOG,
+            "0.0.99.98.4.255",
+            captureObjectsCommunicationSessionsEvents,
+            ASYNCHRONOUSLY,
+            ABSTRACT));
 
     return objectList;
   }
