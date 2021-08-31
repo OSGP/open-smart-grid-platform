@@ -354,24 +354,24 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-2:24.1.0" and attributes
-      | 5 | unsigned             | 241       |
-      | 6 | double-long-unsigned | 302343974 |
-      | 7 | long-unsigned        | 12514     |
-      | 8 | unsigned             | 66        |
-      | 9 | unsigned             | 3         |
+    And device simulation of "TEST1024000000001" with M-Bus client values for channel 2
+      | MbusPrimaryAddress             | 241      |
+      | MbusIdentificationNumber       | 12056726 |
+      | MbusManufacturerIdentification | LGB      |
+      | MbusVersion                    | 66       |
+      | MbusDeviceTypeIdentification   | 3        |
     And a dlms device
       | DeviceIdentification        | TESTG102400000001 |
       | DeviceType                  | SMART_METER_G     |
       | GatewayDeviceIdentification | TEST1024000000001 |
       | Channel                     | 2                 |
       | MbusPrimaryAddress          | 3                 |
-    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes
-      | 5 | unsigned             | 0 |
-      | 6 | double-long-unsigned | 0 |
-      | 7 | long-unsigned        | 0 |
-      | 8 | unsigned             | 0 |
-      | 9 | unsigned             | 0 |
+    And device simulation of "TEST1024000000001" with M-Bus client values for channel 1
+      | MbusPrimaryAddress             | 0 |
+      | MbusIdentificationNumber       | 0 |
+      | MbusManufacturerIdentification | 0 |
+      | MbusVersion                    | 0 |
+      | MbusDeviceTypeIdentification   | 0 |
     And a dlms device
       | DeviceIdentification           | TESTG101205673101 |
       | DeviceType                     | SMART_METER_G     |
@@ -403,12 +403,12 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes
-      | 5 | unsigned             | 3        |
-      | 6 | double-long-unsigned | 12056731 |
-      | 7 | long-unsigned        | 12514    |
-      | 8 | unsigned             | 66       |
-      | 9 | unsigned             | 3        |
+    And device simulation of "TEST1024000000001" with M-Bus client values for channel 1
+      | MbusPrimaryAddress             | 3        |
+      | MbusIdentificationNumber       | 12056731 |
+      | MbusManufacturerIdentification | LGB      |
+      | MbusVersion                    | 66       |
+      | MbusDeviceTypeIdentification   | 3        |
     And a dlms device
       | DeviceIdentification           | TESTG101205673117 |
       | DeviceType                     | SMART_METER_G     |

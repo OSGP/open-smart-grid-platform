@@ -234,7 +234,7 @@ public class DeviceChannelsHelperTest {
   public void testFindEmptyChannel() {
 
     final ChannelElementValuesDto emptyChannel =
-        new ChannelElementValuesDto((short) 1, (short) 0, "0", null, (short) 0, (short) 0);
+        new ChannelElementValuesDto((short) 1, (short) 0, "00000000", null, (short) 0, (short) 0);
     final ChannelElementValuesDto nonEmptyChannel =
         new ChannelElementValuesDto((short) 2, (short) 0, "12345678", null, (short) 0, (short) 0);
 
