@@ -270,6 +270,38 @@
     </xsd:complexType>
   </xsd:element>
 
+  <xsd:element name="ClearMbusStatusRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="ClearMbusStatusRequestData"
+          type="tns:ClearMbusStatusRequestData"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ClearMbusStatusAsyncResponse">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncResponse"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ClearMbusStatusAsyncRequest">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="common:AsyncRequest"/>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="ClearMbusStatusResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType"/>
+        <xsd:element name="ClearMbusStatusResponseData"
+          type="tns:ClearMbusStatusResponseData"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
   <!-- Data Types -->
 
   <!-- Query for FindEventsRequest -->
@@ -977,11 +1009,25 @@
       <xsd:extension base="common:Response">
         <xsd:sequence>
           <xsd:element name="GatewayDeviceIdentification"
-                       type="common:Identification"/>
+            type="common:Identification"/>
           <xsd:element name="MbusDeviceIdentification" type="common:Identification"/>
           <xsd:element name="DeviceLifecycleStatus" type="common:DeviceLifecycleStatus"/>
           <xsd:element name="Channel" type="common:Channel"/>
         </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="ClearMbusStatusRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Query">
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="ClearMbusStatusResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>

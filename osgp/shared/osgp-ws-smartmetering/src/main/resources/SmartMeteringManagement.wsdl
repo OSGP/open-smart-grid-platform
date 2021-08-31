@@ -156,6 +156,27 @@
     </wsdl:part>
   </wsdl:message>
 
+  <wsdl:message name="ClearMbusStatusRequest">
+    <wsdl:part element="smman:ClearMbusStatusRequest"
+      name="ClearMbusStatusRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ClearMbusStatusAsyncResponse">
+    <wsdl:part element="smman:ClearMbusStatusAsyncResponse"
+      name="ClearMbusStatusAsyncResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ClearMbusStatusAsyncRequest">
+    <wsdl:part element="smman:ClearMbusStatusAsyncRequest"
+      name="ClearMbusStatusAsyncRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ClearMbusStatusResponse">
+    <wsdl:part element="smman:ClearMbusStatusResponse"
+      name="ClearMbusStatusResponse">
+    </wsdl:part>
+  </wsdl:message>
+
   <wsdl:message name="GetGsmDiagnosticRequest">
     <wsdl:part element="smman:GetGsmDiagnosticRequest" name="GetGsmDiagnosticRequest">
     </wsdl:part>
@@ -281,6 +302,23 @@
       </wsdl:input>
       <wsdl:output message="tns:SetDeviceLifecycleStatusByChannelResponse"
         name="SetDeviceLifecycleStatusByChannelResponse">
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="ClearMbusStatus">
+      <wsdl:input message="tns:ClearMbusStatusRequest"
+        name="ClearMbusStatusRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:ClearMbusStatusAsyncResponse"
+        name="ClearMbusStatusAsyncResponse">
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetClearMbusStatusResponse">
+      <wsdl:input message="tns:ClearMbusStatusAsyncRequest"
+        name="ClearMbusStatusAsyncRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:ClearMbusStatusResponse"
+        name="ClearMbusStatusResponse">
       </wsdl:output>
     </wsdl:operation>
 
@@ -482,7 +520,7 @@
       </wsdl:output>
     </wsdl:operation>
 
-      <wsdl:operation name="SetDeviceLifecycleStatusByChannel">
+    <wsdl:operation name="SetDeviceLifecycleStatusByChannel">
       <soap:operation soapAction="" />
       <wsdl:input name="SetDeviceLifecycleStatusByChannelRequest">
         <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
@@ -510,6 +548,39 @@
         <soap:body use="literal" />
       </wsdl:input>
       <wsdl:output name="SetDeviceLifecycleStatusByChannelResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+
+    <wsdl:operation name="ClearMbusStatus">
+      <soap:operation soapAction="" />
+      <wsdl:input name="ClearMbusStatusRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="ClearMbusStatusAsyncResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="GetClearMbusStatusResponse">
+      <soap:operation soapAction="" />
+      <wsdl:input name="ClearMbusStatusAsyncRequest">
+        <soap:header message="tns:ActionHeader" part="OrganisationIdentification"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="UserName"
+          use="literal" />
+        <soap:header message="tns:ActionHeader" part="ApplicationName"
+          use="literal" />
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="ClearMbusStatusResponse">
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
