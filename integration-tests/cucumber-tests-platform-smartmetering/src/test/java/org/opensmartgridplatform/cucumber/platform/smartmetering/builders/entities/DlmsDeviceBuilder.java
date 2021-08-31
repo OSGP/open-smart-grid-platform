@@ -19,6 +19,8 @@ import org.opensmartgridplatform.domain.core.entities.ProtocolInfo;
 
 public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
 
+  private static final int HEX_RADIX = 16;
+
   private String deviceIdentification = PlatformSmartmeteringDefaults.DEVICE_IDENTIFICATION;
   private Long version = PlatformSmartmeteringDefaults.VERSION;
   private String iccId = PlatformSmartmeteringDefaults.ICC_ID;
@@ -140,8 +142,8 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     return this;
   }
 
-  public DlmsDeviceBuilder setMbusIdentificationNumber(final Long value) {
-    this.mbusIdentificationNumber = value;
+  public DlmsDeviceBuilder setMbusIdentificationNumber(final String value) {
+    this.mbusIdentificationNumber = Long.parseLong(value, HEX_RADIX);
     return this;
   }
 
@@ -229,7 +231,7 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     }
     if (inputSettings.containsKey(PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER)) {
       this.setMbusIdentificationNumber(
-          getLong(inputSettings, PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER));
+          inputSettings.get(PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER));
     }
     if (inputSettings.containsKey(PlatformSmartmeteringKeys.MBUS_MANUFACTURER_IDENTIFICATION)) {
       this.setMbusManufacturerIdentification(

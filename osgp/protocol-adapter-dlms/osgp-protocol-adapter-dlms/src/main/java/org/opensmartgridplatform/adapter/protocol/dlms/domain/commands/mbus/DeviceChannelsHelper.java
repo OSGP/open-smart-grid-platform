@@ -23,7 +23,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Dlm
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.FindMatchingChannelHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
@@ -169,7 +168,7 @@ public class DeviceChannelsHelper {
       return null;
     } else {
       final Long identification = this.dlmsHelper.readLong(resultData, description);
-      return identification.toString();
+      return IdentificationNumber.fromBcdFormatAsLong(identification).getStringRepresentation();
     }
   }
 
@@ -245,7 +244,6 @@ public class DeviceChannelsHelper {
       final DlmsConnectionManager conn,
       final MbusChannelElementsDto requestDto,
       final short channel,
-      final Protocol protocol,
       final String executorName)
       throws ProtocolAdapterException {
 
@@ -254,8 +252,8 @@ public class DeviceChannelsHelper {
             .addExecutor(
                 this.getMbusAttributeExecutor(
                     MbusClientAttribute.IDENTIFICATION_NUMBER,
-                    IdentificationNumberFactory.create(protocol)
-                        .fromLast8Digits(requestDto.getMbusIdentificationNumber())
+                    IdentificationNumber.fromStringRepresentation(
+                            requestDto.getMbusIdentificationNumber())
                         .asDataObject(),
                     channel))
             .addExecutor(

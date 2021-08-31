@@ -15,46 +15,96 @@ import org.opensmartgridplatform.dlms.interfaceclass.attribute.MbusClientAttribu
 /**
  * Represents the M-Bus Client Setup identification number.
  *
- * <p>The IdentificationNumber in its textual form consists of the last 8 digits of the
- * identification number.<br>
+ * <p>The IdentificationNumber in its textual form consists of the last 8 digits of the 10 digits
+ * serial number within the Equipment Identifier .<br>
  * The long value is the base-10 value calculated from the textual representation interpreted as
- * hexadecimal (base-16). This value is the one that is used for the identification_number
- * (attribute 6) of the DLMS M-Bus client (class ID 72).
+ * hexadecimal (base-16), the BCD value. This value is the one that is used for the
+ * identification_number (attribute 6) of the DLMS M-Bus client (class ID 72).
+ *
+ * <p>For example:<br>
+ * - Equipment Identifier: G0000001122334400<br>
+ * (Meter code G00000, serial number 0011223344, year of manufacturing 00)<br>
+ * - IdentificationNumber in textual form: "11223344"<br>
+ * - Attribute 6 of MBus Client: 287454020
  *
  * @see MbusClientAttribute#IDENTIFICATION_NUMBER
  */
 public class IdentificationNumber {
 
   private static final int HEX_RADIX = 16;
+  private static final String IDENTIFICATION_NUMBER_REGEX = "\\d{1,8}";
 
-  private final String last8Digits;
+  private final String stringRepresentation;
 
-  public IdentificationNumber(final String last8Digits) {
-    this.last8Digits = last8Digits;
-  }
-
-  /** @return a DataObject with the double-long-unsigned value of the identification number */
-  public DataObject asDataObject() {
-    if (StringUtils.isBlank(this.last8Digits)) {
-      return DataObject.newNullData();
+  private IdentificationNumber(final String identificationNumberAsString) {
+    validateIdentificationNumber(identificationNumberAsString);
+    if (StringUtils.isBlank(identificationNumberAsString)) {
+      this.stringRepresentation = null;
+    } else {
+      /*
+       * If a String of less than 8 digits is given, make sure it is
+       * prefixed with zero digits up to a length of 8.
+       */
+      this.stringRepresentation =
+          String.format("%08d", Integer.valueOf(identificationNumberAsString));
     }
-    return DataObject.newUInteger32Data(this.getIdentificationNumber());
   }
 
-  public Long getIdentificationNumber() {
-    if (StringUtils.isBlank(this.last8Digits)) {
+  public static IdentificationNumber fromBcdFormatAsLong(final Long identificationInBcdAsLong) {
+    final String stringRepresentation = calculateStringRepresentation(identificationInBcdAsLong);
+    return new IdentificationNumber(stringRepresentation);
+  }
+
+  public static IdentificationNumber fromStringRepresentation(final String identificationAsString) {
+    return new IdentificationNumber(identificationAsString);
+  }
+
+  private static Long toBcdFormatAsLong(final String identificationNumberAsString) {
+    if (StringUtils.isBlank(identificationNumberAsString)) {
       return null;
     }
-    return Long.parseLong(this.last8Digits, HEX_RADIX);
+    validateIdentificationNumber(identificationNumberAsString);
+    return Long.parseLong(identificationNumberAsString, HEX_RADIX);
   }
 
-  String getLast8Digits() {
-    return this.last8Digits;
+  private static void validateIdentificationNumber(final String identificationNumber) {
+    if (StringUtils.isNotBlank(identificationNumber)
+        && !identificationNumber.matches(IDENTIFICATION_NUMBER_REGEX)) {
+      throw new IllegalArgumentException(
+          "IdentificationNumber must be at least 1 and at most 8 digits: \""
+              + identificationNumber
+              + "\"");
+    }
+  }
+
+  private static String calculateStringRepresentation(final Long identificationInBcdAsLong) {
+    if (identificationInBcdAsLong == null) {
+      return null;
+    }
+
+    return String.format("%08X", identificationInBcdAsLong);
   }
 
   @Override
   public String toString() {
     return String.format(
-        "IdentificationNumber[%s(%d)]", this.last8Digits, this.getIdentificationNumber());
+        "IdentificationNumber[%s(%d)]",
+        this.stringRepresentation, toBcdFormatAsLong(this.stringRepresentation));
+  }
+
+  /** @return a DataObject with the double-long-unsigned value of the identification number */
+  public DataObject asDataObject() {
+    if (StringUtils.isBlank(this.stringRepresentation)) {
+      return DataObject.newNullData();
+    }
+    return DataObject.newUInteger32Data(toBcdFormatAsLong(this.stringRepresentation));
+  }
+
+  public Long getIdentificationNumberInBcdAsLong() {
+    return toBcdFormatAsLong(this.stringRepresentation);
+  }
+
+  public String getStringRepresentation() {
+    return this.stringRepresentation;
   }
 }

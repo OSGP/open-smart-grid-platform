@@ -44,21 +44,22 @@ import org.slf4j.Logger;
 public class DeviceChannelsHelperTest {
 
   private static final String OBIS_CODE_MBUS_CHANNEL_ONE = "0.1.24.1.0.255";
-  private final DlmsHelper dlmsHelper = new DlmsHelper();
-  private final DeviceChannelsHelper deviceChannelsHelper =
-      new DeviceChannelsHelper(this.dlmsHelper);
-
   private static final short PRIMARY_ADDRESS = 1;
-  private static final long IDENTIFICATION_NUMBER = 16137489L;
+  private static final long IDENTIFICATION_NUMBER_IN_BCD_AS_LONG = 287454020L;
+  private static final String IDENTIFICATION_NUMBER_AS_STRING = "11223344";
   private static final int MANUFACTURER_IDENTIFICATION = 1057;
   private static final String MANUFACTURER_IDENTIFICATION_AS_TEXT = "AAA";
   private static final short VERSION = 2;
   private static final short DEVICE_TYPE = 3;
 
+  private final DlmsHelper dlmsHelper = new DlmsHelper();
+  private final DeviceChannelsHelper deviceChannelsHelper =
+      new DeviceChannelsHelper(this.dlmsHelper);
+
   private final GetResult primaryAddress =
       new GetResultImpl(DataObject.newUInteger8Data(PRIMARY_ADDRESS));
   private final GetResult identificationNumber =
-      new GetResultImpl(DataObject.newUInteger32Data(IDENTIFICATION_NUMBER));
+      new GetResultImpl(DataObject.newUInteger32Data(IDENTIFICATION_NUMBER_IN_BCD_AS_LONG));
   private final GetResult manufacturerIdentification =
       new GetResultImpl(DataObject.newUInteger16Data(MANUFACTURER_IDENTIFICATION));
   private final GetResult version = new GetResultImpl(DataObject.newUInteger8Data(VERSION));
@@ -166,7 +167,7 @@ public class DeviceChannelsHelperTest {
         this.deviceChannelsHelper.makeChannelElementValues((short) 1, resultList);
 
     assertThat(values.getPrimaryAddress()).isEqualTo(PRIMARY_ADDRESS);
-    assertThat(values.getIdentificationNumber()).isEqualTo(String.valueOf(IDENTIFICATION_NUMBER));
+    assertThat(values.getIdentificationNumber()).isEqualTo(IDENTIFICATION_NUMBER_AS_STRING);
     assertThat(values.getManufacturerIdentification())
         .isEqualTo(MANUFACTURER_IDENTIFICATION_AS_TEXT);
     assertThat(values.getVersion()).isEqualTo(VERSION);
@@ -212,7 +213,7 @@ public class DeviceChannelsHelperTest {
     final ChannelElementValuesDto values =
         this.deviceChannelsHelper.makeChannelElementValues((short) 1, resultList);
 
-    assertThat(values.getIdentificationNumber()).isEqualTo(null);
+    assertThat(values.getIdentificationNumber()).isNull();
   }
 
   @Test

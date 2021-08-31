@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.FindMatchingChannelHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
@@ -93,11 +92,7 @@ public class CoupleMBusDeviceCommandExecutor
      */
     final ChannelElementValuesDto updatedChannelElementValues =
         this.deviceChannelsHelper.writeUpdatedMbus(
-            conn,
-            requestDto,
-            emptyChannelMatch.getChannel(),
-            Protocol.forDevice(device),
-            "CoupleMBusDevice");
+            conn, requestDto, emptyChannelMatch.getChannel(), "CoupleMBusDevice");
 
     /*
      * Also update the entry in the candidateChannelElementValues list. Take

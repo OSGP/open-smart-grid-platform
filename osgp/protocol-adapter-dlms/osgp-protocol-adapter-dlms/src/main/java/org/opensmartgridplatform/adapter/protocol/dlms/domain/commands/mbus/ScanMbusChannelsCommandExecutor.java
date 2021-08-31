@@ -125,7 +125,7 @@ public class ScanMbusChannelsCommandExecutor
         this.dlmsHelper.getAndCheck(
             conn, device, "Retrieve M-Bus Short ID attributes", SHORT_ID_ATTRIBUTE_ADDRESSES);
     final List<MbusChannelShortEquipmentIdentifierDto> channelShortIds =
-        this.channelShortIdsFromGetResults(mbusShortIdResults, Protocol.forDevice(device));
+        this.channelShortIdsFromGetResults(mbusShortIdResults);
     return new ScanMbusChannelsResponseDto(channelShortIds);
   }
 
@@ -134,8 +134,7 @@ public class ScanMbusChannelsCommandExecutor
    * @see #makeAttributeAddressesShortIds()
    */
   private List<MbusChannelShortEquipmentIdentifierDto> channelShortIdsFromGetResults(
-      final List<GetResult> mbusShortIdResults, final Protocol protocol)
-      throws ProtocolAdapterException {
+      final List<GetResult> mbusShortIdResults) throws ProtocolAdapterException {
 
     /*
      * Process attributes in the same order as they were placed in the
@@ -145,7 +144,7 @@ public class ScanMbusChannelsCommandExecutor
     int index = 0;
     for (short channel = 1; channel <= NUMBER_OF_CHANNELS; channel++) {
       final String identificationNumber =
-          this.determineIdentificationNumber(mbusShortIdResults.get(index++), channel, protocol);
+          this.determineIdentificationNumber(mbusShortIdResults.get(index++), channel);
       final String manufacturerIdentification =
           this.determineManufacturerIdentification(mbusShortIdResults.get(index++), channel);
       final Short versionIdentification =
@@ -163,19 +162,13 @@ public class ScanMbusChannelsCommandExecutor
     return channelShortIds;
   }
 
-  private String determineIdentificationNumber(
-      final GetResult getResult, final short channel, final Protocol protocol)
+  private String determineIdentificationNumber(final GetResult getResult, final short channel)
       throws ProtocolAdapterException {
 
     final Long identification =
         this.dlmsHelper.readLong(getResult, "Identification number on channel " + channel);
-    if (identification == null) {
-      return null;
-    }
 
-    return IdentificationNumberFactory.create(protocol)
-        .fromIdentification(identification)
-        .getLast8Digits();
+    return IdentificationNumber.fromBcdFormatAsLong(identification).getStringRepresentation();
   }
 
   private String determineManufacturerIdentification(final GetResult getResult, final short channel)

@@ -8,7 +8,6 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.builders.entities;
 
-import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getLong;
 import static org.opensmartgridplatform.cucumber.core.ReadSettingsHelper.getShort;
 
 import java.util.Map;
@@ -20,6 +19,8 @@ import org.opensmartgridplatform.domain.core.valueobjects.GpsCoordinates;
 
 public class SmartMeterBuilder extends BaseDeviceBuilder<SmartMeterBuilder>
     implements CucumberBuilder<SmartMeter> {
+
+  private static final int HEX_RADIX = 16;
 
   private String supplier;
   private Short channel;
@@ -39,8 +40,8 @@ public class SmartMeterBuilder extends BaseDeviceBuilder<SmartMeterBuilder>
     return this;
   }
 
-  public SmartMeterBuilder setMbusIdentificationNumber(final Long value) {
-    this.mbusIdentificationNumber = value;
+  public SmartMeterBuilder setMbusIdentificationNumber(final String value) {
+    this.mbusIdentificationNumber = Long.parseLong(value, HEX_RADIX);
     return this;
   }
 
@@ -115,7 +116,7 @@ public class SmartMeterBuilder extends BaseDeviceBuilder<SmartMeterBuilder>
     }
     if (inputSettings.containsKey(PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER)) {
       this.setMbusIdentificationNumber(
-          getLong(inputSettings, PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER));
+          inputSettings.get(PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER));
     }
     if (inputSettings.containsKey(PlatformSmartmeteringKeys.MBUS_MANUFACTURER_IDENTIFICATION)) {
       this.setMbusManufacturerIdentification(
