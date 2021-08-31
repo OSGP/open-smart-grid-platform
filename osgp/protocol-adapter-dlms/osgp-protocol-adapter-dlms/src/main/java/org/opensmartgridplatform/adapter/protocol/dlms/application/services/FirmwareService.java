@@ -86,8 +86,10 @@ public class FirmwareService {
     }
     this.firmwareRepository.store(
         firmwareFileDto.getFirmwareIdentification(), firmwareFileDto.getFirmwareFile());
-    this.imageIdentifierRepository.store(
-        firmwareFileDto.getFirmwareIdentification(), firmwareFileDto.getImageIdentifier());
+    if (firmwareFileDto.getImageIdentifier() != null) {
+      this.imageIdentifierRepository.store(
+          firmwareFileDto.getFirmwareIdentification(), firmwareFileDto.getImageIdentifier());
+    }
 
     return this.executeFirmwareUpdate(
         conn,
