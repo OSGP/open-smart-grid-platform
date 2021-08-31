@@ -18,6 +18,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.SilentException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.responses.from.core.OsgpResponseMessageProcessor;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareFileDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
@@ -92,19 +93,26 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
           ResponseMessageResultType.NOT_OK,
           exception,
           this.responseMessageSender,
-          this.getFirmwareIdentification(message));
+          this.createUpdateFirmwareRequestDto(message));
     } finally {
       this.doConnectionPostProcessing(device, conn, messageMetadata);
     }
   }
 
-  private String getFirmwareIdentification(final ObjectMessage objectMessage) throws JMSException {
+  private UpdateFirmwareRequestDto createUpdateFirmwareRequestDto(final ObjectMessage objectMessage)
+      throws JMSException {
     final Serializable object = objectMessage.getObject();
 
     if (object instanceof ProtocolResponseMessage) {
-      final Serializable dataObject = ((ProtocolResponseMessage) object).getDataObject();
+
+      final ProtocolResponseMessage protocolResponseMessage = (ProtocolResponseMessage) object;
+      final Serializable dataObject = protocolResponseMessage.getDataObject();
+
       if (dataObject instanceof FirmwareFileDto) {
-        return ((FirmwareFileDto) dataObject).getFirmwareIdentification();
+
+        return new UpdateFirmwareRequestDto(
+            ((FirmwareFileDto) dataObject).getFirmwareIdentification(),
+            ((ProtocolResponseMessage) object).getDeviceIdentification());
       }
     }
 
