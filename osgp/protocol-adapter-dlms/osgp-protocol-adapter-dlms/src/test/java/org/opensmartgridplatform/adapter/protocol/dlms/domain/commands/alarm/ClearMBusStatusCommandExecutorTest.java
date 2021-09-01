@@ -7,7 +7,6 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,7 +37,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NotSupportedBy
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.LoggingDlmsMessageListener;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmNotificationsDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearMBusStatusRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
@@ -56,7 +55,7 @@ class ClearMBusStatusCommandExecutorTest {
 
   private DlmsMessageListener dlmsMessageListener;
 
-  @Mock private AlarmNotificationsDto dto;
+  @Mock private ClearMBusStatusRequestDto dto;
 
   @Mock private MessageMetadata messageMetadata;
 

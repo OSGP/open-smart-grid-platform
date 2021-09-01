@@ -34,8 +34,9 @@ import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.DataAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.ExtendedRegisterAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.method.MBusClientMethod;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmNotificationsDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetAlarmNotificationsRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearMBusStatusRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -43,7 +44,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class ClearMBusStatusCommandExecutor
-    extends AbstractCommandExecutor<AlarmNotificationsDto, AccessResultCode> {
+    extends AbstractCommandExecutor<ClearMBusStatusRequestDto, AccessResultCode> {
 
   private static final int CLASS_ID_READ_STATUS = InterfaceClass.EXTENDED_REGISTER.id();
   private static final int ATTR_ID_READ_STATUS = ExtendedRegisterAttribute.VALUE.attributeId();
@@ -99,15 +100,32 @@ public class ClearMBusStatusCommandExecutor
 
   @Autowired
   public ClearMBusStatusCommandExecutor() {
-    // TODO replace DTO
-    super(SetAlarmNotificationsRequestDto.class);
+    super(ClearMBusStatusRequestDto.class);
+  }
+
+  @Override
+  public ActionResponseDto asBundleResponse(final AccessResultCode executionResult)
+      throws ProtocolAdapterException {
+
+    this.checkAccessResultCode(executionResult);
+
+    return new ActionResponseDto("Clear MBus status was successful");
+  }
+
+  @Override
+  public ClearMBusStatusRequestDto fromBundleRequestInput(final ActionRequestDto bundleInput)
+      throws ProtocolAdapterException {
+
+    this.checkActionRequestType(bundleInput);
+
+    return (ClearMBusStatusRequestDto) bundleInput;
   }
 
   @Override
   public AccessResultCode execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final AlarmNotificationsDto alarmNotifications,
+      final ClearMBusStatusRequestDto requestDto,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
