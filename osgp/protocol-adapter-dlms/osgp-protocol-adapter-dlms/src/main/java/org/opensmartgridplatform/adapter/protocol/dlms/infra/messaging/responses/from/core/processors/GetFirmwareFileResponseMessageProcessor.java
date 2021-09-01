@@ -110,9 +110,11 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
 
       if (dataObject instanceof FirmwareFileDto) {
 
+        final FirmwareFileDto firmwareFileDto = (FirmwareFileDto) dataObject;
+
         return new UpdateFirmwareRequestDto(
-            ((FirmwareFileDto) dataObject).getFirmwareIdentification(),
-            ((ProtocolResponseMessage) object).getDeviceIdentification());
+            firmwareFileDto.getFirmwareIdentification(),
+            protocolResponseMessage.getDeviceIdentification());
       }
     }
 
