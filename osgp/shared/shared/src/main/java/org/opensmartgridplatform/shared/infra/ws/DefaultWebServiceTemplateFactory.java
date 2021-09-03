@@ -94,9 +94,9 @@ public class DefaultWebServiceTemplateFactory implements WebserviceTemplateFacto
     private String keyStoreType;
     private String keyStoreLocation;
     private String keyStorePassword;
-    private KeyStoreFactoryBean trustStoreFactory;
-    private int maxConnectionsPerRoute = 2;
-    private int maxConnectionsTotal = 20;
+    private KeyStoreFactoryBean trustStoreFactory; 
+    private int maxConnectionsPerRoute = 20;
+    private int maxConnectionsTotal = 400;
     private int connectionTimeout = 120000;
     private CircuitBreaker circuitBreaker;
     private WebServiceTemplateHostnameVerificationStrategy
