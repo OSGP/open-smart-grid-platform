@@ -210,6 +210,11 @@ public class MBusClientObjectSteps {
 
   private String convertValueToManufacturerId(final String id) {
 
+    // An Id of "0" is used when a channel is empty and this should not be converted.
+    if ("0".equals(id)) {
+      return "0";
+    }
+
     long value = Long.parseLong(id);
     long remainderAfterDevision = 0;
     final StringBuilder manufacturerId = new StringBuilder();

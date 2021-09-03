@@ -3,9 +3,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
   As a grid operator
   I want to be able to couple an M-Bus device to a smart meter
 
-  # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
-  # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
-  Scenario: Couple G-meter "TESTG102400000001" to E-meter "TEST1024000000001" on first channel
+  Scenario: Couple G-meter "TESTG101205673117" to E-meter "TEST1024000000001" on first channel
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -27,7 +25,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     And the M-Bus device "TESTG101205673117" is coupled to device "TEST1024000000001" on M-Bus channel "1" with PrimaryAddress "9"
 
   @NightlyBuildOnly
-  Scenario: Couple G-meter "TESTG102400000001" with missing attributes to E-meter "TEST1024000000001" on first channel
+  Scenario: Couple G-meter "TESTG101205673117" with missing attributes to E-meter "TEST1024000000001" on first channel
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -47,7 +45,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     And the M-Bus device "TESTG101205673117" is coupled to device "TEST1024000000001" on M-Bus channel "1" with PrimaryAddress "9"
 
   @NightlyBuildOnly
-  Scenario: Couple G-meter "TESTG102400000001" to E-meter "TEST1024000000001" on second channel
+  Scenario: Couple G-meter "TESTG101205673117" to E-meter "TEST1024000000001" on second channel
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -75,7 +73,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     And the M-Bus device "TESTG101205673117" is coupled to device "TEST1024000000001" on M-Bus channel "2" with PrimaryAddress "9"
 
   @NightlyBuildOnly
-  Scenario: Couple G-meter "TESTG102400000001" to E-meter "TEST1024000000002" while G-meter is already coupled.
+  Scenario: Couple G-meter "TESTG101205673117" to E-meter "TEST1024000000002" while G-meter is already coupled.
     Given a dlms device
       | DeviceIdentification | TEST1024000000002 |
       | DeviceType           | SMART_METER_E     |
@@ -100,7 +98,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     And the M-Bus device "TESTG101205673117" is coupled to device "TEST1024000000001" on M-Bus channel "1" with PrimaryAddress "3"
 
   @NightlyBuildOnly
-  Scenario: Couple G-meter "TESTG102400000002" to E-meter "TEST1024000000001" on second channel with already coupled channel 1
+  Scenario: Couple G-meter "TESTG101205673117" to E-meter "TEST1024000000001" on second channel with already coupled channel 1
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -137,7 +135,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     And the M-Bus device "TESTG101205673117" is coupled to device "TEST1024000000001" on M-Bus channel "2" with PrimaryAddress "9"
 
   @NightlyBuildOnly
-  Scenario: Couple G-meter "TESTG102400000001" to E-meter "TEST1024000000001" which is already coupled on channel 1
+  Scenario: Couple G-meter "TESTG101205673117" to E-meter "TEST1024000000001" which is already coupled on channel 1
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -243,10 +241,8 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | MbusVersion                    | 66       |
       | MbusDeviceTypeIdentification   | 3        |
 
-  # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
-  # and likewise the database MbusManufacturerIdentification: ITG corresponds with the device attributeID 7: 9863
   @NightlyBuildOnly
-  Scenario: Couple unbound G-meter "TESTG101205673101" without a primary address to E-meter "TEST1024000000001" on a channel 1
+  Scenario: Couple unbound G-meter "TESTG101205673117" without a primary address to E-meter "TEST1024000000001" on a channel 1
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -273,7 +269,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | MbusDeviceTypeIdentification   | 3        |
 
   @NightlyBuildOnly
-  Scenario: Couple unbound G-meter "TESTG101205673101" to E-meter "TEST1024000000001" on a channel 2
+  Scenario: Couple unbound G-meter "TESTG101205673117" to E-meter "TEST1024000000001" on a channel 2
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -381,7 +377,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | MbusDeviceTypeIdentification   | 3        |
 
   @NightlyBuildOnly
-  Scenario: Couple a connected and bound G-meter "TESTG100261510717" to E-meter "TEST1024000000001" on channel 1
+  Scenario: Couple a connected and bound G-meter "TESTG101205673117" to E-meter "TEST1024000000001" on channel 1
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
