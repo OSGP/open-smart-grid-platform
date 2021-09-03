@@ -17,30 +17,30 @@ Feature: SmartMetering Scan M-Bus Channels
       | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
-    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes
-      | 5 | unsigned             |         9 |
-      | 6 | double-long-unsigned | 302343985 |
-      | 7 | long-unsigned        |     12514 |
-      | 8 | unsigned             |        66 |
-      | 9 | unsigned             |         3 |
-    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-2:24.1.0" and attributes
-      | 5 | unsigned             | 0 |
-      | 6 | double-long-unsigned | 0 |
-      | 7 | long-unsigned        | 0 |
-      | 8 | unsigned             | 0 |
-      | 9 | unsigned             | 0 |
-    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-3:24.1.0" and attributes
-      | 5 | unsigned             | 0 |
-      | 6 | double-long-unsigned | 0 |
-      | 7 | long-unsigned        | 0 |
-      | 8 | unsigned             | 0 |
-      | 9 | unsigned             | 0 |
-    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-4:24.1.0" and attributes
-      | 5 | unsigned             | 0 |
-      | 6 | double-long-unsigned | 0 |
-      | 7 | long-unsigned        | 0 |
-      | 8 | unsigned             | 0 |
-      | 9 | unsigned             | 0 |
+    And device simulation of "TEST1024000000001" with M-Bus client values for channel 1
+      | MbusPrimaryAddress             | 9        |
+      | MbusIdentificationNumber       | 12056731 |
+      | MbusManufacturerIdentification | LGB      |
+      | MbusVersion                    | 66       |
+      | MbusDeviceTypeIdentification   | 3        |
+    And device simulation of "TEST1024000000001" with M-Bus client values for channel 2
+      | MbusPrimaryAddress             | 0 |
+      | MbusIdentificationNumber       | 0 |
+      | MbusManufacturerIdentification | 0 |
+      | MbusVersion                    | 0 |
+      | MbusDeviceTypeIdentification   | 0 |
+    And device simulation of "TEST1024000000001" with M-Bus client values for channel 3
+      | MbusPrimaryAddress             | 0 |
+      | MbusIdentificationNumber       | 0 |
+      | MbusManufacturerIdentification | 0 |
+      | MbusVersion                    | 0 |
+      | MbusDeviceTypeIdentification   | 0 |
+    And device simulation of "TEST1024000000001" with M-Bus client values for channel 4
+      | MbusPrimaryAddress             | 0 |
+      | MbusIdentificationNumber       | 0 |
+      | MbusManufacturerIdentification | 0 |
+      | MbusVersion                    | 0 |
+      | MbusDeviceTypeIdentification   | 0 |
     When the scan M-Bus channels request is received
       | DeviceIdentification | TEST1024000000001 |
     Then the found M-bus devices are in the response
