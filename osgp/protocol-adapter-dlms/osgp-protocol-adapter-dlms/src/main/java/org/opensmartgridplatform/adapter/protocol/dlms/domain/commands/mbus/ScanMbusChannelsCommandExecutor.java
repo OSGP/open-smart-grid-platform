@@ -168,7 +168,8 @@ public class ScanMbusChannelsCommandExecutor
     final Long identification =
         this.dlmsHelper.readLong(getResult, "Identification number on channel " + channel);
 
-    return IdentificationNumber.fromBcdFormatAsLong(identification).getStringRepresentation();
+    return IdentificationNumber.fromBcdRepresentationAsLong(identification)
+        .getTextualRepresentation();
   }
 
   private String determineManufacturerIdentification(final GetResult getResult, final short channel)

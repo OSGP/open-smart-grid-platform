@@ -168,7 +168,8 @@ public class DeviceChannelsHelper {
       return null;
     } else {
       final Long identification = this.dlmsHelper.readLong(resultData, description);
-      return IdentificationNumber.fromBcdFormatAsLong(identification).getStringRepresentation();
+      return IdentificationNumber.fromBcdRepresentationAsLong(identification)
+          .getTextualRepresentation();
     }
   }
 
@@ -252,7 +253,7 @@ public class DeviceChannelsHelper {
             .addExecutor(
                 this.getMbusAttributeExecutor(
                     MbusClientAttribute.IDENTIFICATION_NUMBER,
-                    IdentificationNumber.fromStringRepresentation(
+                    IdentificationNumber.fromTextualRepresentation(
                             requestDto.getMbusIdentificationNumber())
                         .asDataObject(),
                     channel))

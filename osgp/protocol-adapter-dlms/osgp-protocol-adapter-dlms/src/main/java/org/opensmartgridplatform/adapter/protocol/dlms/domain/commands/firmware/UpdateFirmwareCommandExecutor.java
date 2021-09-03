@@ -174,9 +174,8 @@ public class UpdateFirmwareCommandExecutor
     }
 
     final Long mbusIdentificationNumber =
-        IdentificationNumber.fromStringRepresentation(
-                String.format("%08d", hexNotationOfTheMbusIdentificationNumber))
-            .getIdentificationNumberInBcdAsLong();
+        IdentificationNumber.fromNumericalRepresentation(hexNotationOfTheMbusIdentificationNumber)
+            .getIdentificationNumberInBcdRepresentationAsLong();
     log.debug(
         "Setting M-Bus device Identification number: {} (hex:{})",
         mbusIdentificationNumber.intValue(),
