@@ -8,6 +8,8 @@
  */
 package org.opensmartgridplatform.adapter.ws.smartmetering.application.mapping;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -18,6 +20,7 @@ import org.joda.time.DateTime;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.EventLogCategory;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.EventType;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.Event;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +51,16 @@ public class EventConverter
       event.setTimestamp(timestamp);
       event.setEventCounter(source.getEventCounter());
       event.setEventLogCategory(EventLogCategory.fromValue(source.getEventLogCategory().name()));
+
+      for (final EventDetail sourceEventDetail : source.getEventDetails()) {
+        final org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.EventDetail
+            eventDetail =
+                new org.opensmartgridplatform.adapter.ws.schema.smartmetering.management
+                    .EventDetail();
+        eventDetail.setName(sourceEventDetail.getName());
+        eventDetail.setValue(sourceEventDetail.getValue());
+        event.getEventDetails().add(eventDetail);
+      }
       return event;
     } catch (final DatatypeConfigurationException e) {
       LOGGER.error("DatatypeConfigurationException", e);
@@ -74,6 +87,14 @@ public class EventConverter
         org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventType.fromValue(
             source.getEventType().value());
 
-    return new Event(timestamp, eventType, source.getEventCounter(), eventLogCategory);
+    final List<EventDetail> eventDetails =
+        source.getEventDetails().stream()
+            .map(
+                sourceEventDetail ->
+                    new EventDetail(sourceEventDetail.getName(), sourceEventDetail.getValue()))
+            .collect(Collectors.toList());
+
+    return new Event(
+        timestamp, eventType, source.getEventCounter(), eventLogCategory, eventDetails);
   }
 }

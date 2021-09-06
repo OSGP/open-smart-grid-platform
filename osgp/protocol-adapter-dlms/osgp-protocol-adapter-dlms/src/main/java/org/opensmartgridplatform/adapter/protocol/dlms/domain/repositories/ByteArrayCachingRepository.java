@@ -41,6 +41,15 @@ public abstract class ByteArrayCachingRepository implements CachingRepository<St
 
   @Override
   public void store(final String key, final byte[] value) {
-    this.cache.put(key, value);
+    if (value == null) {
+      this.remove(key);
+    } else {
+      this.cache.put(key, value);
+    }
+  }
+
+  @Override
+  public void remove(final String key) {
+    this.cache.remove(key);
   }
 }

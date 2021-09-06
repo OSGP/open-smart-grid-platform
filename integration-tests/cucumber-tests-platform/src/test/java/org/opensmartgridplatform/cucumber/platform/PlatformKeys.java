@@ -326,6 +326,7 @@ public class PlatformKeys extends Keys {
 
   public static final String TIMESTAMP = "TimeStamp";
   public static final String EVENT_TYPE = "EventType";
+  public static final String EVENT_LOG_CATEGORY = "EventLogCategory";
 
   public static final String FROM_TIMESTAMP = "FromTimeStamp";
   public static final String TO_TIMESTAMP = "ToTimeStamp";

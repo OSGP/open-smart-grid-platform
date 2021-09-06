@@ -17,11 +17,13 @@ import org.joda.time.DateTime;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
-import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.mapping.DataObjectToEventListConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -45,41 +47,42 @@ public class FindEventsCommandExecutor
 
   private static final Logger LOGGER = LoggerFactory.getLogger(FindEventsCommandExecutor.class);
 
-  private static final int CLASS_ID = 7;
-  private static final int ATTRIBUTE_ID = 2;
-
-  private static final int CLASS_ID_CLOCK = 8;
-  private static final byte[] OBIS_BYTES_CLOCK = new byte[] {0, 0, 1, 0, 0, (byte) 255};
-  private static final byte ATTRIBUTE_ID_TIME = 2;
-
   private static final int ACCESS_SELECTOR_RANGE_DESCRIPTOR = 1;
 
-  private final DataObjectToEventListConverter dataObjectToEventListConverter;
-  private final DlmsHelper dlmsHelper;
-
-  private static final EnumMap<EventLogCategoryDto, ObisCode> EVENT_LOG_CATEGORY_OBISCODE_MAP =
-      new EnumMap<>(EventLogCategoryDto.class);
+  private static final EnumMap<EventLogCategoryDto, DlmsObjectType>
+      EVENT_LOG_CATEGORY_OBISCODE_MAP = new EnumMap<>(EventLogCategoryDto.class);
 
   static {
     EVENT_LOG_CATEGORY_OBISCODE_MAP.put(
-        EventLogCategoryDto.STANDARD_EVENT_LOG, new ObisCode("0.0.99.98.0.255"));
+        EventLogCategoryDto.STANDARD_EVENT_LOG, DlmsObjectType.STANDARD_EVENT_LOG);
     EVENT_LOG_CATEGORY_OBISCODE_MAP.put(
-        EventLogCategoryDto.FRAUD_DETECTION_LOG, new ObisCode("0.0.99.98.1.255"));
+        EventLogCategoryDto.FRAUD_DETECTION_LOG, DlmsObjectType.FRAUD_DETECTION_EVENT_LOG);
     EVENT_LOG_CATEGORY_OBISCODE_MAP.put(
-        EventLogCategoryDto.COMMUNICATION_SESSION_LOG, new ObisCode("0.0.99.98.4.255"));
+        EventLogCategoryDto.COMMUNICATION_SESSION_LOG,
+        DlmsObjectType.COMMUNICATION_SESSIONS_EVENT_LOG);
     EVENT_LOG_CATEGORY_OBISCODE_MAP.put(
-        EventLogCategoryDto.M_BUS_EVENT_LOG, new ObisCode("0.0.99.98.3.255"));
+        EventLogCategoryDto.M_BUS_EVENT_LOG, DlmsObjectType.MBUS_EVENT_LOG);
     EVENT_LOG_CATEGORY_OBISCODE_MAP.put(
-        EventLogCategoryDto.POWER_QUALITY_EVENT_LOG, new ObisCode("0.0.99.98.5.255"));
+        EventLogCategoryDto.POWER_QUALITY_EVENT_LOG, DlmsObjectType.POWER_QUALITY_EVENT_LOG);
+    EVENT_LOG_CATEGORY_OBISCODE_MAP.put(
+        EventLogCategoryDto.AUXILIARY_EVENT_LOG, DlmsObjectType.AUXILIARY_EVENT_LOG);
   }
+
+  private final DataObjectToEventListConverter dataObjectToEventListConverter;
+
+  private final DlmsHelper dlmsHelper;
+
+  private final DlmsObjectConfigService dlmsObjectConfigService;
 
   @Autowired
   public FindEventsCommandExecutor(
       final DlmsHelper dlmsHelper,
-      final DataObjectToEventListConverter dataObjectToEventListConverter) {
+      final DataObjectToEventListConverter dataObjectToEventListConverter,
+      final DlmsObjectConfigService dlmsObjectConfigService) {
     super(FindEventsRequestDto.class);
     this.dlmsHelper = dlmsHelper;
     this.dataObjectToEventListConverter = dataObjectToEventListConverter;
+    this.dlmsObjectConfigService = dlmsObjectConfigService;
   }
 
   @Override
@@ -97,13 +100,18 @@ public class FindEventsCommandExecutor
       throws ProtocolAdapterException {
 
     final SelectiveAccessDescription selectiveAccessDescription =
-        this.getSelectiveAccessDescription(findEventsQuery.getFrom(), findEventsQuery.getUntil());
+        this.getSelectiveAccessDescription(
+            device, findEventsQuery.getFrom(), findEventsQuery.getUntil());
+
+    final DlmsObject eventLogObject =
+        this.dlmsObjectConfigService.findDlmsObject(
+            device, EVENT_LOG_CATEGORY_OBISCODE_MAP.get(findEventsQuery.getEventLogCategory()));
 
     final AttributeAddress eventLogBuffer =
         new AttributeAddress(
-            CLASS_ID,
-            EVENT_LOG_CATEGORY_OBISCODE_MAP.get(findEventsQuery.getEventLogCategory()),
-            ATTRIBUTE_ID,
+            eventLogObject.getClassId(),
+            eventLogObject.getObisCode(),
+            eventLogObject.getDefaultAttributeId(),
             selectiveAccessDescription);
 
     conn.getDlmsMessageListener()
@@ -148,7 +156,8 @@ public class FindEventsCommandExecutor
   }
 
   private SelectiveAccessDescription getSelectiveAccessDescription(
-      final DateTime beginDateTime, final DateTime endDateTime) {
+      final DlmsDevice device, final DateTime beginDateTime, final DateTime endDateTime)
+      throws ProtocolAdapterException {
 
     /*
      * Define the clock object {8,0-0:1.0.0.255,2,0} to be used as
@@ -156,12 +165,15 @@ public class FindEventsCommandExecutor
      * value to determine which elements from the buffered array should be
      * retrieved.
      */
+    final DlmsObject clockObject =
+        this.dlmsObjectConfigService.findDlmsObject(device, DlmsObjectType.CLOCK);
+
     final DataObject clockDefinition =
         DataObject.newStructureData(
             Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_CLOCK),
-                DataObject.newOctetStringData(OBIS_BYTES_CLOCK),
-                DataObject.newInteger8Data(ATTRIBUTE_ID_TIME),
+                DataObject.newUInteger16Data(clockObject.getClassId()),
+                DataObject.newOctetStringData(clockObject.getObisCode().bytes()),
+                DataObject.newInteger8Data((byte) clockObject.getDefaultAttributeId()),
                 DataObject.newUInteger16Data(0)));
 
     final DataObject fromValue = this.dlmsHelper.asDataObject(beginDateTime);

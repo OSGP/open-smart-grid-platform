@@ -71,6 +71,20 @@ public class DlmsObjectConfigService {
         .flatMap(dlmsObjectConfig -> dlmsObjectConfig.findObject(type, filterMedium));
   }
 
+  public DlmsObject findDlmsObject(final DlmsDevice device, final DlmsObjectType type)
+      throws ProtocolAdapterException {
+    final Protocol protocol = Protocol.forDevice(device);
+
+    return this.dlmsObjectConfigs.stream()
+        .filter(config -> config.contains(protocol))
+        .findAny()
+        .flatMap(dlmsObjectConfig -> dlmsObjectConfig.findObject(type, null))
+        .orElseThrow(
+            () ->
+                new ProtocolAdapterException(
+                    "Did not find " + type.name() + " object for device " + device.getDeviceId()));
+  }
+
   public DlmsObject findDlmsObjectForCommunicationMethod(
       final DlmsDevice device, final DlmsObjectType type) throws ProtocolAdapterException {
     final Protocol protocol = Protocol.forDevice(device);

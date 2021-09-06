@@ -65,7 +65,7 @@ public class DataObjectToEventListConverter {
 
     // extract values from List<DataObject> eventData.
     final DateTime dateTime = this.extractDateTime(eventData);
-    final Short code = this.extractCode(eventData);
+    final Integer code = this.extractCode(eventData);
     final Integer eventCounter = this.extractEventCounter(eventLogCategory, eventData);
     final String eventLogCategoryName = eventLogCategory.name();
 
@@ -77,7 +77,7 @@ public class DataObjectToEventListConverter {
         eventCounter);
 
     // build a new EventDto with those values.
-    return new EventDto(dateTime, code.intValue(), eventCounter, eventLogCategoryName);
+    return new EventDto(dateTime, code, eventCounter, eventLogCategoryName);
   }
 
   private DateTime extractDateTime(final List<DataObject> eventData)
@@ -91,12 +91,13 @@ public class DataObjectToEventListConverter {
     return dateTime;
   }
 
-  private Short extractCode(final List<DataObject> eventData) throws ProtocolAdapterException {
+  private Integer extractCode(final List<DataObject> eventData) throws ProtocolAdapterException {
 
     if (!eventData.get(1).isNumber()) {
       throw new ProtocolAdapterException(EVENT_DATA_VALUE_IS_NOT_A_NUMBER);
     }
-    return eventData.get(1).getValue();
+    final Number codeValue = eventData.get(1).getValue();
+    return codeValue.intValue();
   }
 
   private Integer extractEventCounter(

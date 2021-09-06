@@ -40,6 +40,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRes
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.RetryHeaderFactory;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareFileDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareResponseDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -176,10 +177,12 @@ public class GetFirmwareFileResponseMessageProcessorTest {
     // assert
     verify(this.responseMessageSender, times(1)).send(responseMessageArgumentCaptor.capture());
 
-    assertThat(responseMessageArgumentCaptor.getValue().getDataObject()).isSameAs("fw");
-    assertThat(responseMessageArgumentCaptor.getValue().getResult())
-        .isSameAs(ResponseMessageResultType.NOT_OK);
-    assertThat(responseMessageArgumentCaptor.getValue().bypassRetry()).isFalse();
+    final ResponseMessage capturedValue = responseMessageArgumentCaptor.getValue();
+    assertThat(
+            ((UpdateFirmwareRequestDto) capturedValue.getDataObject()).getFirmwareIdentification())
+        .isSameAs(firmwareFileDto.getFirmwareIdentification());
+    assertThat(capturedValue.getResult()).isSameAs(ResponseMessageResultType.NOT_OK);
+    assertThat(capturedValue.bypassRetry()).isFalse();
   }
 
   private FirmwareFileDto setupFirmwareFileDto() {

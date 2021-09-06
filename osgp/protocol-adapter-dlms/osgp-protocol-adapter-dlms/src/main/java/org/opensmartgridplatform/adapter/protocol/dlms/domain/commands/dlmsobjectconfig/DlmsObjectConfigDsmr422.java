@@ -16,20 +16,30 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dl
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ACTIVE_ENERGY_IMPORT_RATE_2;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ALARM_FILTER;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.AMR_STATUS;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.COMMUNICATION_SESSIONS_EVENT_CODE;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.COMMUNICATION_SESSIONS_EVENT_LOG;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.DAILY_LOAD_PROFILE;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.EXTERNAL_TRIGGER_CSD;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.EXTERNAL_TRIGGER_SMS;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.FRAUD_DETECTION_EVENT_CODE;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.FRAUD_DETECTION_EVENT_LOG;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.INTERNAL_TRIGGER_ALARM;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.INTERVAL_VALUES;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.MBUS_EVENT_CODE;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.MBUS_EVENT_LOG;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.MBUS_MASTER_VALUE;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.MONTHLY_BILLING_VALUES;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.PUSH_SCHEDULER;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.PUSH_SETUP_ALARM;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.PUSH_SETUP_SCHEDULER;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.RANDOMISATION_SETTINGS;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.STANDARD_EVENT_CODE;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.STANDARD_EVENT_LOG;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.Medium.ABSTRACT;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.Medium.COMBINED;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.Medium.ELECTRICITY;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.Medium.GAS;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.ProfileCaptureTime.ASYNCHRONOUSLY;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.ProfileCaptureTime.DAY;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.ProfileCaptureTime.HOUR;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.ProfileCaptureTime.MONTH;
@@ -92,6 +102,16 @@ public class DlmsObjectConfigDsmr422 extends DlmsObjectConfig {
             externalTriggerCsd,
             internalTriggerAlarm,
             pushSetupAlarm));
+
+    final DlmsObject standardEventLogCode = new DlmsData(STANDARD_EVENT_CODE, "0.0.96.11.0.255");
+    final DlmsObject fraudDetectionEventLogCode =
+        new DlmsData(FRAUD_DETECTION_EVENT_CODE, "0.0.96.11.1.255");
+    final DlmsObject mbusEventLogCode = new DlmsData(MBUS_EVENT_CODE, "0.0.96.11.3.255");
+    final DlmsObject communicationSessionsEventLogCode =
+        new DlmsData(COMMUNICATION_SESSIONS_EVENT_CODE, "0.0.96.11.4.255");
+
+    objectList.addAll(
+        Arrays.asList(standardEventLogCode, fraudDetectionEventLogCode, mbusEventLogCode));
 
     // Electricity objects
     final DlmsObject activeEnergyImport =
@@ -178,6 +198,47 @@ public class DlmsObjectConfigDsmr422 extends DlmsObjectConfig {
     objectList.add(
         new DlmsProfile(
             MONTHLY_BILLING_VALUES, "0.0.98.1.0.255", captureObjectsMonthly, MONTH, COMBINED));
+
+    // Event logs
+    final List<DlmsCaptureObject> captureObjectsStandardEvents =
+        Arrays.asList(
+            DlmsCaptureObject.create(clock), DlmsCaptureObject.create(standardEventLogCode));
+    objectList.add(
+        new DlmsProfile(
+            STANDARD_EVENT_LOG,
+            "0.0.99.98.0.255",
+            captureObjectsStandardEvents,
+            ASYNCHRONOUSLY,
+            ABSTRACT));
+
+    final List<DlmsCaptureObject> captureObjectsFraudDetectionEvents =
+        Arrays.asList(
+            DlmsCaptureObject.create(clock), DlmsCaptureObject.create(fraudDetectionEventLogCode));
+    objectList.add(
+        new DlmsProfile(
+            FRAUD_DETECTION_EVENT_LOG,
+            "0.0.99.98.1.255",
+            captureObjectsFraudDetectionEvents,
+            ASYNCHRONOUSLY,
+            ABSTRACT));
+
+    final List<DlmsCaptureObject> captureObjectsMBusEvents =
+        Arrays.asList(DlmsCaptureObject.create(clock), DlmsCaptureObject.create(mbusEventLogCode));
+    objectList.add(
+        new DlmsProfile(
+            MBUS_EVENT_LOG, "0.0.99.98.3.255", captureObjectsMBusEvents, ASYNCHRONOUSLY, ABSTRACT));
+
+    final List<DlmsCaptureObject> captureObjectsCommunicationSessionsEvents =
+        Arrays.asList(
+            DlmsCaptureObject.create(clock),
+            DlmsCaptureObject.create(communicationSessionsEventLogCode));
+    objectList.add(
+        new DlmsProfile(
+            COMMUNICATION_SESSIONS_EVENT_LOG,
+            "0.0.99.98.4.255",
+            captureObjectsCommunicationSessionsEvents,
+            ASYNCHRONOUSLY,
+            ABSTRACT));
 
     return objectList;
   }
