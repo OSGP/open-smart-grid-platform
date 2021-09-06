@@ -11,6 +11,7 @@ package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.sim
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.MBUS_DEVICE_TYPE_IDENTIFICATION;
+import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.MBUS_ENCRYPTION_KEY_STATUS;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.MBUS_IDENTIFICATION_NUMBER;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.MBUS_MANUFACTURER_IDENTIFICATION;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.MBUS_PRIMARY_ADDRESS;
@@ -35,6 +36,7 @@ public class MBusClientObjectSteps {
   private static final int ATTRIBUTE_ID_MANUFACTURER_ID = 7;
   private static final int ATTRIBUTE_ID_VERSION = 8;
   private static final int ATTRIBUTE_ID_DEVICE_TYPE = 9;
+  private static final int ATTRIBUTE_ID_ENCRYPTION_KEY_STATUS = 14;
   private static final String OBJECT_DESCRIPTION = "MBus client object";
 
   private static final int ASCII_VALUE_OF_A = 64;
@@ -70,6 +72,10 @@ public class MBusClientObjectSteps {
               break;
             case MBUS_DEVICE_TYPE_IDENTIFICATION:
               this.setStandardAttribute(value, "unsigned", ATTRIBUTE_ID_DEVICE_TYPE, obisCode);
+              break;
+            case MBUS_ENCRYPTION_KEY_STATUS:
+              this.setStandardAttribute(
+                  value, "enumerate", ATTRIBUTE_ID_ENCRYPTION_KEY_STATUS, obisCode);
               break;
             default:
               throw new IllegalArgumentException("Unsupported attribute: " + key);
