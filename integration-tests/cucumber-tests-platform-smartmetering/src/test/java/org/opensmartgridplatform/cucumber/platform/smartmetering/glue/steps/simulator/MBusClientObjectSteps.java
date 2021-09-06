@@ -23,6 +23,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import java.util.Map;
 import org.openmuc.jdlms.ObisCode;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.ManufacturerId;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -102,9 +103,18 @@ public class MBusClientObjectSteps {
   private void setManufacturerIdAttribute(final String value, final ObisCode obisCode) {
     // The Manufacturer id is converted from the textual representation to long value.
     // For example: LGB becomes 12514
-    final String manufacturerId = this.convertManufacturerIdToValue(value);
+
+    final String manufacturerIdAsValue;
+
+    // An Id of "0" is used when a channel is empty and this should not be converted.
+    if ("0".equals(value)) {
+      manufacturerIdAsValue = "0";
+    } else {
+      manufacturerIdAsValue = String.valueOf(ManufacturerId.fromIdentification(value).getId());
+    }
+
     this.setStandardAttribute(
-        manufacturerId, "long-unsigned", ATTRIBUTE_ID_MANUFACTURER_ID, obisCode);
+        manufacturerIdAsValue, "long-unsigned", ATTRIBUTE_ID_MANUFACTURER_ID, obisCode);
   }
 
   @Then("^the values for the M-Bus client for channel (\\d+) on device simulator \"([^\"]*)\" are$")
@@ -170,9 +180,18 @@ public class MBusClientObjectSteps {
       final ObjectNode attributeValuesNode, final String expectedValue) {
     final JsonNode actualAttributeValue =
         attributeValuesNode.get(String.valueOf(ATTRIBUTE_ID_MANUFACTURER_ID));
+    final int actualValue = actualAttributeValue.get("value").asInt();
 
-    final String convertedString =
-        this.convertValueToManufacturerId(actualAttributeValue.get("value").asText());
+    final String convertedString;
+
+    // An Id of "0" is used when a channel is empty and this should not be converted.
+    if (actualValue == 0) {
+      convertedString = "0";
+    } else {
+      convertedString =
+          ManufacturerId.fromId(actualAttributeValue.get("value").asInt()).getIdentification();
+    }
+
     final ObjectNode convertedValue =
         this.jsonObjectCreator.createAttributeValue("VISIBLE_STRING", convertedString);
 
@@ -187,56 +206,5 @@ public class MBusClientObjectSteps {
     assertThat(actualAttributeValue.findValuesAsText("value").get(0))
         .as("value for attributeId: " + attributeId)
         .isEqualTo(expectedValue);
-  }
-
-  // The manufacturedId is stored as number in the MBusClient object.
-  // For example: LGB becomes 12514
-  // The value is calculated as follows:
-  // - Each character gets a value based on the place in the alphabet: A = 1, B = 2, ...
-  // - Then these values are multiplied by a power of 32, based on its place in the Id: the last
-  // character is multiplied by 32^0, the character before that by 32^1, ...
-  // - And finally all values are summed.
-  private String convertManufacturerIdToValue(final String id) {
-
-    // An Id of "0" is used when a channel is empty and this should not be converted.
-    if ("0".equals(id)) {
-      return "0";
-    }
-
-    long convertedId = 0;
-    final int positionOfLastCharacter = id.length() - 1;
-
-    for (int i = 0; i < id.length(); i++) {
-      final int value = id.charAt(i) - ASCII_VALUE_OF_A;
-      convertedId = convertedId + value * (long) (Math.pow(BASE, (positionOfLastCharacter - i)));
-    }
-
-    return String.valueOf(convertedId);
-  }
-
-  private String convertValueToManufacturerId(final String id) {
-
-    // An Id of "0" is used when a channel is empty and this should not be converted.
-    if ("0".equals(id)) {
-      return "0";
-    }
-
-    long value = Long.parseLong(id);
-    long remainderAfterDevision = 0;
-    final StringBuilder manufacturerId = new StringBuilder();
-    int step = 0;
-
-    while (value != 0) {
-      remainderAfterDevision = value % (long) (Math.pow(BASE, step + 1));
-      final char character =
-          (char) (remainderAfterDevision / (long) (Math.pow(BASE, step)) + ASCII_VALUE_OF_A);
-
-      manufacturerId.insert(0, character);
-
-      value -= remainderAfterDevision;
-      step++;
-    }
-
-    return manufacturerId.toString();
   }
 }
