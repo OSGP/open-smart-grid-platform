@@ -1,1 +1,1 @@
-Jenkins folder will be removed in the near future.
+Jenkins folder will likely be removed in the near future.
