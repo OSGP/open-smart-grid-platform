@@ -15,10 +15,10 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.Map;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.Response;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMbusStatusAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMbusStatusAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMbusStatusRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMbusStatusRequestData;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMbusStatusResponse;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
@@ -43,6 +43,7 @@ public class ClearMBusStatusSteps extends BaseBundleSteps {
   public void theBundleRequestContainsAClearMBusStatusAction(final Map<String, String> requestData)
       throws Throwable {
     final ClearMbusStatusRequest request = new ClearMbusStatusRequest();
+    request.setClearMbusStatusRequestData(new ClearMbusStatusRequestData());
     request.setDeviceIdentification(
         requestData.get(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION));
 
@@ -55,22 +56,17 @@ public class ClearMBusStatusSteps extends BaseBundleSteps {
   }
 
   @Then("^the clear M-Bus status response is \"([^\"]*)\"$")
-  public void theDecoupleMbusDeviceByChannelBundleResponseIsWithoutMbusDevice(final String result)
-      throws Throwable {
-
-    final Response response = this.getNextBundleResponse();
-
-    assertThat(response).isInstanceOf(ClearMbusStatusResponse.class);
-    assertThat(response.getResult()).as("Result").isEqualTo(OsgpResultType.valueOf(result));
+  public void theClearMBusStatusResponseShouldBe(final String result) throws Throwable {
 
     final ClearMbusStatusAsyncRequest asyncRequest = new ClearMbusStatusAsyncRequest();
     asyncRequest.setCorrelationUid(RequestFactoryHelper.getCorrelationUidFromScenarioContext());
     asyncRequest.setDeviceIdentification(
         RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
 
-    final ClearMbusStatusResponse reponse = this.managementResponseClient.getResponse(asyncRequest);
+    final ClearMbusStatusResponse response =
+        this.managementResponseClient.getResponse(asyncRequest);
 
-    assertThat(reponse).as("ClearMbusStatusResponse should not be null").isNotNull();
+    assertThat(response).as("ClearMbusStatusResponse should not be null").isNotNull();
     assertThat(response.getResult()).as("Result").isEqualTo(OsgpResultType.valueOf(result));
   }
 }
