@@ -65,7 +65,7 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:Identification"/>
-        <xsd:element name="FirmwareIdentification" type="common:Identification"/>
+        <xsd:element name="FirmwareIdentification" type="tns:FirmwareIdentification"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -115,7 +115,7 @@
     <xsd:complexContent>
       <xsd:extension base="common:Command">
         <xsd:sequence>
-          <xsd:element name="FirmwareIdentification" type="common:Identification"/>
+          <xsd:element name="FirmwareIdentification" type="tns:FirmwareIdentification"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -1312,6 +1312,13 @@
       <xsd:enumeration value="G_METER_ENCRYPTION_KEY"/>
       <xsd:enumeration value="G_METER_FIRMWARE_UPDATE_AUTHENTICATION_KEY"/>
       <xsd:enumeration value="G_METER_OPTICAL_PORT_KEY"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <xsd:simpleType name="FirmwareIdentification">
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:minLength value="1" />
+      <xsd:maxLength value="100" />
     </xsd:restriction>
   </xsd:simpleType>
 
