@@ -221,7 +221,8 @@ public class ClearMBusStatusCommandExecutor
         new MethodParameter(
             method.getInterfaceClass().id(),
             OBIS_CODE_CLIENT_SETUP_MAP.get(channel),
-            method.getMethodId());
+            method.getMethodId(),
+            DataObject.newInteger8Data((byte) 0));
 
     conn.getDlmsMessageListener()
         .setDescription(

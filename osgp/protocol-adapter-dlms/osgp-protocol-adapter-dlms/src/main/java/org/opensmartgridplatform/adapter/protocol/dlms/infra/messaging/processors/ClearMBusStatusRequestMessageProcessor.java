@@ -16,7 +16,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConn
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearMBusStatusRequestDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,7 @@ public class ClearMBusStatusRequestMessageProcessor extends DeviceRequestMessage
   @Autowired private ManagementService managementService;
 
   public ClearMBusStatusRequestMessageProcessor() {
-    super(MessageType.SYNCHRONIZE_TIME);
+    super(MessageType.CLEAR_MBUS_STATUS);
   }
 
   @Override
@@ -38,7 +37,7 @@ public class ClearMBusStatusRequestMessageProcessor extends DeviceRequestMessage
       final Serializable requestObject,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
-    this.assertRequestObjectType(SynchronizeTimeRequestDto.class, requestObject);
+    this.assertRequestObjectType(ClearMBusStatusRequestDto.class, requestObject);
 
     this.managementService.clearMBusStatus(
         conn, device, (ClearMBusStatusRequestDto) requestObject, messageMetadata);

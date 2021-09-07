@@ -709,7 +709,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
     return response;
   }
 
-  @PayloadRoot(localPart = "ClearMBusStatusRequest", namespace = NAMESPACE)
+  @PayloadRoot(localPart = "ClearMbusStatusRequest", namespace = NAMESPACE)
   @ResponsePayload
   public ClearMbusStatusAsyncResponse clearMBusStatus(
       @OrganisationIdentification final String organisationIdentification,
@@ -747,7 +747,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
     return this.managementMapper.map(asyncResponse, ClearMbusStatusAsyncResponse.class);
   }
 
-  @PayloadRoot(localPart = "ClearMBusStatusAsyncRequest", namespace = NAMESPACE)
+  @PayloadRoot(localPart = "ClearMbusStatusAsyncRequest", namespace = NAMESPACE)
   @ResponsePayload
   public ClearMbusStatusResponse clearMBusStatusResponse(
       @OrganisationIdentification final String organisationIdentification,
