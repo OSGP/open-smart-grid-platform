@@ -15,4 +15,6 @@ public interface CachingRepository<S, T> {
   T retrieve(S key);
 
   void store(S key, T value);
+
+  void remove(S key);
 }
