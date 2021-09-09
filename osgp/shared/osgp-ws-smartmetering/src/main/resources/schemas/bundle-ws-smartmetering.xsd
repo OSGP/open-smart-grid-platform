@@ -628,15 +628,6 @@
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element
-    name="ClearMbusStatusResponse">
-    <xsd:complexType>
-      <xsd:complexContent>
-        <xsd:extension
-          base="smman:ClearMbusStatusResponseData" />
-      </xsd:complexContent>
-    </xsd:complexType>
-  </xsd:element>
   <xsd:element name="ScanMbusChannelsResponse">
     <xsd:complexType>
       <xsd:complexContent>
@@ -698,8 +689,6 @@
           ref="tns:GetMbusEncryptionKeyStatusByChannelResponse" />
         <xsd:element
           ref="tns:SetDeviceLifecycleStatusByChannelResponse" />
-        <xsd:element
-          ref="tns:ClearMbusStatusResponse" />
         <xsd:element ref="tns:ScanMbusChannelsResponse" />
         <xsd:element ref="tns:GetOutagesResponse" />
         <xsd:element ref="tns:GetGsmDiagnosticResponse" />
