@@ -297,8 +297,8 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"/>
-        <xsd:element name="ClearMbusStatusResponseData"
-          type="tns:ClearMbusStatusResponseData"/>
+        <xsd:element name="Description" type="xsd:string"
+          minOccurs="0"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -1022,13 +1022,6 @@
   <xsd:complexType name="ClearMbusStatusRequestData">
     <xsd:complexContent>
       <xsd:extension base="common:Query">
-      </xsd:extension>
-    </xsd:complexContent>
-  </xsd:complexType>
-
-  <xsd:complexType name="ClearMbusStatusResponseData">
-    <xsd:complexContent>
-      <xsd:extension base="common:Response">
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>

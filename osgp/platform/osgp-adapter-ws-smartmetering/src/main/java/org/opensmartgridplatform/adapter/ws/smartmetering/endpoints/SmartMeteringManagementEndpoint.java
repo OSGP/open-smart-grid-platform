@@ -23,7 +23,6 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Clea
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMbusStatusAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMbusStatusRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMbusStatusResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMbusStatusResponseData;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.DevicePage;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.DisableDebuggingAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.DisableDebuggingAsyncResponse;
@@ -431,7 +430,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
 
   /**
    * Retrieve the result of the {@link #findMessageLogsRequest(String, String, String, String,
-   * FindMessageLogsRequest)} method.
+   * FindMessageLogsRequest, String)} method.
    *
    * @return FindMessageLogsResponse
    * @throws OsgpException
@@ -771,9 +770,9 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
       this.throwExceptionIfResultNotOk(responseData, "Clear MBus Status");
 
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
-      response.setClearMbusStatusResponseData(
-          this.managementMapper.map(
-              responseData.getMessageData(), ClearMbusStatusResponseData.class));
+      if (responseData.getMessageData() instanceof String) {
+        response.setDescription((String) responseData.getMessageData());
+      }
 
     } catch (final ConstraintViolationException e) {
       throw new FunctionalException(
