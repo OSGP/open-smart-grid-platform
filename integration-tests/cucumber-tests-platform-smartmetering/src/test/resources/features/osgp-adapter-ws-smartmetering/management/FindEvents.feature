@@ -57,7 +57,7 @@ Feature: SmartMetering Management - Find Events
       | ProtocolVersion      |               5.1 |
       | Port                 |              1028 |
     When receiving a find auxiliary events request
-      | DeviceIdentification | TEST1027000000001        |
+      | DeviceIdentification | TEST1028000000001        |
       | BeginDate            | 2015-09-01T00:00:00.000Z |
       | EndDate              | 2015-10-01T00:00:00.000Z |
     Then 169 auxiliary events should be returned
