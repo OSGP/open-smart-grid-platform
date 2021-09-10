@@ -323,11 +323,11 @@
     </xsd:complexType>
   </xsd:element>
   <xsd:element
-    name="ClearMbusStatusRequest">
+    name="ClearMBusStatusRequest">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension
-          base="smman:ClearMbusStatusRequestData" />
+          base="smman:ClearMBusStatusRequestData" />
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
@@ -410,7 +410,7 @@
         <xsd:element
           ref="tns:SetDeviceLifecycleStatusByChannelRequest" />
         <xsd:element
-          ref="tns:ClearMbusStatusRequest" />
+          ref="tns:ClearMBusStatusRequest" />
         <xsd:element ref="tns:ScanMbusChannelsRequest" />
         <xsd:element
           ref="tns:SetRandomisationSettingsRequest" />

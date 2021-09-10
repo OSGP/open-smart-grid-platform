@@ -109,7 +109,7 @@ public class ClearMBusStatusCommandExecutor
 
     this.checkAccessResultCode(executionResult);
 
-    return new ActionResponseDto("Clear MBus status was successful");
+    return new ActionResponseDto("Clear M-Bus status was successful");
   }
 
   @Override
@@ -135,7 +135,7 @@ public class ClearMBusStatusCommandExecutor
 
     try {
       for (final int channel : CHANNELS) {
-        this.clearStatus(conn, channel);
+        this.setClearStatusMask(conn, channel);
       }
     } catch (final IOException e) {
       throw new ConnectionException(e);
@@ -144,16 +144,16 @@ public class ClearMBusStatusCommandExecutor
     return AccessResultCode.SUCCESS;
   }
 
-  private void clearStatus(final DlmsConnectionManager conn, final int channel)
+  private void setClearStatusMask(final DlmsConnectionManager conn, final int channel)
       throws IOException, ProtocolAdapterException {
 
     final long statusMask = this.readStatus(conn, channel);
 
-    final AccessResultCode resultCode = this.clearStatus(statusMask, conn, channel);
+    final AccessResultCode resultCode = this.setClearStatusMask(statusMask, conn, channel);
 
     if (resultCode != AccessResultCode.SUCCESS) {
       throw new ProtocolAdapterException(
-          "Unable to set clear status mask for MBus channel "
+          "Unable to set clear status mask for M-Bus channel "
               + channel
               + ", AccessResultCode="
               + resultCode
@@ -164,7 +164,7 @@ public class ClearMBusStatusCommandExecutor
 
     if (methodResult.getResultCode() != MethodResultCode.SUCCESS) {
       throw new ProtocolAdapterException(
-          "Call for RESET_ALARM was unsuccessful for MBus channel "
+          "Call for RESET_ALARM was unsuccessful for M-Bus channel "
               + channel
               + ", MethodResultCode="
               + methodResult.getResultCode()
@@ -178,23 +178,27 @@ public class ClearMBusStatusCommandExecutor
 
     conn.getDlmsMessageListener()
         .setDescription(
-            "ClearMBusStatus read status"
+            "ClearMBusStatus-readStatus for channel"
+                + channel
+                + " - read status"
                 + JdlmsObjectToStringUtil.describeAttributes(attributeAddress));
 
     log.info(
-        "Reading status for MBus channel {} with attributeAddress: {}.", channel, attributeAddress);
+        "Reading status for M-Bus channel {} with attributeAddress: {}.",
+        channel,
+        attributeAddress);
 
     final GetResult result = conn.getConnection().get(attributeAddress);
 
     if (result == null) {
       throw new ProtocolAdapterException(
-          "No GetResult received while reading status for MBus channel " + channel + ".");
+          "No GetResult received while reading status for M-Bus channel " + channel + ".");
     }
 
     return this.parseStatusFilter(result.getResultData(), channel);
   }
 
-  private AccessResultCode clearStatus(
+  private AccessResultCode setClearStatusMask(
       final long statusMask, final DlmsConnectionManager conn, final Integer channel)
       throws IOException {
     final AttributeAddress attributeAddress = ATTR_SET_STATUS_MAP.get(channel);
@@ -203,11 +207,13 @@ public class ClearMBusStatusCommandExecutor
 
     conn.getDlmsMessageListener()
         .setDescription(
-            "ClearMBusStatus writing status mask "
+            "ClearMBusStatus-setClearStatusMask for channel"
+                + channel
+                + " - writing status mask "
                 + JdlmsObjectToStringUtil.describeAttributes(attributeAddress));
 
     log.info(
-        "Writing clear status mask {} for MBus channel {} with attributeAddress: {}.",
+        "Writing clear status mask {} for M-Bus channel {} with attributeAddress: {}.",
         statusMask,
         channel,
         attributeAddress);
@@ -226,7 +232,7 @@ public class ClearMBusStatusCommandExecutor
 
     conn.getDlmsMessageListener()
         .setDescription(
-            "ClearMBusStatus for channel"
+            "ClearMBusStatus-resetAlarm for channel"
                 + channel
                 + " - calling client setup: "
                 + JdlmsObjectToStringUtil.describeMethod(methodParameter));
@@ -243,12 +249,14 @@ public class ClearMBusStatusCommandExecutor
 
     if (statusMask == null) {
       throw new ProtocolAdapterException(
-          "DataObject expected to contain a status mask for MBus channel " + channel + " is null.");
+          "DataObject expected to contain a status mask for M-Bus channel "
+              + channel
+              + " is null.");
     }
 
     if (!statusMask.isNumber()) {
       throw new ProtocolAdapterException(
-          "DataObject isNumber is expected to be true for status mask of MBus channel "
+          "DataObject isNumber is expected to be true for status mask of M-Bus channel "
               + channel
               + ".");
     }
@@ -257,7 +265,7 @@ public class ClearMBusStatusCommandExecutor
       throw new ProtocolAdapterException(
           "Value in DataObject is not a java.lang.Number: "
               + statusMask.getValue().getClass().getName()
-              + " in MBus channel "
+              + " in M-Bus channel "
               + channel
               + ".");
     }

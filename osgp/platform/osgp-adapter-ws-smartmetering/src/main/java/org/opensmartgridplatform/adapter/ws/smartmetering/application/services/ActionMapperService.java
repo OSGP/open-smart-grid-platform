@@ -15,7 +15,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ClearAlarmRegisterRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ClearMbusStatusRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ClearMBusStatusRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ConfigureDefinableLoadProfileRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.CoupleMbusDeviceByChannelRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.DecoupleMbusDeviceByChannelRequest;
@@ -304,7 +304,7 @@ public class ActionMapperService {
     CLASS_MAP.put(GetActualPowerQualityRequest.class, ActualPowerQualityRequest.class);
     CLASS_MAP.put(GetGsmDiagnosticRequest.class, GetGsmDiagnosticRequestData.class);
     CLASS_MAP.put(GetKeysRequest.class, GetKeysRequestData.class);
-    CLASS_MAP.put(ClearMbusStatusRequest.class, ClearMBusStatusRequestData.class);
+    CLASS_MAP.put(ClearMBusStatusRequest.class, ClearMBusStatusRequestData.class);
   }
 
   @Autowired private ManagementMapper managementMapper;
@@ -380,7 +380,7 @@ public class ActionMapperService {
             .GetGsmDiagnosticRequestData.class,
         this.managementMapper);
     CLASS_TO_MAPPER_MAP.put(GetGsmDiagnosticRequest.class, this.managementMapper);
-    CLASS_TO_MAPPER_MAP.put(ClearMbusStatusRequest.class, this.managementMapper);
+    CLASS_TO_MAPPER_MAP.put(ClearMBusStatusRequest.class, this.managementMapper);
   }
 
   private void mapMonitoringRequestData() {

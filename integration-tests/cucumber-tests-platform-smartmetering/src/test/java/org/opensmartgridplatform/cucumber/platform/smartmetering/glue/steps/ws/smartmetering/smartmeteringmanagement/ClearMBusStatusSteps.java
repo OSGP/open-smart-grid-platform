@@ -9,17 +9,17 @@
  */
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringmanagement;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.Map;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMbusStatusAsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMbusStatusAsyncResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMbusStatusRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMbusStatusRequestData;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMbusStatusResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMBusStatusAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMBusStatusAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMBusStatusRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMBusStatusRequestData;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMBusStatusResponse;
 import org.opensmartgridplatform.cucumber.core.ScenarioContext;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringbundle.BaseBundleSteps;
@@ -31,23 +31,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class ClearMBusStatusSteps extends BaseBundleSteps {
 
   @Autowired
-  private SmartMeteringManagementRequestClient<ClearMbusStatusAsyncResponse, ClearMbusStatusRequest>
+  private SmartMeteringManagementRequestClient<ClearMBusStatusAsyncResponse, ClearMBusStatusRequest>
       managementRequestClient;
 
   @Autowired
   private SmartMeteringManagementResponseClient<
-          ClearMbusStatusResponse, ClearMbusStatusAsyncRequest>
+          ClearMBusStatusResponse, ClearMBusStatusAsyncRequest>
       managementResponseClient;
 
   @When("^the clear M-Bus status request is received$")
   public void theBundleRequestContainsAClearMBusStatusAction(final Map<String, String> requestData)
       throws Throwable {
-    final ClearMbusStatusRequest request = new ClearMbusStatusRequest();
-    request.setClearMbusStatusRequestData(new ClearMbusStatusRequestData());
+    final ClearMBusStatusRequest request = new ClearMBusStatusRequest();
+    request.setClearMBusStatusRequestData(new ClearMBusStatusRequestData());
     request.setDeviceIdentification(
         requestData.get(PlatformSmartmeteringKeys.KEY_DEVICE_IDENTIFICATION));
 
-    final ClearMbusStatusAsyncResponse asyncResponse =
+    final ClearMBusStatusAsyncResponse asyncResponse =
         this.managementRequestClient.doRequest(request);
 
     assertThat(asyncResponse).as("AsyncResponse should not be null").isNotNull();
@@ -58,15 +58,15 @@ public class ClearMBusStatusSteps extends BaseBundleSteps {
   @Then("^the clear M-Bus status response is \"([^\"]*)\"$")
   public void theClearMBusStatusResponseShouldBe(final String result) throws Throwable {
 
-    final ClearMbusStatusAsyncRequest asyncRequest = new ClearMbusStatusAsyncRequest();
+    final ClearMBusStatusAsyncRequest asyncRequest = new ClearMBusStatusAsyncRequest();
     asyncRequest.setCorrelationUid(RequestFactoryHelper.getCorrelationUidFromScenarioContext());
     asyncRequest.setDeviceIdentification(
         RequestFactoryHelper.getDeviceIdentificationFromScenarioContext());
 
-    final ClearMbusStatusResponse response =
+    final ClearMBusStatusResponse response =
         this.managementResponseClient.getResponse(asyncRequest);
 
-    assertThat(response).as("ClearMbusStatusResponse should not be null").isNotNull();
+    assertThat(response).as("ClearMBusStatusResponse should not be null").isNotNull();
     assertThat(response.getResult()).as("Result").isEqualTo(OsgpResultType.valueOf(result));
   }
 }

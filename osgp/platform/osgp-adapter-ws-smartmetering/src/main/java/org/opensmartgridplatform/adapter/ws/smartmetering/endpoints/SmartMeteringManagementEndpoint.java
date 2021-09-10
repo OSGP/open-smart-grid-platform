@@ -19,10 +19,10 @@ import org.opensmartgridplatform.adapter.ws.endpointinterceptors.ResponseUrl;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.ScheduleTime;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.common.OsgpResultType;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMbusStatusAsyncRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMbusStatusAsyncResponse;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMbusStatusRequest;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMbusStatusResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMBusStatusAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMBusStatusAsyncResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMBusStatusRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.ClearMBusStatusResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.DevicePage;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.DisableDebuggingAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.DisableDebuggingAsyncResponse;
@@ -708,11 +708,11 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
     return response;
   }
 
-  @PayloadRoot(localPart = "ClearMbusStatusRequest", namespace = NAMESPACE)
+  @PayloadRoot(localPart = "ClearMBusStatusRequest", namespace = NAMESPACE)
   @ResponsePayload
-  public ClearMbusStatusAsyncResponse clearMBusStatus(
+  public ClearMBusStatusAsyncResponse clearMBusStatus(
       @OrganisationIdentification final String organisationIdentification,
-      @RequestPayload final ClearMbusStatusRequest request,
+      @RequestPayload final ClearMBusStatusRequest request,
       @MessagePriority final String messagePriority,
       @ScheduleTime final String scheduleTime,
       @ResponseUrl final String responseUrl,
@@ -723,7 +723,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             .ClearMBusStatusRequestData
         requestData =
             this.managementMapper.map(
-                request.getClearMbusStatusRequestData(),
+                request.getClearMBusStatusRequestData(),
                 org.opensmartgridplatform.domain.core.valueobjects.smartmetering
                     .ClearMBusStatusRequestData.class);
 
@@ -743,31 +743,31 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
 
     this.saveResponseUrlIfNeeded(asyncResponse.getCorrelationUid(), responseUrl);
 
-    return this.managementMapper.map(asyncResponse, ClearMbusStatusAsyncResponse.class);
+    return this.managementMapper.map(asyncResponse, ClearMBusStatusAsyncResponse.class);
   }
 
-  @PayloadRoot(localPart = "ClearMbusStatusAsyncRequest", namespace = NAMESPACE)
+  @PayloadRoot(localPart = "ClearMBusStatusAsyncRequest", namespace = NAMESPACE)
   @ResponsePayload
-  public ClearMbusStatusResponse clearMBusStatusResponse(
+  public ClearMBusStatusResponse clearMBusStatusResponse(
       @OrganisationIdentification final String organisationIdentification,
-      @RequestPayload final ClearMbusStatusAsyncRequest request)
+      @RequestPayload final ClearMBusStatusAsyncRequest request)
       throws OsgpException {
 
     log.info(
-        "Clear MBus Status response for organisation: {} and device: {}.",
+        "Clear M-Bus Status response for organisation: {} and device: {}.",
         organisationIdentification,
         request.getDeviceIdentification());
 
-    ClearMbusStatusResponse response = null;
+    ClearMBusStatusResponse response = null;
     try {
 
-      response = new ClearMbusStatusResponse();
+      response = new ClearMBusStatusResponse();
 
       final ResponseData responseData =
           this.responseDataService.get(
               request.getCorrelationUid(), ComponentType.WS_SMART_METERING);
 
-      this.throwExceptionIfResultNotOk(responseData, "Clear MBus Status");
+      this.throwExceptionIfResultNotOk(responseData, "Clear M-Bus Status");
 
       response.setResult(OsgpResultType.fromValue(responseData.getResultType().getValue()));
       if (responseData.getMessageData() instanceof String) {

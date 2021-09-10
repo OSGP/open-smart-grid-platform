@@ -292,7 +292,7 @@ public class ManagementService {
       throws FunctionalException {
 
     LOGGER.info(
-        "Clear MBus status for organisationIdentification: {} for deviceIdentification: {}",
+        "Clear M-Bus status for organisationIdentification: {} for deviceIdentification: {}",
         messageMetadata.getOrganisationIdentification(),
         messageMetadata.getDeviceIdentification());
 

@@ -23,14 +23,14 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CleanMBusStatusResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+public class ClearMBusStatusResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
   @Autowired
   @Qualifier("domainSmartMeteringManagementService")
   private ManagementService managementService;
 
   @Autowired
-  protected CleanMBusStatusResponseMessageProcessor(
+  protected ClearMBusStatusResponseMessageProcessor(
       final WebServiceResponseMessageSender responseMessageSender,
       @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
           final MessageProcessorMap messageProcessorMap) {
