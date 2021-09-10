@@ -10,13 +10,13 @@
 package org.opensmartgridplatform.cucumber.platform.smartmetering.glue.steps.ws.smartmetering.smartmeteringbundle;
 
 import io.cucumber.java.en.Given;
-import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ClearMBusStatusRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.bundle.ClearMBusStatusOnAllChannelsRequest;
 
-public class BundledClearMBusStatusSteps extends BaseBundleSteps {
+public class BundledClearMBusStatusOnAllChannelsSteps extends BaseBundleSteps {
 
-  @Given("^the bundle request contains a clear M-Bus status action$")
-  public void theBundleRequestContainsAClearMBusStatusAction() {
-    final ClearMBusStatusRequest action = new ClearMBusStatusRequest();
+  @Given("^the bundle request contains a clear M-Bus status on all channels action$")
+  public void theBundleRequestContainsAClearMBusStatusOnAllChannelsAction() {
+    final ClearMBusStatusOnAllChannelsRequest action = new ClearMBusStatusOnAllChannelsRequest();
 
     this.addActionToBundleRequest(action);
   }

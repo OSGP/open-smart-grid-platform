@@ -270,30 +270,30 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="ClearMBusStatusRequest">
+  <xsd:element name="ClearMBusStatusOnAllChannelsRequest">
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
-        <xsd:element name="ClearMBusStatusRequestData"
-          type="tns:ClearMBusStatusRequestData"/>
+        <xsd:element name="ClearMBusStatusOnAllChannelsRequestData"
+          type="tns:ClearMBusStatusOnAllChannelsRequestData"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="ClearMBusStatusAsyncResponse">
+  <xsd:element name="ClearMBusStatusOnAllChannelsAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="common:AsyncResponse"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="ClearMBusStatusAsyncRequest">
+  <xsd:element name="ClearMBusStatusOnAllChannelsAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="common:AsyncRequest"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="ClearMBusStatusResponse">
+  <xsd:element name="ClearMBusStatusOnAllChannelsResponse">
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"/>
@@ -1019,7 +1019,7 @@
     </xsd:complexContent>
   </xsd:complexType>
 
-  <xsd:complexType name="ClearMBusStatusRequestData">
+  <xsd:complexType name="ClearMBusStatusOnAllChannelsRequestData">
     <xsd:complexContent>
       <xsd:extension base="common:Query">
       </xsd:extension>

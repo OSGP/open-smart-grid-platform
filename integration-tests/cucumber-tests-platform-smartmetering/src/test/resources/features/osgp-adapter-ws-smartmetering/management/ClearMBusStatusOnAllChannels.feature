@@ -10,6 +10,6 @@ Feature: SmartMetering Management - Clear M-Bus alarm status on all channels of 
       | Protocol             | SMR               |
       | ProtocolVersion      |               5.1 |
       | Port                 |              1028 |
-    When the clear M-Bus status request is received
+    When the clear M-Bus status on all channels request is received
       | DeviceIdentification | TEST1028000000001 |
-    Then the clear M-Bus status response is "OK"
+    Then the clear M-Bus status on all channels response is "OK"

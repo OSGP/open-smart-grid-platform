@@ -11,7 +11,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.mess
 
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.services.ManagementService;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.BaseRequestMessageProcessor;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ClearMBusStatusRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ClearMBusStatusOnAllChannelsRequestData;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
@@ -21,26 +21,28 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ClearMBusStatusRequestMessageProcessor extends BaseRequestMessageProcessor {
+public class ClearMBusStatusOnAllChannelsRequestMessageProcessor
+    extends BaseRequestMessageProcessor {
 
   @Autowired
   @Qualifier("domainSmartMeteringManagementService")
   private ManagementService managementService;
 
   @Autowired
-  protected ClearMBusStatusRequestMessageProcessor(
+  protected ClearMBusStatusOnAllChannelsRequestMessageProcessor(
       @Qualifier("domainSmartMeteringInboundWebServiceRequestsMessageProcessorMap")
           final MessageProcessorMap messageProcessorMap) {
-    super(messageProcessorMap, MessageType.CLEAR_MBUS_STATUS);
+    super(messageProcessorMap, MessageType.CLEAR_MBUS_STATUS_ON_ALL_CHANNELS);
   }
 
   @Override
   protected void handleMessage(final MessageMetadata deviceMessageMetadata, final Object dataObject)
       throws FunctionalException {
 
-    final ClearMBusStatusRequestData clearMBusStatusRequestData =
-        (ClearMBusStatusRequestData) dataObject;
+    final ClearMBusStatusOnAllChannelsRequestData ClearMBusStatusOnAllChannelsRequestData =
+        (ClearMBusStatusOnAllChannelsRequestData) dataObject;
 
-    this.managementService.clearMBusStatus(deviceMessageMetadata, clearMBusStatusRequestData);
+    this.managementService.ClearMBusStatusOnAllChannels(
+        deviceMessageMetadata, ClearMBusStatusOnAllChannelsRequestData);
   }
 }

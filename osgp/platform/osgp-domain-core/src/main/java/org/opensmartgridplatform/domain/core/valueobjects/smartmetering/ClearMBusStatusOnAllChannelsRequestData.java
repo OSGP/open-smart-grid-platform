@@ -12,7 +12,7 @@ package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceFunction;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 
-public class ClearMBusStatusRequestData implements ActionRequest {
+public class ClearMBusStatusOnAllChannelsRequestData implements ActionRequest {
 
   private static final long serialVersionUID = 7019973148794717212L;
 
@@ -23,6 +23,6 @@ public class ClearMBusStatusRequestData implements ActionRequest {
 
   @Override
   public DeviceFunction getDeviceFunction() {
-    return DeviceFunction.CLEAR_MBUS_STATUS;
+    return DeviceFunction.CLEAR_MBUS_STATUS_ON_ALL_CHANNELS;
   }
 }

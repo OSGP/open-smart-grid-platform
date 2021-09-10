@@ -15,19 +15,20 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearMBusStatusRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearMBusStatusOnAllChannelsRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ClearMBusStatusRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class ClearMBusStatusOnAllChannelsRequestMessageProcessor
+    extends DeviceRequestMessageProcessor {
 
   @Autowired private ManagementService managementService;
 
-  public ClearMBusStatusRequestMessageProcessor() {
-    super(MessageType.CLEAR_MBUS_STATUS);
+  public ClearMBusStatusOnAllChannelsRequestMessageProcessor() {
+    super(MessageType.CLEAR_MBUS_STATUS_ON_ALL_CHANNELS);
   }
 
   @Override
@@ -37,10 +38,10 @@ public class ClearMBusStatusRequestMessageProcessor extends DeviceRequestMessage
       final Serializable requestObject,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
-    this.assertRequestObjectType(ClearMBusStatusRequestDto.class, requestObject);
+    this.assertRequestObjectType(ClearMBusStatusOnAllChannelsRequestDto.class, requestObject);
 
-    this.managementService.clearMBusStatus(
-        conn, device, (ClearMBusStatusRequestDto) requestObject, messageMetadata);
+    this.managementService.ClearMBusStatusOnAllChannels(
+        conn, device, (ClearMBusStatusOnAllChannelsRequestDto) requestObject, messageMetadata);
     return null;
   }
 }

@@ -9,7 +9,7 @@
  */
 package org.opensmartgridplatform.domain.core.valueobjects.smartmetering;
 
-public class ClearMBusStatusResponse extends ActionResponse {
+public class ClearMBusStatusOnAllChannelsResponse extends ActionResponse {
 
   private static final long serialVersionUID = -3522012800965433168L;
 }

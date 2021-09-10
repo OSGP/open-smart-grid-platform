@@ -6,7 +6,7 @@ Feature: SmartMetering Bundle - Clear M-Bus alarm status on all channels of a E 
   Scenario: Clear M-Bus alarm status on all channels of a E-meter
     Given a bundle request
       | DeviceIdentification | TEST1028000000001 |
-    And the bundle request contains a clear M-Bus status action
+    And the bundle request contains a clear M-Bus status on all channels action
     And a dlms device
       | DeviceIdentification | TEST1028000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -19,7 +19,7 @@ Feature: SmartMetering Bundle - Clear M-Bus alarm status on all channels of a E 
   Scenario: Clear M-Bus alarm status of a E-meter with a non supported protocol should fail
     Given a bundle request
       | DeviceIdentification | TEST1027000000001 |
-    And the bundle request contains a clear M-Bus status action
+    And the bundle request contains a clear M-Bus status on all channels action
     And a dlms device
       | DeviceIdentification | TEST1027000000001 |
       | DeviceType           | SMART_METER_E     |
@@ -28,4 +28,4 @@ Feature: SmartMetering Bundle - Clear M-Bus alarm status on all channels of a E 
       | Port                 |              1027 |
     When the bundle request is received
     Then the bundle response should be a FaultResponse with message containing
-      | Message | Error handling request with ClearMBusStatusCommandExecutor: ClearMBusStatus not supported by protocol. |
+      | Message | Error handling request with ClearMBusStatusOnAllChannelsCommandExecutor: ClearMBusStatusOnAllChannels not supported by protocol. |

@@ -85,7 +85,7 @@
       <xsd:enumeration value="SET_COMMUNICATION_NETWORK_INFORMATION" />
       <xsd:enumeration value="GET_KEYS" />
       <xsd:enumeration value="SYSTEM_EVENT" />
-      <xsd:enumeration value="CLEAR_MBUS_STATUS" />
+      <xsd:enumeration value="CLEAR_MBUS_STATUS_ON_ALL_CHANNELS" />
     </xsd:restriction>
   </xsd:simpleType>
 

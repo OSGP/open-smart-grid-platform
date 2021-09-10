@@ -37,11 +37,11 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NotSupportedBy
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.LoggingDlmsMessageListener;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearMBusStatusRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearMBusStatusOnAllChannelsRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
-class ClearMBusStatusCommandExecutorTest {
+class ClearMBusStatusOnAllChannelsCommandExecutorTest {
 
   private static final String OBIS_CODE_TEMPLATE_READ_STATUS = "0.x.24.2.6.255";
   private static final int CLASS_ID_READ_STATUS = 4;
@@ -55,7 +55,7 @@ class ClearMBusStatusCommandExecutorTest {
 
   private DlmsMessageListener dlmsMessageListener;
 
-  @Mock private ClearMBusStatusRequestDto dto;
+  @Mock private ClearMBusStatusOnAllChannelsRequestDto dto;
 
   @Mock private MessageMetadata messageMetadata;
 
@@ -69,11 +69,11 @@ class ClearMBusStatusCommandExecutorTest {
 
   @Captor private ArgumentCaptor<MethodParameter> methodParameterArgumentCaptor;
 
-  private ClearMBusStatusCommandExecutor executor;
+  private ClearMBusStatusOnAllChannelsCommandExecutor executor;
 
   @BeforeEach
   void setup() {
-    this.executor = new ClearMBusStatusCommandExecutor();
+    this.executor = new ClearMBusStatusOnAllChannelsCommandExecutor();
     this.dlmsMessageListener = new LoggingDlmsMessageListener(null, null);
   }
 

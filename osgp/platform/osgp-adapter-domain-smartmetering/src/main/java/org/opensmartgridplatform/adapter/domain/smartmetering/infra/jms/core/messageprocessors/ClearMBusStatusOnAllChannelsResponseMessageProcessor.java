@@ -23,21 +23,22 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ClearMBusStatusResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+public class ClearMBusStatusOnAllChannelsResponseMessageProcessor
+    extends OsgpCoreResponseMessageProcessor {
 
   @Autowired
   @Qualifier("domainSmartMeteringManagementService")
   private ManagementService managementService;
 
   @Autowired
-  protected ClearMBusStatusResponseMessageProcessor(
+  protected ClearMBusStatusOnAllChannelsResponseMessageProcessor(
       final WebServiceResponseMessageSender responseMessageSender,
       @Qualifier("domainSmartMeteringInboundOsgpCoreResponsesMessageProcessorMap")
           final MessageProcessorMap messageProcessorMap) {
     super(
         responseMessageSender,
         messageProcessorMap,
-        MessageType.CLEAR_MBUS_STATUS,
+        MessageType.CLEAR_MBUS_STATUS_ON_ALL_CHANNELS,
         ComponentType.DOMAIN_SMART_METERING);
   }
 
@@ -54,7 +55,7 @@ public class ClearMBusStatusResponseMessageProcessor extends OsgpCoreResponseMes
       final ResponseMessage responseMessage,
       final OsgpException osgpException) {
 
-    this.managementService.handleClearMBusStatusResponse(
+    this.managementService.handleClearMBusStatusOnAllChannelsResponse(
         deviceMessageMetadata, responseMessage.getResult(), osgpException);
   }
 }

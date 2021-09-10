@@ -32,7 +32,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ActualPo
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.AdministrativeStatusTypeData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.BundleMessageRequest;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ClearAlarmRegisterData;
-import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ClearMBusStatusRequestData;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ClearMBusStatusOnAllChannelsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.CoupleMbusDeviceRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.DecoupleMbusDeviceByChannelRequestData;
@@ -81,7 +81,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActualPowerQuali
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AdministrativeStatusTypeDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearAlarmRegisterRequestDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearMBusStatusRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearMBusStatusOnAllChannelsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DecoupleMbusDeviceDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.DefinableLoadProfileConfigurationDto;
@@ -189,7 +189,9 @@ public class ActionMapperService {
         SetRandomisationSettingsRequestData.class, SetRandomisationSettingsRequestDataDto.class);
     CLASS_MAP.put(GetGsmDiagnosticRequestData.class, GetGsmDiagnosticRequestDto.class);
     CLASS_MAP.put(GetKeysRequestData.class, GetKeysRequestDto.class);
-    CLASS_MAP.put(ClearMBusStatusRequestData.class, ClearMBusStatusRequestDto.class);
+    CLASS_MAP.put(
+        ClearMBusStatusOnAllChannelsRequestData.class,
+        ClearMBusStatusOnAllChannelsRequestDto.class);
   }
 
   @Autowired
@@ -266,7 +268,7 @@ public class ActionMapperService {
     CLASS_TO_MAPPER_MAP.put(SetRandomisationSettingsRequestData.class, this.configurationMapper);
     CLASS_TO_MAPPER_MAP.put(GetGsmDiagnosticRequestData.class, this.managementMapper);
     CLASS_TO_MAPPER_MAP.put(GetKeysRequestData.class, this.configurationMapper);
-    CLASS_TO_MAPPER_MAP.put(ClearMBusStatusRequestData.class, this.managementMapper);
+    CLASS_TO_MAPPER_MAP.put(ClearMBusStatusOnAllChannelsRequestData.class, this.managementMapper);
   }
 
   public BundleMessagesRequestDto mapAllActions(

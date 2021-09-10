@@ -9,11 +9,11 @@
  */
 package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 
-public class ClearMBusStatusRequestDto implements ActionRequestDto {
+public class ClearMBusStatusOnAllChannelsRequestDto implements ActionRequestDto {
 
   private static final long serialVersionUID = -5014268738210751785L;
 
-  public ClearMBusStatusRequestDto() {
+  public ClearMBusStatusOnAllChannelsRequestDto() {
     // default constructor
   }
 }

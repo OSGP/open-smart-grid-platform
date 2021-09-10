@@ -36,15 +36,15 @@ import org.opensmartgridplatform.dlms.interfaceclass.attribute.ExtendedRegisterA
 import org.opensmartgridplatform.dlms.interfaceclass.method.MBusClientMethod;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearMBusStatusRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearMBusStatusOnAllChannelsRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class ClearMBusStatusCommandExecutor
-    extends AbstractCommandExecutor<ClearMBusStatusRequestDto, AccessResultCode> {
+public class ClearMBusStatusOnAllChannelsCommandExecutor
+    extends AbstractCommandExecutor<ClearMBusStatusOnAllChannelsRequestDto, AccessResultCode> {
 
   private static final int CLASS_ID_READ_STATUS = InterfaceClass.EXTENDED_REGISTER.id();
   private static final int ATTR_ID_READ_STATUS = ExtendedRegisterAttribute.VALUE.attributeId();
@@ -99,8 +99,8 @@ public class ClearMBusStatusCommandExecutor
   private static final int[] CHANNELS = {1, 2, 3, 4};
 
   @Autowired
-  public ClearMBusStatusCommandExecutor() {
-    super(ClearMBusStatusRequestDto.class);
+  public ClearMBusStatusOnAllChannelsCommandExecutor() {
+    super(ClearMBusStatusOnAllChannelsRequestDto.class);
   }
 
   @Override
@@ -109,28 +109,29 @@ public class ClearMBusStatusCommandExecutor
 
     this.checkAccessResultCode(executionResult);
 
-    return new ActionResponseDto("Clear M-Bus status was successful");
+    return new ActionResponseDto("Clear M-Bus status on all channels was successful");
   }
 
   @Override
-  public ClearMBusStatusRequestDto fromBundleRequestInput(final ActionRequestDto bundleInput)
-      throws ProtocolAdapterException {
+  public ClearMBusStatusOnAllChannelsRequestDto fromBundleRequestInput(
+      final ActionRequestDto bundleInput) throws ProtocolAdapterException {
 
     this.checkActionRequestType(bundleInput);
 
-    return (ClearMBusStatusRequestDto) bundleInput;
+    return (ClearMBusStatusOnAllChannelsRequestDto) bundleInput;
   }
 
   @Override
   public AccessResultCode execute(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final ClearMBusStatusRequestDto requestDto,
+      final ClearMBusStatusOnAllChannelsRequestDto requestDto,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
     if (Protocol.forDevice(device) != Protocol.SMR_5_1) {
-      throw new NotSupportedByProtocolException("ClearMBusStatus not supported by protocol.");
+      throw new NotSupportedByProtocolException(
+          "ClearMBusStatusOnAllChannels not supported by protocol.");
     }
 
     try {
@@ -178,7 +179,7 @@ public class ClearMBusStatusCommandExecutor
 
     conn.getDlmsMessageListener()
         .setDescription(
-            "ClearMBusStatus-readStatus for channel"
+            "ClearMBusStatusOnAllChannels-readStatus for channel"
                 + channel
                 + " - read status"
                 + JdlmsObjectToStringUtil.describeAttributes(attributeAddress));
@@ -207,7 +208,7 @@ public class ClearMBusStatusCommandExecutor
 
     conn.getDlmsMessageListener()
         .setDescription(
-            "ClearMBusStatus-setClearStatusMask for channel"
+            "ClearMBusStatusOnAllChannels-setClearStatusMask for channel"
                 + channel
                 + " - writing status mask "
                 + JdlmsObjectToStringUtil.describeAttributes(attributeAddress));
@@ -232,7 +233,7 @@ public class ClearMBusStatusCommandExecutor
 
     conn.getDlmsMessageListener()
         .setDescription(
-            "ClearMBusStatus-resetAlarm for channel"
+            "ClearMBusStatusOnAllChannels-resetAlarm for channel"
                 + channel
                 + " - calling client setup: "
                 + JdlmsObjectToStringUtil.describeMethod(methodParameter));

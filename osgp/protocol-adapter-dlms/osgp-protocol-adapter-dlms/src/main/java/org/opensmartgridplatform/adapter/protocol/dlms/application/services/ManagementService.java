@@ -11,7 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm.ClearMBusStatusCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm.ClearMBusStatusOnAllChannelsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.FindEventsCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.GetGsmDiagnosticCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc.SetDeviceLifecycleStatusByChannelCommandExecutor;
@@ -19,7 +19,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearMBusStatusRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearMBusStatusOnAllChannelsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FindEventsRequestDto;
@@ -43,7 +43,8 @@ public class ManagementService {
 
   @Autowired private GetGsmDiagnosticCommandExecutor getGsmDiagnosticCommandExecutor;
 
-  @Autowired private ClearMBusStatusCommandExecutor clearMBusStatusCommandExecutor;
+  @Autowired
+  private ClearMBusStatusOnAllChannelsCommandExecutor ClearMBusStatusOnAllChannelsCommandExecutor;
 
   @Autowired
   private SetDeviceLifecycleStatusByChannelCommandExecutor
@@ -130,14 +131,14 @@ public class ManagementService {
         conn, device, setDeviceLifecycleStatusByChannelRequest, messageMetadata);
   }
 
-  public void clearMBusStatus(
+  public void ClearMBusStatusOnAllChannels(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final ClearMBusStatusRequestDto clearMBusStatusRequestDto,
+      final ClearMBusStatusOnAllChannelsRequestDto ClearMBusStatusOnAllChannelsRequestDto,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
-    this.clearMBusStatusCommandExecutor.execute(
-        conn, device, clearMBusStatusRequestDto, messageMetadata);
+    this.ClearMBusStatusOnAllChannelsCommandExecutor.execute(
+        conn, device, ClearMBusStatusOnAllChannelsRequestDto, messageMetadata);
   }
 }
