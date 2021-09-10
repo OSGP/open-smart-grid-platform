@@ -16,7 +16,7 @@ Feature: SmartMetering Bundle - Clear M-Bus alarm status on all channels of a E 
     When the bundle request is received
     Then the bundle response should be OK
 
-  Scenario: Clear M-Bus alarm status on all channels of a E-meter
+  Scenario: Clear M-Bus alarm status on all channels of a E-meter with not supported protocol
     Given a bundle request
       | DeviceIdentification | TEST1027000000001 |
     And the bundle request contains a clear M-Bus status action
