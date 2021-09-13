@@ -31,6 +31,24 @@
     <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='PHASE_RETURNED_L3']">
         <jxb:typesafeEnumMember name="PHASE_RETURNED_L3"/>
     </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='VOLTAGE_SAG_IN_PHASE_L1']">
+      <jxb:typesafeEnumMember name="VOLTAGE_SAG_IN_PHASE_L1"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='VOLTAGE_SAG_IN_PHASE_L2']">
+      <jxb:typesafeEnumMember name="VOLTAGE_SAG_IN_PHASE_L2"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='VOLTAGE_SAG_IN_PHASE_L3']">
+      <jxb:typesafeEnumMember name="VOLTAGE_SAG_IN_PHASE_L3"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='VOLTAGE_SWELL_IN_PHASE_L1']">
+      <jxb:typesafeEnumMember name="VOLTAGE_SWELL_IN_PHASE_L1"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='VOLTAGE_SWELL_IN_PHASE_L2']">
+      <jxb:typesafeEnumMember name="VOLTAGE_SWELL_IN_PHASE_L2"/>
+    </jxb:bindings>
+    <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='VOLTAGE_SWELL_IN_PHASE_L3']">
+      <jxb:typesafeEnumMember name="VOLTAGE_SWELL_IN_PHASE_L3"/>
+    </jxb:bindings>
     <jxb:bindings node="//xs:simpleType[@name='EventType']/xs:restriction/xs:enumeration[@value='UNDER_VOLTAGE_L1']">
         <jxb:typesafeEnumMember name="UNDER_VOLTAGE_L1"/>
     </jxb:bindings>
