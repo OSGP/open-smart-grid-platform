@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import lombok.SneakyThrows;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -159,9 +158,8 @@ class DlmsObjectConfigServiceTest {
             });
   }
 
-  @SneakyThrows
   @Test
-  void testGetMatchingObject() {
+  void testGetMatchingObject() throws ProtocolAdapterException {
     // SETUP
     final AttributeAddress expectedAddress =
         new AttributeAddress(
@@ -175,6 +173,7 @@ class DlmsObjectConfigServiceTest {
         this.service.getAttributeAddress(this.device422, DlmsObjectType.ACTIVE_ENERGY_IMPORT, null);
 
     // VERIFY
+    assertThat(attributeAddress).isNotNull();
     AttributeAddressAssert.is(attributeAddress, expectedAddress);
   }
 
