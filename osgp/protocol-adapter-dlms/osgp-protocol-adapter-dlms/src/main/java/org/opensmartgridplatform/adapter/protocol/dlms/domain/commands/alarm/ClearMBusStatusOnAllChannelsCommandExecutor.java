@@ -129,7 +129,8 @@ public class ClearMBusStatusOnAllChannelsCommandExecutor
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
-    if (Protocol.forDevice(device) != Protocol.SMR_5_1) {
+    if (!(Protocol.forDevice(device).isSmr5()
+        && Protocol.forDevice(device) != Protocol.SMR_5_0_0)) {
       throw new NotSupportedByProtocolException(
           "ClearMBusStatusOnAllChannels not supported by protocol.");
     }

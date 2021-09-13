@@ -78,29 +78,11 @@ class ClearMBusStatusOnAllChannelsCommandExecutorTest {
   }
 
   @Test
-  void shouldNotExecuteForProtocol_DSMR_4_2_2() {
-    final DlmsDevice dlmsDevice_4_2_2 = new DlmsDevice("DSMR 4.2.2 device");
-    dlmsDevice_4_2_2.setProtocol("DSMR", "4.2.2");
-
-    assertThatExceptionOfType(NotSupportedByProtocolException.class)
-        .isThrownBy(
-            () -> {
-              this.executor.execute(
-                  this.connectionManager, dlmsDevice_4_2_2, this.dto, this.messageMetadata);
-            });
-  }
-
-  @Test
-  void shouldNotExecuteForProtocol_SMR_5_0_0() {
-    final DlmsDevice dlmsDevice_5_0_0 = new DlmsDevice("SMR 5.0.0 device");
-    dlmsDevice_5_0_0.setProtocol("SMR", "5.0.0");
-
-    assertThatExceptionOfType(NotSupportedByProtocolException.class)
-        .isThrownBy(
-            () -> {
-              this.executor.execute(
-                  this.connectionManager, dlmsDevice_5_0_0, this.dto, this.messageMetadata);
-            });
+  void shouldExecuteSpecificProtocol() throws ProtocolAdapterException, IOException {
+    this.assertExecuteSpecificProtocol("XXX", "5.1", false);
+    this.assertExecuteSpecificProtocol("DSMR", "4.2.2", false);
+    this.assertExecuteSpecificProtocol("SMR", "5.0.0", false);
+    this.assertExecuteSpecificProtocol("SMR", "5.1", true);
   }
 
   @Test
@@ -123,6 +105,35 @@ class ClearMBusStatusOnAllChannelsCommandExecutorTest {
 
     this.assertCurrentStatusAttributeAddresses(this.attributeAddressArgumentCaptor.getAllValues());
     this.assertClearStatus(this.setParameterArgumentCaptor.getAllValues());
+  }
+
+  private void assertExecuteSpecificProtocol(
+      final String protocol, final String protocolVersion, final boolean allowedProtocol)
+      throws ProtocolAdapterException, IOException {
+    final DlmsDevice dlmsDevice = new DlmsDevice();
+    dlmsDevice.setProtocol(protocol, protocolVersion);
+
+    if (allowedProtocol) {
+      when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
+      when(this.connectionManager.getConnection()).thenReturn(this.dlmsConnection);
+      when(this.dlmsConnection.get(this.attributeAddressArgumentCaptor.capture()))
+          .thenReturn(this.getResult);
+      when(this.getResult.getResultData()).thenReturn(DataObject.newUInteger32Data(0L));
+      when(this.dlmsConnection.set(this.setParameterArgumentCaptor.capture()))
+          .thenReturn(AccessResultCode.SUCCESS);
+      when(this.methodResult.getResultCode()).thenReturn(MethodResultCode.SUCCESS);
+      when(this.dlmsConnection.action(this.methodParameterArgumentCaptor.capture()))
+          .thenReturn(this.methodResult);
+
+      this.executor.execute(this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);
+    } else {
+      assertThatExceptionOfType(NotSupportedByProtocolException.class)
+          .isThrownBy(
+              () -> {
+                this.executor.execute(
+                    this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);
+              });
+    }
   }
 
   private void assertClearStatus(final List<SetParameter> setParameters) {
