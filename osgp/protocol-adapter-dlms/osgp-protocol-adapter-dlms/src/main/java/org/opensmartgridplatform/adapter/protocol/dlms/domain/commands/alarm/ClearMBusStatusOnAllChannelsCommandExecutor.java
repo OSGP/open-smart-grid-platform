@@ -10,8 +10,6 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
@@ -19,20 +17,16 @@ import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResult;
 import org.openmuc.jdlms.MethodResultCode;
-import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NotSupportedByProtocolException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
-import org.opensmartgridplatform.dlms.interfaceclass.attribute.DataAttribute;
-import org.opensmartgridplatform.dlms.interfaceclass.attribute.ExtendedRegisterAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.method.MBusClientMethod;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
@@ -46,61 +40,15 @@ import org.springframework.stereotype.Component;
 public class ClearMBusStatusOnAllChannelsCommandExecutor
     extends AbstractCommandExecutor<ClearMBusStatusOnAllChannelsRequestDto, AccessResultCode> {
 
-  private static final int CLASS_ID_READ_STATUS = InterfaceClass.EXTENDED_REGISTER.id();
-  private static final int ATTR_ID_READ_STATUS = ExtendedRegisterAttribute.VALUE.attributeId();
-
-  private static final AttributeAddress ATTR_READ_STATUS_MBUS_1 =
-      new AttributeAddress(CLASS_ID_READ_STATUS, "0.1.24.2.6.255", ATTR_ID_READ_STATUS);
-  private static final AttributeAddress ATTR_READ_STATUS_MBUS_2 =
-      new AttributeAddress(CLASS_ID_READ_STATUS, "0.2.24.2.6.255", ATTR_ID_READ_STATUS);
-  private static final AttributeAddress ATTR_READ_STATUS_MBUS_3 =
-      new AttributeAddress(CLASS_ID_READ_STATUS, "0.3.24.2.6.255", ATTR_ID_READ_STATUS);
-  private static final AttributeAddress ATTR_READ_STATUS_MBUS_4 =
-      new AttributeAddress(CLASS_ID_READ_STATUS, "0.4.24.2.6.255", ATTR_ID_READ_STATUS);
-
-  private static final int CLASS_ID_CLEAR_STATUS = InterfaceClass.DATA.id();
-  private static final int ATTR_ID_CLEAR_STATUS = DataAttribute.VALUE.attributeId();
-
-  private static final AttributeAddress ATTR_CLEAR_STATUS_MBUS_1 =
-      new AttributeAddress(CLASS_ID_CLEAR_STATUS, "0.1.94.31.10.255", ATTR_ID_CLEAR_STATUS);
-  private static final AttributeAddress ATTR_CLEAR_STATUS_MBUS_2 =
-      new AttributeAddress(CLASS_ID_CLEAR_STATUS, "0.2.94.31.10.255", ATTR_ID_CLEAR_STATUS);
-  private static final AttributeAddress ATTR_CLEAR_STATUS_MBUS_3 =
-      new AttributeAddress(CLASS_ID_CLEAR_STATUS, "0.3.94.31.10.255", ATTR_ID_CLEAR_STATUS);
-  private static final AttributeAddress ATTR_CLEAR_STATUS_MBUS_4 =
-      new AttributeAddress(CLASS_ID_CLEAR_STATUS, "0.4.94.31.10.255", ATTR_ID_CLEAR_STATUS);
-
-  private static final ObisCode OBIS_CODE_CLIENT_SETUP_MBUS_1 = new ObisCode("0.1.24.1.0.255");
-  private static final ObisCode OBIS_CODE_CLIENT_SETUP_MBUS_2 = new ObisCode("0.2.24.1.0.255");
-  private static final ObisCode OBIS_CODE_CLIENT_SETUP_MBUS_3 = new ObisCode("0.3.24.1.0.255");
-  private static final ObisCode OBIS_CODE_CLIENT_SETUP_MBUS_4 = new ObisCode("0.4.24.1.0.255");
-
-  private static final Map<Integer, AttributeAddress> ATTR_READ_STATUS_MAP = new HashMap<>();
-  private static final Map<Integer, AttributeAddress> ATTR_SET_STATUS_MAP = new HashMap<>();
-  private static final Map<Integer, ObisCode> OBIS_CODE_CLIENT_SETUP_MAP = new HashMap<>();
-
-  static {
-    ATTR_READ_STATUS_MAP.put(1, ATTR_READ_STATUS_MBUS_1);
-    ATTR_READ_STATUS_MAP.put(2, ATTR_READ_STATUS_MBUS_2);
-    ATTR_READ_STATUS_MAP.put(3, ATTR_READ_STATUS_MBUS_3);
-    ATTR_READ_STATUS_MAP.put(4, ATTR_READ_STATUS_MBUS_4);
-
-    ATTR_SET_STATUS_MAP.put(1, ATTR_CLEAR_STATUS_MBUS_1);
-    ATTR_SET_STATUS_MAP.put(2, ATTR_CLEAR_STATUS_MBUS_2);
-    ATTR_SET_STATUS_MAP.put(3, ATTR_CLEAR_STATUS_MBUS_3);
-    ATTR_SET_STATUS_MAP.put(4, ATTR_CLEAR_STATUS_MBUS_4);
-
-    OBIS_CODE_CLIENT_SETUP_MAP.put(1, OBIS_CODE_CLIENT_SETUP_MBUS_1);
-    OBIS_CODE_CLIENT_SETUP_MAP.put(2, OBIS_CODE_CLIENT_SETUP_MBUS_2);
-    OBIS_CODE_CLIENT_SETUP_MAP.put(3, OBIS_CODE_CLIENT_SETUP_MBUS_3);
-    OBIS_CODE_CLIENT_SETUP_MAP.put(4, OBIS_CODE_CLIENT_SETUP_MBUS_4);
-  }
-
   private static final int[] CHANNELS = {1, 2, 3, 4};
 
+  final DlmsObjectConfigService dlmsObjectConfigService;
+
   @Autowired
-  public ClearMBusStatusOnAllChannelsCommandExecutor() {
+  public ClearMBusStatusOnAllChannelsCommandExecutor(
+      final DlmsObjectConfigService dlmsObjectConfigService) {
     super(ClearMBusStatusOnAllChannelsRequestDto.class);
+    this.dlmsObjectConfigService = dlmsObjectConfigService;
   }
 
   @Override
@@ -129,15 +77,9 @@ public class ClearMBusStatusOnAllChannelsCommandExecutor
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
-    if (!(Protocol.forDevice(device).isSmr5()
-        && Protocol.forDevice(device) != Protocol.SMR_5_0_0)) {
-      throw new NotSupportedByProtocolException(
-          "ClearMBusStatusOnAllChannels not supported by protocol.");
-    }
-
     try {
       for (final int channel : CHANNELS) {
-        this.setClearStatusMask(conn, channel);
+        this.clearStatusMaskForChannel(conn, channel, device);
       }
     } catch (final IOException e) {
       throw new ConnectionException(e);
@@ -146,12 +88,24 @@ public class ClearMBusStatusOnAllChannelsCommandExecutor
     return AccessResultCode.SUCCESS;
   }
 
-  private void setClearStatusMask(final DlmsConnectionManager conn, final int channel)
+  private void clearStatusMaskForChannel(
+      final DlmsConnectionManager conn, final int channel, final DlmsDevice device)
       throws IOException, ProtocolAdapterException {
 
-    final long statusMask = this.readStatus(conn, channel);
+    final AttributeAddress readMBusStatusAttributeAddress =
+        this.dlmsObjectConfigService.getAttributeAddress(
+            device, DlmsObjectType.READ_MBUS_STATUS, channel);
+    final AttributeAddress clearMBusStatusAttributeAddress =
+        this.dlmsObjectConfigService.getAttributeAddress(
+            device, DlmsObjectType.CLEAR_MBUS_STATUS, channel);
+    final AttributeAddress clientSetupMbus =
+        this.dlmsObjectConfigService.getAttributeAddress(
+            device, DlmsObjectType.CLIENT_SETUP_MBUS, channel);
 
-    final AccessResultCode resultCode = this.setClearStatusMask(statusMask, conn, channel);
+    final long statusMask = this.readStatus(conn, channel, readMBusStatusAttributeAddress);
+
+    final AccessResultCode resultCode =
+        this.setClearStatusMask(statusMask, conn, channel, clearMBusStatusAttributeAddress);
 
     if (resultCode != AccessResultCode.SUCCESS) {
       throw new ProtocolAdapterException(
@@ -162,7 +116,7 @@ public class ClearMBusStatusOnAllChannelsCommandExecutor
               + ".");
     }
 
-    final MethodResult methodResult = this.resetAlarm(conn, channel);
+    final MethodResult methodResult = this.resetAlarm(conn, channel, clientSetupMbus);
 
     if (methodResult.getResultCode() != MethodResultCode.SUCCESS) {
       throw new ProtocolAdapterException(
@@ -174,9 +128,11 @@ public class ClearMBusStatusOnAllChannelsCommandExecutor
     }
   }
 
-  private long readStatus(final DlmsConnectionManager conn, final Integer channel)
+  private long readStatus(
+      final DlmsConnectionManager conn,
+      final Integer channel,
+      final AttributeAddress attributeAddress)
       throws IOException, ProtocolAdapterException {
-    final AttributeAddress attributeAddress = ATTR_READ_STATUS_MAP.get(channel);
 
     conn.getDlmsMessageListener()
         .setDescription(
@@ -201,9 +157,12 @@ public class ClearMBusStatusOnAllChannelsCommandExecutor
   }
 
   private AccessResultCode setClearStatusMask(
-      final long statusMask, final DlmsConnectionManager conn, final Integer channel)
+      final long statusMask,
+      final DlmsConnectionManager conn,
+      final Integer channel,
+      final AttributeAddress attributeAddress)
       throws IOException {
-    final AttributeAddress attributeAddress = ATTR_SET_STATUS_MAP.get(channel);
+
     final SetParameter parameter =
         new SetParameter(attributeAddress, DataObject.newUInteger32Data(statusMask));
 
@@ -222,13 +181,14 @@ public class ClearMBusStatusOnAllChannelsCommandExecutor
     return conn.getConnection().set(parameter);
   }
 
-  private MethodResult resetAlarm(final DlmsConnectionManager conn, final int channel)
+  private MethodResult resetAlarm(
+      final DlmsConnectionManager conn, final int channel, final AttributeAddress clientSetupMbus)
       throws IOException {
     final MBusClientMethod method = MBusClientMethod.RESET_ALARM;
     final MethodParameter methodParameter =
         new MethodParameter(
             method.getInterfaceClass().id(),
-            OBIS_CODE_CLIENT_SETUP_MAP.get(channel),
+            clientSetupMbus.getInstanceId(),
             method.getMethodId(),
             DataObject.newInteger8Data((byte) 0));
 

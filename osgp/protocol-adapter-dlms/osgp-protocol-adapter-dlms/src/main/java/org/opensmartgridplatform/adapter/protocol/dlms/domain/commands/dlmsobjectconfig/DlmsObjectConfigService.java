@@ -42,6 +42,22 @@ public class DlmsObjectConfigService {
     this.dlmsObjectConfigs = dlmsObjectConfigs;
   }
 
+  public AttributeAddress getAttributeAddress(
+      final DlmsDevice device, final DlmsObjectType type, final Integer channel)
+      throws ProtocolAdapterException {
+    // Note: channel can be null.
+    final Optional<AttributeAddress> optionalAttributeAddress =
+        this.findAttributeAddressForProfile(device, type, channel, null, null, null)
+            .map(AttributeAddressForProfile::getAttributeAddress);
+
+    return optionalAttributeAddress.orElseThrow(
+        () ->
+            new ProtocolAdapterException(
+                String.format(
+                    "Did not find %s object for device %s for channel %s",
+                    type.name(), device.getDeviceId(), channel)));
+  }
+
   public Optional<AttributeAddress> findAttributeAddress(
       final DlmsDevice device, final DlmsObjectType type, final Integer channel) {
     // Note: channel can be null.

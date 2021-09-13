@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -31,23 +32,31 @@ import org.openmuc.jdlms.MethodResult;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NotSupportedByProtocolException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.LoggingDlmsMessageListener;
+import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.DataAttribute;
+import org.opensmartgridplatform.dlms.interfaceclass.attribute.ExtendedRegisterAttribute;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearMBusStatusOnAllChannelsRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
 class ClearMBusStatusOnAllChannelsCommandExecutorTest {
 
-  private static final String OBIS_CODE_TEMPLATE_READ_STATUS = "0.x.24.2.6.255";
+  private static final String OBIS_CODE_TEMPLATE_READ_STATUS = "0.<c>.24.2.6.255";
   private static final int CLASS_ID_READ_STATUS = 4;
 
-  private static final String OBIS_CODE_TEMPLATE_CLEAR_STATUS = "0.x.94.31.10.255";
+  private static final String OBIS_CODE_TEMPLATE_CLEAR_STATUS = "0.<c>.94.31.10.255";
   private static final int CLASS_ID_CLEAR_STATUS = 1;
+
+  private static final String OBIS_CODE_TEMPLATE_MBUS_CLIENT_SETUP = "0.<c>.24.1.0.255";
+
+  @Mock private DlmsObjectConfigService dlmsObjectConfigService;
 
   @Mock private DlmsConnectionManager connectionManager;
 
@@ -73,22 +82,56 @@ class ClearMBusStatusOnAllChannelsCommandExecutorTest {
 
   @BeforeEach
   void setup() {
-    this.executor = new ClearMBusStatusOnAllChannelsCommandExecutor();
+    this.executor = new ClearMBusStatusOnAllChannelsCommandExecutor(this.dlmsObjectConfigService);
     this.dlmsMessageListener = new LoggingDlmsMessageListener(null, null);
   }
 
   @Test
-  void shouldExecuteSpecificProtocol() throws ProtocolAdapterException, IOException {
-    this.assertExecuteSpecificProtocol("XXX", "5.1", false);
-    this.assertExecuteSpecificProtocol("DSMR", "4.2.2", false);
-    this.assertExecuteSpecificProtocol("SMR", "5.0.0", false);
-    this.assertExecuteSpecificProtocol("SMR", "5.1", true);
+  void testExecuteObjectNotFound() throws ProtocolAdapterException {
+    when(this.dlmsObjectConfigService.getAttributeAddress(any(), any(), any()))
+        .thenThrow(new ProtocolAdapterException("Object not found"));
+
+    final DlmsDevice dlmsDevice = new DlmsDevice();
+    dlmsDevice.setProtocol("SMR", "5.0.0");
+
+    assertThatExceptionOfType(ProtocolAdapterException.class)
+        .isThrownBy(
+            () -> {
+              this.executor.execute(
+                  this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);
+            });
   }
 
   @Test
   void shouldExecuteForProtocol_SMR_5_1() throws ProtocolAdapterException, IOException {
     final DlmsDevice dlmsDevice_5_1 = new DlmsDevice("SMR 5.1 device");
     dlmsDevice_5_1.setProtocol("SMR", "5.1");
+
+    for (int channel = 1; channel <= 4; channel++) {
+      when(this.dlmsObjectConfigService.getAttributeAddress(
+              dlmsDevice_5_1, DlmsObjectType.READ_MBUS_STATUS, channel))
+          .thenReturn(
+              new AttributeAddress(
+                  InterfaceClass.EXTENDED_REGISTER.id(),
+                  OBIS_CODE_TEMPLATE_READ_STATUS.replaceAll("<c>", Integer.toString(channel)),
+                  ExtendedRegisterAttribute.VALUE.attributeId()));
+
+      when(this.dlmsObjectConfigService.getAttributeAddress(
+              dlmsDevice_5_1, DlmsObjectType.CLEAR_MBUS_STATUS, channel))
+          .thenReturn(
+              new AttributeAddress(
+                  InterfaceClass.DATA.id(),
+                  OBIS_CODE_TEMPLATE_CLEAR_STATUS.replaceAll("<c>", Integer.toString(channel)),
+                  DataAttribute.VALUE.attributeId()));
+
+      when(this.dlmsObjectConfigService.getAttributeAddress(
+              dlmsDevice_5_1, DlmsObjectType.CLIENT_SETUP_MBUS, channel))
+          .thenReturn(
+              new AttributeAddress(
+                  InterfaceClass.DATA.id(),
+                  OBIS_CODE_TEMPLATE_MBUS_CLIENT_SETUP.replaceAll("<c>", Integer.toString(channel)),
+                  DataAttribute.VALUE.attributeId()));
+    }
 
     when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.connectionManager.getConnection()).thenReturn(this.dlmsConnection);
@@ -107,35 +150,6 @@ class ClearMBusStatusOnAllChannelsCommandExecutorTest {
     this.assertClearStatus(this.setParameterArgumentCaptor.getAllValues());
   }
 
-  private void assertExecuteSpecificProtocol(
-      final String protocol, final String protocolVersion, final boolean allowedProtocol)
-      throws ProtocolAdapterException, IOException {
-    final DlmsDevice dlmsDevice = new DlmsDevice();
-    dlmsDevice.setProtocol(protocol, protocolVersion);
-
-    if (allowedProtocol) {
-      when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
-      when(this.connectionManager.getConnection()).thenReturn(this.dlmsConnection);
-      when(this.dlmsConnection.get(this.attributeAddressArgumentCaptor.capture()))
-          .thenReturn(this.getResult);
-      when(this.getResult.getResultData()).thenReturn(DataObject.newUInteger32Data(0L));
-      when(this.dlmsConnection.set(this.setParameterArgumentCaptor.capture()))
-          .thenReturn(AccessResultCode.SUCCESS);
-      when(this.methodResult.getResultCode()).thenReturn(MethodResultCode.SUCCESS);
-      when(this.dlmsConnection.action(this.methodParameterArgumentCaptor.capture()))
-          .thenReturn(this.methodResult);
-
-      this.executor.execute(this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);
-    } else {
-      assertThatExceptionOfType(NotSupportedByProtocolException.class)
-          .isThrownBy(
-              () -> {
-                this.executor.execute(
-                    this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);
-              });
-    }
-  }
-
   private void assertClearStatus(final List<SetParameter> setParameters) {
     for (int i = 1; i <= 4; i++) {
       final SetParameter setParameter = setParameters.get(i - 1);
@@ -143,7 +157,7 @@ class ClearMBusStatusOnAllChannelsCommandExecutorTest {
 
       final AttributeAddress attributeAddress = setParameter.getAttributeAddress();
       assertThat(attributeAddress.getInstanceId().asDecimalString())
-          .isEqualTo(OBIS_CODE_TEMPLATE_CLEAR_STATUS.replace('x', (char) (i + '0')));
+          .isEqualTo(OBIS_CODE_TEMPLATE_CLEAR_STATUS.replaceAll("<c>", String.valueOf(i)));
       assertThat(attributeAddress.getClassId()).isEqualTo(CLASS_ID_CLEAR_STATUS);
     }
   }
@@ -152,7 +166,7 @@ class ClearMBusStatusOnAllChannelsCommandExecutorTest {
     for (int i = 1; i <= 4; i++) {
       final AttributeAddress attributeAddress = attributes.get(i - 1);
       assertThat(attributeAddress.getInstanceId().asDecimalString())
-          .isEqualTo(OBIS_CODE_TEMPLATE_READ_STATUS.replace('x', (char) (i + '0')));
+          .isEqualTo(OBIS_CODE_TEMPLATE_READ_STATUS.replaceAll("<c>", String.valueOf(i)));
       assertThat(attributeAddress.getClassId()).isEqualTo(CLASS_ID_READ_STATUS);
     }
   }
