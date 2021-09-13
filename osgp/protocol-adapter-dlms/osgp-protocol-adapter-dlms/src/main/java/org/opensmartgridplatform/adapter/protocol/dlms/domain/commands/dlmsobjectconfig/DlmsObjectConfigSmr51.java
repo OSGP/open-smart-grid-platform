@@ -56,7 +56,8 @@ public class DlmsObjectConfigSmr51 extends DlmsObjectConfigSmr50 {
         new DlmsObject(READ_MBUS_STATUS, InterfaceClass.EXTENDED_REGISTER.id(), "0.<c>.24.2.6.255");
     final DlmsObject clearMBusStatus =
         new DlmsObject(CLEAR_MBUS_STATUS, InterfaceClass.DATA.id(), "0.<c>.94.31.10.255");
-    final DlmsObject clientSetupMBus = new DlmsData(CLIENT_SETUP_MBUS, "0.<c>.24.1.0.255");
+    final DlmsObject clientSetupMBus =
+        new DlmsObject(CLIENT_SETUP_MBUS, InterfaceClass.MBUS_CLIENT.id(), "0.<c>.24.1.0.255");
     objectList.addAll(Arrays.asList(readMBusStatus, clearMBusStatus, clientSetupMBus));
 
     // Additional auxiliary event log objects for SMR5.1

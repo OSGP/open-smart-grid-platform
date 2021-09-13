@@ -10,7 +10,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 
 import java.io.IOException;
 import java.util.BitSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import org.openmuc.jdlms.AccessResultCode;
@@ -85,7 +84,9 @@ public class SetAlarmNotificationsCommandExecutor
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
     try {
-      final AttributeAddress alarmFilterValue = this.getAttributeAddress(device);
+      final AttributeAddress alarmFilterValue =
+          this.dlmsObjectConfigService.getAttributeAddress(
+              device, DlmsObjectType.ALARM_FILTER, null);
 
       final AlarmNotificationsDto alarmNotificationsOnDevice =
           this.retrieveCurrentAlarmNotifications(conn, alarmFilterValue);
@@ -237,16 +238,5 @@ public class SetAlarmNotificationsCommandExecutor
     } else {
       return bitSet.toLongArray()[0];
     }
-  }
-
-  private AttributeAddress getAttributeAddress(final DlmsDevice device)
-      throws ProtocolAdapterException {
-    final Optional<AttributeAddress> alarmFilterValueOpt =
-        this.dlmsObjectConfigService.findAttributeAddress(
-            device, DlmsObjectType.ALARM_FILTER, null);
-    return alarmFilterValueOpt.orElseThrow(
-        () ->
-            new ProtocolAdapterException(
-                "Could not find any configuration for " + DlmsObjectType.ALARM_FILTER));
   }
 }

@@ -55,6 +55,7 @@ class ClearMBusStatusOnAllChannelsCommandExecutorTest {
   private static final int CLASS_ID_CLEAR_STATUS = 1;
 
   private static final String OBIS_CODE_TEMPLATE_MBUS_CLIENT_SETUP = "0.<c>.24.1.0.255";
+  private static final int CLASS_ID_MBUS_CLIENT = 72;
 
   @Mock private DlmsObjectConfigService dlmsObjectConfigService;
 
@@ -128,7 +129,7 @@ class ClearMBusStatusOnAllChannelsCommandExecutorTest {
               dlmsDevice_5_1, DlmsObjectType.CLIENT_SETUP_MBUS, channel))
           .thenReturn(
               new AttributeAddress(
-                  InterfaceClass.DATA.id(),
+                  InterfaceClass.MBUS_CLIENT.id(),
                   OBIS_CODE_TEMPLATE_MBUS_CLIENT_SETUP.replaceAll("<c>", Integer.toString(channel)),
                   DataAttribute.VALUE.attributeId()));
     }
@@ -148,6 +149,18 @@ class ClearMBusStatusOnAllChannelsCommandExecutorTest {
 
     this.assertCurrentStatusAttributeAddresses(this.attributeAddressArgumentCaptor.getAllValues());
     this.assertClearStatus(this.setParameterArgumentCaptor.getAllValues());
+    this.assertMethodResetAlarm(this.methodParameterArgumentCaptor.getAllValues());
+  }
+
+  private void assertMethodResetAlarm(final List<MethodParameter> allMethods) {
+    for (int i = 1; i <= 4; i++) {
+      final MethodParameter methodParameter = allMethods.get(i - 1);
+      assertThat(((Number) methodParameter.getParameter().getValue()).longValue()).isEqualTo(0L);
+
+      assertThat(methodParameter.getInstanceId().asDecimalString())
+          .isEqualTo(OBIS_CODE_TEMPLATE_MBUS_CLIENT_SETUP.replaceAll("<c>", String.valueOf(i)));
+      assertThat(methodParameter.getClassId()).isEqualTo(CLASS_ID_MBUS_CLIENT);
+    }
   }
 
   private void assertClearStatus(final List<SetParameter> setParameters) {

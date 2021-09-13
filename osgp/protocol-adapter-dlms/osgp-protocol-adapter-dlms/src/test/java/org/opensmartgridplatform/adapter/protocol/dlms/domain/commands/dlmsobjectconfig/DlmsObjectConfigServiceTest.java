@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.SneakyThrows;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -146,6 +147,35 @@ class DlmsObjectConfigServiceTest {
     this.device51.setSelectiveAccessSupported(true);
     this.device51.setCommunicationMethod("CDMA");
     this.device51.setDeviceIdentification("5151515151");
+  }
+
+  @Test
+  void testGetNoMatchingObject() {
+    // CALL
+    assertThatExceptionOfType(ProtocolAdapterException.class)
+        .isThrownBy(
+            () -> {
+              this.service.getAttributeAddress(this.device51, DlmsObjectType.AMR_STATUS, null);
+            });
+  }
+
+  @SneakyThrows
+  @Test
+  void testGetMatchingObject() {
+    // SETUP
+    final AttributeAddress expectedAddress =
+        new AttributeAddress(
+            this.register.getClassId(),
+            this.register.getObisCodeAsString(),
+            this.register.getDefaultAttributeId(),
+            null);
+
+    // CALL
+    final AttributeAddress attributeAddress =
+        this.service.getAttributeAddress(this.device422, DlmsObjectType.ACTIVE_ENERGY_IMPORT, null);
+
+    // VERIFY
+    AttributeAddressAssert.is(attributeAddress, expectedAddress);
   }
 
   @Test
@@ -336,7 +366,7 @@ class DlmsObjectConfigServiceTest {
   public void testFindDlmsObjectForCommunicationMethod() throws ProtocolAdapterException {
     // CALL
     final DlmsObject object =
-        this.service.findDlmsObjectForCommunicationMethod(
+        this.service.getDlmsObjectForCommunicationMethod(
             this.device51, DlmsObjectType.GSM_DIAGNOSTIC);
 
     // VERIFY
@@ -353,7 +383,7 @@ class DlmsObjectConfigServiceTest {
 
     // CALL
     try {
-      this.service.findDlmsObjectForCommunicationMethod(deviceGprs, DlmsObjectType.GSM_DIAGNOSTIC);
+      this.service.getDlmsObjectForCommunicationMethod(deviceGprs, DlmsObjectType.GSM_DIAGNOSTIC);
       fail("Expected ProtocolAdapterException");
     } catch (final ProtocolAdapterException e) {
       assertThat(e.getMessage()).contains("Did not find GSM_DIAGNOSTIC");
@@ -364,7 +394,7 @@ class DlmsObjectConfigServiceTest {
   public void testFindDlmsObject() throws ProtocolAdapterException {
     // CALL
     final DlmsObject dlmsObject =
-        this.service.findDlmsObject(this.device422, DlmsObjectType.ACTIVE_ENERGY_IMPORT);
+        this.service.getDlmsObject(this.device422, DlmsObjectType.ACTIVE_ENERGY_IMPORT);
 
     // VERIFY
     assertThat(dlmsObject).isNotNull();
@@ -376,7 +406,7 @@ class DlmsObjectConfigServiceTest {
     assertThatExceptionOfType(ProtocolAdapterException.class)
         .isThrownBy(
             () -> {
-              this.service.findDlmsObject(this.device51, DlmsObjectType.AMR_STATUS);
+              this.service.getDlmsObject(this.device51, DlmsObjectType.AMR_STATUS);
             });
   }
 
