@@ -57,6 +57,8 @@ class ClearMBusStatusOnAllChannelsCommandExecutorTest {
   private static final String OBIS_CODE_TEMPLATE_MBUS_CLIENT_SETUP = "0.<c>.24.1.0.255";
   private static final int CLASS_ID_MBUS_CLIENT = 72;
 
+  private static final Long STATUS_MASK = 123456L;
+
   @Mock private DlmsObjectConfigService dlmsObjectConfigService;
 
   @Mock private DlmsConnectionManager connectionManager;
@@ -104,7 +106,7 @@ class ClearMBusStatusOnAllChannelsCommandExecutorTest {
   }
 
   @Test
-  void shouldExecuteForProtocol_SMR_5_1() throws ProtocolAdapterException, IOException {
+  void shouldSkipIfStatusIsZero() throws ProtocolAdapterException, IOException {
     final DlmsDevice dlmsDevice_5_1 = new DlmsDevice("SMR 5.1 device");
     dlmsDevice_5_1.setProtocol("SMR", "5.1");
 
@@ -139,6 +141,48 @@ class ClearMBusStatusOnAllChannelsCommandExecutorTest {
     when(this.dlmsConnection.get(this.attributeAddressArgumentCaptor.capture()))
         .thenReturn(this.getResult);
     when(this.getResult.getResultData()).thenReturn(DataObject.newUInteger32Data(0L));
+
+    this.executor.execute(this.connectionManager, dlmsDevice_5_1, this.dto, this.messageMetadata);
+
+    this.assertCurrentStatusAttributeAddresses(this.attributeAddressArgumentCaptor.getAllValues());
+  }
+
+  @Test
+  void shouldExecuteForProtocol_SMR_5_1() throws ProtocolAdapterException, IOException {
+    final DlmsDevice dlmsDevice_5_1 = new DlmsDevice("SMR 5.1 device");
+    dlmsDevice_5_1.setProtocol("SMR", "5.1");
+
+    for (int channel = 1; channel <= 4; channel++) {
+      when(this.dlmsObjectConfigService.getAttributeAddress(
+              dlmsDevice_5_1, DlmsObjectType.READ_MBUS_STATUS, channel))
+          .thenReturn(
+              new AttributeAddress(
+                  InterfaceClass.EXTENDED_REGISTER.id(),
+                  OBIS_CODE_TEMPLATE_READ_STATUS.replaceAll("<c>", Integer.toString(channel)),
+                  ExtendedRegisterAttribute.VALUE.attributeId()));
+
+      when(this.dlmsObjectConfigService.getAttributeAddress(
+              dlmsDevice_5_1, DlmsObjectType.CLEAR_MBUS_STATUS, channel))
+          .thenReturn(
+              new AttributeAddress(
+                  InterfaceClass.DATA.id(),
+                  OBIS_CODE_TEMPLATE_CLEAR_STATUS.replaceAll("<c>", Integer.toString(channel)),
+                  DataAttribute.VALUE.attributeId()));
+
+      when(this.dlmsObjectConfigService.getAttributeAddress(
+              dlmsDevice_5_1, DlmsObjectType.CLIENT_SETUP_MBUS, channel))
+          .thenReturn(
+              new AttributeAddress(
+                  InterfaceClass.MBUS_CLIENT.id(),
+                  OBIS_CODE_TEMPLATE_MBUS_CLIENT_SETUP.replaceAll("<c>", Integer.toString(channel)),
+                  DataAttribute.VALUE.attributeId()));
+    }
+
+    when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
+    when(this.connectionManager.getConnection()).thenReturn(this.dlmsConnection);
+    when(this.dlmsConnection.get(this.attributeAddressArgumentCaptor.capture()))
+        .thenReturn(this.getResult);
+    when(this.getResult.getResultData()).thenReturn(DataObject.newUInteger32Data(STATUS_MASK));
     when(this.dlmsConnection.set(this.setParameterArgumentCaptor.capture()))
         .thenReturn(AccessResultCode.SUCCESS);
     when(this.methodResult.getResultCode()).thenReturn(MethodResultCode.SUCCESS);
@@ -166,7 +210,7 @@ class ClearMBusStatusOnAllChannelsCommandExecutorTest {
   private void assertClearStatus(final List<SetParameter> setParameters) {
     for (int i = 1; i <= 4; i++) {
       final SetParameter setParameter = setParameters.get(i - 1);
-      assertThat(((Number) setParameter.getData().getValue()).longValue()).isEqualTo(0L);
+      assertThat(((Number) setParameter.getData().getValue()).longValue()).isEqualTo(STATUS_MASK);
 
       final AttributeAddress attributeAddress = setParameter.getAttributeAddress();
       assertThat(attributeAddress.getInstanceId().asDecimalString())

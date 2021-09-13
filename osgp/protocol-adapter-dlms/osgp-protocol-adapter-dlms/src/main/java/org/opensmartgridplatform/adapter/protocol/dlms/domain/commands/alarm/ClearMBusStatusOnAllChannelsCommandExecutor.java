@@ -17,6 +17,7 @@ import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResult;
 import org.openmuc.jdlms.MethodResultCode;
+import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
@@ -103,6 +104,9 @@ public class ClearMBusStatusOnAllChannelsCommandExecutor
             device, DlmsObjectType.CLIENT_SETUP_MBUS, channel);
 
     final long statusMask = this.readStatus(conn, channel, readMBusStatusAttributeAddress);
+    if (statusMask == 0L) {
+      return;
+    }
 
     final AccessResultCode resultCode =
         this.setClearStatusMask(statusMask, conn, channel, clearMBusStatusAttributeAddress);
@@ -116,7 +120,8 @@ public class ClearMBusStatusOnAllChannelsCommandExecutor
               + ".");
     }
 
-    final MethodResult methodResult = this.resetAlarm(conn, channel, clientSetupMbus);
+    final MethodResult methodResult =
+        this.resetAlarm(conn, channel, clientSetupMbus.getInstanceId());
 
     if (methodResult.getResultCode() != MethodResultCode.SUCCESS) {
       throw new ProtocolAdapterException(
@@ -182,13 +187,13 @@ public class ClearMBusStatusOnAllChannelsCommandExecutor
   }
 
   private MethodResult resetAlarm(
-      final DlmsConnectionManager conn, final int channel, final AttributeAddress clientSetupMbus)
+      final DlmsConnectionManager conn, final int channel, final ObisCode obisCode)
       throws IOException {
     final MBusClientMethod method = MBusClientMethod.RESET_ALARM;
     final MethodParameter methodParameter =
         new MethodParameter(
             method.getInterfaceClass().id(),
-            clientSetupMbus.getInstanceId(),
+            obisCode,
             method.getMethodId(),
             DataObject.newInteger8Data((byte) 0));
 
