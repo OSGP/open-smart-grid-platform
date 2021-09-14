@@ -9,7 +9,6 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import java.nio.ByteBuffer;
-import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.engines.AESEngine;
 import org.bouncycastle.crypto.macs.GMac;
@@ -51,7 +50,6 @@ import org.springframework.stereotype.Service;
  *   <li>Activation type: Master initiated activation
  * </ul>
  */
-@Slf4j
 @Service
 public class MacGenerationService {
 
