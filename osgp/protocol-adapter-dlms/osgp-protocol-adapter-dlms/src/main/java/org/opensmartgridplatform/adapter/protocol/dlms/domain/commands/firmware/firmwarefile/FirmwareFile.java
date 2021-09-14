@@ -39,6 +39,8 @@ public class FirmwareFile {
 
   private static final int HEADER_LENGTH = 35;
   public static final String FIRMWARE_IMAGE_MAGIC_NUMBER = "534d5235";
+  // Fixed value in requirement of SMR5.1. In SMR5.2 no value is specified for HEADER_VERSION
+  // Therefor there is no check on the value of HEADER_VERSION
   public static final int HEADER_VERSION = 0;
 
   public FirmwareFile(final byte[] imageData) {
@@ -50,7 +52,6 @@ public class FirmwareFile {
         && this.getHeader()
             .getFirmwareImageMagicNumberHex()
             .equalsIgnoreCase(FIRMWARE_IMAGE_MAGIC_NUMBER)
-        && this.getHeader().getHeaderVersionInt() == HEADER_VERSION
         && this.getHeader().getAddressTypeEnum() == AddressType.MBUS_ADDRESS;
   }
 

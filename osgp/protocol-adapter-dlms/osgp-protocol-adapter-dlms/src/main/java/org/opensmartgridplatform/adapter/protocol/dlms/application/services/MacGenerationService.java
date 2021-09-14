@@ -121,12 +121,6 @@ public class MacGenerationService {
               "Unexpected FirmwareImageMagicNumber in header firmware file: %s. Expected: %s.",
               header.getFirmwareImageMagicNumberHex(), FirmwareFile.FIRMWARE_IMAGE_MAGIC_NUMBER));
     }
-    if (FirmwareFile.HEADER_VERSION != header.getHeaderVersionInt()) {
-      throw new ProtocolAdapterException(
-          String.format(
-              "Unexpected HeaderVersion in header firmware file: %d. Expected: %d.",
-              header.getHeaderVersionInt(), FirmwareFile.HEADER_VERSION));
-    }
     if (header.getHeaderLengthInt() != HEADER_LENGTH) {
       throw new ProtocolAdapterException(
           String.format(
