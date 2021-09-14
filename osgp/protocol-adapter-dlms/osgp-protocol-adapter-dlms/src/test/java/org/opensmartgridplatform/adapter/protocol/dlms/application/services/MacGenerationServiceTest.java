@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
@@ -111,6 +112,18 @@ public class MacGenerationServiceTest {
         ProtocolAdapterException.class,
         clonedByteArray,
         "Unexpected FirmwareImageMagicNumber in header firmware file");
+  }
+
+  @Test
+  public void testInvalidHeaderVersion() throws IOException, ProtocolAdapterException {
+
+    final byte[] clonedByteArray = byteArray.clone();
+    clonedByteArray[4] = (byte) 9;
+
+    this.assertNoExceptionOnCalculateMac(
+        ProtocolAdapterException.class,
+        clonedByteArray,
+        "Unexpected HeaderVersion in header firmware file");
   }
 
   @Test
@@ -221,5 +234,20 @@ public class MacGenerationServiceTest {
                   messageMetadata, deviceIdentification, firmwareFile);
             });
     assertThat(exception).hasMessageContaining(partOfExceptionMessage);
+  }
+
+  private void assertNoExceptionOnCalculateMac(
+      final Class<? extends Exception> exceptionClass,
+      final byte[] malformedFirmwareFile,
+      final String partOfExceptionMessage)
+      throws ProtocolAdapterException {
+
+    final FirmwareFile firmwareFile = new FirmwareFile(malformedFirmwareFile);
+    firmwareFile.setMbusDeviceIdentificationNumber(mbusDeviceIdentificationNumber);
+
+    assertDoesNotThrow(
+        () ->
+            this.macGenerationService.calculateMac(
+                messageMetadata, deviceIdentification, firmwareFile));
   }
 }
