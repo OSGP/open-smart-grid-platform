@@ -39,7 +39,6 @@ public class FirmwareFile {
 
   private static final int HEADER_LENGTH = 35;
   public static final String FIRMWARE_IMAGE_MAGIC_NUMBER = "534d5235";
-  public static final int HEADER_VERSION = 0;
 
   public FirmwareFile(final byte[] imageData) {
     this.imageData = imageData;
