@@ -39,10 +39,10 @@ public class ClearMBusStatusOnAllChannelsRequestMessageProcessor
   protected void handleMessage(final MessageMetadata deviceMessageMetadata, final Object dataObject)
       throws FunctionalException {
 
-    final ClearMBusStatusOnAllChannelsRequestData ClearMBusStatusOnAllChannelsRequestData =
+    final ClearMBusStatusOnAllChannelsRequestData clearMBusStatusOnAllChannelsRequestData =
         (ClearMBusStatusOnAllChannelsRequestData) dataObject;
 
-    this.managementService.ClearMBusStatusOnAllChannels(
-        deviceMessageMetadata, ClearMBusStatusOnAllChannelsRequestData);
+    this.managementService.clearMBusStatusOnAllChannels(
+        deviceMessageMetadata, clearMBusStatusOnAllChannelsRequestData);
   }
 }

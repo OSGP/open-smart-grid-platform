@@ -28,4 +28,4 @@ Feature: SmartMetering Bundle - Clear M-Bus alarm status on all channels of a E 
       | Port                 |              1027 |
     When the bundle request is received
     Then the bundle response should be a FaultResponse with message containing
-      | Message | Error handling request with ClearMBusStatusOnAllChannelsCommandExecutor: ClearMBusStatusOnAllChannels not supported by protocol. |
+      | Message | Error handling request with ClearMBusStatusOnAllChannelsCommandExecutor: Did not find CLEAR_MBUS_STATUS object for device 27000000001 for channel 1 |

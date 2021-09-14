@@ -12,6 +12,8 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -145,6 +147,8 @@ class ClearMBusStatusOnAllChannelsCommandExecutorTest {
     this.executor.execute(this.connectionManager, dlmsDevice_5_1, this.dto, this.messageMetadata);
 
     this.assertCurrentStatusAttributeAddresses(this.attributeAddressArgumentCaptor.getAllValues());
+    verify(this.dlmsConnection, never()).set(any(SetParameter.class));
+    verify(this.dlmsConnection, never()).action(any(MethodParameter.class));
   }
 
   @Test

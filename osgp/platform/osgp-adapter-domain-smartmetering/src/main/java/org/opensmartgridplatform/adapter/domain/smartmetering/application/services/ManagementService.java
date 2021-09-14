@@ -287,7 +287,7 @@ public class ManagementService {
     this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
   }
 
-  public void ClearMBusStatusOnAllChannels(
+  public void clearMBusStatusOnAllChannels(
       final MessageMetadata messageMetadata, final ClearMBusStatusOnAllChannelsRequestData request)
       throws FunctionalException {
 

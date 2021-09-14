@@ -40,7 +40,7 @@ public class ClearMBusStatusOnAllChannelsRequestMessageProcessor
       throws ProtocolAdapterException {
     this.assertRequestObjectType(ClearMBusStatusOnAllChannelsRequestDto.class, requestObject);
 
-    this.managementService.ClearMBusStatusOnAllChannels(
+    this.managementService.clearMBusStatusOnAllChannels(
         conn, device, (ClearMBusStatusOnAllChannelsRequestDto) requestObject, messageMetadata);
     return null;
   }

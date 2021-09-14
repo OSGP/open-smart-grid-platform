@@ -44,7 +44,7 @@ public class ManagementService {
   @Autowired private GetGsmDiagnosticCommandExecutor getGsmDiagnosticCommandExecutor;
 
   @Autowired
-  private ClearMBusStatusOnAllChannelsCommandExecutor ClearMBusStatusOnAllChannelsCommandExecutor;
+  private ClearMBusStatusOnAllChannelsCommandExecutor clearMBusStatusOnAllChannelsCommandExecutor;
 
   @Autowired
   private SetDeviceLifecycleStatusByChannelCommandExecutor
@@ -131,14 +131,14 @@ public class ManagementService {
         conn, device, setDeviceLifecycleStatusByChannelRequest, messageMetadata);
   }
 
-  public void ClearMBusStatusOnAllChannels(
+  public void clearMBusStatusOnAllChannels(
       final DlmsConnectionManager conn,
       final DlmsDevice device,
-      final ClearMBusStatusOnAllChannelsRequestDto ClearMBusStatusOnAllChannelsRequestDto,
+      final ClearMBusStatusOnAllChannelsRequestDto clearMBusStatusOnAllChannelsRequestDto,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
-    this.ClearMBusStatusOnAllChannelsCommandExecutor.execute(
-        conn, device, ClearMBusStatusOnAllChannelsRequestDto, messageMetadata);
+    this.clearMBusStatusOnAllChannelsCommandExecutor.execute(
+        conn, device, clearMBusStatusOnAllChannelsRequestDto, messageMetadata);
   }
 }

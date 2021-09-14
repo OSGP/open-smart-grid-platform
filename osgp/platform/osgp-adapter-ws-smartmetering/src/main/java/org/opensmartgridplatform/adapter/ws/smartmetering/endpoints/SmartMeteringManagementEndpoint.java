@@ -710,7 +710,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
 
   @PayloadRoot(localPart = "ClearMBusStatusOnAllChannelsRequest", namespace = NAMESPACE)
   @ResponsePayload
-  public ClearMBusStatusOnAllChannelsAsyncResponse ClearMBusStatusOnAllChannels(
+  public ClearMBusStatusOnAllChannelsAsyncResponse clearMBusStatusOnAllChannels(
       @OrganisationIdentification final String organisationIdentification,
       @RequestPayload final ClearMBusStatusOnAllChannelsRequest request,
       @MessagePriority final String messagePriority,
@@ -749,7 +749,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
 
   @PayloadRoot(localPart = "ClearMBusStatusOnAllChannelsAsyncRequest", namespace = NAMESPACE)
   @ResponsePayload
-  public ClearMBusStatusOnAllChannelsResponse ClearMBusStatusOnAllChannelsResponse(
+  public ClearMBusStatusOnAllChannelsResponse clearMBusStatusOnAllChannelsResponse(
       @OrganisationIdentification final String organisationIdentification,
       @RequestPayload final ClearMBusStatusOnAllChannelsAsyncRequest request)
       throws OsgpException {
