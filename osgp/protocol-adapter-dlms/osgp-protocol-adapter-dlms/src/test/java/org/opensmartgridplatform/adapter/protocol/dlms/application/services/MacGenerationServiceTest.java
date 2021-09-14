@@ -117,6 +117,12 @@ public class MacGenerationServiceTest {
   @Test
   public void testInvalidHeaderVersion() throws IOException, ProtocolAdapterException {
 
+    when(this.secretManagementService.getKey(
+            messageMetadata,
+            deviceIdentification,
+            SecurityKeyType.G_METER_FIRMWARE_UPDATE_AUTHENTICATION))
+        .thenReturn(this.firmwareUpdateAuthenticationKey);
+
     final byte[] clonedByteArray = byteArray.clone();
     clonedByteArray[4] = (byte) 9;
 
