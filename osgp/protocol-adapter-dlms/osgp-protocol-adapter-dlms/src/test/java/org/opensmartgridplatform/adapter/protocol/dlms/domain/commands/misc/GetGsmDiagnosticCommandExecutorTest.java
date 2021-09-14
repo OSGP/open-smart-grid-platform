@@ -80,7 +80,7 @@ public class GetGsmDiagnosticCommandExecutorTest {
   @Test
   public void testExecuteObjectNotFound() throws ProtocolAdapterException {
     // SETUP
-    when(this.dlmsObjectConfigService.findDlmsObjectForCommunicationMethod(any(), any()))
+    when(this.dlmsObjectConfigService.getDlmsObjectForCommunicationMethod(any(), any()))
         .thenThrow(new ProtocolAdapterException("Object not found"));
 
     // CALL
@@ -97,7 +97,7 @@ public class GetGsmDiagnosticCommandExecutorTest {
   public void testHappy() throws Exception {
 
     // SETUP
-    when(this.dlmsObjectConfigService.findDlmsObjectForCommunicationMethod(
+    when(this.dlmsObjectConfigService.getDlmsObjectForCommunicationMethod(
             this.device, DlmsObjectType.GSM_DIAGNOSTIC))
         .thenReturn(new DlmsObject(DlmsObjectType.GSM_DIAGNOSTIC, this.classId, this.obisCode));
 
@@ -185,7 +185,7 @@ public class GetGsmDiagnosticCommandExecutorTest {
                 this.createAttributeAddress(7)));
 
     verify(this.dlmsObjectConfigService)
-        .findDlmsObjectForCommunicationMethod(this.device, DlmsObjectType.GSM_DIAGNOSTIC);
+        .getDlmsObjectForCommunicationMethod(this.device, DlmsObjectType.GSM_DIAGNOSTIC);
 
     // VERIFY contents of the return value
     assertThat(result.getOperator()).isEqualTo("AB");
@@ -213,7 +213,7 @@ public class GetGsmDiagnosticCommandExecutorTest {
   public void testUnhappy() throws Exception {
 
     // SETUP
-    when(this.dlmsObjectConfigService.findDlmsObjectForCommunicationMethod(
+    when(this.dlmsObjectConfigService.getDlmsObjectForCommunicationMethod(
             this.device, DlmsObjectType.GSM_DIAGNOSTIC))
         .thenReturn(new DlmsObject(DlmsObjectType.GSM_DIAGNOSTIC, this.classId, this.obisCode));
 
