@@ -50,7 +50,6 @@ public class FirmwareFile {
         && this.getHeader()
             .getFirmwareImageMagicNumberHex()
             .equalsIgnoreCase(FIRMWARE_IMAGE_MAGIC_NUMBER)
-        && this.getHeader().getHeaderVersionInt() == HEADER_VERSION
         && this.getHeader().getAddressTypeEnum() == AddressType.MBUS_ADDRESS;
   }
 
