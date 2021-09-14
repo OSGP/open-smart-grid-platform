@@ -445,6 +445,39 @@ public class ListEventMappingTest {
               null,
               EventLogCategory.M_BUS_EVENT_LOG));
 
+  private final List<Event> POWER_QUALITY_EXTENDED_EVENTS =
+      Arrays.asList(
+          this.newEvent(
+              DateTime.now(),
+              EventType.VOLTAGE_SAG_IN_PHASE_L1,
+              null,
+              EventLogCategory.POWER_QUALITY_EXTENDED_EVENT_LOG),
+          this.newEvent(
+              DateTime.now(),
+              EventType.VOLTAGE_SAG_IN_PHASE_L2,
+              null,
+              EventLogCategory.POWER_QUALITY_EXTENDED_EVENT_LOG),
+          this.newEvent(
+              DateTime.now(),
+              EventType.VOLTAGE_SAG_IN_PHASE_L3,
+              null,
+              EventLogCategory.POWER_QUALITY_EXTENDED_EVENT_LOG),
+          this.newEvent(
+              DateTime.now(),
+              EventType.VOLTAGE_SWELL_IN_PHASE_L1,
+              null,
+              EventLogCategory.POWER_QUALITY_EXTENDED_EVENT_LOG),
+          this.newEvent(
+              DateTime.now(),
+              EventType.VOLTAGE_SWELL_IN_PHASE_L2,
+              null,
+              EventLogCategory.POWER_QUALITY_EXTENDED_EVENT_LOG),
+          this.newEvent(
+              DateTime.now(),
+              EventType.VOLTAGE_SWELL_IN_PHASE_L3,
+              null,
+              EventLogCategory.POWER_QUALITY_EXTENDED_EVENT_LOG));
+
   private final List<Event> AUXILIARY_EVENTS =
       Arrays.asList(
           this.newEvent(

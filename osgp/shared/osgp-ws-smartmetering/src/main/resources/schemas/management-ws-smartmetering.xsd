@@ -350,6 +350,7 @@
       <xsd:enumeration value="M_BUS_EVENT_LOG"/>
       <xsd:enumeration value="POWER_QUALITY_EVENT_LOG"/>
       <xsd:enumeration value="AUXILIARY_EVENT_LOG"/>
+      <xsd:enumeration value="POWER_QUALITY_EXTENDED_EVENT_LOG"/>
     </xsd:restriction>
   </xsd:simpleType>
 
