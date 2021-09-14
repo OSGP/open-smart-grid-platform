@@ -109,7 +109,7 @@ public class GetGsmDiagnosticCommandExecutor
       throws ProtocolAdapterException {
 
     final DlmsObject dlmsObject =
-        this.dlmsObjectConfigService.findDlmsObjectForCommunicationMethod(
+        this.dlmsObjectConfigService.getDlmsObjectForCommunicationMethod(
             device, DlmsObjectType.GSM_DIAGNOSTIC);
 
     final AttributeAddress[] addresses = this.createAttributeAddresses(dlmsObject);

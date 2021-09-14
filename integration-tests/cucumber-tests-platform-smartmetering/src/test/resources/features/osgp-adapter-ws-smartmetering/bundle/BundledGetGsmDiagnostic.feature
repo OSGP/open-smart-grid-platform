@@ -5,15 +5,15 @@ Feature: SmartMetering Bundle - Get Gsm Diagnostic
 
   Scenario: Get the GSM Diagnostic of an E-Meter
     Given a bundle request
-      | DeviceIdentification | TEST1027000000001 |
+      | DeviceIdentification | TEST1028000000001 |
     And the bundle request contains a get gsm diagnostic action
     And a dlms device
-      | DeviceIdentification | TEST1027000000001 |
+      | DeviceIdentification | TEST1028000000001 |
       | DeviceType           | SMART_METER_E     |
       | CommunicationMethod  | GPRS              |
       | Protocol             | SMR               |
       | ProtocolVersion      |               5.1 |
-      | Port                 |              1027 |
+      | Port                 |              1028 |
     When the bundle request is received
     Then the bundle response should contain a get gsm diagnostic response with values
       | operator                    | Utility Connect           |

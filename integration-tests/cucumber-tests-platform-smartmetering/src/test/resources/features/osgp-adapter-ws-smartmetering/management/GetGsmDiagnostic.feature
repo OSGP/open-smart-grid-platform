@@ -5,14 +5,14 @@ Feature: SmartMetering Management - Get GSM Diagnostic
 
   Scenario: Get the gsm diagnostic of an E-Meter
     And a dlms device
-      | DeviceIdentification | TEST1027000000001 |
+      | DeviceIdentification | TEST1028000000001 |
       | DeviceType           | SMART_METER_E     |
       | CommunicationMethod  | GPRS              |
       | Protocol             | SMR               |
       | ProtocolVersion      |               5.1 |
-      | Port                 |              1027 |
+      | Port                 |              1028 |
     When a get gsm diagnostic request is received
-      | DeviceIdentification | TEST1027000000001 |
+      | DeviceIdentification | TEST1028000000001 |
     Then the get gsm diagnostic response is returned with values
       | operator                    | Utility Connect           |
       | modemRegistrationStatus     | REGISTERED_ROAMING        |

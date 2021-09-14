@@ -11,7 +11,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.configur
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.SetParameter;
@@ -114,7 +113,9 @@ public class SetRandomisationSettingsCommandExecutor
       final int multiplicationFactor,
       final int numberOfRetries)
       throws ProtocolAdapterException {
-    final AttributeAddress randomisationSettingsAddress = this.getAttributeAddress(device);
+    final AttributeAddress randomisationSettingsAddress =
+        this.dlmsObjectConfigService.getAttributeAddress(
+            device, DlmsObjectType.RANDOMISATION_SETTINGS, null);
 
     final DataObject randomisationStartWindowObject =
         DataObject.newUInteger32Data(randomisationStartWindow);
@@ -186,16 +187,5 @@ public class SetRandomisationSettingsCommandExecutor
               "Attribute '%s' of the Randomisation Settings was not set successfully. ResultCode: %s",
               attributeName, result.name()));
     }
-  }
-
-  private AttributeAddress getAttributeAddress(final DlmsDevice device)
-      throws ProtocolAdapterException {
-    final Optional<AttributeAddress> attributeAddress =
-        this.dlmsObjectConfigService.findAttributeAddress(
-            device, DlmsObjectType.RANDOMISATION_SETTINGS, null);
-    return attributeAddress.orElseThrow(
-        () ->
-            new ProtocolAdapterException(
-                "Could not find any configuration for DlmsObjectType.RANDOMISATION_SETTINGS"));
   }
 }
