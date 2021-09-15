@@ -26,6 +26,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.enums.AddressType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.enums.DeviceType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.enums.SecurityType;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.IdentificationNumber;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.core.io.ClassPathResource;
 
@@ -165,5 +166,18 @@ public class FirmwareFileTest {
                 .getFirmwareFileHeaderAddressField()
                 .getMbusDeviceIdentificationNumber())
         .isEqualTo(mbusDeviceIdentificationNumberByteArrayOutput);
+  }
+
+  @Test
+  public void testImageIdentifierForMbusDevice() throws ProtocolAdapterException {
+    final FirmwareFile firmwareFile = new FirmwareFile(byteArray);
+    firmwareFile.setMbusDeviceIdentificationNumber(
+        new IdentificationNumber("16019864").getIdentificationNumber().intValue());
+
+    assertThat(firmwareFile.createImageIdentifierForMbusDevice())
+        .isEqualTo(
+            new byte[] {
+              71, 87, 73, 77, 66, 85, 83, 100, -104, 1, 22, -23, 30, 80, 3, 17, 0, 64, 0
+            });
   }
 }

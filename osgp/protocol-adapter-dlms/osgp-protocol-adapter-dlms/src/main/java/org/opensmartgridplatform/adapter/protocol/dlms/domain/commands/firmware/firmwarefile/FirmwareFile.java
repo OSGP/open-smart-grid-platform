@@ -201,7 +201,10 @@ public class FirmwareFile {
   }
 
   /**
-   * The Identifier for firmware image of M-Bus device has the following content
+   * Smart Meter Requirements 5.1, Supplement 5, P3 Companion Standard, Section 5.13.1 Firmware
+   * upgrade M-Bus devices
+   *
+   * <p>The Identifier for firmware image of M-Bus device has the following content
    *
    * <ul>
    *   <li>MAN (3 bytes) Manufacturer code according to FLAG
@@ -213,8 +216,8 @@ public class FirmwareFile {
    *         <li>Manufacturer ID (3 bytes)
    *         <li>Version (1 bytes)
    *         <li>DeviceType (1 bytes)
-   *         <li>M-Bus FW ID (4 bytes)
    *       </ul>
+   *   <li>M-Bus FW ID (4 bytes)
    * </ul>
    *
    * @return byte[] image identifier
@@ -230,7 +233,8 @@ public class FirmwareFile {
 
     final FirmwareFileHeaderAddressField addressField = header.getFirmwareFileHeaderAddressField();
     final ByteBuffer imageIdentifier = ByteBuffer.allocate(imageIdentifierSize);
-    imageIdentifier.put(addressField.getMbusManufacturerId());
+    imageIdentifier.put(
+        header.getMbusManufacturerId().getIdentification().getBytes(StandardCharsets.UTF_8));
     imageIdentifier.put("MBUS".getBytes(StandardCharsets.UTF_8));
     imageIdentifier.put(addressField.getMbusDeviceIdentificationNumber());
     imageIdentifier.put(addressField.getMbusManufacturerId());
@@ -245,8 +249,13 @@ public class FirmwareFile {
       final FirmwareFileHeader header, final int imageIdentifierSize) {
     final FirmwareFileHeaderAddressField addressField = header.getFirmwareFileHeaderAddressField();
     log.debug("creating image identifier for M-Bus device from firmware file header information");
-    log.debug("MbusManufacturerId " + Arrays.toString(addressField.getMbusManufacturerId()));
-    log.debug("MBUS " + Arrays.toString("MBUS".getBytes(StandardCharsets.UTF_8)));
+    final String manufacturerIdentification = header.getMbusManufacturerId().getIdentification();
+    log.debug(
+        "ManufacturerIdentification ('"
+            + manufacturerIdentification
+            + "') "
+            + Arrays.toString(manufacturerIdentification.getBytes(StandardCharsets.UTF_8)));
+    log.debug("'MBUS' " + Arrays.toString("MBUS".getBytes(StandardCharsets.UTF_8)));
     log.debug(
         "MbusDeviceIdentificationNumber "
             + Arrays.toString(addressField.getMbusDeviceIdentificationNumber()));
