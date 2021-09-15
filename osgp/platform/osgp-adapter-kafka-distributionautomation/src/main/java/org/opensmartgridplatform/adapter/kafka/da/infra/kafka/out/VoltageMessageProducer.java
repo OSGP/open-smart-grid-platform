@@ -65,14 +65,15 @@ public class VoltageMessageProducer {
     this.locationService = locationService;
   }
 
-  public void send(final String measurement) {
+  public void send(String measurement) {
 
     LOGGER.info("VoltageMessageProducer.send is called with measurement {}", measurement);
 
     final ObjectMapper objectMapper = new ObjectMapper();
     objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     try {
-
+      //Removing possible double quotes around data field and all other fields.
+      measurement=measurement.replaceAll("(\"\\[)","[").replaceAll("(\\]\")","]");
       // we expect a list with one payload from the rtu.
       final ScadaMeasurementPayload[] payloads =
           objectMapper.readValue(measurement, ScadaMeasurementPayload[].class);
