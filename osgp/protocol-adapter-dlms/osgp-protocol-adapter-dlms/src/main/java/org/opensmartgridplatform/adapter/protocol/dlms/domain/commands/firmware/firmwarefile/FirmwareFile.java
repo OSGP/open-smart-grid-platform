@@ -210,15 +210,18 @@ public class FirmwareFile {
    *   <li>MAN (3 bytes) Manufacturer code according to FLAG
    *       (https://www.dlms.com/flag-id/flag-id-list)
    *   <li>DEV (4 bytes) M-Bus DEV code (letters "MBUS" (utf-8))
-   *   <li>M-Bus Short ID
+   *   <li>M-Bus Short ID*
    *       <ul>
-   *         <li>Identification Number (3 bytes)
-   *         <li>Manufacturer ID (3 bytes)
+   *         <li>Identification Number (4 bytes)
+   *         <li>Manufacturer ID (2 bytes)
    *         <li>Version (1 bytes)
    *         <li>DeviceType (1 bytes)
    *       </ul>
    *   <li>M-Bus FW ID (4 bytes)
    * </ul>
+   *
+   * * Definition of Short-ID is described in Smart Meter Requirements 5.2 Supplement 5, P2
+   * Companion Standard paragraph 9.2. Short Equipment Identifier
    *
    * @return byte[] image identifier
    */
