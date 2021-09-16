@@ -16,7 +16,6 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -98,9 +97,9 @@ public class SetRandomisationSettingsCommandExecutorTest {
             any(ConfigurationObjectDto.class),
             any(ConfigurationObjectDto.class)))
         .thenReturn(AccessResultCode.SUCCESS);
-    when(this.dlmsObjectConfigService.findAttributeAddress(
+    when(this.dlmsObjectConfigService.getAttributeAddress(
             this.device, DlmsObjectType.RANDOMISATION_SETTINGS, null))
-        .thenReturn(Optional.of(address));
+        .thenReturn(address);
 
     when(this.dlmsConnectionManager.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.set(any(SetParameter.class))).thenReturn(AccessResultCode.SUCCESS);
@@ -157,9 +156,9 @@ public class SetRandomisationSettingsCommandExecutorTest {
   public void testUnknownAttribute() throws ProtocolAdapterException {
 
     // SETUP
-    when(this.dlmsObjectConfigService.findAttributeAddress(
+    when(this.dlmsObjectConfigService.getAttributeAddress(
             this.device, DlmsObjectType.RANDOMISATION_SETTINGS, null))
-        .thenReturn(Optional.empty());
+        .thenThrow(new ProtocolAdapterException("unknown"));
 
     assertThatExceptionOfType(ProtocolAdapterException.class)
         .isThrownBy(

@@ -114,17 +114,6 @@ public class MacGenerationServiceTest {
   }
 
   @Test
-  public void testInvalidHeaderVersion() throws IOException, ProtocolAdapterException {
-
-    final byte[] clonedByteArray = byteArray.clone();
-    clonedByteArray[4] = (byte) 1;
-    this.assertExceptionContainsMessageOnCalculateMac(
-        ProtocolAdapterException.class,
-        clonedByteArray,
-        "Unexpected HeaderVersion in header firmware file");
-  }
-
-  @Test
   public void testInvalidHeaderLength() throws IOException, ProtocolAdapterException {
 
     final byte[] clonedByteArray = byteArray.clone();
