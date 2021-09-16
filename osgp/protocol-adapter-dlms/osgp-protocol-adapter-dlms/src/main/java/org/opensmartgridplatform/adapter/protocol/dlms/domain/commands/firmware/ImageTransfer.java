@@ -22,6 +22,7 @@ import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.enums.FirmwareTransferStatus;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.CosemObjectAccessor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -38,6 +39,8 @@ public class ImageTransfer {
 
   private static final String EXCEPTION_MSG_IMAGE_VERIFY_NOT_CALLED =
       "Image verify could not be called.";
+  private static final String EXCEPTION_MSG_IMAGE_VERIFICATION_ERROR =
+      "The image could not be verified. Left in firmware transfer status %s with method result code %s}";
   private static final String EXCEPTION_MSG_IMAGE_NOT_VERIFIED =
       "The image could not be verified. Status: ";
   private static final String EXCEPTION_MSG_IMAGE_BLOCK_SIZE_NOT_READ =
@@ -209,8 +212,13 @@ public class ImageTransfer {
     if (this.imageIsVerified()) {
       return;
     }
+
     final int status = this.getImageTransferStatus();
-    throw new ImageTransferException(EXCEPTION_MSG_IMAGE_NOT_VERIFIED + status);
+    throw new ImageTransferException(
+        String.format(
+            EXCEPTION_MSG_IMAGE_VERIFICATION_ERROR,
+            FirmwareTransferStatus.getByCode(status).name(),
+            verified.name()));
   }
 
   /**

@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.MacGenerationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.FirmwareFile;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.IdentificationNumber;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
@@ -158,7 +157,9 @@ public class UpdateFirmwareCommandExecutor
       final FirmwareFile firmwareFile)
       throws ProtocolAdapterException {
 
-    log.debug("Adding MAC to firmware file for M-Bus device");
+    log.debug(
+        "Adding MAC to firmware file for M-Bus device with deviceIdentification {}",
+        deviceIdentification);
     final DlmsDevice mbusDevice =
         this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
     if (mbusDevice == null) {
@@ -166,22 +167,20 @@ public class UpdateFirmwareCommandExecutor
           String.format(EXCEPTION_MSG_DEVICE_NOT_AVAILABLE_IN_DATABASE, deviceIdentification));
     }
 
-    final Long hexNotationOfTheMbusIdentificationNumber = mbusDevice.getMbusIdentificationNumber();
-    if (hexNotationOfTheMbusIdentificationNumber == null) {
+    final Long mbusIdentificationNumberFromDatabase = mbusDevice.getMbusIdentificationNumber();
+    if (mbusIdentificationNumberFromDatabase == null) {
       throw new ProtocolAdapterException(
           String.format(
               EXCEPTION_MSG_DEVICE_HAS_NO_MBUS_IDENTIFICATION_NUMBER, deviceIdentification));
     }
 
-    final Long mbusIdentificationNumber =
-        new IdentificationNumber(String.format("%08d", hexNotationOfTheMbusIdentificationNumber))
-            .getIdentificationNumber();
+    // The MbusIdentificationNumber from the osgp_adapter_protocol_dlms database
+    // is used directly as int value in FirmwareFile header and subsequently the ImageIdentifier.
+    // This only works for SMR5+ devices
     log.debug(
-        "Setting M-Bus device Identification number: {} (hex:{})",
-        mbusIdentificationNumber.intValue(),
-        hexNotationOfTheMbusIdentificationNumber);
-
-    firmwareFile.setMbusDeviceIdentificationNumber(mbusIdentificationNumber.intValue());
+        "Setting M-Bus Identification number: {} (database value is not converted)",
+        mbusIdentificationNumberFromDatabase.intValue());
+    firmwareFile.setMbusDeviceIdentificationNumber(mbusIdentificationNumberFromDatabase.intValue());
 
     final byte[] calculatedMac =
         this.macGenerationService.calculateMac(
