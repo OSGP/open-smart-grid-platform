@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDetailDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDetailNameTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventTypeDto;
@@ -57,32 +55,6 @@ public class EventService {
 
       final EventTypeDto eventTypeDto = this.determineEventType(eventDto, protocolName);
       eventDto.setEventTypeDto(eventTypeDto);
-
-      this.enrichEventDetails(eventDto, smartMeter);
-    }
-  }
-
-  private void enrichEventDetails(final EventDto eventDto, final SmartMeter smartMeter) {
-    if (smartMeter.getDeviceModel() != null
-        && smartMeter.getDeviceModel().getManufacturer() != null) {
-      this.addEventDetail(
-          eventDto,
-          EventDetailNameTypeDto.MANUFACTURER_CODE,
-          smartMeter.getDeviceModel().getManufacturer().getCode());
-    }
-    this.addEventDetail(eventDto, EventDetailNameTypeDto.DEVICE_TYPE, smartMeter.getDeviceType());
-    if (smartMeter.getProtocolInfo() != null) {
-      this.addEventDetail(
-          eventDto,
-          EventDetailNameTypeDto.PROTOCOL_NAME,
-          smartMeter.getProtocolInfo().getProtocol());
-    }
-  }
-
-  private void addEventDetail(
-      final EventDto eventDto, final EventDetailNameTypeDto detailNameType, final String value) {
-    if (value != null) {
-      eventDto.addEventDetail(new EventDetailDto(detailNameType, value));
     }
   }
 
