@@ -13,14 +13,12 @@ import com.alliander.data.scadameasurementpublishedevent.UnitMultiplier;
 import com.alliander.data.scadameasurementpublishedevent.UnitSymbol;
 
 public enum LowVoltageMeasurementTypeVersion2 implements LowVoltageMeasurementDefinition {
-  VOLTAGE_L1(0, "U-L1-E", UnitSymbol.V),
-  VOLTAGE_L2(1, "U-L2-E", UnitSymbol.V),
-  VOLTAGE_L3(2, "U-L3-E", UnitSymbol.V),
+  VOLTAGE_AVERAGE(0, "U-avg", UnitSymbol.V),
   CURRENT_L1(3, "I-L1", UnitSymbol.A),
   CURRENT_L2(4, "I-L2", UnitSymbol.A),
   CURRENT_L3(5, "I-L3", UnitSymbol.A),
-  TOTAL_ACTIVE_POWER(6, "SomP", UnitSymbol.W, UnitMultiplier.k),
-  TOTAL_REACTIVE_POWER(7, "SomQ", UnitSymbol.VAr, UnitMultiplier.k),
+  TOTAL_ACTIVE_POWER(6, "Tot-P", UnitSymbol.W, UnitMultiplier.k),
+  TOTAL_REACTIVE_POWER(7, "Tot-Q", UnitSymbol.VAr, UnitMultiplier.k),
   ACTIVE_POWER_L1(8, "P-L1", UnitSymbol.W, UnitMultiplier.k),
   ACTIVE_POWER_L2(9, "P-L2", UnitSymbol.W, UnitMultiplier.k),
   ACTIVE_POWER_L3(10, "P-L3", UnitSymbol.W, UnitMultiplier.k),
