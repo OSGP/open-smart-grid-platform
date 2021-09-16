@@ -28,6 +28,3 @@ Feature: SmartMetering Bundle - FindEvents
       | UntilDate            | 2015-09-05T00:00:00.000Z |
     When the bundle request is received
     Then the bundle response should contain a find events response with 21 events
-      | DEVICE_TYPE           | SMART_METER_E     |
-      | MANUFACTURER_CODE     | KAIF              |
-      | PROTOCOL_NAME         | SMR               |
