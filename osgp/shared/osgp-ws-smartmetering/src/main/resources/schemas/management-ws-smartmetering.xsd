@@ -270,34 +270,35 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="ClearMbusStatusRequest">
+  <xsd:element name="ClearMBusStatusOnAllChannelsRequest">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="ClearMbusStatusRequestData"
-          type="tns:ClearMbusStatusRequestData"/>
+        <xsd:element name="DeviceIdentification" type="common:DeviceIdentification"/>
+        <xsd:element name="ClearMBusStatusOnAllChannelsRequestData"
+          type="tns:ClearMBusStatusOnAllChannelsRequestData"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="ClearMbusStatusAsyncResponse">
+  <xsd:element name="ClearMBusStatusOnAllChannelsAsyncResponse">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="common:AsyncResponse"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="ClearMbusStatusAsyncRequest">
+  <xsd:element name="ClearMBusStatusOnAllChannelsAsyncRequest">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="common:AsyncRequest"/>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
-  <xsd:element name="ClearMbusStatusResponse">
+  <xsd:element name="ClearMBusStatusOnAllChannelsResponse">
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="Result" type="common:OsgpResultType"/>
-        <xsd:element name="ClearMbusStatusResponseData"
-          type="tns:ClearMbusStatusResponseData"/>
+        <xsd:element name="Description" type="xsd:string"
+          minOccurs="0"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -1031,16 +1032,9 @@
     </xsd:complexContent>
   </xsd:complexType>
 
-  <xsd:complexType name="ClearMbusStatusRequestData">
+  <xsd:complexType name="ClearMBusStatusOnAllChannelsRequestData">
     <xsd:complexContent>
       <xsd:extension base="common:Query">
-      </xsd:extension>
-    </xsd:complexContent>
-  </xsd:complexType>
-
-  <xsd:complexType name="ClearMbusStatusResponseData">
-    <xsd:complexContent>
-      <xsd:extension base="common:Response">
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
