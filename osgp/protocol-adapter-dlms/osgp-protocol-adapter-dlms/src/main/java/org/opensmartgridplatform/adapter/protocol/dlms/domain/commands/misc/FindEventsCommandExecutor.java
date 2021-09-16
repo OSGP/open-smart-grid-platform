@@ -8,6 +8,8 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.misc;
 
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.POWER_QUALITY_EXTENDED_EVENT_LOG;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -66,6 +68,8 @@ public class FindEventsCommandExecutor
         EventLogCategoryDto.POWER_QUALITY_EVENT_LOG, DlmsObjectType.POWER_QUALITY_EVENT_LOG);
     EVENT_LOG_CATEGORY_OBISCODE_MAP.put(
         EventLogCategoryDto.AUXILIARY_EVENT_LOG, DlmsObjectType.AUXILIARY_EVENT_LOG);
+    EVENT_LOG_CATEGORY_OBISCODE_MAP.put(
+        EventLogCategoryDto.POWER_QUALITY_EXTENDED_EVENT_LOG, POWER_QUALITY_EXTENDED_EVENT_LOG);
   }
 
   private final DataObjectToEventListConverter dataObjectToEventListConverter;
@@ -106,6 +110,14 @@ public class FindEventsCommandExecutor
     final DlmsObject eventLogObject =
         this.dlmsObjectConfigService.findDlmsObject(
             device, EVENT_LOG_CATEGORY_OBISCODE_MAP.get(findEventsQuery.getEventLogCategory()));
+
+    // TODO check manufacturer! "Iskr".equals(device.getManufacturerId()
+    if (eventLogObject.getType().equals(POWER_QUALITY_EXTENDED_EVENT_LOG)
+        && !"Iskr".equals(device.getManufacturerId())) {
+      throw new ProtocolAdapterException(
+          "POWER_QUALITY_EXTENDED_EVENT_LOG is only supported for Iskr and not for "
+              + device.getManufacturerId());
+    }
 
     final AttributeAddress eventLogBuffer =
         new AttributeAddress(
