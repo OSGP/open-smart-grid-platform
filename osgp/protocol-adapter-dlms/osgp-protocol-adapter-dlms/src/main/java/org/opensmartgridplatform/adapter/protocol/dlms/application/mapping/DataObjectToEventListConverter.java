@@ -8,17 +8,20 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.application.mapping;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDetailDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDetailNameTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventLogCategoryDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventLogCategoryDto.EventLogDetailsType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +29,12 @@ import org.springframework.stereotype.Component;
 @Component(value = "dataObjectToEventListConverter")
 public class DataObjectToEventListConverter {
 
-  public static final String EVENT_DATA_VALUE_IS_NOT_A_NUMBER = "eventData value is not a number";
+  public static final String EVENT_DATA_VALUE_IS_NOT_A_NUMBER =
+      "eventData value for %s is not a number";
+  public static final String EVENT_CODE = "event code";
+  public static final String COUNTER = "counter";
+  public static final String MAGNITUDE = "magnitude";
+  public static final String DURATION = "duration";
 
   private final DlmsHelper dlmsHelper;
 
@@ -60,9 +68,10 @@ public class DataObjectToEventListConverter {
       throw new ProtocolAdapterException("eventData DataObject should not be null");
     }
 
-    if (eventData.size() != eventLogCategory.getNumberOfEventElements()) {
+    if (eventData.size() != eventLogCategory.getDetailsType().getNumberOfEventElements()) {
       throw new ProtocolAdapterException(
-          "eventData size should be " + eventLogCategory.getNumberOfEventElements());
+          "eventData size should be "
+              + eventLogCategory.getDetailsType().getNumberOfEventElements());
     }
 
     // extract values from List<DataObject> eventData.
@@ -79,12 +88,12 @@ public class DataObjectToEventListConverter {
         eventCounter);
 
     // build a new EventDto with those values.
-    final EventDto eventDto = new EventDto(dateTime, code, eventCounter, eventLogCategoryName);
-    if ("POWER_QUALITY_EXTENDED_EVENT_LOG".equals(eventDto.getEventLogCategoryName())) {
-      this.getExtendedEventList(eventData)
-          .ifPresent(eventDetailDtos -> eventDetailDtos.forEach(eventDto::addEventDetail));
-    }
-    return eventDto;
+    final EventDto event = new EventDto(dateTime, code, eventCounter, eventLogCategoryName);
+
+    // add details
+    event.addEventDetails(this.extractEventDetails(eventLogCategory, eventData));
+
+    return event;
   }
 
   private DateTime extractDateTime(final List<DataObject> eventData)
@@ -100,27 +109,9 @@ public class DataObjectToEventListConverter {
 
   private Integer extractCode(final List<DataObject> eventData) throws ProtocolAdapterException {
 
-    if (!eventData.get(1).isNumber()) {
-      throw new ProtocolAdapterException(EVENT_DATA_VALUE_IS_NOT_A_NUMBER);
-    }
+    this.checkIsNumber(eventData.get(1), EVENT_CODE);
     final Number codeValue = eventData.get(1).getValue();
     return codeValue.intValue();
-  }
-
-  private Optional<List<EventDetailDto>> getExtendedEventList(final List<DataObject> eventData) {
-    final List<EventDetailDto> extendedEventList = new ArrayList<>();
-
-    // TODO .get(x)  is this really the case??
-    if (eventData.size() > 2 && !eventData.get(2).isNull()) {
-      extendedEventList.add(eventData.get(2).getValue());
-    }
-    if (eventData.size() > 3 && !eventData.get(3).isNull()) {
-      extendedEventList.add(eventData.get(3).getValue());
-    }
-    if (extendedEventList.isEmpty()) {
-      return Optional.empty();
-    }
-    return Optional.of(extendedEventList);
   }
 
   private Integer extractEventCounter(
@@ -129,13 +120,57 @@ public class DataObjectToEventListConverter {
 
     Integer eventCounter = null;
 
-    if (eventLogCategory.getNumberOfEventElements() == 3) {
-      if (!eventData.get(2).isNumber()) {
-        throw new ProtocolAdapterException(EVENT_DATA_VALUE_IS_NOT_A_NUMBER);
-      }
+    if (eventLogCategory.getDetailsType() == EventLogDetailsType.COUNTER) {
+      this.checkIsNumber(eventData.get(2), COUNTER);
       eventCounter = eventData.get(2).getValue();
     }
 
     return eventCounter;
+  }
+
+  private List<EventDetailDto> extractEventDetails(
+      final EventLogCategoryDto eventLogCategory, final List<DataObject> eventData)
+      throws ProtocolAdapterException {
+
+    if (eventLogCategory.getDetailsType() == EventLogDetailsType.MAGNITUDE_AND_DURATION) {
+      return this.extractMagnitudeAndDuration(eventData);
+    }
+
+    return Collections.emptyList();
+  }
+
+  private List<EventDetailDto> extractMagnitudeAndDuration(final List<DataObject> eventData)
+      throws ProtocolAdapterException {
+
+    final List<EventDetailDto> eventDetails = new ArrayList<>();
+
+    this.checkIsNumber(eventData.get(2), MAGNITUDE);
+    eventDetails.add(
+        new EventDetailDto(
+            EventDetailNameTypeDto.MAGNITUDE,
+            this.readValueWithScalerAndUnit(eventData.get(2), BigDecimal.valueOf(0.1), "V")));
+
+    this.checkIsNumber(eventData.get(3), DURATION);
+    eventDetails.add(
+        new EventDetailDto(
+            EventDetailNameTypeDto.DURATION,
+            this.readValueWithScalerAndUnit(eventData.get(3), BigDecimal.valueOf(0.1), "s")));
+
+    return eventDetails;
+  }
+
+  private void checkIsNumber(final DataObject data, final String description)
+      throws ProtocolAdapterException {
+    if (!data.isNumber()) {
+      throw new ProtocolAdapterException(
+          String.format(EVENT_DATA_VALUE_IS_NOT_A_NUMBER, description));
+    }
+  }
+
+  private String readValueWithScalerAndUnit(
+      final DataObject data, final BigDecimal scaler, final String unit) {
+    final int value = data.getValue();
+    final BigDecimal scaledValue = scaler.multiply(BigDecimal.valueOf(value));
+    return scaledValue + " " + unit;
   }
 }

@@ -12,5 +12,7 @@ package org.opensmartgridplatform.dto.valueobjects.smartmetering;
 public enum EventDetailNameTypeDto {
   MANUFACTURER_CODE,
   DEVICE_TYPE,
-  PROTOCOL_NAME
+  PROTOCOL_NAME,
+  MAGNITUDE,
+  DURATION
 }
