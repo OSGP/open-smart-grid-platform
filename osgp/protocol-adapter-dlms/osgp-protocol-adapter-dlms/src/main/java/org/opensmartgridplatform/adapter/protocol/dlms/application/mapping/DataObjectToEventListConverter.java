@@ -10,11 +10,13 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.mapping;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDetailDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventLogCategoryDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +79,12 @@ public class DataObjectToEventListConverter {
         eventCounter);
 
     // build a new EventDto with those values.
-    return new EventDto(dateTime, code, eventCounter, eventLogCategoryName);
+    final EventDto eventDto = new EventDto(dateTime, code, eventCounter, eventLogCategoryName);
+    if ("POWER_QUALITY_EXTENDED_EVENT_LOG".equals(eventDto.getEventLogCategoryName())) {
+      this.getExtendedEventList(eventData)
+          .ifPresent(eventDetailDtos -> eventDetailDtos.forEach(eventDto::addEventDetail));
+    }
+    return eventDto;
   }
 
   private DateTime extractDateTime(final List<DataObject> eventData)
@@ -98,6 +105,22 @@ public class DataObjectToEventListConverter {
     }
     final Number codeValue = eventData.get(1).getValue();
     return codeValue.intValue();
+  }
+
+  private Optional<List<EventDetailDto>> getExtendedEventList(final List<DataObject> eventData) {
+    final List<EventDetailDto> extendedEventList = new ArrayList<>();
+
+    // TODO .get(x)  is this really the case??
+    if (eventData.size() > 2 && !eventData.get(2).isNull()) {
+      extendedEventList.add(eventData.get(2).getValue());
+    }
+    if (eventData.size() > 3 && !eventData.get(3).isNull()) {
+      extendedEventList.add(eventData.get(3).getValue());
+    }
+    if (extendedEventList.isEmpty()) {
+      return Optional.empty();
+    }
+    return Optional.of(extendedEventList);
   }
 
   private Integer extractEventCounter(

@@ -193,6 +193,65 @@ class FindEventsCommandExecutorTest {
   }
 
   @Test
+  void testExtendedLogEventsAreRetrievedForTypePowerQualityExtendedEventAndManufacturerIskr()
+      throws ProtocolAdapterException, IOException {
+    // SETUP
+    this.findEventsRequestDto =
+        new FindEventsRequestDto(
+            EventLogCategoryDto.POWER_QUALITY_EXTENDED_EVENT_LOG,
+            DateTime.now().minusDays(70),
+            DateTime.now());
+    final DlmsDevice dlms_device_5_1 = this.DLMS_DEVICE_5_1;
+    dlms_device_5_1.setMbusManufacturerIdentification("Iskr");
+
+    when(this.getResult.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
+    when(this.getResult.getResultData()).thenReturn(this.resultData);
+    when(this.resultData.getValue()).thenReturn(this.generateDataObjects());
+
+    // CALL
+    final List<EventDto> events =
+        this.executor.execute(
+            this.conn, dlms_device_5_1, this.findEventsRequestDto, this.messageMetadata);
+
+    // VERIFY
+    assertThat(events.size()).isEqualTo(13);
+
+    int firstEventCode = 77;
+    for (final EventDto event : events) {
+      assertThat(event.getEventCode()).isEqualTo(firstEventCode++);
+    }
+
+    verify(this.dlmsHelper, times(events.size()))
+        .convertDataObjectToDateTime(any(DataObject.class));
+    verify(this.conn).getDlmsMessageListener();
+    verify(this.conn).getConnection();
+    verify(this.dlmsConnection).get(any(AttributeAddress.class));
+  }
+
+  @Test
+  void testExceptionIsThrownWhenExtendedLogEventsAreRetrievedAndManufacturerIsNotIskr()
+      throws ProtocolAdapterException, IOException {
+    this.findEventsRequestDto =
+        new FindEventsRequestDto(
+            EventLogCategoryDto.POWER_QUALITY_EXTENDED_EVENT_LOG,
+            DateTime.now().minusDays(70),
+            DateTime.now());
+    final DlmsDevice dlms_device_5_1 = this.DLMS_DEVICE_5_1;
+    dlms_device_5_1.setMbusManufacturerIdentification("NoIskrManufacturer");
+
+    when(this.getResult.getResultCode()).thenReturn(AccessResultCode.SUCCESS);
+    when(this.getResult.getResultData()).thenReturn(this.resultData);
+    when(this.resultData.getValue()).thenReturn(this.generateDataObjects());
+
+    assertThatExceptionOfType(ProtocolAdapterException.class)
+        .isThrownBy(
+            () -> {
+              this.executor.execute(
+                  this.conn, dlms_device_5_1, this.findEventsRequestDto, this.messageMetadata);
+            });
+  }
+
+  @Test
   void testOtherReasonResult() throws IOException {
     // SETUP
     when(this.getResult.getResultCode()).thenReturn(AccessResultCode.OTHER_REASON);
