@@ -108,7 +108,7 @@ public class FindEventsCommandExecutor
             device, findEventsQuery.getFrom(), findEventsQuery.getUntil());
 
     final DlmsObject eventLogObject =
-        this.dlmsObjectConfigService.findDlmsObject(
+        this.dlmsObjectConfigService.getDlmsObject(
             device, EVENT_LOG_CATEGORY_OBISCODE_MAP.get(findEventsQuery.getEventLogCategory()));
 
     // TODO check manufacturer! "Iskr".equals(device.getManufacturerId()
@@ -178,7 +178,7 @@ public class FindEventsCommandExecutor
      * retrieved.
      */
     final DlmsObject clockObject =
-        this.dlmsObjectConfigService.findDlmsObject(device, DlmsObjectType.CLOCK);
+        this.dlmsObjectConfigService.getDlmsObject(device, DlmsObjectType.CLOCK);
 
     final DataObject clockDefinition =
         DataObject.newStructureData(

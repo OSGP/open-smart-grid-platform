@@ -37,6 +37,9 @@ public enum DlmsObjectType {
   DIRECT_ATTACH(null),
   RANDOMISATION_SETTINGS(null),
   GSM_DIAGNOSTIC(null),
+  READ_MBUS_STATUS(null),
+  CLEAR_MBUS_STATUS(null),
+  CLIENT_SETUP_MBUS(null),
 
   STANDARD_EVENT_CODE(null),
   FRAUD_DETECTION_EVENT_CODE(null),
