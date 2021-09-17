@@ -20,10 +20,10 @@ public class EventDetailDto implements Serializable {
 
   private static final long serialVersionUID = 6866270221990320428L;
 
-  private final String name;
+  private final EventDetailNameTypeDto name;
   private final String value;
 
-  public EventDetailDto(final String name, final String value) {
+  public EventDetailDto(final EventDetailNameTypeDto name, final String value) {
     this.name = name;
     this.value = value;
   }

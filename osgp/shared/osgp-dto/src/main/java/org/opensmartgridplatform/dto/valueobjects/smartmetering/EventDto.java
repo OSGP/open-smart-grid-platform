@@ -52,7 +52,7 @@ public class EventDto implements Serializable {
 
   public String getEventDetailValue(final EventDetailNameTypeDto eventDetailKey) {
     return this.eventDetails.stream()
-        .filter(detail -> detail.getName().equals(eventDetailKey.name()))
+        .filter(detail -> detail.getName().equals(eventDetailKey))
         .map(EventDetailDto::getValue)
         .findFirst()
         .orElse(null);
