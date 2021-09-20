@@ -9,12 +9,15 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 
 import java.io.IOException;
+import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -24,25 +27,20 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearAlarmRegisterRequestDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class ClearAlarmRegisterCommandExecutor
     extends AbstractCommandExecutor<ClearAlarmRegisterRequestDto, AccessResultCode> {
 
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(ClearAlarmRegisterCommandExecutor.class);
-
-  private static final int CLASS_ID = 1;
-  private static final ObisCode OBIS_CODE = new ObisCode("0.0.97.98.0.255");
-  private static final int ATTRIBUTE_ID = 2;
+  final DlmsObjectConfigService dlmsObjectConfigService;
 
   private static final int ALARM_CODE = 0;
 
-  public ClearAlarmRegisterCommandExecutor() {
+  public ClearAlarmRegisterCommandExecutor(final DlmsObjectConfigService dlmsObjectConfigService) {
     super(ClearAlarmRegisterRequestDto.class);
+    this.dlmsObjectConfigService = dlmsObjectConfigService;
   }
 
   @Override
@@ -71,40 +69,55 @@ public class ClearAlarmRegisterCommandExecutor
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
-    LOGGER.info(
-        "Clear alarm register by request for class id: {}, obis code: {}, attribute id: {}",
-        CLASS_ID,
-        OBIS_CODE,
-        ATTRIBUTE_ID);
+    final AttributeAddress alarmRegister1AttributeAddress =
+        this.dlmsObjectConfigService.getAttributeAddress(
+            device, DlmsObjectType.ALARM_REGISTER_1, null);
 
-    final SetParameter setParameter = this.getSetParameter();
+    final AccessResultCode resultCodeAlarmRegister1 =
+        this.executeForAlarmRegister(conn, alarmRegister1AttributeAddress);
+
+    if (resultCodeAlarmRegister1 == null) {
+      throw new ProtocolAdapterException("Error occurred for clear alarm register 1.");
+    }
+
+    final Optional<AttributeAddress> optAlarmRegister2AttributeAddress =
+        this.dlmsObjectConfigService.findAttributeAddress(
+            device, DlmsObjectType.ALARM_REGISTER_2, null);
+
+    if (!optAlarmRegister2AttributeAddress.isPresent()) {
+      return resultCodeAlarmRegister1;
+    } else {
+      final AccessResultCode resultCodeAlarmRegister2 =
+          this.executeForAlarmRegister(conn, optAlarmRegister2AttributeAddress.get());
+
+      if (resultCodeAlarmRegister2 != null) {
+        return resultCodeAlarmRegister2;
+      } else {
+        throw new ProtocolAdapterException("Error occurred for clear alarm register 2.");
+      }
+    }
+  }
+
+  public AccessResultCode executeForAlarmRegister(
+      final DlmsConnectionManager conn, final AttributeAddress alarmRegisterAttributeAddress) {
+
+    log.info(
+        "Clear alarm register {}",
+        JdlmsObjectToStringUtil.describeAttributes(alarmRegisterAttributeAddress));
+
+    final DataObject data = DataObject.newUInteger32Data(ALARM_CODE);
+    final SetParameter setParameter = new SetParameter(alarmRegisterAttributeAddress, data);
 
     conn.getDlmsMessageListener()
         .setDescription(
             "ClearAlarmRegister, with alarm code = "
                 + ALARM_CODE
-                + "and set attribute: "
-                + JdlmsObjectToStringUtil.describeAttributes(
-                    new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID)));
+                + JdlmsObjectToStringUtil.describeAttributes(alarmRegisterAttributeAddress));
 
-    final AccessResultCode resultCode;
     try {
-      resultCode = conn.getConnection().set(setParameter);
+      return conn.getConnection().set(setParameter);
     } catch (final IOException e) {
       throw new ConnectionException(e);
     }
-    if (resultCode != null) {
-      return resultCode;
-    } else {
-      throw new ProtocolAdapterException("Error occurred for clear alarm register.");
-    }
-  }
-
-  private SetParameter getSetParameter() {
-    final AttributeAddress alarmRegisterValue =
-        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
-    final DataObject data = DataObject.newUInteger32Data(ALARM_CODE);
-
-    return new SetParameter(alarmRegisterValue, data);
   }
 }

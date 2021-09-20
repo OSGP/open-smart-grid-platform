@@ -46,6 +46,7 @@ public class ProtocolTest {
     assertThat(Protocol.withNameAndVersion("DSMR", "4.2.2")).isEqualTo(Protocol.DSMR_4_2_2);
     assertThat(Protocol.withNameAndVersion("SMR", "5.0.0")).isEqualTo(Protocol.SMR_5_0_0);
     assertThat(Protocol.withNameAndVersion("SMR", "5.1")).isEqualTo(Protocol.SMR_5_1);
+    assertThat(Protocol.withNameAndVersion("SMR", "5.2")).isEqualTo(Protocol.SMR_5_2);
     assertThat(Protocol.withNameAndVersion("other", "0.1")).isEqualTo(Protocol.OTHER_PROTOCOL);
   }
 
@@ -54,6 +55,7 @@ public class ProtocolTest {
     assertThat(Protocol.DSMR_4_2_2.isSelectValuesInSelectiveAccessSupported()).isEqualTo(true);
     assertThat(Protocol.SMR_5_0_0.isSelectValuesInSelectiveAccessSupported()).isEqualTo(true);
     assertThat(Protocol.SMR_5_1.isSelectValuesInSelectiveAccessSupported()).isEqualTo(true);
+    assertThat(Protocol.SMR_5_2.isSelectValuesInSelectiveAccessSupported()).isEqualTo(true);
     assertThat(Protocol.OTHER_PROTOCOL.isSelectValuesInSelectiveAccessSupported()).isEqualTo(true);
   }
 
@@ -62,6 +64,7 @@ public class ProtocolTest {
     assertThat(Protocol.DSMR_4_2_2.isSmr5()).isEqualTo(false);
     assertThat(Protocol.SMR_5_0_0.isSmr5()).isEqualTo(true);
     assertThat(Protocol.SMR_5_1.isSmr5()).isEqualTo(true);
+    assertThat(Protocol.SMR_5_2.isSmr5()).isEqualTo(true);
     assertThat(Protocol.OTHER_PROTOCOL.isSmr5()).isEqualTo(false);
   }
 }
