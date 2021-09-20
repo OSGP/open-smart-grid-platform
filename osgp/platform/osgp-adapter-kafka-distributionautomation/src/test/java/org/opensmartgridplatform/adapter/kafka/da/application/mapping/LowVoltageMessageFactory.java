@@ -46,9 +46,9 @@ public class LowVoltageMessageFactory extends MessageFactory {
 
   private static List<Analog> expectedMeasurementsVersion1() {
     final List<Analog> measurements = new ArrayList<>();
-    measurements.add(createAnalog("U-L1-E", 0.1f, UnitSymbol.V));
-    measurements.add(createAnalog("U-L2-E", 0.2f, UnitSymbol.V));
-    measurements.add(createAnalog("U-L3-E", 0.3f, UnitSymbol.V));
+    measurements.add(createAnalog("U-L1", 0.1f, UnitSymbol.V));
+    measurements.add(createAnalog("U-L2", 0.2f, UnitSymbol.V));
+    measurements.add(createAnalog("U-L3", 0.3f, UnitSymbol.V));
     generalExpectedMeasurements(measurements, 0.4);
     return measurements;
   }
