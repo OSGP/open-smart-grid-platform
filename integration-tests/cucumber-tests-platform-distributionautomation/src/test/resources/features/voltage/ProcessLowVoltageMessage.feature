@@ -93,7 +93,7 @@ Feature: DistributionAutomation Low voltage message processing
       | measurement20_description    | H3-I2        |
       | measurement20_unitSymbol     | A            |
       | measurement20_value          |          2.0 |
-      | measurement21_description    | H3-I2        |
+      | measurement21_description    | H3-I3        |
       | measurement21_unitSymbol     | A            |
       | measurement21_value          |          2.1 |
       | measurement22_description    | H5-I1        |
@@ -183,9 +183,9 @@ Feature: DistributionAutomation Low voltage message processing
       
 Scenario: Process a low voltage message from MQTT device version 1
     Given an MQTT device
-      | DeviceIdentification | TST-01             |
+      | DeviceIdentification | TST-02             |
       | IntegrationType      | Kafka              |
-      | MqttTopic            | TST-01/measurement |
+      | MqttTopic            | TST-02/measurement |
     And a location
       | substation identification | sub-1        |
       | substation name           | substation-1 |
@@ -195,11 +195,11 @@ Scenario: Process a low voltage message from MQTT device version 1
       | field code                |    01 |
       | feeder name               | fdr-1 |
       | asset label               | lbl-1 |
-    When MQTT device "TST-01" sends a measurement report
+    When MQTT device "TST-02" sends a measurement report
       | payload | [{"gisnr":"sub-1", "versie":"1", "feeder":"1", "D": "02/10/2020 16:03:38", "uts":"1601647418", "data": [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1,3.2,3.3,3.4,3.5,3.6,3.7,3.8,3.9,4.0,4.1]}] |
     Then a LOW_VOLTAGE message is published to Kafka
       | substation identification    | sub-1        |
-      | version                      |            2 |
+      | version                      |            1 |
       | substation name              | substation-1 |
       | field code                   | 01           |
       | bay identification           | fdr-1        |
