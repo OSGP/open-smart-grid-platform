@@ -10,14 +10,16 @@ package org.opensmartgridplatform.adapter.kafka.da.application.mapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+import org.opensmartgridplatform.adapter.kafka.da.infra.mqtt.in.ScadaMeasurementPayload;
+
 import com.alliander.data.scadameasurementpublishedevent.Analog;
 import com.alliander.data.scadameasurementpublishedevent.Name;
 import com.alliander.data.scadameasurementpublishedevent.NameType;
 import com.alliander.data.scadameasurementpublishedevent.ScadaMeasurementPublishedEvent;
-import java.util.ArrayList;
-import java.util.List;
-import org.junit.jupiter.api.Test;
-import org.opensmartgridplatform.adapter.kafka.da.infra.mqtt.in.ScadaMeasurementPayload;
 
 class ScadaMeasurementPublishedEventConverterTest {
 
@@ -57,8 +59,8 @@ class ScadaMeasurementPublishedEventConverterTest {
     assertThat(measurements)
         .usingElementComparatorIgnoringFields("mRID")
         .isEqualTo(
-            LovVoltageMessageFactory.expectedMeasurements(
-                LovVoltageMessageFactory.Version.VERSION_1));
+            LowVoltageMessageFactory.expectedMeasurements(
+                LowVoltageMessageFactory.Version.VERSION_1));
 
     final List<Name> names = event.getPowerSystemResource().getNames();
     assertThat(names).containsExactlyElementsOf(this.expectedNames(feeder, null));
@@ -91,8 +93,8 @@ class ScadaMeasurementPublishedEventConverterTest {
     assertThat(measurements)
         .usingElementComparatorIgnoringFields("mRID")
         .isEqualTo(
-            LovVoltageMessageFactory.expectedMeasurements(
-                LovVoltageMessageFactory.Version.VERSION_2));
+            LowVoltageMessageFactory.expectedMeasurements(
+                LowVoltageMessageFactory.Version.VERSION_2));
 
     final List<Name> names = event.getPowerSystemResource().getNames();
     assertThat(names).containsExactlyElementsOf(this.expectedNames(feeder, VERSION));
@@ -132,7 +134,7 @@ class ScadaMeasurementPublishedEventConverterTest {
     assertThat(event.getCreatedDateTime()).isEqualTo(utcSeconds * 1000L);
     assertThat(measurements)
         .usingElementComparatorIgnoringFields("mRID")
-        .isEqualTo(LovVoltageMessageFactory.expectedMetaMeasurements());
+        .isEqualTo(LowVoltageMessageFactory.expectedMetaMeasurements());
 
     final List<Name> names = event.getPowerSystemResource().getNames();
     assertThat(names).containsExactlyElementsOf(this.expectedNames(feeder, null));
