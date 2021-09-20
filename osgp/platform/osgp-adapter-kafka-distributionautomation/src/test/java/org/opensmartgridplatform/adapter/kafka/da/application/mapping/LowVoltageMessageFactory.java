@@ -71,53 +71,52 @@ public class LowVoltageMessageFactory extends MessageFactory {
     return measurements;
   }
 
-  private static List<Analog> createCommonExpectedMeasurements(final float value) {
+  private static List<Analog> createCommonExpectedMeasurements(final float startValue) {
     final List<Analog> measurements = new ArrayList<>();
-    double dValue = value;
-    measurements.add(createAnalog("I-L1", value, UnitSymbol.A));
-    measurements.add(createAnalog("I-L2", (float) (dValue += 0.1), UnitSymbol.A));
-    measurements.add(createAnalog("I-L3", (float) (dValue += 0.1), UnitSymbol.A));
+    double value = startValue;
+    measurements.add(createAnalog("I-L1", startValue, UnitSymbol.A));
+    measurements.add(createAnalog("I-L2", (float) (value += 0.1), UnitSymbol.A));
+    measurements.add(createAnalog("I-L3", (float) (value += 0.1), UnitSymbol.A));
+    measurements.add(createAnalog("Tot-P", (float) (value += 0.1), UnitSymbol.W, UnitMultiplier.k));
     measurements.add(
-        createAnalog("Tot-P", (float) (dValue += 0.1), UnitSymbol.W, UnitMultiplier.k));
+        createAnalog("Tot-Q", (float) (value += 0.1), UnitSymbol.VAr, UnitMultiplier.k));
     measurements.add(
-        createAnalog("Tot-Q", (float) (dValue += 0.1), UnitSymbol.VAr, UnitMultiplier.k));
+        createAnalog("P-L1", (float) ((value += 0.1)), UnitSymbol.W, UnitMultiplier.k));
+    measurements.add(createAnalog("P-L2", (float) (value += 0.1), UnitSymbol.W, UnitMultiplier.k));
+    measurements.add(createAnalog("P-L3", (float) (value += 0.1), UnitSymbol.W, UnitMultiplier.k));
     measurements.add(
-        createAnalog("P-L1", (float) ((dValue += 0.1)), UnitSymbol.W, UnitMultiplier.k));
-    measurements.add(createAnalog("P-L2", (float) (dValue += 0.1), UnitSymbol.W, UnitMultiplier.k));
-    measurements.add(createAnalog("P-L3", (float) (dValue += 0.1), UnitSymbol.W, UnitMultiplier.k));
+        createAnalog("Q-L1", (float) (value += 0.1), UnitSymbol.VAr, UnitMultiplier.k));
     measurements.add(
-        createAnalog("Q-L1", (float) (dValue += 0.1), UnitSymbol.VAr, UnitMultiplier.k));
+        createAnalog("Q-L2", (float) (value += 0.1), UnitSymbol.VAr, UnitMultiplier.k));
     measurements.add(
-        createAnalog("Q-L2", (float) (dValue += 0.1), UnitSymbol.VAr, UnitMultiplier.k));
-    measurements.add(
-        createAnalog("Q-L3", (float) (dValue += 0.1), UnitSymbol.VAr, UnitMultiplier.k));
-    measurements.add(createAnalog("PF-L1", (float) (dValue += 0.1), UnitSymbol.none));
-    measurements.add(createAnalog("PF-L2", (float) (dValue += 0.1), UnitSymbol.none));
-    measurements.add(createAnalog("PF-L3", (float) (dValue += 0.1), UnitSymbol.none));
-    measurements.add(createAnalog("THDi-L1", (float) (dValue += 0.1), UnitSymbol.PerCent));
-    measurements.add(createAnalog("THDi-L2", (float) (dValue += 0.1), UnitSymbol.PerCent));
-    measurements.add(createAnalog("THDi-L3", (float) (dValue += 0.1), UnitSymbol.PerCent));
-    measurements.add(createAnalog("H3-I1", (float) (dValue += 0.1), UnitSymbol.A));
-    measurements.add(createAnalog("H3-I2", (float) (dValue += 0.1), UnitSymbol.A));
-    measurements.add(createAnalog("H3-I3", (float) (dValue += 0.1), UnitSymbol.A));
-    measurements.add(createAnalog("H5-I1", (float) (dValue += 0.1), UnitSymbol.A));
-    measurements.add(createAnalog("H5-I2", (float) (dValue += 0.1), UnitSymbol.A));
-    measurements.add(createAnalog("H5-I3", (float) (dValue += 0.1), UnitSymbol.A));
-    measurements.add(createAnalog("H7-I1", (float) (dValue += 0.1), UnitSymbol.A));
-    measurements.add(createAnalog("H7-I2", (float) (dValue += 0.1), UnitSymbol.A));
-    measurements.add(createAnalog("H7-I3", (float) (dValue += 0.1), UnitSymbol.A));
-    measurements.add(createAnalog("H9-I1", (float) (dValue += 0.1), UnitSymbol.A));
-    measurements.add(createAnalog("H9-I2", (float) (dValue += 0.1), UnitSymbol.A));
-    measurements.add(createAnalog("H9-I3", (float) (dValue += 0.1), UnitSymbol.A));
-    measurements.add(createAnalog("H11-I1", (float) (dValue += 0.1), UnitSymbol.A));
-    measurements.add(createAnalog("H11-I2", (float) (dValue += 0.1), UnitSymbol.A));
-    measurements.add(createAnalog("H11-I3", (float) (dValue += 0.1), UnitSymbol.A));
-    measurements.add(createAnalog("H13-I1", (float) (dValue += 0.1), UnitSymbol.A));
-    measurements.add(createAnalog("H13-I2", (float) (dValue += 0.1), UnitSymbol.A));
-    measurements.add(createAnalog("H13-I3", (float) (dValue += 0.1), UnitSymbol.A));
-    measurements.add(createAnalog("H15-I1", (float) (dValue += 0.1), UnitSymbol.A));
-    measurements.add(createAnalog("H15-I2", (float) (dValue += 0.1), UnitSymbol.A));
-    measurements.add(createAnalog("H15-I3", (float) (dValue += 0.1), UnitSymbol.A));
+        createAnalog("Q-L3", (float) (value += 0.1), UnitSymbol.VAr, UnitMultiplier.k));
+    measurements.add(createAnalog("PF-L1", (float) (value += 0.1), UnitSymbol.none));
+    measurements.add(createAnalog("PF-L2", (float) (value += 0.1), UnitSymbol.none));
+    measurements.add(createAnalog("PF-L3", (float) (value += 0.1), UnitSymbol.none));
+    measurements.add(createAnalog("THDi-L1", (float) (value += 0.1), UnitSymbol.PerCent));
+    measurements.add(createAnalog("THDi-L2", (float) (value += 0.1), UnitSymbol.PerCent));
+    measurements.add(createAnalog("THDi-L3", (float) (value += 0.1), UnitSymbol.PerCent));
+    measurements.add(createAnalog("H3-I1", (float) (value += 0.1), UnitSymbol.A));
+    measurements.add(createAnalog("H3-I2", (float) (value += 0.1), UnitSymbol.A));
+    measurements.add(createAnalog("H3-I3", (float) (value += 0.1), UnitSymbol.A));
+    measurements.add(createAnalog("H5-I1", (float) (value += 0.1), UnitSymbol.A));
+    measurements.add(createAnalog("H5-I2", (float) (value += 0.1), UnitSymbol.A));
+    measurements.add(createAnalog("H5-I3", (float) (value += 0.1), UnitSymbol.A));
+    measurements.add(createAnalog("H7-I1", (float) (value += 0.1), UnitSymbol.A));
+    measurements.add(createAnalog("H7-I2", (float) (value += 0.1), UnitSymbol.A));
+    measurements.add(createAnalog("H7-I3", (float) (value += 0.1), UnitSymbol.A));
+    measurements.add(createAnalog("H9-I1", (float) (value += 0.1), UnitSymbol.A));
+    measurements.add(createAnalog("H9-I2", (float) (value += 0.1), UnitSymbol.A));
+    measurements.add(createAnalog("H9-I3", (float) (value += 0.1), UnitSymbol.A));
+    measurements.add(createAnalog("H11-I1", (float) (value += 0.1), UnitSymbol.A));
+    measurements.add(createAnalog("H11-I2", (float) (value += 0.1), UnitSymbol.A));
+    measurements.add(createAnalog("H11-I3", (float) (value += 0.1), UnitSymbol.A));
+    measurements.add(createAnalog("H13-I1", (float) (value += 0.1), UnitSymbol.A));
+    measurements.add(createAnalog("H13-I2", (float) (value += 0.1), UnitSymbol.A));
+    measurements.add(createAnalog("H13-I3", (float) (value += 0.1), UnitSymbol.A));
+    measurements.add(createAnalog("H15-I1", (float) (value += 0.1), UnitSymbol.A));
+    measurements.add(createAnalog("H15-I2", (float) (value += 0.1), UnitSymbol.A));
+    measurements.add(createAnalog("H15-I3", (float) (value += 0.1), UnitSymbol.A));
     return measurements;
   }
 }
