@@ -40,7 +40,7 @@ class ScadaMeasurementPublishedEventConverterTest {
     final ScadaMeasurementPayload payload =
         ScadaMeasurementPayload.builder()
             .substationIdentification(SUBSTATION_IDENTIFICATION)
-            .version(null)
+            .version("1")
             .substationName(SUBSTATION_NAME)
             .feeder(String.valueOf(feeder))
             .fieldCode(FIELD_CODE)
@@ -61,7 +61,7 @@ class ScadaMeasurementPublishedEventConverterTest {
                 LowVoltageMessageFactory.Version.VERSION_1));
 
     final List<Name> names = event.getPowerSystemResource().getNames();
-    assertThat(names).containsExactlyElementsOf(this.expectedNames(feeder, null));
+    assertThat(names).containsExactlyElementsOf(this.expectedNames(feeder, "1"));
   }
 
   @Test
