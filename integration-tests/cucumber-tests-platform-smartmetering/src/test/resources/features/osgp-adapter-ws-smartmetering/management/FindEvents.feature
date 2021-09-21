@@ -75,4 +75,5 @@ Feature: SmartMetering Management - Find Events
       | BeginDate            | 2015-09-01T00:00:00.000Z |
       | EndDate              | 2015-10-01T00:00:00.000Z |
     Then 6 power quality extended events should be returned
-      | DeviceIdentification | TEST1028000000001 |
+      | DeviceIdentification | TEST1028000000001  |
+      | ExpectedEventDetails | MAGNITUDE,DURATION |
