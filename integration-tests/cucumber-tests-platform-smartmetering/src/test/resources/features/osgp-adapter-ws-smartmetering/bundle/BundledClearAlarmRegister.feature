@@ -1,24 +1,7 @@
-@SmartMetering @Platform @SmartMeteringMonitoring
-Feature: SmartMetering Monitoring - Alarm Register
-  As a grid operator
-  I want to be able to read and clear the alarm register on a device
-  So I can see which alarms have occurred without depending on the alarm filter
-  and I can clear the register to be able to see new alarms
-
-  Background:
-    Given a dlms device
-      | DeviceIdentification     | TEST1024000000001 |
-      | DeviceType               | SMART_METER_E     |
-      | SelectiveAccessSupported | true              |
-      | Protocol                 | SMR               |
-      | ProtocolVersion          | 5.0.0             |
-
-  Scenario: Read the alarm register from a device
-    Given device "TEST1024000000001" has alarm register "1" with some value
-    When the get read alarm register request is received
-      | DeviceIdentification | TEST1024000000001 |
-    Then the alarm register should be returned
-      | DeviceIdentification | TEST1024000000001 |
+@SmartMetering @Platform
+Feature: SmartMetering Bundle - ClearAlarmRegister
+  As a grid operator 
+  I want to be able to clear the alarm register from a meter via a bundle request
 
   Scenario: Clear alarm register SMR 5.1
     Given a dlms device
@@ -29,11 +12,11 @@ Feature: SmartMetering Monitoring - Alarm Register
       | ProtocolVersion          | 5.1               |
     And device "TEST1024000000002" has alarm register "1" with some value
     And device "TEST1024000000002" has alarm register "2" with some value
-    When the Clear Alarm Code request is received
+    And a bundle request
       | DeviceIdentification | TEST1024000000002 |
-    Then the Clear Alarm Code response should be returned
-      | DeviceIdentification | TEST1024000000002 |
-      | Result               | OK                |
+    And the bundle request contains a clear alarm register action
+    When the bundle request is received
+    Then the bundle response should contain a clear alarm register response
     And alarm register "1" of device "TEST1024000000002" has been cleared
     And alarm register "2" of device "TEST1024000000002" has not been cleared
 
@@ -47,10 +30,10 @@ Feature: SmartMetering Monitoring - Alarm Register
       | Port                     |              1029 |
     And device "TEST1029000000001" has alarm register "1" with some value
     And device "TEST1029000000001" has alarm register "2" with some value
-    When the Clear Alarm Code request is received
+    And a bundle request
       | DeviceIdentification | TEST1029000000001 |
-    Then the Clear Alarm Code response should be returned
-      | DeviceIdentification | TEST1029000000001 |
-      | Result               | OK                |
+    And the bundle request contains a clear alarm register action
+    When the bundle request is received
+    Then the bundle response should contain a clear alarm register response
     And alarm register "1" of device "TEST1029000000001" has been cleared
     And alarm register "2" of device "TEST1029000000001" has been cleared
