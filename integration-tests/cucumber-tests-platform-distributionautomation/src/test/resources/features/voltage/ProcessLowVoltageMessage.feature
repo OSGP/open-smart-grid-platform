@@ -180,7 +180,8 @@ Feature: DistributionAutomation Low voltage message processing
       | measurement49_description    | F            |
       | measurement49_unitSymbol     | Hz           |
       | measurement49_value          |          4.9 |
-      
+
+@Skip      
 Scenario: Process a low voltage message from MQTT device version 1
     Given an MQTT device
       | DeviceIdentification | TST-02             |
