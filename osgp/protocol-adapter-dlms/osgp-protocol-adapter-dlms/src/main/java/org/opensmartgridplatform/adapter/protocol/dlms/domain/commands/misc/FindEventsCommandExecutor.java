@@ -111,14 +111,6 @@ public class FindEventsCommandExecutor
         this.dlmsObjectConfigService.getDlmsObject(
             device, EVENT_LOG_CATEGORY_OBISCODE_MAP.get(findEventsQuery.getEventLogCategory()));
 
-    // TODO check manufacturer! "Iskr".equals(device.getManufacturerId()
-    if (eventLogObject.getType().equals(POWER_QUALITY_EXTENDED_EVENT_LOG)
-        && !"Iskr".equals(device.getManufacturerId())) {
-      throw new ProtocolAdapterException(
-          "POWER_QUALITY_EXTENDED_EVENT_LOG is only supported for Iskr and not for "
-              + device.getManufacturerId());
-    }
-
     final AttributeAddress eventLogBuffer =
         new AttributeAddress(
             eventLogObject.getClassId(),
