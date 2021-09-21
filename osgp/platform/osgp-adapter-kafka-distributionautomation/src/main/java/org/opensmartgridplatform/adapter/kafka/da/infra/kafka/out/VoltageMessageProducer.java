@@ -72,7 +72,8 @@ public class VoltageMessageProducer {
     final ObjectMapper objectMapper = new ObjectMapper();
     objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     try {
-      // Removing possible double quotes around data field and all other fields.
+      // TODO remove this line when the double quotes bug around the measurement field is fixed on
+      // the device side to avoid bugs in the future.
       measurement = measurement.replaceAll("(\"\\[)", "[").replaceAll("(\\]\")", "]");
       // we expect a list with one payload from the rtu.
       final ScadaMeasurementPayload[] payloads =
