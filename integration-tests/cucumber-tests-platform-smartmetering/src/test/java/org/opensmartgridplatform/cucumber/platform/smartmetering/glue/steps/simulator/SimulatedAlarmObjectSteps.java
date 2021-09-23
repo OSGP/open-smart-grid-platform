@@ -24,8 +24,8 @@ public class SimulatedAlarmObjectSteps {
   private static final int ATTRIBUTE_ID_VALUE = DataAttribute.VALUE.attributeId();
   private static final String OBJECT_DESCRIPTION = "the alarm object";
 
-  private static final ObisCode OBIS_CODE_1 = new ObisCode(0, 0, 97, 98, 0, 255);
-  private static final ObisCode OBIS_CODE_2 = new ObisCode(0, 0, 97, 98, 1, 255);
+  private static final ObisCode OBIS_CODE_ALARM_OBJECT_1 = new ObisCode(0, 0, 97, 98, 0, 255);
+  private static final ObisCode OBIS_CODE_ALARM_OBJECT_2 = new ObisCode(0, 0, 97, 98, 1, 255);
 
   private static final String ALARM_VALUE = "33693956";
 
@@ -72,9 +72,9 @@ public class SimulatedAlarmObjectSteps {
   private ObisCode getAlarmRegisterObisCode(final int alarmRegisterNr) {
     switch (alarmRegisterNr) {
       case 1:
-        return OBIS_CODE_1;
+        return OBIS_CODE_ALARM_OBJECT_1;
       case 2:
-        return OBIS_CODE_2;
+        return OBIS_CODE_ALARM_OBJECT_2;
       default:
         throw new IllegalArgumentException("There is no alarmRegister: " + alarmRegisterNr);
     }
