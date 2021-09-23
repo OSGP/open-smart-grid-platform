@@ -90,7 +90,6 @@ public class DlmsObjectConfigSmr50 extends DlmsObjectConfig {
     final DlmsObject alarmRegisters1 = new DlmsData(ALARM_REGISTER_1, "0.0.97.98.0.255");
     final DlmsObject randomisationSettings =
         new DlmsData(RANDOMISATION_SETTINGS, "0.1.94.31.12.255");
-    // Alarm registers
 
     objectList.addAll(
         Arrays.asList(

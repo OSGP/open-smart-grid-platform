@@ -79,6 +79,9 @@ public class ClearAlarmRegisterCommandExecutor
     if (resultCodeAlarmRegister1 == null) {
       throw new ProtocolAdapterException("Error occurred for clear alarm register 1.");
     }
+    if (resultCodeAlarmRegister1 != AccessResultCode.SUCCESS) {
+      return resultCodeAlarmRegister1;
+    }
 
     final Optional<AttributeAddress> optAlarmRegister2AttributeAddress =
         this.dlmsObjectConfigService.findAttributeAddress(
@@ -91,9 +94,6 @@ public class ClearAlarmRegisterCommandExecutor
           this.executeForAlarmRegister(conn, optAlarmRegister2AttributeAddress.get());
 
       if (resultCodeAlarmRegister2 != null) {
-        if (resultCodeAlarmRegister1 != AccessResultCode.SUCCESS) {
-          return resultCodeAlarmRegister1;
-        }
         return resultCodeAlarmRegister2;
       } else {
         throw new ProtocolAdapterException("Error occurred for clear alarm register 2.");

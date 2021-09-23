@@ -145,7 +145,7 @@ class ClearAlarmRegisterCommandExecutorTest {
         .thenReturn(AccessResultCode.OTHER_REASON)
         .thenReturn(AccessResultCode.SUCCESS);
 
-    final AccessResultCode accessResultCode = this.assertExceptionAlarmRegister2(null);
+    final AccessResultCode accessResultCode = this.assertExceptionAlarmRegister1(null);
     assertThat(accessResultCode).isEqualTo(AccessResultCode.OTHER_REASON);
   }
 
@@ -159,7 +159,8 @@ class ClearAlarmRegisterCommandExecutorTest {
     assertThat(accessResultCode).isEqualTo(AccessResultCode.TEMPORARY_FAILURE);
   }
 
-  void assertExceptionAlarmRegister1(final Class<? extends Exception> expectedExceptionClass)
+  AccessResultCode assertExceptionAlarmRegister1(
+      final Class<? extends Exception> expectedExceptionClass)
       throws ProtocolAdapterException, IOException {
     final DlmsDevice dlmsDevice = new DlmsDevice("SMR 5.2 device");
     dlmsDevice.setProtocol("SMR", "5.2");
@@ -175,11 +176,18 @@ class ClearAlarmRegisterCommandExecutorTest {
     when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.connectionManager.getConnection()).thenReturn(this.dlmsConnection);
 
-    assertThrows(
-        expectedExceptionClass,
-        () -> {
-          this.executor.execute(this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);
-        });
+    if (expectedExceptionClass != null) {
+      assertThrows(
+          expectedExceptionClass,
+          () -> {
+            this.executor.execute(
+                this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);
+          });
+    } else {
+      return this.executor.execute(
+          this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);
+    }
+    return null;
   }
 
   AccessResultCode assertExceptionAlarmRegister2(
