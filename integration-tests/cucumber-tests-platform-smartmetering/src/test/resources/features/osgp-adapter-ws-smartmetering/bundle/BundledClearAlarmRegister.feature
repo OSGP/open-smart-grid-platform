@@ -3,22 +3,22 @@ Feature: SmartMetering Bundle - ClearAlarmRegister
   As a grid operator 
   I want to be able to clear the alarm register from a meter via a bundle request
 
-  Scenario: Clear alarm register SMR 5.1
+  Scenario: Clear alarm register SMR 5.1, only clears register 1
     Given a dlms device
-      | DeviceIdentification     | TEST1024000000002 |
+      | DeviceIdentification     | TEST1028000000002 |
       | DeviceType               | SMART_METER_E     |
       | SelectiveAccessSupported | true              |
       | Protocol                 | SMR               |
       | ProtocolVersion          | 5.1               |
-    And device "TEST1024000000002" has alarm register "1" with some value
-    And device "TEST1024000000002" has alarm register "2" with some value
+    And device "TEST1028000000002" has alarm register "1" with some value
+    And device "TEST1028000000002" has alarm register "2" with some value
     And a bundle request
-      | DeviceIdentification | TEST1024000000002 |
+      | DeviceIdentification | TEST1028000000002 |
     And the bundle request contains a clear alarm register action
     When the bundle request is received
     Then the bundle response should contain a clear alarm register response
-    And alarm register "1" of device "TEST1024000000002" has been cleared
-    And alarm register "2" of device "TEST1024000000002" has not been cleared
+    And alarm register "1" of device "TEST1028000000002" has been cleared
+    And alarm register "2" of device "TEST1028000000002" has not been cleared
 
   Scenario: Clear both alarm registers with SMR 5.2
     Given a dlms device

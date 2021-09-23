@@ -139,6 +139,26 @@ class ClearAlarmRegisterCommandExecutorTest {
     this.assertExceptionAlarmRegister2(ProtocolAdapterException.class);
   }
 
+  @Test
+  void failureRegister1AndResultAlarmRegister2() throws ProtocolAdapterException, IOException {
+    when(this.dlmsConnection.set(this.setParameterArgumentCaptor.capture()))
+        .thenReturn(AccessResultCode.OTHER_REASON)
+        .thenReturn(AccessResultCode.SUCCESS);
+
+    final AccessResultCode accessResultCode = this.assertExceptionAlarmRegister2(null);
+    assertThat(accessResultCode).isEqualTo(AccessResultCode.OTHER_REASON);
+  }
+
+  @Test
+  void successRegister1AndResultAlarmRegister2() throws ProtocolAdapterException, IOException {
+    when(this.dlmsConnection.set(this.setParameterArgumentCaptor.capture()))
+        .thenReturn(AccessResultCode.SUCCESS)
+        .thenReturn(AccessResultCode.TEMPORARY_FAILURE);
+
+    final AccessResultCode accessResultCode = this.assertExceptionAlarmRegister2(null);
+    assertThat(accessResultCode).isEqualTo(AccessResultCode.TEMPORARY_FAILURE);
+  }
+
   void assertExceptionAlarmRegister1(final Class<? extends Exception> expectedExceptionClass)
       throws ProtocolAdapterException, IOException {
     final DlmsDevice dlmsDevice = new DlmsDevice("SMR 5.2 device");
@@ -162,7 +182,8 @@ class ClearAlarmRegisterCommandExecutorTest {
         });
   }
 
-  void assertExceptionAlarmRegister2(final Class<? extends Exception> expectedExceptionClass)
+  AccessResultCode assertExceptionAlarmRegister2(
+      final Class<? extends Exception> expectedExceptionClass)
       throws ProtocolAdapterException, IOException {
     final DlmsDevice dlmsDevice = new DlmsDevice("SMR 5.2 device");
     dlmsDevice.setProtocol("SMR", "5.2");
@@ -187,11 +208,18 @@ class ClearAlarmRegisterCommandExecutorTest {
     when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.connectionManager.getConnection()).thenReturn(this.dlmsConnection);
 
-    assertThrows(
-        expectedExceptionClass,
-        () -> {
-          this.executor.execute(this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);
-        });
+    if (expectedExceptionClass != null) {
+      assertThrows(
+          expectedExceptionClass,
+          () -> {
+            this.executor.execute(
+                this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);
+          });
+    } else {
+      return this.executor.execute(
+          this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);
+    }
+    return null;
   }
 
   void assertForOneRegister(final String protocol, final String protocolVersion)

@@ -87,8 +87,10 @@ public class DlmsObjectConfigSmr50 extends DlmsObjectConfig {
     final DlmsObject amrStatusMonthlyE = new DlmsData(AMR_STATUS, "0.0.96.10.6.255");
     final DlmsObject amrStatusMonthlyG = new DlmsData(AMR_STATUS, "0.<c>.96.10.7.255");
     final DlmsObject alarmFilter = new DlmsData(ALARM_FILTER, "0.0.97.98.10.255");
+    final DlmsObject alarmRegisters1 = new DlmsData(ALARM_REGISTER_1, "0.0.97.98.0.255");
     final DlmsObject randomisationSettings =
         new DlmsData(RANDOMISATION_SETTINGS, "0.1.94.31.12.255");
+    // Alarm registers
 
     objectList.addAll(
         Arrays.asList(
@@ -100,6 +102,7 @@ public class DlmsObjectConfigSmr50 extends DlmsObjectConfig {
             amrStatusMonthlyE,
             amrStatusMonthlyG,
             alarmFilter,
+            alarmRegisters1,
             randomisationSettings));
 
     final DlmsObject pushScheduler = new DlmsSingleActionSchedule(PUSH_SCHEDULER, "0.0.15.0.4.255");
@@ -283,10 +286,6 @@ public class DlmsObjectConfigSmr50 extends DlmsObjectConfig {
     final DlmsObject clientSetupMBus =
         new DlmsObject(CLIENT_SETUP_MBUS, InterfaceClass.MBUS_CLIENT.id(), "0.<c>.24.1.0.255");
     objectList.addAll(Arrays.asList(readMBusStatus, clientSetupMBus));
-
-    // Alarm registers
-    final DlmsObject alarmRegisters1 = new DlmsData(ALARM_REGISTER_1, "0.0.97.98.0.255");
-    objectList.addAll(Arrays.asList(alarmRegisters1));
 
     return objectList;
   }

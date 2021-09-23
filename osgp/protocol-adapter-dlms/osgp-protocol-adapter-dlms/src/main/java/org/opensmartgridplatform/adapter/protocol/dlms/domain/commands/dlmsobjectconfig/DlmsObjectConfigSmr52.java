@@ -11,7 +11,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobje
 
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ALARM_REGISTER_2;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsData;
@@ -29,9 +28,10 @@ public class DlmsObjectConfigSmr52 extends DlmsObjectConfigSmr51 {
   List<DlmsObject> initObjects() {
     final List<DlmsObject> objectList = super.initObjects();
 
-    // Alarm registers for SMR5.2
+    // Abstract objects
     final DlmsObject alarmRegisters2 = new DlmsData(ALARM_REGISTER_2, "0.0.97.98.1.255");
-    objectList.addAll(Arrays.asList(alarmRegisters2));
+
+    objectList.addAll(Collections.singletonList(alarmRegisters2));
 
     return objectList;
   }
