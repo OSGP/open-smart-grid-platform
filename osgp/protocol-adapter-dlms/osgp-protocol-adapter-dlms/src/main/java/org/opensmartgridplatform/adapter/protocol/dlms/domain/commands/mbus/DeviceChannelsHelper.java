@@ -116,7 +116,7 @@ public class DeviceChannelsHelper {
       throws ProtocolAdapterException {
 
     final DlmsObject mbusClientSetupObject =
-        this.dlmsObjectConfigService.findDlmsObject(device, DlmsObjectType.MBUS_CLIENT_SETUP);
+        this.dlmsObjectConfigService.getDlmsObject(device, DlmsObjectType.MBUS_CLIENT_SETUP);
     final ObisCode obiscode = mbusClientSetupObject.getObisCodeWithChannel(channel);
     final int classId = mbusClientSetupObject.getClassId();
 
@@ -148,7 +148,7 @@ public class DeviceChannelsHelper {
       final DlmsConnectionManager conn, final DlmsDevice device, final short channel)
       throws ProtocolAdapterException {
     final DlmsObject clientSetupObject =
-        this.dlmsObjectConfigService.findDlmsObject(device, DlmsObjectType.MBUS_CLIENT_SETUP);
+        this.dlmsObjectConfigService.getDlmsObject(device, DlmsObjectType.MBUS_CLIENT_SETUP);
     final AttributeAddress[] attrAddresses =
         this.makeAttributeAddresses(clientSetupObject, channel);
     final List<GetResult> resultList =
@@ -247,7 +247,7 @@ public class DeviceChannelsHelper {
   protected ObisCode getObisCode(final DlmsDevice device, final int channel)
       throws ProtocolAdapterException {
     final DlmsObject mbusClientSetupObject =
-        this.dlmsObjectConfigService.findDlmsObject(device, DlmsObjectType.MBUS_CLIENT_SETUP);
+        this.dlmsObjectConfigService.getDlmsObject(device, DlmsObjectType.MBUS_CLIENT_SETUP);
     return mbusClientSetupObject.getObisCodeWithChannel(channel);
   }
 
@@ -286,7 +286,7 @@ public class DeviceChannelsHelper {
       throws ProtocolAdapterException {
 
     final DlmsObject mbusClientSetupObject =
-        this.dlmsObjectConfigService.findDlmsObject(device, DlmsObjectType.MBUS_CLIENT_SETUP);
+        this.dlmsObjectConfigService.getDlmsObject(device, DlmsObjectType.MBUS_CLIENT_SETUP);
     final ObisCode obiscode = mbusClientSetupObject.getObisCodeWithChannel(channel);
     final int classId = mbusClientSetupObject.getClassId();
 

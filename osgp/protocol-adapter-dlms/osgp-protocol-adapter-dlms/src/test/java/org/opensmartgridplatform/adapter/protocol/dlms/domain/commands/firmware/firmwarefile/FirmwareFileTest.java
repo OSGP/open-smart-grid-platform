@@ -172,7 +172,9 @@ public class FirmwareFileTest {
   public void testImageIdentifierForMbusDevice() throws ProtocolAdapterException {
     final FirmwareFile firmwareFile = new FirmwareFile(byteArray);
     firmwareFile.setMbusDeviceIdentificationNumber(
-        new IdentificationNumber("16019864").getIdentificationNumber().intValue());
+        IdentificationNumber.fromTextualRepresentation("16019864")
+            .getNumericalRepresentation()
+            .intValue());
 
     assertThat(firmwareFile.createImageIdentifierForMbusDevice())
         .isEqualTo(

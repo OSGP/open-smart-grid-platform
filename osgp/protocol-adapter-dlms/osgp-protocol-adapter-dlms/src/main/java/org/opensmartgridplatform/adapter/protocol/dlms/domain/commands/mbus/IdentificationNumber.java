@@ -114,7 +114,7 @@ public class IdentificationNumber {
     if (StringUtils.isBlank(this.textualRepresentation)) {
       return DataObject.newNullData();
     }
-    return DataObject.newUInteger32Data(Long.parseLong(this.getTextualRepresentation()));
+    return DataObject.newUInteger32Data(this.getNumericalRepresentation());
   }
 
   public Long getIdentificationNumberInBcdRepresentationAsLong() {
@@ -123,5 +123,9 @@ public class IdentificationNumber {
 
   public String getTextualRepresentation() {
     return this.textualRepresentation;
+  }
+
+  public Long getNumericalRepresentation() {
+    return Long.parseLong(this.getTextualRepresentation());
   }
 }
