@@ -15,14 +15,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.openmuc.jdlms.GetResult;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -55,7 +52,6 @@ public class CoupleMbusDeviceByChannelCommandExecutorTest {
     final short version = 123;
     final short deviceTypeIdentification = 456;
     final String identificationNumber = "identificationNumber";
-    final List<GetResult> resultList = new ArrayList<>();
 
     final ChannelElementValuesDto dto =
         new ChannelElementValuesDto(
@@ -70,9 +66,8 @@ public class CoupleMbusDeviceByChannelCommandExecutorTest {
         MessageMetadata.newBuilder().withCorrelationUid("123456").build();
 
     when(this.coupleMbusDeviceByChannelRequestDataDto.getChannel()).thenReturn(channel);
-    when(this.deviceChannelsHelper.getMBusClientAttributeValues(this.conn, this.device, channel))
-        .thenReturn(resultList);
-    when(this.deviceChannelsHelper.makeChannelElementValues(channel, resultList)).thenReturn(dto);
+    when(this.deviceChannelsHelper.getChannelElementValues(this.conn, this.device, channel))
+        .thenReturn(dto);
 
     final CoupleMbusDeviceByChannelResponseDto responseDto =
         this.commandExecutor.execute(
@@ -91,7 +86,6 @@ public class CoupleMbusDeviceByChannelCommandExecutorTest {
     assertThat(responseDto.getChannelElementValues().getVersion()).isEqualTo(version);
 
     verify(this.deviceChannelsHelper, times(1))
-        .getMBusClientAttributeValues(eq(this.conn), eq(this.device), any(Short.class));
-    verify(this.deviceChannelsHelper, times(1)).makeChannelElementValues(channel, resultList);
+        .getChannelElementValues(eq(this.conn), eq(this.device), any(Short.class));
   }
 }

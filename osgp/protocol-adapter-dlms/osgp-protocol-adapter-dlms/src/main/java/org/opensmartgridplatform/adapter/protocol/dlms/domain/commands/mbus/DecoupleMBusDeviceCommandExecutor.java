@@ -8,9 +8,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.CosemObjectAccessor;
@@ -58,11 +56,8 @@ public class DecoupleMBusDeviceCommandExecutor
     final ObisCode obisCode = this.deviceChannelsHelper.getObisCode(channel);
 
     // Get the current channel element values before resetting the channel
-    final List<GetResult> resultList =
-        this.deviceChannelsHelper.getMBusClientAttributeValues(conn, device, channel);
-
     final ChannelElementValuesDto channelElementValues =
-        this.deviceChannelsHelper.makeChannelElementValues(channel, resultList);
+        this.deviceChannelsHelper.getChannelElementValues(conn, device, channel);
 
     // Deinstall and reset channel
     final CosemObjectAccessor mBusSetup =

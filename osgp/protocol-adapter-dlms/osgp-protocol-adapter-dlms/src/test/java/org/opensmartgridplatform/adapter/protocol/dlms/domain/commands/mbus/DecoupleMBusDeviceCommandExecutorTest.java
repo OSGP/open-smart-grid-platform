@@ -10,7 +10,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -61,7 +60,7 @@ public class DecoupleMBusDeviceCommandExecutorTest {
     when(this.deviceChannelsHelper.deinstallSlave(
             eq(this.conn), eq(this.device), any(Short.class), any(CosemObjectAccessor.class)))
         .thenReturn(MethodResultCode.SUCCESS);
-    when(this.deviceChannelsHelper.makeChannelElementValues(eq(channel), anyList()))
+    when(this.deviceChannelsHelper.getChannelElementValues(this.conn, this.device, channel))
         .thenReturn(channelElementValuesDto);
 
     final DecoupleMbusDeviceResponseDto responseDto =
@@ -71,8 +70,7 @@ public class DecoupleMBusDeviceCommandExecutorTest {
     assertThat(responseDto.getChannelElementValues()).isEqualTo(channelElementValuesDto);
 
     verify(this.deviceChannelsHelper, times(1))
-        .getMBusClientAttributeValues(eq(this.conn), eq(this.device), any(Short.class));
-    verify(this.deviceChannelsHelper, times(1)).makeChannelElementValues(eq(channel), any());
+        .getChannelElementValues(eq(this.conn), eq(this.device), any(Short.class));
     verify(this.deviceChannelsHelper, times(1))
         .deinstallSlave(
             eq(this.conn), eq(this.device), any(Short.class), any(CosemObjectAccessor.class));

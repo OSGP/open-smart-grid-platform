@@ -12,6 +12,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -21,14 +22,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.openmuc.jdlms.DlmsConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigConfiguration;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.testutil.GetResultImpl;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.CosemObjectAccessor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
@@ -38,7 +43,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.dlms.interfaceclass.method.MBusClientMethod;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
-import org.slf4j.Logger;
 
 @ExtendWith(MockitoExtension.class)
 public class DeviceChannelsHelperTest {
@@ -52,10 +56,6 @@ public class DeviceChannelsHelperTest {
   private static final short VERSION = 2;
   private static final short DEVICE_TYPE = 3;
 
-  private final DlmsHelper dlmsHelper = new DlmsHelper();
-  private final DeviceChannelsHelper deviceChannelsHelper =
-      new DeviceChannelsHelper(this.dlmsHelper);
-
   private final GetResult primaryAddress =
       new GetResultImpl(DataObject.newUInteger8Data(PRIMARY_ADDRESS));
   private final GetResult identificationNumber =
@@ -65,15 +65,33 @@ public class DeviceChannelsHelperTest {
   private final GetResult version = new GetResultImpl(DataObject.newUInteger8Data(VERSION));
   private final GetResult deviceType = new GetResultImpl(DataObject.newUInteger8Data(DEVICE_TYPE));
 
+  DlmsHelper dlmsHelper = new DlmsHelper();
+
   @Mock DlmsConnectionManager conn;
 
-  @Mock Logger log;
+  @Mock DlmsConnection dlmsConnection;
 
   @Mock DlmsDevice device;
 
   @Mock CosemObjectAccessor mBusSetup;
 
+  private DlmsObjectConfigConfiguration dlmsObjectConfigConfiguration;
+
+  private DlmsObjectConfigService dlmsObjectConfigService;
+
+  private DeviceChannelsHelper deviceChannelsHelper;
+
   @Mock private DlmsMessageListener dlmsMessageListener;
+
+  @BeforeEach
+  void setup() {
+    this.dlmsObjectConfigConfiguration = new DlmsObjectConfigConfiguration();
+    this.dlmsObjectConfigService =
+        new DlmsObjectConfigService(
+            this.dlmsHelper, this.dlmsObjectConfigConfiguration.getDlmsObjectConfigs());
+    this.deviceChannelsHelper =
+        new DeviceChannelsHelper(this.dlmsHelper, this.dlmsObjectConfigService);
+  }
 
   @Test
   void testGetObisCode() {
@@ -120,7 +138,7 @@ public class DeviceChannelsHelperTest {
   @Test
   void testDeinstallSlave3() throws ProtocolAdapterException {
 
-    // unsuccesful deinstall with signed integer parameter
+    // unsuccessful deinstall with signed integer parameter
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.mBusSetup.callMethod(eq(MBusClientMethod.SLAVE_DEINSTALL), any(DataObject.class)))
         .thenReturn(MethodResultCode.SCOPE_OF_ACCESS_VIOLATION);
@@ -136,7 +154,7 @@ public class DeviceChannelsHelperTest {
   @Test
   void testDeinstallSlave4() throws ProtocolAdapterException {
 
-    // unsuccesful deinstall with unsigned integer parameter (second
+    // unsuccessful deinstall with unsigned integer parameter (second
     // attempt)
 
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
@@ -153,7 +171,7 @@ public class DeviceChannelsHelperTest {
   }
 
   @Test
-  void testMakeChannelElementValues() throws Exception {
+  void testGetChannelElementValues() throws Exception {
     final List<GetResult> resultList =
         new ArrayList<>(
             Arrays.asList(
@@ -162,9 +180,13 @@ public class DeviceChannelsHelperTest {
                 this.manufacturerIdentification,
                 this.version,
                 this.deviceType));
+    when(this.device.isWithListSupported()).thenReturn(true);
+    when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
+    when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
+    when(this.dlmsConnection.get(anyList())).thenReturn(resultList);
 
     final ChannelElementValuesDto values =
-        this.deviceChannelsHelper.makeChannelElementValues((short) 1, resultList);
+        this.deviceChannelsHelper.getChannelElementValues(this.conn, this.device, (short) 1);
 
     assertThat(values.getPrimaryAddress()).isEqualTo(PRIMARY_ADDRESS);
     assertThat(values.getIdentificationNumber()).isEqualTo(IDENTIFICATION_NUMBER_AS_STRING);
@@ -175,7 +197,7 @@ public class DeviceChannelsHelperTest {
   }
 
   @Test
-  void testMakeChannelElementValuesInvalidManufacturerId() throws Exception {
+  void testGetChannelElementValuesInvalidManufacturerId() throws Exception {
 
     final GetResult manufacturerIdentificationInvalid =
         new GetResultImpl(DataObject.newUInteger16Data(123));
@@ -188,16 +210,20 @@ public class DeviceChannelsHelperTest {
                 manufacturerIdentificationInvalid,
                 this.version,
                 this.deviceType));
+    when(this.device.isWithListSupported()).thenReturn(true);
+    when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
+    when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
+    when(this.dlmsConnection.get(anyList())).thenReturn(resultList);
 
     assertThatExceptionOfType(IllegalArgumentException.class)
         .isThrownBy(
             () -> {
-              this.deviceChannelsHelper.makeChannelElementValues((short) 1, resultList);
+              this.deviceChannelsHelper.getChannelElementValues(this.conn, this.device, (short) 1);
             });
   }
 
   @Test
-  public void testMakeChannelElementValuesIdenfiticationNumberNull() throws Exception {
+  public void testGetChannelElementValuesIdenfiticationNumberNull() throws Exception {
 
     final GetResult identificationNumberNull = new GetResultImpl(null);
 
@@ -209,9 +235,13 @@ public class DeviceChannelsHelperTest {
                 this.manufacturerIdentification,
                 this.version,
                 this.deviceType));
+    when(this.device.isWithListSupported()).thenReturn(true);
+    when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
+    when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
+    when(this.dlmsConnection.get(anyList())).thenReturn(resultList);
 
     final ChannelElementValuesDto values =
-        this.deviceChannelsHelper.makeChannelElementValues((short) 1, resultList);
+        this.deviceChannelsHelper.getChannelElementValues(this.conn, this.device, (short) 1);
 
     assertThat(values.getIdentificationNumber()).isNull();
   }
