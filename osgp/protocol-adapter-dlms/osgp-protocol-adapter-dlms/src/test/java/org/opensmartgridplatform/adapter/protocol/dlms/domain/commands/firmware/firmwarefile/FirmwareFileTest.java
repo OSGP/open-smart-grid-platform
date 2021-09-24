@@ -173,7 +173,7 @@ public class FirmwareFileTest {
     final FirmwareFile firmwareFile = new FirmwareFile(byteArray);
     firmwareFile.setMbusDeviceIdentificationNumber(
         IdentificationNumber.fromTextualRepresentation("16019864")
-            .getNumericalRepresentation()
+            .getIdentificationNumberInBcdRepresentationAsLong()
             .intValue());
 
     assertThat(firmwareFile.createImageIdentifierForMbusDevice())
