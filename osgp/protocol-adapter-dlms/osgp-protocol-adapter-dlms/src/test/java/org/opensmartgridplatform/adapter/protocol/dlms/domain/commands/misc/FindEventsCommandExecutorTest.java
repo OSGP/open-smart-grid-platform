@@ -54,8 +54,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class FindEventsCommandExecutorTest {
 
-  private final DlmsDevice DLMS_DEVICE_5_2 = this.createDlmsDevice(Protocol.SMR_5_2);
-
   private final DlmsDevice DLMS_DEVICE_5_1 = this.createDlmsDevice(Protocol.SMR_5_1);
 
   private final DlmsDevice DLMS_DEVICE_5_0 = this.createDlmsDevice(Protocol.SMR_5_0_0);
@@ -195,7 +193,7 @@ class FindEventsCommandExecutorTest {
   }
 
   @Test
-  void testExtendedLogEventsAreRetrievedForTypePowerQualityExtendedEventSmr52()
+  void testExtendedLogEventsAreRetrievedForTypePowerQualityExtendedEventSmr51()
       throws ProtocolAdapterException, IOException {
     // SETUP
     this.findEventsRequestDto =
@@ -211,7 +209,7 @@ class FindEventsCommandExecutorTest {
     // CALL
     final List<EventDto> events =
         this.executor.execute(
-            this.conn, this.DLMS_DEVICE_5_2, this.findEventsRequestDto, this.messageMetadata);
+            this.conn, this.DLMS_DEVICE_5_1, this.findEventsRequestDto, this.messageMetadata);
 
     // VERIFY
     assertThat(events.size()).isEqualTo(13);
@@ -229,7 +227,7 @@ class FindEventsCommandExecutorTest {
   }
 
   @Test
-  void testExceptionIsThrownWhenExtendedLogEventsAreRetrievedAndManufacturerIsNotSmr52()
+  void testExceptionIsThrownWhenExtendedLogEventsAreRetrievedAndManufacturerIsNotSmr51()
       throws ProtocolAdapterException, IOException {
     this.findEventsRequestDto =
         new FindEventsRequestDto(
@@ -241,7 +239,7 @@ class FindEventsCommandExecutorTest {
         .isThrownBy(
             () -> {
               this.executor.execute(
-                  this.conn, this.DLMS_DEVICE_5_2, this.findEventsRequestDto, this.messageMetadata);
+                  this.conn, this.DLMS_DEVICE_5_0, this.findEventsRequestDto, this.messageMetadata);
             });
   }
 
