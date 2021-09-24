@@ -58,12 +58,11 @@ public class Smr5AlarmDecoder extends AlarmDecoder {
     }
     this.builder.appendByte(dataTypeByte);
 
-    // Next byte should indicate the amount of elements in the structure: 2
-    // or 3
+    // Next byte should indicate the amount of elements in the structure: 2, 3 or 4
     final byte dataLength = buffer.readByte();
-    if (dataLength != 2 && dataLength != 3) {
+    if (dataLength != 2 && dataLength != 3 && dataLength != 4) {
       throw new UnrecognizedMessageDataException(
-          "Expected a structure with 2 or 3 elements, but amount is " + dataLength);
+          "Expected a structure with 2, 3 or 4 elements, but amount is " + dataLength);
     }
     this.builder.appendByte(dataLength);
 
