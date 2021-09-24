@@ -94,9 +94,9 @@ public class DeviceChannelsHelperTest {
   }
 
   @Test
-  void testGetObisCode() {
+  void testGetObisCode() throws ProtocolAdapterException {
     final int channel = 1;
-    final ObisCode obisCode = this.deviceChannelsHelper.getObisCode(channel);
+    final ObisCode obisCode = this.deviceChannelsHelper.getObisCode(this.device, channel);
     assertThat(obisCode.asDecimalString()).isEqualTo(OBIS_CODE_MBUS_CHANNEL_ONE);
   }
 

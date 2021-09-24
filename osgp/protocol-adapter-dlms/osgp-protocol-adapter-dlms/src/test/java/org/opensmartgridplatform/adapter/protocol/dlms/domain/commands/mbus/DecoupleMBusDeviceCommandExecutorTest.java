@@ -55,7 +55,8 @@ public class DecoupleMBusDeviceCommandExecutorTest {
     final MessageMetadata messageMetadata =
         MessageMetadata.newBuilder().withCorrelationUid("123456").build();
 
-    when(this.deviceChannelsHelper.getObisCode(channel)).thenReturn(new ObisCode("0.1.24.1.0.255"));
+    when(this.deviceChannelsHelper.getObisCode(this.device, channel))
+        .thenReturn(new ObisCode("0.1.24.1.0.255"));
     when(this.decoupleMbusDto.getChannel()).thenReturn(channel);
     when(this.deviceChannelsHelper.deinstallSlave(
             eq(this.conn), eq(this.device), any(Short.class), any(CosemObjectAccessor.class)))
@@ -75,6 +76,7 @@ public class DecoupleMBusDeviceCommandExecutorTest {
         .deinstallSlave(
             eq(this.conn), eq(this.device), any(Short.class), any(CosemObjectAccessor.class));
     verify(this.deviceChannelsHelper, times(1))
-        .resetMBusClientAttributeValues(eq(this.conn), any(Short.class), any(String.class));
+        .resetMBusClientAttributeValues(
+            eq(this.conn), eq(this.device), any(Short.class), any(String.class));
   }
 }

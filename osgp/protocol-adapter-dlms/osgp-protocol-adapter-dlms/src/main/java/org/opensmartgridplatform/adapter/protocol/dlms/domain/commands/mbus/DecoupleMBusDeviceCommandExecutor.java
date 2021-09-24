@@ -53,7 +53,7 @@ public class DecoupleMBusDeviceCommandExecutor
     log.debug(
         "Decouple channel {} on gateway device {}", channel, device.getDeviceIdentification());
 
-    final ObisCode obisCode = this.deviceChannelsHelper.getObisCode(channel);
+    final ObisCode obisCode = this.deviceChannelsHelper.getObisCode(device, channel);
 
     // Get the current channel element values before resetting the channel
     final ChannelElementValuesDto channelElementValues =
@@ -66,7 +66,7 @@ public class DecoupleMBusDeviceCommandExecutor
     this.deviceChannelsHelper.deinstallSlave(conn, device, channel, mBusSetup);
 
     this.deviceChannelsHelper.resetMBusClientAttributeValues(
-        conn, channel, this.getClass().getSimpleName());
+        conn, device, channel, this.getClass().getSimpleName());
 
     // return the channel element values as before decoupling
     return new DecoupleMbusDeviceResponseDto(channelElementValues);

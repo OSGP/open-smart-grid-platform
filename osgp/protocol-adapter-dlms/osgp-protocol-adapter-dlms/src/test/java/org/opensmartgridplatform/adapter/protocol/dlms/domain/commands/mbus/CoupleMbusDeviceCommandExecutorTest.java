@@ -200,6 +200,7 @@ public class CoupleMbusDeviceCommandExecutorTest {
         .thenReturn(emptyChannel);
     when(this.deviceChannelsHelper.writeUpdatedMbus(
             eq(this.conn),
+            eq(this.device),
             eq(mbusChannelElementsDto),
             eq(emptyChannel.getChannel()),
             any(String.class)))

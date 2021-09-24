@@ -103,11 +103,18 @@ public class IdentificationNumber {
   }
 
   /** @return a DataObject with the double-long-unsigned value of the identification number */
-  public DataObject asDataObject() {
+  public DataObject asDataObjectInBcdRepresentation() {
     if (StringUtils.isBlank(this.textualRepresentation)) {
       return DataObject.newNullData();
     }
     return DataObject.newUInteger32Data(toBcdRepresentationAsLong(this.textualRepresentation));
+  }
+
+  public DataObject asDataObject() {
+    if (StringUtils.isBlank(this.textualRepresentation)) {
+      return DataObject.newNullData();
+    }
+    return DataObject.newUInteger32Data(Long.parseLong(this.getTextualRepresentation()));
   }
 
   public Long getIdentificationNumberInBcdRepresentationAsLong() {

@@ -92,7 +92,7 @@ public class CoupleMBusDeviceCommandExecutor
      */
     final ChannelElementValuesDto updatedChannelElementValues =
         this.deviceChannelsHelper.writeUpdatedMbus(
-            conn, requestDto, emptyChannelMatch.getChannel(), "CoupleMBusDevice");
+            conn, device, requestDto, emptyChannelMatch.getChannel(), "CoupleMBusDevice");
 
     /*
      * Also update the entry in the candidateChannelElementValues list. Take
