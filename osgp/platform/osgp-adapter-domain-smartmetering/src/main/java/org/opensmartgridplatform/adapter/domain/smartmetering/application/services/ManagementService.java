@@ -14,12 +14,14 @@ import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebSe
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.repositories.SmartMeterRepository;
 import org.opensmartgridplatform.domain.core.valueobjects.DeviceLifecycleStatus;
+import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.ClearMBusStatusOnAllChannelsRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventMessagesResponse;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.FindEventsRequestDataList;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetGsmDiagnosticRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.GetGsmDiagnosticResponseData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelRequestData;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.SetDeviceLifecycleStatusByChannelResponseData;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ClearMBusStatusOnAllChannelsRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.FindEventsRequestList;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetGsmDiagnosticRequestDto;
@@ -283,6 +285,37 @@ public class ManagementService {
             .withDataObject(responseData)
             .build();
     this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
+  }
+
+  public void clearMBusStatusOnAllChannels(
+      final MessageMetadata messageMetadata, final ClearMBusStatusOnAllChannelsRequestData request)
+      throws FunctionalException {
+
+    LOGGER.info(
+        "Clear M-Bus status on all channels for organisationIdentification: {} for deviceIdentification: {}",
+        messageMetadata.getOrganisationIdentification(),
+        messageMetadata.getDeviceIdentification());
+
+    final ClearMBusStatusOnAllChannelsRequestDto requestDto =
+        this.managementMapper.map(request, ClearMBusStatusOnAllChannelsRequestDto.class);
+    final SmartMeter smartMeter =
+        this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
+
+    this.osgpCoreRequestMessageSender.send(
+        requestDto, messageMetadata.builder().withIpAddress(smartMeter.getIpAddress()).build());
+  }
+
+  public void handleClearMBusStatusOnAllChannelsResponse(
+      final MessageMetadata messageMetadata,
+      final ResponseMessageResultType deviceResult,
+      final OsgpException exception) {
+
+    LOGGER.info(
+        "handleClearMBusStatusOnAllChannelsResponse for MessageType: {}, with result: {}",
+        messageMetadata.getMessageType(),
+        deviceResult);
+
+    this.handleMetadataOnlyResponseMessage(messageMetadata, deviceResult, exception);
   }
 
   private void sendMetadataOnlyRequestMessage(final MessageMetadata messageMetadata)

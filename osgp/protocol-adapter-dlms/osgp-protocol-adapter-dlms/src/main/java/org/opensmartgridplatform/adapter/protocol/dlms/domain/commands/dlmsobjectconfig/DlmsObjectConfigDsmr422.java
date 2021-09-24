@@ -17,6 +17,7 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dl
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ACTIVE_ENERGY_IMPORT_RATE_2;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ALARM_FILTER;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.AMR_STATUS;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.CLIENT_SETUP_MBUS;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.COMMUNICATION_SESSIONS_EVENT_CODE;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.COMMUNICATION_SESSIONS_EVENT_LOG;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.DAILY_LOAD_PROFILE;
@@ -51,6 +52,7 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dl
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsAutoAnswer;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsClock;
@@ -65,6 +67,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjec
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsRegisterMonitor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsSingleActionSchedule;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
+import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 
 public class DlmsObjectConfigDsmr422 extends DlmsObjectConfig {
 
@@ -245,6 +248,10 @@ public class DlmsObjectConfigDsmr422 extends DlmsObjectConfig {
             captureObjectsCommunicationSessionsEvents,
             ASYNCHRONOUSLY,
             ABSTRACT));
+
+    final DlmsObject clientSetupMBus =
+        new DlmsObject(CLIENT_SETUP_MBUS, InterfaceClass.MBUS_CLIENT.id(), "0.<c>.24.1.0.255");
+    objectList.addAll(Collections.singletonList(clientSetupMBus));
 
     return objectList;
   }

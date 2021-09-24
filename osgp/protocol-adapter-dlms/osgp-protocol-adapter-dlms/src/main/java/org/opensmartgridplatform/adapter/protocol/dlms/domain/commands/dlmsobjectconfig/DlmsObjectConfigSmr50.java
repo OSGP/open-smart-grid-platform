@@ -17,6 +17,7 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dl
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ACTIVE_ENERGY_IMPORT_RATE_2;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ALARM_FILTER;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.AMR_STATUS;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.CLIENT_SETUP_MBUS;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.COMMUNICATION_SESSIONS_EVENT_CODE;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.COMMUNICATION_SESSIONS_EVENT_LOG;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.DAILY_LOAD_PROFILE;
@@ -36,6 +37,7 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dl
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.PUSH_SETUP_ALARM;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.PUSH_SETUP_SCHEDULER;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.RANDOMISATION_SETTINGS;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.READ_MBUS_STATUS;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.STANDARD_EVENT_CODE;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.STANDARD_EVENT_LOG;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.Medium.ABSTRACT;
@@ -65,6 +67,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjec
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsRegisterMonitor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsSingleActionSchedule;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
+import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 
 public class DlmsObjectConfigSmr50 extends DlmsObjectConfig {
 
@@ -278,6 +281,13 @@ public class DlmsObjectConfigSmr50 extends DlmsObjectConfig {
             captureObjectsPowerQualityEvents,
             ASYNCHRONOUSLY,
             ABSTRACT));
+
+    // Additional read mbus status for SMR5.0
+    final DlmsObject readMBusStatus =
+        new DlmsObject(READ_MBUS_STATUS, InterfaceClass.EXTENDED_REGISTER.id(), "0.<c>.24.2.6.255");
+    final DlmsObject clientSetupMBus =
+        new DlmsObject(CLIENT_SETUP_MBUS, InterfaceClass.MBUS_CLIENT.id(), "0.<c>.24.1.0.255");
+    objectList.addAll(Arrays.asList(readMBusStatus, clientSetupMBus));
 
     return objectList;
   }
