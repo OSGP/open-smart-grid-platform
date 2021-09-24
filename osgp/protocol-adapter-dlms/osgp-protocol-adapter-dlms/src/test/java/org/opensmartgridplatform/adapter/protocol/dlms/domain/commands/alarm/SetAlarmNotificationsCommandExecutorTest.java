@@ -13,6 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -38,7 +39,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
-public class SetAlarmNotificationsCommandExecutorTest {
+class SetAlarmNotificationsCommandExecutorTest {
   private DlmsDevice device;
   private CommandExecutor<AlarmNotificationsDto, AccessResultCode> executor;
   private List<SetParameter> setParametersReceived;
@@ -59,7 +60,13 @@ public class SetAlarmNotificationsCommandExecutorTest {
           @Override
           public Optional<AttributeAddress> findAttributeAddress(
               final DlmsDevice device, final DlmsObjectType type, final Integer channel) {
-            return Optional.of(new AttributeAddress(40, "0.0.97.98.10.255", 2));
+            switch (type) {
+              case ALARM_FILTER_1:
+                return Optional.of(new AttributeAddress(40, "0.0.97.98.10.255", 2));
+              case ALARM_FILTER_2:
+                return Optional.of(new AttributeAddress(40, "0.0.97.98.11.255", 2));
+            }
+            throw new IllegalArgumentException();
           }
         };
     this.executor = new SetAlarmNotificationsCommandExecutor(dlmsObjectConfigService);
@@ -77,12 +84,14 @@ public class SetAlarmNotificationsCommandExecutorTest {
     // REPLACE_BATTERY enabled, AUXILIARY_EVENT enabled.
     conn.addReturnValue(
         new AttributeAddress(1, "0.0.97.98.10.255", 2), DataObject.newInteger32Data(10));
+    conn.addReturnValue(
+        new AttributeAddress(1, "0.0.97.98.11.255", 2), DataObject.newInteger32Data(0));
 
     this.connMgr = new DlmsConnectionManagerStub(conn);
   }
 
   @Test
-  public void testSetSettingThatIsAlreadySet() throws OsgpException {
+  void testSetSettingThatIsAlreadySet() throws OsgpException {
     // Setting notifications that are not different from what is on the
     // meter already,
     // should always be successful.
@@ -91,11 +100,11 @@ public class SetAlarmNotificationsCommandExecutorTest {
     assertThat(res).isEqualTo(AccessResultCode.SUCCESS);
     // Since nothing changed, not a single message should have been sent to
     // the meter.
-    assertThat(this.setParametersReceived.size()).isEqualTo(0);
+    assertThat(this.setParametersReceived.size()).isZero();
   }
 
   @Test
-  public void testSetSettingEnabled() throws OsgpException {
+  void testSetSettingEnabled() throws OsgpException {
     // Now we enable something: CLOCK_INVALID to enabled.
     final AccessResultCode res =
         this.execute(new AlarmNotificationDto(AlarmTypeDto.CLOCK_INVALID, true));
@@ -106,7 +115,30 @@ public class SetAlarmNotificationsCommandExecutorTest {
   }
 
   @Test
-  public void testSetSettingEnabledAndDisabled() throws OsgpException {
+  void testSetSettingEnabledRegister2() throws OsgpException {
+    // no values are enabled at start of test
+    this.assertSetSettingEnabledRegister2(AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L1, 1L);
+    this.assertSetSettingEnabledRegister2(AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L2, 2L);
+    this.assertSetSettingEnabledRegister2(AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L3, 4L);
+    this.assertSetSettingEnabledRegister2(AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L1, 8L);
+    this.assertSetSettingEnabledRegister2(AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L2, 16L);
+    this.assertSetSettingEnabledRegister2(AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L3, 32L);
+
+    this.assertSetSettingEnabledRegister2(
+        Arrays.asList(
+            AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L1,
+            AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L2),
+        3L);
+    this.assertSetSettingEnabledRegister2(
+        Arrays.asList(
+            AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L1,
+            AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L2,
+            AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L3),
+        7L);
+  }
+
+  @Test
+  void testSetSettingEnabledAndDisabled() throws OsgpException {
     // Now we enable and disable something: CLOCK_INVALID to enabled and
     // REPLACE_BATTERY to disabled.
     final AccessResultCode res =
@@ -117,6 +149,26 @@ public class SetAlarmNotificationsCommandExecutorTest {
     assertThat(this.setParametersReceived.size()).isEqualTo(1);
     // Expecting 9 (0b1001).
     assertThat((long) this.setParametersReceived.get(0).getData().getValue()).isEqualTo(9);
+  }
+
+  private void assertSetSettingEnabledRegister2(
+      final AlarmTypeDto alarmType, final long expectedValue) throws OsgpException {
+    this.assertSetSettingEnabledRegister2(Collections.singletonList(alarmType), expectedValue);
+  }
+
+  private void assertSetSettingEnabledRegister2(
+      final List<AlarmTypeDto> alarmTypes, final long expectedValue) throws OsgpException {
+    this.setUp();
+
+    final AccessResultCode res =
+        this.execute(
+            alarmTypes.stream()
+                .map(alarmType -> new AlarmNotificationDto(alarmType, true))
+                .toArray(AlarmNotificationDto[]::new));
+    assertThat(res).isEqualTo(AccessResultCode.SUCCESS);
+    assertThat(this.setParametersReceived.size()).isEqualTo(1);
+    assertThat((long) this.setParametersReceived.get(0).getData().getValue())
+        .isEqualTo(expectedValue);
   }
 
   private AccessResultCode execute(final AlarmNotificationDto... alarmNotificationDtos)
