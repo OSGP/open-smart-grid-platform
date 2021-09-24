@@ -22,6 +22,7 @@ public class DlmsObjectConfigConfiguration {
     configs.add(new DlmsObjectConfigDsmr422());
     configs.add(new DlmsObjectConfigSmr50());
     configs.add(new DlmsObjectConfigSmr51());
+    configs.add(new DlmsObjectConfigSmr52());
     return configs;
   }
 }
