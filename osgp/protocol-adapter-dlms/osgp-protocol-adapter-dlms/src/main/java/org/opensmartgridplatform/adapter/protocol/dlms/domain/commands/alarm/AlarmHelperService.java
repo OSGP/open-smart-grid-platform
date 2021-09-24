@@ -8,13 +8,11 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ALARM_REGISTER_1;
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ALARM_REGISTER_2;
-
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.ByteRegisterConverter;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
@@ -27,77 +25,20 @@ public class AlarmHelperService {
   private static final Map<DlmsObjectType, ByteRegisterConverter<AlarmTypeDto>>
       BYTE_REGISTER_CONVERTERS = new EnumMap<>(DlmsObjectType.class);
 
-  /**
-   * Gives the position of the alarm code as indicated by the AlarmType in the bit string
-   * representation of the alarm register.
-   *
-   * <p>A position of 0 means the least significant bit, up to the maximum of 31 for the most
-   * significant bit. Since the 4 most significant bits in the object are not used according to the
-   * DSMR documentation, the practical meaningful most significant bit is bit 27.
-   */
-  private static final Map<DlmsObjectType, Map<AlarmTypeDto, Integer>> ALARM_REGISTERS =
-      new EnumMap<>(DlmsObjectType.class);
-
   static {
-    // Bits for group: Other Alarms
-    final Map<AlarmTypeDto, Integer> mapAlarmRegister1 = new EnumMap<>(AlarmTypeDto.class);
-    ALARM_REGISTERS.put(ALARM_REGISTER_1, mapAlarmRegister1);
+    for (final DlmsObjectType dlmsObjectTypeAlarmRegister :
+        AlarmTypeRegisterLookup.getAlarmRegisters()) {
+      final Map<AlarmTypeDto, Integer> alarmRegisterMap =
+          AlarmTypeRegisterLookup.findByAlarmRegister(dlmsObjectTypeAlarmRegister).stream()
+              .collect(
+                  Collectors.toMap(
+                      AlarmTypeRegisterLookup::getAlarmTypeDto, AlarmTypeRegisterLookup::getBit));
 
-    mapAlarmRegister1.put(AlarmTypeDto.CLOCK_INVALID, 0);
-    mapAlarmRegister1.put(AlarmTypeDto.REPLACE_BATTERY, 1);
-    mapAlarmRegister1.put(AlarmTypeDto.POWER_UP, 2);
-    mapAlarmRegister1.put(AlarmTypeDto.AUXILIARY_EVENT, 3);
-    mapAlarmRegister1.put(AlarmTypeDto.CONFIGURATION_CHANGED, 4);
-    // bits 5 to 7 are not used
-
-    // Bits for group: Critical Alarms
-    mapAlarmRegister1.put(AlarmTypeDto.PROGRAM_MEMORY_ERROR, 8);
-    mapAlarmRegister1.put(AlarmTypeDto.RAM_ERROR, 9);
-    mapAlarmRegister1.put(AlarmTypeDto.NV_MEMORY_ERROR, 10);
-    mapAlarmRegister1.put(AlarmTypeDto.MEASUREMENT_SYSTEM_ERROR, 11);
-    mapAlarmRegister1.put(AlarmTypeDto.WATCHDOG_ERROR, 12);
-    mapAlarmRegister1.put(AlarmTypeDto.FRAUD_ATTEMPT, 13);
-    // bits 14 and 15 are not used
-
-    // Bits for group: M-Bus Alarms
-    mapAlarmRegister1.put(AlarmTypeDto.COMMUNICATION_ERROR_M_BUS_CHANNEL_1, 16);
-    mapAlarmRegister1.put(AlarmTypeDto.COMMUNICATION_ERROR_M_BUS_CHANNEL_2, 17);
-    mapAlarmRegister1.put(AlarmTypeDto.COMMUNICATION_ERROR_M_BUS_CHANNEL_3, 18);
-    mapAlarmRegister1.put(AlarmTypeDto.COMMUNICATION_ERROR_M_BUS_CHANNEL_4, 19);
-    mapAlarmRegister1.put(AlarmTypeDto.FRAUD_ATTEMPT_M_BUS_CHANNEL_1, 20);
-    mapAlarmRegister1.put(AlarmTypeDto.FRAUD_ATTEMPT_M_BUS_CHANNEL_2, 21);
-    mapAlarmRegister1.put(AlarmTypeDto.FRAUD_ATTEMPT_M_BUS_CHANNEL_3, 22);
-    mapAlarmRegister1.put(AlarmTypeDto.FRAUD_ATTEMPT_M_BUS_CHANNEL_4, 23);
-
-    // Bits for group: Reserved
-    mapAlarmRegister1.put(AlarmTypeDto.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_1, 24);
-    mapAlarmRegister1.put(AlarmTypeDto.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_2, 25);
-    mapAlarmRegister1.put(AlarmTypeDto.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_3, 26);
-    mapAlarmRegister1.put(AlarmTypeDto.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4, 27);
-    mapAlarmRegister1.put(AlarmTypeDto.PHASE_OUTAGE_DETECTED_L1, 28);
-    mapAlarmRegister1.put(AlarmTypeDto.PHASE_OUTAGE_DETECTED_L2, 29);
-    mapAlarmRegister1.put(AlarmTypeDto.PHASE_OUTAGE_DETECTED_L3, 30);
-    mapAlarmRegister1.put(AlarmTypeDto.PHASE_OUTAGE_TEST_INDICATION, 31);
-
-    // Bits for group: alarm register 2
-    final Map<AlarmTypeDto, Integer> mapAlarmRegister2 = new EnumMap<>(AlarmTypeDto.class);
-    ALARM_REGISTERS.put(ALARM_REGISTER_2, mapAlarmRegister2);
-
-    mapAlarmRegister2.put(AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L1, 0);
-    mapAlarmRegister2.put(AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L2, 1);
-    mapAlarmRegister2.put(AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L3, 2);
-    mapAlarmRegister2.put(AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L1, 3);
-    mapAlarmRegister2.put(AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L2, 4);
-    mapAlarmRegister2.put(AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L3, 5);
-
-    BYTE_REGISTER_CONVERTERS.put(
-        ALARM_REGISTER_1,
-        new ByteRegisterConverter<>(
-            Collections.unmodifiableMap(mapAlarmRegister1), NUMBER_OF_BITS_IN_REGISTER));
-    BYTE_REGISTER_CONVERTERS.put(
-        ALARM_REGISTER_2,
-        new ByteRegisterConverter<>(
-            Collections.unmodifiableMap(mapAlarmRegister2), NUMBER_OF_BITS_IN_REGISTER));
+      BYTE_REGISTER_CONVERTERS.put(
+          dlmsObjectTypeAlarmRegister,
+          new ByteRegisterConverter<>(
+              Collections.unmodifiableMap(alarmRegisterMap), NUMBER_OF_BITS_IN_REGISTER));
+    }
   }
 
   /**
@@ -107,13 +48,7 @@ public class AlarmHelperService {
    * @return an unmodifiable map containing every AlarmType and it's bit index.
    */
   public Integer getAlarmRegisterBitIndex(final AlarmTypeDto alarmType) {
-    if (ALARM_REGISTERS.get(ALARM_REGISTER_1).containsKey(alarmType)) {
-      return ALARM_REGISTERS.get(ALARM_REGISTER_1).get(alarmType);
-    }
-    if (ALARM_REGISTERS.get(ALARM_REGISTER_2).containsKey(alarmType)) {
-      return ALARM_REGISTERS.get(ALARM_REGISTER_2).get(alarmType);
-    }
-    throw new IllegalArgumentException("Unexpected alarmType: " + alarmType);
+    return AlarmTypeRegisterLookup.getByAlarmType(alarmType).getBit();
   }
 
   /**
@@ -123,13 +58,10 @@ public class AlarmHelperService {
    * @return position of the bit holding the alarm type value.
    */
   public Integer toBitPosition(final AlarmTypeDto alarmType) {
-    if (ALARM_REGISTERS.get(ALARM_REGISTER_1).containsKey(alarmType)) {
-      return BYTE_REGISTER_CONVERTERS.get(ALARM_REGISTER_1).toBitPosition(alarmType);
-    }
-    if (ALARM_REGISTERS.get(ALARM_REGISTER_2).containsKey(alarmType)) {
-      return BYTE_REGISTER_CONVERTERS.get(ALARM_REGISTER_2).toBitPosition(alarmType);
-    }
-    throw new IllegalArgumentException("Unexpected alarmType: " + alarmType);
+    final DlmsObjectType alarmRegister =
+        AlarmTypeRegisterLookup.getByAlarmType(alarmType).getAlarmRegisterDlmsObjectType();
+
+    return this.getByteRegisterConverter(alarmRegister).toBitPosition(alarmType);
   }
 
   /**
@@ -140,11 +72,7 @@ public class AlarmHelperService {
    * @return Set<AlarmTypeDto> AlarmTypeDto alarm types in register.
    */
   public Set<AlarmTypeDto> alarmTypesForRegister(final DlmsObjectType alarmRegisterDlmsObjectType) {
-    if (!ALARM_REGISTERS.containsKey(alarmRegisterDlmsObjectType)) {
-      throw new IllegalArgumentException(
-          "Unexpected alarmRegisterDlmsObjectType: " + alarmRegisterDlmsObjectType);
-    }
-    return ALARM_REGISTERS.get(alarmRegisterDlmsObjectType).keySet();
+    return AlarmTypeRegisterLookup.getAlarmTypesForRegister(alarmRegisterDlmsObjectType);
   }
 
   /**
@@ -157,12 +85,7 @@ public class AlarmHelperService {
    */
   public Set<AlarmTypeDto> toAlarmTypes(
       final DlmsObjectType alarmRegisterDlmsObjectType, final Number registerValue) {
-    if (!BYTE_REGISTER_CONVERTERS.containsKey(alarmRegisterDlmsObjectType)) {
-      throw new IllegalArgumentException(
-          "Unexpected dlmsObjectType: " + alarmRegisterDlmsObjectType);
-    }
-    return BYTE_REGISTER_CONVERTERS
-        .get(alarmRegisterDlmsObjectType)
+    return this.getByteRegisterConverter(alarmRegisterDlmsObjectType)
         .toTypes(registerValue.longValue());
   }
 
@@ -176,10 +99,15 @@ public class AlarmHelperService {
    */
   public Long toLongValue(
       final DlmsObjectType alarmRegisterDlmsObjectType, final Set<AlarmTypeDto> alarmTypes) {
-    if (!BYTE_REGISTER_CONVERTERS.containsKey(alarmRegisterDlmsObjectType)) {
+    return this.getByteRegisterConverter(alarmRegisterDlmsObjectType).toLongValue(alarmTypes);
+  }
+
+  private ByteRegisterConverter<AlarmTypeDto> getByteRegisterConverter(
+      final DlmsObjectType alarmRegisterDlmsObjectType) {
+    if (!AlarmTypeRegisterLookup.getAlarmRegisters().contains(alarmRegisterDlmsObjectType)) {
       throw new IllegalArgumentException(
           "Unexpected alarmRegisterDlmsObjectType: " + alarmRegisterDlmsObjectType);
     }
-    return BYTE_REGISTER_CONVERTERS.get(alarmRegisterDlmsObjectType).toLongValue(alarmTypes);
+    return BYTE_REGISTER_CONVERTERS.get(alarmRegisterDlmsObjectType);
   }
 }
