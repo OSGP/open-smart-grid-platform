@@ -47,9 +47,13 @@ public class MBusClientObjectSteps {
 
   @Autowired private JsonObjectCreator jsonObjectCreator;
 
-  @Given("^device simulation of \"([^\"]*)\" with M-Bus client values for channel (\\d+)$")
+  @Given(
+      "^device simulation of \"([^\"]*)\" with M-Bus client version (\\d+) values for channel (\\d+)$")
   public void deviceSimulationOfMBusClientObject(
-      final String deviceIdentification, final int channel, final Map<String, String> inputSettings)
+      final String deviceIdentification,
+      final int version,
+      final int channel,
+      final Map<String, String> inputSettings)
       throws Throwable {
 
     this.deviceSimulatorSteps.deviceSimulationOfEquipmentIdentifier(deviceIdentification);
@@ -63,7 +67,7 @@ public class MBusClientObjectSteps {
               this.setStandardAttribute(value, "unsigned", ATTRIBUTE_ID_PRIMARY_ADDRESS, obisCode);
               break;
             case MBUS_IDENTIFICATION_NUMBER:
-              this.setIdentificationNumberAttribute(value, obisCode);
+              this.setIdentificationNumberAttribute(value, obisCode, version);
               break;
             case MBUS_MANUFACTURER_IDENTIFICATION:
               this.setManufacturerIdAttribute(value, obisCode);
@@ -92,10 +96,17 @@ public class MBusClientObjectSteps {
         CLASS_ID, obisCode, attributeId, attributeValuePrimaryAddress, OBJECT_DESCRIPTION);
   }
 
-  private void setIdentificationNumberAttribute(final String value, final ObisCode obisCode) {
-    // The identificationNumber is converted from the textual representation to BCD format.
-    // For example: 12056731 becomes 302343985
-    final String identificationNumber = String.valueOf(Long.parseLong(value, HEX_RADIX));
+  private void setIdentificationNumberAttribute(
+      final String value, final ObisCode obisCode, final int version) {
+    final String identificationNumber;
+    if (version == 0) {
+      // For MbusClientSetup version 0 the identificationNumber is converted from the textual
+      // representation to BCD format.
+      // For example: 12056731 becomes 302343985
+      identificationNumber = String.valueOf(Long.parseLong(value, HEX_RADIX));
+    } else {
+      identificationNumber = value;
+    }
     this.setStandardAttribute(
         identificationNumber, "double-long-unsigned", ATTRIBUTE_ID_IDENTIFICATION_NUMBER, obisCode);
   }
