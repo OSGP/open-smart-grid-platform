@@ -50,19 +50,19 @@
     <osgp.dlms.version>5.18.0-SNAPSHOT</osgp.dlms.version>
     <osgp.shared.version>5.18.0-SNAPSHOT</osgp.shared.version>
     <osgp.jasper-interface.version>5.18.0-SNAPSHOT</osgp.jasper-interface.version>
-    <spring.version>5.3.2</spring.version>
+    <spring.version>5.2.6.RELEASE</spring.version>
     <spring.data.version>2.2.3.RELEASE</spring.data.version>
     <spring.data.commons.version>2.2.4.RELEASE</spring.data.commons.version>
-    <spring.security.version>5.4.2</spring.security.version>
+    <spring.security.version>4.2.14.RELEASE</spring.security.version>
     <spring.ws.version>3.0.10.RELEASE</spring.ws.version>
     <assertj.version>3.16.1</assertj.version>
     <xmlunit.version>1.6</xmlunit.version>
     <mockito.core.version>3.6.0</mockito.core.version>
     <apache.wss4j.version>1.6.19</apache.wss4j.version>
-    <servlet.version>4.0.1</servlet.version>
+    <servlet.version>3.0.1</servlet.version>
     <servlet.jstl.version>1.2</servlet.jstl.version>
     <hibernate.version>5.4.16.Final</hibernate.version>
-    <hibernate.validator.version>6.1.5.Final</hibernate.validator.version>
+    <hibernate.validator.version>5.4.3.Final</hibernate.validator.version>
     <hibernate.jpa.version>1.0.2.Final</hibernate.jpa.version>
     <javax.validation.api.version>2.0.1.Final</javax.validation.api.version>
     <junit.version>5.7.0</junit.version>
@@ -613,7 +613,7 @@
 
       <!-- Hibernate validator -->
       <dependency>
-        <groupId>org.hibernate.validator</groupId>
+        <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator</artifactId>
         <version>${hibernate.validator.version}</version>
         <exclusions>
