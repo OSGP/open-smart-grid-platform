@@ -51,6 +51,7 @@ public class DeviceChannelsHelperTest {
   private static final short PRIMARY_ADDRESS = 1;
   private static final long IDENTIFICATION_NUMBER_IN_BCD_AS_LONG = 287454020L;
   private static final String IDENTIFICATION_NUMBER_AS_STRING = "11223344";
+  private static final int IDENTIFICATION_NUMBER_AS_VALUE = 11223344;
   private static final int MANUFACTURER_IDENTIFICATION = 1057;
   private static final String MANUFACTURER_IDENTIFICATION_AS_TEXT = "AAA";
   private static final short VERSION = 2;
@@ -58,8 +59,10 @@ public class DeviceChannelsHelperTest {
 
   private final GetResult primaryAddress =
       new GetResultImpl(DataObject.newUInteger8Data(PRIMARY_ADDRESS));
-  private final GetResult identificationNumber =
+  private final GetResult identificationNumberInBcd =
       new GetResultImpl(DataObject.newUInteger32Data(IDENTIFICATION_NUMBER_IN_BCD_AS_LONG));
+  private final GetResult identificationNumber =
+      new GetResultImpl(DataObject.newUInteger32Data(IDENTIFICATION_NUMBER_AS_VALUE));
   private final GetResult manufacturerIdentification =
       new GetResultImpl(DataObject.newUInteger16Data(MANUFACTURER_IDENTIFICATION));
   private final GetResult version = new GetResultImpl(DataObject.newUInteger8Data(VERSION));
@@ -171,7 +174,35 @@ public class DeviceChannelsHelperTest {
   }
 
   @Test
-  void testGetChannelElementValues() throws Exception {
+  void testGetChannelElementValuesDsmr4() throws Exception {
+    final List<GetResult> resultList =
+        new ArrayList<>(
+            Arrays.asList(
+                this.primaryAddress,
+                this.identificationNumberInBcd,
+                this.manufacturerIdentification,
+                this.version,
+                this.deviceType));
+    when(this.device.isWithListSupported()).thenReturn(true);
+    when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
+    when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
+    when(this.dlmsConnection.get(anyList())).thenReturn(resultList);
+    when(this.device.getProtocolName()).thenReturn("DSMR");
+    when(this.device.getProtocolVersion()).thenReturn("4.2.2");
+
+    final ChannelElementValuesDto values =
+        this.deviceChannelsHelper.getChannelElementValues(this.conn, this.device, (short) 1);
+
+    assertThat(values.getPrimaryAddress()).isEqualTo(PRIMARY_ADDRESS);
+    assertThat(values.getIdentificationNumber()).isEqualTo(IDENTIFICATION_NUMBER_AS_STRING);
+    assertThat(values.getManufacturerIdentification())
+        .isEqualTo(MANUFACTURER_IDENTIFICATION_AS_TEXT);
+    assertThat(values.getVersion()).isEqualTo(VERSION);
+    assertThat(values.getDeviceTypeIdentification()).isEqualTo(DEVICE_TYPE);
+  }
+
+  @Test
+  void testGetChannelElementValuesSmr5() throws Exception {
     final List<GetResult> resultList =
         new ArrayList<>(
             Arrays.asList(
@@ -184,6 +215,8 @@ public class DeviceChannelsHelperTest {
     when(this.conn.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.conn.getConnection()).thenReturn(this.dlmsConnection);
     when(this.dlmsConnection.get(anyList())).thenReturn(resultList);
+    when(this.device.getProtocolName()).thenReturn("SMR");
+    when(this.device.getProtocolVersion()).thenReturn("5.1");
 
     final ChannelElementValuesDto values =
         this.deviceChannelsHelper.getChannelElementValues(this.conn, this.device, (short) 1);
@@ -206,7 +239,7 @@ public class DeviceChannelsHelperTest {
         new ArrayList<>(
             Arrays.asList(
                 this.primaryAddress,
-                this.identificationNumber,
+                this.identificationNumberInBcd,
                 manufacturerIdentificationInvalid,
                 this.version,
                 this.deviceType));
