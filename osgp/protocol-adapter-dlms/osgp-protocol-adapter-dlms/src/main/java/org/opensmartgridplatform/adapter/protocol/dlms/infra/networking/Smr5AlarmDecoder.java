@@ -74,13 +74,11 @@ public class Smr5AlarmDecoder extends AlarmDecoder {
     this.decodeEquipmentIdentifier(buffer);
     this.decodeLogicalName(buffer, alarmRegisterExpected);
 
-    if (dataLength == 3) {
-      // SMR 5.0.0 or SMR 5.1
+    if (dataLength >= 3) {
       this.decodeAlarms(buffer, DlmsObjectType.ALARM_REGISTER_1);
     }
     if (dataLength == 4) {
       // SMR 5.2
-      this.decodeAlarms(buffer, DlmsObjectType.ALARM_REGISTER_1);
       this.decodeAlarms(buffer, DlmsObjectType.ALARM_REGISTER_2);
     }
 

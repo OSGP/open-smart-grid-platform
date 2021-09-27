@@ -44,7 +44,7 @@ public class AlarmDecoder {
         this.alarmHelperService.toAlarmTypes(dlmsObjectType, ByteBuffer.wrap(alarmBytes).getInt());
 
     builder.withTriggerType(PUSH_ALARM_TRIGGER);
-    builder.withAlarms(alarms);
+    builder.addAlarms(alarms);
     builder.appendBytes(alarmBytes);
   }
 
