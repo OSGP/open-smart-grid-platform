@@ -62,7 +62,7 @@ public class DlmsPushNotification implements Serializable {
 
     public Builder addAlarms(final Set<AlarmTypeDto> alarms) {
       if (alarms != null) {
-        this.alarms.addAll(EnumSet.copyOf(alarms));
+        this.alarms.addAll(alarms);
       }
       return this;
     }
