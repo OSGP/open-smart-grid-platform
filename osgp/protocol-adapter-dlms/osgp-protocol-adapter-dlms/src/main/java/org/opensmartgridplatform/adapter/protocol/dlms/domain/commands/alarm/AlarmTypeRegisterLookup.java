@@ -16,17 +16,16 @@ import lombok.Getter;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.AlarmTypeDto;
 
+/**
+ * Gives the position of the alarm code as indicated by the AlarmType in the bit string
+ * representation of the alarm register.
+ *
+ * <p>A position of 0 means the least significant bit, up to the maximum of 31 for the most
+ * significant bit. Since the 4 most significant bits in the object are not used according to the
+ * DSMR documentation, the practical meaningful most significant bit is bit 27.
+ */
 @Getter
 public enum AlarmTypeRegisterLookup {
-  /**
-   * Gives the position of the alarm code as indicated by the AlarmType in the bit string
-   * representation of the alarm register.
-   *
-   * <p>A position of 0 means the least significant bit, up to the maximum of 31 for the most
-   * significant bit. Since the 4 most significant bits in the object are not used according to the
-   * DSMR documentation, the practical meaningful most significant bit is bit 27.
-   */
-
   // Bits for group: Other Alarms
   CLOCK_INVALID(AlarmTypeDto.CLOCK_INVALID, DlmsObjectType.ALARM_REGISTER_1, 0),
   REPLACE_BATTERY(AlarmTypeDto.REPLACE_BATTERY, DlmsObjectType.ALARM_REGISTER_1, 1),
