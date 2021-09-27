@@ -1,4 +1,4 @@
-@SmartMetering @Platform @SmartMeteringAdHoc @IdentificationNumber
+@SmartMetering @Platform @SmartMeteringAdHoc
 Feature: SmartMetering Scan M-Bus Channels
   As a grid operator
   I want to be able to scan the M-Bus channels 
