@@ -18,7 +18,6 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventDet
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventLogCategory;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventType;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDetailDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDetailNameTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventTypeDto;
 
@@ -33,9 +32,7 @@ public class EventsConverter extends BidirectionalConverter<EventDto, Event> {
     final EventType eventType = EventType.valueOf(source.getEventTypeDto().name());
     final List<EventDetail> eventDetails =
         source.getEventDetails().stream()
-            .map(
-                sourceDetail ->
-                    new EventDetail(sourceDetail.getName().name(), sourceDetail.getValue()))
+            .map(sourceDetail -> new EventDetail(sourceDetail.getName(), sourceDetail.getValue()))
             .collect(Collectors.toList());
 
     return new Event(
@@ -60,10 +57,8 @@ public class EventsConverter extends BidirectionalConverter<EventDto, Event> {
             source.getEventLogCategory().name());
     eventDto.setEventTypeDto(EventTypeDto.valueOf(source.getEventType().name()));
     for (final EventDetail sourceEventDetail : source.getEventDetails()) {
-      final EventDetailNameTypeDto eventDetailNameTypeDto =
-          EventDetailNameTypeDto.valueOf(sourceEventDetail.getName());
       eventDto.addEventDetail(
-          new EventDetailDto(eventDetailNameTypeDto, sourceEventDetail.getValue()));
+          new EventDetailDto(sourceEventDetail.getName(), sourceEventDetail.getValue()));
     }
     return eventDto;
   }
