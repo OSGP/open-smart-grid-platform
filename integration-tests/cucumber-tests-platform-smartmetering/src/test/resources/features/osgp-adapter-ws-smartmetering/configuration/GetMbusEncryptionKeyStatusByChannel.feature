@@ -17,7 +17,7 @@ Feature: SmartMetering - Configuration - M-Bus encryption key status by channel
       | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
-    And device simulation of "TEST1024000000001" with M-Bus client values for channel 1
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
       | MbusPrimaryAddress             | 9        |
       | MbusIdentificationNumber       | 12056731 |
       | MbusManufacturerIdentification | LGB      |
@@ -36,7 +36,7 @@ Feature: SmartMetering - Configuration - M-Bus encryption key status by channel
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-    And device simulation of "TEST1024000000001" with M-Bus client values for channel 1
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
       | MbusPrimaryAddress             | 0 |
       | MbusIdentificationNumber       | 0 |
       | MbusManufacturerIdentification | 0 |

@@ -51,7 +51,7 @@ Feature: SmartMetering Configuration - Exchange User Key on M-Bus Device
       | DeviceType                     | SMART_METER_G     |
       | MbusIdentificationNumber       |          12056731 |
       | MbusManufacturerIdentification | LGB               |
-    And device simulation of "TEST1024000000001" with M-Bus client values for channel 2
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 2
       | MbusPrimaryAddress             | 1        |
       | MbusIdentificationNumber       | 12056731 |
       | MbusManufacturerIdentification | LGB      |

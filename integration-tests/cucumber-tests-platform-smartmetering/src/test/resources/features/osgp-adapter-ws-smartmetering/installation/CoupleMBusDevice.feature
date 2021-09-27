@@ -14,7 +14,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    | 66                |
       | MbusDeviceTypeIdentification   | 3                 |
-    And device simulation of "TEST1024000000001" with M-Bus client values for channel 1
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
       | MbusPrimaryAddress             | 9        |
       | MbusIdentificationNumber       | 12056731 |
       | MbusManufacturerIdentification | LGB      |
@@ -34,7 +34,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | DeviceType                     | SMART_METER_G     |
       | MbusIdentificationNumber       | 12056731          |
       | MbusManufacturerIdentification | ITG               |
-    And device simulation of "TEST1024000000001" with M-Bus client values for channel 1
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
       | MbusPrimaryAddress             | 9        |
       | MbusIdentificationNumber       | 12056731 |
       | MbusManufacturerIdentification | ITG      |
@@ -56,13 +56,13 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    | 66                |
       | MbusDeviceTypeIdentification   | 3                 |
-    And device simulation of "TEST1024000000001" with M-Bus client values for channel 1
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
       | MbusPrimaryAddress             | 0 |
       | MbusIdentificationNumber       | 0 |
       | MbusManufacturerIdentification | 0 |
       | MbusVersion                    | 0 |
       | MbusDeviceTypeIdentification   | 0 |
-    And device simulation of "TEST1024000000001" with M-Bus client values for channel 2
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 2
       | MbusPrimaryAddress             | 9        |
       | MbusIdentificationNumber       | 12056731 |
       | MbusManufacturerIdentification | LGB      |
@@ -118,13 +118,13 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    | 66                |
       | MbusDeviceTypeIdentification   | 3                 |
-    And device simulation of "TEST1024000000001" with M-Bus client values for channel 1
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
       | MbusPrimaryAddress             | 0 |
       | MbusIdentificationNumber       | 0 |
       | MbusManufacturerIdentification | 0 |
       | MbusVersion                    | 0 |
       | MbusDeviceTypeIdentification   | 0 |
-    And device simulation of "TEST1024000000001" with M-Bus client values for channel 2
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 2
       | MbusPrimaryAddress             | 9        |
       | MbusIdentificationNumber       | 12056731 |
       | MbusManufacturerIdentification | LGB      |
@@ -149,7 +149,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | MbusVersion                    | 66                |
       | MbusDeviceTypeIdentification   | 3                 |
       | MbusPrimaryAddress             | 3                 |
-    And device simulation of "TEST1024000000001" with M-Bus client values for channel 1
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
       | MbusPrimaryAddress             | 9        |
       | MbusIdentificationNumber       | 12056731 |
       | MbusManufacturerIdentification | LGB      |
@@ -180,7 +180,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    | 66                |
       | MbusDeviceTypeIdentification   | 3                 |
-    And device simulation of "TEST1024000000001" with M-Bus client values for channel 2
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 2
       | MbusPrimaryAddress             | 9        |
       | MbusIdentificationNumber       | 12056731 |
       | MbusManufacturerIdentification | LGB      |
@@ -217,7 +217,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-    And device simulation of "TEST1024000000001" with M-Bus client values for channel 1
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
       | MbusPrimaryAddress             | 0 |
       | MbusIdentificationNumber       | 0 |
       | MbusManufacturerIdentification | 0 |
@@ -246,7 +246,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-    And device simulation of "TEST1024000000001" with M-Bus client values for channel 1
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
       | MbusPrimaryAddress             | 0 |
       | MbusIdentificationNumber       | 0 |
       | MbusManufacturerIdentification | 0 |
@@ -273,13 +273,13 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-    And device simulation of "TEST1024000000001" with M-Bus client values for channel 1
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
       | MbusPrimaryAddress             | 241      |
       | MbusIdentificationNumber       | 12056726 |
       | MbusManufacturerIdentification | LGB      |
       | MbusVersion                    | 66       |
       | MbusDeviceTypeIdentification   | 3        |
-    And device simulation of "TEST1024000000001" with M-Bus client values for channel 2
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 2
       | MbusPrimaryAddress             | 0 |
       | MbusIdentificationNumber       | 0 |
       | MbusManufacturerIdentification | 0 |
@@ -334,7 +334,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-    And device simulation of "TEST1024000000001" with M-Bus client values for channel 2
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 2
       | MbusPrimaryAddress             | 241      |
       | MbusIdentificationNumber       | 12056726 |
       | MbusManufacturerIdentification | LGB      |
@@ -346,7 +346,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
       | GatewayDeviceIdentification | TEST1024000000001 |
       | Channel                     | 2                 |
       | MbusPrimaryAddress          | 3                 |
-    And device simulation of "TEST1024000000001" with M-Bus client values for channel 1
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
       | MbusPrimaryAddress             | 0 |
       | MbusIdentificationNumber       | 0 |
       | MbusManufacturerIdentification | 0 |
@@ -381,7 +381,7 @@ Feature: SmartMetering Installation - Couple M-Bus Device
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-    And device simulation of "TEST1024000000001" with M-Bus client values for channel 1
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
       | MbusPrimaryAddress             | 3        |
       | MbusIdentificationNumber       | 12056731 |
       | MbusManufacturerIdentification | LGB      |

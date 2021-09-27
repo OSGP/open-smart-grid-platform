@@ -19,7 +19,7 @@ Feature: SmartMetering Management - Set Device Lifecycle Status by Channel
       | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    | 66                |
       | MbusDeviceTypeIdentification   | 3                 |
-    And device simulation of "TEST1024000000001" with M-Bus client values for channel 1
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
       | MbusPrimaryAddress             | 0        |
       | MbusIdentificationNumber       | 12056731 |
       | MbusManufacturerIdentification | LGB      |

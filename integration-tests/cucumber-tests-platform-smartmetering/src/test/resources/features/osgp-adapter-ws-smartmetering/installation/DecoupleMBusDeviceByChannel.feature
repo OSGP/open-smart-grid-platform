@@ -7,7 +7,7 @@ Feature: SmartMetering Installation - Decouple M-Bus Device By Channel
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-    And device simulation of "TEST1024000000001" with M-Bus client values for channel 1
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
       | MbusPrimaryAddress             | 9        |
       | MbusIdentificationNumber       | 12056731 |
       | MbusManufacturerIdentification | LGB      |
@@ -26,7 +26,7 @@ Feature: SmartMetering Installation - Decouple M-Bus Device By Channel
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-    And device simulation of "TEST1024000000001" with M-Bus client values for channel 1
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
       | MbusPrimaryAddress             | 0 |
       | MbusIdentificationNumber       | 0 |
       | MbusManufacturerIdentification | 0 |
@@ -54,7 +54,7 @@ Feature: SmartMetering Installation - Decouple M-Bus Device By Channel
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-    And device simulation of "TEST1024000000001" with M-Bus client values for channel 1
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
       | MbusPrimaryAddress             | 9        |
       | MbusIdentificationNumber       | 12056731 |
       | MbusManufacturerIdentification | LGB      |
@@ -85,7 +85,7 @@ Feature: SmartMetering Installation - Decouple M-Bus Device By Channel
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-    And device simulation of "TEST1024000000001" with M-Bus client values for channel 1
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
       | MbusPrimaryAddress             | 9        |
       | MbusIdentificationNumber       | 12056731 |
       | MbusManufacturerIdentification | LGB      |

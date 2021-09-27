@@ -16,25 +16,25 @@ Feature: SmartMetering Bundle - ScanMbusChannels
       | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
-    And device simulation of "TEST1024000000001" with M-Bus client values for channel 1
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
       | MbusPrimaryAddress             | 9        |
       | MbusIdentificationNumber       | 12056731 |
       | MbusManufacturerIdentification | LGB      |
       | MbusVersion                    | 66       |
       | MbusDeviceTypeIdentification   | 3        |
-    And device simulation of "TEST1024000000001" with M-Bus client values for channel 2
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 2
       | MbusPrimaryAddress             | 0 |
       | MbusIdentificationNumber       | 0 |
       | MbusManufacturerIdentification | 0 |
       | MbusVersion                    | 0 |
       | MbusDeviceTypeIdentification   | 0 |
-    And device simulation of "TEST1024000000001" with M-Bus client values for channel 3
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 3
       | MbusPrimaryAddress             | 0 |
       | MbusIdentificationNumber       | 0 |
       | MbusManufacturerIdentification | 0 |
       | MbusVersion                    | 0 |
       | MbusDeviceTypeIdentification   | 0 |
-    And device simulation of "TEST1024000000001" with M-Bus client values for channel 4
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 4
       | MbusPrimaryAddress             | 0 |
       | MbusIdentificationNumber       | 0 |
       | MbusManufacturerIdentification | 0 |
