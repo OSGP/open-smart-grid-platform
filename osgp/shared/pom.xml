@@ -96,6 +96,7 @@
     <module>osgp-dto</module>
     <module>osgp-ws-core</module>
     <module>osgp-ws-admin</module>
+    <module>osgp-throttling-api</module>
   </modules>
 
   <profiles>

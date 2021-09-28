@@ -124,6 +124,7 @@
     <ant.junit.version>1.10.8</ant.junit.version>
     <args4j.version>2.33</args4j.version>
     <cucumber.version>5.6.0</cucumber.version>
+    <testcontainers.version>1.16.0</testcontainers.version>
     <sun.httpserver.version>20070405</sun.httpserver.version>
     <postgresql.version>42.2.12</postgresql.version>
     <javax.xml.soap-api.version>1.4.0</javax.xml.soap-api.version>
@@ -161,6 +162,16 @@
         <artifactId>shared</artifactId>
         <version>${osgp.shared.version}</version>
         <type>test-jar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-throttling-api</artifactId>
+        <version>${osgp.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-throttling-service</artifactId>
+        <version>${osgp.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
@@ -925,6 +936,26 @@
         <groupId>org.scala-lang</groupId>
         <artifactId>scala-reflect</artifactId>
         <version>${scala.lang.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <!-- Testcontainers -->
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>testcontainers</artifactId>
+        <version>${testcontainers.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <version>${testcontainers.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>${testcontainers.version}</version>
         <scope>test</scope>
       </dependency>
 
