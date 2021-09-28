@@ -88,7 +88,6 @@ public class DlmsObjectConfigSmr50 extends DlmsObjectConfig {
     final DlmsObject amrStatusMonthlyG = new DlmsData(AMR_STATUS, "0.<c>.96.10.7.255");
     final DlmsObject alarmFilter1 = new DlmsData(ALARM_FILTER_1, "0.0.97.98.10.255");
     final DlmsObject alarmRegister1 = new DlmsData(ALARM_REGISTER_1, "0.0.97.98.0.255");
-
     final DlmsObject randomisationSettings =
         new DlmsData(RANDOMISATION_SETTINGS, "0.1.94.31.12.255");
 
