@@ -3,7 +3,7 @@ Feature: SmartMetering Bundle - ClearAlarmRegister
   As a grid operator 
   I want to be able to clear the alarm register from a meter via a bundle request
 
-  Scenario: Clear alarm register for SMR 5.1
+  Scenario: Clear alarm register with SMR 5.1
     Given a dlms device
       | DeviceIdentification     | TEST1028000000002 |
       | DeviceType               | SMART_METER_E     |
