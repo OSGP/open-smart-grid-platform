@@ -10,7 +10,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.ThrowableAssert.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -75,15 +75,16 @@ class ClearAlarmRegisterCommandExecutorTest {
   }
 
   @Test
-  void testAsBundleResponse() throws ProtocolAdapterException, IOException {
+  void testAsBundleResponse() throws ProtocolAdapterException {
     final ActionResponseDto responseDto = this.executor.asBundleResponse(AccessResultCode.SUCCESS);
     assertThat(responseDto.getResult()).isEqualTo(OsgpResultTypeDto.OK);
+  }
 
-    assertThrows(
-        ProtocolAdapterException.class,
-        () -> {
-          this.executor.asBundleResponse(AccessResultCode.OTHER_REASON);
-        });
+  @Test
+  void testAsBundleResponseOtherReason() {
+    final Throwable actual =
+        catchThrowable(() -> this.executor.asBundleResponse(AccessResultCode.OTHER_REASON));
+    assertThat(actual).isInstanceOf(ProtocolAdapterException.class);
   }
 
   @Test
@@ -177,12 +178,12 @@ class ClearAlarmRegisterCommandExecutorTest {
     when(this.connectionManager.getConnection()).thenReturn(this.dlmsConnection);
 
     if (expectedExceptionClass != null) {
-      assertThrows(
-          expectedExceptionClass,
-          () -> {
-            this.executor.execute(
-                this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);
-          });
+      final Throwable actual =
+          catchThrowable(
+              () ->
+                  this.executor.execute(
+                      this.connectionManager, dlmsDevice, this.dto, this.messageMetadata));
+      assertThat(actual).isInstanceOf(expectedExceptionClass);
     } else {
       return this.executor.execute(
           this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);
@@ -217,12 +218,12 @@ class ClearAlarmRegisterCommandExecutorTest {
     when(this.connectionManager.getConnection()).thenReturn(this.dlmsConnection);
 
     if (expectedExceptionClass != null) {
-      assertThrows(
-          expectedExceptionClass,
-          () -> {
-            this.executor.execute(
-                this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);
-          });
+      final Throwable actual =
+          catchThrowable(
+              () ->
+                  this.executor.execute(
+                      this.connectionManager, dlmsDevice, this.dto, this.messageMetadata));
+      assertThat(actual).isInstanceOf(expectedExceptionClass);
     } else {
       return this.executor.execute(
           this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);

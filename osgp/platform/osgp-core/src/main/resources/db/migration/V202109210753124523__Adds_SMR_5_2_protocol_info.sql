@@ -20,8 +20,8 @@ INSERT INTO protocol_info(
     outgoing_responses_property_prefix,
     parallel_requests_allowed)
 VALUES (
-    '2018-12-10 00:00:00',
-    '2018-12-10 00:00:00',
+    '2021-10-01 00:00:00',
+    '2021-10-01 00:00:00',
     0,
     'SMR',
     '5.2',
