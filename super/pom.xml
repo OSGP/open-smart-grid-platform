@@ -55,9 +55,11 @@
     <spring.data.commons.version>2.2.4.RELEASE</spring.data.commons.version>
     <spring.security.version>5.4.2</spring.security.version>
     <spring.ws.version>3.0.10.RELEASE</spring.ws.version>
+    <projectreactor.netty.version>1.0.11</projectreactor.netty.version>
     <assertj.version>3.16.1</assertj.version>
     <xmlunit.version>1.6</xmlunit.version>
     <mockito.core.version>3.6.0</mockito.core.version>
+    <okhttp3.mockwebserver.version>4.9.1</okhttp3.mockwebserver.version>
     <apache.wss4j.version>1.6.19</apache.wss4j.version>
     <servlet.version>4.0.1</servlet.version>
     <servlet.jstl.version>1.2</servlet.jstl.version>
@@ -403,6 +405,16 @@
         <groupId>org.springframework</groupId>
         <artifactId>spring-webmvc</artifactId>
         <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-webflux</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.projectreactor.netty</groupId>
+        <artifactId>reactor-netty-http</artifactId>
+        <version>${projectreactor.netty.version}</version>
       </dependency>
 
       <!-- Spring JMS -->
@@ -844,6 +856,12 @@
         <groupId>org.assertj</groupId>
         <artifactId>assertj-core</artifactId>
         <version>${assertj.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.squareup.okhttp3</groupId>
+        <artifactId>mockwebserver</artifactId>
+        <version>${okhttp3.mockwebserver.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
