@@ -176,8 +176,6 @@ public class FirmwareFileTest {
 
     assertThat(firmwareFile.createImageIdentifierForMbusDevice())
         .isEqualTo(
-            new byte[] {
-              71, 87, 73, 77, 66, 85, 83, 100, -104, 1, 22, -23, 30, 80, 3, 17, 0, 64, 0
-            });
+            new byte[] {71, 87, 73, 77, 66, 85, 83, 100, -104, 1, 22, -23, 30, 80, 3, 0, 0, 0, 0});
   }
 }

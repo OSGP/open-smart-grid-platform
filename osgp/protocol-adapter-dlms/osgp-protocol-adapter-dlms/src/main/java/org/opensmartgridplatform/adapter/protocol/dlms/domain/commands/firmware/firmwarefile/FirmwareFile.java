@@ -243,7 +243,8 @@ public class FirmwareFile {
     imageIdentifier.put(addressField.getMbusManufacturerId());
     imageIdentifier.put(addressField.getMbusVersion());
     imageIdentifier.put(addressField.getMbusDeviceType());
-    imageIdentifier.put(header.getFirmwareImageVersion());
+    //    imageIdentifier.put(header.getFirmwareImageVersion());
+    imageIdentifier.put(new byte[] {0, 0, 0, 0}); // Add zeroes instead of firmware version
 
     return imageIdentifier.array();
   }
