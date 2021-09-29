@@ -10,6 +10,7 @@
 package org.opensmartgridplatform.throttling.repositories;
 
 import java.util.List;
+import java.util.Optional;
 import org.opensmartgridplatform.throttling.api.NonUniqueRequestIdException;
 import org.opensmartgridplatform.throttling.entities.Permit;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -98,9 +99,5 @@ public interface PermitRepository extends JpaRepository<Permit, Long> {
       @Param("cellId") final int cellId,
       @Param("requestId") final int requestId);
 
-  default boolean discardPermit(final int clientId, final int requestId) {
-    return this.deleteByClientIdAndRequestId(clientId, requestId) == 1;
-  }
-
-  int deleteByClientIdAndRequestId(int clientId, int requestId);
+  Optional<Permit> findByClientIdAndRequestId(int clientId, int requestId);
 }

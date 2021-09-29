@@ -108,6 +108,16 @@ public class PermitsByThrottlingConfig {
   }
 
   public boolean discardPermit(final int clientId, final int requestId) {
-    return this.permitRepository.discardPermit(clientId, requestId);
+    return this.permitRepository
+        .findByClientIdAndRequestId(clientId, requestId)
+        .map(
+            permit ->
+                this.releasePermit(
+                    permit.getThrottlingConfigId(),
+                    permit.getClientId(),
+                    permit.getBaseTransceiverStationId(),
+                    permit.getCellId(),
+                    permit.getRequestId()))
+        .orElse(false);
   }
 }

@@ -652,15 +652,39 @@ class ThrottlingServiceApplicationIT {
 
   @Test
   void aPermitThatWasGrantedWhereTheClientMissedTheResponseCanBeDiscarded() {
+    final short throttlingConfigId = this.existingThrottlingConfigId;
     final int clientId = this.existingClientId;
     final int baseTransceiverStationId = 4375;
     final int cellId = 3;
     final int requestId = requestIdCounter.incrementAndGet();
 
     this.successfullyRequestPermit(
-        this.existingThrottlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
+        throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
 
     this.discardPermitThatWasGranted(clientId, requestId);
+
+    this.thePermitIsNoLongerHeldInMemoryOrDatabase(
+        throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
+  }
+
+  private void thePermitIsNoLongerHeldInMemoryOrDatabase(
+      final short throttlingConfigId,
+      final int clientId,
+      final int baseTransceiverStationId,
+      final int cellId,
+      final int requestId) {
+
+    final Map<Short, PermitsPerNetworkSegment> actualPermitsPerNetworkSegmentByConfig =
+        this.permitsByThrottlingConfig.permitsPerNetworkSegmentByConfig();
+
+    assertThat(
+            actualPermitsPerNetworkSegmentByConfig
+                .get(throttlingConfigId)
+                .permitsPerNetworkSegment()
+                .get(baseTransceiverStationId)
+                .get(cellId))
+        .isZero();
+    assertThat(this.permitRepository.findByClientIdAndRequestId(clientId, requestId)).isEmpty();
   }
 
   @Test
