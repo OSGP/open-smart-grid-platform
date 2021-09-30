@@ -1,4 +1,4 @@
-@DistributionAutomation @Platform @MediumVoltageMessage
+@DistributionAutomation @Platform @MediumVoltageMessage @Skip 
 Feature: DistributionAutomation Medium voltage message processing
 
   Scenario: Process a medium voltage message from MQTT device

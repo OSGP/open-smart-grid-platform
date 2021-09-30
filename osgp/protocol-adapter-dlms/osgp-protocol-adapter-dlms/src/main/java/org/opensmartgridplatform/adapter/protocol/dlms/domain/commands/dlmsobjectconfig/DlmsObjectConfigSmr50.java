@@ -15,6 +15,7 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dl
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ACTIVE_ENERGY_IMPORT_RATE_1;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ACTIVE_ENERGY_IMPORT_RATE_2;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ALARM_FILTER;
+import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.ALARM_REGISTER_1;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.AMR_STATUS;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.CLIENT_SETUP_MBUS;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType.COMMUNICATION_SESSIONS_EVENT_CODE;
@@ -85,7 +86,10 @@ public class DlmsObjectConfigSmr50 extends DlmsObjectConfig {
     final DlmsObject amrStatusDailyG = new DlmsData(AMR_STATUS, "0.<c>.96.10.5.255");
     final DlmsObject amrStatusMonthlyE = new DlmsData(AMR_STATUS, "0.0.96.10.6.255");
     final DlmsObject amrStatusMonthlyG = new DlmsData(AMR_STATUS, "0.<c>.96.10.7.255");
+
     final DlmsObject alarmFilter = new DlmsData(ALARM_FILTER, "0.0.97.98.10.255");
+    final DlmsObject alarmRegister1 = new DlmsData(ALARM_REGISTER_1, "0.0.97.98.0.255");
+
     final DlmsObject randomisationSettings =
         new DlmsData(RANDOMISATION_SETTINGS, "0.1.94.31.12.255");
 
@@ -99,6 +103,7 @@ public class DlmsObjectConfigSmr50 extends DlmsObjectConfig {
             amrStatusMonthlyE,
             amrStatusMonthlyG,
             alarmFilter,
+            alarmRegister1,
             randomisationSettings));
 
     final DlmsObject pushScheduler = new DlmsSingleActionSchedule(PUSH_SCHEDULER, "0.0.15.0.4.255");
