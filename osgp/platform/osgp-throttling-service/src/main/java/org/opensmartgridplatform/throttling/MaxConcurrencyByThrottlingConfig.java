@@ -85,6 +85,6 @@ public class MaxConcurrencyByThrottlingConfig {
                     new IllegalArgumentException(
                         "throttlingConfigId is unknown: " + throttlingConfigId));
     this.maxConcurrencyByConfigId.putIfAbsent(throttlingConfigId, maxConcurrency);
-    return maxConcurrency;
+    return this.maxConcurrencyByConfigId.get(throttlingConfigId);
   }
 }

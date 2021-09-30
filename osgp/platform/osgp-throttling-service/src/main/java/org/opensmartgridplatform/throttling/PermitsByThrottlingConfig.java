@@ -50,7 +50,9 @@ public class PermitsByThrottlingConfig {
                 this.permitsPerSegmentByConfig.putIfAbsent(
                     throttlingConfig.getId(), new PermitsPerNetworkSegment(this.permitRepository)));
 
-    this.permitsPerSegmentByConfig.entrySet().parallelStream()
+    this.permitsPerSegmentByConfig
+        .entrySet()
+        .parallelStream()
         .forEach(entry -> entry.getValue().initialize(entry.getKey()));
     stopWatch.stop();
     LOGGER.info("Init took {}ms", stopWatch.getLastTaskTimeMillis());
