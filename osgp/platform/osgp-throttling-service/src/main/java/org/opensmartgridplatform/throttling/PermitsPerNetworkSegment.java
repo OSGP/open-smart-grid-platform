@@ -9,7 +9,6 @@
  */
 package org.opensmartgridplatform.throttling;
 
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,9 +16,12 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import org.opensmartgridplatform.throttling.repositories.PermitRepository;
-import org.opensmartgridplatform.throttling.repositories.PermitRepository.PermitCountByNetworkSegment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StopWatch;
 
 public class PermitsPerNetworkSegment {
+  private static final Logger LOGGER = LoggerFactory.getLogger(PermitsPerNetworkSegment.class);
 
   private static final ConcurrentMap<Integer, AtomicInteger> NO_PERMITS_FOR_STATION =
       new ConcurrentHashMap<>();
@@ -35,17 +37,21 @@ public class PermitsPerNetworkSegment {
   }
 
   public void initialize(final short throttlingConfigId) {
-    final List<PermitCountByNetworkSegment> permitCountByNetworkSegment =
-        this.permitRepository.permitsByNetworkSegment(throttlingConfigId);
-    permitCountByNetworkSegment.forEach(
-        countByNetworkSegment ->
-            this.permitsPerSegment
-                .computeIfAbsent(
-                    countByNetworkSegment.getBaseTransceiverStationId(),
-                    key -> new ConcurrentHashMap<>())
-                .put(
-                    countByNetworkSegment.getCellId(),
-                    new AtomicInteger(countByNetworkSegment.getNumberOfPermits())));
+    final StopWatch stopWatch = new StopWatch(this.getClass().getSimpleName());
+    stopWatch.start();
+    this.permitRepository
+        .permitsByNetworkSegment(throttlingConfigId)
+        .forEach(
+            countByNetworkSegment ->
+                this.permitsPerSegment
+                    .computeIfAbsent(
+                        countByNetworkSegment.getBaseTransceiverStationId(),
+                        key -> new ConcurrentHashMap<>())
+                    .put(
+                        countByNetworkSegment.getCellId(),
+                        new AtomicInteger(countByNetworkSegment.getNumberOfPermits())));
+    stopWatch.stop();
+    LOGGER.info("Init took {}ms", stopWatch.getLastTaskTimeMillis());
   }
 
   public Map<Integer, Map<Integer, Integer>> permitsPerNetworkSegment() {

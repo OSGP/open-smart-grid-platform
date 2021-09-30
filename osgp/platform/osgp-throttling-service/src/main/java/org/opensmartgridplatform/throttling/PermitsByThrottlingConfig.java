@@ -9,19 +9,21 @@
  */
 package org.opensmartgridplatform.throttling;
 
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import javax.annotation.PostConstruct;
-import org.opensmartgridplatform.throttling.entities.ThrottlingConfig;
 import org.opensmartgridplatform.throttling.repositories.PermitRepository;
 import org.opensmartgridplatform.throttling.repositories.ThrottlingConfigRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StopWatch;
 
 @Component
 public class PermitsByThrottlingConfig {
+  private static final Logger LOGGER = LoggerFactory.getLogger(PermitsByThrottlingConfig.class);
 
   private final ConcurrentMap<Short, PermitsPerNetworkSegment> permitsPerSegmentByConfig =
       new ConcurrentHashMap<>();
@@ -39,19 +41,23 @@ public class PermitsByThrottlingConfig {
 
   @PostConstruct
   public void initialize() {
-    final List<ThrottlingConfig> throttlingConfigs = this.throttlingConfigRepository.findAll();
-    throttlingConfigs.forEach(
-        throttlingConfig ->
-            this.permitsPerSegmentByConfig.putIfAbsent(
-                throttlingConfig.getId(), new PermitsPerNetworkSegment(this.permitRepository)));
-    this.permitsPerSegmentByConfig
-        .entrySet()
-        .parallelStream()
+    final StopWatch stopWatch = new StopWatch(this.getClass().getSimpleName());
+    stopWatch.start();
+    this.throttlingConfigRepository
+        .findAll()
+        .forEach(
+            throttlingConfig ->
+                this.permitsPerSegmentByConfig.putIfAbsent(
+                    throttlingConfig.getId(), new PermitsPerNetworkSegment(this.permitRepository)));
+
+    this.permitsPerSegmentByConfig.entrySet().parallelStream()
         .forEach(entry -> entry.getValue().initialize(entry.getKey()));
+    stopWatch.stop();
+    LOGGER.info("Init took {}ms", stopWatch.getLastTaskTimeMillis());
   }
 
   /** Clears all cached permit counts and initializes the cached information from the database. */
-  public void reset() {
+  void reset() {
     this.permitsPerSegmentByConfig.clear();
     this.initialize();
   }
