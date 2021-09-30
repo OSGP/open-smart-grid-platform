@@ -38,7 +38,7 @@ public class MacGenerationServiceTest {
   final String expectedMac = "9a72acd7a949861cc4df4612cbdbdef6";
 
   private static byte[] byteArray;
-  private static final int mbusDeviceIdentificationNumber = Integer.parseInt("10000540", 16);
+  private static final int mbusDeviceIdentificationNumber = Integer.parseInt("10000540");
   private static final String deviceIdentification = "G0035161000054016";
   private static final MessageMetadata messageMetadata =
       MessageMetadata.newBuilder().withCorrelationUid("123456").build();

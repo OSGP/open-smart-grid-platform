@@ -115,8 +115,8 @@ public class FirmwareFileTest {
 
   @Test
   void acceptIdentificationNumberThatDoesNotMatchLessRegularPattern() {
-    final FirmwareFile firmwareFile1 = this.createPartialWildcardFirmwareFile("FFFF4798");
-    final String id = "98474798";
+    final FirmwareFile firmwareFile1 = this.createPartialWildcardFirmwareFile("FFFF0116");
+    final String id = "16019864";
     final int fittingMbusIdentificationNumberInt = Integer.parseInt(id);
 
     assertDoesNotThrow(
@@ -128,7 +128,7 @@ public class FirmwareFileTest {
     final FirmwareFile firmwareFile = this.createPartialWildcardFirmwareFile("FFFF5922");
     final String reversedWildcard = "2259FFFF";
 
-    final String id = "80215923";
+    final String id = "16019864";
     final int misfittingMbusIdentificationNumberInt = Integer.parseInt(id);
     final Exception exception =
         assertThrows(
@@ -160,7 +160,7 @@ public class FirmwareFileTest {
     final byte[] mbusDeviceIdentificationNumberByteArrayOutput =
         ByteBuffer.allocate(4)
             .order(ByteOrder.LITTLE_ENDIAN)
-            .putInt(mbusDeviceIdentificationNumberInput)
+            .putInt(Integer.parseInt(String.valueOf(mbusDeviceIdentificationNumberInput), 16))
             .array();
 
     final FirmwareFile firmwareFile = new FirmwareFile(byteArray);
@@ -182,6 +182,6 @@ public class FirmwareFileTest {
 
     assertThat(firmwareFile.createImageIdentifierForMbusDevice())
         .isEqualTo(
-            new byte[] {71, 87, 73, 77, 66, 85, 83, -104, 113, -12, 0, -23, 30, 80, 3, 0, 0, 0, 0});
+            new byte[] {71, 87, 73, 77, 66, 85, 83, 100, -104, 1, 22, -23, 30, 80, 3, 0, 0, 0, 0});
   }
 }

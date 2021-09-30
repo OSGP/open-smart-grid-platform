@@ -116,7 +116,7 @@ public class FirmwareFile {
     final byte[] mbusDeviceIdentificationNumberByteArray =
         ByteBuffer.allocate(4)
             .order(ByteOrder.LITTLE_ENDIAN)
-            .putInt(mbusDeviceIdentificationNumber)
+            .putInt(Integer.parseInt(String.valueOf(mbusDeviceIdentificationNumber), 16))
             .array();
 
     this.checkWildcard(StringUtils.leftPad(String.valueOf(mbusDeviceIdentificationNumber), 8, '0'));
