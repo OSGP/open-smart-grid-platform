@@ -112,14 +112,28 @@ class ClearAlarmRegisterCommandExecutorTest {
     when(this.dlmsConnection.set(this.setParameterArgumentCaptor.capture()))
         .thenThrow(new IOException());
 
-    this.assertExceptionAlarmRegister1(ConnectionException.class);
+    final DlmsDevice dlmsDevice = new DlmsDevice("SMR 5.2 device");
+    this.setupAlarmRegister1(dlmsDevice);
+    final Throwable actual =
+        catchThrowable(
+            () ->
+                this.executor.execute(
+                    this.connectionManager, dlmsDevice, this.dto, this.messageMetadata));
+    assertThat(actual).isInstanceOf(ConnectionException.class);
   }
 
   @Test
   void nullResultAlarmRegister1() throws ProtocolAdapterException, IOException {
     when(this.dlmsConnection.set(this.setParameterArgumentCaptor.capture())).thenReturn(null);
 
-    this.assertExceptionAlarmRegister1(ProtocolAdapterException.class);
+    final DlmsDevice dlmsDevice = new DlmsDevice("SMR 5.2 device");
+    this.setupAlarmRegister1(dlmsDevice);
+    final Throwable actual =
+        catchThrowable(
+            () ->
+                this.executor.execute(
+                    this.connectionManager, dlmsDevice, this.dto, this.messageMetadata));
+    assertThat(actual).isInstanceOf(ProtocolAdapterException.class);
   }
 
   @Test
@@ -160,7 +174,10 @@ class ClearAlarmRegisterCommandExecutorTest {
         .thenReturn(AccessResultCode.OTHER_REASON)
         .thenReturn(AccessResultCode.SUCCESS);
 
-    final AccessResultCode accessResultCode = this.assertExceptionAlarmRegister1(null);
+    final DlmsDevice dlmsDevice = new DlmsDevice("SMR 5.2 device");
+    this.setupAlarmRegister1(dlmsDevice);
+    final AccessResultCode accessResultCode =
+        this.executor.execute(this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);
     assertThat(accessResultCode).isEqualTo(AccessResultCode.OTHER_REASON);
   }
 
@@ -177,10 +194,9 @@ class ClearAlarmRegisterCommandExecutorTest {
     assertThat(accessResultCode).isEqualTo(AccessResultCode.TEMPORARY_FAILURE);
   }
 
-  AccessResultCode assertExceptionAlarmRegister1(
-      final Class<? extends Exception> expectedExceptionClass)
+  void setupAlarmRegister1(final DlmsDevice dlmsDevice)
       throws ProtocolAdapterException, IOException {
-    final DlmsDevice dlmsDevice = new DlmsDevice("SMR 5.2 device");
+
     dlmsDevice.setProtocol("SMR", "5.2");
 
     when(this.dlmsObjectConfigService.getAttributeAddress(
@@ -193,19 +209,6 @@ class ClearAlarmRegisterCommandExecutorTest {
 
     when(this.connectionManager.getDlmsMessageListener()).thenReturn(this.dlmsMessageListener);
     when(this.connectionManager.getConnection()).thenReturn(this.dlmsConnection);
-
-    if (expectedExceptionClass != null) {
-      final Throwable actual =
-          catchThrowable(
-              () ->
-                  this.executor.execute(
-                      this.connectionManager, dlmsDevice, this.dto, this.messageMetadata));
-      assertThat(actual).isInstanceOf(expectedExceptionClass);
-    } else {
-      return this.executor.execute(
-          this.connectionManager, dlmsDevice, this.dto, this.messageMetadata);
-    }
-    return null;
   }
 
   void setupAlarmRegister2(final DlmsDevice dlmsDevice)
