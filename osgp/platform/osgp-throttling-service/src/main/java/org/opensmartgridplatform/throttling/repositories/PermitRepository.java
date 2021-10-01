@@ -100,4 +100,6 @@ public interface PermitRepository extends JpaRepository<Permit, Long> {
       @Param("requestId") final int requestId);
 
   Optional<Permit> findByClientIdAndRequestId(int clientId, int requestId);
+
+  long countByClientId(int clientId);
 }

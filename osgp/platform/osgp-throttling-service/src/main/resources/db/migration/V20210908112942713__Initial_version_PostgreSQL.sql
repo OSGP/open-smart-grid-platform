@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS client (
   name character varying(100) NOT NULL,
   registered_at timestamp without time zone NOT NULL,
   unregistered_at timestamp without time zone,
+  last_seen_at timestamp without time zone,
   CONSTRAINT client_registration_name_key UNIQUE (name)
 );
 
@@ -30,6 +31,7 @@ COMMENT ON COLUMN client.id IS 'Unique technical id of this Client.';
 COMMENT ON COLUMN client.name IS 'Business key; identification of this Client.';
 COMMENT ON COLUMN client.registered_at IS 'Creation timestamp for this Client.';
 COMMENT ON COLUMN client.unregistered_at IS 'Deactivation timestamp for this Client.';
+COMMENT ON COLUMN client.last_seen_at IS 'Last seen timestamp for this Client.';
 
 CREATE TABLE IF NOT EXISTS permit (
   id bigserial PRIMARY KEY,

@@ -9,6 +9,8 @@
  */
 package org.opensmartgridplatform.throttling.repositories;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import org.opensmartgridplatform.throttling.entities.Client;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,4 +20,6 @@ import org.springframework.stereotype.Repository;
 public interface ClientRepository extends JpaRepository<Client, Integer> {
 
   Optional<Client> findOneByName(String name);
+
+  List<Client> findByLastSeenAtBefore(Instant threshold);
 }

@@ -35,6 +35,9 @@ public class Client {
 
   private Instant unregisteredAt;
 
+  @Column(nullable = false)
+  private Instant lastSeenAt;
+
   public Client() {
     // no-arg constructor required by JPA specification
   }
@@ -86,6 +89,14 @@ public class Client {
           "Client has already been unregistered at " + this.unregisteredAt);
     }
     this.unregisteredAt = Instant.now();
+  }
+
+  public Instant getLastSeenAt() {
+    return this.lastSeenAt;
+  }
+
+  public void seen() {
+    this.lastSeenAt = Instant.now();
   }
 
   @Override
