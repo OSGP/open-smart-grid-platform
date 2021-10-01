@@ -14,10 +14,10 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SchedulingConfig {
-  @Value("${scheduling.task.cleanup.clients.cron.expression:0 0 3 * * ?}")
+  @Value("${scheduling.task.cleanup.clients.cron.expression:0 0 4 * * ?}")
   private String clientsCronExpression;
 
-  @Value("${scheduling.task.cleanup.permits.cron.expression:0 0 4 * * ?}")
+  @Value("${scheduling.task.cleanup.permits.cron.expression:0 0 3 * * ?}")
   private String permitsCronExpression;
 
   private final OsgpScheduler osgpScheduler;

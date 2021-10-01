@@ -9,6 +9,7 @@
  */
 package org.opensmartgridplatform.throttling.repositories;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import org.opensmartgridplatform.throttling.api.NonUniqueRequestIdException;
@@ -102,4 +103,6 @@ public interface PermitRepository extends JpaRepository<Permit, Long> {
   Optional<Permit> findByClientIdAndRequestId(int clientId, int requestId);
 
   long countByClientId(int clientId);
+
+  List<Permit> findByCreatedAtBefore(Instant minus);
 }
