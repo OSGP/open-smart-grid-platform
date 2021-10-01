@@ -49,6 +49,7 @@ public class PlatformSmartmeteringKeys
   public static final String LLS1_ACTIVE = "Lls1active";
   public static final String USE_HDLC = "UseHdlc";
   public static final String USE_SN = "UseSn";
+  public static final String POLYPHASE = "Polyphase";
   public static final String ICC_ID = "IccId";
   public static final String IN_DEBUG_MODE = "InDebugMode";
   public static final String IN_MAINTENANCE = "InMaintenance";

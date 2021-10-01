@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -72,12 +73,34 @@ public class GetActualPowerQualityCommandExecutorTest {
 
   @Test
   void testRetrievalPublic() throws ProtocolAdapterException {
+    when(this.dlmsDevice.isPolyphase()).thenReturn(true);
     this.executeAndAssert("PUBLIC", GetActualPowerQualityCommandExecutor.getMetadatasPublic());
   }
 
   @Test
   void testRetrievalPrivate() throws ProtocolAdapterException {
+    when(this.dlmsDevice.isPolyphase()).thenReturn(true);
     this.executeAndAssert("PRIVATE", GetActualPowerQualityCommandExecutor.getMetadatasPrivate());
+  }
+
+  @Test
+  void testRetrievalPublicSinglePhase() throws ProtocolAdapterException {
+    when(this.dlmsDevice.isPolyphase()).thenReturn(false);
+    this.executeAndAssert(
+        "PUBLIC",
+        GetActualPowerQualityCommandExecutor.getMetadatasPublic().stream()
+            .filter(PowerQualityObjectMetadata::isExistInSinglephase)
+            .collect(Collectors.toList()));
+  }
+
+  @Test
+  void testRetrievalPrivateSinglePhase() throws ProtocolAdapterException {
+    when(this.dlmsDevice.isPolyphase()).thenReturn(false);
+    this.executeAndAssert(
+        "PRIVATE",
+        GetActualPowerQualityCommandExecutor.getMetadatasPrivate().stream()
+            .filter(PowerQualityObjectMetadata::isExistInSinglephase)
+            .collect(Collectors.toList()));
   }
 
   @Test

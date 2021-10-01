@@ -111,5 +111,8 @@ public class SetDeviceCommunicationSettingsSteps {
     assertThat(device.isUseHdlc())
         .as("Use HDLC should match")
         .isEqualTo(getBoolean(settings, PlatformSmartmeteringKeys.USE_HDLC));
+    assertThat(device.isPolyphase())
+        .as("Polyphase should match")
+        .isEqualTo(getBoolean(settings, PlatformSmartmeteringKeys.POLYPHASE));
   }
 }

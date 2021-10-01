@@ -61,6 +61,8 @@ public class DlmsDevice extends AbstractEntity {
 
   @Column private boolean useSn;
 
+  @Column private boolean polyphase;
+
   @Column private Long mbusIdentificationNumber;
 
   @Column(length = 3)
@@ -107,7 +109,7 @@ public class DlmsDevice extends AbstractEntity {
     return String.format(
         "DlmsDevice[deviceId=%s, lls1=%b, hls3=%b, hls4=%b, hls5=%b, ipAddress=%s, port=%s, "
             + "logicalId=%s, clientId=%s, "
-            + "debug=%b, hdlc=%b, sn=%b, mbusIdentification=%s, mbusManufacturer=%s, "
+            + "debug=%b, hdlc=%b, sn=%b, pphase=%b, mbusIdentification=%s, mbusManufacturer=%s, "
             + "protocolName=%s, "
             + "protocolVersion=%s]",
         this.deviceIdentification,
@@ -122,6 +124,7 @@ public class DlmsDevice extends AbstractEntity {
         this.inDebugMode,
         this.useHdlc,
         this.useSn,
+        this.polyphase,
         this.mbusIdentificationNumber,
         this.mbusManufacturerIdentification,
         this.protocolName,
@@ -285,6 +288,14 @@ public class DlmsDevice extends AbstractEntity {
 
   public void setUseSn(final boolean useSn) {
     this.useSn = useSn;
+  }
+
+  public boolean isPolyphase() {
+    return this.polyphase;
+  }
+
+  public void setPolyphase(final boolean polyphase) {
+    this.polyphase = polyphase;
   }
 
   public Long getMbusIdentificationNumber() {

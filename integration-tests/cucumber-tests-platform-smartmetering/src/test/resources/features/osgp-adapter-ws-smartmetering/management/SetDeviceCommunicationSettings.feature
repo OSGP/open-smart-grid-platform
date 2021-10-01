@@ -16,6 +16,7 @@ Feature: SmartMetering Management - Set Device Communication Settings
       | IpAddressIsStatic        | false             |
       | UseSn                    | false             |
       | UseHdlc                  | true              |
+      | Polyphase                | true              |
     Then the set device communication settings response should be "OK"
     And the device "TEST1024000000001" should be in the database with attributes
       | ChallengeLength          | 16    |
@@ -23,4 +24,4 @@ Feature: SmartMetering Management - Set Device Communication Settings
       | SelectiveAccessSupported | false |
       | IpAddressIsStatic        | false |
       | UseSn                    | false |
-      | UseHdlc                  | true  |
+      | Polyphase                | true  |

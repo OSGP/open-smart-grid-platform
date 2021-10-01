@@ -49,6 +49,11 @@ public class SetDeviceCommunicationSettingsRequestDataFactory {
             parameters,
             PlatformSmartmeteringKeys.USE_HDLC,
             PlatformSmartmeteringDefaults.USE_HDLC));
+    setDeviceCommunicationSettingsData.setPolyphase(
+        getBoolean(
+            parameters,
+            PlatformSmartmeteringKeys.POLYPHASE,
+            PlatformSmartmeteringDefaults.POLYPHASE));
 
     return setDeviceCommunicationSettingsData;
   }
