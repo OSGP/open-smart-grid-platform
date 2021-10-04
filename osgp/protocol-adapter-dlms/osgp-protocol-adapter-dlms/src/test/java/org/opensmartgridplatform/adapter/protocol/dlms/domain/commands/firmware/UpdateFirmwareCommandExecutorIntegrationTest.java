@@ -33,6 +33,10 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.UpdateFirmwareConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.MacGenerationService;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsClassVersion;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.ImageTransfer.ImageTransferProperties;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionManagerStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionStub;
@@ -40,6 +44,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.FirmwareFileCachingRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.FirmwareImageIdentifierCachingRepository;
+import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.AttributeClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.ImageTransferAttribute;
 import org.opensmartgridplatform.dlms.interfaceclass.method.ImageTransferMethod;
@@ -56,6 +61,7 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
   @Mock private FirmwareImageIdentifierCachingRepository firmwareImageIdentifierCachingRepository;
   @Mock private MacGenerationService macGenerationService;
   @Mock private UpdateFirmwareConfig updateFirmwareConfig;
+  @Mock private DlmsObjectConfigService dlmsObjectConfigService;
 
   private DlmsConnectionManagerStub connectionManagerStub;
   private DlmsConnectionStub connectionStub;
@@ -112,7 +118,8 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
             this.firmwareFileCachingRepository,
             this.firmwareImageIdentifierCachingRepository,
             this.macGenerationService,
-            imageTransferProperties);
+            imageTransferProperties,
+            this.dlmsObjectConfigService);
   }
 
   @Test
@@ -153,6 +160,13 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
     final String deviceIdentification = RandomStringUtils.randomAlphabetic(10);
     device.setDeviceIdentification(deviceIdentification);
 
+    final DlmsObject mbusClientSetupObject =
+        new DlmsObject(
+            DlmsObjectType.MBUS_CLIENT_SETUP,
+            InterfaceClass.MBUS_CLIENT.id(),
+            "0-x:24.1.0.255 ",
+            DlmsClassVersion.VERSION_1);
+
     final byte[] firmwareFile =
         org.bouncycastle.util.encoders.Hex.decode(
             "534d523500230011004000310000001000020801e91effffffff500303000000000000831c9d5aa5b4f"
@@ -164,6 +178,8 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
     when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification))
         .thenReturn(firmwareFile);
     when(this.macGenerationService.calculateMac(any(), any(), any())).thenReturn(new byte[16]);
+    when(this.dlmsObjectConfigService.getDlmsObject(device, DlmsObjectType.MBUS_CLIENT_SETUP))
+        .thenReturn(mbusClientSetupObject);
 
     final UpdateFirmwareRequestDto updateFirmwareRequestDto =
         new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);

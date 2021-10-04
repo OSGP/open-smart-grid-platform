@@ -24,7 +24,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Protocol;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
@@ -34,6 +33,10 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
 public class CoupleMbusDeviceCommandExecutorTest {
+
+  @InjectMocks
+  private final CoupleMBusDeviceCommandExecutor commandExecutor =
+      new CoupleMBusDeviceCommandExecutor();
 
   private short channel;
   private Short primaryAddress;
@@ -50,9 +53,6 @@ public class CoupleMbusDeviceCommandExecutorTest {
   @Mock private DlmsConnectionManager conn;
 
   @Mock private DlmsDevice device;
-
-  @InjectMocks
-  private CoupleMBusDeviceCommandExecutor commandExecutor = new CoupleMBusDeviceCommandExecutor();
 
   @BeforeEach
   public void setUp() {
@@ -200,9 +200,9 @@ public class CoupleMbusDeviceCommandExecutorTest {
         .thenReturn(emptyChannel);
     when(this.deviceChannelsHelper.writeUpdatedMbus(
             eq(this.conn),
+            eq(this.device),
             eq(mbusChannelElementsDto),
             eq(emptyChannel.getChannel()),
-            any(Protocol.class),
             any(String.class)))
         .thenReturn(
             new ChannelElementValuesDto(

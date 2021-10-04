@@ -14,7 +14,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.util.encoders.Hex;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.enums.AddressType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -35,6 +34,8 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
  */
 @Slf4j
 public class FirmwareFile {
+
+  private static final byte[] EMPTY_FIRMWARE_VERSION = new byte[] {0, 0, 0, 0};
 
   private byte[] imageData;
 
@@ -110,16 +111,16 @@ public class FirmwareFile {
             .array();
   }
 
-  public void setMbusDeviceIdentificationNumber(final int mbusDeviceIdentificationNumber)
+  public void setMbusDeviceIdentificationNumber(final String mbusDeviceIdentificationNumber)
       throws ProtocolAdapterException {
 
     final byte[] mbusDeviceIdentificationNumberByteArray =
         ByteBuffer.allocate(4)
             .order(ByteOrder.LITTLE_ENDIAN)
-            .putInt(Integer.parseInt(String.valueOf(mbusDeviceIdentificationNumber), 16))
+            .putInt(Integer.parseInt(mbusDeviceIdentificationNumber, 16))
             .array();
 
-    this.checkWildcard(StringUtils.leftPad(String.valueOf(mbusDeviceIdentificationNumber), 8, '0'));
+    this.checkWildcard(mbusDeviceIdentificationNumber);
 
     final ByteBuffer buffer = ByteBuffer.wrap(this.imageData);
     buffer.position(22);
@@ -239,8 +240,10 @@ public class FirmwareFile {
     imageIdentifier.put(addressField.getMbusManufacturerId());
     imageIdentifier.put(addressField.getMbusVersion());
     imageIdentifier.put(addressField.getMbusDeviceType());
-    //    imageIdentifier.put(header.getFirmwareImageVersion());
-    imageIdentifier.put(new byte[] {0, 0, 0, 0}); // Add zeroes instead of firmware version
+    // There is no validation on the Firmware ID part of the imageIdentifier
+    // for the meters tested so far. As long as no meters are available that explicitly
+    // validate this part empty bytes are placed here
+    imageIdentifier.put(EMPTY_FIRMWARE_VERSION);
 
     return imageIdentifier.array();
   }

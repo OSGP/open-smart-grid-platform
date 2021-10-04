@@ -12,7 +12,12 @@ import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.MacGenerationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsClassVersion;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.FirmwareFile;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.IdentificationNumber;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
@@ -44,25 +49,28 @@ public class UpdateFirmwareCommandExecutor
   private static final String EXCEPTION_MSG_DEVICE_HAS_NO_MBUS_IDENTIFICATION_NUMBER =
       "Device {} has no M-Bus identification number.";
 
-  private DlmsDeviceRepository dlmsDeviceRepository;
+  private final DlmsDeviceRepository dlmsDeviceRepository;
 
   private final FirmwareFileCachingRepository firmwareFileCachingRepository;
   private final FirmwareImageIdentifierCachingRepository firmwareImageIdentifierCachingRepository;
-  private final ImageTransfer.ImageTransferProperties imageTransferProperties;
   private final MacGenerationService macGenerationService;
+  private final ImageTransfer.ImageTransferProperties imageTransferProperties;
+  private final DlmsObjectConfigService dlmsObjectConfigService;
 
   public UpdateFirmwareCommandExecutor(
       final DlmsDeviceRepository dlmsDeviceRepository,
       final FirmwareFileCachingRepository firmwareFileCachingRepository,
       final FirmwareImageIdentifierCachingRepository firmwareImageIdentifierCachingRepository,
       final MacGenerationService macGenerationService,
-      final ImageTransfer.ImageTransferProperties imageTransferProperties) {
+      final ImageTransfer.ImageTransferProperties imageTransferProperties,
+      final DlmsObjectConfigService dlmsObjectConfigService) {
     super(UpdateFirmwareRequestDto.class);
     this.dlmsDeviceRepository = dlmsDeviceRepository;
     this.firmwareFileCachingRepository = firmwareFileCachingRepository;
     this.firmwareImageIdentifierCachingRepository = firmwareImageIdentifierCachingRepository;
     this.macGenerationService = macGenerationService;
     this.imageTransferProperties = imageTransferProperties;
+    this.dlmsObjectConfigService = dlmsObjectConfigService;
   }
 
   @Override
@@ -174,13 +182,26 @@ public class UpdateFirmwareCommandExecutor
               EXCEPTION_MSG_DEVICE_HAS_NO_MBUS_IDENTIFICATION_NUMBER, deviceIdentification));
     }
 
-    // The MbusIdentificationNumber from the osgp_adapter_protocol_dlms database
-    // is used directly as int value in FirmwareFile header and subsequently the ImageIdentifier.
-    // This only works for SMR5+ devices
+    final IdentificationNumber identificationNumber;
+
+    if (this.mbusIdentificationIsBcdRepresentatyionAsLong(mbusDevice)) {
+      log.debug(
+          "Creating M-Bus Identification number from BCD representation as along (as stored in database); {}",
+          mbusIdentificationNumberFromDatabase);
+      identificationNumber =
+          IdentificationNumber.fromBcdRepresentationAsLong(mbusIdentificationNumberFromDatabase);
+    } else {
+      log.debug(
+          "Creating M-Bus Identification number from numerical representation (as stored in database); {}",
+          mbusIdentificationNumberFromDatabase);
+      identificationNumber =
+          IdentificationNumber.fromNumericalRepresentation(mbusIdentificationNumberFromDatabase);
+    }
+
     log.debug(
-        "Setting M-Bus Identification number: {} (database value is not converted)",
-        mbusIdentificationNumberFromDatabase.intValue());
-    firmwareFile.setMbusDeviceIdentificationNumber(mbusIdentificationNumberFromDatabase.intValue());
+        "Setting M-Bus Identification number: {}",
+        identificationNumber.getNumericalRepresentation());
+    firmwareFile.setMbusDeviceIdentificationNumber(identificationNumber.getTextualRepresentation());
 
     final byte[] calculatedMac =
         this.macGenerationService.calculateMac(
@@ -191,6 +212,15 @@ public class UpdateFirmwareCommandExecutor
     firmwareFile.setSecurityByteArray(calculatedMac);
 
     return firmwareFile;
+  }
+
+  private boolean mbusIdentificationIsBcdRepresentatyionAsLong(final DlmsDevice mbusDevice)
+      throws ProtocolAdapterException {
+
+    final DlmsObject mbusClientSetupObject =
+        this.dlmsObjectConfigService.getDlmsObject(mbusDevice, DlmsObjectType.MBUS_CLIENT_SETUP);
+
+    return mbusClientSetupObject.getVersion().equals(DlmsClassVersion.VERSION_0);
   }
 
   private byte[] getImageIdentifier(

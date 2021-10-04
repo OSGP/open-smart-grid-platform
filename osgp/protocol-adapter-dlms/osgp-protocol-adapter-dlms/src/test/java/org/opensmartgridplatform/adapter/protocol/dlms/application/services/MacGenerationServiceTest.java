@@ -22,6 +22,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.FirmwareFile;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.IdentificationNumber;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -34,18 +35,36 @@ public class MacGenerationServiceTest {
   @Mock SecretManagementService secretManagementService;
 
   final byte[] firmwareUpdateAuthenticationKey = Hex.decode("F9AA0123456789012345D7AFCCD41BD1");
+  // final byte[] firmwareUpdateAuthenticationKey = Hex.decode("A0EAA250258C1E80B5E7745F8371FA02");
+
   final String expectedIv = "e91e40050010500300400011";
   final String expectedMac = "9a72acd7a949861cc4df4612cbdbdef6";
 
+  // final String expectedIv = "e23029440059500308000903";
+  // final String expectedMac = "905e8dbe73d70b2f6eb62d7902acdbae";
+
   private static byte[] byteArray;
-  private static final int mbusDeviceIdentificationNumber = Integer.parseInt("10000540");
+
+  /*  private static final int mbusDeviceIdentificationNumber =
+        IdentificationNumber.fromTextualRepresentation("10000540")
+            .getNumericalRepresentation()
+            //          .getIdentificationNumberInBcdRepresentationAsLong()
+            .intValue();
+  */
+  private static final String mbusDeviceIdentificationNumber =
+      IdentificationNumber.fromTextualRepresentation("10000540").getTextualRepresentation();
+  // private static final String mbusDeviceIdentificationNumber =
+  //    IdentificationNumber.fromTextualRepresentation("59004429").getTextualRepresentation();
+
   private static final String deviceIdentification = "G0035161000054016";
+
   private static final MessageMetadata messageMetadata =
       MessageMetadata.newBuilder().withCorrelationUid("123456").build();
 
   @BeforeAll
   public static void init() throws IOException {
     final String filename = "test-short-v00400011-snffffffff-newmods.bin";
+    // final String filename = "SMR5_811767-08.00.09.03-LK-NL (Prod key).ota";
     byteArray = Files.readAllBytes(new ClassPathResource(filename).getFile().toPath());
   }
 
@@ -59,6 +78,7 @@ public class MacGenerationServiceTest {
         .thenReturn(this.firmwareUpdateAuthenticationKey);
 
     final FirmwareFile firmwareFile = this.createFirmwareFile();
+
     final byte[] calculatedMac =
         this.macGenerationService.calculateMac(messageMetadata, deviceIdentification, firmwareFile);
 
