@@ -96,16 +96,15 @@ public class DlmsConnectionFactory {
       final DlmsMessageListener dlmsMessageListener,
       final SecurityLevel securityLevel)
       throws OsgpException {
-    try (final DlmsConnectionManager connectionManager =
+    final DlmsConnectionManager connectionManager =
         new DlmsConnectionManager(
             this.connectorFor(securityLevel),
             messageMetadata,
             device,
             dlmsMessageListener,
-            this.domainHelperService)) {
-      connectionManager.connect();
-      return connectionManager;
-    }
+            this.domainHelperService);
+    connectionManager.connect();
+    return connectionManager;
   }
 
   private DlmsConnector connectorFor(final SecurityLevel securityLevel) throws FunctionalException {
