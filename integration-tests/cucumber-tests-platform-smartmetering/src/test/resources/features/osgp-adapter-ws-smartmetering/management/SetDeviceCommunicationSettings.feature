@@ -6,22 +6,30 @@ Feature: SmartMetering Management - Set Device Communication Settings
 
   Scenario: Set device communication settings on a single meter
     Given a dlms device
-      | DeviceIdentification | TEST1024000000001 |
-      | DeviceType           | SMART_METER_E     |
+      | DeviceIdentification     | TEST1024000000001 |
+      | DeviceType               | SMART_METER_E     |
+      | ChallengeLength          | 8                 |
+      | WithListSupported        | true              |
+      | SelectiveAccessSupported | true              |
+      | IpAddressIsStatic        | true              |
+      | UseSn                    | true              |
+      | UseHdlc                  | true              |
+      | Polyphase                | true              |
     When the set device communication settings request is received
       | DeviceIdentification     | TEST1024000000001 |
       | ChallengeLength          | 16                |
-      | WithListSupported        | true              |
+      | WithListSupported        | false             |
       | SelectiveAccessSupported | false             |
       | IpAddressIsStatic        | false             |
       | UseSn                    | false             |
-      | UseHdlc                  | true              |
-      | Polyphase                | true              |
+      | UseHdlc                  | false             |
+      | Polyphase                | false             |
     Then the set device communication settings response should be "OK"
     And the device "TEST1024000000001" should be in the database with attributes
       | ChallengeLength          | 16    |
-      | WithListSupported        | true  |
+      | WithListSupported        | false |
       | SelectiveAccessSupported | false |
       | IpAddressIsStatic        | false |
       | UseSn                    | false |
-      | Polyphase                | true  |
+      | UseHdlc                  | false |
+      | Polyphase                | false |

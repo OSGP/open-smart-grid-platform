@@ -89,7 +89,7 @@ public class GetActualPowerQualityCommandExecutorTest {
     this.executeAndAssert(
         "PUBLIC",
         GetActualPowerQualityCommandExecutor.getMetadatasPublic().stream()
-            .filter(PowerQualityObjectMetadata::isExistInSinglephase)
+            .filter(metadata -> !metadata.isPolyphaseOnly())
             .collect(Collectors.toList()));
   }
 
@@ -99,7 +99,7 @@ public class GetActualPowerQualityCommandExecutorTest {
     this.executeAndAssert(
         "PRIVATE",
         GetActualPowerQualityCommandExecutor.getMetadatasPrivate().stream()
-            .filter(PowerQualityObjectMetadata::isExistInSinglephase)
+            .filter(metadata -> !metadata.isPolyphaseOnly())
             .collect(Collectors.toList()));
   }
 
