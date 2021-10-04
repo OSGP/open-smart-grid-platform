@@ -174,7 +174,6 @@ public class FirmwareFileTest {
 
     final FirmwareFile firmwareFile = new FirmwareFile(byteArray);
     firmwareFile.setMbusDeviceIdentificationNumber(mbusDeviceIdentificationNumberInput);
-    log.debug(firmwareFile.getHeader().toString());
 
     assertThat(
             firmwareFile

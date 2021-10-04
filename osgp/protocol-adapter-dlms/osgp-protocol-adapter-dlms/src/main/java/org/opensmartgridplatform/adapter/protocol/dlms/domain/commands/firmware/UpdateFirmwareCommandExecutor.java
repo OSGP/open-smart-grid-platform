@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware
 
 import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.util.encoders.Hex;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.MacGenerationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsClassVersion;
@@ -95,8 +96,12 @@ public class UpdateFirmwareCommandExecutor
     try {
       this.prepare(transfer);
       this.transfer(transfer);
-      this.verify(transfer);
-      this.activate(transfer);
+      if (!firmwareFile.isMbusFirmware()) {
+        this.verify(transfer);
+        this.activate(transfer);
+      } else {
+        this.activateWithoutVerification(transfer);
+      }
       return new UpdateFirmwareResponseDto(firmwareIdentification);
     } catch (final ImageTransferException | ProtocolAdapterException e) {
       throw new ProtocolAdapterException(EXCEPTION_MSG_UPDATE_FAILED, e);
@@ -132,6 +137,10 @@ public class UpdateFirmwareCommandExecutor
     } else {
       throw new ProtocolAdapterException("An unknown error occurred while updating firmware.");
     }
+  }
+
+  private void activateWithoutVerification(final ImageTransfer transfer) throws OsgpException {
+    transfer.activateImage();
   }
 
   private FirmwareFile getFirmwareFile(
@@ -175,11 +184,36 @@ public class UpdateFirmwareCommandExecutor
           String.format(EXCEPTION_MSG_DEVICE_NOT_AVAILABLE_IN_DATABASE, deviceIdentification));
     }
 
+    final IdentificationNumber identificationNumber = this.getIdentificationNumber(mbusDevice);
+
+    log.debug(
+        "Setting M-Bus Identification number: {}",
+        identificationNumber.getNumericalRepresentation());
+    firmwareFile.setMbusDeviceIdentificationNumber(identificationNumber.getTextualRepresentation());
+
+    log.debug(
+        "Firmware file header after setting M-Bus Identification number: {}",
+        firmwareFile.getHeader());
+
+    final byte[] calculatedMac =
+        this.macGenerationService.calculateMac(
+            messageMetadata, mbusDevice.getDeviceIdentification(), firmwareFile);
+
+    log.debug("Calculated MAC: {}", Hex.toHexString(calculatedMac));
+
+    firmwareFile.setSecurityByteArray(calculatedMac);
+
+    return firmwareFile;
+  }
+
+  private IdentificationNumber getIdentificationNumber(final DlmsDevice mbusDevice)
+      throws ProtocolAdapterException {
     final Long mbusIdentificationNumberFromDatabase = mbusDevice.getMbusIdentificationNumber();
     if (mbusIdentificationNumberFromDatabase == null) {
       throw new ProtocolAdapterException(
           String.format(
-              EXCEPTION_MSG_DEVICE_HAS_NO_MBUS_IDENTIFICATION_NUMBER, deviceIdentification));
+              EXCEPTION_MSG_DEVICE_HAS_NO_MBUS_IDENTIFICATION_NUMBER,
+              mbusDevice.getDeviceIdentification()));
     }
 
     final IdentificationNumber identificationNumber;
@@ -197,21 +231,7 @@ public class UpdateFirmwareCommandExecutor
       identificationNumber =
           IdentificationNumber.fromNumericalRepresentation(mbusIdentificationNumberFromDatabase);
     }
-
-    log.debug(
-        "Setting M-Bus Identification number: {}",
-        identificationNumber.getNumericalRepresentation());
-    firmwareFile.setMbusDeviceIdentificationNumber(identificationNumber.getTextualRepresentation());
-
-    final byte[] calculatedMac =
-        this.macGenerationService.calculateMac(
-            messageMetadata, mbusDevice.getDeviceIdentification(), firmwareFile);
-
-    log.debug("Calculated MAC: {}", Arrays.toString(calculatedMac));
-
-    firmwareFile.setSecurityByteArray(calculatedMac);
-
-    return firmwareFile;
+    return identificationNumber;
   }
 
   private boolean mbusIdentificationIsBcdRepresentatyionAsLong(final DlmsDevice mbusDevice)

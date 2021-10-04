@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import java.nio.ByteBuffer;
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.engines.AESEngine;
 import org.bouncycastle.crypto.macs.GMac;
@@ -16,6 +17,7 @@ import org.bouncycastle.crypto.modes.GCMBlockCipher;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
 import org.bouncycastle.util.Arrays;
+import org.bouncycastle.util.encoders.Hex;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.FirmwareFile;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.FirmwareFileHeader;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.FirmwareFileHeaderAddressField;
@@ -51,6 +53,7 @@ import org.springframework.stereotype.Service;
  * </ul>
  */
 @Service
+@Slf4j
 public class MacGenerationService {
 
   private static final int HEADER_LENGTH = 35;
@@ -69,6 +72,8 @@ public class MacGenerationService {
     this.validateHeader(header);
 
     final byte[] iv = this.createIV(firmwareFile);
+
+    log.debug("Calculated IV: {}", Hex.toHexString(iv));
 
     final byte[] decryptedFirmwareUpdateAuthenticationKey =
         this.secretManagementService.getKey(
