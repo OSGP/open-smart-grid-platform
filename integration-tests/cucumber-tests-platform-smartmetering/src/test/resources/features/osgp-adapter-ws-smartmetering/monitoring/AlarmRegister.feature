@@ -10,17 +10,47 @@ Feature: SmartMetering Monitoring - Alarm Register
       | DeviceIdentification     | TEST1024000000001 |
       | DeviceType               | SMART_METER_E     |
       | SelectiveAccessSupported | true              |
+      | Protocol                 | SMR               |
+      | ProtocolVersion          | 5.0.0             |
 
   Scenario: Read the alarm register from a device
-    Given device "TEST1024000000001" has some alarms registered
+    Given device "TEST1024000000001" has alarm register "1" with some value
     When the get read alarm register request is received
       | DeviceIdentification | TEST1024000000001 |
     Then the alarm register should be returned
       | DeviceIdentification | TEST1024000000001 |
 
-  Scenario: Clear alarm register
+  Scenario: Clear alarm register SMR 5.1
+    Given a dlms device
+      | DeviceIdentification     | TEST1024000000002 |
+      | DeviceType               | SMART_METER_E     |
+      | SelectiveAccessSupported | true              |
+      | Protocol                 | SMR               |
+      | ProtocolVersion          | 5.1               |
+    And device "TEST1024000000002" has alarm register "1" with some value
+    And device "TEST1024000000002" has alarm register "2" with some value
     When the Clear Alarm Code request is received
-      | DeviceIdentification | TEST1024000000001 |
+      | DeviceIdentification | TEST1024000000002 |
     Then the Clear Alarm Code response should be returned
-      | DeviceIdentification | TEST1024000000001 |
+      | DeviceIdentification | TEST1024000000002 |
       | Result               | OK                |
+    And alarm register "1" of device "TEST1024000000002" has been cleared
+    And alarm register "2" of device "TEST1024000000002" has not been cleared
+
+  Scenario: Clear both alarm registers with SMR 5.2
+    Given a dlms device
+      | DeviceIdentification     | TEST1029000000001 |
+      | DeviceType               | SMART_METER_E     |
+      | SelectiveAccessSupported | true              |
+      | Protocol                 | SMR               |
+      | ProtocolVersion          | 5.2               |
+      | Port                     |              1029 |
+    And device "TEST1029000000001" has alarm register "1" with some value
+    And device "TEST1029000000001" has alarm register "2" with some value
+    When the Clear Alarm Code request is received
+      | DeviceIdentification | TEST1029000000001 |
+    Then the Clear Alarm Code response should be returned
+      | DeviceIdentification | TEST1029000000001 |
+      | Result               | OK                |
+    And alarm register "1" of device "TEST1029000000001" has been cleared
+    And alarm register "2" of device "TEST1029000000001" has been cleared

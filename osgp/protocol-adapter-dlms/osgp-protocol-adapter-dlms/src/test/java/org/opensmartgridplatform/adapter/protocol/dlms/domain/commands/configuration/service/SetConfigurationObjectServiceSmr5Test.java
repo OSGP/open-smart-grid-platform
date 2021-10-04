@@ -36,6 +36,7 @@ public class SetConfigurationObjectServiceSmr5Test {
   public void handles() {
     assertThat(this.instance.handles(Protocol.SMR_5_0_0)).isTrue();
     assertThat(this.instance.handles(Protocol.SMR_5_1)).isTrue();
+    assertThat(this.instance.handles(Protocol.SMR_5_2)).isTrue();
     assertThat(this.instance.handles(Protocol.DSMR_4_2_2)).isFalse();
     assertThat(this.instance.handles(Protocol.OTHER_PROTOCOL)).isFalse();
     assertThat(this.instance.handles(null)).isFalse();
