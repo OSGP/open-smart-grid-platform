@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 
 import java.io.Serializable;
+import java.util.function.Consumer;
 import javax.jms.JMSException;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SystemEventService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
@@ -51,8 +52,11 @@ public abstract class DlmsConnectionMessageProcessor {
 
   @Autowired private SystemEventService systemEventService;
 
-  public DlmsConnectionManager createConnectionForDevice(
-      final DlmsDevice device, final MessageMetadata messageMetadata) throws OsgpException {
+  public void handleConnectionForDevice(
+      final DlmsDevice device,
+      final MessageMetadata messageMetadata,
+      final Consumer<DlmsConnectionManager> taskForConnectionManager)
+      throws OsgpException {
 
     this.throttlingService.openConnection();
 
@@ -60,8 +64,8 @@ public abstract class DlmsConnectionMessageProcessor {
         this.createMessageListenerForDeviceConnection(device, messageMetadata);
 
     try {
-      return this.dlmsConnectionHelper.createConnectionForDevice(
-          messageMetadata, device, dlmsMessageListener);
+      this.dlmsConnectionHelper.handleConnectionForDevice(
+          messageMetadata, device, dlmsMessageListener, taskForConnectionManager);
     } catch (final Exception e) {
       this.throttlingService.closeConnection();
       throw e;
@@ -98,7 +102,7 @@ public abstract class DlmsConnectionMessageProcessor {
       return;
     }
 
-    this.closeDlmsConnection(device, conn);
+    this.setClosingDlmsConnectionMessageListener(device, conn);
 
     this.throttlingService.closeConnection();
 
@@ -109,15 +113,11 @@ public abstract class DlmsConnectionMessageProcessor {
     }
   }
 
-  protected void closeDlmsConnection(final DlmsDevice device, final DlmsConnectionManager conn) {
+  protected void setClosingDlmsConnectionMessageListener(
+      final DlmsDevice device, final DlmsConnectionManager conn) {
     LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
     final DlmsMessageListener dlmsMessageListener = conn.getDlmsMessageListener();
     dlmsMessageListener.setDescription("Close connection");
-    try {
-      conn.close();
-    } catch (final Exception e) {
-      LOGGER.error("Error while closing connection", e);
-    }
   }
 
   /* package private */

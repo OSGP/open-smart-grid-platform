@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
@@ -52,27 +53,33 @@ public class InvocationCounterManager {
 
   private void initializeWithInvocationCounterStoredOnDevice(
       final MessageMetadata messageMetadata, final DlmsDevice device) throws OsgpException {
-    try (final DlmsConnectionManager connectionManager =
-        this.connectionFactory.getPublicClientConnection(messageMetadata, device, null)) {
-      final Long previousKnownInvocationCounter = device.getInvocationCounter();
-      final Long invocationCounterFromDevice = this.getInvocationCounter(connectionManager);
-      if (Objects.equals(previousKnownInvocationCounter, invocationCounterFromDevice)) {
-        LOGGER.warn(
-            "Initializing invocationCounter of device {} with the value that was already known: {}",
-            device.getDeviceIdentification(),
-            previousKnownInvocationCounter);
-      } else {
-        device.setInvocationCounter(invocationCounterFromDevice);
-        LOGGER.info(
-            "Property invocationCounter of device {} initialized to the value of the invocation counter "
-                + "stored on the device: {}{}",
-            device.getDeviceIdentification(),
-            device.getInvocationCounter(),
-            previousKnownInvocationCounter == null
-                ? ""
-                : " (previous known value: " + previousKnownInvocationCounter + ")");
-      }
-    }
+    final Long previousKnownInvocationCounter = device.getInvocationCounter();
+    final Consumer<DlmsConnectionManager> taskForConnectionManager =
+        connectionManager -> {
+          try {
+            final Long invocationCounterFromDevice = this.getInvocationCounter(connectionManager);
+            if (Objects.equals(previousKnownInvocationCounter, invocationCounterFromDevice)) {
+              LOGGER.warn(
+                  "Initializing invocationCounter of device {} with the value that was already known: {}",
+                  device.getDeviceIdentification(),
+                  previousKnownInvocationCounter);
+            } else {
+              device.setInvocationCounter(invocationCounterFromDevice);
+              LOGGER.info(
+                  "Property invocationCounter of device {} initialized to the value of the invocation counter "
+                      + "stored on the device: {}{}",
+                  device.getDeviceIdentification(),
+                  device.getInvocationCounter(),
+                  previousKnownInvocationCounter == null
+                      ? ""
+                      : " (previous known value: " + previousKnownInvocationCounter + ")");
+            }
+          } catch (final FunctionalException e) {
+            LOGGER.warn("Something went wrong while trying to get the invocation counter", e);
+          }
+        };
+    this.connectionFactory.handlePublicClientConnection(
+        messageMetadata, device, null, taskForConnectionManager);
   }
 
   private long getInvocationCounter(final DlmsConnectionManager connectionManager)

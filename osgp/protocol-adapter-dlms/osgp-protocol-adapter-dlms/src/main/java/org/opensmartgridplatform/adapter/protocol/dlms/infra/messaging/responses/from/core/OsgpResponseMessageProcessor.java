@@ -25,6 +25,7 @@ import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.opensmartgridplatform.shared.utils.ThrowingConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,43 +77,57 @@ public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessage
   @Override
   public void processMessage(final ObjectMessage message) throws JMSException {
     LOGGER.debug("Processing {} request message", this.messageType);
-    MessageMetadata messageMetadata = null;
-    DlmsConnectionManager conn = null;
-    DlmsDevice device = null;
 
-    try {
-      messageMetadata = MessageMetadata.fromMessage(message);
+    final MessageMetadata messageMetadata = MessageMetadata.fromMessage(message);
 
-      device = this.domainHelperService.findDlmsDevice(messageMetadata);
+    final ThrowingConsumer<DlmsConnectionManager> taskForConnectionManager =
+        conn -> {
+          try {
+            final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
 
-      LOGGER.info(
-          "{} called for device: {} for organisation: {}",
-          message.getJMSType(),
-          messageMetadata.getDeviceIdentification(),
-          messageMetadata.getOrganisationIdentification());
+            LOGGER.info(
+                "{} called for device: {} for organisation: {}",
+                message.getJMSType(),
+                messageMetadata.getDeviceIdentification(),
+                messageMetadata.getOrganisationIdentification());
 
-      if (this.usesDeviceConnection()) {
-        conn = this.createConnectionForDevice(device, messageMetadata);
-        this.handleMessage(conn, device, message.getObject());
-      } else {
-        this.handleMessage(device, message);
+            if (this.usesDeviceConnection()) {
+              this.handleMessage(
+                  conn,
+                  this.domainHelperService.findDlmsDevice(messageMetadata),
+                  message.getObject());
+            } else {
+              this.handleMessage(device, message);
+            }
+          } catch (final JMSException exception) {
+            this.logJmsException(LOGGER, exception, messageMetadata);
+          } catch (final Exception exception) {
+            // Return original request + exception
+            if (!(exception instanceof SilentException)) {
+              LOGGER.error("Unexpected exception during {}", this.messageType.name(), exception);
+            }
+
+            this.sendResponseMessage(
+                messageMetadata,
+                ResponseMessageResultType.NOT_OK,
+                exception,
+                this.responseMessageSender,
+                message.getObject());
+          } finally {
+            final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
+            this.doConnectionPostProcessing(device, conn, messageMetadata);
+          }
+        };
+
+    if (this.usesDeviceConnection()) {
+      try {
+        this.handleConnectionForDevice(
+            this.domainHelperService.findDlmsDevice(messageMetadata),
+            messageMetadata,
+            taskForConnectionManager);
+      } catch (final OsgpException e) {
+        LOGGER.error("Something went wrong with the DlmsConnection", e);
       }
-    } catch (final JMSException exception) {
-      this.logJmsException(LOGGER, exception, messageMetadata);
-    } catch (final Exception exception) {
-      // Return original request + exception
-      if (!(exception instanceof SilentException)) {
-        LOGGER.error("Unexpected exception during {}", this.messageType.name(), exception);
-      }
-
-      this.sendResponseMessage(
-          messageMetadata,
-          ResponseMessageResultType.NOT_OK,
-          exception,
-          this.responseMessageSender,
-          message.getObject());
-    } finally {
-      this.doConnectionPostProcessing(device, conn, messageMetadata);
     }
   }
 

@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
 import java.time.Duration;
+import java.util.function.Consumer;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.DevicePingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
@@ -54,13 +55,14 @@ public class DlmsConnectionHelper {
   }
 
   /**
-   * Returns an open connection to the device, taking care of details like initializing the
+   * Passes a task for the connection to the device, taking care of details like initializing the
    * invocation counter when required.
    */
-  public DlmsConnectionManager createConnectionForDevice(
+  public void handleConnectionForDevice(
       final MessageMetadata messageMetadata,
       final DlmsDevice device,
-      final DlmsMessageListener messageListener)
+      final DlmsMessageListener messageListener,
+      final Consumer<DlmsConnectionManager> taskForConnectionManager)
       throws OsgpException {
 
     final boolean pingDevice =
@@ -70,14 +72,15 @@ public class DlmsConnectionHelper {
     final Duration waitBeforeCreatingTheConnection =
         initializeInvocationCounter ? this.delayBetweenDlmsConnections : NO_DELAY;
 
-    return this.createConnectionForDevice(
+    this.handleConnectionForDevice(
         device,
         messageListener,
         pingDevice,
         initializeInvocationCounter,
         NO_DELAY,
         waitBeforeCreatingTheConnection,
-        messageMetadata);
+        messageMetadata,
+        taskForConnectionManager);
   }
 
   private void delay(final Duration duration) {
@@ -92,14 +95,15 @@ public class DlmsConnectionHelper {
     }
   }
 
-  private DlmsConnectionManager createConnectionForDevice(
+  private void handleConnectionForDevice(
       final DlmsDevice device,
       final DlmsMessageListener messageListener,
       final boolean pingDevice,
       final boolean initializeInvocationCounter,
       final Duration waitBeforeInitializingInvocationCounter,
       final Duration waitBeforeCreatingTheConnection,
-      final MessageMetadata messageMetadata)
+      final MessageMetadata messageMetadata,
+      final Consumer<DlmsConnectionManager> taskForConnectionManager)
       throws OsgpException {
 
     if (pingDevice) {
@@ -113,7 +117,8 @@ public class DlmsConnectionHelper {
 
     try {
       this.delay(waitBeforeCreatingTheConnection);
-      return this.connectionFactory.getConnection(messageMetadata, device, messageListener);
+      this.connectionFactory.handleConnection(
+          messageMetadata, device, messageListener, taskForConnectionManager);
     } catch (final ConnectionException e) {
       if ((device.needsInvocationCounter() && this.indicatesInvocationCounterOutOfSync(e))
           && !initializeInvocationCounter) {
@@ -128,14 +133,15 @@ public class DlmsConnectionHelper {
          * been pinged if that was appropriate. Make sure the invocation counter is initialized,
          * regardless of whether it has already been initialized before or not.
          */
-        return this.createConnectionForDevice(
+        this.handleConnectionForDevice(
             device,
             messageListener,
             false,
             true,
             this.delayBetweenDlmsConnections,
             this.delayBetweenDlmsConnections,
-            messageMetadata);
+            messageMetadata,
+            taskForConnectionManager);
       }
       /*
        * The connection exception is assumed not to be related to the invocation counter, or has

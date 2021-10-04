@@ -25,6 +25,7 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.opensmartgridplatform.shared.utils.ThrowingConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,56 +47,67 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
       "squid:S1193") // SilentException cannot be caught since it does not extend Exception.
   @Override
   public void processMessage(final ObjectMessage message) throws JMSException {
-    LOGGER.debug("Processing {} response message", this.messageType.name());
-    MessageMetadata messageMetadata = null;
 
-    DlmsConnectionManager conn = null;
-    DlmsDevice device = null;
+    final String messageTypeName = this.messageType.name();
+    LOGGER.debug("Processing {} response message", messageTypeName);
+
+    // Get metadata from message and update message type to update
+    // firmware
+    final MessageMetadata messageMetadata =
+        new MessageMetadata.Builder(MessageMetadata.fromMessage(message))
+            .withMessageType(MessageType.UPDATE_FIRMWARE.name())
+            .build();
+
+    final ThrowingConsumer<DlmsConnectionManager> taskForConnectionManager =
+        conn -> {
+          try {
+            final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
+
+            LOGGER.info(
+                "{} called for device: {} for organisation: {}",
+                message.getJMSType(),
+                messageMetadata.getDeviceIdentification(),
+                messageMetadata.getOrganisationIdentification());
+
+            final Serializable response;
+
+            response = this.handleMessage(conn, device, message.getObject());
+
+            // Send response
+            this.sendResponseMessage(
+                messageMetadata,
+                ResponseMessageResultType.OK,
+                null,
+                this.responseMessageSender,
+                response);
+
+          } catch (final JMSException exception) {
+            this.logJmsException(LOGGER, exception, messageMetadata);
+          } catch (final Exception exception) {
+            // Return original request + exception
+            if (!(exception instanceof SilentException)) {
+              LOGGER.error("Unexpected exception during {}", this.messageType.name(), exception);
+            }
+
+            this.sendResponseMessage(
+                messageMetadata,
+                ResponseMessageResultType.NOT_OK,
+                exception,
+                this.responseMessageSender,
+                this.createUpdateFirmwareRequestDto(message));
+          } finally {
+            final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
+            this.doConnectionPostProcessing(device, conn, messageMetadata);
+          }
+        };
 
     try {
-      // Get metadata from message and update message type to update
-      // firmware
-      messageMetadata =
-          new MessageMetadata.Builder(MessageMetadata.fromMessage(message))
-              .withMessageType(MessageType.UPDATE_FIRMWARE.name())
-              .build();
-
-      device = this.domainHelperService.findDlmsDevice(messageMetadata);
-
-      LOGGER.info(
-          "{} called for device: {} for organisation: {}",
-          message.getJMSType(),
-          messageMetadata.getDeviceIdentification(),
-          messageMetadata.getOrganisationIdentification());
-
-      final Serializable response;
-      conn = this.createConnectionForDevice(device, messageMetadata);
-      response = this.handleMessage(conn, device, message.getObject());
-
-      // Send response
-      this.sendResponseMessage(
+      this.handleConnectionForDevice(
+          this.domainHelperService.findDlmsDevice(messageMetadata),
           messageMetadata,
-          ResponseMessageResultType.OK,
-          null,
-          this.responseMessageSender,
-          response);
-
-    } catch (final JMSException exception) {
-      this.logJmsException(LOGGER, exception, messageMetadata);
-    } catch (final Exception exception) {
-      // Return original request + exception
-      if (!(exception instanceof SilentException)) {
-        LOGGER.error("Unexpected exception during {}", this.messageType.name(), exception);
-      }
-
-      this.sendResponseMessage(
-          messageMetadata,
-          ResponseMessageResultType.NOT_OK,
-          exception,
-          this.responseMessageSender,
-          this.createUpdateFirmwareRequestDto(message));
-    } finally {
-      this.doConnectionPostProcessing(device, conn, messageMetadata);
+          taskForConnectionManager);
+    } catch (final OsgpException e) {
+      LOGGER.error("Something went wrong with the DlmsConnection", e);
     }
   }
 

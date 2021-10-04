@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
+import java.util.function.Consumer;
 import org.openmuc.jdlms.DlmsConnection;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -54,17 +55,22 @@ public class DlmsConnectionFactory {
    *     DlmsConnection} that is initialized if the given {@code device} is in {@link
    *     DlmsDevice#isInDebugMode() debug mode}. If this is {@code null} no DLMS device
    *     communication debug logging will be done.
-   * @return a manager providing access to an open DLMS connection as well as an optional message
-   *     listener active in the connection.
+   * @param taskForConnectionManager A task for the manager providing access to an open DLMS
+   *     connection as well as an optional message listener active in the connection.
    * @throws OsgpException in case of a TechnicalException or FunctionalException
    */
-  public DlmsConnectionManager getConnection(
+  public void handleConnection(
       final MessageMetadata messageMetadata,
       final DlmsDevice device,
-      final DlmsMessageListener dlmsMessageListener)
+      final DlmsMessageListener dlmsMessageListener,
+      final Consumer<DlmsConnectionManager> taskForConnectionManager)
       throws OsgpException {
-    return this.newConnectionWithSecurityLevel(
-        messageMetadata, device, dlmsMessageListener, SecurityLevel.forDevice(device));
+    this.handleNewConnectionWithSecurityLevel(
+        messageMetadata,
+        device,
+        dlmsMessageListener,
+        SecurityLevel.forDevice(device),
+        taskForConnectionManager);
   }
 
   /**
@@ -77,34 +83,41 @@ public class DlmsConnectionFactory {
    *     DlmsConnection} that is initialized if the given {@code device} is in {@link
    *     DlmsDevice#isInDebugMode() debug mode}. If this is {@code null} no DLMS device
    *     communication debug logging will be done.
-   * @return a manager providing access to an open DLMS connection as well as an optional message
-   *     listener active in the connection.
+   * @param taskForDlmsConnectionManager A task for the manager providing access to an open DLMS
+   *     connection as well as an optional message listener active in the connection.
    * @throws OsgpException in case of a TechnicalException or FunctionalException
    */
-  public DlmsConnectionManager getPublicClientConnection(
-      final MessageMetadata messageMetadata,
-      final DlmsDevice device,
-      final DlmsMessageListener dlmsMessageListener)
-      throws OsgpException {
-    return this.newConnectionWithSecurityLevel(
-        messageMetadata, device, dlmsMessageListener, SecurityLevel.LLS0);
-  }
-
-  private DlmsConnectionManager newConnectionWithSecurityLevel(
+  public void handlePublicClientConnection(
       final MessageMetadata messageMetadata,
       final DlmsDevice device,
       final DlmsMessageListener dlmsMessageListener,
-      final SecurityLevel securityLevel)
+      final Consumer<DlmsConnectionManager> taskForDlmsConnectionManager)
       throws OsgpException {
-    final DlmsConnectionManager connectionManager =
+    this.handleNewConnectionWithSecurityLevel(
+        messageMetadata,
+        device,
+        dlmsMessageListener,
+        SecurityLevel.LLS0,
+        taskForDlmsConnectionManager);
+  }
+
+  private void handleNewConnectionWithSecurityLevel(
+      final MessageMetadata messageMetadata,
+      final DlmsDevice device,
+      final DlmsMessageListener dlmsMessageListener,
+      final SecurityLevel securityLevel,
+      final Consumer<DlmsConnectionManager> taskForDlmsConnectionManager)
+      throws OsgpException {
+    try (final DlmsConnectionManager connectionManager =
         new DlmsConnectionManager(
             this.connectorFor(securityLevel),
             messageMetadata,
             device,
             dlmsMessageListener,
-            this.domainHelperService);
-    connectionManager.connect();
-    return connectionManager;
+            this.domainHelperService)) {
+      connectionManager.connect();
+      taskForDlmsConnectionManager.accept(connectionManager);
+    }
   }
 
   private DlmsConnector connectorFor(final SecurityLevel securityLevel) throws FunctionalException {

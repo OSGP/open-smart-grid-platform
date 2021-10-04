@@ -27,6 +27,9 @@ import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.opensmartgridplatform.shared.utils.ThrowingConsumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -39,6 +42,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 @Slf4j
 public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessageProcessor
     implements MessageProcessor {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRequestMessageProcessor.class);
 
   /** Constant to signal that message processor doesn't (have to) send a response. */
   protected static final String NO_RESPONSE = "NO-RESPONSE";
@@ -75,55 +80,64 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
   public void processMessage(final ObjectMessage message) throws JMSException {
     log.debug("Processing {} request message", this.messageType);
 
-    MessageMetadata messageMetadata = null;
-    DlmsConnectionManager connectionManager = null;
-    DlmsDevice device = null;
+    final MessageMetadata messageMetadata = MessageMetadata.fromMessage(message);
 
-    try {
-      messageMetadata = MessageMetadata.fromMessage(message);
+    final ThrowingConsumer<DlmsConnectionManager> taskForConnectionManager =
+        connectionManager -> {
+          try {
+            DlmsDevice device = null;
+            if (this.maxScheduleTimeExceeded(messageMetadata)) {
+              log.info(
+                  "Processing message of type {} for correlation UID {} exceeded max schedule time: {} ({})",
+                  messageMetadata.getMessageType(),
+                  messageMetadata.getCorrelationUid(),
+                  messageMetadata.getMaxScheduleTime(),
+                  Instant.ofEpochMilli(messageMetadata.getMaxScheduleTime()));
+              this.sendErrorResponse(
+                  messageMetadata,
+                  new FunctionalException(
+                      FunctionalExceptionType.MAX_SCHEDULE_TIME_EXCEEDED,
+                      ComponentType.PROTOCOL_DLMS),
+                  message.getObject());
+              return;
+            }
 
-      if (this.maxScheduleTimeExceeded(messageMetadata)) {
-        log.info(
-            "Processing message of type {} for correlation UID {} exceeded max schedule time: {} ({})",
-            messageMetadata.getMessageType(),
-            messageMetadata.getCorrelationUid(),
-            messageMetadata.getMaxScheduleTime(),
-            Instant.ofEpochMilli(messageMetadata.getMaxScheduleTime()));
-        this.sendErrorResponse(
+            if (this.requiresExistingDevice()) {
+              device = this.domainHelperService.findDlmsDevice(messageMetadata);
+            }
+
+            log.info(
+                "{} called for device: {} for organisation: {}, correlationUID={}",
+                message.getJMSType(),
+                messageMetadata.getDeviceIdentification(),
+                messageMetadata.getOrganisationIdentification(),
+                messageMetadata.getCorrelationUid());
+
+            final Serializable response =
+                this.getResponse(connectionManager, device, message.getObject(), messageMetadata);
+            this.sendResponse(messageMetadata, response);
+
+          } catch (final JMSException exception) {
+            this.logJmsException(log, exception, messageMetadata);
+          } catch (final Exception exception) {
+
+            this.sendErrorResponse(messageMetadata, exception, message.getObject());
+
+          } finally {
+            final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
+            this.doConnectionPostProcessing(device, connectionManager, messageMetadata);
+          }
+        };
+
+    if (this.usesDeviceConnection()) {
+      try {
+        this.handleConnectionForDevice(
+            this.domainHelperService.findDlmsDevice(messageMetadata),
             messageMetadata,
-            new FunctionalException(
-                FunctionalExceptionType.MAX_SCHEDULE_TIME_EXCEEDED, ComponentType.PROTOCOL_DLMS),
-            message.getObject());
-        return;
+            taskForConnectionManager);
+      } catch (final OsgpException e) {
+        LOGGER.error("Something went wrong with the DlmsConnection", e);
       }
-
-      if (this.requiresExistingDevice()) {
-        device = this.domainHelperService.findDlmsDevice(messageMetadata);
-      }
-
-      log.info(
-          "{} called for device: {} for organisation: {}, correlationUID={}",
-          message.getJMSType(),
-          messageMetadata.getDeviceIdentification(),
-          messageMetadata.getOrganisationIdentification(),
-          messageMetadata.getCorrelationUid());
-
-      if (this.usesDeviceConnection()) {
-        connectionManager = this.createConnectionForDevice(device, messageMetadata);
-      }
-
-      final Serializable response =
-          this.getResponse(connectionManager, device, message.getObject(), messageMetadata);
-      this.sendResponse(messageMetadata, response);
-
-    } catch (final JMSException exception) {
-      this.logJmsException(log, exception, messageMetadata);
-    } catch (final Exception exception) {
-
-      this.sendErrorResponse(messageMetadata, exception, message.getObject());
-
-    } finally {
-      this.doConnectionPostProcessing(device, connectionManager, messageMetadata);
     }
   }
 
