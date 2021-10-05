@@ -80,14 +80,14 @@ public class ReadAlarmRegisterCommandExecutor
         this.readAlarmRegister(
             conn, alarmRegister1AttributeAddress, DlmsObjectType.ALARM_REGISTER_1);
 
-    final Optional<AttributeAddress> optAlarmRegister2AttributeAddress =
+    final Optional<AttributeAddress> alarmRegister2AttributeAddress =
         this.dlmsObjectConfigService.findAttributeAddress(
             device, DlmsObjectType.ALARM_REGISTER_2, null);
 
-    if (optAlarmRegister2AttributeAddress.isPresent()) {
+    if (alarmRegister2AttributeAddress.isPresent()) {
       alarmList.addAll(
           this.readAlarmRegister(
-              conn, optAlarmRegister2AttributeAddress.get(), DlmsObjectType.ALARM_REGISTER_2));
+              conn, alarmRegister2AttributeAddress.get(), DlmsObjectType.ALARM_REGISTER_2));
     }
 
     return new AlarmRegisterResponseDto(alarmList);

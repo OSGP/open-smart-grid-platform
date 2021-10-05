@@ -97,17 +97,17 @@ public class SetAlarmNotificationsCommandExecutor
             alarmFilter1AttributeAddress,
             DlmsObjectType.ALARM_REGISTER_1);
 
-    final Optional<AttributeAddress> optAlarmFilter2AttributeAddress =
+    final Optional<AttributeAddress> alarmFilter2AttributeAddress =
         this.dlmsObjectConfigService.findAttributeAddress(
             device, DlmsObjectType.ALARM_FILTER_2, null);
 
-    if (!optAlarmFilter2AttributeAddress.isPresent()) {
+    if (!alarmFilter2AttributeAddress.isPresent()) {
       return resultCodeAlarmFilter1;
     } else {
       return this.setAlarmNotifications(
           conn,
           alarmNotifications,
-          optAlarmFilter2AttributeAddress.get(),
+          alarmFilter2AttributeAddress.get(),
           DlmsObjectType.ALARM_REGISTER_2);
     }
   }
