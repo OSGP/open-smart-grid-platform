@@ -27,6 +27,7 @@ public class Client {
 
   private Instant registeredAt;
   private Instant unregisteredAt;
+  private Instant lastSeenAt;
 
   public Client() {
     this(UUID.randomUUID().toString());
@@ -37,19 +38,21 @@ public class Client {
   }
 
   public Client(final Integer id, final String name) {
-    this(id, name, null, null);
+    this(id, name, null, null, null);
   }
 
   public Client(
       final Integer id,
       final String name,
       final Instant registeredAt,
-      final Instant unregisteredAt) {
+      final Instant unregisteredAt,
+      final Instant lastSeenAt) {
 
     this.id = id;
     this.name = name;
     this.registeredAt = registeredAt;
     this.unregisteredAt = unregisteredAt;
+    this.lastSeenAt = lastSeenAt;
   }
 
   public Integer getId() {
@@ -82,6 +85,14 @@ public class Client {
 
   public void setUnregisteredAt(final Instant unregisteredAt) {
     this.unregisteredAt = unregisteredAt;
+  }
+
+  public Instant getLastSeenAt() {
+    return this.lastSeenAt;
+  }
+
+  public void setLastSeenAt(final Instant lastSeenAt) {
+    this.lastSeenAt = lastSeenAt;
   }
 
   @Override

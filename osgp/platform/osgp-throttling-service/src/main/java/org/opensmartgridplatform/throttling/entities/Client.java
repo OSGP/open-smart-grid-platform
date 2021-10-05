@@ -47,19 +47,21 @@ public class Client {
   }
 
   public Client(final Integer id, final String name) {
-    this(id, name, null, null);
+    this(id, name, null, null, null);
   }
 
   public Client(
       final Integer id,
       final String name,
       final Instant registeredAt,
-      final Instant unregisteredAt) {
+      final Instant unregisteredAt,
+      final Instant lastSeenAt) {
 
     this.id = id;
     this.name = Objects.requireNonNull(name, "name must not be null");
     this.registeredAt = registeredAt;
     this.unregisteredAt = unregisteredAt;
+    this.lastSeenAt = lastSeenAt;
   }
 
   public Integer getId() {

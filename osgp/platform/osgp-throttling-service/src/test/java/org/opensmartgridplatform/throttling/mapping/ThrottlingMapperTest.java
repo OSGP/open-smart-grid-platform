@@ -19,7 +19,7 @@ import org.opensmartgridplatform.throttling.api.ThrottlingConfig;
 
 class ThrottlingMapperTest {
 
-  private ThrottlingMapper throttlingMapper = new ThrottlingMapper();
+  private final ThrottlingMapper throttlingMapper = new ThrottlingMapper();
 
   @Test
   void mapsApiConfigToNewEntity() {
@@ -230,7 +230,7 @@ class ThrottlingMapperTest {
       final Instant registeredAt,
       final Instant unregisteredAt) {
 
-    return new Client(id, name, registeredAt, unregisteredAt);
+    return new Client(id, name, registeredAt, unregisteredAt, null);
   }
 
   private org.opensmartgridplatform.throttling.entities.Client clientEntity(
@@ -246,6 +246,6 @@ class ThrottlingMapperTest {
       final Instant unregisteredAt) {
 
     return new org.opensmartgridplatform.throttling.entities.Client(
-        id, name, registeredAt, unregisteredAt);
+        id, name, registeredAt, unregisteredAt, null);
   }
 }

@@ -38,7 +38,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping(path = "/clients", produces = "application/json")
@@ -55,14 +54,17 @@ public class ClientController {
   private final ThrottlingMapper throttlingMapper;
   private final ClientRepository clientRepository;
   private final PermitRepository permitRepository;
+  private final ClientApiService clientApiService;
 
   public ClientController(
       final ThrottlingMapper throttlingMapper,
       final ClientRepository clientRegistrationRepository,
-      final PermitRepository permitRepository) {
+      final PermitRepository permitRepository,
+      final ClientApiService clientApiService) {
     this.throttlingMapper = throttlingMapper;
     this.clientRepository = clientRegistrationRepository;
     this.permitRepository = permitRepository;
+    this.clientApiService = clientApiService;
   }
 
   @GetMapping
@@ -113,6 +115,7 @@ public class ClientController {
               .findOneByName(client.getName())
               .orElseGet(this.newClientEntityFromApi(client));
 
+      clientEntity.seen();
       if (clientEntity.getId() == null) {
         this.clientRepository.saveAndFlush(clientEntity);
       } else {
@@ -139,7 +142,8 @@ public class ClientController {
   @Transactional
   @DeleteMapping(path = "/{clientId}")
   public ResponseEntity<JsonNode> unregisterClient(@PathVariable final int clientId) {
-    final org.opensmartgridplatform.throttling.entities.Client client = this.getClient(clientId);
+    final org.opensmartgridplatform.throttling.entities.Client client =
+        this.clientApiService.getAndNoticeClient(clientId);
     if (client.getUnregisteredAt() == null) {
       client.unregister();
     }
@@ -161,18 +165,10 @@ public class ClientController {
   @Transactional
   @PutMapping(path = "/{clientId}")
   public HttpStatus noticeClient(@PathVariable final int clientId) {
-    final org.opensmartgridplatform.throttling.entities.Client client = this.getClient(clientId);
+    final org.opensmartgridplatform.throttling.entities.Client client =
+        this.clientApiService.getAndNoticeClient(clientId);
     client.seen();
     return HttpStatus.OK;
-  }
-
-  private org.opensmartgridplatform.throttling.entities.Client getClient(final int clientId) {
-    return this.clientRepository
-        .findById(clientId)
-        .orElseThrow(
-            () ->
-                new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "No client found for ID: " + clientId));
   }
 
   private Supplier<? extends org.opensmartgridplatform.throttling.entities.Client>
