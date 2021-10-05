@@ -127,6 +127,12 @@ public class SetAlarmNotificationsCommandExecutor
       throw new ProtocolAdapterException(
           "Error occurred for set alarm register : " + alarmRegister.name());
     }
+
+    if (resultCodeAlarmFilter != AccessResultCode.SUCCESS) {
+      throw new ProtocolAdapterException(
+          "AccessResultCode for alarm register was not SUCCESS: " + resultCodeAlarmFilter);
+    }
+
     return resultCodeAlarmFilter;
   }
 

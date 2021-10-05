@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.Set;
+import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.DataObject;
@@ -105,6 +106,12 @@ public class ReadAlarmRegisterCommandExecutor
     if (resultAlarmRegister == null) {
       throw new ProtocolAdapterException(
           "No GetResult received while retrieving alarm register: " + alarmRegister.name());
+    }
+
+    if (resultAlarmRegister.getResultCode() != AccessResultCode.SUCCESS) {
+      throw new ProtocolAdapterException(
+          "AccessResultCode for retrieving alarm register was not SUCCESS: "
+              + resultAlarmRegister.getResultCode());
     }
 
     return this.convertToAlarmTypes(alarmRegister, resultAlarmRegister);
