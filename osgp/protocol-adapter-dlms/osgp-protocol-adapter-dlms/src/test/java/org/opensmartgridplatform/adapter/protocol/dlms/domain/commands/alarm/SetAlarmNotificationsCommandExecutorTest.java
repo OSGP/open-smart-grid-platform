@@ -13,13 +13,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.SetParameter;
@@ -66,7 +67,7 @@ class SetAlarmNotificationsCommandExecutorTest {
               case ALARM_FILTER_2:
                 return Optional.of(new AttributeAddress(40, "0.0.97.98.11.255", 2));
             }
-            throw new IllegalArgumentException();
+            return Optional.empty();
           }
         };
     this.executor = new SetAlarmNotificationsCommandExecutor(dlmsObjectConfigService);
@@ -114,27 +115,35 @@ class SetAlarmNotificationsCommandExecutorTest {
     assertThat((long) this.setParametersReceived.get(0).getData().getValue()).isEqualTo(11);
   }
 
-  @Test
-  void testSetSettingEnabledRegister2() throws OsgpException {
-    // no values are enabled at start of test
-    this.assertSetSettingEnabledRegister2(AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L1, 1L);
-    this.assertSetSettingEnabledRegister2(AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L2, 2L);
-    this.assertSetSettingEnabledRegister2(AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L3, 4L);
-    this.assertSetSettingEnabledRegister2(AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L1, 8L);
-    this.assertSetSettingEnabledRegister2(AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L2, 16L);
-    this.assertSetSettingEnabledRegister2(AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L3, 32L);
-
-    this.assertSetSettingEnabledRegister2(
-        Arrays.asList(
-            AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L1,
-            AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L2),
-        3L);
-    this.assertSetSettingEnabledRegister2(
-        Arrays.asList(
-            AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L1,
-            AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L2,
-            AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L3),
-        7L);
+  @ParameterizedTest
+  @CsvSource({
+    "1,VOLTAGE_SAG_IN_PHASE_DETECTED_L1,",
+    "2,VOLTAGE_SAG_IN_PHASE_DETECTED_L2,",
+    "4,VOLTAGE_SAG_IN_PHASE_DETECTED_L3,",
+    "8,VOLTAGE_SWELL_IN_PHASE_DETECTED_L1,",
+    "16,VOLTAGE_SWELL_IN_PHASE_DETECTED_L2,",
+    "32,VOLTAGE_SWELL_IN_PHASE_DETECTED_L3,",
+    "3,VOLTAGE_SAG_IN_PHASE_DETECTED_L1,VOLTAGE_SAG_IN_PHASE_DETECTED_L2"
+  })
+  void testSetSettingEnabledRegister(
+      final long expectedValue, final AlarmTypeDto alarmType1, final AlarmTypeDto alarmType2)
+      throws OsgpException {
+    final List<AlarmTypeDto> alarmTypes = new ArrayList<>();
+    if (alarmType1 != null) {
+      alarmTypes.add(alarmType1);
+    }
+    if (alarmType2 != null) {
+      alarmTypes.add(alarmType2);
+    }
+    final AccessResultCode res =
+        this.execute(
+            alarmTypes.stream()
+                .map(alarmType -> new AlarmNotificationDto(alarmType, true))
+                .toArray(AlarmNotificationDto[]::new));
+    assertThat(res).isEqualTo(AccessResultCode.SUCCESS);
+    assertThat(this.setParametersReceived.size()).isEqualTo(1);
+    assertThat((long) this.setParametersReceived.get(0).getData().getValue())
+        .isEqualTo(expectedValue);
   }
 
   @Test
@@ -149,26 +158,6 @@ class SetAlarmNotificationsCommandExecutorTest {
     assertThat(this.setParametersReceived.size()).isEqualTo(1);
     // Expecting 9 (0b1001).
     assertThat((long) this.setParametersReceived.get(0).getData().getValue()).isEqualTo(9);
-  }
-
-  private void assertSetSettingEnabledRegister2(
-      final AlarmTypeDto alarmType, final long expectedValue) throws OsgpException {
-    this.assertSetSettingEnabledRegister2(Collections.singletonList(alarmType), expectedValue);
-  }
-
-  private void assertSetSettingEnabledRegister2(
-      final List<AlarmTypeDto> alarmTypes, final long expectedValue) throws OsgpException {
-    this.setUp();
-
-    final AccessResultCode res =
-        this.execute(
-            alarmTypes.stream()
-                .map(alarmType -> new AlarmNotificationDto(alarmType, true))
-                .toArray(AlarmNotificationDto[]::new));
-    assertThat(res).isEqualTo(AccessResultCode.SUCCESS);
-    assertThat(this.setParametersReceived.size()).isEqualTo(1);
-    assertThat((long) this.setParametersReceived.get(0).getData().getValue())
-        .isEqualTo(expectedValue);
   }
 
   private AccessResultCode execute(final AlarmNotificationDto... alarmNotificationDtos)

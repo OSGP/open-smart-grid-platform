@@ -53,15 +53,14 @@ class AlarmHelperServiceTest {
 
   @Test
   void testBitPositions() {
-    assertThat((int) this.toBitPositionRegister1(AlarmTypeDto.CLOCK_INVALID)).isZero();
-    assertThat((int) this.toBitPositionRegister1(AlarmTypeDto.PROGRAM_MEMORY_ERROR)).isEqualTo(8);
-    assertThat((int) this.toBitPositionRegister1(AlarmTypeDto.WATCHDOG_ERROR)).isEqualTo(12);
-    assertThat((int) this.toBitPositionRegister1(AlarmTypeDto.COMMUNICATION_ERROR_M_BUS_CHANNEL_1))
+    assertThat((int) this.toBitPositionRegister(AlarmTypeDto.CLOCK_INVALID)).isZero();
+    assertThat((int) this.toBitPositionRegister(AlarmTypeDto.PROGRAM_MEMORY_ERROR)).isEqualTo(8);
+    assertThat((int) this.toBitPositionRegister(AlarmTypeDto.WATCHDOG_ERROR)).isEqualTo(12);
+    assertThat((int) this.toBitPositionRegister(AlarmTypeDto.COMMUNICATION_ERROR_M_BUS_CHANNEL_1))
         .isEqualTo(16);
-    assertThat((int) this.toBitPositionRegister1(AlarmTypeDto.FRAUD_ATTEMPT_M_BUS_CHANNEL_1))
+    assertThat((int) this.toBitPositionRegister(AlarmTypeDto.FRAUD_ATTEMPT_M_BUS_CHANNEL_1))
         .isEqualTo(20);
-    assertThat(
-            (int) this.toBitPositionRegister1(AlarmTypeDto.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_1))
+    assertThat((int) this.toBitPositionRegister(AlarmTypeDto.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_1))
         .isEqualTo(24);
   }
 
@@ -98,21 +97,21 @@ class AlarmHelperServiceTest {
 
   @Test
   void testBitPositionsAlarmRegister2() {
-    assertThat((int) this.toBitPositionRegister1(AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L1))
+    assertThat((int) this.toBitPositionRegister(AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L1))
         .isZero();
-    assertThat((int) this.toBitPositionRegister1(AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L2))
+    assertThat((int) this.toBitPositionRegister(AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L2))
         .isEqualTo(1);
-    assertThat((int) this.toBitPositionRegister1(AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L3))
+    assertThat((int) this.toBitPositionRegister(AlarmTypeDto.VOLTAGE_SAG_IN_PHASE_DETECTED_L3))
         .isEqualTo(2);
-    assertThat((int) this.toBitPositionRegister1(AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L1))
+    assertThat((int) this.toBitPositionRegister(AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L1))
         .isEqualTo(3);
-    assertThat((int) this.toBitPositionRegister1(AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L2))
+    assertThat((int) this.toBitPositionRegister(AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L2))
         .isEqualTo(4);
-    assertThat((int) this.toBitPositionRegister1(AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L3))
+    assertThat((int) this.toBitPositionRegister(AlarmTypeDto.VOLTAGE_SWELL_IN_PHASE_DETECTED_L3))
         .isEqualTo(5);
   }
 
-  private int toBitPositionRegister1(final AlarmTypeDto alarmTypeDto) {
+  private int toBitPositionRegister(final AlarmTypeDto alarmTypeDto) {
     return this.alarmHelperService.toBitPosition(alarmTypeDto);
   }
 }

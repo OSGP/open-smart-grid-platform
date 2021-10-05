@@ -9,12 +9,10 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
-import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
@@ -43,10 +41,6 @@ public class ReadAlarmRegisterCommandExecutor
       LoggerFactory.getLogger(ReadAlarmRegisterCommandExecutor.class);
 
   final DlmsObjectConfigService dlmsObjectConfigService;
-
-  private static final int CLASS_ID = 1;
-  private static final ObisCode OBIS_CODE = new ObisCode("0.0.97.98.0.255");
-  private static final int ATTRIBUTE_ID = 2;
 
   @Autowired private AlarmHelperService alarmHelperService;
 
@@ -82,36 +76,38 @@ public class ReadAlarmRegisterCommandExecutor
         this.dlmsObjectConfigService.getAttributeAddress(
             device, DlmsObjectType.ALARM_REGISTER_1, null);
 
-    final GetResult resultAlarmRegister1 =
-        this.executeForAlarmRegister(conn, alarmRegister1AttributeAddress);
-
-    if (resultAlarmRegister1 == null) {
-      throw new ProtocolAdapterException(
-          "No GetResult received while retrieving alarm register 1.");
-    }
+    final Set<AlarmTypeDto> alarmList =
+        this.readAlarmRegister(
+            conn, alarmRegister1AttributeAddress, DlmsObjectType.ALARM_REGISTER_1);
 
     final Optional<AttributeAddress> optAlarmRegister2AttributeAddress =
         this.dlmsObjectConfigService.findAttributeAddress(
             device, DlmsObjectType.ALARM_REGISTER_2, null);
 
-    final Set<AlarmTypeDto> alarmList = new HashSet<>();
-    if (!optAlarmRegister2AttributeAddress.isPresent()) {
+    if (optAlarmRegister2AttributeAddress.isPresent()) {
       alarmList.addAll(
-          this.convertToAlarmTypes(DlmsObjectType.ALARM_REGISTER_1, resultAlarmRegister1));
-    } else {
-      final GetResult resultAlarmRegister2 =
-          this.executeForAlarmRegister(conn, optAlarmRegister2AttributeAddress.get());
-
-      if (resultAlarmRegister2 != null) {
-        alarmList.addAll(
-            this.convertToAlarmTypes(DlmsObjectType.ALARM_REGISTER_2, resultAlarmRegister2));
-      } else {
-        throw new ProtocolAdapterException(
-            "No GetResult received while retrieving alarm register 2.");
-      }
+          this.readAlarmRegister(
+              conn, optAlarmRegister2AttributeAddress.get(), DlmsObjectType.ALARM_REGISTER_2));
     }
 
     return new AlarmRegisterResponseDto(alarmList);
+  }
+
+  private Set<AlarmTypeDto> readAlarmRegister(
+      final DlmsConnectionManager conn,
+      final AttributeAddress alarmRegisterAttributeAddress,
+      final DlmsObjectType alarmRegister)
+      throws ProtocolAdapterException {
+
+    final GetResult resultAlarmRegister =
+        this.executeForAlarmRegister(conn, alarmRegisterAttributeAddress);
+
+    if (resultAlarmRegister == null) {
+      throw new ProtocolAdapterException(
+          "No GetResult received while retrieving alarm register: " + alarmRegister.name());
+    }
+
+    return this.convertToAlarmTypes(alarmRegister, resultAlarmRegister);
   }
 
   private Set<AlarmTypeDto> convertToAlarmTypes(

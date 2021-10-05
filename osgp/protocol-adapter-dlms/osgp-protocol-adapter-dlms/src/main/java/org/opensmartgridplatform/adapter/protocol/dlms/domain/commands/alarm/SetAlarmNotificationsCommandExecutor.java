@@ -90,37 +90,44 @@ public class SetAlarmNotificationsCommandExecutor
         this.dlmsObjectConfigService.getAttributeAddress(
             device, DlmsObjectType.ALARM_FILTER_1, null);
 
-    final AccessResultCode resultCodeAlarmRegister1 =
-        this.executeForAlarmFilter(
+    final AccessResultCode resultCodeAlarmFilter1 =
+        this.setAlarmNotifications(
             conn,
-            alarmFilter1AttributeAddress,
             alarmNotifications,
+            alarmFilter1AttributeAddress,
             DlmsObjectType.ALARM_REGISTER_1);
-
-    if (resultCodeAlarmRegister1 == null) {
-      throw new ProtocolAdapterException("Error occurred for set alarm register 1.");
-    }
 
     final Optional<AttributeAddress> optAlarmFilter2AttributeAddress =
         this.dlmsObjectConfigService.findAttributeAddress(
             device, DlmsObjectType.ALARM_FILTER_2, null);
 
     if (!optAlarmFilter2AttributeAddress.isPresent()) {
-      return resultCodeAlarmRegister1;
+      return resultCodeAlarmFilter1;
     } else {
-      final AccessResultCode resultCodeAlarmRegister2 =
-          this.executeForAlarmFilter(
-              conn,
-              optAlarmFilter2AttributeAddress.get(),
-              alarmNotifications,
-              DlmsObjectType.ALARM_REGISTER_2);
-
-      if (resultCodeAlarmRegister2 != null) {
-        return resultCodeAlarmRegister2;
-      } else {
-        throw new ProtocolAdapterException("Error occurred for set alarm register 2.");
-      }
+      return this.setAlarmNotifications(
+          conn,
+          alarmNotifications,
+          optAlarmFilter2AttributeAddress.get(),
+          DlmsObjectType.ALARM_REGISTER_2);
     }
+  }
+
+  private AccessResultCode setAlarmNotifications(
+      final DlmsConnectionManager conn,
+      final AlarmNotificationsDto alarmNotifications,
+      final AttributeAddress alarmFilterAttributeAddress,
+      final DlmsObjectType alarmRegister)
+      throws ProtocolAdapterException {
+
+    final AccessResultCode resultCodeAlarmFilter =
+        this.executeForAlarmFilter(
+            conn, alarmFilterAttributeAddress, alarmNotifications, alarmRegister);
+
+    if (resultCodeAlarmFilter == null) {
+      throw new ProtocolAdapterException(
+          "Error occurred for set alarm register : " + alarmRegister.name());
+    }
+    return resultCodeAlarmFilter;
   }
 
   private AccessResultCode executeForAlarmFilter(

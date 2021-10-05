@@ -42,7 +42,7 @@ public class AlarmHelperService {
   }
 
   /**
-   * Returns bit index for a AlarmType.
+   * Returns bit index for an AlarmType.
    *
    * @param alarmType AlarmType
    * @return an unmodifiable map containing every AlarmType and it's bit index.
