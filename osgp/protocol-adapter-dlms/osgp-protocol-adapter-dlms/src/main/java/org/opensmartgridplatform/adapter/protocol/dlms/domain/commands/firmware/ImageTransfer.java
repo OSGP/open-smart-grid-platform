@@ -10,8 +10,10 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -22,7 +24,6 @@ import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.datatypes.DataObject.Type;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.enums.FirmwareTransferStatus;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.CosemObjectAccessor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -217,7 +218,7 @@ public class ImageTransfer {
     throw new ImageTransferException(
         String.format(
             EXCEPTION_MSG_IMAGE_VERIFICATION_ERROR,
-            FirmwareTransferStatus.getByCode(status).name(),
+            ImageTransferStatus.getByValue(status).name(),
             verified.name()));
   }
 
@@ -595,6 +596,13 @@ public class ImageTransfer {
     ACTIVATION_FAILED(7);
 
     private final int value;
+    private static final Map<Integer, ImageTransferStatus> map = new HashMap<>();
+
+    static {
+      for (final ImageTransferStatus status : ImageTransferStatus.values()) {
+        map.put(status.value, status);
+      }
+    }
 
     ImageTransferStatus(final int imageTransferStatus) {
       this.value = imageTransferStatus;
@@ -602,6 +610,15 @@ public class ImageTransfer {
 
     private int getValue() {
       return this.value;
+    }
+
+    public static ImageTransferStatus getByValue(final int value) {
+      final ImageTransferStatus status = map.get(value);
+      if (status == null) {
+        throw new IllegalArgumentException(
+            String.format("No ImageTransferStatus found with code %d (int)", value));
+      }
+      return status;
     }
   }
 }
