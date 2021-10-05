@@ -9,6 +9,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
@@ -117,24 +118,19 @@ class SetAlarmNotificationsCommandExecutorTest {
 
   @ParameterizedTest
   @CsvSource({
-    "1,VOLTAGE_SAG_IN_PHASE_DETECTED_L1,",
-    "2,VOLTAGE_SAG_IN_PHASE_DETECTED_L2,",
-    "4,VOLTAGE_SAG_IN_PHASE_DETECTED_L3,",
-    "8,VOLTAGE_SWELL_IN_PHASE_DETECTED_L1,",
-    "16,VOLTAGE_SWELL_IN_PHASE_DETECTED_L2,",
-    "32,VOLTAGE_SWELL_IN_PHASE_DETECTED_L3,",
-    "3,VOLTAGE_SAG_IN_PHASE_DETECTED_L1,VOLTAGE_SAG_IN_PHASE_DETECTED_L2"
+    "1,VOLTAGE_SAG_IN_PHASE_DETECTED_L1",
+    "2,VOLTAGE_SAG_IN_PHASE_DETECTED_L2",
+    "4,VOLTAGE_SAG_IN_PHASE_DETECTED_L3",
+    "8,VOLTAGE_SWELL_IN_PHASE_DETECTED_L1",
+    "16,VOLTAGE_SWELL_IN_PHASE_DETECTED_L2",
+    "32,VOLTAGE_SWELL_IN_PHASE_DETECTED_L3",
+    "3,VOLTAGE_SAG_IN_PHASE_DETECTED_L1;VOLTAGE_SAG_IN_PHASE_DETECTED_L2",
+    "7,VOLTAGE_SAG_IN_PHASE_DETECTED_L1;VOLTAGE_SAG_IN_PHASE_DETECTED_L2;VOLTAGE_SAG_IN_PHASE_DETECTED_L3"
   })
-  void testSetSettingEnabledRegister(
-      final long expectedValue, final AlarmTypeDto alarmType1, final AlarmTypeDto alarmType2)
+  void testSetSettingEnabledRegister(final long expectedValue, final String alarmTypesInput)
       throws OsgpException {
-    final List<AlarmTypeDto> alarmTypes = new ArrayList<>();
-    if (alarmType1 != null) {
-      alarmTypes.add(alarmType1);
-    }
-    if (alarmType2 != null) {
-      alarmTypes.add(alarmType2);
-    }
+    final List<AlarmTypeDto> alarmTypes =
+        Arrays.stream(alarmTypesInput.split(";")).map(AlarmTypeDto::valueOf).collect(toList());
     final AccessResultCode res =
         this.execute(
             alarmTypes.stream()
