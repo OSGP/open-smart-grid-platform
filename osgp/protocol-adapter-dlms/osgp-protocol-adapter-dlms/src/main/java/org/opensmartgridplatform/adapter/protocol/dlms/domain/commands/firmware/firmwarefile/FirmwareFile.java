@@ -12,6 +12,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Hex;
@@ -40,7 +41,9 @@ public class FirmwareFile {
   private byte[] imageData;
 
   private static final int HEADER_LENGTH = 35;
-  public static final String FIRMWARE_IMAGE_MAGIC_NUMBER = "534d5235";
+  //  public static final String FIRMWARE_IMAGE_MAGIC_NUMBER = "534d5235";
+  public static final List<String> VALID_FIRMWARE_IMAGE_MAGIC_NUMBERS =
+      Arrays.asList("534d5235", "35524d53");
   // Fixed value in requirement of SMR5.1. In SMR5.2 no value is specified for HEADER_VERSION
   // Therefor there is no check on the value of HEADER_VERSION
   public static final int HEADER_VERSION = 0;
@@ -51,9 +54,8 @@ public class FirmwareFile {
 
   public boolean isMbusFirmware() {
     return this.imageData.length >= HEADER_LENGTH
-        && this.getHeader()
-            .getFirmwareImageMagicNumberHex()
-            .equalsIgnoreCase(FIRMWARE_IMAGE_MAGIC_NUMBER)
+        && VALID_FIRMWARE_IMAGE_MAGIC_NUMBERS.contains(
+            this.getHeader().getFirmwareImageMagicNumberHex())
         && this.getHeader().getAddressTypeEnum() == AddressType.MBUS_ADDRESS;
   }
 
