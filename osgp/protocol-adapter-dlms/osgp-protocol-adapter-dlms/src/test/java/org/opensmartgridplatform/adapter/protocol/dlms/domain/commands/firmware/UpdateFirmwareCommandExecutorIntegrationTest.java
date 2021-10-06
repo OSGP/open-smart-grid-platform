@@ -178,8 +178,6 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
     when(this.firmwareFileCachingRepository.retrieve(firmwareIdentification))
         .thenReturn(firmwareFile);
     when(this.macGenerationService.calculateMac(any(), any(), any())).thenReturn(new byte[16]);
-    when(this.dlmsObjectConfigService.getDlmsObject(device, DlmsObjectType.MBUS_CLIENT_SETUP))
-        .thenReturn(mbusClientSetupObject);
 
     final UpdateFirmwareRequestDto updateFirmwareRequestDto =
         new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);

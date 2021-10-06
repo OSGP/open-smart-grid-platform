@@ -13,12 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Hex;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.MacGenerationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsClassVersion;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.FirmwareFile;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.IdentificationNumber;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
@@ -184,12 +180,10 @@ public class UpdateFirmwareCommandExecutor
           String.format(EXCEPTION_MSG_DEVICE_NOT_AVAILABLE_IN_DATABASE, deviceIdentification));
     }
 
-    final IdentificationNumber identificationNumber = this.getIdentificationNumber(mbusDevice);
+    final String identificationNumber = this.getIdentificationNumber(mbusDevice);
 
-    log.debug(
-        "Setting M-Bus Identification number: {}",
-        identificationNumber.getNumericalRepresentation());
-    firmwareFile.setMbusDeviceIdentificationNumber(identificationNumber.getTextualRepresentation());
+    log.debug("Setting M-Bus Identification number: {}", identificationNumber);
+    firmwareFile.setMbusDeviceIdentificationNumber(identificationNumber);
 
     log.debug(
         "Firmware file header after setting M-Bus Identification number: {}",
@@ -206,41 +200,17 @@ public class UpdateFirmwareCommandExecutor
     return firmwareFile;
   }
 
-  private IdentificationNumber getIdentificationNumber(final DlmsDevice mbusDevice)
+  private String getIdentificationNumber(final DlmsDevice mbusDevice)
       throws ProtocolAdapterException {
-    final Long mbusIdentificationNumberFromDatabase = mbusDevice.getMbusIdentificationNumber();
-    if (mbusIdentificationNumberFromDatabase == null) {
+    final String mbusIdentificationNumberTextualRepresentation =
+        mbusDevice.getMbusIdentificationNumberTextualRepresentation();
+    if (mbusIdentificationNumberTextualRepresentation == null) {
       throw new ProtocolAdapterException(
           String.format(
               EXCEPTION_MSG_DEVICE_HAS_NO_MBUS_IDENTIFICATION_NUMBER,
               mbusDevice.getDeviceIdentification()));
     }
-
-    final IdentificationNumber identificationNumber;
-
-    if (this.mbusIdentificationIsBcdRepresentatyionAsLong(mbusDevice)) {
-      log.debug(
-          "Creating M-Bus Identification number from BCD representation as along (as stored in database); {}",
-          mbusIdentificationNumberFromDatabase);
-      identificationNumber =
-          IdentificationNumber.fromBcdRepresentationAsLong(mbusIdentificationNumberFromDatabase);
-    } else {
-      log.debug(
-          "Creating M-Bus Identification number from numerical representation (as stored in database); {}",
-          mbusIdentificationNumberFromDatabase);
-      identificationNumber =
-          IdentificationNumber.fromNumericalRepresentation(mbusIdentificationNumberFromDatabase);
-    }
-    return identificationNumber;
-  }
-
-  private boolean mbusIdentificationIsBcdRepresentatyionAsLong(final DlmsDevice mbusDevice)
-      throws ProtocolAdapterException {
-
-    final DlmsObject mbusClientSetupObject =
-        this.dlmsObjectConfigService.getDlmsObject(mbusDevice, DlmsObjectType.MBUS_CLIENT_SETUP);
-
-    return mbusClientSetupObject.getVersion().equals(DlmsClassVersion.VERSION_0);
+    return mbusIdentificationNumberTextualRepresentation;
   }
 
   private byte[] getImageIdentifier(
