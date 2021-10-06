@@ -9,6 +9,9 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.engines.AESEngine;
@@ -175,12 +178,35 @@ public class MacGenerationService {
   public byte[] createIV(final FirmwareFile firmwareFile) {
     final FirmwareFileHeaderAddressField firmwareFileHeaderAddressField =
         firmwareFile.getHeader().getFirmwareFileHeaderAddressField();
-    return ByteBuffer.allocate(12)
+    final int ivLength = 12;
+    this.logIV(firmwareFile, ivLength);
+    return ByteBuffer.allocate(ivLength)
         .put(firmwareFileHeaderAddressField.getMbusManufacturerId())
         .put(firmwareFileHeaderAddressField.getMbusDeviceIdentificationNumber())
         .put(firmwareFileHeaderAddressField.getMbusVersion())
         .put(firmwareFileHeaderAddressField.getMbusDeviceType())
         .put(Arrays.reverse(firmwareFile.getHeader().getFirmwareImageVersion()))
         .array();
+  }
+
+  private void logIV(final FirmwareFile firmwareFile, final int ivLength) {
+    final FirmwareFileHeaderAddressField firmwareFileHeaderAddressField =
+        firmwareFile.getHeader().getFirmwareFileHeaderAddressField();
+    log.debug("IV length: {}", ivLength);
+    final Map<String, byte[]> map = new HashMap<>(5);
+    map.put("MbusManufacturerId", firmwareFileHeaderAddressField.getMbusManufacturerId());
+    map.put(
+        "MbusDeviceIdentificationNumber",
+        firmwareFileHeaderAddressField.getMbusDeviceIdentificationNumber());
+    map.put("MbusVersion", firmwareFileHeaderAddressField.getMbusVersion());
+    map.put("MbusDeviceType", firmwareFileHeaderAddressField.getMbusDeviceType());
+    map.put("FirmwareImageVersion", firmwareFile.getHeader().getFirmwareImageVersion());
+
+    for (final Entry<String, byte[]> entry : map.entrySet()) {
+      log.debug(
+          entry.getKey() + ": (Hex){} ({})",
+          Hex.toHexString(entry.getValue()),
+          entry.getValue().length);
+    }
   }
 }

@@ -130,6 +130,14 @@ public class FirmwareFile {
     this.imageData = buffer.array();
   }
 
+  public void setMbusVersion(final Integer mbusVersion) throws ProtocolAdapterException {
+
+    final ByteBuffer buffer = ByteBuffer.wrap(this.imageData);
+    buffer.position(26);
+    buffer.put(new byte[] {mbusVersion.byteValue()});
+    this.imageData = buffer.array();
+  }
+
   /**
    * The Identification number can be wildcarded, a firmware file can be made available for a range
    * or all individual meters. The wildcard character is hex-value: 'F'.

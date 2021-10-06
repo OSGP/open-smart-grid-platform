@@ -182,12 +182,16 @@ public class UpdateFirmwareCommandExecutor
 
     final String identificationNumber = this.getIdentificationNumber(mbusDevice);
 
+    log.debug("Original Firmware file header: {}", firmwareFile.getHeader());
+
     log.debug("Setting M-Bus Identification number: {}", identificationNumber);
     firmwareFile.setMbusDeviceIdentificationNumber(identificationNumber);
 
-    log.debug(
-        "Firmware file header after setting M-Bus Identification number: {}",
-        firmwareFile.getHeader());
+    final int mbusVersion = 80;
+    log.debug("Setting M-Bus Version: {}", mbusVersion);
+    firmwareFile.setMbusVersion(mbusVersion);
+
+    log.debug("Modified Firmware file header: {}", firmwareFile.getHeader());
 
     final byte[] calculatedMac =
         this.macGenerationService.calculateMac(
