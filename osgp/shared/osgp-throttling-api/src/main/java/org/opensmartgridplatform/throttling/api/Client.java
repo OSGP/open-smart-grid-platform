@@ -98,7 +98,12 @@ public class Client {
   @Override
   public String toString() {
     return String.format(
-        "%s[id=%s, name=%s, registered=%s, unregistered=%s]",
-        Client.class.getSimpleName(), this.id, this.name, this.registeredAt, this.unregisteredAt);
+        "%s[id=%s, name=%s, registered=%s, unregistered=%s, lastSeen=%s]",
+        Client.class.getSimpleName(),
+        this.id,
+        this.name,
+        this.registeredAt,
+        this.unregisteredAt,
+        this.lastSeenAt);
   }
 }
