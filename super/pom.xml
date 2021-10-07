@@ -172,6 +172,11 @@
       </dependency>
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-throttling-client</artifactId>
+        <version>${osgp.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
         <artifactId>osgp-throttling-service</artifactId>
         <version>${osgp.version}</version>
       </dependency>

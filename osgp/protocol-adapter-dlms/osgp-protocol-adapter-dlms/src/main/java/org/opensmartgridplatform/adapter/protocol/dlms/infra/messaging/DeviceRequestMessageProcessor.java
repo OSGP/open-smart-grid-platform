@@ -18,6 +18,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Doma
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.SilentException;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ThrottlingPermitDeniedException;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -116,6 +117,11 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
           this.getResponse(connectionManager, device, message.getObject(), messageMetadata);
       this.sendResponse(messageMetadata, response);
 
+    } catch (final ThrottlingPermitDeniedException exception) {
+      log.error("TODO place the ObjectMessage back on ${jms.dlms.requests.queue}", exception);
+      // TODO the ObjectMessage needs to be sent back to the request queue it came from, possibly
+      // with a little delay so that it can be picked up by the listener at a later moment, when the
+      // throttling may allow a connection for the device
     } catch (final JMSException exception) {
       this.logJmsException(log, exception, messageMetadata);
     } catch (final Exception exception) {

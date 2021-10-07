@@ -24,6 +24,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.BundleService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
@@ -44,6 +45,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
+import org.opensmartgridplatform.throttling.api.Permit;
 
 @ExtendWith(MockitoExtension.class)
 class BundleMessageProcessorTest {
@@ -68,23 +70,29 @@ class BundleMessageProcessorTest {
 
   @Mock private DlmsMessageListener messageListener;
 
+  @Mock private ThrottlingConfig throttlingConfig;
+
   private DlmsDevice dlmsDevice;
 
   @InjectMocks private BundleMessageProcessor messageProcessor;
 
   @BeforeEach
-  public void setUp() throws JMSException, OsgpException {
+  public void setUp() throws OsgpException {
     this.dlmsDevice = new DlmsDeviceBuilder().withHls5Active(true).build();
     when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class)))
         .thenReturn(this.dlmsDevice);
+    when(this.throttlingConfig.clientEnabled()).thenReturn(false);
   }
 
   @Test
-  public void shouldSetEmptyHeaderOnSuccessfulOperation() throws OsgpException, JMSException {
+  void shouldSetEmptyHeaderOnSuccessfulOperation() throws OsgpException, JMSException {
     this.prepareBundleServiceMockWithRequestAndResponse(new ActionResponseDto());
     when(this.dlmsConnectionManager.getDlmsMessageListener()).thenReturn(this.messageListener);
     when(this.dlmsConnectionHelper.createConnectionForDevice(
-            any(MessageMetadata.class), same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
+            any(MessageMetadata.class),
+            same(this.dlmsDevice),
+            nullable(DlmsMessageListener.class),
+            nullable(Permit.class)))
         .thenReturn(this.dlmsConnectionManager);
 
     this.messageProcessor.processMessage(this.message);
@@ -93,7 +101,7 @@ class BundleMessageProcessorTest {
   }
 
   @Test
-  public void shouldSetRetryHeaderOnRuntimeException() throws OsgpException, JMSException {
+  void shouldSetRetryHeaderOnRuntimeException() throws OsgpException, JMSException {
     when(this.dlmsConnectionHelper.createConnectionForDevice(
             any(MessageMetadata.class), same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
         .thenThrow(new RuntimeException());
@@ -104,7 +112,7 @@ class BundleMessageProcessorTest {
   }
 
   @Test
-  public void shouldSetRetryHeaderOnOsgpException() throws OsgpException, JMSException {
+  void shouldSetRetryHeaderOnOsgpException() throws OsgpException, JMSException {
     when(this.dlmsConnectionHelper.createConnectionForDevice(
             any(MessageMetadata.class), same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
         .thenThrow(new OsgpException(ComponentType.PROTOCOL_DLMS, ""));
@@ -115,7 +123,7 @@ class BundleMessageProcessorTest {
   }
 
   @Test
-  public void shouldSetRetryHeaderOnSuccessfulOperationWithRetryableFaultResponse()
+  void shouldSetRetryHeaderOnSuccessfulOperationWithRetryableFaultResponse()
       throws OsgpException, JMSException {
     when(this.dlmsConnectionManager.getDlmsMessageListener()).thenReturn(this.messageListener);
     when(this.dlmsConnectionHelper.createConnectionForDevice(
@@ -131,11 +139,14 @@ class BundleMessageProcessorTest {
   }
 
   @Test
-  public void shouldSetEmptyHeaderOnSuccessfulOperationWithNonRetryableFaultResponse()
+  void shouldSetEmptyHeaderOnSuccessfulOperationWithNonRetryableFaultResponse()
       throws OsgpException, JMSException {
     when(this.dlmsConnectionManager.getDlmsMessageListener()).thenReturn(this.messageListener);
     when(this.dlmsConnectionHelper.createConnectionForDevice(
-            any(MessageMetadata.class), same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
+            any(MessageMetadata.class),
+            same(this.dlmsDevice),
+            nullable(DlmsMessageListener.class),
+            nullable(Permit.class)))
         .thenReturn(this.dlmsConnectionManager);
 
     this.prepareBundleServiceMockWithRequestAndResponse(

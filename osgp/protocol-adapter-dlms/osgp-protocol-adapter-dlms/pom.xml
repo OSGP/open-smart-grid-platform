@@ -133,6 +133,11 @@
       <version>${osgp-ws-secret-management-version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.opensmartgridplatform</groupId>
+      <artifactId>osgp-throttling-client</artifactId>
+    </dependency>
+
     <!-- Spring Framework -->
     <dependency>
       <groupId>org.springframework</groupId>

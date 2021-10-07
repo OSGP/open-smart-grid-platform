@@ -62,7 +62,7 @@ class DlmsConnectionHelperTest {
     device.setIpAddress(deviceIpAddress);
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
-    this.helper.createConnectionForDevice(this.messageMetadata, device, listener);
+    this.helper.createConnectionForDevice(this.messageMetadata, device, listener, null);
 
     verify(this.pinger).ping(deviceIpAddress);
   }
@@ -76,7 +76,7 @@ class DlmsConnectionHelperTest {
     device.setIpAddress(noIpAddress);
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
-    this.helper.createConnectionForDevice(this.messageMetadata, device, listener);
+    this.helper.createConnectionForDevice(this.messageMetadata, device, listener, null);
 
     verifyNoInteractions(this.pinger);
     verifyNoMoreInteractions(this.devicePingConfig);
@@ -90,7 +90,7 @@ class DlmsConnectionHelperTest {
     device.setIpAddress(deviceIpAddress);
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
-    this.helper.createConnectionForDevice(this.messageMetadata, device, listener);
+    this.helper.createConnectionForDevice(this.messageMetadata, device, listener, null);
 
     verifyNoInteractions(this.pinger);
     verifyNoMoreInteractions(this.devicePingConfig);
@@ -102,11 +102,11 @@ class DlmsConnectionHelperTest {
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
     final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
-    when(this.connectionFactory.getConnection(this.messageMetadata, device, listener))
+    when(this.connectionFactory.getConnection(this.messageMetadata, device, listener, null))
         .thenReturn(connectionManager);
 
     final DlmsConnectionManager result =
-        this.helper.createConnectionForDevice(this.messageMetadata, device, listener);
+        this.helper.createConnectionForDevice(this.messageMetadata, device, listener, null);
 
     assertThat(result).isSameAs(connectionManager);
   }
@@ -124,12 +124,13 @@ class DlmsConnectionHelperTest {
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
     final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
-    when(this.connectionFactory.getConnection(this.messageMetadata, device, listener))
+    when(this.connectionFactory.getConnection(this.messageMetadata, device, listener, null))
         .thenReturn(connectionManager);
 
-    this.helper.createConnectionForDevice(this.messageMetadata, device, listener);
+    this.helper.createConnectionForDevice(this.messageMetadata, device, listener, null);
 
-    verify(this.invocationCounterManager).initializeInvocationCounter(this.messageMetadata, device);
+    verify(this.invocationCounterManager)
+        .initializeInvocationCounter(this.messageMetadata, device, null);
   }
 
   @Test
@@ -140,11 +141,11 @@ class DlmsConnectionHelperTest {
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
     final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
-    when(this.connectionFactory.getConnection(this.messageMetadata, device, listener))
+    when(this.connectionFactory.getConnection(this.messageMetadata, device, listener, null))
         .thenReturn(connectionManager);
 
     final DlmsConnectionManager result =
-        this.helper.createConnectionForDevice(this.messageMetadata, device, listener);
+        this.helper.createConnectionForDevice(this.messageMetadata, device, listener, null);
 
     assertThat(result).isSameAs(connectionManager);
 
@@ -169,17 +170,19 @@ class DlmsConnectionHelperTest {
                 + " error message. Result name REJECTED_PERMANENT. Assumed fault: user.");
     doThrow(exception)
         .when(this.connectionFactory)
-        .getConnection(this.messageMetadata, device, listener);
+        .getConnection(this.messageMetadata, device, listener, null);
 
     try {
-      this.helper.createConnectionForDevice(this.messageMetadata, device, listener);
+      this.helper.createConnectionForDevice(this.messageMetadata, device, listener, null);
       fail("Expected ConnectionException");
     } catch (final ConnectionException e) {
       // expected
     }
 
-    verify(this.invocationCounterManager).initializeInvocationCounter(this.messageMetadata, device);
-    verify(this.connectionFactory, times(2)).getConnection(this.messageMetadata, device, listener);
+    verify(this.invocationCounterManager)
+        .initializeInvocationCounter(this.messageMetadata, device, null);
+    verify(this.connectionFactory, times(2))
+        .getConnection(this.messageMetadata, device, listener, null);
   }
 
   @Test
@@ -199,17 +202,19 @@ class DlmsConnectionHelperTest {
                 + "UseHdlc:false UseSn:false Message:Socket was closed by remote host.");
     doThrow(exception)
         .when(this.connectionFactory)
-        .getConnection(this.messageMetadata, device, listener);
+        .getConnection(this.messageMetadata, device, listener, null);
 
     try {
-      this.helper.createConnectionForDevice(this.messageMetadata, device, listener);
+      this.helper.createConnectionForDevice(this.messageMetadata, device, listener, null);
       fail("Expected ConnectionException");
     } catch (final ConnectionException e) {
       // expected
     }
 
-    verify(this.invocationCounterManager).initializeInvocationCounter(this.messageMetadata, device);
-    verify(this.connectionFactory, times(2)).getConnection(this.messageMetadata, device, listener);
+    verify(this.invocationCounterManager)
+        .initializeInvocationCounter(this.messageMetadata, device, null);
+    verify(this.connectionFactory, times(2))
+        .getConnection(this.messageMetadata, device, listener, null);
   }
 
   @Test
@@ -230,10 +235,10 @@ class DlmsConnectionHelperTest {
                 + "UseHdlc:false UseSn:false Message:Socket was closed by remote host.");
     doThrow(exception)
         .when(this.connectionFactory)
-        .getConnection(this.messageMetadata, device, listener);
+        .getConnection(this.messageMetadata, device, listener, null);
 
     try {
-      this.helper.createConnectionForDevice(this.messageMetadata, device, listener);
+      this.helper.createConnectionForDevice(this.messageMetadata, device, listener, null);
       fail("Expected ConnectionException");
     } catch (final ConnectionException e) {
       // expected

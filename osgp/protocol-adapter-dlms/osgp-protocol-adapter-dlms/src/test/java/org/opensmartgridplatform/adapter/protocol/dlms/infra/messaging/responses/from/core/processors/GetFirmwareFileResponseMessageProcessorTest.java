@@ -12,6 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -27,6 +28,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.FirmwareService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
@@ -49,6 +51,7 @@ import org.opensmartgridplatform.shared.infra.jms.ObjectMessageBuilder;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.opensmartgridplatform.throttling.api.Permit;
 
 @ExtendWith(MockitoExtension.class)
 public class GetFirmwareFileResponseMessageProcessorTest {
@@ -68,6 +71,8 @@ public class GetFirmwareFileResponseMessageProcessorTest {
 
   @Mock private ThrottlingService throttlingService;
 
+  @Mock private ThrottlingConfig throttlingConfig;
+
   @Mock private OsgpExceptionConverter osgpExceptionConverter;
 
   private DlmsDevice dlmsDevice;
@@ -78,6 +83,7 @@ public class GetFirmwareFileResponseMessageProcessorTest {
   @BeforeEach
   public void setUp() {
     this.dlmsDevice = new DlmsDeviceBuilder().withHls5Active(true).build();
+    lenient().when(this.throttlingConfig.clientEnabled()).thenReturn(false);
   }
 
   @Test
@@ -102,7 +108,10 @@ public class GetFirmwareFileResponseMessageProcessorTest {
     when(this.dlmsConnectionManagerMock.getDlmsMessageListener())
         .thenReturn(this.dlmsMessageListenerMock);
     when(this.connectionHelper.createConnectionForDevice(
-            any(MessageMetadata.class), same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
+            any(MessageMetadata.class),
+            same(this.dlmsDevice),
+            nullable(DlmsMessageListener.class),
+            nullable(Permit.class)))
         .thenReturn(this.dlmsConnectionManagerMock);
     when(this.firmwareService.updateFirmware(
             same(this.dlmsConnectionManagerMock),

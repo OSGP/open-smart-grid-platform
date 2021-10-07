@@ -13,9 +13,12 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.Se
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.DlmsConnection;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
@@ -23,8 +26,10 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Hls5Connector;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.RecoverKeyException;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ThrottlingPermitDeniedException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.InvocationCountingDlmsMessageListener;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.throttling.api.Permit;
 
 @Slf4j
 public class RecoverKeyProcess implements Runnable {
@@ -43,6 +48,8 @@ public class RecoverKeyProcess implements Runnable {
 
   private final ThrottlingService throttlingService;
 
+  private final ThrottlingConfig throttlingConfig;
+
   private final DlmsDeviceRepository deviceRepository;
 
   public RecoverKeyProcess(
@@ -50,11 +57,13 @@ public class RecoverKeyProcess implements Runnable {
       final Hls5Connector hls5Connector,
       final SecretManagementService secretManagementService,
       final ThrottlingService throttlingService,
+      final ThrottlingConfig throttlingConfig,
       final DlmsDeviceRepository deviceRepository) {
     this.domainHelperService = domainHelperService;
     this.hls5Connector = hls5Connector;
     this.secretManagementService = secretManagementService;
     this.throttlingService = throttlingService;
+    this.throttlingConfig = throttlingConfig;
     this.deviceRepository = deviceRepository;
   }
 
@@ -76,10 +85,30 @@ public class RecoverKeyProcess implements Runnable {
           this.messageMetadata.getCorrelationUid());
       return;
     }
-    if (!this.canConnectUsingNewKeys(device)) {
+
+    try {
+      if (!this.canConnectUsingNewKeys(device)) {
+        log.warn(
+            "[{}] Could not recover keys: could not connect to device using new keys",
+            this.messageMetadata.getCorrelationUid());
+        return;
+      }
+    } catch (final ThrottlingPermitDeniedException e) {
       log.warn(
-          "[{}] Could not recover keys: could not connect to device using new keys",
-          this.messageMetadata.getCorrelationUid());
+          "RecoverKeyProcess could not connect to the device due to throttling constraints", e);
+
+      // TODO look if this could be improved upon, should we do this with a fixed delay, or should
+      // there be a more flexible solution?
+      new Timer()
+          .schedule(
+              new TimerTask() {
+                @Override
+                public void run() {
+                  RecoverKeyProcess.this.run();
+                }
+              },
+              30000);
+
       return;
     }
 
@@ -113,8 +142,25 @@ public class RecoverKeyProcess implements Runnable {
   private boolean canConnectUsingNewKeys(final DlmsDevice device) {
     DlmsConnection connection = null;
     InvocationCountingDlmsMessageListener dlmsMessageListener = null;
+    Permit permit = null;
     try {
-      this.throttlingService.openConnection();
+      if (this.throttlingConfig.clientEnabled()) {
+        final int baseTransceiverStationId =
+            Integer.MAX_VALUE; // TODO needs to get here from OSGP Core DB device.bts_id
+        final int cellId = 1; // TODO needs to get here from OSGP Core DB device.cell_id
+        permit =
+            this.throttlingConfig
+                .throttlingClient()
+                .requestPermit(baseTransceiverStationId, cellId)
+                .orElseThrow(
+                    () ->
+                        new ThrottlingPermitDeniedException(
+                            this.throttlingConfig.configurationName(),
+                            baseTransceiverStationId,
+                            cellId));
+      } else {
+        this.throttlingService.openConnection();
+      }
 
       if (device.needsInvocationCounter()) {
         dlmsMessageListener = new InvocationCountingDlmsMessageListener();
@@ -139,7 +185,15 @@ public class RecoverKeyProcess implements Runnable {
         }
       }
 
-      this.throttlingService.closeConnection();
+      if (this.throttlingConfig.clientEnabled()) {
+        // TODO releasing needs to be made resilient to network failures communicating with the
+        // throttling service. One idea for this has been to put the details of the release request
+        // in a queue and put the throttling client in a message listener for that queue, and call
+        // the release method on the client from onMessage.
+        this.throttlingConfig.throttlingClient().releasePermit(permit);
+      } else {
+        this.throttlingService.closeConnection();
+      }
 
       if (dlmsMessageListener != null) {
         final int numberOfSentMessages = dlmsMessageListener.getNumberOfSentMessages();

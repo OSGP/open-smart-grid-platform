@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 
 import java.io.Serializable;
 import javax.jms.JMSException;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SystemEventService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -19,11 +20,13 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsD
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NonRetryableException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ThrottlingPermitDeniedException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
+import org.opensmartgridplatform.throttling.api.Permit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,21 +52,46 @@ public abstract class DlmsConnectionMessageProcessor {
 
   @Autowired protected ThrottlingService throttlingService;
 
+  @Autowired private ThrottlingConfig throttlingConfig;
+
   @Autowired private SystemEventService systemEventService;
 
   public DlmsConnectionManager createConnectionForDevice(
       final DlmsDevice device, final MessageMetadata messageMetadata) throws OsgpException {
 
-    this.throttlingService.openConnection();
+    Permit permit = null;
+    if (this.throttlingConfig.clientEnabled()) {
+      // TODO baseTransceiverStationId and cellId need to get here from OSGP Core DB device.bts_id
+      // and cellId. Similar to other data from the core DB (for instance the static IP address),
+      // this could be done by placing these fields in the MessageMetadata
+      final int baseTransceiverStationId = Integer.MAX_VALUE;
+      final int cellId = 1;
+      permit =
+          this.throttlingConfig
+              .throttlingClient()
+              .requestPermit(baseTransceiverStationId, cellId)
+              .orElseThrow(
+                  () ->
+                      new ThrottlingPermitDeniedException(
+                          this.throttlingConfig.configurationName(),
+                          baseTransceiverStationId,
+                          cellId));
+    } else {
+      this.throttlingService.openConnection();
+    }
 
     final DlmsMessageListener dlmsMessageListener =
         this.createMessageListenerForDeviceConnection(device, messageMetadata);
 
     try {
       return this.dlmsConnectionHelper.createConnectionForDevice(
-          messageMetadata, device, dlmsMessageListener);
+          messageMetadata, device, dlmsMessageListener, permit);
     } catch (final Exception e) {
-      this.throttlingService.closeConnection();
+      if (this.throttlingConfig.clientEnabled()) {
+        this.throttlingConfig.throttlingClient().releasePermit(permit);
+      } else {
+        this.throttlingService.closeConnection();
+      }
       throw e;
     }
   }
@@ -100,7 +128,11 @@ public abstract class DlmsConnectionMessageProcessor {
 
     this.closeDlmsConnection(device, conn);
 
-    this.throttlingService.closeConnection();
+    if (this.throttlingConfig.clientEnabled()) {
+      this.throttlingConfig.throttlingClient().releasePermit(conn.getPermit());
+    } else {
+      this.throttlingService.closeConnection();
+    }
 
     if (device.needsInvocationCounter()) {
       this.updateInvocationCounterForDevice(device, conn);

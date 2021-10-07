@@ -17,6 +17,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.throttling.api.Permit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,10 +62,20 @@ public class DlmsConnectionFactory {
   public DlmsConnectionManager getConnection(
       final MessageMetadata messageMetadata,
       final DlmsDevice device,
-      final DlmsMessageListener dlmsMessageListener)
+      final DlmsMessageListener dlmsMessageListener,
+      final Permit permit)
       throws OsgpException {
     return this.newConnectionWithSecurityLevel(
-        messageMetadata, device, dlmsMessageListener, SecurityLevel.forDevice(device));
+        messageMetadata, device, dlmsMessageListener, SecurityLevel.forDevice(device), permit);
+  }
+
+  public DlmsConnectionManager getPublicClientConnection(
+      final MessageMetadata messageMetadata,
+      final DlmsDevice device,
+      final DlmsMessageListener dlmsMessageListener)
+      throws OsgpException {
+
+    return this.getPublicClientConnection(messageMetadata, device, dlmsMessageListener, null);
   }
 
   /**
@@ -84,17 +95,19 @@ public class DlmsConnectionFactory {
   public DlmsConnectionManager getPublicClientConnection(
       final MessageMetadata messageMetadata,
       final DlmsDevice device,
-      final DlmsMessageListener dlmsMessageListener)
+      final DlmsMessageListener dlmsMessageListener,
+      final Permit permit)
       throws OsgpException {
     return this.newConnectionWithSecurityLevel(
-        messageMetadata, device, dlmsMessageListener, SecurityLevel.LLS0);
+        messageMetadata, device, dlmsMessageListener, SecurityLevel.LLS0, permit);
   }
 
   private DlmsConnectionManager newConnectionWithSecurityLevel(
       final MessageMetadata messageMetadata,
       final DlmsDevice device,
       final DlmsMessageListener dlmsMessageListener,
-      final SecurityLevel securityLevel)
+      final SecurityLevel securityLevel,
+      final Permit permit)
       throws OsgpException {
     final DlmsConnectionManager connectionManager =
         new DlmsConnectionManager(
@@ -102,7 +115,8 @@ public class DlmsConnectionFactory {
             messageMetadata,
             device,
             dlmsMessageListener,
-            this.domainHelperService);
+            this.domainHelperService,
+            permit);
     connectionManager.connect();
     return connectionManager;
   }

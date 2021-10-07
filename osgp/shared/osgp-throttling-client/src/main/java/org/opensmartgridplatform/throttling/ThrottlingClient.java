@@ -432,4 +432,8 @@ public class ThrottlingClient {
         break;
     }
   }
+
+  public ThrottlingConfig getThrottlingConfig() {
+    return this.throttlingConfig;
+  }
 }

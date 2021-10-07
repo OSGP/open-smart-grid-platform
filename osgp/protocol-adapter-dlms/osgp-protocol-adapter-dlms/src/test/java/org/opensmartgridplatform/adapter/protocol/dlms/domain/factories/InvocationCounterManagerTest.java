@@ -57,7 +57,7 @@ class InvocationCounterManagerTest {
             .build();
 
     final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
-    when(this.connectionFactory.getPublicClientConnection(this.messageMetadata, device, null))
+    when(this.connectionFactory.getPublicClientConnection(this.messageMetadata, device, null, null))
         .thenReturn(connectionManager);
 
     final DataObject dataObject = DataObject.newUInteger32Data(invocationCounterValueOnDevice);

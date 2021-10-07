@@ -26,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ConfigurationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.FirmwareService;
@@ -43,6 +44,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ObjectMessageBuilder;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
+import org.opensmartgridplatform.throttling.api.Permit;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -67,6 +69,8 @@ public class UpdateFirmwareRequestMessageProcessorTest {
 
   @Mock private ThrottlingService throttlingService;
 
+  @Mock private ThrottlingConfig throttlingConfig;
+
   private DlmsDevice device;
 
   @InjectMocks private UpdateFirmwareRequestMessageProcessor processor;
@@ -81,8 +85,12 @@ public class UpdateFirmwareRequestMessageProcessorTest {
     when(this.dlmsConnectionManagerMock.getDlmsMessageListener())
         .thenReturn(this.messageListenerMock);
     when(this.connectionHelper.createConnectionForDevice(
-            any(MessageMetadata.class), same(this.device), nullable(DlmsMessageListener.class)))
+            any(MessageMetadata.class),
+            same(this.device),
+            nullable(DlmsMessageListener.class),
+            nullable(Permit.class)))
         .thenReturn(this.dlmsConnectionManagerMock);
+    when(this.throttlingConfig.clientEnabled()).thenReturn(false);
   }
 
   @Test

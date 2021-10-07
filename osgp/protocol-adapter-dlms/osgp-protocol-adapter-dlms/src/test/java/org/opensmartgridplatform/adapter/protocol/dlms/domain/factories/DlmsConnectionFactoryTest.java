@@ -58,7 +58,7 @@ public class DlmsConnectionFactoryTest {
         .thenReturn(this.connection);
 
     final DlmsConnectionManager result =
-        this.factory.getConnection(this.messageMetadata, device, listener);
+        this.factory.getConnection(this.messageMetadata, device, listener, null);
 
     final DlmsConnectionManager expected =
         this.newConnectionManager(device, listener, this.hls5Connector);
@@ -67,7 +67,7 @@ public class DlmsConnectionFactoryTest {
   }
 
   @Test
-  public void getConnection_throwsForHls4Device() throws Exception {
+  public void getConnection_throwsForHls4Device() {
 
     final DlmsDevice device = new DlmsDeviceBuilder().withHls4Active(true).build();
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
@@ -75,19 +75,19 @@ public class DlmsConnectionFactoryTest {
     assertThatExceptionOfType(FunctionalException.class)
         .isThrownBy(
             () -> {
-              this.factory.getConnection(this.messageMetadata, device, listener);
+              this.factory.getConnection(this.messageMetadata, device, listener, null);
             });
   }
 
   @Test
-  public void getConnection_throwsForHls3Device() throws Exception {
+  public void getConnection_throwsForHls3Device() {
     final DlmsDevice device = new DlmsDeviceBuilder().withHls3Active(true).build();
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
     assertThatExceptionOfType(FunctionalException.class)
         .isThrownBy(
             () -> {
-              this.factory.getConnection(this.messageMetadata, device, listener);
+              this.factory.getConnection(this.messageMetadata, device, listener, null);
             });
   }
 
@@ -99,7 +99,7 @@ public class DlmsConnectionFactoryTest {
         .thenReturn(this.connection);
 
     final DlmsConnectionManager result =
-        this.factory.getConnection(this.messageMetadata, device, listener);
+        this.factory.getConnection(this.messageMetadata, device, listener, null);
 
     final DlmsConnectionManager expected =
         this.newConnectionManager(device, listener, this.lls1Connector);
@@ -115,7 +115,7 @@ public class DlmsConnectionFactoryTest {
         .thenReturn(this.connection);
 
     final DlmsConnectionManager result =
-        this.factory.getConnection(this.messageMetadata, device, listener);
+        this.factory.getConnection(this.messageMetadata, device, listener, null);
 
     final DlmsConnectionManager expected =
         this.newConnectionManager(device, listener, this.lls0Connector);
@@ -131,7 +131,7 @@ public class DlmsConnectionFactoryTest {
         .thenReturn(this.connection);
 
     final DlmsConnectionManager result =
-        this.factory.getPublicClientConnection(this.messageMetadata, device, listener);
+        this.factory.getPublicClientConnection(this.messageMetadata, device, listener, null);
 
     final DlmsConnectionManager expected =
         this.newConnectionManager(device, listener, this.lls0Connector);
@@ -144,7 +144,7 @@ public class DlmsConnectionFactoryTest {
       throws OsgpException {
     final DlmsConnectionManager connectionManager =
         new DlmsConnectionManager(
-            connector, this.messageMetadata, device, listener, this.domainHelperService);
+            connector, this.messageMetadata, device, listener, this.domainHelperService, null);
     connectionManager.connect();
     return connectionManager;
   }

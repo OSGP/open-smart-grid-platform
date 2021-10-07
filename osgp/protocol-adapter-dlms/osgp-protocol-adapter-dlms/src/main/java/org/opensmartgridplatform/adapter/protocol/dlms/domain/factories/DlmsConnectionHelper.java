@@ -15,6 +15,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionExce
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.throttling.api.Permit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,15 @@ public class DlmsConnectionHelper {
             : Duration.ofSeconds(secondsBetweenDlmsConnections);
   }
 
+  public DlmsConnectionManager createConnectionForDevice(
+      final MessageMetadata messageMetadata,
+      final DlmsDevice device,
+      final DlmsMessageListener messageListener)
+      throws OsgpException {
+
+    return this.createConnectionForDevice(messageMetadata, device, messageListener, null);
+  }
+
   /**
    * Returns an open connection to the device, taking care of details like initializing the
    * invocation counter when required.
@@ -60,7 +70,8 @@ public class DlmsConnectionHelper {
   public DlmsConnectionManager createConnectionForDevice(
       final MessageMetadata messageMetadata,
       final DlmsDevice device,
-      final DlmsMessageListener messageListener)
+      final DlmsMessageListener messageListener,
+      final Permit permit)
       throws OsgpException {
 
     final boolean pingDevice =
@@ -77,7 +88,8 @@ public class DlmsConnectionHelper {
         initializeInvocationCounter,
         NO_DELAY,
         waitBeforeCreatingTheConnection,
-        messageMetadata);
+        messageMetadata,
+        permit);
   }
 
   private void delay(final Duration duration) {
@@ -99,7 +111,8 @@ public class DlmsConnectionHelper {
       final boolean initializeInvocationCounter,
       final Duration waitBeforeInitializingInvocationCounter,
       final Duration waitBeforeCreatingTheConnection,
-      final MessageMetadata messageMetadata)
+      final MessageMetadata messageMetadata,
+      final Permit permit)
       throws OsgpException {
 
     if (pingDevice) {
@@ -108,12 +121,12 @@ public class DlmsConnectionHelper {
 
     if (initializeInvocationCounter) {
       this.delay(waitBeforeInitializingInvocationCounter);
-      this.invocationCounterManager.initializeInvocationCounter(messageMetadata, device);
+      this.invocationCounterManager.initializeInvocationCounter(messageMetadata, device, permit);
     }
 
     try {
       this.delay(waitBeforeCreatingTheConnection);
-      return this.connectionFactory.getConnection(messageMetadata, device, messageListener);
+      return this.connectionFactory.getConnection(messageMetadata, device, messageListener, permit);
     } catch (final ConnectionException e) {
       if ((device.needsInvocationCounter() && this.indicatesInvocationCounterOutOfSync(e))
           && !initializeInvocationCounter) {
@@ -135,7 +148,8 @@ public class DlmsConnectionHelper {
             true,
             this.delayBetweenDlmsConnections,
             this.delayBetweenDlmsConnections,
-            messageMetadata);
+            messageMetadata,
+            permit);
       }
       /*
        * The connection exception is assumed not to be related to the invocation counter, or has
