@@ -11,7 +11,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 import static org.assertj.core.api.Fail.fail;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -73,10 +72,9 @@ class DlmsConnectionHelperTest {
   @Test
   void doesNotPingDeviceWithoutIpAddressBeforeCreatingConnectionIfPingingIsEnabled()
       throws Exception {
-    final String noIpAddress = null;
     when(this.devicePingConfig.pingingEnabled()).thenReturn(true);
     final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true).build();
-    device.setIpAddress(noIpAddress);
+    device.setIpAddress(null);
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
     this.helper.handleConnectionForDevice(this.messageMetadata, device, listener, this.task);
@@ -99,20 +97,20 @@ class DlmsConnectionHelperTest {
     verifyNoMoreInteractions(this.devicePingConfig);
   }
 
-  //  @Test
-  //  void createsConnectionForDeviceThatDoesNotNeedInvocationCounter() throws Exception {
-  //    final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(false).build();
-  //    final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
-  //
-  //    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
-  //    when(this.connectionFactory.handleConnection(this.messageMetadata, device, listener))
-  //        .thenReturn(connectionManager);
-  //
-  //    final DlmsConnectionManager result =
-  //        this.helper.handleConnectionForDevice(this.messageMetadata, device, listener);
-  //
-  //    assertThat(result).isSameAs(connectionManager);
-  //  }
+  @Test
+  void noInteractionsWithInvocationCounterManagerForDeviceThatDoesNotNeedInvocationCounter()
+      throws Exception {
+    final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(false).build();
+    final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
+
+    doNothing()
+        .when(this.connectionFactory)
+        .handleConnection(this.messageMetadata, device, listener, this.task);
+
+    this.helper.handleConnectionForDevice(this.messageMetadata, device, listener, this.task);
+
+    verifyNoInteractions(this.invocationCounterManager);
+  }
 
   @Test
   void
@@ -126,7 +124,6 @@ class DlmsConnectionHelperTest {
             .build();
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
-    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
     doNothing()
         .when(this.connectionFactory)
         .handleConnection(this.messageMetadata, device, listener, this.task);
@@ -136,24 +133,21 @@ class DlmsConnectionHelperTest {
     verify(this.invocationCounterManager).initializeInvocationCounter(this.messageMetadata, device);
   }
 
-  //  @Test
-  //  void createsConnectionForDeviceThatNeedsInvocationCounterWithInvocationCounterInitialized()
-  //      throws Exception {
-  //    final DlmsDevice device =
-  //        new DlmsDeviceBuilder().withHls5Active(true).withInvocationCounter(123L).build();
-  //    final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
-  //
-  //    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
-  //    when(this.connectionFactory.handleConnection(this.messageMetadata, device, listener))
-  //        .thenReturn(connectionManager);
-  //
-  //    final DlmsConnectionManager result =
-  //        this.helper.handleConnectionForDevice(this.messageMetadata, device, listener);
-  //
-  //    assertThat(result).isSameAs(connectionManager);
-  //
-  //    verifyNoMoreInteractions(this.invocationCounterManager);
-  //  }
+  @Test
+  void createsConnectionForDeviceThatNeedsInvocationCounterWithInvocationCounterInitialized()
+      throws Exception {
+    final DlmsDevice device =
+        new DlmsDeviceBuilder().withHls5Active(true).withInvocationCounter(123L).build();
+    final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
+
+    doNothing()
+        .when(this.connectionFactory)
+        .handleConnection(this.messageMetadata, device, listener, this.task);
+
+    this.helper.handleConnectionForDevice(this.messageMetadata, device, listener, this.task);
+
+    verifyNoMoreInteractions(this.invocationCounterManager);
+  }
 
   @Test
   void initializesInvocationCounterWhenInvocationCounterIsOutOfSyncForIskraDevice()
