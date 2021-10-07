@@ -18,6 +18,7 @@ import io.netty.buffer.ByteBuf;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigSmr50;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.DlmsPushNotification;
 import org.slf4j.Logger;
@@ -28,7 +29,7 @@ public class Smr5AlarmDecoder extends AlarmDecoder {
   private static final int SMR5_NUMBER_OF_BYTES_FOR_ADDRESSING = 8;
   private static final int SMR5_NUMBER_OF_BYTES_FOR_INVOKE_ID = 4;
 
-  private DlmsObjectConfigSmr50 dlmsObjectConfigSmr50 = new DlmsObjectConfigSmr50();
+  private final DlmsObjectConfigSmr50 dlmsObjectConfigSmr50 = new DlmsObjectConfigSmr50();
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Smr5AlarmDecoder.class);
 
@@ -38,7 +39,7 @@ public class Smr5AlarmDecoder extends AlarmDecoder {
   private static final byte OCTET_STRING = 0x09;
   private static final byte DOUBLE_LONG_UNSIGNED = 0x06;
 
-  private DlmsPushNotification.Builder builder = new DlmsPushNotification.Builder();
+  private final DlmsPushNotification.Builder builder = new DlmsPushNotification.Builder();
 
   public DlmsPushNotification decodeSmr5alarm(final ByteBuf buffer)
       throws UnrecognizedMessageDataException {
@@ -57,25 +58,28 @@ public class Smr5AlarmDecoder extends AlarmDecoder {
     }
     this.builder.appendByte(dataTypeByte);
 
-    // Next byte should indicate the amount of elements in the structure: 2
-    // or 3
+    // Next byte should indicate the amount of elements in the structure: 2, 3 or 4
     final byte dataLength = buffer.readByte();
-    if (dataLength != 2 && dataLength != 3) {
+    if (dataLength != 2 && dataLength != 3 && dataLength != 4) {
       throw new UnrecognizedMessageDataException(
-          "Expected a structure with 2 or 3 elements, but amount is " + dataLength);
+          "Expected a structure with 2, 3 or 4 elements, but amount is " + dataLength);
     }
     this.builder.appendByte(dataLength);
 
-    // If the alarm contains 3 elements, then the 3rd element is the alarm
-    // register
-    final boolean alarmRegisterExpected = (dataLength == 3);
+    // If the alarm contains 3 elements, then the 3rd element is the alarm register
+    // If the alarm contains 4 elements, then the 4th element is the alarm register 2
+    final boolean alarmRegisterExpected = (dataLength == 3 || dataLength == 4);
 
     // Decode elements
     this.decodeEquipmentIdentifier(buffer);
     this.decodeLogicalName(buffer, alarmRegisterExpected);
 
-    if (alarmRegisterExpected) {
-      this.decodeAlarms(buffer);
+    if (dataLength >= 3) {
+      this.decodeAlarms(buffer, DlmsObjectType.ALARM_REGISTER_1);
+    }
+    if (dataLength == 4) {
+      // SMR 5.2
+      this.decodeAlarms(buffer, DlmsObjectType.ALARM_REGISTER_2);
     }
 
     return this.builder.build();
@@ -146,7 +150,8 @@ public class Smr5AlarmDecoder extends AlarmDecoder {
     this.decodeObisCodeData(buffer, alarmExpected);
   }
 
-  private void decodeAlarms(final ByteBuf buffer) throws UnrecognizedMessageDataException {
+  private void decodeAlarms(final ByteBuf buffer, final DlmsObjectType dlmsObjectType)
+      throws UnrecognizedMessageDataException {
     // First byte should indicate double-long-unsigned
     final byte dataTypeByte = buffer.readByte();
     if (dataTypeByte != DOUBLE_LONG_UNSIGNED) {
@@ -156,7 +161,7 @@ public class Smr5AlarmDecoder extends AlarmDecoder {
     this.builder.appendByte(dataTypeByte);
 
     // Next bytes are the alarm
-    this.decodeAlarmRegisterData(buffer, this.builder);
+    this.decodeAlarmRegisterData(buffer, this.builder, dlmsObjectType);
   }
 
   private void decodeObisCodeData(final ByteBuf buffer, final boolean alarmRegisterExpected)

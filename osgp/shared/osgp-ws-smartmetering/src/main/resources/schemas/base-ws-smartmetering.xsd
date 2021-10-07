@@ -228,10 +228,16 @@
       <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_2"/>
       <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_3"/>
       <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4"/>
-      <xsd:enumeration value="PHASE_OUTAGE_DETECTED_L_1"/>
-      <xsd:enumeration value="PHASE_OUTAGE_DETECTED_L_2"/>
-      <xsd:enumeration value="PHASE_OUTAGE_DETECTED_L_3"/>
+      <xsd:enumeration value="PHASE_OUTAGE_DETECTED_L1"/>
+      <xsd:enumeration value="PHASE_OUTAGE_DETECTED_L2"/>
+      <xsd:enumeration value="PHASE_OUTAGE_DETECTED_L3"/>
       <xsd:enumeration value="PHASE_OUTAGE_TEST_INDICATION"/>
+      <xsd:enumeration value="VOLTAGE_SAG_IN_PHASE_DETECTED_L1"/>
+      <xsd:enumeration value="VOLTAGE_SAG_IN_PHASE_DETECTED_L2"/>
+      <xsd:enumeration value="VOLTAGE_SAG_IN_PHASE_DETECTED_L3"/>
+      <xsd:enumeration value="VOLTAGE_SWELL_IN_PHASE_DETECTED_L1"/>
+      <xsd:enumeration value="VOLTAGE_SWELL_IN_PHASE_DETECTED_L2"/>
+      <xsd:enumeration value="VOLTAGE_SWELL_IN_PHASE_DETECTED_L3"/>
     </xsd:restriction>
   </xsd:simpleType>
 
