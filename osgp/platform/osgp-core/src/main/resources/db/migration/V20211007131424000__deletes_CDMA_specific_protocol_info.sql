@@ -4,7 +4,7 @@ begin
 
 if ((select count(*)
      from   protocol_info
-     where  protocol like '%SMR_CDMA') = 3) then
+     where  protocol like '%SMR_%') = 3) then
 
 delete from protocol_info WHERE protocol = 'SMR_CDMA' AND protocol_version  = '5.1';
 delete from protocol_info WHERE protocol = 'SMR_CDMA' AND protocol_version  = '5.0.0';
