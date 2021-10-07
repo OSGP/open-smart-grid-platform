@@ -59,47 +59,7 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
             .build();
 
     final ThrowingConsumer<DlmsConnectionManager> taskForConnectionManager =
-        conn -> {
-          try {
-            final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
-
-            LOGGER.info(
-                "{} called for device: {} for organisation: {}",
-                message.getJMSType(),
-                messageMetadata.getDeviceIdentification(),
-                messageMetadata.getOrganisationIdentification());
-
-            final Serializable response;
-
-            response = this.handleMessage(conn, device, message.getObject());
-
-            // Send response
-            this.sendResponseMessage(
-                messageMetadata,
-                ResponseMessageResultType.OK,
-                null,
-                this.responseMessageSender,
-                response);
-
-          } catch (final JMSException exception) {
-            this.logJmsException(LOGGER, exception, messageMetadata);
-          } catch (final Exception exception) {
-            // Return original request + exception
-            if (!(exception instanceof SilentException)) {
-              LOGGER.error("Unexpected exception during {}", this.messageType.name(), exception);
-            }
-
-            this.sendResponseMessage(
-                messageMetadata,
-                ResponseMessageResultType.NOT_OK,
-                exception,
-                this.responseMessageSender,
-                this.createUpdateFirmwareRequestDto(message));
-          } finally {
-            final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
-            this.doConnectionPostProcessing(device, conn, messageMetadata);
-          }
-        };
+        conn -> this.processMessageTask(message, messageMetadata, conn);
 
     try {
       this.handleConnectionForDevice(
@@ -108,6 +68,52 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
           taskForConnectionManager);
     } catch (final OsgpException e) {
       LOGGER.error("Something went wrong with the DlmsConnection", e);
+    }
+  }
+
+  void processMessageTask(
+      final ObjectMessage message,
+      final MessageMetadata messageMetadata,
+      final DlmsConnectionManager conn)
+      throws JMSException, OsgpException {
+    try {
+      final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
+
+      LOGGER.info(
+          "{} called for device: {} for organisation: {}",
+          message.getJMSType(),
+          messageMetadata.getDeviceIdentification(),
+          messageMetadata.getOrganisationIdentification());
+
+      final Serializable response;
+
+      response = this.handleMessage(conn, device, message.getObject());
+
+      // Send response
+      this.sendResponseMessage(
+          messageMetadata,
+          ResponseMessageResultType.OK,
+          null,
+          this.responseMessageSender,
+          response);
+
+    } catch (final JMSException exception) {
+      this.logJmsException(LOGGER, exception, messageMetadata);
+    } catch (final Exception exception) {
+      // Return original request + exception
+      if (!(exception instanceof SilentException)) {
+        LOGGER.error("Unexpected exception during {}", this.messageType.name(), exception);
+      }
+
+      this.sendResponseMessage(
+          messageMetadata,
+          ResponseMessageResultType.NOT_OK,
+          exception,
+          this.responseMessageSender,
+          this.createUpdateFirmwareRequestDto(message));
+    } finally {
+      final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
+      this.doConnectionPostProcessing(device, conn, messageMetadata);
     }
   }
 

@@ -55,31 +55,38 @@ public class InvocationCounterManager {
       final MessageMetadata messageMetadata, final DlmsDevice device) throws OsgpException {
     final Long previousKnownInvocationCounter = device.getInvocationCounter();
     final Consumer<DlmsConnectionManager> taskForConnectionManager =
-        connectionManager -> {
-          try {
-            final Long invocationCounterFromDevice = this.getInvocationCounter(connectionManager);
-            if (Objects.equals(previousKnownInvocationCounter, invocationCounterFromDevice)) {
-              LOGGER.warn(
-                  "Initializing invocationCounter of device {} with the value that was already known: {}",
-                  device.getDeviceIdentification(),
-                  previousKnownInvocationCounter);
-            } else {
-              device.setInvocationCounter(invocationCounterFromDevice);
-              LOGGER.info(
-                  "Property invocationCounter of device {} initialized to the value of the invocation counter "
-                      + "stored on the device: {}{}",
-                  device.getDeviceIdentification(),
-                  device.getInvocationCounter(),
-                  previousKnownInvocationCounter == null
-                      ? ""
-                      : " (previous known value: " + previousKnownInvocationCounter + ")");
-            }
-          } catch (final FunctionalException e) {
-            LOGGER.warn("Something went wrong while trying to get the invocation counter", e);
-          }
-        };
+        connectionManager ->
+            this.initializeWithInvocationCounterStoredOnDeviceTask(
+                device, previousKnownInvocationCounter, connectionManager);
     this.connectionFactory.handlePublicClientConnection(
         messageMetadata, device, null, taskForConnectionManager);
+  }
+
+  void initializeWithInvocationCounterStoredOnDeviceTask(
+      final DlmsDevice device,
+      final Long previousKnownInvocationCounter,
+      final DlmsConnectionManager connectionManager) {
+    try {
+      final Long invocationCounterFromDevice = this.getInvocationCounter(connectionManager);
+      if (Objects.equals(previousKnownInvocationCounter, invocationCounterFromDevice)) {
+        LOGGER.warn(
+            "Initializing invocationCounter of device {} with the value that was already known: {}",
+            device.getDeviceIdentification(),
+            previousKnownInvocationCounter);
+      } else {
+        device.setInvocationCounter(invocationCounterFromDevice);
+        LOGGER.info(
+            "Property invocationCounter of device {} initialized to the value of the invocation counter "
+                + "stored on the device: {}{}",
+            device.getDeviceIdentification(),
+            device.getInvocationCounter(),
+            previousKnownInvocationCounter == null
+                ? ""
+                : " (previous known value: " + previousKnownInvocationCounter + ")");
+      }
+    } catch (final FunctionalException e) {
+      LOGGER.warn("Something went wrong while trying to get the invocation counter", e);
+    }
   }
 
   private long getInvocationCounter(final DlmsConnectionManager connectionManager)

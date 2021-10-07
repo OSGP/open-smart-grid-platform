@@ -78,56 +78,12 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
 
   @Override
   public void processMessage(final ObjectMessage message) throws JMSException {
-    log.debug("Processing {} request message", this.messageType);
+    LOGGER.debug("Processing {} request message", this.messageType);
 
     final MessageMetadata messageMetadata = MessageMetadata.fromMessage(message);
 
     final ThrowingConsumer<DlmsConnectionManager> taskForConnectionManager =
-        connectionManager -> {
-          try {
-            DlmsDevice device = null;
-            if (this.maxScheduleTimeExceeded(messageMetadata)) {
-              log.info(
-                  "Processing message of type {} for correlation UID {} exceeded max schedule time: {} ({})",
-                  messageMetadata.getMessageType(),
-                  messageMetadata.getCorrelationUid(),
-                  messageMetadata.getMaxScheduleTime(),
-                  Instant.ofEpochMilli(messageMetadata.getMaxScheduleTime()));
-              this.sendErrorResponse(
-                  messageMetadata,
-                  new FunctionalException(
-                      FunctionalExceptionType.MAX_SCHEDULE_TIME_EXCEEDED,
-                      ComponentType.PROTOCOL_DLMS),
-                  message.getObject());
-              return;
-            }
-
-            if (this.requiresExistingDevice()) {
-              device = this.domainHelperService.findDlmsDevice(messageMetadata);
-            }
-
-            log.info(
-                "{} called for device: {} for organisation: {}, correlationUID={}",
-                message.getJMSType(),
-                messageMetadata.getDeviceIdentification(),
-                messageMetadata.getOrganisationIdentification(),
-                messageMetadata.getCorrelationUid());
-
-            final Serializable response =
-                this.getResponse(connectionManager, device, message.getObject(), messageMetadata);
-            this.sendResponse(messageMetadata, response);
-
-          } catch (final JMSException exception) {
-            this.logJmsException(log, exception, messageMetadata);
-          } catch (final Exception exception) {
-
-            this.sendErrorResponse(messageMetadata, exception, message.getObject());
-
-          } finally {
-            final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
-            this.doConnectionPostProcessing(device, connectionManager, messageMetadata);
-          }
-        };
+        connectionManager -> this.processMessageTask(message, messageMetadata, connectionManager);
 
     if (this.usesDeviceConnection()) {
       try {
@@ -138,6 +94,55 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
       } catch (final OsgpException e) {
         LOGGER.error("Something went wrong with the DlmsConnection", e);
       }
+    }
+  }
+
+  private void processMessageTask(
+      final ObjectMessage message,
+      final MessageMetadata messageMetadata,
+      final DlmsConnectionManager connectionManager)
+      throws JMSException, OsgpException {
+    try {
+      DlmsDevice device = null;
+      if (this.maxScheduleTimeExceeded(messageMetadata)) {
+        log.info(
+            "Processing message of type {} for correlation UID {} exceeded max schedule time: {} ({})",
+            messageMetadata.getMessageType(),
+            messageMetadata.getCorrelationUid(),
+            messageMetadata.getMaxScheduleTime(),
+            Instant.ofEpochMilli(messageMetadata.getMaxScheduleTime()));
+        this.sendErrorResponse(
+            messageMetadata,
+            new FunctionalException(
+                FunctionalExceptionType.MAX_SCHEDULE_TIME_EXCEEDED, ComponentType.PROTOCOL_DLMS),
+            message.getObject());
+        return;
+      }
+
+      if (this.requiresExistingDevice()) {
+        device = this.domainHelperService.findDlmsDevice(messageMetadata);
+      }
+
+      log.info(
+          "{} called for device: {} for organisation: {}, correlationUID={}",
+          message.getJMSType(),
+          messageMetadata.getDeviceIdentification(),
+          messageMetadata.getOrganisationIdentification(),
+          messageMetadata.getCorrelationUid());
+
+      final Serializable response =
+          this.getResponse(connectionManager, device, message.getObject(), messageMetadata);
+      this.sendResponse(messageMetadata, response);
+
+    } catch (final JMSException exception) {
+      this.logJmsException(log, exception, messageMetadata);
+    } catch (final Exception exception) {
+
+      this.sendErrorResponse(messageMetadata, exception, message.getObject());
+
+    } finally {
+      final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
+      this.doConnectionPostProcessing(device, connectionManager, messageMetadata);
     }
   }
 

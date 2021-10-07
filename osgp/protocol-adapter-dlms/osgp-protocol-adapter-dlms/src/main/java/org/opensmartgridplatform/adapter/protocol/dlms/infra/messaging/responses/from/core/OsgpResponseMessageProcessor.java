@@ -81,43 +81,7 @@ public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessage
     final MessageMetadata messageMetadata = MessageMetadata.fromMessage(message);
 
     final ThrowingConsumer<DlmsConnectionManager> taskForConnectionManager =
-        conn -> {
-          try {
-            final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
-
-            LOGGER.info(
-                "{} called for device: {} for organisation: {}",
-                message.getJMSType(),
-                messageMetadata.getDeviceIdentification(),
-                messageMetadata.getOrganisationIdentification());
-
-            if (this.usesDeviceConnection()) {
-              this.handleMessage(
-                  conn,
-                  this.domainHelperService.findDlmsDevice(messageMetadata),
-                  message.getObject());
-            } else {
-              this.handleMessage(device, message);
-            }
-          } catch (final JMSException exception) {
-            this.logJmsException(LOGGER, exception, messageMetadata);
-          } catch (final Exception exception) {
-            // Return original request + exception
-            if (!(exception instanceof SilentException)) {
-              LOGGER.error("Unexpected exception during {}", this.messageType.name(), exception);
-            }
-
-            this.sendResponseMessage(
-                messageMetadata,
-                ResponseMessageResultType.NOT_OK,
-                exception,
-                this.responseMessageSender,
-                message.getObject());
-          } finally {
-            final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
-            this.doConnectionPostProcessing(device, conn, messageMetadata);
-          }
-        };
+        conn -> this.processMessageTask(message, messageMetadata, conn);
 
     if (this.usesDeviceConnection()) {
       try {
@@ -128,6 +92,46 @@ public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessage
       } catch (final OsgpException e) {
         LOGGER.error("Something went wrong with the DlmsConnection", e);
       }
+    }
+  }
+
+  private void processMessageTask(
+      final ObjectMessage message,
+      final MessageMetadata messageMetadata,
+      final DlmsConnectionManager conn)
+      throws JMSException, OsgpException {
+    try {
+      final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
+
+      LOGGER.info(
+          "{} called for device: {} for organisation: {}",
+          message.getJMSType(),
+          messageMetadata.getDeviceIdentification(),
+          messageMetadata.getOrganisationIdentification());
+
+      if (this.usesDeviceConnection()) {
+        this.handleMessage(
+            conn, this.domainHelperService.findDlmsDevice(messageMetadata), message.getObject());
+      } else {
+        this.handleMessage(device, message);
+      }
+    } catch (final JMSException exception) {
+      this.logJmsException(LOGGER, exception, messageMetadata);
+    } catch (final Exception exception) {
+      // Return original request + exception
+      if (!(exception instanceof SilentException)) {
+        LOGGER.error("Unexpected exception during {}", this.messageType.name(), exception);
+      }
+
+      this.sendResponseMessage(
+          messageMetadata,
+          ResponseMessageResultType.NOT_OK,
+          exception,
+          this.responseMessageSender,
+          message.getObject());
+    } finally {
+      final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
+      this.doConnectionPostProcessing(device, conn, messageMetadata);
     }
   }
 
