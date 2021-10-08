@@ -1,0 +1,15 @@
+{
+  "profiles": [
+    "profile1",
+    "smr5"
+  ],
+  "configuration": {
+    "port": 123,
+    "deviceidentification": {
+      "kemacode": "kemacode1",
+      "productionyear": "productionyear1",
+      "serialnumber": "serialnumber1"
+    },
+    "logicalDeviceIds": "124..126"
+  }
+}
