@@ -8,14 +8,28 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
-import java.util.function.Consumer;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.refEq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
+import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,7 +39,8 @@ class InvocationCounterManagerTest {
 
   private InvocationCounterManager manager;
   private MessageMetadata messageMetadata;
-  private Consumer<DlmsConnectionManager> task;
+  private DlmsDevice device;
+  final long invocationCounterValueInDatabaseEntity = 7;
 
   @Mock private DlmsConnectionFactory connectionFactory;
 
@@ -35,33 +50,34 @@ class InvocationCounterManagerTest {
   public void setUp() {
     this.manager = new InvocationCounterManager(this.connectionFactory, this.dlmsHelper);
     this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
-    this.task = t -> {};
+    this.device =
+        new DlmsDeviceBuilder()
+            .withInvocationCounter(this.invocationCounterValueInDatabaseEntity)
+            .build();
   }
 
-  //  @Test
-  //  void initializesInvocationCounterForDevice() throws Exception {
-  //    final long invocationCounterValueInDatabaseEntity = 7;
-  //    final long invocationCounterValueOnDevice = 123;
-  //
-  //    final DlmsDevice device =
-  //        new DlmsDeviceBuilder()
-  //            .withInvocationCounter(invocationCounterValueInDatabaseEntity)
-  //            .build();
-  //
-  //    //    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
-  //    doNothing()
-  //        .when(this.connectionFactory)
-  //        .handlePublicClientConnection(eq(this.messageMetadata), eq(device), isNull(), any());
-  //
-  //    final DataObject dataObject = DataObject.newUInteger32Data(invocationCounterValueOnDevice);
-  //    when(this.dlmsHelper.getAttributeValue(
-  //            any(), refEq(ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE)))
-  //        .thenReturn(dataObject);
-  //
-  //    this.manager.initializeInvocationCounter(this.messageMetadata, device);
-  //
-  //    assertThat(device.getInvocationCounter()).isEqualTo(invocationCounterValueOnDevice);
-  //
-  //    //    verify(connectionManager).close();
-  //  }
+  @Test
+  void initializeInvocationCounterForDeviceTaskExecuted() throws OsgpException {
+    this.manager.initializeInvocationCounter(this.messageMetadata, this.device);
+
+    verify(this.connectionFactory, times(1))
+        .handlePublicClientConnection(any(MessageMetadata.class), eq(this.device), isNull(), any());
+  }
+
+  @Test
+  void initializesInvocationCounterForDevice() throws Exception {
+    final long invocationCounterValueOnDevice = 123;
+
+    final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
+
+    final DataObject dataObject = DataObject.newUInteger32Data(invocationCounterValueOnDevice);
+    when(this.dlmsHelper.getAttributeValue(
+            eq(connectionManager), refEq(ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE)))
+        .thenReturn(dataObject);
+
+    this.manager.initializeWithInvocationCounterStoredOnDeviceTask(
+        this.device, this.device.getInvocationCounter(), connectionManager);
+
+    assertThat(this.device.getInvocationCounter()).isEqualTo(invocationCounterValueOnDevice);
+  }
 }

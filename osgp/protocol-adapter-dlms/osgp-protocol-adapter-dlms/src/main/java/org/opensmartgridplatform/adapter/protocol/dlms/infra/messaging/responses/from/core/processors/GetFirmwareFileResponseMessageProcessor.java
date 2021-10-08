@@ -47,9 +47,9 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
       "squid:S1193") // SilentException cannot be caught since it does not extend Exception.
   @Override
   public void processMessage(final ObjectMessage message) throws JMSException {
-
-    final String messageTypeName = this.messageType.name();
-    LOGGER.debug("Processing {} response message", messageTypeName);
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Processing {} response message", this.messageType.name());
+    }
 
     // Get metadata from message and update message type to update
     // firmware
@@ -59,7 +59,7 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
             .build();
 
     final ThrowingConsumer<DlmsConnectionManager> taskForConnectionManager =
-        conn -> this.processMessageTask(message, messageMetadata, conn);
+        conn -> this.processMessageTasks(message, messageMetadata, conn);
 
     try {
       this.handleConnectionForDevice(
@@ -71,7 +71,7 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
     }
   }
 
-  void processMessageTask(
+  void processMessageTasks(
       final ObjectMessage message,
       final MessageMetadata messageMetadata,
       final DlmsConnectionManager conn)

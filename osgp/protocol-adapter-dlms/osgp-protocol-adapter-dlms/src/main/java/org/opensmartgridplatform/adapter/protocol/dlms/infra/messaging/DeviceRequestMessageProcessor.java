@@ -91,17 +91,17 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
             this.domainHelperService.findDlmsDevice(messageMetadata),
             messageMetadata,
             taskForConnectionManager);
-      } catch (final OsgpException e) {
-        LOGGER.error("Something went wrong with the DlmsConnection", e);
+      } catch (final Exception exception) {
+        this.sendErrorResponse(messageMetadata, exception, message.getObject());
       }
     }
   }
 
-  private void processMessageTask(
+  public void processMessageTask(
       final ObjectMessage message,
       final MessageMetadata messageMetadata,
       final DlmsConnectionManager connectionManager)
-      throws JMSException, OsgpException {
+      throws OsgpException {
     try {
       DlmsDevice device = null;
       if (this.maxScheduleTimeExceeded(messageMetadata)) {
@@ -136,10 +136,6 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
 
     } catch (final JMSException exception) {
       this.logJmsException(log, exception, messageMetadata);
-    } catch (final Exception exception) {
-
-      this.sendErrorResponse(messageMetadata, exception, message.getObject());
-
     } finally {
       final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
       this.doConnectionPostProcessing(device, connectionManager, messageMetadata);

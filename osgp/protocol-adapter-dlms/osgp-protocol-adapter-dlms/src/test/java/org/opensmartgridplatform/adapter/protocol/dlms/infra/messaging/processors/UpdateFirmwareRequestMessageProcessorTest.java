@@ -91,82 +91,8 @@ public class UpdateFirmwareRequestMessageProcessorTest {
             any(Consumer.class));
   }
 
-  //  @Test
-  //  public void processMessageShouldSendFirmwareFileRequestWhenFirmwareFileNotAvailable()
-  //      throws JMSException {
-  //    // Arrange
-  //    final String firmwareIdentification = "unavailable";
-  //    final String deviceIdentification = "unavailableEither";
-  //    final UpdateFirmwareRequestDto updateFirmwareRequestDto =
-  //        new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
-  //    final ObjectMessage message =
-  //        new ObjectMessageBuilder()
-  //            .withObject(updateFirmwareRequestDto)
-  //            .withCorrelationUid("123456")
-  //            .build();
-  //
-  // when(this.firmwareService.isFirmwareFileAvailable(firmwareIdentification)).thenReturn(false);
-  //
-  //    // Act
-  //    this.processor.processMessage(message);
-  //
-  //    // Assert
-  //    verify(this.osgpRequestMessageSender, times(1))
-  //        .send(any(RequestMessage.class), any(String.class), any(MessageMetadata.class));
-  //  }
-
   @Test
-  public void processMessageShouldNotSendFirmwareFileRequestWhenFirmwareFileAvailable()
-      throws JMSException {
-    // Arrange
-    final String firmwareIdentification = "unavailable";
-    final String deviceIdentification = "unavailableEither";
-    final UpdateFirmwareRequestDto updateFirmwareRequestDto =
-        new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
-    final ObjectMessage message =
-        new ObjectMessageBuilder()
-            .withObject(updateFirmwareRequestDto)
-            .withCorrelationUid("123456")
-            .build();
-    when(this.firmwareService.isFirmwareFileAvailable(firmwareIdentification)).thenReturn(true);
-
-    // Act
-    this.processor.processMessage(message);
-
-    // Assert
-    verify(this.osgpRequestMessageSender, never())
-        .send(any(RequestMessage.class), any(String.class), any(MessageMetadata.class));
-  }
-
-  //  @Test
-  //  public void processMessageShouldUpdateFirmwareWhenFirmwareFileAvailable()
-  //      throws JMSException, OsgpException {
-  //    // Arrange
-  //    final String firmwareIdentification = "available";
-  //    final String deviceIdentification = "availableToo";
-  //    final UpdateFirmwareRequestDto updateFirmwareRequestDto =
-  //        new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
-  //    final ObjectMessage message =
-  //        new ObjectMessageBuilder()
-  //            .withObject(updateFirmwareRequestDto)
-  //            .withCorrelationUid("123456")
-  //            .build();
-  //    when(this.firmwareService.isFirmwareFileAvailable(firmwareIdentification)).thenReturn(true);
-  //
-  //    // Act
-  //    this.processor.processMessage(message);
-  //
-  //    // Assert
-  //    verify(this.configurationService, times(1))
-  //        .updateFirmware(
-  //            nullable(DlmsConnectionManager.class),
-  //            same(this.device),
-  //            same(updateFirmwareRequestDto),
-  //            any(MessageMetadata.class));
-  //  }
-
-  @Test
-  public void processMessageShouldNotUpdateFirmwareWhenFirmwareFileNotAvailable()
+  public void processMessageTaskShouldSendFirmwareFileRequestWhenFirmwareFileNotAvailable()
       throws JMSException, OsgpException {
     // Arrange
     final String firmwareIdentification = "unavailable";
@@ -178,10 +104,88 @@ public class UpdateFirmwareRequestMessageProcessorTest {
             .withObject(updateFirmwareRequestDto)
             .withCorrelationUid("123456")
             .build();
+    final MessageMetadata messageMetadata = MessageMetadata.fromMessage(message);
+
     when(this.firmwareService.isFirmwareFileAvailable(firmwareIdentification)).thenReturn(false);
 
     // Act
-    this.processor.processMessage(message);
+    this.processor.processMessageTask(message, messageMetadata, this.dlmsConnectionManagerMock);
+
+    // Assert
+    verify(this.osgpRequestMessageSender, times(1))
+        .send(any(RequestMessage.class), any(String.class), any(MessageMetadata.class));
+  }
+
+  @Test
+  public void processMessageTaskShouldNotSendFirmwareFileRequestWhenFirmwareFileAvailable()
+      throws JMSException, OsgpException {
+    // Arrange
+    final String firmwareIdentification = "unavailable";
+    final String deviceIdentification = "unavailableEither";
+    final UpdateFirmwareRequestDto updateFirmwareRequestDto =
+        new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
+    final ObjectMessage message =
+        new ObjectMessageBuilder()
+            .withObject(updateFirmwareRequestDto)
+            .withCorrelationUid("123456")
+            .build();
+    final MessageMetadata messageMetadata = MessageMetadata.fromMessage(message);
+    when(this.firmwareService.isFirmwareFileAvailable(firmwareIdentification)).thenReturn(true);
+
+    // Act
+    this.processor.processMessageTask(message, messageMetadata, this.dlmsConnectionManagerMock);
+
+    // Assert
+    verify(this.osgpRequestMessageSender, never())
+        .send(any(RequestMessage.class), any(String.class), any(MessageMetadata.class));
+  }
+
+  @Test
+  public void processMessageTaskShouldUpdateFirmwareWhenFirmwareFileAvailable()
+      throws JMSException, OsgpException {
+    // Arrange
+    final String firmwareIdentification = "available";
+    final String deviceIdentification = "availableToo";
+    final UpdateFirmwareRequestDto updateFirmwareRequestDto =
+        new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
+    final ObjectMessage message =
+        new ObjectMessageBuilder()
+            .withObject(updateFirmwareRequestDto)
+            .withCorrelationUid("123456")
+            .build();
+    final MessageMetadata messageMetadata = MessageMetadata.fromMessage(message);
+    when(this.firmwareService.isFirmwareFileAvailable(firmwareIdentification)).thenReturn(true);
+
+    // Act
+    this.processor.processMessageTask(message, messageMetadata, this.dlmsConnectionManagerMock);
+
+    // Assert
+    verify(this.configurationService, times(1))
+        .updateFirmware(
+            nullable(DlmsConnectionManager.class),
+            same(this.device),
+            same(updateFirmwareRequestDto),
+            any(MessageMetadata.class));
+  }
+
+  @Test
+  public void processMessageTaskShouldNotUpdateFirmwareWhenFirmwareFileNotAvailable()
+      throws JMSException, OsgpException {
+    // Arrange
+    final String firmwareIdentification = "unavailable";
+    final String deviceIdentification = "unavailableEither";
+    final UpdateFirmwareRequestDto updateFirmwareRequestDto =
+        new UpdateFirmwareRequestDto(firmwareIdentification, deviceIdentification);
+    final ObjectMessage message =
+        new ObjectMessageBuilder()
+            .withObject(updateFirmwareRequestDto)
+            .withCorrelationUid("123456")
+            .build();
+    final MessageMetadata messageMetadata = MessageMetadata.fromMessage(message);
+    when(this.firmwareService.isFirmwareFileAvailable(firmwareIdentification)).thenReturn(false);
+
+    // Act
+    this.processor.processMessageTask(message, messageMetadata, this.dlmsConnectionManagerMock);
 
     // Assert
     verify(this.firmwareService, times(0))
