@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2017 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
@@ -37,7 +37,7 @@ public class DlmsAttributeValuesCache {
 
   public void storeAttributeValues(final ObisCode obisCode, final ObjectNode attributeValues) {
     synchronized (this.attributeValuesByObisCode) {
-      ObjectNode newValue;
+      final ObjectNode newValue;
       if (this.attributeValuesByObisCode.containsKey(obisCode)) {
         newValue = this.attributeValuesByObisCode.get(obisCode);
         attributeValues

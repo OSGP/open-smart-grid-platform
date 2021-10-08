@@ -10,10 +10,10 @@ package com.alliander.osgp.simulatorstarter;
 
 import static java.util.Arrays.asList;
 
-import com.alliander.osgp.simulator.util.LogicalDeviceIdsConverter;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
+import org.opensmartgridplatform.simulator.protocol.dlms.util.LogicalDeviceIdsConverter;
 
 public class SimulatorConfiguration {
   private String[] profiles;

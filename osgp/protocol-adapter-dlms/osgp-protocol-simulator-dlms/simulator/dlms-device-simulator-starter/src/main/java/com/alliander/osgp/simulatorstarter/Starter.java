@@ -8,7 +8,6 @@
  */
 package com.alliander.osgp.simulatorstarter;
 
-import com.alliander.osgp.simulator.server.DeviceServer;
 import com.alliander.osgp.simulatorstarter.database.DatabaseHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import org.opensmartgridplatform.simulator.protocol.dlms.server.DeviceServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

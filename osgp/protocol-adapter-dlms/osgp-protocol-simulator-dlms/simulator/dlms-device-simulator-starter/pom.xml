@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Copyright 2015 Alliander N.V.
+    Copyright 2021 Alliander N.V.
 
     Licensed under the Apache License, Version 2.0 (the "License"); 
     you may not use this file except in compliance with the License. 
@@ -31,6 +31,11 @@
     <dependency>
       <groupId>com.fasterxml.jackson.jaxrs</groupId>
       <artifactId>jackson-jaxrs-json-provider</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
     </dependency>
 
     <dependency>
@@ -94,7 +99,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.opensmartgridplatform.osgp-protocol-simulator-dlms</groupId>
+      <groupId>org.opensmartgridplatform</groupId>
       <artifactId>dlms-device-simulator</artifactId>
       <version>${osgp.version}</version>
     </dependency>

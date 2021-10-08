@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
@@ -30,7 +30,7 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.ImportResource;
 
 @Configuration
-@ComponentScan(basePackages = {"com.alliander.osgp.simulator.dlms.triggered"})
+@ComponentScan(basePackages = {"org.opensmartgridplatform.simulator.protocol.dlms.triggered"})
 @ImportResource({"classpath:applicationContext.xml"})
 public class ApplicationContext {
 
