@@ -92,11 +92,6 @@ public class MacGenerationService {
               SecurityKeyType.G_METER_FIRMWARE_UPDATE_AUTHENTICATION, deviceIdentification));
     }
 
-    log.debug(
-        "{} key (decrypted) used for generation of MAC: (Hex){}",
-        SecurityKeyType.G_METER_FIRMWARE_UPDATE_AUTHENTICATION.name(),
-        Hex.toHexString(decryptedFirmwareUpdateAuthenticationKey));
-
     final CipherParameters cipherParameters =
         new KeyParameter(decryptedFirmwareUpdateAuthenticationKey);
     final ParametersWithIV parameterWithIV = new ParametersWithIV(cipherParameters, iv);
