@@ -41,12 +41,8 @@ public class FirmwareFile {
   private byte[] imageData;
 
   private static final int HEADER_LENGTH = 35;
-  //  public static final String FIRMWARE_IMAGE_MAGIC_NUMBER = "534d5235";
   public static final List<String> VALID_FIRMWARE_IMAGE_MAGIC_NUMBERS =
       Arrays.asList("534d5235", "35524d53");
-  // Fixed value in requirement of SMR5.1. In SMR5.2 no value is specified for HEADER_VERSION
-  // Therefor there is no check on the value of HEADER_VERSION
-  public static final int HEADER_VERSION = 0;
 
   public FirmwareFile(final byte[] imageData) {
     this.imageData = imageData;
@@ -130,7 +126,7 @@ public class FirmwareFile {
     this.imageData = buffer.array();
   }
 
-  public void setMbusVersion(final Integer mbusVersion) throws ProtocolAdapterException {
+  public void setMbusVersion(final Integer mbusVersion) {
 
     final ByteBuffer buffer = ByteBuffer.wrap(this.imageData);
     buffer.position(26);

@@ -165,7 +165,6 @@ public class FirmwareFileTest {
   public void testMbusDeviceIdentificationNumber() throws IOException, ProtocolAdapterException {
     final String id = "10000540";
     final String mbusDeviceIdentificationNumberInput = id;
-    //    final int mbusDeviceIdentificationNumberInput = Integer.parseInt(id);
     final byte[] mbusDeviceIdentificationNumberByteArrayOutput =
         ByteBuffer.allocate(4)
             .order(ByteOrder.LITTLE_ENDIAN)
