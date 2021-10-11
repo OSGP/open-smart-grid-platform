@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Hex;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.MacGenerationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.FirmwareFile;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -52,22 +51,19 @@ public class UpdateFirmwareCommandExecutor
   private final FirmwareImageIdentifierCachingRepository firmwareImageIdentifierCachingRepository;
   private final MacGenerationService macGenerationService;
   private final ImageTransfer.ImageTransferProperties imageTransferProperties;
-  private final DlmsObjectConfigService dlmsObjectConfigService;
 
   public UpdateFirmwareCommandExecutor(
       final DlmsDeviceRepository dlmsDeviceRepository,
       final FirmwareFileCachingRepository firmwareFileCachingRepository,
       final FirmwareImageIdentifierCachingRepository firmwareImageIdentifierCachingRepository,
       final MacGenerationService macGenerationService,
-      final ImageTransfer.ImageTransferProperties imageTransferProperties,
-      final DlmsObjectConfigService dlmsObjectConfigService) {
+      final ImageTransfer.ImageTransferProperties imageTransferProperties) {
     super(UpdateFirmwareRequestDto.class);
     this.dlmsDeviceRepository = dlmsDeviceRepository;
     this.firmwareFileCachingRepository = firmwareFileCachingRepository;
     this.firmwareImageIdentifierCachingRepository = firmwareImageIdentifierCachingRepository;
     this.macGenerationService = macGenerationService;
     this.imageTransferProperties = imageTransferProperties;
-    this.dlmsObjectConfigService = dlmsObjectConfigService;
   }
 
   @Override

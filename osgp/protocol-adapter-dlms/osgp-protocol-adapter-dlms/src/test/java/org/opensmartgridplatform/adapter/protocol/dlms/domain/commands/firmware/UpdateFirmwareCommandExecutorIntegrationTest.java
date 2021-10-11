@@ -33,7 +33,6 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.UpdateFirmwareConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.MacGenerationService;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.ImageTransfer.ImageTransferProperties;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionManagerStub;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.stub.DlmsConnectionStub;
@@ -57,7 +56,6 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
   @Mock private FirmwareImageIdentifierCachingRepository firmwareImageIdentifierCachingRepository;
   @Mock private MacGenerationService macGenerationService;
   @Mock private UpdateFirmwareConfig updateFirmwareConfig;
-  @Mock private DlmsObjectConfigService dlmsObjectConfigService;
 
   private DlmsConnectionManagerStub connectionManagerStub;
   private DlmsConnectionStub connectionStub;
@@ -114,8 +112,7 @@ class UpdateFirmwareCommandExecutorIntegrationTest {
             this.firmwareFileCachingRepository,
             this.firmwareImageIdentifierCachingRepository,
             this.macGenerationService,
-            imageTransferProperties,
-            this.dlmsObjectConfigService);
+            imageTransferProperties);
   }
 
   @Test
