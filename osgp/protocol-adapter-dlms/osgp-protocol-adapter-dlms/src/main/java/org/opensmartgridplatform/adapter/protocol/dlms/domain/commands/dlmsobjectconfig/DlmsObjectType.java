@@ -15,7 +15,8 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.PeriodTypeDto;
 public enum DlmsObjectType {
   AMR_STATUS(null),
   AMR_STATUS_MBUS(null),
-  ALARM_FILTER(null),
+  ALARM_FILTER_1(null),
+  ALARM_FILTER_2(null),
   CLOCK(null),
   PUSH_SCHEDULER(null),
   PUSH_SETUP_SCHEDULER(null),
@@ -40,6 +41,8 @@ public enum DlmsObjectType {
   READ_MBUS_STATUS(null),
   CLEAR_MBUS_STATUS(null),
   CLIENT_SETUP_MBUS(null),
+  ALARM_REGISTER_1(null),
+  ALARM_REGISTER_2(null),
 
   STANDARD_EVENT_CODE(null),
   FRAUD_DETECTION_EVENT_CODE(null),
