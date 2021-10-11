@@ -67,8 +67,13 @@ pipeline {
                     sh "mvn clean install -B -T1C -DskipTestJarWithDependenciesAssembly=false"
                 }
 
-                // Collect all build wars and copy them to target/artifacts
-                sh "rm -rf target/artifacts && mkdir -p target/artifacts && find . -name *.war -exec cp -uf {} target/artifacts \\;"
+                // Create clean folder target/artifacts
+                sh "rm -rf target/artifacts && mkdir -p target/artifacts"
+
+                // Collect all build wars and simulator jar and copy them to target/artifacts
+                sh "find . -name *.war -exec cp -uf {} target/artifacts \\;"
+                // Collect dlms device simulator jar and copy to target/artifacts
+                sh "find . -name dlms-device-simulator*.jar -exec cp -uf {} target/artifacts \\;"
 
                 // Clone the release repository in order to deploy
                 sh "rm -rf release && git clone git@github.com:SmartSocietyServices/release.git"
@@ -85,9 +90,6 @@ pipeline {
                 // Download missing artifacts from artifactory for the same version
                 // - The following artifacts are not in this repository
                 sh "cd release && plays/download-artifacts.yml -e artifactstodownload='{{ configuration_artifacts }}' -e deployment_type=snapshot -e osgp_version=${POMVERSION} -e tmp_artifacts_directory=../../target/artifacts"
-                sh "cd release && plays/download-artifacts.yml -e artifactstodownload='{{ dlms_simulator_artifacts }}' -e deployment_type=snapshot -e osgp_version=${POMVERSION} -e tmp_artifacts_directory=../../target/artifacts"
-                // Make sure a standalone version of the dlms device simulator is present
-                sh "cp -p target/artifacts/dlms-device-simulator-${POMVERSION}.jar target/artifacts/dlms-device-simulator-${POMVERSION}-standalone.jar"
 
                 // Now create a new single instance (not stream specific) and put all the artifacts in /data/software/artifacts
                 sh "cd release && plays/deploy-files-to-system.yml -e osgp_version=${POMVERSION} -e deployment_name=${servername} -e directory_to_deploy=../../target/artifacts -e tomcat_restart=false -e ec2_instance_type=m4.xlarge -e ami_name=CentOS7SingleInstance -e ami_owner=self"
