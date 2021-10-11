@@ -69,7 +69,7 @@ public class DlmsPushNotificationDecoder
      * 9th byte in DSMR4 is in the identifier and this should be a number or a character, so it
      * can't be ASCII code 0F.
      */
-    DlmsPushNotification pushNotification;
+    final DlmsPushNotification pushNotification;
 
     // Determine whether the alarm is in DSMR4 or SMR5 format.
     final boolean smr5alarm = in.getByte(8) == 0x0F;
