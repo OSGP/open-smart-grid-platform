@@ -22,7 +22,6 @@ public interface ThrowingConsumer<T> extends Consumer<T> {
     try {
       this.acceptThrows(elem);
     } catch (final Exception e) {
-      LOGGER.error("Exception: {}", e.getMessage(), e);
       throw new RuntimeException(e);
     }
   }

@@ -134,7 +134,7 @@ class DlmsConnectionHelperTest {
   }
 
   @Test
-  void createsConnectionForDeviceThatNeedsInvocationCounterWithInvocationCounterInitialized()
+  void handlesConnectionForDeviceThatNeedsInvocationCounterWithInvocationCounterInitialized()
       throws Exception {
     final DlmsDevice device =
         new DlmsDeviceBuilder().withHls5Active(true).withInvocationCounter(123L).build();

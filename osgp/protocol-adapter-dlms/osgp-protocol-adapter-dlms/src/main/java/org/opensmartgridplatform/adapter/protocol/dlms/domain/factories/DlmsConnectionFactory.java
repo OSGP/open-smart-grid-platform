@@ -83,8 +83,8 @@ public class DlmsConnectionFactory {
    *     DlmsConnection} that is initialized if the given {@code device} is in {@link
    *     DlmsDevice#isInDebugMode() debug mode}. If this is {@code null} no DLMS device
    *     communication debug logging will be done.
-   * @param taskForDlmsConnectionManager A task for the manager providing access to an open DLMS
-   *     connection as well as an optional message listener active in the connection.
+   * @param taskForDlmsConnectionManager A task for the DLMS connection manager to handle when the
+   *     DLMS connection is open
    * @throws OsgpException in case of a TechnicalException or FunctionalException
    */
   public void handlePublicClientConnection(

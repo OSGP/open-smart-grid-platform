@@ -57,13 +57,13 @@ public class DlmsConnectionFactoryTest {
         new DlmsConnectionFactory(
             this.hls5Connector, this.lls1Connector, this.lls0Connector, this.domainHelperService);
     this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
+    this.actualConnectionManagerReference.set(null);
+    this.actualConnectionReference.set(null);
     this.task =
         conn -> {
           this.actualConnectionManagerReference.set(conn);
           this.actualConnectionReference.set(conn.getConnection());
         };
-    this.actualConnectionManagerReference.set(null);
-    this.actualConnectionReference.set(null);
   }
 
   @Test
@@ -81,7 +81,7 @@ public class DlmsConnectionFactoryTest {
   }
 
   @Test
-  public void getConnection_throwsForHls4Device() {
+  public void handleConnection_throwsForHls4Device() {
     final DlmsDevice device = new DlmsDeviceBuilder().withHls4Active(true).build();
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
@@ -91,7 +91,7 @@ public class DlmsConnectionFactoryTest {
   }
 
   @Test
-  public void getConnection_throwsForHls3Device() {
+  public void handleConnection_throwsForHls3Device() {
     final DlmsDevice device = new DlmsDeviceBuilder().withHls3Active(true).build();
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 

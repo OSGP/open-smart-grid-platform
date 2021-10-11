@@ -28,8 +28,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.shared.utils.ThrowingConsumer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -42,8 +40,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 @Slf4j
 public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessageProcessor
     implements MessageProcessor {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRequestMessageProcessor.class);
 
   /** Constant to signal that message processor doesn't (have to) send a response. */
   protected static final String NO_RESPONSE = "NO-RESPONSE";
@@ -78,7 +74,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
 
   @Override
   public void processMessage(final ObjectMessage message) throws JMSException {
-    LOGGER.debug("Processing {} request message", this.messageType);
+    log.debug("Processing {} request message", this.messageType);
 
     final MessageMetadata messageMetadata = MessageMetadata.fromMessage(message);
 
