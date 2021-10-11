@@ -152,7 +152,7 @@ It is possible to add a connection open delay to the simulator. The number used 
 - Logical ID's are limited to 16383 (0x3FFF, 14 bits)
 
 # Simulator Starter
-The simulator starter can be started using a single jar, which is provided as an artifact of osgp-applications.
+The simulator starter can be started using a single jar, which is provided as an artifact of open-smart-grid-platform.
 
 To start the simulator:
 
@@ -163,5 +163,4 @@ The configuration file can contain multiple configurations, and each configurati
 entries as those described above as commandline arguments for the stand-alone simulator.
 
 For an example of a simulator-configuration file see:
-https://github.com/SmartSocietyServices/osgp-applications/blob/development/smart-metering/simulator/simulator-configurations/example.json
-
+https://github.com/OSGP/open-smart-grid-platform/blob/development/osgp/protocol-adapter-dlms/osgp-protocol-simulator-dlms/simulator/simulator-configurations/example.json
