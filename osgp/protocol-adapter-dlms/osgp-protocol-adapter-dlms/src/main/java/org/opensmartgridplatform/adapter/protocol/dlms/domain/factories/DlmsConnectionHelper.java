@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 import java.time.Duration;
 import java.util.function.Consumer;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.DevicePingConfig;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.ConnectionProperties;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
@@ -58,7 +59,7 @@ public class DlmsConnectionHelper {
    * Passes a task for the connection to the device, taking care of details like initializing the
    * invocation counter when required.
    */
-  public void handleConnectionForDevice(
+  public void createConnectionForDevice(
       final MessageMetadata messageMetadata,
       final DlmsDevice device,
       final DlmsMessageListener messageListener,
@@ -71,16 +72,12 @@ public class DlmsConnectionHelper {
         device.needsInvocationCounter() && !device.isInvocationCounterInitialized();
     final Duration waitBeforeCreatingTheConnection =
         initializeInvocationCounter ? this.delayBetweenDlmsConnections : NO_DELAY;
+    final ConnectionProperties connectionProperties =
+        new ConnectionProperties(
+            pingDevice, initializeInvocationCounter, NO_DELAY, waitBeforeCreatingTheConnection);
 
-    this.handleConnectionForDevice(
-        device,
-        messageListener,
-        pingDevice,
-        initializeInvocationCounter,
-        NO_DELAY,
-        waitBeforeCreatingTheConnection,
-        messageMetadata,
-        taskForConnectionManager);
+    this.createConnectionForDevice(
+        device, messageListener, connectionProperties, messageMetadata, taskForConnectionManager);
   }
 
   private void delay(final Duration duration) {
@@ -95,37 +92,37 @@ public class DlmsConnectionHelper {
     }
   }
 
-  private void handleConnectionForDevice(
+  private void createConnectionForDevice(
       final DlmsDevice device,
       final DlmsMessageListener messageListener,
-      final boolean pingDevice,
-      final boolean initializeInvocationCounter,
-      final Duration waitBeforeInitializingInvocationCounter,
-      final Duration waitBeforeCreatingTheConnection,
+      final ConnectionProperties connectionProperties,
       final MessageMetadata messageMetadata,
       final Consumer<DlmsConnectionManager> taskForConnectionManager)
       throws OsgpException {
 
-    if (pingDevice) {
+    if (connectionProperties.isPingDevice()) {
       this.devicePingConfig.pinger().ping(device.getIpAddress());
     }
 
-    if (initializeInvocationCounter) {
-      this.delay(waitBeforeInitializingInvocationCounter);
+    if (connectionProperties.isInitializeInvocationCounter()) {
+      this.delay(connectionProperties.getWaitBeforeInitializingInvocationCounter());
       this.invocationCounterManager.initializeInvocationCounter(messageMetadata, device);
     }
 
     try {
-      this.delay(waitBeforeCreatingTheConnection);
-      this.connectionFactory.handleConnection(
+      this.delay(connectionProperties.getWaitBeforeCreatingTheConnection());
+      this.connectionFactory.createConnection(
           messageMetadata, device, messageListener, taskForConnectionManager);
     } catch (final ConnectionException e) {
       if ((device.needsInvocationCounter() && this.indicatesInvocationCounterOutOfSync(e))
-          && !initializeInvocationCounter) {
+          && !connectionProperties.isInitializeInvocationCounter()) {
         LOGGER.warn(
             "Invocation counter (stored value: {}) appears to be out of sync for {}, retry initializing the counter",
             device.getInvocationCounter(),
             device.getDeviceIdentification());
+        final ConnectionProperties newConnectionProperties =
+            new ConnectionProperties(
+                false, true, this.delayBetweenDlmsConnections, this.delayBetweenDlmsConnections);
         /*
          * The connection exception is likely caused by an already initialized invocation counter
          * that does not have an appropriate value compared to the counter on the actual device.
@@ -133,13 +130,10 @@ public class DlmsConnectionHelper {
          * been pinged if that was appropriate. Make sure the invocation counter is initialized,
          * regardless of whether it has already been initialized before or not.
          */
-        this.handleConnectionForDevice(
+        this.createConnectionForDevice(
             device,
             messageListener,
-            false,
-            true,
-            this.delayBetweenDlmsConnections,
-            this.delayBetweenDlmsConnections,
+            newConnectionProperties,
             messageMetadata,
             taskForConnectionManager);
       }

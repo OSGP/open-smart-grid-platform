@@ -16,6 +16,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.SilentException;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ThrowingConsumer;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.responses.from.core.OsgpResponseMessageProcessor;
 import org.opensmartgridplatform.dto.valueobjects.FirmwareFileDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.UpdateFirmwareRequestDto;
@@ -25,7 +26,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.opensmartgridplatform.shared.utils.ThrowingConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +43,6 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
     super(MessageType.GET_FIRMWARE_FILE);
   }
 
-  @SuppressWarnings(
-      "squid:S1193") // SilentException cannot be caught since it does not extend Exception.
   @Override
   public void processMessage(final ObjectMessage message) throws JMSException {
     if (LOGGER.isDebugEnabled()) {
@@ -62,7 +60,7 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
         conn -> this.processMessageTasks(message, messageMetadata, conn);
 
     try {
-      this.handleConnectionForDevice(
+      this.createConnectionForDevice(
           this.domainHelperService.findDlmsDevice(messageMetadata),
           messageMetadata,
           taskForConnectionManager);
@@ -71,6 +69,8 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
     }
   }
 
+  @SuppressWarnings(
+      "squid:S1193") // SilentException cannot be caught since it does not extend Exception.
   void processMessageTasks(
       final ObjectMessage message,
       final MessageMetadata messageMetadata,

@@ -18,6 +18,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Doma
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.SilentException;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ThrowingConsumer;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -27,7 +28,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.opensmartgridplatform.shared.utils.ThrowingConsumer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -83,7 +83,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
 
     if (this.usesDeviceConnection()) {
       try {
-        this.handleConnectionForDevice(
+        this.createConnectionForDevice(
             this.domainHelperService.findDlmsDevice(messageMetadata),
             messageMetadata,
             taskForConnectionManager);

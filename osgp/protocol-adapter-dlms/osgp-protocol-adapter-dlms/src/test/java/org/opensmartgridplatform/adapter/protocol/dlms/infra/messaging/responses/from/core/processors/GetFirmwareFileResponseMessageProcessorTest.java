@@ -82,7 +82,7 @@ public class GetFirmwareFileResponseMessageProcessorTest {
   }
 
   @Test
-  void processMessageShouldCallConnectionHelperHandleConnection()
+  void processMessageShouldCallConnectionHelperCreateConnection()
       throws JMSException, OsgpException {
     final FirmwareFileDto firmwareFileDto = this.setupFirmwareFileDto();
     final ResponseMessage responseMessage = this.setupResponseMessage(firmwareFileDto);
@@ -98,7 +98,7 @@ public class GetFirmwareFileResponseMessageProcessorTest {
     this.getFirmwareFileResponseMessageProcessor.processMessage(message);
 
     verify(this.connectionHelper)
-        .handleConnectionForDevice(
+        .createConnectionForDevice(
             any(MessageMetadata.class), eq(this.dlmsDevice), isNull(), any());
   }
 
@@ -149,7 +149,7 @@ public class GetFirmwareFileResponseMessageProcessorTest {
   }
 
   @Test
-  public void handleMessageShouldCallUpdateFirmware() throws OsgpException {
+  public void createMessageShouldCallUpdateFirmware() throws OsgpException {
     // arrange
     final FirmwareFileDto firmwareFileDto = this.setupFirmwareFileDto();
     final ResponseMessage responseMessage = this.setupResponseMessage(firmwareFileDto);

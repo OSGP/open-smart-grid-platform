@@ -98,7 +98,7 @@ class BundleMessageProcessorTest {
   public void shouldSetRetryHeaderOnRuntimeException() throws OsgpException, JMSException {
     doThrow(new RuntimeException())
         .when(this.dlmsConnectionHelper)
-        .handleConnectionForDevice(
+        .createConnectionForDevice(
             any(MessageMetadata.class),
             same(this.dlmsDevice),
             nullable(DlmsMessageListener.class),
@@ -113,7 +113,7 @@ class BundleMessageProcessorTest {
   public void shouldSetRetryHeaderOnOsgpException() throws OsgpException, JMSException {
     doThrow(new OsgpException(ComponentType.PROTOCOL_DLMS, ""))
         .when(this.dlmsConnectionHelper)
-        .handleConnectionForDevice(
+        .createConnectionForDevice(
             any(MessageMetadata.class),
             same(this.dlmsDevice),
             nullable(DlmsMessageListener.class),

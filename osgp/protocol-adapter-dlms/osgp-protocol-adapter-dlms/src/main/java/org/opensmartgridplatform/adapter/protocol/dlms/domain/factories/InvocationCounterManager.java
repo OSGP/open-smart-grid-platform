@@ -58,7 +58,7 @@ public class InvocationCounterManager {
         connectionManager ->
             this.initializeWithInvocationCounterStoredOnDeviceTask(
                 device, previousKnownInvocationCounter, connectionManager);
-    this.connectionFactory.handlePublicClientConnection(
+    this.connectionFactory.createPublicClientConnection(
         messageMetadata, device, null, taskForConnectionManager);
   }
 

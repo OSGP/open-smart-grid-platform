@@ -8,23 +8,22 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
-package org.opensmartgridplatform.shared.utils;
+package org.opensmartgridplatform.adapter.protocol.dlms.exceptions;
 
 import java.util.function.Consumer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.jms.JMSException;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 
 public interface ThrowingConsumer<T> extends Consumer<T> {
-  Logger LOGGER = LoggerFactory.getLogger(ThrowingConsumer.class);
 
   @Override
   default void accept(final T elem) {
     try {
       this.acceptThrows(elem);
     } catch (final Exception e) {
-      throw new RuntimeException(e);
+      throw new ConnectionException(e);
     }
   }
 
-  void acceptThrows(T elem) throws Exception;
+  void acceptThrows(T elem) throws JMSException, OsgpException;
 }

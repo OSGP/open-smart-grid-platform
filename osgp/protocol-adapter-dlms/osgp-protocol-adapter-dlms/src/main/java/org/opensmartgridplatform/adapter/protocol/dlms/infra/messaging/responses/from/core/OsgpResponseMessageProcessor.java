@@ -17,6 +17,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Doma
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.SilentException;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ThrowingConsumer;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsConnectionMessageProcessor;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
@@ -25,7 +26,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.opensmartgridplatform.shared.utils.ThrowingConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,8 +72,6 @@ public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessage
     this.messageProcessorMap.addMessageProcessor(this.messageType, this);
   }
 
-  @SuppressWarnings("squid:S1193") // SilentException cannot be caught since
-  // it does not extend Exception.
   @Override
   public void processMessage(final ObjectMessage message) throws JMSException {
     LOGGER.debug("Processing {} request message", this.messageType);
@@ -85,7 +83,7 @@ public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessage
 
     if (this.usesDeviceConnection()) {
       try {
-        this.handleConnectionForDevice(
+        this.createConnectionForDevice(
             this.domainHelperService.findDlmsDevice(messageMetadata),
             messageMetadata,
             taskForConnectionManager);
@@ -95,6 +93,8 @@ public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessage
     }
   }
 
+  @SuppressWarnings("squid:S1193") // SilentException cannot be caught since
+  // it does not extend Exception.
   private void processMessageTask(
       final ObjectMessage message,
       final MessageMetadata messageMetadata,
