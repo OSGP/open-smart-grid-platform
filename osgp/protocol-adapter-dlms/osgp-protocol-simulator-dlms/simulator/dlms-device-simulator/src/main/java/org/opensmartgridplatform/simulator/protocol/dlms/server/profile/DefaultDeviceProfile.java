@@ -106,7 +106,6 @@ import org.opensmartgridplatform.simulator.protocol.dlms.util.DynamicValues;
 import org.opensmartgridplatform.simulator.protocol.dlms.util.KeyPathProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -417,8 +416,6 @@ public class DefaultDeviceProfile {
   @Value("#{'${configurationobject.flags}'.split(',')}")
   private List<Byte> configurationObjectFlags;
 
-  @Autowired private org.springframework.context.ApplicationContext applicationContext;
-
   @Value("${firmware.imagetransfer.blocksize}")
   private int imageTransferBlockSize;
 
@@ -482,8 +479,9 @@ public class DefaultDeviceProfile {
 
   @Bean
   @Scope("prototype")
-  public Map<String, CosemInterfaceObject> cosemClasses() {
-    return this.applicationContext.getBeansOfType(CosemInterfaceObject.class);
+  public Map<String, CosemInterfaceObject> cosemClasses(
+      final org.springframework.context.ApplicationContext applicationContext) {
+    return applicationContext.getBeansOfType(CosemInterfaceObject.class);
   }
 
   @Bean

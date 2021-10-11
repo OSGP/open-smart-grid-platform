@@ -30,7 +30,6 @@ import org.opensmartgridplatform.simulator.protocol.dlms.interceptor.OsgpServerC
 import org.opensmartgridplatform.simulator.protocol.dlms.util.KeyPathProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -70,8 +69,6 @@ public class E650Profile {
   @Value("${default.clock.second}")
   private int defaultClockSecond;
 
-  @Autowired private org.springframework.context.ApplicationContext applicationContext;
-
   @Bean
   public KeyPathProvider keyPathProvider() {
     return new KeyPathProvider("", "", "");
@@ -88,13 +85,14 @@ public class E650Profile {
   }
 
   @Bean
-  public Map<String, CosemInterfaceObject> cosemClasses() {
+  public Map<String, CosemInterfaceObject> cosemClasses(
+      final org.springframework.context.ApplicationContext applicationContext) {
     final HashMap<String, CosemInterfaceObject> snCosemClasses = new HashMap<>();
 
     // change the return type of getBeansOfType to Map<String,
     // CosemInterfaceObject>
     for (final Map.Entry<String, CosemSnInterfaceObject> entry :
-        this.applicationContext.getBeansOfType(CosemSnInterfaceObject.class).entrySet()) {
+        applicationContext.getBeansOfType(CosemSnInterfaceObject.class).entrySet()) {
       snCosemClasses.put(entry.getKey(), entry.getValue());
     }
     return snCosemClasses;

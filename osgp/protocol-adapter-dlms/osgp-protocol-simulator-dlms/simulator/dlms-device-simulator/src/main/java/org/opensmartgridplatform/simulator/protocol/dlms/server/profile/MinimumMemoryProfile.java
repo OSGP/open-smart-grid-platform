@@ -12,7 +12,6 @@ import java.util.Map;
 import org.openmuc.jdlms.CosemInterfaceObject;
 import org.opensmartgridplatform.simulator.protocol.dlms.interceptor.OsgpServerConnectionListener;
 import org.opensmartgridplatform.simulator.protocol.dlms.util.KeyPathProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -32,23 +31,18 @@ import org.springframework.context.annotation.Profile;
 @Profile("minimumMemory")
 public class MinimumMemoryProfile {
 
-  @Autowired private org.springframework.context.ApplicationContext applicationContext;
-
-  @Autowired private String authenticationKeyPath;
-
-  @Autowired private String encryptionKeyPath;
-
-  @Autowired private String masterKeyPath;
-
   @Bean
-  KeyPathProvider keyPathProvider() {
-    return new KeyPathProvider(
-        this.authenticationKeyPath, this.encryptionKeyPath, this.masterKeyPath);
+  KeyPathProvider keyPathProvider(
+      final String authenticationKeyPath,
+      final String encryptionKeyPath,
+      final String masterKeyPath) {
+    return new KeyPathProvider(authenticationKeyPath, encryptionKeyPath, masterKeyPath);
   }
 
   @Bean
-  public Map<String, CosemInterfaceObject> cosemClasses() {
-    return this.applicationContext.getBeansOfType(CosemInterfaceObject.class);
+  public Map<String, CosemInterfaceObject> cosemClasses(
+      final org.springframework.context.ApplicationContext applicationContext) {
+    return applicationContext.getBeansOfType(CosemInterfaceObject.class);
   }
 
   @Bean

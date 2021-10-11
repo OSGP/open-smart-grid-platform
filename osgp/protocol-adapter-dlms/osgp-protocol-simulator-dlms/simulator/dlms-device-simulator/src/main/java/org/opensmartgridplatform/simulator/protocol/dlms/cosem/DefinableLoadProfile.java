@@ -500,6 +500,8 @@ public class DefinableLoadProfile extends ProfileGeneric {
 
   private CaptureObjectDefinitionCollection captureObjectDefinitionCollection;
 
+  private final Random random = new Random();
+
   public DefinableLoadProfile(final Calendar time) {
     super("0.1.94.31.6.255");
     this.time = time;
@@ -543,15 +545,13 @@ public class DefinableLoadProfile extends ProfileGeneric {
     final int numberOfCaptureObjects = captureObjectDefinitions.size();
     final long capturePeriodSeconds = this.getCapturePeriod().getValue();
 
-    final Random r = new Random();
-
     for (int i = 0; i < numberOfProfileEntries; i++) {
       final Calendar cal = this.getNextDateTime((int) capturePeriodSeconds);
       final List<Object> profileEntryList = new ArrayList<>();
       profileEntryList.add(cal);
       for (int j = 1; j < numberOfCaptureObjects; j++) {
         final CaptureObject captureObject = captureObjectDefinitions.get(j);
-        this.addProfileEntry(profileEntryList, captureObject, cal, r);
+        this.addProfileEntry(profileEntryList, captureObject, cal, this.random);
       }
       this.bufferData.add(profileEntryList);
     }

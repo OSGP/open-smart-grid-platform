@@ -62,34 +62,42 @@ public class ProtocolAdapterDlmsDatabaseRepository {
         logicalDeviceId,
         protocol,
         protocolInfo);
-    this.jdbc.update(
-        "INSERT INTO security_key "
-            + "(creation_time, modification_time, version, dlms_device_id, security_key_type, valid_from, "
-            + "security_key) "
-            + "VALUES (now(), now(), 0, (SELECT id FROM dlms_device WHERE device_identification = ?), "
-            + "\'E_METER_MASTER\', ?, "
-            + "\'bc082efed278e1bbebddc0431877d4fa16374b00e96dd102beab666dcb72efbd1f0b868412497f6d3d0c62caa4700585\')",
+    this.insertKey(
+        "E_METER_MASTER",
+        "bc082efed278e1bbebddc0431877d4fa16374b00e96dd102beab666dcb72efbd1f0b868412497f6d3d0c62caa4700585",
         deviceIdentification,
         validFrom);
-    this.jdbc.update(
-        "INSERT INTO security_key "
-            + "(creation_time, modification_time, version, dlms_device_id, security_key_type, valid_from, "
-            + "security_key) "
-            + "VALUES (now(), now(), 0, (SELECT id FROM dlms_device WHERE device_identification = ?), "
-            + "\'E_METER_ENCRYPTION\', ?, "
-            + "\'bc082efed278e1bbebddc0431877d4fa2df7728229f3e03c57b2549142b40d047b35011dbf9f77ad91db5fe6f19a7b9c\')",
+    this.insertKey(
+        "E_METER_ENCRYPTION",
+        "bc082efed278e1bbebddc0431877d4fa2df7728229f3e03c57b2549142b40d047b35011dbf9f77ad91db5fe6f19a7b9c",
         deviceIdentification,
         validFrom);
-    this.jdbc.update(
-        "INSERT INTO security_key "
-            + "(creation_time, modification_time, version, dlms_device_id, security_key_type, valid_from, "
-            + "security_key) "
-            + "VALUES (now(), now(), 0, (SELECT id FROM dlms_device WHERE device_identification = ?), "
-            + "\'E_METER_AUTHENTICATION\', ?, "
-            + "\'bc082efed278e1bbebddc0431877d4fae80fa4e72925b6ad0bc67c84b8721598eda8458bcc1b2827fe6e5e7918ce22fd\')",
+    this.insertKey(
+        "E_METER_AUTHENTICATION",
+        "bc082efed278e1bbebddc0431877d4fae80fa4e72925b6ad0bc67c84b8721598eda8458bcc1b2827fe6e5e7918ce22fd",
         deviceIdentification,
         validFrom);
     LOGGER.debug("Device inserted into protocol adapter DLMS database: {}", deviceIdentification);
+  }
+
+  private void insertKey(
+      final String keyType,
+      final String key,
+      final String deviceIdentification,
+      final Date validFrom) {
+    this.jdbc.update(
+        "INSERT INTO security_key "
+            + "(creation_time, modification_time, version, dlms_device_id, security_key_type, valid_from, "
+            + "security_key) "
+            + "VALUES (now(), now(), 0, (SELECT id FROM dlms_device WHERE device_identification = ?), "
+            + "\'"
+            + keyType
+            + "\', ?, "
+            + "\'"
+            + key
+            + "\')",
+        deviceIdentification,
+        validFrom);
   }
 
   private boolean alreadyInserted(final String deviceIdentification) {

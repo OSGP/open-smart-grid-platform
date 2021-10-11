@@ -50,8 +50,6 @@ public class DlmsServerConfig implements ApplicationContextAware {
 
   @Autowired private KeyPathProvider keyPathProvider;
 
-  @Autowired private OsgpServerConnectionListener osgpServerConnectionListener;
-
   @Value("${port}")
   private int port;
 
@@ -68,7 +66,8 @@ public class DlmsServerConfig implements ApplicationContextAware {
   private boolean useHdlc;
 
   @Bean
-  public DlmsServer dlmsServer() throws IOException {
+  public DlmsServer dlmsServer(final OsgpServerConnectionListener osgpServerConnectionListener)
+      throws IOException {
     final DlmsServer serverConnection;
     TcpServerBuilder serverBuilder = DlmsServer.tcpServerBuilder(this.port);
 
@@ -77,7 +76,7 @@ public class DlmsServerConfig implements ApplicationContextAware {
           serverBuilder.setSessionLayerFactory(
               ServerSessionLayerFactories.newHdlcSessionLayerFactory());
     }
-    serverBuilder = serverBuilder.setConnectionListener(this.osgpServerConnectionListener);
+    serverBuilder = serverBuilder.setConnectionListener(osgpServerConnectionListener);
 
     for (final Integer logicalDeviceId : LogicalDeviceIdsConverter.convert(this.logicalDeviceIds)) {
       LOGGER.info("preparing logical device {} on port {}", logicalDeviceId, this.port);

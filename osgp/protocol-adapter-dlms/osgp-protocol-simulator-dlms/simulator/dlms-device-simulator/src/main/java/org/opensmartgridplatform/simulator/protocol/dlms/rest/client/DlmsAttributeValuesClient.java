@@ -427,6 +427,7 @@ public class DlmsAttributeValuesClient {
                 }
 
                 @Override
+                @SuppressWarnings("squid:S4830")
                 public void checkServerTrusted(
                     final X509Certificate[] chain, final String authType) {
                   /*
@@ -436,6 +437,7 @@ public class DlmsAttributeValuesClient {
                 }
 
                 @Override
+                @SuppressWarnings("squid:S4830")
                 public void checkClientTrusted(
                     final X509Certificate[] chain, final String authType) {
                   /*
