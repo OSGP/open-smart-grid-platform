@@ -42,10 +42,7 @@ public class DlmsAttributeValuesCache {
         newValue = this.attributeValuesByObisCode.get(obisCode);
         attributeValues
             .fields()
-            .forEachRemaining(
-                field -> {
-                  newValue.set(field.getKey(), field.getValue());
-                });
+            .forEachRemaining(field -> newValue.set(field.getKey(), field.getValue()));
       } else {
         newValue = attributeValues;
       }

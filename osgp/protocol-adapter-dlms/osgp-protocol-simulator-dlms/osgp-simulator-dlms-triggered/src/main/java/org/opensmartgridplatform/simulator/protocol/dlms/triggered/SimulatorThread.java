@@ -53,11 +53,10 @@ public class SimulatorThread extends Thread {
     try {
       dlmsServer.close();
       if (this.unregisterPort(this.port)) {
-        LOGGER.info(
-            "Successfully closed DlmsServer, port " + this.port + " is free for future use.");
+        LOGGER.info("Successfully closed DlmsServer, port {} is free for future use.", this.port);
       }
     } catch (final IOException e) {
-      LOGGER.warn("Failed to close DlmsServer on port " + this.port, e);
+      LOGGER.warn("Failed to close DlmsServer on port {}", this.port, e);
     }
   }
 

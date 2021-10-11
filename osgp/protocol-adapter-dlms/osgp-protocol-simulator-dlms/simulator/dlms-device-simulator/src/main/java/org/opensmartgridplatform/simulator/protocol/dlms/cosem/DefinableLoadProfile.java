@@ -629,10 +629,9 @@ public class DefinableLoadProfile extends ProfileGeneric {
     final int numberOfCaptureObjects = captureObjectList.size();
     if (numberOfCaptureObjects > MAX_CAPTURE_OBJECTS) {
       LOGGER.error(
-          "Number of capture objects larger than supported (max "
-              + MAX_CAPTURE_OBJECTS
-              + "): "
-              + numberOfCaptureObjects);
+          "Number of capture objects larger than supported (max {}): {}",
+          MAX_CAPTURE_OBJECTS,
+          numberOfCaptureObjects);
       throw new IllegalAttributeAccessException(
           AccessResultCode.OTHER_REASON,
           new IllegalArgumentException(
@@ -658,14 +657,14 @@ public class DefinableLoadProfile extends ProfileGeneric {
       try {
         initCaptureObject = CaptureObject.newCaptureObject(captureObject);
       } catch (final RuntimeException e) {
-        LOGGER.error("Unable to create capture object from: " + captureObject, e);
+        LOGGER.error("Unable to create capture object from: {}", captureObject, e);
         throw new IllegalAttributeAccessException(
             AccessResultCode.OTHER_REASON,
             new IllegalArgumentException(
                 "Unable to create capture object from: " + captureObject, e));
       }
       if (!PROCESSORS_BY_CAPTURE_OBJECT.containsKey(initCaptureObject)) {
-        LOGGER.error("No data processor configured for " + initCaptureObject);
+        LOGGER.error("No data processor configured for {}", initCaptureObject);
         throw new IllegalAttributeAccessException(
             AccessResultCode.OTHER_REASON,
             new IllegalArgumentException("No data processor configured for " + initCaptureObject));
@@ -696,10 +695,9 @@ public class DefinableLoadProfile extends ProfileGeneric {
     final long numberOfProfileEntries = profileEntries.getValue();
     if (numberOfProfileEntries > MAX_PROFILE_ENTRIES) {
       LOGGER.error(
-          "Number of profile entries larger than supported (max "
-              + MAX_PROFILE_ENTRIES
-              + "): "
-              + numberOfProfileEntries);
+          "Number of profile entries larger than supported (max {}): {}",
+          MAX_PROFILE_ENTRIES,
+          numberOfProfileEntries);
       throw new IllegalAttributeAccessException(
           AccessResultCode.OTHER_REASON,
           new IllegalArgumentException(

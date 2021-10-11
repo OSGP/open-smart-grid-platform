@@ -24,11 +24,11 @@ import org.slf4j.LoggerFactory;
  * <p>Please make sure that the proper application is running and that the BASE_URL is configured to
  * send the request to the correct place, before attempting to run this test.
  */
-public class WakeUpTest {
+public class WakeUpTestTool {
 
   private static final String BASE_URL =
       "http://localhost:8080/osgp-simulator-dlms-triggered/wakeup/trigger";
-  private static final Logger LOGGER = LoggerFactory.getLogger(WakeUpTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(WakeUpTestTool.class);
 
   public static void main(final String[] args) {
 

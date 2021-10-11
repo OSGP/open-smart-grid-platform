@@ -128,7 +128,7 @@ public class PowerOutages extends ProfileGeneric {
 
     // Add all events.
     for (int i = 1; i < 5; i++) {
-      this.bufferData.add(Arrays.asList(this.getNextDateTime(), new Long(i * 180)));
+      this.bufferData.add(Arrays.asList(this.getNextDateTime(), (long) (i * 180)));
     }
   }
 

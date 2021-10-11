@@ -69,7 +69,7 @@ public class PortTracker {
       // local port can be opened, it's not used
       return false;
     } catch (final IOException e) {
-      LOGGER.debug("Unable to open/close port " + port + ", registering it as in use.", e);
+      LOGGER.debug("Unable to open/close port {}, registering it as in use.", port, e);
       this.registerPort(port);
       // local port cannot be opened, it's in use
       return true;
