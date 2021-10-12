@@ -91,8 +91,8 @@ public class Starter {
         "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration");
     DeviceServer.main(
         "--spring.profiles.active="
-            + org.opensmartgridplatform.simulator.protocol.dlms.starter.Starter.formatActiveProfiles(
-                simulatorConfiguration.getProfiles()));
+            + org.opensmartgridplatform.simulator.protocol.dlms.starter.Starter
+                .formatActiveProfiles(simulatorConfiguration.getProfiles()));
   }
 
   private static String formatActiveProfiles(final String[] profiles) {
