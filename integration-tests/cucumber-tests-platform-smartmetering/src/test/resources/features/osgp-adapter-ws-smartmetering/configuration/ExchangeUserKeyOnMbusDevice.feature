@@ -45,20 +45,18 @@ Feature: SmartMetering Configuration - Exchange User Key on M-Bus Device
     And a valid m-bus user key is stored
       | DeviceIdentification | TESTG102400000001 |
 
-  # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
-  # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
   Scenario: Exchange user key on an m-bus device identified by channel
     Given a dlms device
       | DeviceIdentification           | TESTG101205673117 |
       | DeviceType                     | SMART_METER_G     |
       | MbusIdentificationNumber       |          12056731 |
       | MbusManufacturerIdentification | LGB               |
-    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-2:24.1.0" and attributes
-      | 5 | unsigned             |         1 |
-      | 6 | double-long-unsigned |  12056731 |
-      | 7 | long-unsigned        |     12514 |
-      | 8 | unsigned             |        66 |
-      | 9 | unsigned             |         3 |
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 2
+      | MbusPrimaryAddress             | 1        |
+      | MbusIdentificationNumber       | 12056731 |
+      | MbusManufacturerIdentification | LGB      |
+      | MbusVersion                    | 66       |
+      | MbusDeviceTypeIdentification   | 3        |
     When the set m-bus user key by channel request is received
       | DeviceIdentification | TEST1024000000001 |
       | Channel              |                 2 |

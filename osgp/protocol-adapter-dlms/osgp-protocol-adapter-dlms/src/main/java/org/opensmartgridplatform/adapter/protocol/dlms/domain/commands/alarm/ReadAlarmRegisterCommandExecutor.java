@@ -9,12 +9,15 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.alarm;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.Set;
+import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
-import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.JdlmsObjectToStringUtil;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -38,14 +41,13 @@ public class ReadAlarmRegisterCommandExecutor
   private static final Logger LOGGER =
       LoggerFactory.getLogger(ReadAlarmRegisterCommandExecutor.class);
 
-  private static final int CLASS_ID = 1;
-  private static final ObisCode OBIS_CODE = new ObisCode("0.0.97.98.0.255");
-  private static final int ATTRIBUTE_ID = 2;
+  final DlmsObjectConfigService dlmsObjectConfigService;
 
   @Autowired private AlarmHelperService alarmHelperService;
 
-  public ReadAlarmRegisterCommandExecutor() {
+  public ReadAlarmRegisterCommandExecutor(final DlmsObjectConfigService dlmsObjectConfigService) {
     super(ReadAlarmRegisterDataDto.class);
+    this.dlmsObjectConfigService = dlmsObjectConfigService;
   }
 
   @Override
@@ -70,38 +72,76 @@ public class ReadAlarmRegisterCommandExecutor
       final ReadAlarmRegisterRequestDto object,
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
-    return new AlarmRegisterResponseDto(this.retrieveAlarmRegister(conn));
+
+    final AttributeAddress alarmRegister1AttributeAddress =
+        this.dlmsObjectConfigService.getAttributeAddress(
+            device, DlmsObjectType.ALARM_REGISTER_1, null);
+
+    final Set<AlarmTypeDto> alarmList =
+        this.readAlarmRegister(
+            conn, alarmRegister1AttributeAddress, DlmsObjectType.ALARM_REGISTER_1);
+
+    final Optional<AttributeAddress> alarmRegister2AttributeAddress =
+        this.dlmsObjectConfigService.findAttributeAddress(
+            device, DlmsObjectType.ALARM_REGISTER_2, null);
+
+    if (alarmRegister2AttributeAddress.isPresent()) {
+      alarmList.addAll(
+          this.readAlarmRegister(
+              conn, alarmRegister2AttributeAddress.get(), DlmsObjectType.ALARM_REGISTER_2));
+    }
+
+    return new AlarmRegisterResponseDto(alarmList);
   }
 
-  private Set<AlarmTypeDto> retrieveAlarmRegister(final DlmsConnectionManager conn)
+  private Set<AlarmTypeDto> readAlarmRegister(
+      final DlmsConnectionManager conn,
+      final AttributeAddress alarmRegisterAttributeAddress,
+      final DlmsObjectType alarmRegister)
       throws ProtocolAdapterException {
 
-    final AttributeAddress alarmRegisterValue =
-        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
+    final GetResult resultAlarmRegister =
+        this.executeForAlarmRegister(conn, alarmRegisterAttributeAddress);
+
+    if (resultAlarmRegister == null) {
+      throw new ProtocolAdapterException(
+          "No GetResult received while retrieving alarm register: " + alarmRegister.name());
+    }
+
+    if (resultAlarmRegister.getResultCode() != AccessResultCode.SUCCESS) {
+      throw new ProtocolAdapterException(
+          "AccessResultCode for retrieving alarm register was not SUCCESS: "
+              + resultAlarmRegister.getResultCode());
+    }
+
+    return this.convertToAlarmTypes(alarmRegister, resultAlarmRegister);
+  }
+
+  private Set<AlarmTypeDto> convertToAlarmTypes(
+      final DlmsObjectType dlmsObjectType, final GetResult getResult)
+      throws ProtocolAdapterException {
+    final DataObject resultData = getResult.getResultData();
+    if (resultData != null && resultData.isNumber()) {
+      return this.alarmHelperService.toAlarmTypes(
+          dlmsObjectType, getResult.getResultData().getValue());
+    } else {
+      LOGGER.error("Result: {} --> {}", getResult.getResultCode(), getResult.getResultData());
+      throw new ProtocolAdapterException("Invalid register value received from the meter.");
+    }
+  }
+
+  private GetResult executeForAlarmRegister(
+      final DlmsConnectionManager conn, final AttributeAddress alarmRegisterAttributeAddress) {
 
     conn.getDlmsMessageListener()
         .setDescription(
             "ReadAlarmRegister, retrieve attribute: "
-                + JdlmsObjectToStringUtil.describeAttributes(alarmRegisterValue));
+                + JdlmsObjectToStringUtil.describeAttributes(alarmRegisterAttributeAddress));
 
-    final GetResult getResult;
     try {
-      getResult = conn.getConnection().get(alarmRegisterValue);
+      return conn.getConnection().get(alarmRegisterAttributeAddress);
     } catch (final IOException e) {
       throw new ConnectionException(e);
-    }
-
-    if (getResult == null) {
-      throw new ProtocolAdapterException("No GetResult received while retrieving alarm register.");
-    }
-
-    final DataObject resultData = getResult.getResultData();
-    if (resultData != null && resultData.isNumber()) {
-      return this.alarmHelperService.toAlarmTypes(getResult.getResultData().getValue());
-    } else {
-      LOGGER.error(
-          "Result: {} --> {}", getResult.getResultCode().name(), getResult.getResultData());
-      throw new ProtocolAdapterException("Invalid register value received from the meter.");
     }
   }
 }
