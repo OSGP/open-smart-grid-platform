@@ -45,7 +45,7 @@ public class UpdateFirmwareCommandExecutor
   private static final String EXCEPTION_MSG_DEVICE_HAS_NO_MBUS_IDENTIFICATION_NUMBER =
       "Device {} has no M-Bus identification number.";
 
-  private DlmsDeviceRepository dlmsDeviceRepository;
+  private final DlmsDeviceRepository dlmsDeviceRepository;
 
   private final FirmwareFileCachingRepository firmwareFileCachingRepository;
   private final FirmwareImageIdentifierCachingRepository firmwareImageIdentifierCachingRepository;
@@ -174,8 +174,8 @@ public class UpdateFirmwareCommandExecutor
     }
 
     final Long mbusIdentificationNumber =
-        new IdentificationNumber(String.format("%08d", hexNotationOfTheMbusIdentificationNumber))
-            .getIdentificationNumber();
+        IdentificationNumber.fromNumericalRepresentation(hexNotationOfTheMbusIdentificationNumber)
+            .getIdentificationNumberInBcdRepresentationAsLong();
     log.debug(
         "Setting M-Bus device Identification number: {} (hex:{})",
         mbusIdentificationNumber.intValue(),
