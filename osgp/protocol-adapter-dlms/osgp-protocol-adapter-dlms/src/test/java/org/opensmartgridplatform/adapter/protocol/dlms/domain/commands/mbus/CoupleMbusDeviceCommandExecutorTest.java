@@ -34,9 +34,7 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 @ExtendWith(MockitoExtension.class)
 public class CoupleMbusDeviceCommandExecutorTest {
 
-  @InjectMocks
-  private final CoupleMBusDeviceCommandExecutor commandExecutor =
-      new CoupleMBusDeviceCommandExecutor();
+  @InjectMocks private CoupleMBusDeviceCommandExecutor commandExecutor;
 
   private short channel;
   private Short primaryAddress;

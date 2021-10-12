@@ -43,9 +43,7 @@ public class DecoupleMBusDeviceCommandExecutorTest {
 
   @Mock private DecoupleMbusDeviceDto decoupleMbusDto;
 
-  @InjectMocks
-  private DecoupleMBusDeviceCommandExecutor commandExecutor =
-      new DecoupleMBusDeviceCommandExecutor();
+  @InjectMocks private DecoupleMBusDeviceCommandExecutor commandExecutor;
 
   @Test
   public void testHappyFlow() throws ProtocolAdapterException {
