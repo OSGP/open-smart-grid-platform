@@ -10,7 +10,6 @@
 package org.opensmartgridplatform.throttling.web.api;
 
 import org.opensmartgridplatform.throttling.api.ApiException;
-import org.opensmartgridplatform.throttling.api.ClientAlreadyRegisteredException;
 import org.opensmartgridplatform.throttling.api.NonUniqueRequestIdException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -23,7 +22,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class ThrottlingResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
-  @ExceptionHandler({ClientAlreadyRegisteredException.class, NonUniqueRequestIdException.class})
+  @ExceptionHandler({NonUniqueRequestIdException.class})
   protected ResponseEntity<Object> handleApiException(
       final Exception exception, final WebRequest request) {
 
