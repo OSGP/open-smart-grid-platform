@@ -11,10 +11,7 @@ package org.opensmartgridplatform.throttling.mapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.Duration;
-import java.time.Instant;
 import org.junit.jupiter.api.Test;
-import org.opensmartgridplatform.throttling.api.Client;
 import org.opensmartgridplatform.throttling.api.ThrottlingConfig;
 
 class ThrottlingMapperTest {
@@ -126,126 +123,5 @@ class ThrottlingMapperTest {
 
     return new org.opensmartgridplatform.throttling.entities.ThrottlingConfig(
         id, name, maxConcurrency);
-  }
-
-  @Test
-  void mapsApiClientToNewEntity() {
-
-    final Integer id = null;
-    final String name = "test-client-new-entity";
-
-    final org.opensmartgridplatform.throttling.entities.Client expected =
-        this.clientEntity(id, name);
-    final Client source = this.clientApi(id, name);
-
-    final org.opensmartgridplatform.throttling.entities.Client actual =
-        this.throttlingMapper.map(
-            source, org.opensmartgridplatform.throttling.entities.Client.class);
-
-    assertThat(actual).isEqualToComparingFieldByField(expected);
-  }
-
-  @Test
-  void mappingApiClientToNewEntityIgnoresId() {
-
-    final Integer idApi = 4578;
-    final Integer idEntity = null;
-    final String name = "test-client-no-id-on-new";
-
-    final org.opensmartgridplatform.throttling.entities.Client expected =
-        this.clientEntity(idEntity, name);
-    final Client source = this.clientApi(idApi, name);
-
-    final org.opensmartgridplatform.throttling.entities.Client actual =
-        this.throttlingMapper.map(
-            source, org.opensmartgridplatform.throttling.entities.Client.class);
-
-    assertThat(actual).isEqualToComparingFieldByField(expected);
-  }
-
-  @Test
-  void mapsEntityClientToApiClient() {
-
-    final Integer id = 90185;
-    final String name = "test-client-entity-to-api";
-    final Instant registeredAt = Instant.now().minus(Duration.ofMinutes(13));
-    final Instant unregisteredAt = null;
-
-    final Client expected = this.clientApi(id, name, registeredAt, unregisteredAt);
-    final org.opensmartgridplatform.throttling.entities.Client source =
-        this.clientEntity(id, name, registeredAt, unregisteredAt);
-
-    final Client actual = this.throttlingMapper.map(source, Client.class);
-
-    assertThat(actual).isEqualToComparingFieldByField(expected);
-  }
-
-  @Test
-  void mapsUnregisteredEntityClientToApiClient() {
-
-    final Integer id = 455021948;
-    final String name = "test-client-unregistered-entity-to-api";
-    final Instant registeredAt = Instant.now().minus(Duration.ofMinutes(458));
-    final Instant unregisteredAt = registeredAt.plus(Duration.ofMinutes(425));
-
-    final Client expected = this.clientApi(id, name, registeredAt, unregisteredAt);
-    final org.opensmartgridplatform.throttling.entities.Client source =
-        this.clientEntity(id, name, registeredAt, unregisteredAt);
-
-    final Client actual = this.throttlingMapper.map(source, Client.class);
-
-    assertThat(actual).isEqualToComparingFieldByField(expected);
-  }
-
-  @Test
-  void doesNotUpdateExistingEntityFromApiClient() {
-
-    final Integer idApi = 45901;
-    final Integer idEntity = 2234987;
-    final String nameApi = "test-client-update-api";
-    final String nameEntity = "test-client-update-entity";
-    final Instant registeredAtApi = null;
-    final Instant registeredAtEntity = Instant.now().minusSeconds(347980);
-    final Instant unregisteredAtApi = Instant.now().minusMillis(727);
-    final Instant unregisteredAtEntity = null;
-
-    final org.opensmartgridplatform.throttling.entities.Client destination =
-        this.clientEntity(idEntity, nameEntity, registeredAtEntity, unregisteredAtEntity);
-    final org.opensmartgridplatform.throttling.entities.Client expected =
-        this.clientEntity(idEntity, nameEntity, registeredAtEntity, unregisteredAtEntity);
-    final Client source = this.clientApi(idApi, nameApi, registeredAtApi, unregisteredAtApi);
-
-    this.throttlingMapper.map(source, destination);
-
-    assertThat(destination).isEqualToComparingFieldByField(expected);
-  }
-
-  private Client clientApi(final Integer id, final String name) {
-    return this.clientApi(id, name, null, null);
-  }
-
-  private Client clientApi(
-      final Integer id,
-      final String name,
-      final Instant registeredAt,
-      final Instant unregisteredAt) {
-
-    return new Client(id, name, registeredAt, unregisteredAt, null);
-  }
-
-  private org.opensmartgridplatform.throttling.entities.Client clientEntity(
-      final Integer id, final String name) {
-
-    return this.clientEntity(id, name, null, null);
-  }
-
-  private org.opensmartgridplatform.throttling.entities.Client clientEntity(
-      final Integer id,
-      final String name,
-      final Instant registeredAt,
-      final Instant unregisteredAt) {
-
-    return new org.opensmartgridplatform.throttling.entities.Client(
-        id, name, registeredAt, unregisteredAt, null);
   }
 }

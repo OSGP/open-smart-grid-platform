@@ -186,10 +186,6 @@ public class RecoverKeyProcess implements Runnable {
       }
 
       if (this.throttlingConfig.clientEnabled()) {
-        // TODO releasing needs to be made resilient to network failures communicating with the
-        // throttling service. One idea for this has been to put the details of the release request
-        // in a queue and put the throttling client in a message listener for that queue, and call
-        // the release method on the client from onMessage.
         this.throttlingConfig.throttlingClient().releasePermit(permit);
       } else {
         this.throttlingService.closeConnection();

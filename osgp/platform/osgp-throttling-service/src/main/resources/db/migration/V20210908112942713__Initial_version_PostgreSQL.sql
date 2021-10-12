@@ -14,24 +14,9 @@ COMMENT ON COLUMN throttling_config.id IS 'Unique technical id of this Throttlin
 COMMENT ON COLUMN throttling_config.name IS 'Business key; identification of this Throttling Config.';
 COMMENT ON COLUMN throttling_config.max_concurrency IS 'Maximum number of concurrent permits to be granted by throttlers applying this Throttling Config.';
 
-CREATE TABLE IF NOT EXISTS client (
-  id serial PRIMARY KEY,
-  name character varying(100) NOT NULL,
-  registered_at timestamp without time zone NOT NULL,
-  unregistered_at timestamp without time zone,
-  last_seen_at timestamp without time zone,
-  CONSTRAINT client_registration_name_key UNIQUE (name)
-);
-
-ALTER TABLE client OWNER TO osp_admin;
-
-COMMENT ON TABLE client IS 'Registration of clients taking part in distributed throttling.';
-
-COMMENT ON COLUMN client.id IS 'Unique technical id of this Client.';
-COMMENT ON COLUMN client.name IS 'Business key; identification of this Client.';
-COMMENT ON COLUMN client.registered_at IS 'Creation timestamp for this Client.';
-COMMENT ON COLUMN client.unregistered_at IS 'Deactivation timestamp for this Client.';
-COMMENT ON COLUMN client.last_seen_at IS 'Last seen timestamp for this Client.';
+CREATE SEQUENCE IF NOT EXISTS client_id_seq MAXVALUE 2147483647 CYCLE;
+ALTER SEQUENCE client_id_seq OWNER TO osp_admin;
+COMMENT ON SEQUENCE client_id_seq IS 'Sequence for generating unique IDs for newly registered clients. Cleanup permits the sequence to be cycled when the max is reached.';
 
 CREATE TABLE IF NOT EXISTS permit (
   id bigserial PRIMARY KEY,

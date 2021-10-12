@@ -12,14 +12,12 @@ package org.opensmartgridplatform.throttling;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
-import java.time.Instant;
 import okhttp3.mockwebserver.Dispatcher;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.opensmartgridplatform.throttling.api.Client;
 import org.opensmartgridplatform.throttling.api.ThrottlingConfig;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -29,18 +27,15 @@ class ThrottlingClientTest {
 
   private MockWebServer mockWebServer;
 
-  private Client client;
   private ThrottlingConfig throttlingConfig;
   private ThrottlingClient throttlingClient;
 
   @BeforeEach
   void beforeEach() {
     this.mockWebServer = new MockWebServer();
-    this.client = new Client("throttling-client");
     this.throttlingConfig = new ThrottlingConfig("throttling-client-test", 2);
     this.throttlingClient =
         new ThrottlingClient(
-            this.client,
             this.throttlingConfig,
             this.mockWebServer.url("/").url().toExternalForm(),
             Duration.ofSeconds(1));
@@ -55,7 +50,7 @@ class ThrottlingClientTest {
     this.throttlingClient.register();
 
     assertThat(this.throttlingConfig.getId()).isEqualTo(throttlingConfigId);
-    assertThat(this.client.getId()).isEqualTo(clientId);
+    assertThat(this.throttlingClient.getClientId()).isEqualTo(clientId);
   }
 
   private void whenTheThrottlingServiceReturnsIdsOnRegistration(
@@ -64,7 +59,7 @@ class ThrottlingClientTest {
     this.mockWebServer.setDispatcher(
         new Dispatcher() {
           @Override
-          public MockResponse dispatch(final RecordedRequest request) throws InterruptedException {
+          public MockResponse dispatch(final RecordedRequest request) {
 
             if ("/throttling-configs".equals(request.getPath())
                 && "{\"name\":\"throttling-client-test\",\"maxConcurrency\":2}"
@@ -98,18 +93,15 @@ class ThrottlingClientTest {
 
     this.throttlingClient.unregister();
 
-    assertThat(this.client.getUnregisteredAt()).isAfter(this.client.getRegisteredAt());
+    assertThat(this.throttlingClient.getClientId()).isNull();
   }
 
   private void whenTheThrottlingServiceAcceptsUnregistrationWithClientID(final int clientId) {
 
-    this.client.setRegisteredAt(Instant.now());
-    this.client.setId(clientId);
-
     this.mockWebServer.setDispatcher(
         new Dispatcher() {
           @Override
-          public MockResponse dispatch(final RecordedRequest request) throws InterruptedException {
+          public MockResponse dispatch(final RecordedRequest request) {
 
             if (String.format("/clients/%d", clientId).equals(request.getPath())
                 && "DELETE".equals(request.getMethod())) {

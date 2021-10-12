@@ -29,13 +29,9 @@ public class PermitController {
   private static final int NO_ID_PROVIDED = -1;
 
   private final SegmentedNetworkThrottler segmentedNetworkThrottler;
-  private final ClientApiService clientApiService;
 
-  public PermitController(
-      final SegmentedNetworkThrottler segmentedNetworkThrottler,
-      final ClientApiService clientApiService) {
+  public PermitController(final SegmentedNetworkThrottler segmentedNetworkThrottler) {
     this.segmentedNetworkThrottler = segmentedNetworkThrottler;
-    this.clientApiService = clientApiService;
   }
 
   /**
@@ -71,7 +67,6 @@ public class PermitController {
       @PathVariable(required = false) final Optional<Integer> cellId,
       @RequestBody(required = false) final Optional<Integer> requestId) {
 
-    this.clientApiService.getAndNoticeClient(clientId);
     final boolean granted =
         this.segmentedNetworkThrottler.requestPermit(
             throttlingConfigId,
@@ -123,7 +118,6 @@ public class PermitController {
       @PathVariable(required = false) final Optional<Integer> cellId,
       @RequestBody(required = false) final Optional<Integer> requestId) {
 
-    this.clientApiService.getAndNoticeClient(clientId);
     final boolean released =
         this.segmentedNetworkThrottler.releasePermit(
             throttlingConfigId,
@@ -151,7 +145,6 @@ public class PermitController {
   public ResponseEntity<JsonNode> discardPermit(
       @PathVariable final int clientId, @PathVariable final int requestId) {
 
-    this.clientApiService.getAndNoticeClient(clientId);
     final boolean discarded = this.segmentedNetworkThrottler.discardPermit(clientId, requestId);
 
     final HttpStatus status = discarded ? HttpStatus.OK : HttpStatus.NOT_FOUND;

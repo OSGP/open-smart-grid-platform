@@ -16,7 +16,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.NumericNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.security.SecureRandom;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,10 +31,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.opensmartgridplatform.throttling.api.Client;
 import org.opensmartgridplatform.throttling.api.ThrottlingConfig;
 import org.opensmartgridplatform.throttling.mapping.ThrottlingMapper;
-import org.opensmartgridplatform.throttling.repositories.ClientRepository;
 import org.opensmartgridplatform.throttling.repositories.PermitRepository;
 import org.opensmartgridplatform.throttling.repositories.ThrottlingConfigRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,8 +123,6 @@ class ThrottlingServiceApplicationIT {
 
   @Autowired private ThrottlingConfigRepository throttlingConfigRepository;
 
-  @Autowired private ClientRepository clientRepository;
-
   @Autowired private PermitRepository permitRepository;
 
   @Autowired private MaxConcurrencyByThrottlingConfig maxConcurrencyByThrottlingConfig;
@@ -135,7 +130,7 @@ class ThrottlingServiceApplicationIT {
   @Autowired private PermitsByThrottlingConfig permitsByThrottlingConfig;
 
   private short existingThrottlingConfigId;
-  private int existingClientId;
+  private int registeredClientId;
 
   @BeforeEach
   void beforeEach() {
@@ -146,16 +141,11 @@ class ThrottlingServiceApplicationIT {
                     EXISTING_THROTTLING_CONFIG_NAME,
                     EXISTING_THROTTLING_CONFIG_INITIAL_MAX_CONCURRENCY))
             .getId();
-    this.existingClientId =
-        this.clientRepository
-            .save(new org.opensmartgridplatform.throttling.entities.Client(EXISTING_CLIENT_NAME))
-            .getId();
   }
 
   @AfterEach
   void afterEach() {
     this.permitRepository.deleteAllInBatch();
-    this.clientRepository.deleteAllInBatch();
     this.throttlingConfigRepository.deleteAllInBatch();
   }
 
@@ -296,45 +286,18 @@ class ThrottlingServiceApplicationIT {
 
   @Test
   void registerNewClient() {
-    final String name = "new-client";
 
-    final ResponseEntity<JsonNode> responseEntity = this.registerClient(name);
+    final ResponseEntity<JsonNode> responseEntity =
+        this.testRestTemplate.postForEntity(CLIENTS_URL, null, JsonNode.class);
 
-    final int id = this.validClientId(responseEntity);
-    this.assertClientEntityExistsWithValues(id, name);
-  }
-
-  @Test
-  void clientWithAnAlreadyRegisteredNameIsNotAllowed() throws Exception {
-    final String name = EXISTING_CLIENT_NAME;
-
-    final ResponseEntity<JsonNode> responseEntity = this.registerClient(name);
-
-    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
-    final JsonNode errorBody = responseEntity.getBody();
-    final ObjectNode expected =
-        new ObjectMapper()
-            .createObjectNode()
-            .put("error", "client-already-registered")
-            .put("name", name);
-    assertThat(errorBody).isEqualTo(expected);
+    this.registeredClientId = this.validClientId(responseEntity);
   }
 
   @Test
   void unregisterClient() {
-
-    final org.opensmartgridplatform.throttling.entities.Client client =
-        this.findExistingClientByName(EXISTING_CLIENT_NAME);
-
-    final ResponseEntity<JsonNode> responseEntity = this.unregisterClient(client.getId());
+    final ResponseEntity<JsonNode> responseEntity = this.unregisterClient(this.registeredClientId);
 
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.ACCEPTED);
-    final Instant unregisteredAt = this.validClientUnregisteredAt(responseEntity);
-    final org.opensmartgridplatform.throttling.entities.Client unregisteredClient =
-        this.findExistingClientById(client.getId());
-    assertThat(unregisteredClient.getUnregisteredAt())
-        .isEqualTo(unregisteredAt)
-        .isAfter(unregisteredClient.getRegisteredAt());
   }
 
   @Test
@@ -344,74 +307,6 @@ class ThrottlingServiceApplicationIT {
     final ResponseEntity<JsonNode> responseEntity = this.unregisterClient(unknownClientId);
 
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-  }
-
-  @Test
-  void registeredClientsCanBeRetrievedWithPageableRequests() {
-    final int numberOfClients = 3;
-    final List<Client> apiClients = new ArrayList<>();
-
-    final Client existingApiClient =
-        this.throttlingMapper.map(
-            this.findExistingClientByName(EXISTING_CLIENT_NAME), Client.class);
-    apiClients.add(existingApiClient);
-
-    for (int i = 0; i < numberOfClients - 1; i++) {
-      final Client addedApiClient = this.apiClient("additional-client-" + i);
-      apiClients.add(addedApiClient);
-      final ResponseEntity<JsonNode> registerClientResponse = this.registerClient(addedApiClient);
-      final int id = this.validClientId(registerClientResponse);
-      addedApiClient.setId(id);
-      final org.opensmartgridplatform.throttling.entities.Client addedEntityClient =
-          this.findExistingClientById(id);
-      addedApiClient.setRegisteredAt(addedEntityClient.getRegisteredAt());
-      addedApiClient.setUnregisteredAt(addedEntityClient.getUnregisteredAt());
-    }
-
-    int page = 0;
-    final int size = 2;
-
-    while (page * size < numberOfClients) {
-
-      final List<Client> pageOfClients = this.retrievePageOfClients(page, size);
-
-      assertThat(pageOfClients)
-          .usingFieldByFieldElementComparator()
-          .containsExactlyElementsOf(
-              apiClients.subList(page * size, Math.min((page + 1) * size, numberOfClients)));
-
-      page = page + 1;
-    }
-  }
-
-  private Client apiClient(final String name) {
-    return new Client(name);
-  }
-
-  private org.opensmartgridplatform.throttling.entities.Client findExistingClientById(
-      final int id) {
-
-    return this.clientRepository
-        .findById(id)
-        .orElseThrow(() -> new AssertionError("Expected Client entity for ID: " + id));
-  }
-
-  private org.opensmartgridplatform.throttling.entities.Client findExistingClientByName(
-      final String name) {
-
-    return this.clientRepository
-        .findOneByName(name)
-        .orElseThrow(() -> new AssertionError("Expected Client entity for name: " + name));
-  }
-
-  private ResponseEntity<JsonNode> registerClient(final String name) {
-
-    return this.registerClient(this.apiClient(name));
-  }
-
-  private ResponseEntity<JsonNode> registerClient(final Client client) {
-
-    return this.testRestTemplate.postForEntity(CLIENTS_URL, client, JsonNode.class);
   }
 
   private ResponseEntity<JsonNode> unregisterClient(final int clientId) {
@@ -427,35 +322,13 @@ class ThrottlingServiceApplicationIT {
     return id;
   }
 
-  private Instant validClientUnregisteredAt(final ResponseEntity<JsonNode> responseEntity) {
-    assertThat(responseEntity.getStatusCode().series()).isEqualTo(HttpStatus.Series.SUCCESSFUL);
-    assertThat(responseEntity.getBody()).isInstanceOf(NumericNode.class);
-    final long epochMilli = ((NumericNode) responseEntity.getBody()).longValue();
-    return Instant.ofEpochMilli(epochMilli);
-  }
-
-  private List<Client> retrievePageOfClients(final int page, final int size) {
-    final ResponseEntity<Client[]> responseEntity =
-        this.testRestTemplate.getForEntity(CLIENTS_PAGE_URL, Client[].class, page, size);
-    assertThat(responseEntity.getStatusCode().series()).isEqualTo(HttpStatus.Series.SUCCESSFUL);
-    return Arrays.asList(responseEntity.getBody());
-  }
-
-  private void assertClientEntityExistsWithValues(final int id, final String name) {
-    final org.opensmartgridplatform.throttling.entities.Client client =
-        this.clientRepository
-            .findById(id)
-            .orElseThrow(() -> new AssertionError("Expected Client entity for ID: " + id));
-    assertThat(client.getName()).isEqualTo(name);
-  }
-
   @Test
   void requestPermitForNetworkSegment() {
     final int baseTransceiverStationId = 98549874;
     final int cellId = 0;
 
     this.successfullyRequestPermit(
-        this.existingThrottlingConfigId, this.existingClientId, baseTransceiverStationId, cellId);
+        this.existingThrottlingConfigId, this.registeredClientId, baseTransceiverStationId, cellId);
   }
 
   private void successfullyRequestPermit(
@@ -531,7 +404,7 @@ class ThrottlingServiceApplicationIT {
     final int requestId = 5534879;
 
     final ResponseEntity<JsonNode> responseEntity =
-        this.requestPermit(this.existingThrottlingConfigId, this.existingClientId, requestId);
+        this.requestPermit(this.existingThrottlingConfigId, this.registeredClientId, requestId);
 
     assertThat(responseEntity.getStatusCode().series()).isEqualTo(HttpStatus.Series.SUCCESSFUL);
   }
@@ -539,7 +412,7 @@ class ThrottlingServiceApplicationIT {
   @Test
   void requestIdForTheClientMustBeUniqueAcrossPermitRequests() {
     final short throttlingConfigId = this.existingThrottlingConfigId;
-    final int clientId = this.existingClientId;
+    final int clientId = this.registeredClientId;
     final int baseTransceiverStationId1 = 34;
     final int cellId1 = 1;
     final int baseTransceiverStationId2 = 45;
@@ -559,7 +432,7 @@ class ThrottlingServiceApplicationIT {
     final int maxConcurrency = 2;
     final short throttlingConfigId =
         this.idForNewThrottlingConfig("at-most-2-concurrent-permits", maxConcurrency);
-    final int clientId = this.existingClientId;
+    final int clientId = this.registeredClientId;
 
     final int baseTransceiverStationId = 45910;
     final int cellId = 2;
@@ -595,7 +468,7 @@ class ThrottlingServiceApplicationIT {
   @Test
   void releasePermitForNetworkSegment() {
     final short throttlingConfigId = this.existingThrottlingConfigId;
-    final int clientId = this.existingClientId;
+    final int clientId = this.registeredClientId;
     final int baseTransceiverStationId = 846574;
     final int cellId = 1;
     final int requestId = 299164;
@@ -612,7 +485,7 @@ class ThrottlingServiceApplicationIT {
   @Test
   void releasePermitForUnknownNetworkSegment() {
     final short throttlingConfigId = this.existingThrottlingConfigId;
-    final int clientId = this.existingClientId;
+    final int clientId = this.registeredClientId;
     final Integer requestId = null;
 
     this.requestPermit(throttlingConfigId, clientId, requestId);
@@ -631,7 +504,7 @@ class ThrottlingServiceApplicationIT {
 
     this.unsuccessfullyReleasePermit(
         this.existingThrottlingConfigId,
-        this.existingClientId,
+        this.registeredClientId,
         baseTransceiverStationId,
         cellId,
         requestIdCounter.incrementAndGet());
@@ -640,7 +513,7 @@ class ThrottlingServiceApplicationIT {
   @Test
   void aRequestedPermitIsOnlyReleasedSuccessfullyOnce() {
     final short throttlingConfigId = this.existingThrottlingConfigId;
-    final int clientId = this.existingClientId;
+    final int clientId = this.registeredClientId;
     final int baseTransceiverStationId = 59;
     final int cellId = 1;
 
@@ -653,7 +526,7 @@ class ThrottlingServiceApplicationIT {
   @Test
   void aPermitThatWasGrantedWhereTheClientMissedTheResponseCanBeDiscarded() {
     final short throttlingConfigId = this.existingThrottlingConfigId;
-    final int clientId = this.existingClientId;
+    final int clientId = this.registeredClientId;
     final int baseTransceiverStationId = 4375;
     final int cellId = 3;
     final int requestId = requestIdCounter.incrementAndGet();
@@ -689,7 +562,7 @@ class ThrottlingServiceApplicationIT {
 
   @Test
   void aPermitThatWasDeniedWhereTheClientMissedTheResponseCanBeDiscarded() {
-    final int clientId = this.existingClientId;
+    final int clientId = this.registeredClientId;
     final int requestId = requestIdCounter.incrementAndGet();
 
     this.discardPermitThatWasNotGranted(clientId, requestId);

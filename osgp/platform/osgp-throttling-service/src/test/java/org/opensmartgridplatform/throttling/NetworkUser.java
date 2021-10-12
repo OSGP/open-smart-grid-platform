@@ -12,7 +12,6 @@ package org.opensmartgridplatform.throttling;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NumericNode;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.opensmartgridplatform.throttling.api.Client;
 import org.opensmartgridplatform.throttling.api.ThrottlingConfig;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -139,8 +138,7 @@ public class NetworkUser {
 
   private void registerThrottlingClient() {
     final ResponseEntity<JsonNode> clientRegistrationResponse =
-        this.restTemplate.postForEntity(
-            "/clients", new Client(this.clientIdentity), JsonNode.class);
+        this.restTemplate.postForEntity("/clients", null, JsonNode.class);
 
     if (clientRegistrationResponse.getStatusCode().series() != HttpStatus.Series.SUCCESSFUL) {
       throw new IllegalStateException("Could not register client " + this.clientIdentity);

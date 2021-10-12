@@ -13,7 +13,6 @@ package org.opensmartgridplatform.throttling.cleanup;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
-import org.opensmartgridplatform.throttling.entities.Client;
 import org.opensmartgridplatform.throttling.entities.Permit;
 import org.opensmartgridplatform.throttling.repositories.ClientRepository;
 import org.opensmartgridplatform.throttling.repositories.PermitRepository;
@@ -31,26 +30,22 @@ public class PermitCleanUpJob implements Job {
   @Autowired private PermitRepository permitRepository;
   @Autowired private ClientRepository clientRepository;
 
-  @Value("${cleanup.permits.threshold-seconds:86400}")
-  private int thresholdSeconds;
+  @Value("#{T(java.time.Duration).parse('${cleanup.permits.time-to-live:PT1H}')}")
+  private Duration timeToLive;
 
   @Override
   public void execute(final JobExecutionContext jobExecutionContext) {
     final List<Permit> expiredPermits =
-        this.permitRepository.findByCreatedAtBefore(
-            Instant.now().minus(Duration.ofSeconds(this.thresholdSeconds)));
+        this.permitRepository.findByCreatedAtBefore(Instant.now().minus(this.timeToLive));
     LOGGER.debug("Found {} permits to be cleaned", expiredPermits.size());
     expiredPermits.forEach(
         permit ->
             LOGGER.warn(
-                "Cleaning up permit (bts: {}/cell: {}), created on {} for client '{}'",
+                "Cleaning up permit (bts: {}/cell: {}), created on {} for client {}",
                 permit.getBaseTransceiverStationId(),
                 permit.getCellId(),
                 permit.getCreatedAt(),
-                this.clientRepository
-                    .findById(permit.getClientId())
-                    .map(Client::getName)
-                    .orElse("<unknown>")));
+                permit.getClientId()));
     this.permitRepository.deleteAll(expiredPermits);
   }
 }

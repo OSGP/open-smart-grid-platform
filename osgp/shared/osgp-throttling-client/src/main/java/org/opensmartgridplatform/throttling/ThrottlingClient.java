@@ -14,9 +14,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.opensmartgridplatform.throttling.api.Client;
 import org.opensmartgridplatform.throttling.api.Permit;
 import org.opensmartgridplatform.throttling.api.ThrottlingConfig;
 import org.slf4j.Logger;
@@ -34,8 +32,8 @@ public class ThrottlingClient {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ThrottlingClient.class);
 
+  private Integer clientId;
   private final AtomicInteger requestIdCounter = new AtomicInteger(0);
-  private final Client client;
   private final ThrottlingConfig throttlingConfig;
   private final WebClient webClient;
   private final Duration timeout;
@@ -51,16 +49,6 @@ public class ThrottlingClient {
       final String throttlingServiceUrl,
       final Duration timeout) {
 
-    this(new Client(UUID.randomUUID().toString()), throttlingConfig, throttlingServiceUrl, timeout);
-  }
-
-  public ThrottlingClient(
-      final Client client,
-      final ThrottlingConfig throttlingConfig,
-      final String throttlingServiceUrl,
-      final Duration timeout) {
-
-    this.client = Objects.requireNonNull(client, "client must not be null");
     this.throttlingConfig =
         Objects.requireNonNull(throttlingConfig, "throttlingConfig must not be null");
     this.webClient =
@@ -103,44 +91,35 @@ public class ThrottlingClient {
         this.webClient
             .post()
             .uri("/clients")
-            .bodyValue(this.client)
             .retrieve()
             .bodyToMono(Integer.class)
             .block(this.timeout);
 
     if (clientId == null) {
-      throw new IllegalStateException(
-          "No client ID available after registration of " + this.client);
+      throw new IllegalStateException("No client ID available after registration of client");
     }
 
-    /*
-     * Set registered at to now, which may be a slightly different instant than the one with the
-     * throttling service. This is just an indication, and should not be depended on to match the
-     * value when retrieving the client information from the throttling service API.
-     */
-    this.client.setRegisteredAt(Instant.now());
-    this.client.setId(clientId);
+    this.clientId = clientId;
 
-    LOGGER.info("Registered {}", this.client);
+    LOGGER.info("Registered {}", this.clientId);
   }
 
   public void unregister() {
-    final Long unregisteredAtMillis =
+    final ResponseEntity<Void> responseEntity =
         this.webClient
             .delete()
-            .uri("/clients/{clientId}", this.client.getId())
+            .uri("/clients/{clientId}", this.clientId)
             .retrieve()
-            .bodyToMono(Long.class)
+            .toBodilessEntity()
             .block(this.timeout);
 
-    if (unregisteredAtMillis == null) {
+    if (responseEntity == null || !responseEntity.getStatusCode().is2xxSuccessful()) {
       throw new IllegalStateException(
-          "No unregistered at millis available after unregistration of " + this.client);
+          "No HTTP success response on unregistration of " + this.clientId);
     }
 
-    this.client.setUnregisteredAt(Instant.ofEpochMilli(unregisteredAtMillis));
-
-    LOGGER.info("Unregistered {}", this.client);
+    LOGGER.info("Unregistered {}", this.clientId);
+    this.clientId = null;
   }
 
   public Optional<Permit> requestPermit() {
@@ -149,7 +128,7 @@ public class ThrottlingClient {
     LOGGER.debug(
         "Requesting permit using requestId {} for {} on {}",
         requestId,
-        this.client,
+        this.clientId,
         this.throttlingConfig);
 
     final Integer numberOfGrantedPermits = this.numberOfGrantedPermits(requestId);
@@ -167,12 +146,7 @@ public class ThrottlingClient {
     return numberOfGrantedPermits > 0
         ? Optional.of(
             new Permit(
-                this.throttlingConfig.getId(),
-                this.client.getId(),
-                requestId,
-                null,
-                null,
-                Instant.now()))
+                this.throttlingConfig.getId(), this.clientId, requestId, null, null, Instant.now()))
         : Optional.empty();
   }
 
@@ -184,7 +158,7 @@ public class ThrottlingClient {
         baseTransceiverStationId,
         cellId,
         requestId,
-        this.client,
+        this.clientId,
         this.throttlingConfig);
 
     final Integer numberOfGrantedPermits =
@@ -204,7 +178,7 @@ public class ThrottlingClient {
         ? Optional.of(
             new Permit(
                 this.throttlingConfig.getId(),
-                this.client.getId(),
+                this.clientId,
                 requestId,
                 baseTransceiverStationId,
                 cellId,
@@ -220,7 +194,7 @@ public class ThrottlingClient {
           .uri(
               "/permits/{throttlingConfigId}/{clientId}",
               this.throttlingConfig.getId(),
-              this.client.getId())
+              this.clientId)
           .bodyValue(requestId)
           .retrieve()
           .onStatus(status -> HttpStatus.CONFLICT == status, clientResponse -> Mono.empty())
@@ -230,7 +204,7 @@ public class ThrottlingClient {
       LOGGER.error(
           "Unexpected exception requesting permit using requestId {} for {} on {}",
           requestId,
-          this.client,
+          this.clientId,
           this.throttlingConfig);
       return null;
     }
@@ -245,7 +219,7 @@ public class ThrottlingClient {
           .uri(
               "/permits/{throttlingConfigId}/{clientId}/{baseTransceiverStationId}/{cellId}",
               this.throttlingConfig.getId(),
-              this.client.getId(),
+              this.clientId,
               baseTransceiverStationId,
               cellId)
           .bodyValue(requestId)
@@ -259,7 +233,7 @@ public class ThrottlingClient {
           baseTransceiverStationId,
           cellId,
           requestId,
-          this.client,
+          this.clientId,
           this.throttlingConfig);
       return null;
     }
@@ -285,7 +259,7 @@ public class ThrottlingClient {
             .uri(
                 "/permits/{throttlingConfigId}/{clientId}",
                 this.throttlingConfig.getId(),
-                this.client.getId())
+                this.clientId)
             .bodyValue(requestId)
             .retrieve()
             .onStatus(status -> HttpStatus.NOT_FOUND == status, clientResponse -> Mono.empty())
@@ -296,7 +270,7 @@ public class ThrottlingClient {
       throw new IllegalStateException(
           String.format(
               "No release response available for permit with throttlingConfigId %d, clientId %d, requestId %s",
-              this.throttlingConfig.getId(), this.client.getId(), requestId));
+              this.throttlingConfig.getId(), this.clientId, requestId));
     }
 
     switch (releaseResponse.getStatusCode()) {
@@ -304,21 +278,21 @@ public class ThrottlingClient {
         LOGGER.warn(
             "Unable to release permit with throttlingConfigId {}, clientId {}, requestId {}, because the permit has not been granted",
             this.throttlingConfig.getId(),
-            this.client.getId(),
+            this.clientId,
             requestId);
         return false;
       case OK:
         LOGGER.debug(
             "Released permit with throttlingConfigId {}, clientId {}, requestId {}",
             this.throttlingConfig.getId(),
-            this.client.getId(),
+            this.clientId,
             requestId);
         return true;
       default:
         LOGGER.warn(
             "Unable to release permit with throttlingConfigId {}, clientId {}, requestId {} - got unexpected response status {}",
             this.throttlingConfig.getId(),
-            this.client.getId(),
+            this.clientId,
             requestId,
             releaseResponse.getStatusCode());
         return false;
@@ -334,7 +308,7 @@ public class ThrottlingClient {
             .uri(
                 "/permits/{throttlingConfigId}/{clientId}/{baseTransceiverStationId}/{cellId}",
                 this.throttlingConfig.getId(),
-                this.client.getId(),
+                this.clientId,
                 baseTransceiverStationId,
                 cellId)
             .bodyValue(requestId)
@@ -348,7 +322,7 @@ public class ThrottlingClient {
           String.format(
               "No release response available for permit with throttlingConfigId %d, clientId %d, requestId %s, baseTransceiverStationId %s, cellId %s",
               this.throttlingConfig.getId(),
-              this.client.getId(),
+              this.clientId,
               requestId,
               baseTransceiverStationId,
               cellId));
@@ -359,7 +333,7 @@ public class ThrottlingClient {
         LOGGER.warn(
             "Unable to release permit with throttlingConfigId {}, clientId {}, requestId {}, baseTransceiverStationId {}, cellId {}, because the permit has not been granted",
             this.throttlingConfig.getId(),
-            this.client.getId(),
+            this.clientId,
             requestId,
             baseTransceiverStationId,
             cellId);
@@ -368,7 +342,7 @@ public class ThrottlingClient {
         LOGGER.debug(
             "Released permit with throttlingConfigId {}, clientId {}, requestId {}, baseTransceiverStationId {}, cellId {}",
             this.throttlingConfig.getId(),
-            this.client.getId(),
+            this.clientId,
             requestId,
             baseTransceiverStationId,
             cellId);
@@ -377,7 +351,7 @@ public class ThrottlingClient {
         LOGGER.error(
             "Unable to release permit with throttlingConfigId {}, clientId {}, requestId {}, baseTransceiverStationId {}, cellId {} - got unexpected response status {}",
             this.throttlingConfig.getId(),
-            this.client.getId(),
+            this.clientId,
             requestId,
             baseTransceiverStationId,
             cellId,
@@ -398,7 +372,7 @@ public class ThrottlingClient {
     final ResponseEntity<Void> discardResponse =
         this.webClient
             .delete()
-            .uri("/permits/discard/{clientId}/{requestId}", this.client.getId(), requestId)
+            .uri("/permits/discard/{clientId}/{requestId}", this.clientId, requestId)
             .retrieve()
             .onStatus(status -> HttpStatus.NOT_FOUND == status, clientResponse -> Mono.empty())
             .toBodilessEntity()
@@ -407,26 +381,26 @@ public class ThrottlingClient {
     if (discardResponse == null) {
       throw new IllegalStateException(
           String.format(
-              "No discard response available for requestId %d of %s", requestId, this.client));
+              "No discard response available for requestId %d of %s", requestId, this.clientId));
     }
 
     switch (discardResponse.getStatusCode()) {
       case NOT_FOUND:
         LOGGER.info(
             "Discarded permit for {} with requestId {} - no permit had been granted",
-            this.client,
+            this.clientId,
             requestId);
         break;
       case OK:
         LOGGER.info(
             "Discarded permit for {} with requestId {} - granted permit has been released",
-            this.client,
+            this.clientId,
             requestId);
         break;
       default:
         LOGGER.error(
             "Discarded permit for {} with requestId {} - got unexpected response status {}",
-            this.client,
+            this.clientId,
             requestId,
             discardResponse.getStatusCode());
         break;
@@ -435,5 +409,9 @@ public class ThrottlingClient {
 
   public ThrottlingConfig getThrottlingConfig() {
     return this.throttlingConfig;
+  }
+
+  public Integer getClientId() {
+    return this.clientId;
   }
 }

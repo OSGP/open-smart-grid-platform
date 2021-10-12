@@ -9,17 +9,18 @@
  */
 package org.opensmartgridplatform.throttling.repositories;
 
-import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
-import org.opensmartgridplatform.throttling.entities.Client;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
 
-@Repository
-public interface ClientRepository extends JpaRepository<Client, Integer> {
+@Component
+public class ClientRepository {
+  private final JdbcTemplate jdbcTemplate;
 
-  Optional<Client> findOneByName(String name);
+  public ClientRepository(final JdbcTemplate jdbcTemplate) {
+    this.jdbcTemplate = jdbcTemplate;
+  }
 
-  List<Client> findByLastSeenAtBefore(Instant threshold);
+  public Integer getNextClientId() {
+    return this.jdbcTemplate.queryForObject("SELECT nextval('client_id_seq')", Integer.class);
+  }
 }

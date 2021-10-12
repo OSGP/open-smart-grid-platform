@@ -19,14 +19,10 @@ public class ThrottlingMapper extends ConfigurableMapper {
   private static final String ID = "id";
   private static final String NAME = "name";
   private static final String MAX_CONCURRENCY = "maxConcurrency";
-  private static final String REGISTERED_AT = "registeredAt";
-  private static final String UNREGISTERED_AT = "unregisteredAt";
-  private static final String LAST_SEEN_AT = "lastSeenAt";
 
   @Override
   protected void configure(final MapperFactory factory) {
     this.registerThrottlingConfigMapping(factory);
-    this.registerClientMapping(factory);
   }
 
   private void registerThrottlingConfigMapping(final MapperFactory factory) {
@@ -39,25 +35,6 @@ public class ThrottlingMapper extends ConfigurableMapper {
             .constructorB(NAME, MAX_CONCURRENCY) // a new entity does not get its ID from the API
             .fieldBToA(ID, ID) // entity ID is not updated from the API
             .fieldBToA(NAME, NAME) // name is not updated from the API
-            .byDefault()
-            .toClassMap());
-  }
-
-  private void registerClientMapping(final MapperFactory factory) {
-    factory.registerClassMap(
-        factory
-            .classMap(
-                org.opensmartgridplatform.throttling.api.Client.class,
-                org.opensmartgridplatform.throttling.entities.Client.class)
-            .constructorA(ID, NAME, REGISTERED_AT, UNREGISTERED_AT)
-            .constructorB(
-                NAME) // a new entity does not get its ID or registration period from the API
-            .fieldBToA(ID, ID) // entity ID is not updated from the API
-            .fieldBToA(NAME, NAME) // name is not updated from the API
-            .fieldBToA(REGISTERED_AT, REGISTERED_AT) // registration is not updated from the API
-            .fieldBToA(
-                UNREGISTERED_AT, UNREGISTERED_AT) // unregistration is not updated from the API
-            .fieldBToA(LAST_SEEN_AT, LAST_SEEN_AT) // 'last seen' is not updated from the API
             .byDefault()
             .toClassMap());
   }
