@@ -5,7 +5,7 @@
     <target name="create_run_jar">
         <jar destfile="dlms-device-simulator.jar" filesetmanifest="mergewithoutmain">
             <manifest>
-                <attribute name="Main-Class" value="com.alliander.osgp.simulator.server.DeviceServer"/>
+                <attribute name="Main-Class" value="org.opensmartgridplatform.simulator.protocol.dlms.server.DeviceServer"/>
                 <attribute name="Class-Path" value="."/>
             </manifest>
             <fileset dir="/home/dev/Sources/Webapps/dlms-device-simulator/osgp-simulator/target/classes"/>

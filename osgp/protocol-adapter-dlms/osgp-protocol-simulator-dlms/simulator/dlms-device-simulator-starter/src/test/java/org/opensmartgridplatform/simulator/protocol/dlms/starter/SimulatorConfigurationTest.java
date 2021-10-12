@@ -6,7 +6,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.simulatorstarter;
+package org.opensmartgridplatform.simulator.protocol.dlms.starter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,6 +18,7 @@ import java.util.Map;
 import org.assertj.core.api.AbstractCharSequenceAssert;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.opensmartgridplatform.simulator.protocol.dlms.starter.SimulatorConfiguration;
 import org.springframework.core.io.ClassPathResource;
 
 public class SimulatorConfigurationTest {

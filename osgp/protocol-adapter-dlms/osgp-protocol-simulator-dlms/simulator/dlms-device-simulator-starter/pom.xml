@@ -138,7 +138,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
-          <mainClass>com.alliander.osgp.simulatorstarter.Starter</mainClass>
+          <mainClass>org.opensmartgridplatform.simulator.protocol.dlms.starter.Starter</mainClass>
           <executable>true</executable>
         </configuration>
         <executions>

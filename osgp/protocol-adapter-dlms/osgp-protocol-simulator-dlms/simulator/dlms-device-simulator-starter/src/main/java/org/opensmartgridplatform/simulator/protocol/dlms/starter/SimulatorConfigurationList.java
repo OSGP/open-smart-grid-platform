@@ -6,7 +6,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.simulatorstarter;
+package org.opensmartgridplatform.simulator.protocol.dlms.starter;
 
 import java.util.List;
 

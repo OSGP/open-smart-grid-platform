@@ -6,7 +6,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.simulatorstarter.database;
+package org.opensmartgridplatform.simulator.protocol.dlms.database;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

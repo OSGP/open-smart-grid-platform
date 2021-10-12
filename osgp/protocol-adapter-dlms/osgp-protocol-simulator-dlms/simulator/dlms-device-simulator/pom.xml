@@ -131,7 +131,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
-          <mainClass>com.alliander.osgp.simulator.server.DeviceServer</mainClass>
+          <mainClass>org.opensmartgridplatform.simulator.protocol.dlms.server.DeviceServer</mainClass>
           <classifier>standalone</classifier>
           <executable>true</executable>
         </configuration>

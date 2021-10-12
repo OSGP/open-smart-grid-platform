@@ -6,15 +6,15 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.simulatorstarter;
+package org.opensmartgridplatform.simulator.protocol.dlms.starter;
 
-import com.alliander.osgp.simulatorstarter.database.DatabaseHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import org.opensmartgridplatform.simulator.protocol.dlms.database.DatabaseHelper;
 import org.opensmartgridplatform.simulator.protocol.dlms.server.DeviceServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +91,7 @@ public class Starter {
         "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration");
     DeviceServer.main(
         "--spring.profiles.active="
-            + com.alliander.osgp.simulatorstarter.Starter.formatActiveProfiles(
+            + org.opensmartgridplatform.simulator.protocol.dlms.starter.Starter.formatActiveProfiles(
                 simulatorConfiguration.getProfiles()));
   }
 

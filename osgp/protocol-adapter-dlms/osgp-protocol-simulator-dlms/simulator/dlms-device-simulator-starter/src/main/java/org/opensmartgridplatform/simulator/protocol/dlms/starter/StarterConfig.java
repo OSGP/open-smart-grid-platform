@@ -6,13 +6,13 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.simulatorstarter;
+package org.opensmartgridplatform.simulator.protocol.dlms.starter;
 
-import com.alliander.osgp.simulatorstarter.database.CoreDatabaseRepository;
-import com.alliander.osgp.simulatorstarter.database.DatabaseHelper;
-import com.alliander.osgp.simulatorstarter.database.ProtocolAdapterDlmsDatabaseRepository;
-import com.alliander.osgp.simulatorstarter.database.SharedDatabaseRepository;
 import java.io.IOException;
+import org.opensmartgridplatform.simulator.protocol.dlms.database.CoreDatabaseRepository;
+import org.opensmartgridplatform.simulator.protocol.dlms.database.DatabaseHelper;
+import org.opensmartgridplatform.simulator.protocol.dlms.database.ProtocolAdapterDlmsDatabaseRepository;
+import org.opensmartgridplatform.simulator.protocol.dlms.database.SharedDatabaseRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.context.annotation.ComponentScan;
