@@ -12,6 +12,11 @@ package org.opensmartgridplatform.throttling.repositories;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+/**
+ * Clients aren't actually saved, but need to identify themselves uniquely, because each client can
+ * have its own unique request IDs (unique constraint on client id + request id). This repository
+ * hands out unique client IDs from the database sequence for each newly registered client.
+ */
 @Component
 public class ClientRepository {
   private final JdbcTemplate jdbcTemplate;
