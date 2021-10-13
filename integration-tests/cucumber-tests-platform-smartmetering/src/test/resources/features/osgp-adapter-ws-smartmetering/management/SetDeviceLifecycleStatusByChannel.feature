@@ -9,8 +9,6 @@ Feature: SmartMetering Management - Set Device Lifecycle Status by Channel
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
 
-  # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
-  # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
   Scenario: Set M-Bus device lifecycle status by channel
     And a dlms device
       | DeviceIdentification           | TESTG101205673101 |
@@ -21,13 +19,13 @@ Feature: SmartMetering Management - Set Device Lifecycle Status by Channel
       | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    | 66                |
       | MbusDeviceTypeIdentification   | 3                 |
-    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes
-      | 5  | unsigned             | 9        |
-      | 6  | double-long-unsigned | 12056731 |
-      | 7  | long-unsigned        | 12514    |
-      | 8  | unsigned             | 66       |
-      | 9  | unsigned             | 3        |
-      | 14 | enumerate            | 4        |
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
+      | MbusPrimaryAddress             | 0        |
+      | MbusIdentificationNumber       | 12056731 |
+      | MbusManufacturerIdentification | LGB      |
+      | MbusVersion                    | 66       |
+      | MbusDeviceTypeIdentification   | 3        |
+      | MbusEncryptionKeyStatus        | 4        |
     When a set device lifecycle status by channel request is received
       | DeviceIdentification  | TEST1024000000001 |
       | Channel               | 1                 |
