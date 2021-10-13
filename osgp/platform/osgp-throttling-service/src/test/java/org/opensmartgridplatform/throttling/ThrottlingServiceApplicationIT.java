@@ -91,15 +91,12 @@ class ThrottlingServiceApplicationIT {
   private static final String EXISTING_THROTTLING_CONFIG_NAME = "pre-added-config";
   private static final int EXISTING_THROTTLING_CONFIG_INITIAL_MAX_CONCURRENCY = 8;
 
-  private static final String EXISTING_CLIENT_NAME = "pre-added-client";
-
   private static final String PAGING_PARAMETERS = "?page={page}&size={size}";
   private static final String ID_PATH = "/{id}";
   private static final String THROTTLING_CONFIGS_URL = "/throttling-configs";
   private static final String THROTTLING_CONFIGS_PAGE_URL =
       THROTTLING_CONFIGS_URL + PAGING_PARAMETERS;
   private static final String CLIENTS_URL = "/clients";
-  private static final String CLIENTS_PAGE_URL = CLIENTS_URL + PAGING_PARAMETERS;
   private static final String CLIENT_URL = CLIENTS_URL + ID_PATH;
   private static final String PERMITS_URL = "/permits";
   private static final String THROTTLING_AND_CLIENT_PATH = "/{throttlingConfigId}/{clientId}";
@@ -129,7 +126,7 @@ class ThrottlingServiceApplicationIT {
   @Autowired private PermitsByThrottlingConfig permitsByThrottlingConfig;
 
   private short existingThrottlingConfigId;
-  private int registeredClientId;
+  private int registeredClientId = 73;
 
   @BeforeEach
   void beforeEach() {
@@ -140,12 +137,6 @@ class ThrottlingServiceApplicationIT {
                     EXISTING_THROTTLING_CONFIG_NAME,
                     EXISTING_THROTTLING_CONFIG_INITIAL_MAX_CONCURRENCY))
             .getId();
-
-    if (this.registeredClientId == 0) {
-      final ResponseEntity<Integer> responseEntity =
-          this.testRestTemplate.postForEntity(CLIENTS_URL, null, Integer.class);
-      this.registeredClientId = this.validClientId(responseEntity);
-    }
   }
 
   @AfterEach
@@ -289,6 +280,18 @@ class ThrottlingServiceApplicationIT {
   }
 
   @Test
+  void registerClient() {
+
+    final ResponseEntity<Integer> responseEntity =
+        this.testRestTemplate.postForEntity(CLIENTS_URL, null, Integer.class);
+
+    assertThat(responseEntity.getStatusCode().series()).isEqualTo(HttpStatus.Series.SUCCESSFUL);
+    assertThat(responseEntity.getBody()).isNotNull();
+    final int id = responseEntity.getBody();
+    assertThat(id).isPositive();
+  }
+
+  @Test
   void unregisterClient() {
     final ResponseEntity<Void> responseEntity = this.unregisterClient(this.registeredClientId);
 
@@ -307,14 +310,6 @@ class ThrottlingServiceApplicationIT {
   private ResponseEntity<Void> unregisterClient(final int clientId) {
     return this.testRestTemplate.exchange(
         CLIENT_URL, HttpMethod.DELETE, null, Void.class, clientId);
-  }
-
-  private int validClientId(final ResponseEntity<Integer> responseEntity) {
-    assertThat(responseEntity.getStatusCode().series()).isEqualTo(HttpStatus.Series.SUCCESSFUL);
-    assertThat(responseEntity.getBody()).isNotNull();
-    final int id = responseEntity.getBody();
-    assertThat(id).isPositive();
-    return id;
   }
 
   @Test

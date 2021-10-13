@@ -255,7 +255,8 @@ public class ThrottlingClient {
           cellId,
           requestId,
           this.clientId,
-          this.throttlingConfig);
+          this.throttlingConfig,
+          e);
       return null;
     }
   }
