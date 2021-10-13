@@ -20,7 +20,6 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsD
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NonRetryableException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ThrottlingPermitDeniedException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
@@ -61,21 +60,11 @@ public abstract class DlmsConnectionMessageProcessor {
 
     Permit permit = null;
     if (this.throttlingConfig.clientEnabled()) {
-      // TODO baseTransceiverStationId and cellId need to get here from OSGP Core DB device.bts_id
-      // and cellId. Similar to other data from the core DB (for instance the static IP address),
-      // this could be done by placing these fields in the MessageMetadata
-      final int baseTransceiverStationId = Integer.MAX_VALUE;
-      final int cellId = 1;
       permit =
           this.throttlingConfig
               .throttlingClient()
-              .requestPermit(baseTransceiverStationId, cellId)
-              .orElseThrow(
-                  () ->
-                      new ThrottlingPermitDeniedException(
-                          this.throttlingConfig.configurationName(),
-                          baseTransceiverStationId,
-                          cellId));
+              .requestPermitUsingNetworkSegmentIfIdsAreAvailable(
+                  messageMetadata.getBaseTransceiverStationId(), messageMetadata.getCellId());
     } else {
       this.throttlingService.openConnection();
     }

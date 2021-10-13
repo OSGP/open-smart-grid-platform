@@ -183,6 +183,30 @@ public class ThrottlingClient {
         : Optional.empty();
   }
 
+  /**
+   * Requests a permit for a network segment identified by {@code baseTransceiverStationId} and
+   * {@code cellId} or for the entire network if any of the IDs is {@code null}.
+   *
+   * @param baseTransceiverStationId
+   * @param cellId
+   * @return a permit granting access to a network or network segment
+   * @throws ThrottlingPermitDeniedException if a permit is not granted
+   */
+  public Permit requestPermitUsingNetworkSegmentIfIdsAreAvailable(
+      final Integer baseTransceiverStationId, final Integer cellId) {
+
+    if (baseTransceiverStationId != null && cellId != null) {
+      return this.requestPermit(baseTransceiverStationId, cellId)
+          .orElseThrow(
+              () ->
+                  new ThrottlingPermitDeniedException(
+                      this.throttlingConfig.getName(), baseTransceiverStationId, cellId));
+    }
+
+    return this.requestPermit()
+        .orElseThrow(() -> new ThrottlingPermitDeniedException(this.throttlingConfig.getName()));
+  }
+
   private Integer numberOfGrantedPermits(final int requestId) {
 
     try {

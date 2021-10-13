@@ -26,9 +26,9 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.Hls5Connector;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.RecoverKeyException;
-import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ThrottlingPermitDeniedException;
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.InvocationCountingDlmsMessageListener;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.throttling.ThrottlingPermitDeniedException;
 import org.opensmartgridplatform.throttling.api.Permit;
 
 @Slf4j
@@ -145,19 +145,12 @@ public class RecoverKeyProcess implements Runnable {
     Permit permit = null;
     try {
       if (this.throttlingConfig.clientEnabled()) {
-        final int baseTransceiverStationId =
-            Integer.MAX_VALUE; // TODO needs to get here from OSGP Core DB device.bts_id
-        final int cellId = 1; // TODO needs to get here from OSGP Core DB device.cell_id
         permit =
             this.throttlingConfig
                 .throttlingClient()
-                .requestPermit(baseTransceiverStationId, cellId)
-                .orElseThrow(
-                    () ->
-                        new ThrottlingPermitDeniedException(
-                            this.throttlingConfig.configurationName(),
-                            baseTransceiverStationId,
-                            cellId));
+                .requestPermitUsingNetworkSegmentIfIdsAreAvailable(
+                    this.messageMetadata.getBaseTransceiverStationId(),
+                    this.messageMetadata.getCellId());
       } else {
         this.throttlingService.openConnection();
       }
@@ -173,6 +166,8 @@ public class RecoverKeyProcess implements Runnable {
               dlmsMessageListener,
               this.secretManagementService::getNewKeys);
       return connection != null;
+    } catch (final ThrottlingPermitDeniedException e) {
+      throw e;
     } catch (final Exception e) {
       log.warn("Connection exception: {}", e.getMessage(), e);
       return false;
@@ -186,7 +181,9 @@ public class RecoverKeyProcess implements Runnable {
       }
 
       if (this.throttlingConfig.clientEnabled()) {
-        this.throttlingConfig.throttlingClient().releasePermit(permit);
+        if (permit != null) {
+          this.throttlingConfig.throttlingClient().releasePermit(permit);
+        }
       } else {
         this.throttlingService.closeConnection();
       }
