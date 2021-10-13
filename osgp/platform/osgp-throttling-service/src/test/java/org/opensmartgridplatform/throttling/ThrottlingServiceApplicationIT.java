@@ -13,7 +13,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.NumericNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -141,6 +140,12 @@ class ThrottlingServiceApplicationIT {
                     EXISTING_THROTTLING_CONFIG_NAME,
                     EXISTING_THROTTLING_CONFIG_INITIAL_MAX_CONCURRENCY))
             .getId();
+
+    if (this.registeredClientId == 0) {
+      final ResponseEntity<Integer> responseEntity =
+          this.testRestTemplate.postForEntity(CLIENTS_URL, null, Integer.class);
+      this.registeredClientId = this.validClientId(responseEntity);
+    }
   }
 
   @AfterEach
@@ -159,7 +164,7 @@ class ThrottlingServiceApplicationIT {
   }
 
   private short idForNewThrottlingConfig(final String name, final int maxConcurrency) {
-    final ResponseEntity<JsonNode> responseEntity =
+    final ResponseEntity<Short> responseEntity =
         this.registerThrottlingConfig(name, maxConcurrency);
     return this.validThrottlingConfigId(responseEntity);
   }
@@ -171,7 +176,7 @@ class ThrottlingServiceApplicationIT {
         this.findExistingThrottlingConfigByName(name);
     final int updatedMaxConcurrency = throttlingConfigEntity.getMaxConcurrency() + 3;
 
-    final ResponseEntity<JsonNode> responseEntity =
+    final ResponseEntity<Short> responseEntity =
         this.registerThrottlingConfig(name, updatedMaxConcurrency);
 
     final short id = this.validThrottlingConfigId(responseEntity);
@@ -184,7 +189,7 @@ class ThrottlingServiceApplicationIT {
     final String name = "config-with-negative-max-concurrency";
     final int maxConcurrency = -29;
 
-    final ResponseEntity<JsonNode> responseEntity =
+    final ResponseEntity<Short> responseEntity =
         this.registerThrottlingConfig(name, maxConcurrency);
 
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -206,7 +211,7 @@ class ThrottlingServiceApplicationIT {
       final ThrottlingConfig addedApiThrottlingConfig =
           this.apiThrottlingConfig("additional-config-" + i, i + 2);
       apiThrottlingConfigs.add(addedApiThrottlingConfig);
-      final ResponseEntity<JsonNode> response =
+      final ResponseEntity<Short> response =
           this.registerThrottlingConfig(addedApiThrottlingConfig);
       final short id = this.validThrottlingConfigId(response);
       addedApiThrottlingConfig.setId(id);
@@ -243,23 +248,22 @@ class ThrottlingServiceApplicationIT {
             () -> new AssertionError("Expected ThrottlingConfig entity for name: " + name));
   }
 
-  private ResponseEntity<JsonNode> registerThrottlingConfig(
+  private ResponseEntity<Short> registerThrottlingConfig(
       final String name, final int maxConcurrency) {
 
     return this.registerThrottlingConfig(this.apiThrottlingConfig(name, maxConcurrency));
   }
 
-  private ResponseEntity<JsonNode> registerThrottlingConfig(
-      final ThrottlingConfig throttlingConfig) {
+  private ResponseEntity<Short> registerThrottlingConfig(final ThrottlingConfig throttlingConfig) {
 
     return this.testRestTemplate.postForEntity(
-        THROTTLING_CONFIGS_URL, throttlingConfig, JsonNode.class);
+        THROTTLING_CONFIGS_URL, throttlingConfig, Short.class);
   }
 
-  private short validThrottlingConfigId(final ResponseEntity<JsonNode> responseEntity) {
+  private short validThrottlingConfigId(final ResponseEntity<Short> responseEntity) {
     assertThat(responseEntity.getStatusCode().series()).isEqualTo(HttpStatus.Series.SUCCESSFUL);
-    assertThat(responseEntity.getBody()).isInstanceOf(NumericNode.class);
-    final short id = ((NumericNode) responseEntity.getBody()).shortValue();
+    assertThat(responseEntity.getBody()).isNotNull();
+    final short id = responseEntity.getBody();
     assertThat(id).isPositive();
     return id;
   }
@@ -285,17 +289,8 @@ class ThrottlingServiceApplicationIT {
   }
 
   @Test
-  void registerNewClient() {
-
-    final ResponseEntity<JsonNode> responseEntity =
-        this.testRestTemplate.postForEntity(CLIENTS_URL, null, JsonNode.class);
-
-    this.registeredClientId = this.validClientId(responseEntity);
-  }
-
-  @Test
   void unregisterClient() {
-    final ResponseEntity<JsonNode> responseEntity = this.unregisterClient(this.registeredClientId);
+    final ResponseEntity<Void> responseEntity = this.unregisterClient(this.registeredClientId);
 
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.ACCEPTED);
   }
@@ -304,20 +299,20 @@ class ThrottlingServiceApplicationIT {
   void unregisterUnknownClient() {
     final int unknownClientId = Integer.MAX_VALUE;
 
-    final ResponseEntity<JsonNode> responseEntity = this.unregisterClient(unknownClientId);
+    final ResponseEntity<Void> responseEntity = this.unregisterClient(unknownClientId);
 
-    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.ACCEPTED);
   }
 
-  private ResponseEntity<JsonNode> unregisterClient(final int clientId) {
+  private ResponseEntity<Void> unregisterClient(final int clientId) {
     return this.testRestTemplate.exchange(
-        CLIENT_URL, HttpMethod.DELETE, null, JsonNode.class, clientId);
+        CLIENT_URL, HttpMethod.DELETE, null, Void.class, clientId);
   }
 
-  private int validClientId(final ResponseEntity<JsonNode> responseEntity) {
+  private int validClientId(final ResponseEntity<Integer> responseEntity) {
     assertThat(responseEntity.getStatusCode().series()).isEqualTo(HttpStatus.Series.SUCCESSFUL);
-    assertThat(responseEntity.getBody()).isInstanceOf(NumericNode.class);
-    final int id = ((NumericNode) responseEntity.getBody()).intValue();
+    assertThat(responseEntity.getBody()).isNotNull();
+    final int id = responseEntity.getBody();
     assertThat(id).isPositive();
     return id;
   }
@@ -348,7 +343,7 @@ class ThrottlingServiceApplicationIT {
       final int cellId,
       final Integer requestId) {
 
-    final ResponseEntity<JsonNode> responseEntity =
+    final ResponseEntity<Integer> responseEntity =
         this.requestPermit(
             throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
 
@@ -363,7 +358,7 @@ class ThrottlingServiceApplicationIT {
       final int cellId,
       final Integer requestId) {
 
-    final ResponseEntity<JsonNode> responseEntity =
+    final ResponseEntity<Integer> responseEntity =
         this.requestPermit(
             throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
 
@@ -379,8 +374,14 @@ class ThrottlingServiceApplicationIT {
       final Integer requestId) {
 
     final ResponseEntity<JsonNode> responseEntity =
-        this.requestPermit(
-            throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
+        this.testRestTemplate.<JsonNode>postForEntity(
+            PERMITS_URL_FOR_THROTTLING_AND_CLIENT_AND_NETWORK_SEGMENT,
+            requestId,
+            JsonNode.class,
+            throttlingConfigId,
+            clientId,
+            baseTransceiverStationId,
+            cellId);
 
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
     final JsonNode errorBody = responseEntity.getBody();
@@ -393,9 +394,9 @@ class ThrottlingServiceApplicationIT {
     assertThat(errorBody).isEqualTo(expected);
   }
 
-  private int numberOfGrantedPermits(final ResponseEntity<JsonNode> responseEntity) {
-    assertThat(responseEntity.getBody()).isInstanceOf(NumericNode.class);
-    return ((NumericNode) responseEntity.getBody()).intValue();
+  private int numberOfGrantedPermits(final ResponseEntity<Integer> responseEntity) {
+    assertThat(responseEntity.getBody()).isNotNull();
+    return responseEntity.getBody();
   }
 
   @Test
@@ -403,7 +404,7 @@ class ThrottlingServiceApplicationIT {
 
     final int requestId = 5534879;
 
-    final ResponseEntity<JsonNode> responseEntity =
+    final ResponseEntity<Integer> responseEntity =
         this.requestPermit(this.existingThrottlingConfigId, this.registeredClientId, requestId);
 
     assertThat(responseEntity.getStatusCode().series()).isEqualTo(HttpStatus.Series.SUCCESSFUL);
@@ -475,7 +476,7 @@ class ThrottlingServiceApplicationIT {
 
     this.requestPermit(throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
 
-    final ResponseEntity<JsonNode> responseEntity =
+    final ResponseEntity<Void> responseEntity =
         this.releasePermit(
             throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
 
@@ -490,7 +491,7 @@ class ThrottlingServiceApplicationIT {
 
     this.requestPermit(throttlingConfigId, clientId, requestId);
 
-    final ResponseEntity<JsonNode> responseEntity =
+    final ResponseEntity<Void> responseEntity =
         this.releasePermit(throttlingConfigId, clientId, requestId);
 
     System.out.println(responseEntity);
@@ -585,7 +586,7 @@ class ThrottlingServiceApplicationIT {
       final int cellId,
       final Integer requestId) {
 
-    final ResponseEntity<JsonNode> responseEntity =
+    final ResponseEntity<Void> responseEntity =
         this.releasePermit(
             throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
 
@@ -609,25 +610,25 @@ class ThrottlingServiceApplicationIT {
       final int cellId,
       final Integer requestId) {
 
-    final ResponseEntity<JsonNode> responseEntity =
+    final ResponseEntity<Void> responseEntity =
         this.releasePermit(
             throttlingConfigId, clientId, baseTransceiverStationId, cellId, requestId);
 
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
   }
 
-  private ResponseEntity<JsonNode> requestPermit(
+  private ResponseEntity<Integer> requestPermit(
       final short throttlingConfigId, final int clientId, final Integer requestId) {
 
     return this.testRestTemplate.postForEntity(
         PERMITS_URL_FOR_THROTTLING_AND_CLIENT,
         requestId,
-        JsonNode.class,
+        Integer.class,
         throttlingConfigId,
         clientId);
   }
 
-  private ResponseEntity<JsonNode> requestPermit(
+  private ResponseEntity<Integer> requestPermit(
       final short throttlingConfigId,
       final int clientId,
       final int baseTransceiverStationId,
@@ -637,26 +638,26 @@ class ThrottlingServiceApplicationIT {
     return this.testRestTemplate.postForEntity(
         PERMITS_URL_FOR_THROTTLING_AND_CLIENT_AND_NETWORK_SEGMENT,
         requestId,
-        JsonNode.class,
+        Integer.class,
         throttlingConfigId,
         clientId,
         baseTransceiverStationId,
         cellId);
   }
 
-  private ResponseEntity<JsonNode> releasePermit(
+  private ResponseEntity<Void> releasePermit(
       final short throttlingConfigId, final int clientId, final Integer requestId) {
 
     return this.testRestTemplate.exchange(
         PERMITS_URL_FOR_THROTTLING_AND_CLIENT,
         HttpMethod.DELETE,
         new HttpEntity<>(requestId),
-        JsonNode.class,
+        Void.class,
         throttlingConfigId,
         clientId);
   }
 
-  private ResponseEntity<JsonNode> releasePermit(
+  private ResponseEntity<Void> releasePermit(
       final short throttlingConfigId,
       final int clientId,
       final int baseTransceiverStationId,
@@ -667,7 +668,7 @@ class ThrottlingServiceApplicationIT {
         PERMITS_URL_FOR_THROTTLING_AND_CLIENT_AND_NETWORK_SEGMENT,
         HttpMethod.DELETE,
         new HttpEntity<>(requestId),
-        JsonNode.class,
+        Void.class,
         throttlingConfigId,
         clientId,
         baseTransceiverStationId,
@@ -676,20 +677,20 @@ class ThrottlingServiceApplicationIT {
 
   private void discardPermitThatWasGranted(final int clientId, final int requestId) {
 
-    final ResponseEntity<JsonNode> responseEntity = this.discardPermit(clientId, requestId);
+    final ResponseEntity<Void> responseEntity = this.discardPermit(clientId, requestId);
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
   }
 
   private void discardPermitThatWasNotGranted(final int clientId, final int requestId) {
 
-    final ResponseEntity<JsonNode> responseEntity = this.discardPermit(clientId, requestId);
+    final ResponseEntity<Void> responseEntity = this.discardPermit(clientId, requestId);
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
   }
 
-  private ResponseEntity<JsonNode> discardPermit(final int clientId, final int requestId) {
+  private ResponseEntity<Void> discardPermit(final int clientId, final int requestId) {
 
     return this.testRestTemplate.exchange(
-        PERMITS_URL_FOR_DISCARD, HttpMethod.DELETE, null, JsonNode.class, clientId, requestId);
+        PERMITS_URL_FOR_DISCARD, HttpMethod.DELETE, null, Void.class, clientId, requestId);
   }
 
   @Test

@@ -5,12 +5,6 @@ INSERT INTO throttling_config (id, name, max_concurrency) VALUES
   (4, 'config-four', 1);
 ALTER SEQUENCE throttling_config_id_seq RESTART WITH 5;
 
-INSERT INTO client (id, name, registered_at) VALUES
-  (1, 'client-one', CURRENT_TIMESTAMP AT TIME ZONE 'UTC'),
-  (2, 'client-two', CURRENT_TIMESTAMP AT TIME ZONE 'UTC'),
-  (3, 'client-three', CURRENT_TIMESTAMP AT TIME ZONE 'UTC');
-ALTER SEQUENCE client_id_seq RESTART WITH 4;
-
 INSERT INTO permit (id, throttling_config_id, client_id, bts_id, cell_id, request_id, created_at) VALUES
   ( 1, 1, 1,  1,  1,  1, CURRENT_TIMESTAMP AT TIME ZONE 'UTC'),
   ( 2, 1, 1,  1,  1,  2, CURRENT_TIMESTAMP AT TIME ZONE 'UTC'),

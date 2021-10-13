@@ -9,8 +9,6 @@
  */
 package org.opensmartgridplatform.throttling.web.api;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.IntNode;
 import java.util.Optional;
 import org.opensmartgridplatform.throttling.SegmentedNetworkThrottler;
 import org.springframework.http.HttpStatus;
@@ -60,7 +58,7 @@ public class PermitController {
         "/{throttlingConfigId:[1-9]\\d*+}/{clientId:[1-9]\\d*+}",
         "/{throttlingConfigId:[1-9]\\d*+}/{clientId:[1-9]\\d*+}/{baseTransceiverStationId:0|[1-9]\\d*+}/{cellId:0|[1-9]\\d*+}"
       })
-  public ResponseEntity<JsonNode> requestPermit(
+  public ResponseEntity<Integer> requestPermit(
       @PathVariable final short throttlingConfigId,
       @PathVariable final int clientId,
       @PathVariable(required = false) final Optional<Integer> baseTransceiverStationId,
@@ -84,7 +82,7 @@ public class PermitController {
       numberOfPermitsGranted = 0;
       status = HttpStatus.CONFLICT;
     }
-    return ResponseEntity.status(status).body(IntNode.valueOf(numberOfPermitsGranted));
+    return ResponseEntity.status(status).body(numberOfPermitsGranted);
   }
 
   /**
@@ -111,7 +109,7 @@ public class PermitController {
         "/{throttlingConfigId:[1-9]\\d*+}/{clientId:[1-9]\\d*+}",
         "/{throttlingConfigId:[1-9]\\d*+}/{clientId:[1-9]\\d*+}/{baseTransceiverStationId:0|[1-9]\\d*+}/{cellId:0|[1-9]\\d*+}"
       })
-  public ResponseEntity<JsonNode> releasePermit(
+  public ResponseEntity<Void> releasePermit(
       @PathVariable final short throttlingConfigId,
       @PathVariable final int clientId,
       @PathVariable(required = false) final Optional<Integer> baseTransceiverStationId,
@@ -142,7 +140,7 @@ public class PermitController {
    *     and {@code requestId}
    */
   @DeleteMapping(path = "/discard/{clientId:[1-9]\\d*+}/{requestId:0|[1-9]\\d*+}")
-  public ResponseEntity<JsonNode> discardPermit(
+  public ResponseEntity<Void> discardPermit(
       @PathVariable final int clientId, @PathVariable final int requestId) {
 
     final boolean discarded = this.segmentedNetworkThrottler.discardPermit(clientId, requestId);

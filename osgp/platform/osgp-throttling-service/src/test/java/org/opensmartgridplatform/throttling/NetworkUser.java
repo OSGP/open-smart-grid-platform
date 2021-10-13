@@ -9,8 +9,6 @@
  */
 package org.opensmartgridplatform.throttling;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.NumericNode;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.opensmartgridplatform.throttling.api.ThrottlingConfig;
 import org.springframework.http.HttpEntity;
@@ -118,44 +116,35 @@ public class NetworkUser {
   }
 
   private void registerThrottlingConfig() {
-    final ResponseEntity<JsonNode> throttlingConfigResponse =
+    final ResponseEntity<Short> throttlingConfigResponse =
         this.restTemplate.postForEntity(
             "/throttling-configs",
             new ThrottlingConfig(this.throttlingIdentity, this.initialMaxConcurrency),
-            JsonNode.class);
+            Short.class);
 
-    if (throttlingConfigResponse.getStatusCode().series() != HttpStatus.Series.SUCCESSFUL) {
+    if (throttlingConfigResponse.getStatusCode().series() != HttpStatus.Series.SUCCESSFUL
+        || throttlingConfigResponse.getBody() == null) {
       throw new IllegalStateException(
           "Could not register throttling config " + this.throttlingIdentity);
     }
-    if (throttlingConfigResponse.getBody() instanceof NumericNode) {
-      this.throttlingConfigId = ((NumericNode) throttlingConfigResponse.getBody()).shortValue();
-    } else {
-      throw new IllegalStateException(
-          "Throttling config response did not have a numeric node: " + throttlingConfigResponse);
-    }
+    this.throttlingConfigId = throttlingConfigResponse.getBody();
   }
 
   private void registerThrottlingClient() {
-    final ResponseEntity<JsonNode> clientRegistrationResponse =
-        this.restTemplate.postForEntity("/clients", null, JsonNode.class);
+    final ResponseEntity<Integer> clientRegistrationResponse =
+        this.restTemplate.postForEntity("/clients", null, Integer.class);
 
-    if (clientRegistrationResponse.getStatusCode().series() != HttpStatus.Series.SUCCESSFUL) {
+    if (clientRegistrationResponse.getStatusCode().series() != HttpStatus.Series.SUCCESSFUL
+        || clientRegistrationResponse.getBody() == null) {
       throw new IllegalStateException("Could not register client " + this.clientIdentity);
     }
-    if (clientRegistrationResponse.getBody() instanceof NumericNode) {
-      this.clientId = ((NumericNode) clientRegistrationResponse.getBody()).intValue();
-    } else {
-      throw new IllegalStateException(
-          "Client registration response did not have a numeric node: "
-              + clientRegistrationResponse);
-    }
+    this.clientId = clientRegistrationResponse.getBody();
   }
 
   private void unregisterThrottlingClient() {
-    final ResponseEntity<JsonNode> clientUnregistrationResponse =
+    final ResponseEntity<Void> clientUnregistrationResponse =
         this.restTemplate.exchange(
-            "/clients/{clientId}", HttpMethod.DELETE, null, JsonNode.class, this.clientId);
+            "/clients/{clientId}", HttpMethod.DELETE, null, Void.class, this.clientId);
 
     if (clientUnregistrationResponse.getStatusCode() != HttpStatus.ACCEPTED) {
       throw new IllegalStateException(
@@ -169,30 +158,30 @@ public class NetworkUser {
   private boolean requestPermit(
       final int baseTransceiverStationId, final int cellId, final int requestId) {
 
-    final ResponseEntity<JsonNode> permitRequestResponse =
+    final ResponseEntity<Integer> permitRequestResponse =
         this.restTemplate.postForEntity(
             "/permits/{throttlingConfigId}/{clientId}/{baseTransceiverStationId}/{cellId}",
             requestId,
-            JsonNode.class,
+            Integer.class,
             this.throttlingConfigId,
             this.clientId,
             baseTransceiverStationId,
             cellId);
 
     return permitRequestResponse.getStatusCode().is2xxSuccessful()
-        && permitRequestResponse.getBody() instanceof NumericNode
-        && ((NumericNode) permitRequestResponse.getBody()).intValue() == 1;
+        && permitRequestResponse.getBody() != null
+        && permitRequestResponse.getBody() == 1;
   }
 
   private boolean releasePermit(
       final int baseTransceiverStationId, final int cellId, final int requestId) {
 
-    final ResponseEntity<JsonNode> releasePermitResponse =
+    final ResponseEntity<Void> releasePermitResponse =
         this.restTemplate.exchange(
             "/permits/{throttlingConfigId}/{clientId}/{baseTransceiverStationId}/{cellId}",
             HttpMethod.DELETE,
             new HttpEntity<>(requestId),
-            JsonNode.class,
+            Void.class,
             this.throttlingConfigId,
             this.clientId,
             baseTransceiverStationId,

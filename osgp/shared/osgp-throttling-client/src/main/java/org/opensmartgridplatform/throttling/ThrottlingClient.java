@@ -87,19 +87,16 @@ public class ThrottlingClient {
   }
 
   private void registerClient() {
-    final Integer clientId =
+    this.clientId =
         this.webClient
             .post()
             .uri("/clients")
             .retrieve()
             .bodyToMono(Integer.class)
             .block(this.timeout);
-
-    if (clientId == null) {
+    if (this.clientId == null) {
       throw new IllegalStateException("No client ID available after registration of client");
     }
-
-    this.clientId = clientId;
 
     LOGGER.info("Registered {}", this.clientId);
   }
