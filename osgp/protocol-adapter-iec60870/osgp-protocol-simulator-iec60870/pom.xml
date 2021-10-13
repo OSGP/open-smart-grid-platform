@@ -24,7 +24,7 @@
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>osgp-protocol-simulator-iec60870</artifactId>
-  <version>5.18.1-SNAPSHOT</version>
+  <version>5.18.1</version>
   <packaging>war</packaging>
   <name>osgp-protocol-simulator-iec60870</name>
   <description>Simulator for IEC60870-5-104 protocol</description>
