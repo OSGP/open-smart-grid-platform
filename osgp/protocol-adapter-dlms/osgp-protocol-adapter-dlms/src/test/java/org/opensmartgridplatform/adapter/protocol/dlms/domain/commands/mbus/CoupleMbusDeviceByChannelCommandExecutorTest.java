@@ -39,9 +39,7 @@ public class CoupleMbusDeviceByChannelCommandExecutorTest {
 
   @Mock private CoupleMbusDeviceByChannelRequestDataDto coupleMbusDeviceByChannelRequestDataDto;
 
-  @InjectMocks
-  private CoupleMbusDeviceByChannelCommandExecutor commandExecutor =
-      new CoupleMbusDeviceByChannelCommandExecutor();
+  @InjectMocks private CoupleMbusDeviceByChannelCommandExecutor commandExecutor;
 
   @Test
   public void testHappyFlow() throws ProtocolAdapterException {
