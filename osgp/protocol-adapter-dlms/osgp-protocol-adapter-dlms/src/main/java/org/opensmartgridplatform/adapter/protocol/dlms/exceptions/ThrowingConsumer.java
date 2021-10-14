@@ -21,7 +21,7 @@ public interface ThrowingConsumer<T> extends Consumer<T> {
     try {
       this.acceptThrows(elem);
     } catch (final Exception e) {
-      throw new ConnectionException(e);
+      throw new ConnectionTaskException(e);
     }
   }
 

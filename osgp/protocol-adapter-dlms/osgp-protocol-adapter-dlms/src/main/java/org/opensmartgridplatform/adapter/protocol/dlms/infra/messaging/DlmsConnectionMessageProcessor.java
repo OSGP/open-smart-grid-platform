@@ -17,6 +17,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionTaskException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NonRetryableException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -66,6 +67,9 @@ public abstract class DlmsConnectionMessageProcessor {
     try {
       this.dlmsConnectionHelper.createConnectionForDevice(
           messageMetadata, device, dlmsMessageListener, taskForConnectionManager);
+    } catch (final ConnectionTaskException e) {
+      LOGGER.error(
+          "Something went wrong in the tasks to be executed with the DlmsConnectionManager");
     } catch (final Exception e) {
       this.throttlingService.closeConnection();
       throw e;
