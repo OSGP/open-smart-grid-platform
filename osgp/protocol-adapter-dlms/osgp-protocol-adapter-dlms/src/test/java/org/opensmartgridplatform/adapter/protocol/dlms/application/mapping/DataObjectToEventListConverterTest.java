@@ -76,7 +76,8 @@ class DataObjectToEventListConverterTest {
                 this.converter.convert(
                     DataObject.newArrayData(
                         Collections.singletonList(
-                            DataObject.newArrayData(Collections.singletonList(this.getDataObject(1))))),
+                            DataObject.newArrayData(
+                                Collections.singletonList(this.getDataObject(1))))),
                     EventLogCategoryDto.STANDARD_EVENT_LOG));
 
     assertThat(thrown)
