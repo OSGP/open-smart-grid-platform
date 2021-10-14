@@ -1508,6 +1508,24 @@ public class ListEventMappingTest {
   }
 
   @Test
+  public void testMappingForListOfPowerqualityExtendeEvents() {
+
+    final List<org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event>
+        mappedPowerqualityExtendeEvents =
+            this.managementMapper.mapAsList(
+                this.POWER_QUALITY_EXTENDED_EVENTS,
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event.class);
+
+    this.checkEventsMappedToWsSchema(
+        this.POWER_QUALITY_EXTENDED_EVENTS, mappedPowerqualityExtendeEvents);
+
+    final List<Event> powerqualityExtendeEvents =
+        this.managementMapper.mapAsList(mappedPowerqualityExtendeEvents, Event.class);
+
+    this.checkEventsMappedFromWsSchema(mappedPowerqualityExtendeEvents, powerqualityExtendeEvents);
+  }
+
+  @Test
   public void testMappingForListOfStandardEvents() {
 
     final List<org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event>

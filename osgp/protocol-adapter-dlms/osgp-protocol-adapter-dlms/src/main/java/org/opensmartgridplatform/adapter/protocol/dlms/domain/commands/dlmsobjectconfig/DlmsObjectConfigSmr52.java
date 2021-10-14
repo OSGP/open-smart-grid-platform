@@ -20,7 +20,6 @@ import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dl
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsClock;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsData;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsProfile;
@@ -66,12 +65,5 @@ public class DlmsObjectConfigSmr52 extends DlmsObjectConfigSmr51 {
             ABSTRACT));
 
     return objectList;
-  }
-
-  private DlmsObject getClock(final List<DlmsObject> objectList) {
-    return objectList.stream()
-        .filter(object -> object.getType() == DlmsObjectType.CLOCK)
-        .findAny()
-        .orElse(new DlmsClock("0.0.1.0.0.255"));
   }
 }

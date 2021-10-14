@@ -29,12 +29,12 @@ import org.springframework.stereotype.Component;
 @Component(value = "dataObjectToEventListConverter")
 public class DataObjectToEventListConverter {
 
-  public static final String EVENT_DATA_VALUE_IS_NOT_A_NUMBER =
+  private static final String EVENT_DATA_VALUE_IS_NOT_A_NUMBER =
       "eventData value for %s is not a number";
-  public static final String EVENT_CODE = "event code";
-  public static final String COUNTER = "counter";
-  public static final String MAGNITUDE = "magnitude";
-  public static final String DURATION = "duration";
+  private static final String EVENT_CODE = "event code";
+  private static final String COUNTER = "counter";
+  private static final String MAGNITUDE = "magnitude";
+  private static final String DURATION = "duration";
 
   private final DlmsHelper dlmsHelper;
 
@@ -68,10 +68,9 @@ public class DataObjectToEventListConverter {
       throw new ProtocolAdapterException("eventData DataObject should not be null");
     }
 
-    if (eventData.size() != eventLogCategory.getDetailsType().getNumberOfEventElements()) {
-      throw new ProtocolAdapterException(
-          "eventData size should be "
-              + eventLogCategory.getDetailsType().getNumberOfEventElements());
+    final int numberOfEventElements = eventLogCategory.getDetailsType().getNumberOfEventElements();
+    if (eventData.size() != numberOfEventElements) {
+      throw new ProtocolAdapterException("eventData size should be " + numberOfEventElements);
     }
 
     // extract values from List<DataObject> eventData.

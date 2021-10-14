@@ -195,7 +195,7 @@ class FindEventsCommandExecutorTest {
   }
 
   @Test
-  void testExtendedLogEventsAreRetrievedForTypePowerQualityExtendedEventSmr51()
+  void testRetrievalOfEventsFromPowerQualityExtendedEventLog()
       throws ProtocolAdapterException, IOException {
     // SETUP
     this.findEventsRequestDto =
@@ -214,9 +214,9 @@ class FindEventsCommandExecutorTest {
             this.conn, this.DLMS_DEVICE_5_2, this.findEventsRequestDto, this.messageMetadata);
 
     // VERIFY
-    assertThat(events.size()).isEqualTo(13);
+    assertThat(events.size()).isEqualTo(6);
 
-    int firstEventCode = 77;
+    int firstEventCode = 93;
     for (final EventDto event : events) {
       assertThat(event.getEventCode()).isEqualTo(firstEventCode++);
     }
@@ -229,8 +229,9 @@ class FindEventsCommandExecutorTest {
   }
 
   @Test
-  void testExceptionIsThrownWhenExtendedLogEventsAreRetrievedAndManufacturerIsNotSmr51()
-      throws ProtocolAdapterException, IOException {
+  void
+      testRetrievalOfEventsFromPowerQualityExtendedEventLogThrowsExceptionWhenNotSupportedByDevice()
+          throws ProtocolAdapterException, IOException {
     this.findEventsRequestDto =
         new FindEventsRequestDto(
             EventLogCategoryDto.POWER_QUALITY_EXTENDED_EVENT_LOG,
@@ -325,7 +326,7 @@ class FindEventsCommandExecutorTest {
 
     final List<DataObject> dataObjects = new ArrayList<>();
 
-    IntStream.rangeClosed(77, 89)
+    IntStream.rangeClosed(93, 98)
         .forEach(
             code -> {
               final DataObject eventCode = DataObject.newInteger16Data((short) code);

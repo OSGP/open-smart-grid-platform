@@ -80,7 +80,7 @@ public class DlmsObjectConfigSmr51 extends DlmsObjectConfigSmr50 {
     return objectList;
   }
 
-  private DlmsObject getClock(final List<DlmsObject> objectList) {
+  DlmsObject getClock(final List<DlmsObject> objectList) {
     return objectList.stream()
         .filter(object -> object.getType() == DlmsObjectType.CLOCK)
         .findAny()
