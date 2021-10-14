@@ -57,8 +57,22 @@
 <!--     </dependencies> -->
 <!--   </dependencyManagement> -->
 
+  <properties>
+    <spring.boot.version>2.2.2.RELEASE</spring.boot.version>
+  </properties>
 
   <build>
+
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+          <version>${spring.boot.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
     <plugins>
       <plugin>
         <groupId>org.springframework.boot</groupId>
@@ -81,12 +95,10 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>${maven.project.info.reports.plugin.version}</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
-        <!-- <version>${jxr.version}</version> -->
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
