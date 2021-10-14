@@ -68,7 +68,7 @@ Feature: SmartMetering Management - Find Events
       | DeviceIdentification | TEST1029000000001 |
       | DeviceType           | SMART_METER_E     |
       | Protocol             | SMR               |
-      | ProtocolVersion      |               5.1 |
+      | ProtocolVersion      |               5.2 |
       | Port                 |              1029 |
     When receiving a find power quality extended events request
       | DeviceIdentification | TEST1029000000001        |
