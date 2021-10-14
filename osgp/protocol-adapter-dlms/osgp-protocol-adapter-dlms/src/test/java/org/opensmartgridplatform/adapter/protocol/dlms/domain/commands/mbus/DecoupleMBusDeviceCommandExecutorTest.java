@@ -10,7 +10,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -44,9 +43,7 @@ public class DecoupleMBusDeviceCommandExecutorTest {
 
   @Mock private DecoupleMbusDeviceDto decoupleMbusDto;
 
-  @InjectMocks
-  private DecoupleMBusDeviceCommandExecutor commandExecutor =
-      new DecoupleMBusDeviceCommandExecutor();
+  @InjectMocks private DecoupleMBusDeviceCommandExecutor commandExecutor;
 
   @Test
   public void testHappyFlow() throws ProtocolAdapterException {
@@ -56,12 +53,13 @@ public class DecoupleMBusDeviceCommandExecutorTest {
     final MessageMetadata messageMetadata =
         MessageMetadata.newBuilder().withCorrelationUid("123456").build();
 
-    when(this.deviceChannelsHelper.getObisCode(channel)).thenReturn(new ObisCode("0.1.24.1.0.255"));
+    when(this.deviceChannelsHelper.getObisCode(this.device, channel))
+        .thenReturn(new ObisCode("0.1.24.1.0.255"));
     when(this.decoupleMbusDto.getChannel()).thenReturn(channel);
     when(this.deviceChannelsHelper.deinstallSlave(
             eq(this.conn), eq(this.device), any(Short.class), any(CosemObjectAccessor.class)))
         .thenReturn(MethodResultCode.SUCCESS);
-    when(this.deviceChannelsHelper.makeChannelElementValues(eq(channel), anyList()))
+    when(this.deviceChannelsHelper.getChannelElementValues(this.conn, this.device, channel))
         .thenReturn(channelElementValuesDto);
 
     final DecoupleMbusDeviceResponseDto responseDto =
@@ -71,12 +69,12 @@ public class DecoupleMBusDeviceCommandExecutorTest {
     assertThat(responseDto.getChannelElementValues()).isEqualTo(channelElementValuesDto);
 
     verify(this.deviceChannelsHelper, times(1))
-        .getMBusClientAttributeValues(eq(this.conn), eq(this.device), any(Short.class));
-    verify(this.deviceChannelsHelper, times(1)).makeChannelElementValues(eq(channel), any());
+        .getChannelElementValues(eq(this.conn), eq(this.device), any(Short.class));
     verify(this.deviceChannelsHelper, times(1))
         .deinstallSlave(
             eq(this.conn), eq(this.device), any(Short.class), any(CosemObjectAccessor.class));
     verify(this.deviceChannelsHelper, times(1))
-        .resetMBusClientAttributeValues(eq(this.conn), any(Short.class), any(String.class));
+        .resetMBusClientAttributeValues(
+            eq(this.conn), eq(this.device), any(Short.class), any(String.class));
   }
 }

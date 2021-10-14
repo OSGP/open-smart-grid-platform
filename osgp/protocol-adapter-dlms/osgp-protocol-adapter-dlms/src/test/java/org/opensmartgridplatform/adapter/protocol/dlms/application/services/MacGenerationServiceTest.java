@@ -22,6 +22,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.FirmwareFile;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.IdentificationNumber;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -38,7 +39,10 @@ public class MacGenerationServiceTest {
   final String expectedMac = "9a72acd7a949861cc4df4612cbdbdef6";
 
   private static byte[] byteArray;
-  private static final int mbusDeviceIdentificationNumber = Integer.parseInt("10000540", 16);
+  private static final int mbusDeviceIdentificationNumber =
+      IdentificationNumber.fromTextualRepresentation("10000540")
+          .getIdentificationNumberInBcdRepresentationAsLong()
+          .intValue();
   private static final String deviceIdentification = "G0035161000054016";
   private static final MessageMetadata messageMetadata =
       MessageMetadata.newBuilder().withCorrelationUid("123456").build();

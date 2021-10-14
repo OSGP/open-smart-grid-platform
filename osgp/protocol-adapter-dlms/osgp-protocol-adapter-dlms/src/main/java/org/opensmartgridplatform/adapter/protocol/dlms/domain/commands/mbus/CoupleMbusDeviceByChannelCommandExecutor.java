@@ -8,13 +8,12 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.openmuc.jdlms.GetResult;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.ChannelElementValuesDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelRequestDataDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.CoupleMbusDeviceByChannelResponseDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -45,9 +44,8 @@ public class CoupleMbusDeviceByChannelCommandExecutor
         "Retrieving values for mbus channel {} on device {}",
         requestDto.getChannel(),
         device.getDeviceIdentification());
-    final List<GetResult> resultList =
-        this.deviceChannelsHelper.getMBusClientAttributeValues(
-            conn, device, requestDto.getChannel());
+    final ChannelElementValuesDto channelElementValuesDto =
+        this.deviceChannelsHelper.getChannelElementValues(conn, device, requestDto.getChannel());
 
     /*
      * Couple M-Bus device by channel is created to couple the M-Bus device
@@ -58,7 +56,6 @@ public class CoupleMbusDeviceByChannelCommandExecutor
      * actually involved when the alarm was triggered for the channel from
      * the request.
      */
-    return new CoupleMbusDeviceByChannelResponseDto(
-        this.deviceChannelsHelper.makeChannelElementValues(requestDto.getChannel(), resultList));
+    return new CoupleMbusDeviceByChannelResponseDto(channelElementValuesDto);
   }
 }

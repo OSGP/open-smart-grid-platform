@@ -124,7 +124,7 @@ public class ManufacturerId {
    * Calculates the integer value of the DLMS M-Bus client setup manufacturer_id from the given
    * manufacturer identification, according to EN 62056-21.
    *
-   * @param identification manufacturer identification in three capital letters
+   * @param id manufacturer identification in three capital letters
    * @return DLMS manufacturer ID
    */
   private static String calculateIdentification(final int id) {
