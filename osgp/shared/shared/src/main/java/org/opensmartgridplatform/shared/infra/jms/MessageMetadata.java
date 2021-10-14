@@ -166,7 +166,11 @@ public class MessageMetadata implements Serializable {
 
   private Integer getIntProperty(
       final Message message, final String name, final Integer defaultValue) throws JMSException {
-    return message.propertyExists(name) ? message.getIntProperty(name) : defaultValue;
+    if (message.propertyExists(name)) {
+      return message.getIntProperty(name);
+    } else {
+      return defaultValue;
+    }
   }
 
   private boolean getBooleanProperty(
