@@ -47,8 +47,9 @@ public class FindPowerQualityExtendedEventsReads extends AbstractFindEventsReads
     super.eventsShouldBeReturned(settings);
   }
 
+  @Override
   @Then("^power quality extended events for all types should be returned$")
-  public void standardEventsForAllTypesShouldBeReturned(final Map<String, String> settings)
+  public void eventsForAllTypesShouldBeReturned(final Map<String, String> settings)
       throws Throwable {
     super.eventsForAllTypesShouldBeReturned(settings);
   }
