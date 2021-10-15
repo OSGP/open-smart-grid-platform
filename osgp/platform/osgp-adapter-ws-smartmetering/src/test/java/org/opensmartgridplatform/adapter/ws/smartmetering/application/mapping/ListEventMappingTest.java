@@ -1508,7 +1508,7 @@ public class ListEventMappingTest {
   }
 
   @Test
-  public void testMappingForListOfPowerqualityExtendeEvents() {
+  public void testMappingForListOfPowerqualityExtendedEvents() {
 
     final List<org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event>
         mappedPowerqualityExtendeEvents =

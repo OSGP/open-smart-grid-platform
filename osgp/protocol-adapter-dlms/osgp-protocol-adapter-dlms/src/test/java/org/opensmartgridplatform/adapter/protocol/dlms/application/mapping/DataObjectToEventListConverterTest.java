@@ -54,13 +54,12 @@ class DataObjectToEventListConverterTest {
 
   @Test
   void testEventDataIsNull() {
+    final DataObject source =
+        DataObject.newArrayData(Collections.singletonList(DataObject.newNullData()));
 
     final Throwable thrown =
         catchThrowable(
-            () ->
-                this.converter.convert(
-                    DataObject.newArrayData(Collections.singletonList(DataObject.newNullData())),
-                    EventLogCategoryDto.STANDARD_EVENT_LOG));
+            () -> this.converter.convert(source, EventLogCategoryDto.STANDARD_EVENT_LOG));
 
     assertThat(thrown)
         .isInstanceOf(ProtocolAdapterException.class)
@@ -69,16 +68,14 @@ class DataObjectToEventListConverterTest {
 
   @Test
   void testWrongEventElementListSize() {
+    final DataObject source =
+        DataObject.newArrayData(
+            Collections.singletonList(
+                DataObject.newArrayData(Collections.singletonList(this.getDataObject(1)))));
 
     final Throwable thrown =
         catchThrowable(
-            () ->
-                this.converter.convert(
-                    DataObject.newArrayData(
-                        Collections.singletonList(
-                            DataObject.newArrayData(
-                                Collections.singletonList(this.getDataObject(1))))),
-                    EventLogCategoryDto.STANDARD_EVENT_LOG));
+            () -> this.converter.convert(source, EventLogCategoryDto.STANDARD_EVENT_LOG));
 
     assertThat(thrown)
         .isInstanceOf(ProtocolAdapterException.class)
@@ -157,14 +154,14 @@ class DataObjectToEventListConverterTest {
     final EventDto expectedEvent2 =
         new EventDto(
             dateTime2, 2, null, EventLogCategoryDto.POWER_QUALITY_EXTENDED_EVENT_LOG.name());
+    expectedEvent2.addEventDetail(new EventDetailDto(EventDetailNameTypeDto.MAGNITUDE, "1.2 V"));
+    expectedEvent2.addEventDetail(new EventDetailDto(EventDetailNameTypeDto.DURATION, "2.2 s"));
 
     // WHEN
     final List<EventDto> events =
         this.converter.convert(source, EventLogCategoryDto.POWER_QUALITY_EXTENDED_EVENT_LOG);
 
     // THEN
-    expectedEvent2.addEventDetail(new EventDetailDto(EventDetailNameTypeDto.MAGNITUDE, "1.2 V"));
-    expectedEvent2.addEventDetail(new EventDetailDto(EventDetailNameTypeDto.DURATION, "2.2 s"));
     assertThat(events)
         .usingRecursiveFieldByFieldElementComparator()
         .containsExactly(expectedEvent1, expectedEvent2);
@@ -185,10 +182,10 @@ class DataObjectToEventListConverterTest {
   }
 
   private DataObject createEventDataObject(
-      final DateTime dateTime, final int number, final int intCounter, final int intDuration) {
+      final DateTime dateTime, final int number, final int intMagnitude, final int intDuration) {
     final DataObject eventCode = this.getDataObject(number);
     final DataObject timeStamp = this.dlmsHelper.asDataObject(dateTime);
-    final DataObject counter = this.getDataObject(intCounter);
+    final DataObject counter = this.getDataObject(intMagnitude);
     final DataObject duration = this.getDataObject(intDuration);
     return DataObject.newStructureData(Arrays.asList(timeStamp, eventCode, counter, duration));
   }
