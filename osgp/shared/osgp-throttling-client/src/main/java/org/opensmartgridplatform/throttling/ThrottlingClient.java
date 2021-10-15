@@ -61,6 +61,10 @@ public class ThrottlingClient {
     this.timeout = Objects.requireNonNull(timeout, "timeout must not be null");
   }
 
+  /**
+   * Have this client register the configured throttling config with the Throttling REST service. It
+   * will also register itself and store the client-ID for subsequent calls.
+   */
   public void register() {
     this.registerThrottlingConfig();
     this.registerClient();
@@ -101,6 +105,7 @@ public class ThrottlingClient {
     LOGGER.info("Registered {}", this.clientId);
   }
 
+  /** Lets the Throttling REST service know this client is going away. */
   public void unregister() {
     final ResponseEntity<Void> responseEntity =
         this.webClient
@@ -119,6 +124,16 @@ public class ThrottlingClient {
     this.clientId = null;
   }
 
+  /**
+   * Requests a permit for the entire network. All calls to this method share a single throttling
+   * limit.
+   *
+   * <p>The return value contains a request ID that is unique to this client. This permit, with the
+   * request ID is required to release the permit when finished.
+   *
+   * @return a permit granting access to the network, containing a locally (this client) unique
+   *     request ID, or an empty response if no permit was available.
+   */
   public Optional<Permit> requestPermit() {
     final int requestId = this.requestIdCounter.incrementAndGet();
 
@@ -147,6 +162,18 @@ public class ThrottlingClient {
         : Optional.empty();
   }
 
+  /**
+   * Requests a permit for a network segment identified by {@code baseTransceiverStationId} and
+   * {@code cellId}
+   *
+   * <p>The return value contains a request ID that is unique to this client. This permit, with the
+   * request, BTS and cell ID is required to release the permit when finished.
+   *
+   * @param baseTransceiverStationId BTS for which a permit is requested
+   * @param cellId Cell of the BTS for which a permit is requested
+   * @return a permit granting access to the given network and network segment, containing a locally
+   *     (this client) unique request ID, or an empty response if no permit was available.
+   */
   public Optional<Permit> requestPermit(final int baseTransceiverStationId, final int cellId) {
     final int requestId = this.requestIdCounter.incrementAndGet();
 
@@ -187,8 +214,11 @@ public class ThrottlingClient {
    * Requests a permit for a network segment identified by {@code baseTransceiverStationId} and
    * {@code cellId} or for the entire network if any of the IDs is {@code null}.
    *
-   * @param baseTransceiverStationId
-   * @param cellId
+   * <p>The return value contains a request ID that is unique to this client. This permit, with at
+   * least the request ID is required to release the permit when finished.
+   *
+   * @param baseTransceiverStationId ID of the BTS (or 'network')
+   * @param cellId Cell ID within the BTS (or 'segment')
    * @return a permit granting access to a network or network segment
    * @throws ThrottlingPermitDeniedException if a permit is not granted
    */
@@ -261,6 +291,12 @@ public class ThrottlingClient {
     }
   }
 
+  /**
+   * Releases the given permit, freeing up the network for the next request.
+   *
+   * @param permit the permit as it was returned by {@code requestPermit} (or variants thereof)
+   * @return true if it was successfully released, false otherwise
+   */
   public boolean releasePermit(final Permit permit) {
 
     final boolean released;
@@ -390,6 +426,11 @@ public class ThrottlingClient {
     }
   }
 
+  /**
+   * Discard the given request, freeing up the network for the next request.
+   *
+   * @param requestId ID of the discarded request
+   */
   public void discardPermit(final int requestId) {
     final ResponseEntity<Void> discardResponse =
         this.webClient
@@ -429,10 +470,20 @@ public class ThrottlingClient {
     }
   }
 
+  /**
+   * Gets the throttling configuration used by this client
+   *
+   * @return throttling configuration
+   */
   public ThrottlingConfig getThrottlingConfig() {
     return this.throttlingConfig;
   }
 
+  /**
+   * Gets the client ID as returned by the Throttling REST service.
+   *
+   * @return Client ID
+   */
   public Integer getClientId() {
     return this.clientId;
   }
