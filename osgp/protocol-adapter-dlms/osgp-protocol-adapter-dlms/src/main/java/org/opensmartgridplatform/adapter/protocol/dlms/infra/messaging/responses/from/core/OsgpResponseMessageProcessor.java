@@ -81,15 +81,17 @@ public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessage
     final ThrowingConsumer<DlmsConnectionManager> taskForConnectionManager =
         conn -> this.processMessageTask(message, messageMetadata, conn);
 
-    if (this.usesDeviceConnection()) {
-      try {
+    try {
+      if (this.usesDeviceConnection()) {
         this.createConnectionForDevice(
             this.domainHelperService.findDlmsDevice(messageMetadata),
             messageMetadata,
             taskForConnectionManager);
-      } catch (final OsgpException e) {
-        LOGGER.error("Something went wrong with the DlmsConnection", e);
+      } else {
+        processMessageTask(message, messageMetadata, null);
       }
+    } catch (final OsgpException e) {
+      LOGGER.error("Something went wrong with the DlmsConnection", e);
     }
   }
 
