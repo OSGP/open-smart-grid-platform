@@ -79,21 +79,23 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
     final MessageMetadata messageMetadata = MessageMetadata.fromMessage(message);
 
     final ThrowingConsumer<DlmsConnectionManager> taskForConnectionManager =
-        connectionManager -> this.processMessageTask(message, messageMetadata, connectionManager);
+        connectionManager -> this.processMessageTasks(message, messageMetadata, connectionManager);
 
-    if (this.usesDeviceConnection()) {
-      try {
+    try {
+      if (this.usesDeviceConnection()) {
         this.createConnectionForDevice(
             this.domainHelperService.findDlmsDevice(messageMetadata),
             messageMetadata,
             taskForConnectionManager);
-      } catch (final Exception exception) {
-        this.sendErrorResponse(messageMetadata, exception, message.getObject());
+      } else {
+        this.processMessageTasks(message, messageMetadata, null);
       }
+    } catch (final Exception exception) {
+      this.sendErrorResponse(messageMetadata, exception, message.getObject());
     }
   }
 
-  public void processMessageTask(
+  public void processMessageTasks(
       final ObjectMessage message,
       final MessageMetadata messageMetadata,
       final DlmsConnectionManager connectionManager)

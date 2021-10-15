@@ -109,7 +109,7 @@ public class UpdateFirmwareRequestMessageProcessorTest {
     when(this.firmwareService.isFirmwareFileAvailable(firmwareIdentification)).thenReturn(false);
 
     // Act
-    this.processor.processMessageTask(message, messageMetadata, this.dlmsConnectionManagerMock);
+    this.processor.processMessageTasks(message, messageMetadata, this.dlmsConnectionManagerMock);
 
     // Assert
     verify(this.osgpRequestMessageSender, times(1))
@@ -133,7 +133,7 @@ public class UpdateFirmwareRequestMessageProcessorTest {
     when(this.firmwareService.isFirmwareFileAvailable(firmwareIdentification)).thenReturn(true);
 
     // Act
-    this.processor.processMessageTask(message, messageMetadata, this.dlmsConnectionManagerMock);
+    this.processor.processMessageTasks(message, messageMetadata, this.dlmsConnectionManagerMock);
 
     // Assert
     verify(this.osgpRequestMessageSender, never())
@@ -157,7 +157,7 @@ public class UpdateFirmwareRequestMessageProcessorTest {
     when(this.firmwareService.isFirmwareFileAvailable(firmwareIdentification)).thenReturn(true);
 
     // Act
-    this.processor.processMessageTask(message, messageMetadata, this.dlmsConnectionManagerMock);
+    this.processor.processMessageTasks(message, messageMetadata, this.dlmsConnectionManagerMock);
 
     // Assert
     verify(this.configurationService, times(1))
@@ -185,7 +185,7 @@ public class UpdateFirmwareRequestMessageProcessorTest {
     when(this.firmwareService.isFirmwareFileAvailable(firmwareIdentification)).thenReturn(false);
 
     // Act
-    this.processor.processMessageTask(message, messageMetadata, this.dlmsConnectionManagerMock);
+    this.processor.processMessageTasks(message, messageMetadata, this.dlmsConnectionManagerMock);
 
     // Assert
     verify(this.firmwareService, times(0))

@@ -88,7 +88,7 @@ class BundleMessageProcessorTest {
     this.prepareBundleServiceMockWithRequestAndResponse(new ActionResponseDto());
     when(this.dlmsConnectionManager.getDlmsMessageListener()).thenReturn(this.messageListener);
 
-    this.messageProcessor.processMessageTask(
+    this.messageProcessor.processMessageTasks(
         this.message, this.messageMetadata, this.dlmsConnectionManager);
 
     verify(this.retryHeaderFactory, times(1)).createEmptyRetryHeader();
@@ -132,7 +132,7 @@ class BundleMessageProcessorTest {
     this.prepareBundleServiceMockWithRequestAndResponse(
         new FaultResponseDto.Builder().withRetryable(true).build());
 
-    this.messageProcessor.processMessageTask(
+    this.messageProcessor.processMessageTasks(
         this.message, this.messageMetadata, this.dlmsConnectionManager);
 
     verify(this.retryHeaderFactory).createRetryHeader(0);
@@ -146,7 +146,7 @@ class BundleMessageProcessorTest {
     this.prepareBundleServiceMockWithRequestAndResponse(
         new FaultResponseDto.Builder().withRetryable(false).build());
 
-    this.messageProcessor.processMessageTask(
+    this.messageProcessor.processMessageTasks(
         this.message, this.messageMetadata, this.dlmsConnectionManager);
 
     verify(this.retryHeaderFactory).createEmptyRetryHeader();
