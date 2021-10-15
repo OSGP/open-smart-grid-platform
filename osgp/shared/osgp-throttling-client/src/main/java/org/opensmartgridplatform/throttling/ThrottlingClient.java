@@ -427,7 +427,8 @@ public class ThrottlingClient {
   }
 
   /**
-   * Discard the given request, freeing up the network for the next request.
+   * Discard the given request, freeing up the network for the next request. This can be used to
+   * free a possibly granted permit, which wasn't received by the client.
    *
    * @param requestId ID of the discarded request
    */
