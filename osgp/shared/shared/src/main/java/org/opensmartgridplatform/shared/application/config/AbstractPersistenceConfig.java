@@ -57,7 +57,7 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
   @Value("${db.max_pool_size:5}")
   private int maxPoolSize;
 
-  @Value("${db.initialization_fail_timeout:1}")
+  @Value("${db.initialization_fail_timeout:300000}")
   private long initializationFailTimeout;
 
   @Value("${db.validation_timeout:5000}")
