@@ -84,7 +84,7 @@ public class UpdateFirmwareRequestMessageProcessorTest {
         .thenReturn(this.messageListenerMock);
     doNothing()
         .when(this.connectionHelper)
-        .createConnectionForDevice(
+        .createAndHandleConnectionForDevice(
             any(MessageMetadata.class),
             same(this.device),
             nullable(DlmsMessageListener.class),

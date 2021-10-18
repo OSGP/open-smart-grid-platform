@@ -59,13 +59,13 @@ public class DlmsConnectionFactory {
    *     connection as well as an optional message listener active in the connection.
    * @throws OsgpException in case of a TechnicalException or FunctionalException
    */
-  public void createConnection(
+  public void createAndHandleConnection(
       final MessageMetadata messageMetadata,
       final DlmsDevice device,
       final DlmsMessageListener dlmsMessageListener,
       final Consumer<DlmsConnectionManager> taskForConnectionManager)
       throws OsgpException {
-    this.createNewConnectionWithSecurityLevel(
+    this.createAndHandleConnectionWithSecurityLevel(
         messageMetadata,
         device,
         dlmsMessageListener,
@@ -87,13 +87,13 @@ public class DlmsConnectionFactory {
    *     DLMS connection is open
    * @throws OsgpException in case of a TechnicalException or FunctionalException
    */
-  public void createPublicClientConnection(
+  public void createAndHandlePublicClientConnection(
       final MessageMetadata messageMetadata,
       final DlmsDevice device,
       final DlmsMessageListener dlmsMessageListener,
       final Consumer<DlmsConnectionManager> taskForDlmsConnectionManager)
       throws OsgpException {
-    this.createNewConnectionWithSecurityLevel(
+    this.createAndHandleConnectionWithSecurityLevel(
         messageMetadata,
         device,
         dlmsMessageListener,
@@ -101,7 +101,7 @@ public class DlmsConnectionFactory {
         taskForDlmsConnectionManager);
   }
 
-  private void createNewConnectionWithSecurityLevel(
+  private void createAndHandleConnectionWithSecurityLevel(
       final MessageMetadata messageMetadata,
       final DlmsDevice device,
       final DlmsMessageListener dlmsMessageListener,

@@ -61,7 +61,8 @@ class InvocationCounterManagerTest {
     this.manager.initializeInvocationCounter(this.messageMetadata, this.device);
 
     verify(this.connectionFactory, times(1))
-        .createPublicClientConnection(any(MessageMetadata.class), eq(this.device), isNull(), any());
+        .createAndHandlePublicClientConnection(
+            any(MessageMetadata.class), eq(this.device), isNull(), any());
   }
 
   @Test

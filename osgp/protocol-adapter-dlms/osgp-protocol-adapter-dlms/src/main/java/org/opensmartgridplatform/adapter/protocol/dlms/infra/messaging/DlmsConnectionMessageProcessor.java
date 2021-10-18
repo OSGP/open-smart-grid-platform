@@ -53,7 +53,7 @@ public abstract class DlmsConnectionMessageProcessor {
 
   @Autowired private SystemEventService systemEventService;
 
-  public void createConnectionForDevice(
+  public void createAndHandleConnectionForDevice(
       final DlmsDevice device,
       final MessageMetadata messageMetadata,
       final Consumer<DlmsConnectionManager> taskForConnectionManager)
@@ -65,7 +65,7 @@ public abstract class DlmsConnectionMessageProcessor {
         this.createMessageListenerForDeviceConnection(device, messageMetadata);
 
     try {
-      this.dlmsConnectionHelper.createConnectionForDevice(
+      this.dlmsConnectionHelper.createAndHandleConnectionForDevice(
           messageMetadata, device, dlmsMessageListener, taskForConnectionManager);
     } catch (final ConnectionTaskException e) {
       LOGGER.error(

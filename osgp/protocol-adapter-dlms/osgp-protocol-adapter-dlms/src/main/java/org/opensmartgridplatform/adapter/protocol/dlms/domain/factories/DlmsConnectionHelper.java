@@ -59,7 +59,7 @@ public class DlmsConnectionHelper {
    * Passes a task for the connection to the device, taking care of details like initializing the
    * invocation counter when required.
    */
-  public void createConnectionForDevice(
+  public void createAndHandleConnectionForDevice(
       final MessageMetadata messageMetadata,
       final DlmsDevice device,
       final DlmsMessageListener messageListener,
@@ -76,7 +76,7 @@ public class DlmsConnectionHelper {
         new ConnectionProperties(
             pingDevice, initializeInvocationCounter, NO_DELAY, waitBeforeCreatingTheConnection);
 
-    this.createConnectionForDevice(
+    this.createAndHandleConnectionForDevice(
         device, messageListener, connectionProperties, messageMetadata, taskForConnectionManager);
   }
 
@@ -92,7 +92,7 @@ public class DlmsConnectionHelper {
     }
   }
 
-  private void createConnectionForDevice(
+  private void createAndHandleConnectionForDevice(
       final DlmsDevice device,
       final DlmsMessageListener messageListener,
       final ConnectionProperties connectionProperties,
@@ -111,7 +111,7 @@ public class DlmsConnectionHelper {
 
     try {
       this.delay(connectionProperties.getWaitBeforeCreatingTheConnection());
-      this.connectionFactory.createConnection(
+      this.connectionFactory.createAndHandleConnection(
           messageMetadata, device, messageListener, taskForConnectionManager);
     } catch (final ConnectionException e) {
       if ((device.needsInvocationCounter() && this.indicatesInvocationCounterOutOfSync(e))
@@ -130,7 +130,7 @@ public class DlmsConnectionHelper {
          * been pinged if that was appropriate. Make sure the invocation counter is initialized,
          * regardless of whether it has already been initialized before or not.
          */
-        this.createConnectionForDevice(
+        this.createAndHandleConnectionForDevice(
             device,
             messageListener,
             newConnectionProperties,

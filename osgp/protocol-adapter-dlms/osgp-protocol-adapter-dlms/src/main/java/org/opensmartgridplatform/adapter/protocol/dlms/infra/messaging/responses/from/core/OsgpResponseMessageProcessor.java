@@ -83,12 +83,12 @@ public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessage
 
     try {
       if (this.usesDeviceConnection()) {
-        this.createConnectionForDevice(
+        this.createAndHandleConnectionForDevice(
             this.domainHelperService.findDlmsDevice(messageMetadata),
             messageMetadata,
             taskForConnectionManager);
       } else {
-        processMessageTask(message, messageMetadata, null);
+        this.processMessageTask(message, messageMetadata, null);
       }
     } catch (final OsgpException e) {
       LOGGER.error("Something went wrong with the DlmsConnection", e);

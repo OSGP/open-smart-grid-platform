@@ -83,7 +83,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
 
     try {
       if (this.usesDeviceConnection()) {
-        this.createConnectionForDevice(
+        this.createAndHandleConnectionForDevice(
             this.domainHelperService.findDlmsDevice(messageMetadata),
             messageMetadata,
             taskForConnectionManager);

@@ -60,7 +60,7 @@ public class GetFirmwareFileResponseMessageProcessor extends OsgpResponseMessage
         conn -> this.processMessageTasks(message, messageMetadata, conn);
 
     try {
-      this.createConnectionForDevice(
+      this.createAndHandleConnectionForDevice(
           this.domainHelperService.findDlmsDevice(messageMetadata),
           messageMetadata,
           taskForConnectionManager);

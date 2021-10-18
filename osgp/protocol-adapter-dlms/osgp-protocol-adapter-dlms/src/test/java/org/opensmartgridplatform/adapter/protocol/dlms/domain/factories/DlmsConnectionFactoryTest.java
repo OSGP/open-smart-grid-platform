@@ -75,29 +75,33 @@ public class DlmsConnectionFactoryTest {
     final DlmsConnectionManager expected =
         this.newConnectionManager(device, listener, this.hls5Connector);
 
-    this.factory.createConnection(this.messageMetadata, device, listener, this.task);
+    this.factory.createAndHandleConnection(this.messageMetadata, device, listener, this.task);
 
     this.assertConnectionManagerForDevice(expected);
   }
 
   @Test
-  public void createConnection_throwsForHls4Device() {
+  public void createAndHandleConnection_throwsForHls4Device() {
     final DlmsDevice device = new DlmsDeviceBuilder().withHls4Active(true).build();
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
     assertThatExceptionOfType(FunctionalException.class)
         .isThrownBy(
-            () -> this.factory.createConnection(this.messageMetadata, device, listener, this.task));
+            () ->
+                this.factory.createAndHandleConnection(
+                    this.messageMetadata, device, listener, this.task));
   }
 
   @Test
-  public void createConnection_throwsForHls3Device() {
+  public void createAndHandleConnection_throwsForHls3Device() {
     final DlmsDevice device = new DlmsDeviceBuilder().withHls3Active(true).build();
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
     assertThatExceptionOfType(FunctionalException.class)
         .isThrownBy(
-            () -> this.factory.createConnection(this.messageMetadata, device, listener, this.task));
+            () ->
+                this.factory.createAndHandleConnection(
+                    this.messageMetadata, device, listener, this.task));
   }
 
   @Test
@@ -109,7 +113,7 @@ public class DlmsConnectionFactoryTest {
     final DlmsConnectionManager expected =
         this.newConnectionManager(device, listener, this.lls1Connector);
 
-    this.factory.createConnection(this.messageMetadata, device, listener, this.task);
+    this.factory.createAndHandleConnection(this.messageMetadata, device, listener, this.task);
 
     this.assertConnectionManagerForDevice(expected);
   }
@@ -123,7 +127,7 @@ public class DlmsConnectionFactoryTest {
     final DlmsConnectionManager expected =
         this.newConnectionManager(device, listener, this.lls0Connector);
 
-    this.factory.createConnection(this.messageMetadata, device, listener, this.task);
+    this.factory.createAndHandleConnection(this.messageMetadata, device, listener, this.task);
 
     this.assertConnectionManagerForDevice(expected);
   }
@@ -137,7 +141,8 @@ public class DlmsConnectionFactoryTest {
     final DlmsConnectionManager expected =
         this.newConnectionManager(device, listener, this.lls0Connector);
 
-    this.factory.createPublicClientConnection(this.messageMetadata, device, listener, this.task);
+    this.factory.createAndHandlePublicClientConnection(
+        this.messageMetadata, device, listener, this.task);
 
     this.assertConnectionManagerForDevice(expected);
   }
