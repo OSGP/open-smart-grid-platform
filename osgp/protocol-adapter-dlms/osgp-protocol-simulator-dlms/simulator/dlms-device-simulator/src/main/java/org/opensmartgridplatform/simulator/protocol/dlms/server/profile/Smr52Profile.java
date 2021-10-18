@@ -10,11 +10,13 @@ package org.opensmartgridplatform.simulator.protocol.dlms.server.profile;
 
 import static org.opensmartgridplatform.simulator.protocol.dlms.cosem.AlarmObject.ALARM_OBJECT_2;
 
+import java.util.Calendar;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.dlms.interfaceclass.InterfaceClass;
 import org.opensmartgridplatform.dlms.interfaceclass.attribute.DataAttribute;
 import org.opensmartgridplatform.simulator.protocol.dlms.cosem.AlarmObject;
+import org.opensmartgridplatform.simulator.protocol.dlms.cosem.PowerQualityExtendedEventLog;
 import org.opensmartgridplatform.simulator.protocol.dlms.util.DynamicValues;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -35,5 +37,10 @@ public class Smr52Profile {
         DataAttribute.VALUE.attributeId(),
         DataObject.newUInteger32Data(this.alarmRegister2Value));
     return new AlarmObject(ALARM_OBJECT_2);
+  }
+
+  @Bean
+  public PowerQualityExtendedEventLog powerQualityExtendedEventLog(final Calendar cal) {
+    return new PowerQualityExtendedEventLog(cal);
   }
 }
