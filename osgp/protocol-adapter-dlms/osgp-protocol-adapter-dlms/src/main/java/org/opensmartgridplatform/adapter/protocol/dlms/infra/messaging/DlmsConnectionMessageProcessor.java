@@ -51,7 +51,7 @@ public abstract class DlmsConnectionMessageProcessor {
 
   @Autowired protected ThrottlingService throttlingService;
 
-  @Autowired private ThrottlingConfig throttlingConfig;
+  @Autowired protected ThrottlingConfig throttlingConfig;
 
   @Autowired private SystemEventService systemEventService;
 

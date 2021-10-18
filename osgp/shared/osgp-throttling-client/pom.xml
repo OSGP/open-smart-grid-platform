@@ -35,12 +35,12 @@
 
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring-webflux</artifactId>
+      <artifactId>spring-web</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>io.projectreactor.netty</groupId>
-      <artifactId>reactor-netty-http</artifactId>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
     </dependency>
 
     <dependency>

@@ -34,6 +34,9 @@ public class ThrottlingConfig {
   @Value("#{T(java.time.Duration).parse('${throttling.service.timeout:PT30S}')}")
   private Duration timeout;
 
+  @Value("#{T(java.time.Duration).parse('${throttling.rejected.delay:PT10S}')}")
+  private Duration delay;
+
   public boolean clientEnabled() {
     return this.clientEnabled;
   }
@@ -53,5 +56,14 @@ public class ThrottlingConfig {
             this.timeout);
     throttlingClient.register();
     return throttlingClient;
+  }
+
+  /**
+   * Delay to be applied before retrying some action when a requested permit was not granted.
+   *
+   * @return delay
+   */
+  public Duration delay() {
+    return this.delay;
   }
 }

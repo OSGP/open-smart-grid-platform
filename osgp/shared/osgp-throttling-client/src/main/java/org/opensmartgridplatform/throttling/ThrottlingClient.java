@@ -9,7 +9,7 @@
  */
 package org.opensmartgridplatform.throttling;
 
-import com.fasterxml.jackson.databind.node.NumericNode;
+import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
@@ -19,13 +19,15 @@ import org.opensmartgridplatform.throttling.api.Permit;
 import org.opensmartgridplatform.throttling.api.ThrottlingConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.web.client.DefaultResponseErrorHandler;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
 /** Client for distributed segmented network max concurrency throttling. */
 public class ThrottlingClient {
@@ -35,8 +37,7 @@ public class ThrottlingClient {
   private Integer clientId;
   private final AtomicInteger requestIdCounter = new AtomicInteger(0);
   private final ThrottlingConfig throttlingConfig;
-  private final WebClient webClient;
-  private final Duration timeout;
+  private final RestTemplate restTemplate;
 
   public ThrottlingClient(
       final ThrottlingConfig throttlingConfig, final String throttlingServiceUrl) {
@@ -51,14 +52,42 @@ public class ThrottlingClient {
 
     this.throttlingConfig =
         Objects.requireNonNull(throttlingConfig, "throttlingConfig must not be null");
-    this.webClient =
-        WebClient.builder()
-            .baseUrl(
-                Objects.requireNonNull(
-                    throttlingServiceUrl, "throttlingServiceUrl must not be null"))
-            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .build();
-    this.timeout = Objects.requireNonNull(timeout, "timeout must not be null");
+    this.restTemplate =
+        this.createAndConfigureRestTemplate(
+            Objects.requireNonNull(throttlingServiceUrl, "throttlingServiceUrl must not be null"),
+            Objects.requireNonNull(timeout, "timeout must not be null"));
+  }
+
+  private RestTemplate createAndConfigureRestTemplate(
+      final String throttlingServiceUrl, final Duration timeout) {
+
+    final HttpComponentsClientHttpRequestFactory clientHttpRequestFactory =
+        new HttpComponentsClientHttpRequestFactory();
+    clientHttpRequestFactory.setConnectTimeout((int) timeout.toMillis());
+    final RestTemplate template = new RestTemplate(clientHttpRequestFactory);
+
+    final DefaultUriBuilderFactory uriBuilderFactory =
+        new DefaultUriBuilderFactory(throttlingServiceUrl);
+    template.setUriTemplateHandler(uriBuilderFactory);
+
+    template.setErrorHandler(
+        new DefaultResponseErrorHandler() {
+          @Override
+          public void handleError(final ClientHttpResponse response, final HttpStatus statusCode)
+              throws IOException {
+            if (statusCode == HttpStatus.NOT_FOUND) {
+              /*
+               * Do not treat not found as an error. With the throttling API this is a regular
+               * response status for a number of requests, for instance when discarding a permit
+               * that had not actually been granted.
+               */
+              return;
+            }
+            super.handleError(response, statusCode);
+          }
+        });
+
+    return template;
   }
 
   /**
@@ -71,51 +100,37 @@ public class ThrottlingClient {
   }
 
   private void registerThrottlingConfig() {
-    final NumericNode throttlingConfigIdNode =
-        this.webClient
-            .post()
-            .uri("/throttling-configs")
-            .bodyValue(this.throttlingConfig)
-            .retrieve()
-            .bodyToMono(NumericNode.class)
-            .block(this.timeout);
+    final Short throttlingConfigId =
+        this.restTemplate.postForObject("/throttling-configs", this.throttlingConfig, Short.class);
 
-    if (throttlingConfigIdNode == null) {
+    if (throttlingConfigId == null) {
       throw new IllegalStateException(
           "No throttling config ID available after registration of " + this.throttlingConfig);
     }
 
-    this.throttlingConfig.setId(throttlingConfigIdNode.shortValue());
+    this.throttlingConfig.setId(throttlingConfigId);
 
     LOGGER.info("Registered {}", this.throttlingConfig);
   }
 
   private void registerClient() {
-    this.clientId =
-        this.webClient
-            .post()
-            .uri("/clients")
-            .retrieve()
-            .bodyToMono(Integer.class)
-            .block(this.timeout);
+
+    this.clientId = this.restTemplate.postForObject("/clients", null, Integer.class);
+
     if (this.clientId == null) {
       throw new IllegalStateException("No client ID available after registration of client");
     }
 
-    LOGGER.info("Registered {}", this.clientId);
+    LOGGER.info("Registered throttling client with ID: {}", this.clientId);
   }
 
   /** Lets the Throttling REST service know this client is going away. */
   public void unregister() {
     final ResponseEntity<Void> responseEntity =
-        this.webClient
-            .delete()
-            .uri("/clients/{clientId}", this.clientId)
-            .retrieve()
-            .toBodilessEntity()
-            .block(this.timeout);
+        this.restTemplate.exchange(
+            "/clients/{clientId}", HttpMethod.DELETE, null, Void.class, this.clientId);
 
-    if (responseEntity == null || !responseEntity.getStatusCode().is2xxSuccessful()) {
+    if (!responseEntity.getStatusCode().is2xxSuccessful()) {
       throw new IllegalStateException(
           "No HTTP success response on unregistration of " + this.clientId);
     }
@@ -217,8 +232,8 @@ public class ThrottlingClient {
    * <p>The return value contains a request ID that is unique to this client. This permit, with at
    * least the request ID is required to release the permit when finished.
    *
-   * @param baseTransceiverStationId ID of the BTS (or 'network')
-   * @param cellId Cell ID within the BTS (or 'segment')
+   * @param baseTransceiverStationId ID of the BTS
+   * @param cellId Cell ID within the BTS
    * @return a permit granting access to a network or network segment
    * @throws ThrottlingPermitDeniedException if a permit is not granted
    */
@@ -240,17 +255,12 @@ public class ThrottlingClient {
   private Integer numberOfGrantedPermits(final int requestId) {
 
     try {
-      return this.webClient
-          .post()
-          .uri(
-              "/permits/{throttlingConfigId}/{clientId}",
-              this.throttlingConfig.getId(),
-              this.clientId)
-          .bodyValue(requestId)
-          .retrieve()
-          .onStatus(status -> HttpStatus.CONFLICT == status, clientResponse -> Mono.empty())
-          .bodyToMono(Integer.class)
-          .block(this.timeout);
+      return this.restTemplate.postForObject(
+          "/permits/{throttlingConfigId}/{clientId}",
+          requestId,
+          Integer.class,
+          this.throttlingConfig.getId(),
+          this.clientId);
     } catch (final Exception e) {
       LOGGER.error(
           "Unexpected exception requesting permit using requestId {} for {} on {}",
@@ -265,19 +275,14 @@ public class ThrottlingClient {
       final int requestId, final int baseTransceiverStationId, final int cellId) {
 
     try {
-      return this.webClient
-          .post()
-          .uri(
-              "/permits/{throttlingConfigId}/{clientId}/{baseTransceiverStationId}/{cellId}",
-              this.throttlingConfig.getId(),
-              this.clientId,
-              baseTransceiverStationId,
-              cellId)
-          .bodyValue(requestId)
-          .retrieve()
-          .onStatus(status -> HttpStatus.CONFLICT == status, clientResponse -> Mono.empty())
-          .bodyToMono(Integer.class)
-          .block(this.timeout);
+      return this.restTemplate.postForObject(
+          "/permits/{throttlingConfigId}/{clientId}/{baseTransceiverStationId}/{cellId}",
+          requestId,
+          Integer.class,
+          this.throttlingConfig.getId(),
+          this.clientId,
+          baseTransceiverStationId,
+          cellId);
     } catch (final Exception e) {
       LOGGER.error(
           "Unexpected exception requesting permit for network segment ({}, {}) using requestId {} for {} on {}",
@@ -311,25 +316,15 @@ public class ThrottlingClient {
   }
 
   private boolean releasePermit(final Integer requestId) {
-    final ResponseEntity<Void> releaseResponse =
-        this.webClient
-            .method(HttpMethod.DELETE)
-            .uri(
-                "/permits/{throttlingConfigId}/{clientId}",
-                this.throttlingConfig.getId(),
-                this.clientId)
-            .bodyValue(requestId)
-            .retrieve()
-            .onStatus(status -> HttpStatus.NOT_FOUND == status, clientResponse -> Mono.empty())
-            .toBodilessEntity()
-            .block(this.timeout);
 
-    if (releaseResponse == null) {
-      throw new IllegalStateException(
-          String.format(
-              "No release response available for permit with throttlingConfigId %d, clientId %d, requestId %s",
-              this.throttlingConfig.getId(), this.clientId, requestId));
-    }
+    final ResponseEntity<Void> releaseResponse =
+        this.restTemplate.exchange(
+            "/permits/{throttlingConfigId}/{clientId}",
+            HttpMethod.DELETE,
+            new HttpEntity<>(requestId),
+            Void.class,
+            this.throttlingConfig.getId(),
+            this.clientId);
 
     switch (releaseResponse.getStatusCode()) {
       case NOT_FOUND:
@@ -361,30 +356,15 @@ public class ThrottlingClient {
       final Integer requestId, final int baseTransceiverStationId, final int cellId) {
 
     final ResponseEntity<Void> releaseResponse =
-        this.webClient
-            .method(HttpMethod.DELETE)
-            .uri(
-                "/permits/{throttlingConfigId}/{clientId}/{baseTransceiverStationId}/{cellId}",
-                this.throttlingConfig.getId(),
-                this.clientId,
-                baseTransceiverStationId,
-                cellId)
-            .bodyValue(requestId)
-            .retrieve()
-            .onStatus(status -> HttpStatus.NOT_FOUND == status, clientResponse -> Mono.empty())
-            .toBodilessEntity()
-            .block(this.timeout);
-
-    if (releaseResponse == null) {
-      throw new IllegalStateException(
-          String.format(
-              "No release response available for permit with throttlingConfigId %d, clientId %d, requestId %s, baseTransceiverStationId %s, cellId %s",
-              this.throttlingConfig.getId(),
-              this.clientId,
-              requestId,
-              baseTransceiverStationId,
-              cellId));
-    }
+        this.restTemplate.exchange(
+            "/permits/{throttlingConfigId}/{clientId}/{baseTransceiverStationId}/{cellId}",
+            HttpMethod.DELETE,
+            new HttpEntity<>(requestId),
+            Void.class,
+            this.throttlingConfig.getId(),
+            this.clientId,
+            baseTransceiverStationId,
+            cellId);
 
     switch (releaseResponse.getStatusCode()) {
       case NOT_FOUND:
@@ -433,20 +413,15 @@ public class ThrottlingClient {
    * @param requestId ID of the discarded request
    */
   public void discardPermit(final int requestId) {
-    final ResponseEntity<Void> discardResponse =
-        this.webClient
-            .delete()
-            .uri("/permits/discard/{clientId}/{requestId}", this.clientId, requestId)
-            .retrieve()
-            .onStatus(status -> HttpStatus.NOT_FOUND == status, clientResponse -> Mono.empty())
-            .toBodilessEntity()
-            .block(this.timeout);
 
-    if (discardResponse == null) {
-      throw new IllegalStateException(
-          String.format(
-              "No discard response available for requestId %d of %s", requestId, this.clientId));
-    }
+    final ResponseEntity<Void> discardResponse =
+        this.restTemplate.exchange(
+            "/permits/discard/{clientId}/{requestId}",
+            HttpMethod.DELETE,
+            null,
+            Void.class,
+            this.clientId,
+            requestId);
 
     switch (discardResponse.getStatusCode()) {
       case NOT_FOUND:

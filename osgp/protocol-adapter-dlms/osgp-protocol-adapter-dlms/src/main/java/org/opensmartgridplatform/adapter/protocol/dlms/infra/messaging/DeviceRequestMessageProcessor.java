@@ -52,6 +52,10 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
 
   @Autowired protected DomainHelperService domainHelperService;
 
+  @Autowired
+  @Qualifier("protocolDlmsDlmsRequestsMessageSender")
+  private DeviceRequestMessageSender deviceRequestMessageSender;
+
   protected final MessageType messageType;
 
   /**
@@ -118,10 +122,10 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
       this.sendResponse(messageMetadata, response);
 
     } catch (final ThrottlingPermitDeniedException exception) {
-      log.error("TODO place the ObjectMessage back on ${jms.dlms.requests.queue}", exception);
-      // TODO the ObjectMessage needs to be sent back to the request queue it came from, possibly
-      // with a little delay so that it can be picked up by the listener at a later moment, when the
-      // throttling may allow a connection for the device
+
+      this.deviceRequestMessageSender.send(
+          message.getObject(), messageMetadata, this.throttlingConfig.delay());
+
     } catch (final JMSException exception) {
       this.logJmsException(log, exception, messageMetadata);
     } catch (final Exception exception) {

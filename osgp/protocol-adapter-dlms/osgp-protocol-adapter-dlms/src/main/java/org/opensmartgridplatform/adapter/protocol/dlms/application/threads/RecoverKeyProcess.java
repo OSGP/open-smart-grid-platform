@@ -97,8 +97,6 @@ public class RecoverKeyProcess implements Runnable {
       log.warn(
           "RecoverKeyProcess could not connect to the device due to throttling constraints", e);
 
-      // TODO look if this could be improved upon, should we do this with a fixed delay, or should
-      // there be a more flexible solution?
       new Timer()
           .schedule(
               new TimerTask() {
@@ -107,7 +105,7 @@ public class RecoverKeyProcess implements Runnable {
                   RecoverKeyProcess.this.run();
                 }
               },
-              30000);
+              this.throttlingConfig.delay().toMillis());
 
       return;
     }
