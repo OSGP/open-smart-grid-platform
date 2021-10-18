@@ -75,11 +75,12 @@ public class ThrottlingClient {
           @Override
           public void handleError(final ClientHttpResponse response, final HttpStatus statusCode)
               throws IOException {
-            if (statusCode == HttpStatus.NOT_FOUND) {
+            if (statusCode == HttpStatus.NOT_FOUND || statusCode == HttpStatus.CONFLICT) {
               /*
-               * Do not treat not found as an error. With the throttling API this is a regular
-               * response status for a number of requests, for instance when discarding a permit
-               * that had not actually been granted.
+               * Do not treat HTTP status not found or conflict as an error. With the throttling API
+               * these are regular response statuses for a number of requests, for instance when
+               * discarding a permit that had not actually been granted, or when requesting a permit
+               * which is not available.
                */
               return;
             }
