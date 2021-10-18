@@ -17,6 +17,7 @@ import io.netty.buffer.ByteBuf;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigDsmr422;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dlms.DlmsPushNotification;
 import org.slf4j.Logger;
@@ -24,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 public class Dsmr4AlarmDecoder extends AlarmDecoder {
 
-  private DlmsObjectConfigDsmr422 dlmsObjectConfigDsmr422 = new DlmsObjectConfigDsmr422();
+  private final DlmsObjectConfigDsmr422 dlmsObjectConfigDsmr422 = new DlmsObjectConfigDsmr422();
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Dsmr4AlarmDecoder.class);
 
@@ -34,7 +35,7 @@ public class Dsmr4AlarmDecoder extends AlarmDecoder {
    */
   private static final byte COMMA = 0x2C;
 
-  private DlmsPushNotification.Builder builder = new DlmsPushNotification.Builder();
+  private final DlmsPushNotification.Builder builder = new DlmsPushNotification.Builder();
 
   public DlmsPushNotification decodeDsmr4alarm(final ByteBuf buffer)
       throws UnrecognizedMessageDataException {
@@ -81,7 +82,7 @@ public class Dsmr4AlarmDecoder extends AlarmDecoder {
     }
 
     if (readableBytes == NUMBER_OF_BYTES_FOR_ALARM) {
-      this.decodeAlarmRegisterData(buffer, this.builder);
+      this.decodeAlarmRegisterData(buffer, this.builder, DlmsObjectType.ALARM_REGISTER_1);
     } else if (readableBytes == NUMBER_OF_BYTES_FOR_LOGICAL_NAME) {
       this.decodeObisCodeData(buffer);
     } else {

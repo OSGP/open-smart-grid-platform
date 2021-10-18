@@ -8,8 +8,6 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
-import java.util.List;
-import org.openmuc.jdlms.GetResult;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.AbstractCommandExecutor;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
@@ -26,10 +24,10 @@ import org.springframework.stereotype.Component;
 public class GetMBusDeviceOnChannelCommandExecutor
     extends AbstractCommandExecutor<GetMBusDeviceOnChannelRequestDataDto, ChannelElementValuesDto> {
 
-  @Autowired private DeviceChannelsHelper deviceChannelsHelper;
-
   private static final Logger LOGGER =
       LoggerFactory.getLogger(GetMBusDeviceOnChannelCommandExecutor.class);
+
+  @Autowired private DeviceChannelsHelper deviceChannelsHelper;
 
   public GetMBusDeviceOnChannelCommandExecutor() {
     super(GetMBusDeviceOnChannelRequestDataDto.class);
@@ -47,9 +45,6 @@ public class GetMBusDeviceOnChannelCommandExecutor
         "Retrieving values for mbus channel {} on meter {}",
         requestDto.getChannel(),
         requestDto.getGatewayDeviceIdentification());
-    final List<GetResult> resultList =
-        this.deviceChannelsHelper.getMBusClientAttributeValues(
-            conn, device, requestDto.getChannel());
-    return this.deviceChannelsHelper.makeChannelElementValues(requestDto.getChannel(), resultList);
+    return this.deviceChannelsHelper.getChannelElementValues(conn, device, requestDto.getChannel());
   }
 }
