@@ -153,6 +153,9 @@ public class UpdateFirmwareCommandExecutor
 
     final FirmwareFile firmwareFile = new FirmwareFile(firmwareFileByteArray);
     if (firmwareFile.isMbusFirmware()) {
+
+      firmwareFile.checkLengths();
+
       this.addMac(
           messageMetadata, updateFirmwareRequestDto.getDeviceIdentification(), firmwareFile);
     }

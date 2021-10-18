@@ -55,25 +55,26 @@ public class FirmwareFile {
         && this.getHeader().getAddressTypeEnum() == AddressType.MBUS_ADDRESS;
   }
 
-  public void checkLengths() {
+  public void checkLengths() throws ProtocolAdapterException {
     final FirmwareFileHeader header = this.getHeader();
     final Integer firmwareImageLength = header.getFirmwareImageLengthInt();
     final Integer securityLength = header.getSecurityLengthInt();
     final Integer headerLength = header.getHeaderLengthInt();
     if (this.imageData.length != (firmwareImageLength + securityLength + headerLength)) {
-      log.warn(
-          "Byte array length doesn't match lengths defined in header: "
-              + "\nByte array length : {}"
-              + "\nLengths defined in header: "
-              + "\nHeader : {}"
-              + "\nFirmwareImage : {}"
-              + "\nSecurity : {}"
-              + "\nTotal of {}  bytes.",
-          this.imageData.length,
-          headerLength,
-          firmwareImageLength,
-          securityLength,
-          (firmwareImageLength + securityLength + headerLength));
+      throw new ProtocolAdapterException(
+          String.format(
+              "Byte array length doesn't match lengths defined in header: "
+                  + "\nByte array length : %d"
+                  + "\nLengths defined in header: "
+                  + "\nHeader : %d"
+                  + "\nFirmwareImage : %d"
+                  + "\nSecurity : %d"
+                  + "\nTotal of %d  bytes.",
+              this.imageData.length,
+              headerLength,
+              firmwareImageLength,
+              securityLength,
+              (firmwareImageLength + securityLength + headerLength)));
     }
   }
 
