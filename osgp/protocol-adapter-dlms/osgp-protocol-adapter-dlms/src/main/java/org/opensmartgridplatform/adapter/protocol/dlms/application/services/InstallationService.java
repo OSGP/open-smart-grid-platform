@@ -105,12 +105,14 @@ public class InstallationService {
     final byte[] deviceEmeterEncryptionKey =
         this.getKeyFromDeviceDto(deviceDto, E_METER_ENCRYPTION);
 
-    if (deviceGmeterMasterKey != null && deviceGmeterMasterKey.length > 0) {
-      if ((deviceEmeterMasterKey != null && deviceEmeterMasterKey.length > 0)
-          || (deviceEmeterAuthenticationKey != null && deviceEmeterAuthenticationKey.length > 0)
-          || (deviceEmeterEncryptionKey != null && deviceEmeterEncryptionKey.length > 0)) {
+    if (this.isKeyPresent(deviceGmeterMasterKey)) {
+      if (this.isKeyPresent(deviceEmeterMasterKey)
+          || this.isKeyPresent(deviceEmeterAuthenticationKey)
+          || this.isKeyPresent(deviceEmeterEncryptionKey)) {
         final String msg =
-            "Device to install contains a G-Meter Master key, but contains E-Meter key(s) as well";
+            "Device "
+                + deviceDto.getDeviceIdentification()
+                + " to install contains a G-Meter Master key, but contains E-Meter key(s) as well";
         throw new FunctionalException(
             FunctionalExceptionType.VALIDATION_ERROR,
             ComponentType.PROTOCOL_DLMS,
@@ -120,6 +122,10 @@ public class InstallationService {
     } else {
       return Arrays.asList(E_METER_MASTER, E_METER_AUTHENTICATION, E_METER_ENCRYPTION);
     }
+  }
+
+  private boolean isKeyPresent(final byte[] deviceKey) {
+    return deviceKey != null && deviceKey.length > 0;
   }
 
   private byte[] getKeyFromDeviceDto(
