@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>parent-pa-iec61850</artifactId>
-    <version>5.18.3</version>
+    <version>5.18.4-SNAPSHOT</version>
     <relativePath>../parent-pa-iec61850/pom.xml</relativePath>
   </parent>
 
