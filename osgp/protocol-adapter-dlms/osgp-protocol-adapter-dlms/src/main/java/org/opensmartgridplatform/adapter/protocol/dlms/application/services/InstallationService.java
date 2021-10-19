@@ -98,14 +98,19 @@ public class InstallationService {
 
   private List<SecurityKeyType> determineKeyTypesToStore(final SmartMeteringDeviceDto deviceDto)
       throws FunctionalException {
-    if (this.getKeyFromDeviceDto(deviceDto, G_METER_MASTER) != null) {
-      // device is a G-Meter
-      if (this.getKeyFromDeviceDto(deviceDto, E_METER_MASTER) != null
-          || this.getKeyFromDeviceDto(deviceDto, E_METER_AUTHENTICATION) != null
-          || this.getKeyFromDeviceDto(deviceDto, E_METER_ENCRYPTION) != null) {
+    final byte[] deviceGmeterMasterKey = this.getKeyFromDeviceDto(deviceDto, G_METER_MASTER);
+    final byte[] deviceEmeterMasterKey = this.getKeyFromDeviceDto(deviceDto, E_METER_MASTER);
+    final byte[] deviceEmeterAuthenticationKey =
+        this.getKeyFromDeviceDto(deviceDto, E_METER_AUTHENTICATION);
+    final byte[] deviceEmeterEncryptionKey =
+        this.getKeyFromDeviceDto(deviceDto, E_METER_ENCRYPTION);
+
+    if (deviceGmeterMasterKey != null && deviceGmeterMasterKey.length > 0) {
+      if ((deviceEmeterMasterKey != null && deviceEmeterMasterKey.length > 0)
+          || (deviceEmeterAuthenticationKey != null && deviceEmeterAuthenticationKey.length > 0)
+          || (deviceEmeterEncryptionKey != null && deviceEmeterEncryptionKey.length > 0)) {
         final String msg =
-            "Provided device is considered a G-Meter (G_METER_MASTER is set)"
-                + ", but contains E-Meter keys as well";
+            "Device to install contains a G-Meter Master key, but contains E-Meter key(s) as well";
         throw new FunctionalException(
             FunctionalExceptionType.VALIDATION_ERROR,
             ComponentType.PROTOCOL_DLMS,
@@ -113,7 +118,6 @@ public class InstallationService {
       }
       return Arrays.asList(G_METER_MASTER);
     } else {
-      // device is an E-meter
       return Arrays.asList(E_METER_MASTER, E_METER_AUTHENTICATION, E_METER_ENCRYPTION);
     }
   }
