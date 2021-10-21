@@ -10,11 +10,18 @@
 
 package org.opensmartgridplatform.adapter.protocol.dlms.exceptions;
 
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
+
 public class ConnectionTaskException extends RuntimeException {
 
   private static final long serialVersionUID = -5709055250101626431L;
+  private final OsgpException osgpException;
 
-  public ConnectionTaskException(final Throwable cause) {
-    super(cause);
+  public ConnectionTaskException(final OsgpException osgpException) {
+    this.osgpException = osgpException;
+  }
+
+  public OsgpException getOsgpException() {
+    return this.osgpException;
   }
 }

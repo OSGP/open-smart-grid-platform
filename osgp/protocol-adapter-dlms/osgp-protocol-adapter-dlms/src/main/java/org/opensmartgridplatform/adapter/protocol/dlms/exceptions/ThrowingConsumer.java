@@ -11,7 +11,6 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.exceptions;
 
 import java.util.function.Consumer;
-import javax.jms.JMSException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 
 public interface ThrowingConsumer<T> extends Consumer<T> {
@@ -20,10 +19,10 @@ public interface ThrowingConsumer<T> extends Consumer<T> {
   default void accept(final T elem) {
     try {
       this.acceptThrows(elem);
-    } catch (final Exception e) {
+    } catch (final OsgpException e) {
       throw new ConnectionTaskException(e);
     }
   }
 
-  void acceptThrows(T elem) throws JMSException, OsgpException;
+  void acceptThrows(T elem) throws OsgpException;
 }

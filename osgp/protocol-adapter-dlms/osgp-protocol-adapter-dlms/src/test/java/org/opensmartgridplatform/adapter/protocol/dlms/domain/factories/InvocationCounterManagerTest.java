@@ -40,7 +40,7 @@ class InvocationCounterManagerTest {
   private InvocationCounterManager manager;
   private MessageMetadata messageMetadata;
   private DlmsDevice device;
-  final long invocationCounterValueInDatabaseEntity = 7;
+  private final long invocationCounterValueInDatabaseEntity = 7;
 
   @Mock private DlmsConnectionFactory connectionFactory;
 
@@ -76,8 +76,7 @@ class InvocationCounterManagerTest {
             eq(connectionManager), refEq(ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE)))
         .thenReturn(dataObject);
 
-    this.manager.initializeWithInvocationCounterStoredOnDeviceTask(
-        this.device, this.device.getInvocationCounter(), connectionManager);
+    this.manager.initializeWithInvocationCounterStoredOnDeviceTask(this.device, connectionManager);
 
     assertThat(this.device.getInvocationCounter()).isEqualTo(invocationCounterValueOnDevice);
   }

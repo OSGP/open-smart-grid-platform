@@ -89,7 +89,7 @@ class BundleMessageProcessorTest {
     when(this.dlmsConnectionManager.getDlmsMessageListener()).thenReturn(this.messageListener);
 
     this.messageProcessor.processMessageTasks(
-        this.message, this.messageMetadata, this.dlmsConnectionManager);
+        this.message.getObject(), this.messageMetadata, this.dlmsConnectionManager);
 
     verify(this.retryHeaderFactory, times(1)).createEmptyRetryHeader();
   }
@@ -133,7 +133,7 @@ class BundleMessageProcessorTest {
         new FaultResponseDto.Builder().withRetryable(true).build());
 
     this.messageProcessor.processMessageTasks(
-        this.message, this.messageMetadata, this.dlmsConnectionManager);
+        this.message.getObject(), this.messageMetadata, this.dlmsConnectionManager);
 
     verify(this.retryHeaderFactory).createRetryHeader(0);
   }
@@ -147,7 +147,7 @@ class BundleMessageProcessorTest {
         new FaultResponseDto.Builder().withRetryable(false).build());
 
     this.messageProcessor.processMessageTasks(
-        this.message, this.messageMetadata, this.dlmsConnectionManager);
+        this.message.getObject(), this.messageMetadata, this.dlmsConnectionManager);
 
     verify(this.retryHeaderFactory).createEmptyRetryHeader();
   }

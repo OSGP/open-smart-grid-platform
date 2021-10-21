@@ -53,20 +53,18 @@ public class InvocationCounterManager {
 
   private void initializeWithInvocationCounterStoredOnDevice(
       final MessageMetadata messageMetadata, final DlmsDevice device) throws OsgpException {
-    final Long previousKnownInvocationCounter = device.getInvocationCounter();
+
     final Consumer<DlmsConnectionManager> taskForConnectionManager =
         connectionManager ->
-            this.initializeWithInvocationCounterStoredOnDeviceTask(
-                device, previousKnownInvocationCounter, connectionManager);
+            this.initializeWithInvocationCounterStoredOnDeviceTask(device, connectionManager);
     this.connectionFactory.createAndHandlePublicClientConnection(
         messageMetadata, device, null, taskForConnectionManager);
   }
 
   void initializeWithInvocationCounterStoredOnDeviceTask(
-      final DlmsDevice device,
-      final Long previousKnownInvocationCounter,
-      final DlmsConnectionManager connectionManager) {
+      final DlmsDevice device, final DlmsConnectionManager connectionManager) {
     try {
+      final Long previousKnownInvocationCounter = device.getInvocationCounter();
       final Long invocationCounterFromDevice = this.getInvocationCounter(connectionManager);
       if (Objects.equals(previousKnownInvocationCounter, invocationCounterFromDevice)) {
         LOGGER.warn(

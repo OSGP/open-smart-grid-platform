@@ -68,9 +68,21 @@ public abstract class DlmsConnectionMessageProcessor {
       this.dlmsConnectionHelper.createAndHandleConnectionForDevice(
           messageMetadata, device, dlmsMessageListener, taskForConnectionManager);
     } catch (final ConnectionTaskException e) {
-      LOGGER.error(
-          "Something went wrong in the tasks to be executed with the DlmsConnectionManager");
+      /*
+      Exceptions thrown by the tasks working with the DlmsConnectionManager are wrapped in ConnectionTaskException
+      in the ThrowingConsumer.
+       */
+      throw e.getOsgpException();
     } catch (final Exception e) {
+      /*
+      throttlingService.closeConnection() is called in this catch block to make sure that it is
+      called when there are problems setting up the connection and only then (exceptions thrown by the
+      tasks working with the DlmsConnectionManager are wrapped as ConnectionTaskException and are caught
+      in the previous catch block, so they don't end up here). If there are no problems in setting up
+      the connection, calling throttlingService.closeConnection() is the responsibility of the tasks
+      for the DlmsConnectionManager, as seen in  DeviceRequestMessageProcessor.processMessageTasks(),
+      where this.connectionPostProcessing() is called in a finally block.
+       */
       this.throttlingService.closeConnection();
       throw e;
     }

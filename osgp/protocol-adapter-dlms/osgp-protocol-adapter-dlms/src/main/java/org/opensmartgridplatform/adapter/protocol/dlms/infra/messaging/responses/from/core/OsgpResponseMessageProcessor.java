@@ -77,9 +77,10 @@ public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessage
     LOGGER.debug("Processing {} request message", this.messageType);
 
     final MessageMetadata messageMetadata = MessageMetadata.fromMessage(message);
+    final Serializable messageObject = message.getObject();
 
     final ThrowingConsumer<DlmsConnectionManager> taskForConnectionManager =
-        conn -> this.processMessageTask(message, messageMetadata, conn);
+        conn -> this.processMessageTask(messageObject, messageMetadata, conn);
 
     try {
       if (this.usesDeviceConnection()) {
@@ -88,7 +89,7 @@ public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessage
             messageMetadata,
             taskForConnectionManager);
       } else {
-        this.processMessageTask(message, messageMetadata, null);
+        this.processMessageTask(messageObject, messageMetadata, null);
       }
     } catch (final OsgpException e) {
       LOGGER.error("Something went wrong with the DlmsConnection", e);
@@ -98,27 +99,25 @@ public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessage
   @SuppressWarnings("squid:S1193") // SilentException cannot be caught since
   // it does not extend Exception.
   private void processMessageTask(
-      final ObjectMessage message,
+      final Serializable messageObject,
       final MessageMetadata messageMetadata,
       final DlmsConnectionManager conn)
-      throws JMSException, OsgpException {
+      throws OsgpException {
     try {
       final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
 
       LOGGER.info(
           "{} called for device: {} for organisation: {}",
-          message.getJMSType(),
+          messageMetadata.getMessageType(),
           messageMetadata.getDeviceIdentification(),
           messageMetadata.getOrganisationIdentification());
 
       if (this.usesDeviceConnection()) {
         this.handleMessage(
-            conn, this.domainHelperService.findDlmsDevice(messageMetadata), message.getObject());
+            conn, this.domainHelperService.findDlmsDevice(messageMetadata), messageObject);
       } else {
-        this.handleMessage(device, message);
+        this.handleMessage(device, messageObject);
       }
-    } catch (final JMSException exception) {
-      this.logJmsException(LOGGER, exception, messageMetadata);
     } catch (final Exception exception) {
       // Return original request + exception
       if (!(exception instanceof SilentException)) {
@@ -130,7 +129,7 @@ public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessage
           ResponseMessageResultType.NOT_OK,
           exception,
           this.responseMessageSender,
-          message.getObject());
+          messageObject);
     } finally {
       final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
       this.doConnectionPostProcessing(device, conn, messageMetadata);
@@ -156,13 +155,13 @@ public abstract class OsgpResponseMessageProcessor extends DlmsConnectionMessage
       final DlmsConnectionManager conn, final DlmsDevice device, final Serializable requestObject)
       throws OsgpException {
     throw new UnsupportedOperationException(
-        "handleMessage(DlmsConnection, DlmsDevice, Serializable) should be overriden by a subclass, or usesDeviceConnection should return false.");
+        "handleMessage(DlmsConnectionManager, DlmsDevice, Serializable) should be overriden by a subclass, or usesDeviceConnection should return false.");
   }
 
-  protected Serializable handleMessage(final DlmsDevice device, final ObjectMessage message)
+  protected Serializable handleMessage(final DlmsDevice device, final Serializable message)
       throws OsgpException {
     throw new UnsupportedOperationException(
-        "handleMessage(Serializable) should be overriden by a subclass, or usesDeviceConnection should return true.");
+        "handleMessage(DlmsDevice, Serializable) should be overriden by a subclass, or usesDeviceConnection should return true.");
   }
 
   /**

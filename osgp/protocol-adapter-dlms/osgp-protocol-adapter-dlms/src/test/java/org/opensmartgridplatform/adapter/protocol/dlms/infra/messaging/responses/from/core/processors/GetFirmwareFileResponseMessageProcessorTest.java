@@ -137,7 +137,7 @@ public class GetFirmwareFileResponseMessageProcessorTest {
 
     // act
     this.getFirmwareFileResponseMessageProcessor.processMessageTasks(
-        message, messageMetadata, this.dlmsConnectionManagerMock);
+        message.getObject(), messageMetadata, this.dlmsConnectionManagerMock);
 
     // assert
     verify(this.responseMessageSender, times(1)).send(responseMessageArgumentCaptor.capture());
@@ -199,7 +199,7 @@ public class GetFirmwareFileResponseMessageProcessorTest {
 
     // act
     this.getFirmwareFileResponseMessageProcessor.processMessageTasks(
-        message, messageMetadata, this.dlmsConnectionManagerMock);
+        message.getObject(), messageMetadata, this.dlmsConnectionManagerMock);
 
     // assert
     verify(this.responseMessageSender, times(1)).send(responseMessageArgumentCaptor.capture());

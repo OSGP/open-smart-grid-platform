@@ -13,10 +13,10 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.entities;
 import java.time.Duration;
 
 public class ConnectionProperties {
-  final boolean pingDevice;
-  final boolean initializeInvocationCounter;
-  final Duration waitBeforeInitializingInvocationCounter;
-  final Duration waitBeforeCreatingTheConnection;
+  private final boolean pingDevice;
+  private final boolean initializeInvocationCounter;
+  private final Duration waitBeforeInitializingInvocationCounter;
+  private final Duration waitBeforeCreatingTheConnection;
 
   public ConnectionProperties(
       final boolean pingDevice,
