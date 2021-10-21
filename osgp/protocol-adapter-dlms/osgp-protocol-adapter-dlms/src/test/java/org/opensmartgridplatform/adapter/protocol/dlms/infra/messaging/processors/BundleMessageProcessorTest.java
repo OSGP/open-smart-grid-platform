@@ -45,7 +45,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.FaultResponseDto
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.opensmartgridplatform.shared.infra.jms.MessageType;
 
 @ExtendWith(MockitoExtension.class)
 class BundleMessageProcessorTest {
@@ -158,7 +157,6 @@ class BundleMessageProcessorTest {
     action.setResponse(response);
     final BundleMessagesRequestDto request = new BundleMessagesRequestDto(Arrays.asList(action));
 
-    when(this.message.getJMSType()).thenReturn(MessageType.CLEAR_ALARM_REGISTER.name());
     when(this.message.getObject()).thenReturn(request);
 
     when(this.bundleService.callExecutors(

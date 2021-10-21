@@ -92,7 +92,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
       } else {
         this.processMessageTasks(messageObject, messageMetadata, null);
       }
-    } catch (final OsgpException exception) {
+    } catch (final Exception exception) {
       this.sendErrorResponse(messageMetadata, exception, message.getObject());
     }
   }
