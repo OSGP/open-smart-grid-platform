@@ -10,7 +10,8 @@ package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.response
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -81,6 +82,27 @@ public class GetFirmwareFileResponseMessageProcessorTest {
   }
 
   @Test
+  void processMessageShouldCallConnectionHelperCreateAndHandleConnection()
+      throws JMSException, OsgpException {
+    final FirmwareFileDto firmwareFileDto = this.setupFirmwareFileDto();
+    final ResponseMessage responseMessage = this.setupResponseMessage(firmwareFileDto);
+    final ObjectMessage message =
+        new ObjectMessageBuilder()
+            .withMessageType(MessageType.GET_FIRMWARE_FILE.name())
+            .withObject(responseMessage)
+            .build();
+
+    when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class)))
+        .thenReturn(this.dlmsDevice);
+
+    this.getFirmwareFileResponseMessageProcessor.processMessage(message);
+
+    verify(this.connectionHelper)
+        .createAndHandleConnectionForDevice(
+            any(MessageMetadata.class), eq(this.dlmsDevice), isNull(), any());
+  }
+
+  @Test
   public void processMessageShouldSendOkResponseMessageContainingFirmwareVersions()
       throws OsgpException, JMSException {
     // arrange
@@ -97,13 +119,15 @@ public class GetFirmwareFileResponseMessageProcessorTest {
     final ArgumentCaptor<ResponseMessage> responseMessageArgumentCaptor =
         ArgumentCaptor.forClass(ResponseMessage.class);
 
+    final MessageMetadata messageMetadata =
+        new MessageMetadata.Builder(MessageMetadata.fromMessage(message))
+            .withMessageType(MessageType.UPDATE_FIRMWARE.name())
+            .build();
+
     when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class)))
         .thenReturn(this.dlmsDevice);
     when(this.dlmsConnectionManagerMock.getDlmsMessageListener())
         .thenReturn(this.dlmsMessageListenerMock);
-    when(this.connectionHelper.createConnectionForDevice(
-            any(MessageMetadata.class), same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
-        .thenReturn(this.dlmsConnectionManagerMock);
     when(this.firmwareService.updateFirmware(
             same(this.dlmsConnectionManagerMock),
             same(this.dlmsDevice),
@@ -112,7 +136,8 @@ public class GetFirmwareFileResponseMessageProcessorTest {
         .thenReturn(updateFirmwareResponseDto);
 
     // act
-    this.getFirmwareFileResponseMessageProcessor.processMessage(message);
+    this.getFirmwareFileResponseMessageProcessor.processMessageTasks(
+        message.getObject(), messageMetadata, this.dlmsConnectionManagerMock);
 
     // assert
     verify(this.responseMessageSender, times(1)).send(responseMessageArgumentCaptor.capture());
@@ -124,7 +149,7 @@ public class GetFirmwareFileResponseMessageProcessorTest {
   }
 
   @Test
-  public void handleMessageShouldCallUpdateFirmware() throws OsgpException {
+  public void createMessageShouldCallUpdateFirmware() throws OsgpException {
     // arrange
     final FirmwareFileDto firmwareFileDto = this.setupFirmwareFileDto();
     final ResponseMessage responseMessage = this.setupResponseMessage(firmwareFileDto);
@@ -153,6 +178,10 @@ public class GetFirmwareFileResponseMessageProcessorTest {
             .withMessageType(MessageType.GET_FIRMWARE_FILE.name())
             .withObject(responseMessage)
             .build();
+    final MessageMetadata messageMetadata =
+        new MessageMetadata.Builder(MessageMetadata.fromMessage(message))
+            .withMessageType(MessageType.UPDATE_FIRMWARE.name())
+            .build();
 
     final ArgumentCaptor<ResponseMessage> responseMessageArgumentCaptor =
         ArgumentCaptor.forClass(ResponseMessage.class);
@@ -161,9 +190,6 @@ public class GetFirmwareFileResponseMessageProcessorTest {
         .thenReturn(this.dlmsDevice);
     when(this.dlmsConnectionManagerMock.getDlmsMessageListener())
         .thenReturn(this.dlmsMessageListenerMock);
-    when(this.connectionHelper.createConnectionForDevice(
-            any(MessageMetadata.class), same(this.dlmsDevice), nullable(DlmsMessageListener.class)))
-        .thenReturn(this.dlmsConnectionManagerMock);
     when(this.firmwareService.updateFirmware(
             same(this.dlmsConnectionManagerMock),
             same(this.dlmsDevice),
@@ -172,7 +198,8 @@ public class GetFirmwareFileResponseMessageProcessorTest {
         .thenThrow(new ProtocolAdapterException("Firmware file fw is not available."));
 
     // act
-    this.getFirmwareFileResponseMessageProcessor.processMessage(message);
+    this.getFirmwareFileResponseMessageProcessor.processMessageTasks(
+        message.getObject(), messageMetadata, this.dlmsConnectionManagerMock);
 
     // assert
     verify(this.responseMessageSender, times(1)).send(responseMessageArgumentCaptor.capture());
