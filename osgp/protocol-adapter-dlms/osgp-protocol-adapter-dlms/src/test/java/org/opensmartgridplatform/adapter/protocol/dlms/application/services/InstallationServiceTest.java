@@ -28,7 +28,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
-public class InstallationServiceTest {
+class InstallationServiceTest {
 
   private final MessageMetadata messageMetadata =
       MessageMetadata.newBuilder().withCorrelationUid("123456").build();
@@ -48,6 +48,7 @@ public class InstallationServiceTest {
     deviceDto.setMasterKey(new byte[16]);
     deviceDto.setAuthenticationKey(new byte[16]);
     deviceDto.setGlobalEncryptionUnicastKey(new byte[16]);
+    deviceDto.setMbusDefaultKey(new byte[0]);
     final DlmsDevice dlmsDevice = new DlmsDevice();
     when(this.installationMapper.map(deviceDto, DlmsDevice.class)).thenReturn(dlmsDevice);
     when(this.dlmsDeviceRepository.save(dlmsDevice)).thenReturn(dlmsDevice);
@@ -66,6 +67,9 @@ public class InstallationServiceTest {
     // GIVEN
     final SmartMeteringDeviceDto deviceDto = new SmartMeteringDeviceDto();
     deviceDto.setDeviceIdentification(this.deviceIdentification);
+    deviceDto.setMasterKey(new byte[0]);
+    deviceDto.setAuthenticationKey(new byte[0]);
+    deviceDto.setGlobalEncryptionUnicastKey(new byte[0]);
     deviceDto.setMbusDefaultKey(new byte[16]);
     final DlmsDevice dlmsDevice = new DlmsDevice();
     when(this.installationMapper.map(deviceDto, DlmsDevice.class)).thenReturn(dlmsDevice);

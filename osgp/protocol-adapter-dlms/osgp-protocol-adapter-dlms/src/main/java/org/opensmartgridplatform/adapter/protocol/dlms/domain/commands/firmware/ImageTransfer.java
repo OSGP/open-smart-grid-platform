@@ -10,8 +10,10 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -38,6 +40,8 @@ public class ImageTransfer {
 
   private static final String EXCEPTION_MSG_IMAGE_VERIFY_NOT_CALLED =
       "Image verify could not be called.";
+  private static final String EXCEPTION_MSG_IMAGE_VERIFICATION_ERROR =
+      "The image could not be verified. Left in firmware transfer status %s with method result code %s}";
   private static final String EXCEPTION_MSG_IMAGE_NOT_VERIFIED =
       "The image could not be verified. Status: ";
   private static final String EXCEPTION_MSG_IMAGE_BLOCK_SIZE_NOT_READ =
@@ -209,8 +213,13 @@ public class ImageTransfer {
     if (this.imageIsVerified()) {
       return;
     }
+
     final int status = this.getImageTransferStatus();
-    throw new ImageTransferException(EXCEPTION_MSG_IMAGE_NOT_VERIFIED + status);
+    throw new ImageTransferException(
+        String.format(
+            EXCEPTION_MSG_IMAGE_VERIFICATION_ERROR,
+            ImageTransferStatus.getByValue(status).name(),
+            verified.name()));
   }
 
   /**
@@ -476,10 +485,10 @@ public class ImageTransfer {
 
   private void logUploadPercentage(final int block, final int totalBlocks) {
     final int step = (int) Math.round(totalBlocks / (100 / LOGGER_PERCENTAGE_STEP));
-    if (step != 0 && block % step == 0) {
+    if (totalBlocks != 0 && step != 0 && block % step == 0) {
       log.info(
           "Firmware upload progress {}%. ({} / {})",
-          ((double) block / step) * LOGGER_PERCENTAGE_STEP, block, totalBlocks);
+          (block * 100) / totalBlocks, block, totalBlocks);
     }
   }
 
@@ -587,6 +596,13 @@ public class ImageTransfer {
     ACTIVATION_FAILED(7);
 
     private final int value;
+    private static final Map<Integer, ImageTransferStatus> map = new HashMap<>();
+
+    static {
+      for (final ImageTransferStatus status : ImageTransferStatus.values()) {
+        map.put(status.value, status);
+      }
+    }
 
     ImageTransferStatus(final int imageTransferStatus) {
       this.value = imageTransferStatus;
@@ -594,6 +610,15 @@ public class ImageTransfer {
 
     private int getValue() {
       return this.value;
+    }
+
+    public static ImageTransferStatus getByValue(final int value) {
+      final ImageTransferStatus status = map.get(value);
+      if (status == null) {
+        throw new IllegalArgumentException(
+            String.format("No ImageTransferStatus found with code %d (int)", value));
+      }
+      return status;
     }
   }
 }

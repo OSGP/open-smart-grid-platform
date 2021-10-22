@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 
 import java.io.Serializable;
+import java.util.function.Consumer;
 import javax.jms.JMSException;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SystemEventService;
@@ -17,6 +18,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionTaskException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.NonRetryableException;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -55,8 +57,11 @@ public abstract class DlmsConnectionMessageProcessor {
 
   @Autowired private SystemEventService systemEventService;
 
-  public DlmsConnectionManager createConnectionForDevice(
-      final DlmsDevice device, final MessageMetadata messageMetadata) throws OsgpException {
+  public void createAndHandleConnectionForDevice(
+      final DlmsDevice device,
+      final MessageMetadata messageMetadata,
+      final Consumer<DlmsConnectionManager> taskForConnectionManager)
+      throws OsgpException {
 
     Permit permit = null;
     if (this.throttlingConfig.clientEnabled()) {
@@ -73,9 +78,26 @@ public abstract class DlmsConnectionMessageProcessor {
         this.createMessageListenerForDeviceConnection(device, messageMetadata);
 
     try {
-      return this.dlmsConnectionHelper.createConnectionForDevice(
-          messageMetadata, device, dlmsMessageListener, permit);
+      this.dlmsConnectionHelper.createAndHandleConnectionForDevice(
+          messageMetadata, device, dlmsMessageListener, permit, taskForConnectionManager);
+    } catch (final ConnectionTaskException e) {
+      /*
+       * Exceptions thrown by the tasks working with the DlmsConnectionManager are wrapped in
+       * ConnectionTaskException in the ThrowingConsumer.
+       */
+      throw e.getOsgpException();
     } catch (final Exception e) {
+      /*
+       * Throttling permit is released in this catch block to make sure that it is made available
+       * again when there were problems setting up the connection and only then (exceptions thrown
+       * by the tasks working with the DlmsConnectionManager are wrapped as ConnectionTaskException
+       * and are caught in the previous catch block, so they don't end up here).
+       *
+       * If there are no problems in setting up the connection, releasing the throttling permit is
+       * the responsibility of the tasks for the DlmsConnectionManager, as seen in
+       * DeviceRequestMessageProcessor.processMessageTasks(), where
+       * this.doConnectionPostProcessing() is called in a finally block.
+       */
       if (this.throttlingConfig.clientEnabled()) {
         this.throttlingConfig.throttlingClient().releasePermit(permit);
       } else {
@@ -115,7 +137,7 @@ public abstract class DlmsConnectionMessageProcessor {
       return;
     }
 
-    this.closeDlmsConnection(device, conn);
+    this.setClosingDlmsConnectionMessageListener(device, conn);
 
     if (this.throttlingConfig.clientEnabled()) {
       this.throttlingConfig.throttlingClient().releasePermit(conn.getPermit());
@@ -130,15 +152,11 @@ public abstract class DlmsConnectionMessageProcessor {
     }
   }
 
-  protected void closeDlmsConnection(final DlmsDevice device, final DlmsConnectionManager conn) {
+  protected void setClosingDlmsConnectionMessageListener(
+      final DlmsDevice device, final DlmsConnectionManager conn) {
     LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
     final DlmsMessageListener dlmsMessageListener = conn.getDlmsMessageListener();
     dlmsMessageListener.setDescription("Close connection");
-    try {
-      conn.close();
-    } catch (final Exception e) {
-      LOGGER.error("Error while closing connection", e);
-    }
   }
 
   /* package private */

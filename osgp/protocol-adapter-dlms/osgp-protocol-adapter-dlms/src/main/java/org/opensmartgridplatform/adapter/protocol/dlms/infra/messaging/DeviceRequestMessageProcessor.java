@@ -18,6 +18,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.application.services.Doma
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.SilentException;
+import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ThrowingConsumer;
 import org.opensmartgridplatform.shared.exceptionhandling.ComponentType;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalExceptionType;
@@ -80,13 +81,43 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
   public void processMessage(final ObjectMessage message) throws JMSException {
     log.debug("Processing {} request message", this.messageType);
 
-    MessageMetadata messageMetadata = null;
-    DlmsConnectionManager connectionManager = null;
-    DlmsDevice device = null;
+    final MessageMetadata messageMetadata = MessageMetadata.fromMessage(message);
+    final Serializable messageObject = message.getObject();
+
+    final ThrowingConsumer<DlmsConnectionManager> taskForConnectionManager =
+        connectionManager ->
+            this.processMessageTasks(messageObject, messageMetadata, connectionManager);
 
     try {
-      messageMetadata = MessageMetadata.fromMessage(message);
+      if (this.usesDeviceConnection()) {
+        this.createAndHandleConnectionForDevice(
+            this.domainHelperService.findDlmsDevice(messageMetadata),
+            messageMetadata,
+            taskForConnectionManager);
+      } else {
+        this.processMessageTasks(messageObject, messageMetadata, null);
+      }
+    } catch (final ThrottlingPermitDeniedException exception) {
 
+      /*
+       * Throttling permit for network access not granted, send the request back to the queue to be
+       * picked up again a little later by the message listener for device requests.
+       */
+      this.deviceRequestMessageSender.send(
+          messageObject, messageMetadata, this.throttlingConfig.delay());
+
+    } catch (final Exception exception) {
+      this.sendErrorResponse(messageMetadata, exception, messageObject);
+    }
+  }
+
+  public void processMessageTasks(
+      final Serializable messageObject,
+      final MessageMetadata messageMetadata,
+      final DlmsConnectionManager connectionManager)
+      throws OsgpException {
+    try {
+      DlmsDevice device = null;
       if (this.maxScheduleTimeExceeded(messageMetadata)) {
         log.info(
             "Processing message of type {} for correlation UID {} exceeded max schedule time: {} ({})",
@@ -98,7 +129,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
             messageMetadata,
             new FunctionalException(
                 FunctionalExceptionType.MAX_SCHEDULE_TIME_EXCEEDED, ComponentType.PROTOCOL_DLMS),
-            message.getObject());
+            messageObject);
         return;
       }
 
@@ -108,31 +139,17 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
 
       log.info(
           "{} called for device: {} for organisation: {}, correlationUID={}",
-          message.getJMSType(),
+          messageMetadata.getMessageType(),
           messageMetadata.getDeviceIdentification(),
           messageMetadata.getOrganisationIdentification(),
           messageMetadata.getCorrelationUid());
 
-      if (this.usesDeviceConnection()) {
-        connectionManager = this.createConnectionForDevice(device, messageMetadata);
-      }
-
       final Serializable response =
-          this.getResponse(connectionManager, device, message.getObject(), messageMetadata);
+          this.getResponse(connectionManager, device, messageObject, messageMetadata);
       this.sendResponse(messageMetadata, response);
 
-    } catch (final ThrottlingPermitDeniedException exception) {
-
-      this.deviceRequestMessageSender.send(
-          message.getObject(), messageMetadata, this.throttlingConfig.delay());
-
-    } catch (final JMSException exception) {
-      this.logJmsException(log, exception, messageMetadata);
-    } catch (final Exception exception) {
-
-      this.sendErrorResponse(messageMetadata, exception, message.getObject());
-
     } finally {
+      final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
       this.doConnectionPostProcessing(device, connectionManager, messageMetadata);
     }
   }

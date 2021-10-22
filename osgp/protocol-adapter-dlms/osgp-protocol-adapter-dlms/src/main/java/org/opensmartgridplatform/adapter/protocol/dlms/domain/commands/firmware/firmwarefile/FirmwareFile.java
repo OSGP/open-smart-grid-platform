@@ -12,6 +12,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Hex;
@@ -35,13 +36,13 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapte
 @Slf4j
 public class FirmwareFile {
 
+  private static final byte[] EMPTY_FIRMWARE_VERSION = new byte[] {0, 0, 0, 0};
+
   private byte[] imageData;
 
   private static final int HEADER_LENGTH = 35;
-  public static final String FIRMWARE_IMAGE_MAGIC_NUMBER = "534d5235";
-  // Fixed value in requirement of SMR5.1. In SMR5.2 no value is specified for HEADER_VERSION
-  // Therefor there is no check on the value of HEADER_VERSION
-  public static final int HEADER_VERSION = 0;
+  public static final List<String> VALID_FIRMWARE_IMAGE_MAGIC_NUMBERS =
+      Arrays.asList("534d5235", "35524d53");
 
   public FirmwareFile(final byte[] imageData) {
     this.imageData = imageData;
@@ -49,31 +50,31 @@ public class FirmwareFile {
 
   public boolean isMbusFirmware() {
     return this.imageData.length >= HEADER_LENGTH
-        && this.getHeader()
-            .getFirmwareImageMagicNumberHex()
-            .equalsIgnoreCase(FIRMWARE_IMAGE_MAGIC_NUMBER)
+        && VALID_FIRMWARE_IMAGE_MAGIC_NUMBERS.contains(
+            this.getHeader().getFirmwareImageMagicNumberHex())
         && this.getHeader().getAddressTypeEnum() == AddressType.MBUS_ADDRESS;
   }
 
-  public void checkLengths() {
+  public void checkLengths() throws ProtocolAdapterException {
     final FirmwareFileHeader header = this.getHeader();
     final Integer firmwareImageLength = header.getFirmwareImageLengthInt();
     final Integer securityLength = header.getSecurityLengthInt();
     final Integer headerLength = header.getHeaderLengthInt();
     if (this.imageData.length != (firmwareImageLength + securityLength + headerLength)) {
-      log.warn(
-          "Byte array length doesn't match lengths defined in header: "
-              + "\nByte array length : {}"
-              + "\nLengths defined in header: "
-              + "\nHeader : {}"
-              + "\nFirmwareImage : {}"
-              + "\nSecurity : {}"
-              + "\nTotal of {}  bytes.",
-          this.imageData.length,
-          headerLength,
-          firmwareImageLength,
-          securityLength,
-          (firmwareImageLength + securityLength + headerLength));
+      throw new ProtocolAdapterException(
+          String.format(
+              "Byte array length doesn't match lengths defined in header: "
+                  + "\nByte array length : %d"
+                  + "\nLengths defined in header: "
+                  + "\nHeader : %d"
+                  + "\nFirmwareImage : %d"
+                  + "\nSecurity : %d"
+                  + "\nTotal of %d  bytes.",
+              this.imageData.length,
+              headerLength,
+              firmwareImageLength,
+              securityLength,
+              (firmwareImageLength + securityLength + headerLength)));
     }
   }
 
@@ -109,21 +110,16 @@ public class FirmwareFile {
             .array();
   }
 
-  public void setMbusDeviceIdentificationNumber(final int mbusDeviceIdentificationNumber)
+  public void setMbusDeviceIdentificationNumber(final String mbusDeviceIdentificationNumber)
       throws ProtocolAdapterException {
 
     final byte[] mbusDeviceIdentificationNumberByteArray =
         ByteBuffer.allocate(4)
             .order(ByteOrder.LITTLE_ENDIAN)
-            .putInt(mbusDeviceIdentificationNumber)
+            .putInt(Integer.parseInt(mbusDeviceIdentificationNumber, 16))
             .array();
 
-    this.checkWildcard(
-        Hex.toHexString(
-            ByteBuffer.allocate(4)
-                .order(ByteOrder.BIG_ENDIAN)
-                .putInt(mbusDeviceIdentificationNumber)
-                .array()));
+    this.checkWildcard(mbusDeviceIdentificationNumber);
 
     final ByteBuffer buffer = ByteBuffer.wrap(this.imageData);
     buffer.position(22);
@@ -131,20 +127,28 @@ public class FirmwareFile {
     this.imageData = buffer.array();
   }
 
+  public void setMbusVersion(final Integer mbusVersion) {
+
+    final ByteBuffer buffer = ByteBuffer.wrap(this.imageData);
+    buffer.position(26);
+    buffer.put(new byte[] {mbusVersion.byteValue()});
+    this.imageData = buffer.array();
+  }
+
   /**
    * The Identification number can be wildcarded, a firmware file can be made available for a range
    * or all individual meters. The wildcard character is hex-value: 'F'.
    */
-  private void checkWildcard(final String mbusDeviceIdentificationNumberHex)
+  private void checkWildcard(final String mbusDeviceIdentificationNumber)
       throws ProtocolAdapterException {
     final String lsbFirstPattern = this.getHeader().getMbusDeviceIdentificationNumber();
     final String msbFirstPattern = this.reverseHexString(lsbFirstPattern);
     if (!Pattern.matches(
-        msbFirstPattern.replaceAll("[fF]", "[0-9]"), mbusDeviceIdentificationNumberHex)) {
+        msbFirstPattern.replaceAll("[fF]", "[0-9]"), mbusDeviceIdentificationNumber)) {
       throw new ProtocolAdapterException(
           String.format(
               "M-Bus Device Identification Number (%s) does not fit the range of Identification Numbers supported by this Firmware File (%s)",
-              mbusDeviceIdentificationNumberHex, msbFirstPattern));
+              mbusDeviceIdentificationNumber, msbFirstPattern));
     }
   }
 
@@ -243,7 +247,10 @@ public class FirmwareFile {
     imageIdentifier.put(addressField.getMbusManufacturerId());
     imageIdentifier.put(addressField.getMbusVersion());
     imageIdentifier.put(addressField.getMbusDeviceType());
-    imageIdentifier.put(header.getFirmwareImageVersion());
+    // There is no validation on the Firmware ID part of the imageIdentifier
+    // for the meters tested so far. As long as no meters are available that explicitly
+    // validate this part empty bytes are placed here
+    imageIdentifier.put(EMPTY_FIRMWARE_VERSION);
 
     return imageIdentifier.array();
   }

@@ -181,13 +181,17 @@ public class ScanMbusChannelsCommandExecutor
     final DlmsObject mbusClientSetupObject =
         this.dlmsObjectConfigService.getDlmsObject(device, DlmsObjectType.MBUS_CLIENT_SETUP);
 
-    if (mbusClientSetupObject.getVersion().equals(DlmsClassVersion.VERSION_0)) {
+    if (this.identificationNumberStoredAsBcdOnDevice(mbusClientSetupObject)) {
       identificationNumber = IdentificationNumber.fromBcdRepresentationAsLong(identification);
     } else {
       identificationNumber = IdentificationNumber.fromNumericalRepresentation(identification);
     }
 
     return identificationNumber.getTextualRepresentation();
+  }
+
+  private boolean identificationNumberStoredAsBcdOnDevice(final DlmsObject mbusClientSetupObject) {
+    return mbusClientSetupObject.getVersion().equals(DlmsClassVersion.VERSION_0);
   }
 
   private String determineManufacturerIdentification(final GetResult getResult, final short channel)

@@ -10,8 +10,13 @@ package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,9 +33,13 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
-public class DlmsConnectionFactoryTest {
+class DlmsConnectionFactoryTest {
   private DlmsConnectionFactory factory;
   private MessageMetadata messageMetadata;
+  private Consumer<DlmsConnectionManager> task;
+  private final AtomicReference<DlmsConnectionManager> actualConnectionManagerReference =
+      new AtomicReference<>();
+  private final AtomicReference<DlmsConnection> actualConnectionReference = new AtomicReference<>();
 
   @Mock private Hls5Connector hls5Connector;
 
@@ -43,100 +52,114 @@ public class DlmsConnectionFactoryTest {
   @Mock private DlmsConnection connection;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     this.factory =
         new DlmsConnectionFactory(
             this.hls5Connector, this.lls1Connector, this.lls0Connector, this.domainHelperService);
     this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
+    this.actualConnectionManagerReference.set(null);
+    this.actualConnectionReference.set(null);
+    this.task =
+        conn -> {
+          this.actualConnectionManagerReference.set(conn);
+          this.actualConnectionReference.set(conn.getConnection());
+        };
   }
 
   @Test
-  public void returnsConnectionManagerForHls5Device() throws Exception {
+  void createsConnectionManagerForHls5Device() throws Exception {
     final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true).build();
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
     when(this.hls5Connector.connect(this.messageMetadata, device, listener))
         .thenReturn(this.connection);
-
-    final DlmsConnectionManager result =
-        this.factory.getConnection(this.messageMetadata, device, listener, null);
-
     final DlmsConnectionManager expected =
         this.newConnectionManager(device, listener, this.hls5Connector);
-    assertThat(result).isEqualToComparingFieldByField(expected);
-    assertThat(result.getConnection()).isSameAs(this.connection);
+
+    this.factory.createAndHandleConnection(this.messageMetadata, device, listener, this.task);
+
+    this.assertConnectionManagerForDevice(expected);
   }
 
   @Test
-  public void getConnection_throwsForHls4Device() {
-
+  void createAndHandleConnectionThrowsForHls4Device() {
     final DlmsDevice device = new DlmsDeviceBuilder().withHls4Active(true).build();
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
     assertThatExceptionOfType(FunctionalException.class)
         .isThrownBy(
-            () -> {
-              this.factory.getConnection(this.messageMetadata, device, listener, null);
-            });
+            () ->
+                this.factory.createAndHandleConnection(
+                    this.messageMetadata, device, listener, this.task));
   }
 
   @Test
-  public void getConnection_throwsForHls3Device() {
+  void createAndHandleConnectionThrowsForHls3Device() {
     final DlmsDevice device = new DlmsDeviceBuilder().withHls3Active(true).build();
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
     assertThatExceptionOfType(FunctionalException.class)
         .isThrownBy(
-            () -> {
-              this.factory.getConnection(this.messageMetadata, device, listener, null);
-            });
+            () ->
+                this.factory.createAndHandleConnection(
+                    this.messageMetadata, device, listener, this.task));
   }
 
   @Test
-  public void returnsConnectionManagerForLls1Device() throws Exception {
+  void createsConnectionManagerForLls1Device() throws Exception {
     final DlmsDevice device = new DlmsDeviceBuilder().withLls1Active(true).build();
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
     when(this.lls1Connector.connect(this.messageMetadata, device, listener))
         .thenReturn(this.connection);
-
-    final DlmsConnectionManager result =
-        this.factory.getConnection(this.messageMetadata, device, listener, null);
-
     final DlmsConnectionManager expected =
         this.newConnectionManager(device, listener, this.lls1Connector);
-    assertThat(result).isEqualToComparingFieldByField(expected);
-    assertThat(result.getConnection()).isSameAs(this.connection);
+
+    this.factory.createAndHandleConnection(this.messageMetadata, device, listener, this.task);
+
+    this.assertConnectionManagerForDevice(expected);
   }
 
   @Test
-  public void returnsConnectionManagerForLls0Device() throws Exception {
+  void createsConnectionManagerForLls0Device() throws Exception {
     final DlmsDevice device = new DlmsDeviceBuilder().withLls1Active(false).build();
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
     when(this.lls0Connector.connect(this.messageMetadata, device, listener))
         .thenReturn(this.connection);
-
-    final DlmsConnectionManager result =
-        this.factory.getConnection(this.messageMetadata, device, listener, null);
-
     final DlmsConnectionManager expected =
         this.newConnectionManager(device, listener, this.lls0Connector);
-    assertThat(result).isEqualToComparingFieldByField(expected);
-    assertThat(result.getConnection()).isSameAs(this.connection);
+
+    this.factory.createAndHandleConnection(this.messageMetadata, device, listener, this.task);
+
+    this.assertConnectionManagerForDevice(expected);
   }
 
   @Test
-  public void returnsPublicClientConnectionManagerForDevice() throws Exception {
+  void createsPublicClientConnectionManagerForDevice() throws Exception {
     final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true).build();
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
     when(this.lls0Connector.connect(this.messageMetadata, device, listener))
         .thenReturn(this.connection);
-
-    final DlmsConnectionManager result =
-        this.factory.getPublicClientConnection(this.messageMetadata, device, listener, null);
-
     final DlmsConnectionManager expected =
         this.newConnectionManager(device, listener, this.lls0Connector);
-    assertThat(result).isEqualToComparingFieldByField(expected);
-    assertThat(result.getConnection()).isSameAs(this.connection);
+
+    this.factory.createAndHandlePublicClientConnection(
+        this.messageMetadata, device, listener, this.task);
+
+    this.assertConnectionManagerForDevice(expected);
+  }
+
+  private void assertConnectionManagerForDevice(final DlmsConnectionManager expected)
+      throws IOException {
+    assertThat(this.actualConnectionManagerReference.get())
+        .isEqualToComparingOnlyGivenFields(
+            expected,
+            "messageMetadata",
+            "connector",
+            "device",
+            "dlmsMessageListener",
+            "domainHelperService");
+
+    assertThat(this.actualConnectionReference.get()).isSameAs(this.connection);
+    verify(this.connection, times(1)).close();
   }
 
   private DlmsConnectionManager newConnectionManager(
