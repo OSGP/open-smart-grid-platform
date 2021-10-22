@@ -18,7 +18,6 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDetailDto;
-import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDetailNameTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventLogCategoryDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.EventLogCategoryDto.EventLogDetailsType;
@@ -146,13 +145,13 @@ public class DataObjectToEventListConverter {
     this.checkIsNumber(eventData.get(2), MAGNITUDE);
     eventDetails.add(
         new EventDetailDto(
-            EventDetailNameTypeDto.MAGNITUDE,
+            MAGNITUDE,
             this.readValueWithScalerAndUnit(eventData.get(2), BigDecimal.valueOf(0.1), "V")));
 
     this.checkIsNumber(eventData.get(3), DURATION);
     eventDetails.add(
         new EventDetailDto(
-            EventDetailNameTypeDto.DURATION,
+            DURATION,
             this.readValueWithScalerAndUnit(eventData.get(3), BigDecimal.valueOf(0.1), "s")));
 
     return eventDetails;

@@ -49,12 +49,4 @@ public class EventDto implements Serializable {
   public void addEventDetails(final List<EventDetailDto> eventDetails) {
     this.eventDetails.addAll(eventDetails);
   }
-
-  public String getEventDetailValue(final EventDetailNameTypeDto eventDetailKey) {
-    return this.eventDetails.stream()
-        .filter(detail -> detail.getName().equals(eventDetailKey))
-        .map(EventDetailDto::getValue)
-        .findFirst()
-        .orElse(null);
-  }
 }
