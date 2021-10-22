@@ -9,35 +9,14 @@
 package org.opensmartgridplatform.simulator.protocol.dlms.starter;
 
 import java.io.IOException;
-import org.opensmartgridplatform.simulator.protocol.dlms.database.CoreDatabaseRepository;
-import org.opensmartgridplatform.simulator.protocol.dlms.database.DatabaseHelper;
-import org.opensmartgridplatform.simulator.protocol.dlms.database.ProtocolAdapterDlmsDatabaseRepository;
-import org.opensmartgridplatform.simulator.protocol.dlms.database.SharedDatabaseRepository;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 @Configuration
 @ComponentScan()
 public class StarterConfig {
-  public Starter starter(
-      final DatabaseHelper databaseHelper, final ApplicationArguments applicationArguments)
-      throws IOException {
-    return new Starter(databaseHelper, applicationArguments);
-  }
-
-  public DatabaseHelper databaseHelper(
-      final CoreDatabaseRepository coreDatabaseRepository,
-      final ProtocolAdapterDlmsDatabaseRepository protocolAdapterDlmsDatabaseRepository,
-      final SharedDatabaseRepository sharedDatabaseRepository) {
-    return new DatabaseHelper(
-        coreDatabaseRepository, protocolAdapterDlmsDatabaseRepository, sharedDatabaseRepository);
-  }
-
-  public CoreDatabaseRepository coreDatabaseRepository(
-      @Qualifier("coreDb") final JdbcTemplate jdbcTemplate) {
-    return new CoreDatabaseRepository(jdbcTemplate);
+  public Starter starter(final ApplicationArguments applicationArguments) throws IOException {
+    return new Starter(applicationArguments);
   }
 }

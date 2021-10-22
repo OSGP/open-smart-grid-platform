@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import org.opensmartgridplatform.simulator.protocol.dlms.database.DatabaseHelper;
 import org.opensmartgridplatform.simulator.protocol.dlms.server.DeviceServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,15 +28,10 @@ import org.springframework.util.Assert;
 public class Starter {
   private static final Logger LOGGER = LoggerFactory.getLogger(Starter.class);
 
-  private final DatabaseHelper databaseHelper;
-
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   @Autowired
-  public Starter(
-      final DatabaseHelper databaseHelper, final ApplicationArguments applicationArguments)
-      throws IOException {
-    this.databaseHelper = databaseHelper;
+  public Starter(final ApplicationArguments applicationArguments) throws IOException {
     this.run(applicationArguments.getNonOptionArgs());
   }
 
@@ -62,22 +56,10 @@ public class Starter {
   private void performAction(
       final SimulatorConfiguration simulatorConfiguration, final String action)
       throws JsonProcessingException {
-    switch (action) {
-      case "insert":
-        this.databaseHelper.insertDevices(simulatorConfiguration);
-        break;
-      case "start":
-        this.startSimulator(simulatorConfiguration);
-        break;
-      case "insertAndStart":
-        this.databaseHelper.insertDevices(simulatorConfiguration);
-        this.startSimulator(simulatorConfiguration);
-        break;
-      case "delete":
-        this.databaseHelper.deleteDevices(simulatorConfiguration);
-        break;
-      default:
-        throw new IllegalArgumentException("Unknown action: " + action);
+    if ("start".equals(action)) {
+      this.startSimulator(simulatorConfiguration);
+    } else {
+      throw new IllegalArgumentException("Unknown action: " + action);
     }
   }
 
