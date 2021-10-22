@@ -1,3 +1,5 @@
+-- Insert database content expected to be present executing test methods annotated with
+-- @Sql(scripts = "/permits-by-throttling-config-initializes-from-database.sql")
 INSERT INTO throttling_config (id, name, max_concurrency) VALUES
   (1, 'config-one', 10),
   (2, 'config-two', 15),

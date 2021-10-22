@@ -53,9 +53,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
 
   @Autowired protected DomainHelperService domainHelperService;
 
-  @Autowired
-  @Qualifier("protocolDlmsDlmsRequestsMessageSender")
-  private DeviceRequestMessageSender deviceRequestMessageSender;
+  @Autowired private DeviceRequestMessageSender deviceRequestMessageSender;
 
   protected final MessageType messageType;
 
@@ -104,7 +102,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
        * picked up again a little later by the message listener for device requests.
        */
       this.deviceRequestMessageSender.send(
-          messageObject, messageMetadata, this.throttlingConfig.delay());
+          messageObject, messageMetadata, this.throttlingClientConfig.delay());
 
     } catch (final Exception exception) {
       this.sendErrorResponse(messageMetadata, exception, messageObject);

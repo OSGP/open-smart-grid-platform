@@ -19,11 +19,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
-@Component(value = "protocolDlmsDlmsRequestsMessageSender")
+@Component
 public class DeviceRequestMessageSender {
 
   @Autowired
-  @Qualifier("protocolDlmsDlmsRequestsJmsTemplate")
+  @Qualifier("protocolDlmsDeviceRequestMessageSenderJmsTemplate")
   private JmsTemplate jmsTemplate;
 
   public void send(

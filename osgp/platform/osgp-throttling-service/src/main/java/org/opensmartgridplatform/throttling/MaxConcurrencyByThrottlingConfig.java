@@ -37,7 +37,7 @@ public class MaxConcurrencyByThrottlingConfig {
   }
 
   @PostConstruct
-  public void initialize() {
+  private void initialize() {
     final StopWatch stopWatch = new StopWatch(this.getClass().getSimpleName());
     stopWatch.start();
     this.throttlingConfigRepository
@@ -54,7 +54,7 @@ public class MaxConcurrencyByThrottlingConfig {
    * Clears all cached throttling configuration and initializes the cached information from the
    * database.
    */
-  public void reset() {
+  void reset() {
     this.maxConcurrencyByConfigId.clear();
     this.initialize();
   }

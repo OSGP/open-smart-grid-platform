@@ -40,12 +40,6 @@ public class ThrottlingClient {
   private final RestTemplate restTemplate;
 
   public ThrottlingClient(
-      final ThrottlingConfig throttlingConfig, final String throttlingServiceUrl) {
-
-    this(throttlingConfig, throttlingServiceUrl, Duration.ofSeconds(30));
-  }
-
-  public ThrottlingClient(
       final ThrottlingConfig throttlingConfig,
       final String throttlingServiceUrl,
       final Duration timeout) {
@@ -141,6 +135,33 @@ public class ThrottlingClient {
   }
 
   /**
+   * Requests a permit for a network segment identified by {@code baseTransceiverStationId} and
+   * {@code cellId} or for the entire network if any of the IDs is {@code null}.
+   *
+   * <p>The return value contains a request ID that is unique to this client. This permit, with at
+   * least the request ID is required to release the permit when finished.
+   *
+   * @param baseTransceiverStationId ID of the BTS
+   * @param cellId Cell ID within the BTS
+   * @return a permit granting access to a network or network segment
+   * @throws ThrottlingPermitDeniedException if a permit is not granted
+   */
+  public Permit requestPermitUsingNetworkSegmentIfIdsAreAvailable(
+      final Integer baseTransceiverStationId, final Integer cellId) {
+
+    if (baseTransceiverStationId != null && cellId != null) {
+      return this.requestPermit(baseTransceiverStationId, cellId)
+          .orElseThrow(
+              () ->
+                  new ThrottlingPermitDeniedException(
+                      this.throttlingConfig.getName(), baseTransceiverStationId, cellId));
+    }
+
+    return this.requestPermit()
+        .orElseThrow(() -> new ThrottlingPermitDeniedException(this.throttlingConfig.getName()));
+  }
+
+  /**
    * Requests a permit for the entire network. All calls to this method share a single throttling
    * limit.
    *
@@ -224,33 +245,6 @@ public class ThrottlingClient {
                 cellId,
                 Instant.now()))
         : Optional.empty();
-  }
-
-  /**
-   * Requests a permit for a network segment identified by {@code baseTransceiverStationId} and
-   * {@code cellId} or for the entire network if any of the IDs is {@code null}.
-   *
-   * <p>The return value contains a request ID that is unique to this client. This permit, with at
-   * least the request ID is required to release the permit when finished.
-   *
-   * @param baseTransceiverStationId ID of the BTS
-   * @param cellId Cell ID within the BTS
-   * @return a permit granting access to a network or network segment
-   * @throws ThrottlingPermitDeniedException if a permit is not granted
-   */
-  public Permit requestPermitUsingNetworkSegmentIfIdsAreAvailable(
-      final Integer baseTransceiverStationId, final Integer cellId) {
-
-    if (baseTransceiverStationId != null && cellId != null) {
-      return this.requestPermit(baseTransceiverStationId, cellId)
-          .orElseThrow(
-              () ->
-                  new ThrottlingPermitDeniedException(
-                      this.throttlingConfig.getName(), baseTransceiverStationId, cellId));
-    }
-
-    return this.requestPermit()
-        .orElseThrow(() -> new ThrottlingPermitDeniedException(this.throttlingConfig.getName()));
   }
 
   private Integer numberOfGrantedPermits(final int requestId) {

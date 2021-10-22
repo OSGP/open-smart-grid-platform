@@ -164,14 +164,14 @@ public class DlmsConfig extends AbstractConfig {
       final Hls5Connector hls5Connector,
       final SecretManagementService secretManagementService,
       final ThrottlingService throttlingService,
-      final ThrottlingConfig throttlingConfig,
+      final ThrottlingClientConfig throttlingClientConfig,
       final DlmsDeviceRepository deviceRepository) {
     return new RecoverKeyProcess(
         domainHelperService,
         hls5Connector,
         secretManagementService,
         throttlingService,
-        throttlingConfig,
+        throttlingClientConfig,
         deviceRepository);
   }
 

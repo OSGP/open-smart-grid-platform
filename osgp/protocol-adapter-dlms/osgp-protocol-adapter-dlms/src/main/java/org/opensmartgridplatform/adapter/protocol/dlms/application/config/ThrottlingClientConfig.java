@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class ThrottlingConfig {
+public class ThrottlingClientConfig {
 
   @Value("${throttling.client.enabled:false}")
   private boolean clientEnabled;

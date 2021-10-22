@@ -11,7 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 import java.io.Serializable;
 import java.util.function.Consumer;
 import javax.jms.JMSException;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingConfig;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingClientConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SystemEventService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -53,7 +53,7 @@ public abstract class DlmsConnectionMessageProcessor {
 
   @Autowired protected ThrottlingService throttlingService;
 
-  @Autowired protected ThrottlingConfig throttlingConfig;
+  @Autowired protected ThrottlingClientConfig throttlingClientConfig;
 
   @Autowired private SystemEventService systemEventService;
 
@@ -64,9 +64,9 @@ public abstract class DlmsConnectionMessageProcessor {
       throws OsgpException {
 
     Permit permit = null;
-    if (this.throttlingConfig.clientEnabled()) {
+    if (this.throttlingClientConfig.clientEnabled()) {
       permit =
-          this.throttlingConfig
+          this.throttlingClientConfig
               .throttlingClient()
               .requestPermitUsingNetworkSegmentIfIdsAreAvailable(
                   messageMetadata.getBaseTransceiverStationId(), messageMetadata.getCellId());
@@ -98,8 +98,8 @@ public abstract class DlmsConnectionMessageProcessor {
        * DeviceRequestMessageProcessor.processMessageTasks(), where
        * this.doConnectionPostProcessing() is called in a finally block.
        */
-      if (this.throttlingConfig.clientEnabled()) {
-        this.throttlingConfig.throttlingClient().releasePermit(permit);
+      if (this.throttlingClientConfig.clientEnabled()) {
+        this.throttlingClientConfig.throttlingClient().releasePermit(permit);
       } else {
         this.throttlingService.closeConnection();
       }
@@ -139,8 +139,8 @@ public abstract class DlmsConnectionMessageProcessor {
 
     this.setClosingDlmsConnectionMessageListener(device, conn);
 
-    if (this.throttlingConfig.clientEnabled()) {
-      this.throttlingConfig.throttlingClient().releasePermit(conn.getPermit());
+    if (this.throttlingClientConfig.clientEnabled()) {
+      this.throttlingClientConfig.throttlingClient().releasePermit(conn.getPermit());
     } else {
       this.throttlingService.closeConnection();
     }

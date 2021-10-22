@@ -18,7 +18,7 @@ import java.util.TimerTask;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.openmuc.jdlms.DlmsConnection;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingConfig;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingClientConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
@@ -48,7 +48,7 @@ public class RecoverKeyProcess implements Runnable {
 
   private final ThrottlingService throttlingService;
 
-  private final ThrottlingConfig throttlingConfig;
+  private final ThrottlingClientConfig throttlingClientConfig;
 
   private final DlmsDeviceRepository deviceRepository;
 
@@ -57,13 +57,13 @@ public class RecoverKeyProcess implements Runnable {
       final Hls5Connector hls5Connector,
       final SecretManagementService secretManagementService,
       final ThrottlingService throttlingService,
-      final ThrottlingConfig throttlingConfig,
+      final ThrottlingClientConfig throttlingClientConfig,
       final DlmsDeviceRepository deviceRepository) {
     this.domainHelperService = domainHelperService;
     this.hls5Connector = hls5Connector;
     this.secretManagementService = secretManagementService;
     this.throttlingService = throttlingService;
-    this.throttlingConfig = throttlingConfig;
+    this.throttlingClientConfig = throttlingClientConfig;
     this.deviceRepository = deviceRepository;
   }
 
@@ -105,7 +105,7 @@ public class RecoverKeyProcess implements Runnable {
                   RecoverKeyProcess.this.run();
                 }
               },
-              this.throttlingConfig.delay().toMillis());
+              this.throttlingClientConfig.delay().toMillis());
 
       return;
     }
@@ -142,9 +142,9 @@ public class RecoverKeyProcess implements Runnable {
     InvocationCountingDlmsMessageListener dlmsMessageListener = null;
     Permit permit = null;
     try {
-      if (this.throttlingConfig.clientEnabled()) {
+      if (this.throttlingClientConfig.clientEnabled()) {
         permit =
-            this.throttlingConfig
+            this.throttlingClientConfig
                 .throttlingClient()
                 .requestPermitUsingNetworkSegmentIfIdsAreAvailable(
                     this.messageMetadata.getBaseTransceiverStationId(),
@@ -178,9 +178,9 @@ public class RecoverKeyProcess implements Runnable {
         }
       }
 
-      if (this.throttlingConfig.clientEnabled()) {
+      if (this.throttlingClientConfig.clientEnabled()) {
         if (permit != null) {
-          this.throttlingConfig.throttlingClient().releasePermit(permit);
+          this.throttlingClientConfig.throttlingClient().releasePermit(permit);
         }
       } else {
         this.throttlingService.closeConnection();

@@ -40,7 +40,7 @@ public class PermitsByThrottlingConfig {
   }
 
   @PostConstruct
-  public void initialize() {
+  private void initialize() {
     final StopWatch stopWatch = new StopWatch(this.getClass().getSimpleName());
     stopWatch.start();
     this.throttlingConfigRepository

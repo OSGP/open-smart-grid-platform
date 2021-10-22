@@ -29,7 +29,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingConfig;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingClientConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.FirmwareService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
@@ -71,7 +71,7 @@ class GetFirmwareFileResponseMessageProcessorTest {
 
   @Mock private ThrottlingService throttlingService;
 
-  @Mock private ThrottlingConfig throttlingConfig;
+  @Mock private ThrottlingClientConfig throttlingClientConfig;
 
   @Mock private OsgpExceptionConverter osgpExceptionConverter;
 
@@ -83,7 +83,7 @@ class GetFirmwareFileResponseMessageProcessorTest {
   @BeforeEach
   void setUp() {
     this.dlmsDevice = new DlmsDeviceBuilder().withHls5Active(true).build();
-    lenient().when(this.throttlingConfig.clientEnabled()).thenReturn(false);
+    lenient().when(this.throttlingClientConfig.clientEnabled()).thenReturn(false);
   }
 
   @Test

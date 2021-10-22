@@ -71,9 +71,9 @@ public class InboundOsgpCoreRequestsMessagingConfig {
     return new BaseMessageProcessorMap("InboundOsgpCoreRequestsMessageProcessorMap");
   }
 
-  @Bean(name = "protocolDlmsDlmsRequestsJmsTemplate")
+  @Bean(name = "protocolDlmsDeviceRequestMessageSenderJmsTemplate")
   public JmsTemplate jmsTemplate() {
-    LOGGER.info("Initializing protocolDlmsDlmsRequestsJmsTemplate bean.");
+    LOGGER.info("Initializing protocolDlmsDeviceRequestMessageSenderJmsTemplate bean.");
     return this.jmsConfigurationFactory.initJmsTemplate();
   }
 }
