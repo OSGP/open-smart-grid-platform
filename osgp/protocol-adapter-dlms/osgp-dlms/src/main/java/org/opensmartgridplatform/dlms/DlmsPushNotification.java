@@ -24,8 +24,8 @@ public class DlmsPushNotification implements Serializable {
 
     private String equipmentIdentifier;
     private String triggerType;
-    private EnumSet<AlarmTypeDto> alarms;
-    private ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    private EnumSet<AlarmTypeDto> alarms = EnumSet.noneOf(AlarmTypeDto.class);
+    private final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
     public Builder appendByte(final byte b) {
       this.baos.write(b);
@@ -57,6 +57,11 @@ public class DlmsPushNotification implements Serializable {
       } else {
         this.alarms = EnumSet.copyOf(alarms);
       }
+      return this;
+    }
+
+    public Builder addAlarms(final Set<AlarmTypeDto> alarms) {
+      this.alarms.addAll(alarms);
       return this;
     }
 

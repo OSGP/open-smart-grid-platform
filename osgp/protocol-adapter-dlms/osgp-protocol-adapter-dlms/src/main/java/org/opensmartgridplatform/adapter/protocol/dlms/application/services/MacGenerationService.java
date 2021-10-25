@@ -9,6 +9,10 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.engines.AESEngine;
 import org.bouncycastle.crypto.macs.GMac;
@@ -16,6 +20,7 @@ import org.bouncycastle.crypto.modes.GCMBlockCipher;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
 import org.bouncycastle.util.Arrays;
+import org.bouncycastle.util.encoders.Hex;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.FirmwareFile;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.FirmwareFileHeader;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.firmware.firmwarefile.FirmwareFileHeaderAddressField;
@@ -51,6 +56,7 @@ import org.springframework.stereotype.Service;
  * </ul>
  */
 @Service
+@Slf4j
 public class MacGenerationService {
 
   private static final int HEADER_LENGTH = 35;
@@ -69,6 +75,8 @@ public class MacGenerationService {
     this.validateHeader(header);
 
     final byte[] iv = this.createIV(firmwareFile);
+
+    log.debug("Calculated IV: {}", Hex.toHexString(iv));
 
     final byte[] decryptedFirmwareUpdateAuthenticationKey =
         this.secretManagementService.getKey(
@@ -115,11 +123,13 @@ public class MacGenerationService {
   }
 
   private void validateHeader(final FirmwareFileHeader header) throws ProtocolAdapterException {
-    if (!FirmwareFile.FIRMWARE_IMAGE_MAGIC_NUMBER.equals(header.getFirmwareImageMagicNumberHex())) {
+    if (!FirmwareFile.VALID_FIRMWARE_IMAGE_MAGIC_NUMBERS.contains(
+        header.getFirmwareImageMagicNumberHex())) {
       throw new ProtocolAdapterException(
           String.format(
-              "Unexpected FirmwareImageMagicNumber in header firmware file: %s. Expected: %s.",
-              header.getFirmwareImageMagicNumberHex(), FirmwareFile.FIRMWARE_IMAGE_MAGIC_NUMBER));
+              "Unexpected FirmwareImageMagicNumber in header firmware file: %s. Expected one of %s.",
+              header.getFirmwareImageMagicNumberHex(),
+              FirmwareFile.VALID_FIRMWARE_IMAGE_MAGIC_NUMBERS));
     }
     if (header.getHeaderLengthInt() != HEADER_LENGTH) {
       throw new ProtocolAdapterException(
@@ -168,12 +178,35 @@ public class MacGenerationService {
   public byte[] createIV(final FirmwareFile firmwareFile) {
     final FirmwareFileHeaderAddressField firmwareFileHeaderAddressField =
         firmwareFile.getHeader().getFirmwareFileHeaderAddressField();
-    return ByteBuffer.allocate(12)
+    final int ivLength = 12;
+    this.logIV(firmwareFile, ivLength);
+    return ByteBuffer.allocate(ivLength)
         .put(firmwareFileHeaderAddressField.getMbusManufacturerId())
         .put(firmwareFileHeaderAddressField.getMbusDeviceIdentificationNumber())
         .put(firmwareFileHeaderAddressField.getMbusVersion())
         .put(firmwareFileHeaderAddressField.getMbusDeviceType())
         .put(Arrays.reverse(firmwareFile.getHeader().getFirmwareImageVersion()))
         .array();
+  }
+
+  private void logIV(final FirmwareFile firmwareFile, final int ivLength) {
+    final FirmwareFileHeaderAddressField firmwareFileHeaderAddressField =
+        firmwareFile.getHeader().getFirmwareFileHeaderAddressField();
+    log.debug("IV length: {}", ivLength);
+    final Map<String, byte[]> map = new HashMap<>(5);
+    map.put("MbusManufacturerId", firmwareFileHeaderAddressField.getMbusManufacturerId());
+    map.put(
+        "MbusDeviceIdentificationNumber",
+        firmwareFileHeaderAddressField.getMbusDeviceIdentificationNumber());
+    map.put("MbusVersion", firmwareFileHeaderAddressField.getMbusVersion());
+    map.put("MbusDeviceType", firmwareFileHeaderAddressField.getMbusDeviceType());
+    map.put("FirmwareImageVersion", firmwareFile.getHeader().getFirmwareImageVersion());
+
+    for (final Entry<String, byte[]> entry : map.entrySet()) {
+      log.debug(
+          entry.getKey() + ": (Hex){} ({})",
+          Hex.toHexString(entry.getValue()),
+          entry.getValue().length);
+    }
   }
 }

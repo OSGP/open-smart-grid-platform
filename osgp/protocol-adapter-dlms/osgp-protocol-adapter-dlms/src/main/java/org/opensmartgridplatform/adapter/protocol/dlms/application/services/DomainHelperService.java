@@ -125,7 +125,7 @@ public class DomainHelperService {
               + dlmsDevice.getCommunicationProvider()
               + " did not return an IP address for device: "
               + dlmsDevice.getDeviceIdentification()
-              + "and iccId: "
+              + " and iccId: "
               + dlmsDevice.getIccId());
     }
     return deviceIpAddress;

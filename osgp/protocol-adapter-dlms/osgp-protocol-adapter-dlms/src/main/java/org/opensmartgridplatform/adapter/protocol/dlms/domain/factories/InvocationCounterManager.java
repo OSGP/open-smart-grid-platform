@@ -9,6 +9,7 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
@@ -52,8 +53,17 @@ public class InvocationCounterManager {
 
   private void initializeWithInvocationCounterStoredOnDevice(
       final MessageMetadata messageMetadata, final DlmsDevice device) throws OsgpException {
-    try (final DlmsConnectionManager connectionManager =
-        this.connectionFactory.getPublicClientConnection(messageMetadata, device, null)) {
+
+    final Consumer<DlmsConnectionManager> taskForConnectionManager =
+        connectionManager ->
+            this.initializeWithInvocationCounterStoredOnDeviceTask(device, connectionManager);
+    this.connectionFactory.createAndHandlePublicClientConnection(
+        messageMetadata, device, null, taskForConnectionManager);
+  }
+
+  void initializeWithInvocationCounterStoredOnDeviceTask(
+      final DlmsDevice device, final DlmsConnectionManager connectionManager) {
+    try {
       final Long previousKnownInvocationCounter = device.getInvocationCounter();
       final Long invocationCounterFromDevice = this.getInvocationCounter(connectionManager);
       if (Objects.equals(previousKnownInvocationCounter, invocationCounterFromDevice)) {
@@ -72,6 +82,8 @@ public class InvocationCounterManager {
                 ? ""
                 : " (previous known value: " + previousKnownInvocationCounter + ")");
       }
+    } catch (final FunctionalException e) {
+      LOGGER.warn("Something went wrong while trying to get the invocation counter", e);
     }
   }
 

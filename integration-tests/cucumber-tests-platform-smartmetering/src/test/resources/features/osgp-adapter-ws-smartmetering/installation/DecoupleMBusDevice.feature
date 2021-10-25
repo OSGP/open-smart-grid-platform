@@ -52,8 +52,6 @@ Feature: SmartMetering Installation - Decouple M-Bus Device
       | Code    |             207 |
       | Message | INACTIVE_DEVICE |
 
-  # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
-  # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
   Scenario: Decouple coupled G-meter "TESTG101205673117" from E-meter "TEST1024000000001"
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -68,24 +66,22 @@ Feature: SmartMetering Installation - Decouple M-Bus Device
       | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
-    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes
-      | 5 | unsigned             |         3 |
-      | 6 | double-long-unsigned | 302343985 |
-      | 7 | long-unsigned        |     12514 |
-      | 8 | unsigned             |        66 |
-      | 9 | unsigned             |         3 |
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
+      | MbusPrimaryAddress             | 3        |
+      | MbusIdentificationNumber       | 12056731 |
+      | MbusManufacturerIdentification | LGB      |
+      | MbusVersion                    | 66       |
+      | MbusDeviceTypeIdentification   | 3        |
     When the Decouple G-meter "TESTG101205673117" from E-meter "TEST1024000000001" request is received
     Then the Decouple response is "OK"
     And the mbus device "TESTG101205673117" is not coupled to the device "TEST1024000000001"
-    And the values for classid 72 obiscode "0-1:24.1.0" on device simulator "TEST1024000000001" are
-      | 5 | unsigned             | 0 |
-      | 6 | double-long-unsigned | 0 |
-      | 7 | long-unsigned        | 0 |
-      | 8 | unsigned             | 0 |
-      | 9 | unsigned             | 0 |
+    And the values for the M-Bus client for channel 1 on device simulator "TEST1024000000001" are
+      | MbusPrimaryAddress             | 0 |
+      | MbusIdentificationNumber       | 0 |
+      | MbusManufacturerIdentification | 0 |
+      | MbusVersion                    | 0 |
+      | MbusDeviceTypeIdentification   | 0 |
 
-  # NOTE: The database MbusIdentificationNumber: 12056731 corresponds with the device attributeID 6: 302343985
-  # and likewise the database MbusManufacturerIdentification: LGB corresponds with the device attributeID 7: 12514
   Scenario: Decouple decoupled G-meter "TESTG101205673117" from E-meter "TEST1024000000001"
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
@@ -98,18 +94,18 @@ Feature: SmartMetering Installation - Decouple M-Bus Device
       | MbusManufacturerIdentification | LGB               |
       | MbusVersion                    |                66 |
       | MbusDeviceTypeIdentification   |                 3 |
-    And device simulation of "TEST1024000000001" with classid 72 obiscode "0-1:24.1.0" and attributes
-      | 5 | unsigned             | 0 |
-      | 6 | double-long-unsigned | 0 |
-      | 7 | long-unsigned        | 0 |
-      | 8 | unsigned             | 0 |
-      | 9 | unsigned             | 0 |
+    And device simulation of "TEST1024000000001" with M-Bus client version 0 values for channel 1
+      | MbusPrimaryAddress             | 0 |
+      | MbusIdentificationNumber       | 0 |
+      | MbusManufacturerIdentification | 0 |
+      | MbusVersion                    | 0 |
+      | MbusDeviceTypeIdentification   | 0 |
     When the Decouple G-meter "TESTG101205673117" from E-meter "TEST1024000000001" request is received
     Then the Decouple response is "OK"
     And the mbus device "TESTG101205673117" is not coupled to the device "TEST1024000000001"
-    And the values for classid 72 obiscode "0-1:24.1.0" on device simulator "TEST1024000000001" are
-      | 5 | unsigned             | 0 |
-      | 6 | double-long-unsigned | 0 |
-      | 7 | long-unsigned        | 0 |
-      | 8 | unsigned             | 0 |
-      | 9 | unsigned             | 0 |
+    And the values for the M-Bus client for channel 1 on device simulator "TEST1024000000001" are
+      | MbusPrimaryAddress             | 0 |
+      | MbusIdentificationNumber       | 0 |
+      | MbusManufacturerIdentification | 0 |
+      | MbusVersion                    | 0 |
+      | MbusDeviceTypeIdentification   | 0 |

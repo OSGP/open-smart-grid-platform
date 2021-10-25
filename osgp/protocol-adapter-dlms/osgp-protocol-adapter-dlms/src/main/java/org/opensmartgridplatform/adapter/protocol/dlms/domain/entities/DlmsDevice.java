@@ -12,6 +12,7 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.IdentificationNumber;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 
 @Entity
@@ -300,6 +301,18 @@ public class DlmsDevice extends AbstractEntity {
 
   public Long getMbusIdentificationNumber() {
     return this.mbusIdentificationNumber;
+  }
+
+  @Transient
+  public String getMbusIdentificationNumberTextualRepresentation() {
+    if (this.mbusIdentificationNumber == null) {
+      return null;
+    }
+    // IdentificationNumber of M-Bus device is stored on the device as BCD or plain Long depending
+    // on the version of the M-Bus Client Setup object. In the database the IdentificationNumber is
+    // always stored as plain Long
+    return IdentificationNumber.fromNumericalRepresentation(this.mbusIdentificationNumber)
+        .getTextualRepresentation();
   }
 
   public void setMbusIdentificationNumber(final Long mbusIdentificationNumber) {
