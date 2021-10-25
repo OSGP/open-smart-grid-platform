@@ -3,7 +3,7 @@ Feature: SmartMetering Bundle - GetActualPowerQuality
   As a grid operator
   I want to be able to retrieve actual power quality data from a meter via a bundle request
 
-  Scenario: Retrieve actual power quality data as part of a bundled public request of a single meter
+  Scenario: Retrieve actual power quality data as part of a bundled public request of a single phase meter
     Given a dlms device
       | DeviceIdentification      | TEST1024000000001 |
       | DeviceType                | SMART_METER_E     |
@@ -75,7 +75,7 @@ Feature: SmartMetering Bundle - GetActualPowerQuality
       | PowerQualityObject_Name_14  | NUMBER_OF_VOLTAGE_SWELLS_FOR_L2 |
       | PowerQualityObject_Name_15  | NUMBER_OF_VOLTAGE_SWELLS_FOR_L3 |
 
-  Scenario: Retrieve actual power quality data as part of a bundled private request of a singlephase meter
+  Scenario: Retrieve actual power quality data as part of a bundled private request of a single phase meter
     Given a dlms device
       | DeviceIdentification      | TEST1024000000001 |
       | DeviceType                | SMART_METER_E     |
