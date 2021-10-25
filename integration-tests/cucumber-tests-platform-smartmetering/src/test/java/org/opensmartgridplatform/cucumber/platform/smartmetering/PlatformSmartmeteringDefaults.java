@@ -46,6 +46,7 @@ public class PlatformSmartmeteringDefaults
   public static final boolean LLS1_ACTIVE = false;
   public static final boolean USE_HDLC = false;
   public static final boolean USE_SN = false;
+  public static final boolean POLYPHASE = false;
   public static final String PASSWORD = "e7233dec0dfbf031960e21c149c3293e";
 
   public static final boolean IN_DEBUG_MODE = false;
