@@ -22,7 +22,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventDet
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventLogCategory;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventType;
 
-public class ListEventMappingTest {
+class ListEventMappingTest {
 
   private static final String NUMBER_OF_EVENTS = "number of events";
   private static final String EVENT_CODE_WITH_MAPPING_OF = "eventCode with mapping of ";
@@ -1374,15 +1374,15 @@ public class ListEventMappingTest {
           .as(EVENT_COUNTER_WITH_MAPPING_OF + originalEvent)
           .isEqualTo(originalEvent.getEventCounter());
 
-      assertThat(new DateTime(mappedEvent.getTimestamp().toGregorianCalendar()).toString())
+      assertThat(new DateTime(mappedEvent.getTimestamp().toGregorianCalendar()))
           .as(TIMESTAMP_WITH_MAPPING_OF + originalEvent)
-          .isEqualTo(originalEvent.getTimestamp().toString());
+          .isEqualByComparingTo(originalEvent.getTimestamp());
     }
   }
 
   /** Tests if mapping a List, typed to Event, succeeds if the List is empty. */
   @Test
-  public void testEmptyListEventMapping() {
+  void testEmptyListEventMapping() {
 
     // build test data
     final List<Event> listOriginal = new ArrayList<>();
@@ -1401,7 +1401,7 @@ public class ListEventMappingTest {
 
   /** Tests if mapping a List, typed to Event, succeeds if the List is filled. */
   @Test
-  public void testFilledListEventMapping() {
+  void testFilledListEventMapping() {
 
     // build test data
     final DateTime timestamp = new DateTime();
@@ -1456,16 +1456,16 @@ public class ListEventMappingTest {
   }
 
   @Test
-  public void testMappingForListOfCommunicationSessionEvents() {
+  void testMappingForListOfCommunicationSessionEvents() {
 
     final List<org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event>
         mappedCommunicationSessionEvents =
             this.managementMapper.mapAsList(
-                this.COMMUNICATION_SESSIONS_EVENTS,
+                COMMUNICATION_SESSIONS_EVENTS,
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event.class);
 
     this.checkEventsMappedToWsSchema(
-        this.COMMUNICATION_SESSIONS_EVENTS, mappedCommunicationSessionEvents);
+        COMMUNICATION_SESSIONS_EVENTS, mappedCommunicationSessionEvents);
 
     final List<Event> communicationSessionEvents =
         this.managementMapper.mapAsList(mappedCommunicationSessionEvents, Event.class);
@@ -1475,15 +1475,15 @@ public class ListEventMappingTest {
   }
 
   @Test
-  public void testMappingForListOfFraudDetectionEvents() {
+  void testMappingForListOfFraudDetectionEvents() {
 
     final List<org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event>
         mappedFraudDetectionEvents =
             this.managementMapper.mapAsList(
-                this.FRAUD_DETECTION_EVENTS,
+                FRAUD_DETECTION_EVENTS,
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event.class);
 
-    this.checkEventsMappedToWsSchema(this.FRAUD_DETECTION_EVENTS, mappedFraudDetectionEvents);
+    this.checkEventsMappedToWsSchema(FRAUD_DETECTION_EVENTS, mappedFraudDetectionEvents);
 
     final List<Event> fraudDetectionEvents =
         this.managementMapper.mapAsList(mappedFraudDetectionEvents, Event.class);
@@ -1492,15 +1492,15 @@ public class ListEventMappingTest {
   }
 
   @Test
-  public void testMappingForListOfMBusEvents() {
+  void testMappingForListOfMBusEvents() {
 
     final List<org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event>
         mappedMBusEvents =
             this.managementMapper.mapAsList(
-                this.M_BUS_EVENTS,
+                M_BUS_EVENTS,
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event.class);
 
-    this.checkEventsMappedToWsSchema(this.M_BUS_EVENTS, mappedMBusEvents);
+    this.checkEventsMappedToWsSchema(M_BUS_EVENTS, mappedMBusEvents);
 
     final List<Event> mBusEvents = this.managementMapper.mapAsList(mappedMBusEvents, Event.class);
 
@@ -1508,16 +1508,16 @@ public class ListEventMappingTest {
   }
 
   @Test
-  public void testMappingForListOfPowerQualityExtendedEvents() {
+  void testMappingForListOfPowerQualityExtendedEvents() {
 
     final List<org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event>
         mappedPowerQualityExtendedEvents =
             this.managementMapper.mapAsList(
-                this.POWER_QUALITY_EXTENDED_EVENTS,
+                POWER_QUALITY_EXTENDED_EVENTS,
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event.class);
 
     this.checkEventsMappedToWsSchema(
-        this.POWER_QUALITY_EXTENDED_EVENTS, mappedPowerQualityExtendedEvents);
+        POWER_QUALITY_EXTENDED_EVENTS, mappedPowerQualityExtendedEvents);
 
     final List<Event> powerQualityExtendedEvents =
         this.managementMapper.mapAsList(mappedPowerQualityExtendedEvents, Event.class);
@@ -1527,15 +1527,15 @@ public class ListEventMappingTest {
   }
 
   @Test
-  public void testMappingForListOfStandardEvents() {
+  void testMappingForListOfStandardEvents() {
 
     final List<org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event>
         mappedStandardEvents =
             this.managementMapper.mapAsList(
-                this.STANDARD_EVENTS,
+                STANDARD_EVENTS,
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event.class);
 
-    this.checkEventsMappedToWsSchema(this.STANDARD_EVENTS, mappedStandardEvents);
+    this.checkEventsMappedToWsSchema(STANDARD_EVENTS, mappedStandardEvents);
 
     final List<Event> standardEvents =
         this.managementMapper.mapAsList(mappedStandardEvents, Event.class);
@@ -1544,15 +1544,15 @@ public class ListEventMappingTest {
   }
 
   @Test
-  public void testMappingForListOfAuxiliaryEvents() {
+  void testMappingForListOfAuxiliaryEvents() {
 
     final List<org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event>
         mappedAuxiliaryEvents =
             this.managementMapper.mapAsList(
-                this.AUXILIARY_EVENTS,
+                AUXILIARY_EVENTS,
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event.class);
 
-    this.checkEventsMappedToWsSchema(this.AUXILIARY_EVENTS, mappedAuxiliaryEvents);
+    this.checkEventsMappedToWsSchema(AUXILIARY_EVENTS, mappedAuxiliaryEvents);
 
     final List<Event> auxiliaryEvents =
         this.managementMapper.mapAsList(mappedAuxiliaryEvents, Event.class);
@@ -1562,7 +1562,7 @@ public class ListEventMappingTest {
 
   /** Tests if mapping a List, typed to Event, succeeds if the List is null. */
   @Test
-  public void testNullListEventMapping() {
+  void testNullListEventMapping() {
     // build test data
     final List<Event> listOriginal = null;
 
