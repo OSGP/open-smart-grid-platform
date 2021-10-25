@@ -1348,9 +1348,9 @@ class ListEventMappingTest {
           .as(EVENT_COUNTER_WITH_MAPPING_OF + originalEvent.getEventType())
           .isEqualTo(originalEvent.getEventCounter());
 
-      assertThat(mappedEvent.getTimestamp().toString())
+      assertThat(mappedEvent.getTimestamp())
           .as(TIMESTAMP_WITH_MAPPING_OF + originalEvent.getEventType())
-          .isEqualTo(new DateTime(originalEvent.getTimestamp().toGregorianCalendar()).toString());
+          .isEqualByComparingTo(new DateTime(originalEvent.getTimestamp().toGregorianCalendar()));
     }
   }
 
