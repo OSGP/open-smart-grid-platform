@@ -9,9 +9,12 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -26,6 +29,7 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
+import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,6 +39,8 @@ class InvocationCounterManagerTest {
 
   private InvocationCounterManager manager;
   private MessageMetadata messageMetadata;
+  private DlmsDevice device;
+  private final long invocationCounterValueInDatabaseEntity = 7;
 
   @Mock private DlmsConnectionFactory connectionFactory;
 
@@ -44,31 +50,34 @@ class InvocationCounterManagerTest {
   public void setUp() {
     this.manager = new InvocationCounterManager(this.connectionFactory, this.dlmsHelper);
     this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
+    this.device =
+        new DlmsDeviceBuilder()
+            .withInvocationCounter(this.invocationCounterValueInDatabaseEntity)
+            .build();
+  }
+
+  @Test
+  void initializeInvocationCounterForDeviceTaskExecuted() throws OsgpException {
+    this.manager.initializeInvocationCounter(this.messageMetadata, this.device);
+
+    verify(this.connectionFactory, times(1))
+        .createAndHandlePublicClientConnection(
+            any(MessageMetadata.class), eq(this.device), isNull(), any());
   }
 
   @Test
   void initializesInvocationCounterForDevice() throws Exception {
-    final long invocationCounterValueInDatabaseEntity = 7;
     final long invocationCounterValueOnDevice = 123;
 
-    final DlmsDevice device =
-        new DlmsDeviceBuilder()
-            .withInvocationCounter(invocationCounterValueInDatabaseEntity)
-            .build();
-
     final DlmsConnectionManager connectionManager = mock(DlmsConnectionManager.class);
-    when(this.connectionFactory.getPublicClientConnection(this.messageMetadata, device, null))
-        .thenReturn(connectionManager);
 
     final DataObject dataObject = DataObject.newUInteger32Data(invocationCounterValueOnDevice);
     when(this.dlmsHelper.getAttributeValue(
             eq(connectionManager), refEq(ATTRIBUTE_ADDRESS_INVOCATION_COUNTER_VALUE)))
         .thenReturn(dataObject);
 
-    this.manager.initializeInvocationCounter(this.messageMetadata, device);
+    this.manager.initializeWithInvocationCounterStoredOnDeviceTask(this.device, connectionManager);
 
-    assertThat(device.getInvocationCounter()).isEqualTo(invocationCounterValueOnDevice);
-
-    verify(connectionManager).close();
+    assertThat(this.device.getInvocationCounter()).isEqualTo(invocationCounterValueOnDevice);
   }
 }

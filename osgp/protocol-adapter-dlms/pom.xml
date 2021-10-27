@@ -90,5 +90,6 @@
     <module>osgp-dlms</module>
     <module>osgp-protocol-adapter-dlms</module>
     <module>osgp-jasper-interface</module>
+    <module>osgp-protocol-simulator-dlms</module>
   </modules>
 </project>

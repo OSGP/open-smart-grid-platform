@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright 2021 Alliander N.V.
+
+    Licensed under the Apache License, Version 2.0 (the "License"); 
+    you may not use this file except in compliance with the License. 
+    You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>simulator</artifactId>
+  <packaging>pom</packaging>
+
+  <parent>
+    <groupId>org.opensmartgridplatform</groupId>
+    <artifactId>parent-pa-dlms</artifactId>
+    <version>5.19.0-SNAPSHOT</version>
+    <relativePath>../../parent-pa-dlms/pom.xml</relativePath>
+  </parent>
+
+  <!-- Description, Organization, Licenses, URL and Distribution Management
+    elements are needed for the maven-jxr-plugin to generate a maven site -->
+  <!--<description>A library to simulate behaviour of dlms devices.</description>
+  <organization>
+    <name>OSGP</name>
+    <url>http://opensmartgridplatform.org</url>
+  </organization>
+  <licenses>
+    <license>
+      <name>APACHE 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+    </license>
+  </licenses>
+  <url>${maven.site.url}</url>
+  <distributionManagement>
+    <site>
+      <id>osgp-simulator</id>
+      <name>osgp-simulator</name>
+       <url>${maven.site.distributionManagement.site.url}</url>
+    </site>
+  </distributionManagement> -->
+
+<!--   <dependencyManagement> -->
+<!--     <dependencies> -->
+<!--       <dependency> -->
+<!--         Import dependency management from Spring Boot -->
+<!--         <groupId>org.springframework.boot</groupId> -->
+<!--         <artifactId>spring-boot-dependencies</artifactId> -->
+<!--         <version>${spring.boot.version}</version> -->
+<!--         <type>pom</type> -->
+<!--         <scope>import</scope> -->
+<!--       </dependency> -->
+<!--     </dependencies> -->
+<!--   </dependencyManagement> -->
+
+  <properties>
+    <spring.boot.version>2.2.2.RELEASE</spring.boot.version>
+  </properties>
+
+  <build>
+
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+          <version>${spring.boot.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <additionalparam>-Xdoclint:none</additionalparam>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+
+  <modules>
+    <module>dlms-device-simulator</module>
+    <module>dlms-device-simulator-starter</module>
+  </modules>
+
+
+</project>

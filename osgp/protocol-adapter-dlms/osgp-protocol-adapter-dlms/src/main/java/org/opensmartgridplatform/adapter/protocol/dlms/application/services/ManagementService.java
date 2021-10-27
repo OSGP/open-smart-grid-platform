@@ -115,6 +115,7 @@ public class ManagementService {
     device.setIpAddressIsStatic(setCommunicationSettingsDataDto.isIpAddressIsStatic());
     device.setUseSn(setCommunicationSettingsDataDto.isUseSn());
     device.setUseHdlc(setCommunicationSettingsDataDto.isUseHdlc());
+    device.setPolyphase(setCommunicationSettingsDataDto.isPolyphase());
 
     return device;
   }

@@ -12,6 +12,7 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus.IdentificationNumber;
 import org.opensmartgridplatform.shared.domain.entities.AbstractEntity;
 
 @Entity
@@ -61,6 +62,8 @@ public class DlmsDevice extends AbstractEntity {
 
   @Column private boolean useSn;
 
+  @Column private boolean polyphase;
+
   @Column private Long mbusIdentificationNumber;
 
   @Column(length = 3)
@@ -107,7 +110,7 @@ public class DlmsDevice extends AbstractEntity {
     return String.format(
         "DlmsDevice[deviceId=%s, lls1=%b, hls3=%b, hls4=%b, hls5=%b, ipAddress=%s, port=%s, "
             + "logicalId=%s, clientId=%s, "
-            + "debug=%b, hdlc=%b, sn=%b, mbusIdentification=%s, mbusManufacturer=%s, "
+            + "debug=%b, hdlc=%b, sn=%b, pphase=%b, mbusIdentification=%s, mbusManufacturer=%s, "
             + "protocolName=%s, "
             + "protocolVersion=%s]",
         this.deviceIdentification,
@@ -122,6 +125,7 @@ public class DlmsDevice extends AbstractEntity {
         this.inDebugMode,
         this.useHdlc,
         this.useSn,
+        this.polyphase,
         this.mbusIdentificationNumber,
         this.mbusManufacturerIdentification,
         this.protocolName,
@@ -287,8 +291,28 @@ public class DlmsDevice extends AbstractEntity {
     this.useSn = useSn;
   }
 
+  public boolean isPolyphase() {
+    return this.polyphase;
+  }
+
+  public void setPolyphase(final boolean polyphase) {
+    this.polyphase = polyphase;
+  }
+
   public Long getMbusIdentificationNumber() {
     return this.mbusIdentificationNumber;
+  }
+
+  @Transient
+  public String getMbusIdentificationNumberTextualRepresentation() {
+    if (this.mbusIdentificationNumber == null) {
+      return null;
+    }
+    // IdentificationNumber of M-Bus device is stored on the device as BCD or plain Long depending
+    // on the version of the M-Bus Client Setup object. In the database the IdentificationNumber is
+    // always stored as plain Long
+    return IdentificationNumber.fromNumericalRepresentation(this.mbusIdentificationNumber)
+        .getTextualRepresentation();
   }
 
   public void setMbusIdentificationNumber(final Long mbusIdentificationNumber) {

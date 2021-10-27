@@ -8,8 +8,6 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.mbus;
 
-import static org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsClassVersion.VERSION_0;
-
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +16,7 @@ import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsClassVersion;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectConfigService;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.DlmsObjectType;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.dlmsobjectconfig.model.DlmsObject;
@@ -195,13 +194,17 @@ public class DeviceChannelsHelper {
     } else {
       final Long identification = this.dlmsHelper.readLong(resultData, description);
       final IdentificationNumber identificationNumber;
-      if (clientSetupObject.getVersion().equals(VERSION_0)) {
+      if (this.identificationNumberStoredAsBcdOnDevice(clientSetupObject)) {
         identificationNumber = IdentificationNumber.fromBcdRepresentationAsLong(identification);
       } else {
         identificationNumber = IdentificationNumber.fromNumericalRepresentation(identification);
       }
       return identificationNumber.getTextualRepresentation();
     }
+  }
+
+  private boolean identificationNumberStoredAsBcdOnDevice(final DlmsObject mbusClientSetupObject) {
+    return mbusClientSetupObject.getVersion().equals(DlmsClassVersion.VERSION_0);
   }
 
   private String readManufacturerIdentification(
@@ -292,7 +295,7 @@ public class DeviceChannelsHelper {
 
     final DataObject identificationNumberDataObject;
 
-    if (mbusClientSetupObject.getVersion().equals(VERSION_0)) {
+    if (this.identificationNumberStoredAsBcdOnDevice(mbusClientSetupObject)) {
       identificationNumberDataObject =
           IdentificationNumber.fromTextualRepresentation(requestDto.getMbusIdentificationNumber())
               .asDataObjectInBcdRepresentation();

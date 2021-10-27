@@ -1004,6 +1004,7 @@
       <xsd:element type="xsd:boolean" name="UseSn" default="false"/>
       <xsd:element type="xsd:boolean" name="UseHdlc"
                    default="false"/>
+      <xsd:element type="xsd:boolean" name="Polyphase" default="false"/>
     </xsd:sequence>
   </xsd:complexType>
 
