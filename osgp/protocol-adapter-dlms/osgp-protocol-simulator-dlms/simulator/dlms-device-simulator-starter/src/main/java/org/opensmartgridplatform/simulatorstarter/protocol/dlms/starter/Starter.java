@@ -6,7 +6,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.simulator.protocol.dlms.starter;
+package org.opensmartgridplatform.simulatorstarter.protocol.dlms.starter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -73,7 +73,7 @@ public class Starter {
         "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration");
     DeviceServer.main(
         "--spring.profiles.active="
-            + org.opensmartgridplatform.simulator.protocol.dlms.starter.Starter
+            + org.opensmartgridplatform.simulatorstarter.protocol.dlms.starter.Starter
                 .formatActiveProfiles(simulatorConfiguration.getProfiles()));
   }
 

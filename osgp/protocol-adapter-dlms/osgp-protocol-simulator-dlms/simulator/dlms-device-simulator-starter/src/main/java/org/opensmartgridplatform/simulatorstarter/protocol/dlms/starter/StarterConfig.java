@@ -6,7 +6,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.opensmartgridplatform.simulator.protocol.dlms.starter;
+package org.opensmartgridplatform.simulatorstarter.protocol.dlms.starter;
 
 import java.io.IOException;
 import org.springframework.boot.ApplicationArguments;

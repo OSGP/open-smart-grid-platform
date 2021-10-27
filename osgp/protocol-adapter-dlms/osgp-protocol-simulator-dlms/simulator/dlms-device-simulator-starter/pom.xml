@@ -142,7 +142,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
-          <mainClass>org.opensmartgridplatform.simulator.protocol.dlms.starter.Starter</mainClass>
+          <mainClass>org.opensmartgridplatform.simulatorstarter.protocol.dlms.starter.Starter</mainClass>
           <executable>true</executable>
         </configuration>
         <executions>

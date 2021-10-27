@@ -18,6 +18,7 @@ import java.util.Map;
 import org.assertj.core.api.AbstractCharSequenceAssert;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.opensmartgridplatform.simulatorstarter.protocol.dlms.starter.SimulatorConfiguration;
 import org.springframework.core.io.ClassPathResource;
 
 public class SimulatorConfigurationTest {
