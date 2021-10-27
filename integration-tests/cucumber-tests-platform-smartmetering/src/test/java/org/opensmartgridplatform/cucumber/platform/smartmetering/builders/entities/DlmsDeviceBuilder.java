@@ -30,6 +30,7 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
   private boolean lls1Active = PlatformSmartmeteringDefaults.LLS1_ACTIVE;
   private boolean useSn = PlatformSmartmeteringDefaults.USE_SN;
   private boolean useHdlc = PlatformSmartmeteringDefaults.USE_HDLC;
+  private boolean polyphase = PlatformSmartmeteringDefaults.POLYPHASE;
   private Integer challengeLength = PlatformSmartmeteringDefaults.CHALLENGE_LENGTH;
   private boolean withListSupported = PlatformSmartmeteringDefaults.WITH_LIST_SUPPORTED;
   private boolean selectiveAccessSupported =
@@ -97,6 +98,11 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
 
   public DlmsDeviceBuilder setUseHdlc(final boolean useHdlc) {
     this.useHdlc = useHdlc;
+    return this;
+  }
+
+  public DlmsDeviceBuilder setPolyphase(final boolean polyphase) {
+    this.polyphase = polyphase;
     return this;
   }
 
@@ -203,6 +209,10 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     if (inputSettings.containsKey(PlatformSmartmeteringKeys.USE_SN)) {
       this.setUseSn(Boolean.parseBoolean(inputSettings.get(PlatformSmartmeteringKeys.USE_SN)));
     }
+    if (inputSettings.containsKey(PlatformSmartmeteringKeys.POLYPHASE)) {
+      this.setPolyphase(
+          Boolean.parseBoolean(inputSettings.get(PlatformSmartmeteringKeys.POLYPHASE)));
+    }
     if (inputSettings.containsKey(PlatformSmartmeteringKeys.CHALLENGE_LENGTH)) {
       this.setChallengeLength(
           Integer.parseInt(inputSettings.get(PlatformSmartmeteringKeys.CHALLENGE_LENGTH)));
@@ -276,6 +286,7 @@ public class DlmsDeviceBuilder implements CucumberBuilder<DlmsDevice> {
     dlmsDevice.setLls1Active(this.lls1Active);
     dlmsDevice.setUseHdlc(this.useHdlc);
     dlmsDevice.setUseSn(this.useSn);
+    dlmsDevice.setPolyphase(this.polyphase);
     dlmsDevice.setChallengeLength(this.challengeLength);
     dlmsDevice.setWithListSupported(this.withListSupported);
     dlmsDevice.setSelectiveAccessSupported(this.selectiveAccessSupported);
