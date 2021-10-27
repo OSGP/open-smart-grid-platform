@@ -203,26 +203,21 @@ public abstract class AbstractPersistenceConfig extends AbstractConfig {
   }
 
   private void checkForDeprecatedHibernateNamingStrategyConfiguration() {
-    String deprecatedProperty = null;
-    try {
-      deprecatedProperty =
-          this.environment.getRequiredProperty(PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY_DEPRECATED);
-    } catch (final IllegalStateException e) {
-      // The property is expected to be absent.
-      LOGGER.debug("IllegalStateException", e);
-      return;
+    final String deprecatedProperty =
+        this.environment.getProperty(PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY_DEPRECATED);
+
+    if (deprecatedProperty != null) {
+      final String message =
+          String.format(
+              "Using '%s=%s' is deprecated and no longer works with Hibernate 5.X! Use '%s=%s' instead!",
+              PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY_DEPRECATED,
+              deprecatedProperty,
+              PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY,
+              HibernateNamingStrategy.class.getName());
+
+      LOGGER.error(message);
+      throw new DeprecatedPropertyException(message);
     }
-
-    final String message =
-        String.format(
-            "Using '%s=%s' is deprecated and no longer works with Hibernate 5.X! Use '%s=%s' instead!",
-            PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY_DEPRECATED,
-            deprecatedProperty,
-            PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY,
-            HibernateNamingStrategy.class.getName());
-
-    LOGGER.error(message);
-    throw new DeprecatedPropertyException(message);
   }
 
   protected void destroyDataSource() {
