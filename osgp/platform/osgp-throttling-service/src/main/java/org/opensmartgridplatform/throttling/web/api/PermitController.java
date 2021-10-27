@@ -11,6 +11,8 @@ package org.opensmartgridplatform.throttling.web.api;
 
 import java.util.Optional;
 import org.opensmartgridplatform.throttling.SegmentedNetworkThrottler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,6 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class PermitController {
 
   private static final int NO_ID_PROVIDED = -1;
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(PermitController.class);
 
   private final SegmentedNetworkThrottler segmentedNetworkThrottler;
 
@@ -65,13 +69,26 @@ public class PermitController {
       @PathVariable(required = false) final Optional<Integer> cellId,
       @RequestBody(required = false) final Optional<Integer> requestId) {
 
+    final int actualBaseTransceiverStationId = baseTransceiverStationId.orElse(NO_ID_PROVIDED);
+    final int actualCellId = cellId.orElse(NO_ID_PROVIDED);
+    final int actualRequestId = requestId.orElse(NO_ID_PROVIDED);
+
     final boolean granted =
         this.segmentedNetworkThrottler.requestPermit(
             throttlingConfigId,
             clientId,
-            baseTransceiverStationId.orElse(NO_ID_PROVIDED),
-            cellId.orElse(NO_ID_PROVIDED),
-            requestId.orElse(NO_ID_PROVIDED));
+            actualBaseTransceiverStationId,
+            actualCellId,
+            actualRequestId);
+
+    LOGGER.debug(
+        "Requesting permit for network segment ({}, {}) using requestId {} for clientId {} and throttlingConfigId {}, granted: {}",
+        actualBaseTransceiverStationId,
+        actualCellId,
+        actualRequestId,
+        clientId,
+        throttlingConfigId,
+        granted);
 
     final int numberOfPermitsGranted;
     final HttpStatus status;
@@ -116,13 +133,26 @@ public class PermitController {
       @PathVariable(required = false) final Optional<Integer> cellId,
       @RequestBody(required = false) final Optional<Integer> requestId) {
 
+    final int actualBaseTransceiverStationId = baseTransceiverStationId.orElse(NO_ID_PROVIDED);
+    final int actualCellId = cellId.orElse(NO_ID_PROVIDED);
+    final int actualRequestId = requestId.orElse(NO_ID_PROVIDED);
+
     final boolean released =
         this.segmentedNetworkThrottler.releasePermit(
             throttlingConfigId,
             clientId,
-            baseTransceiverStationId.orElse(NO_ID_PROVIDED),
-            cellId.orElse(NO_ID_PROVIDED),
-            requestId.orElse(NO_ID_PROVIDED));
+            actualBaseTransceiverStationId,
+            actualCellId,
+            actualRequestId);
+
+    LOGGER.debug(
+        "Releasing permit for network segment ({}, {}) using requestId {} for clientId {} and throttlingConfigId {}, released: {}",
+        actualBaseTransceiverStationId,
+        actualCellId,
+        actualRequestId,
+        clientId,
+        throttlingConfigId,
+        released);
 
     final HttpStatus status = released ? HttpStatus.OK : HttpStatus.NOT_FOUND;
     return ResponseEntity.status(status).build();
@@ -144,6 +174,12 @@ public class PermitController {
       @PathVariable final int clientId, @PathVariable final int requestId) {
 
     final boolean discarded = this.segmentedNetworkThrottler.discardPermit(clientId, requestId);
+
+    LOGGER.debug(
+        "Discarding permit using requestId {} for clientId {}, discarded: {}",
+        requestId,
+        clientId,
+        discarded);
 
     final HttpStatus status = discarded ? HttpStatus.OK : HttpStatus.NOT_FOUND;
     return ResponseEntity.status(status).build();

@@ -130,7 +130,7 @@ public class ThrottlingClient {
           "No HTTP success response on unregistration of " + this.clientId);
     }
 
-    LOGGER.info("Unregistered {}", this.clientId);
+    LOGGER.info("Unregistered clientId {}", this.clientId);
     this.clientId = null;
   }
 
@@ -175,7 +175,7 @@ public class ThrottlingClient {
     final int requestId = this.requestIdCounter.incrementAndGet();
 
     LOGGER.debug(
-        "Requesting permit using requestId {} for {} on {}",
+        "Requesting permit using requestId {} for clientId {} on {}",
         requestId,
         this.clientId,
         this.throttlingConfig);
@@ -215,7 +215,7 @@ public class ThrottlingClient {
     final int requestId = this.requestIdCounter.incrementAndGet();
 
     LOGGER.debug(
-        "Requesting permit for network segment ({}, {}) using requestId {} for {} on {}",
+        "Requesting permit for network segment ({}, {}) using requestId {} for clientId {} on {}",
         baseTransceiverStationId,
         cellId,
         requestId,

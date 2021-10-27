@@ -79,6 +79,8 @@ public class PlatformSmartmeteringKeys
   // Default keys for security_key
   public static final String DLMS_DEVICE_ID = "DlmsDeviceId";
   public static final String INVOCATION_COUNTER = "InvocationCounter";
+  public static final String KEY_BASE_TRANSCEIVER_STATION_ID = "BtsId";
+  public static final String KEY_CELL_ID = "CellId";
   public static final String NETWORK_ADDRESS = "NetworkAddress";
   public static final String PORT = "Port";
   public static final String PROTOCOL = "Protocol";

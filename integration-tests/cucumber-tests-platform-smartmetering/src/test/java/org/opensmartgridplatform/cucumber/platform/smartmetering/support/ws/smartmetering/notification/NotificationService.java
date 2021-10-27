@@ -71,9 +71,12 @@ public class NotificationService {
                   try {
                     final Notification notification =
                         this.queue.poll(remaining, TimeUnit.MILLISECONDS);
-                    if (notification != null
-                        && correlationUid.equals(notification.getCorrelationUid())) {
-                      return notification;
+                    if (notification != null) {
+                      if (correlationUid.equals(notification.getCorrelationUid())) {
+                        return notification;
+                      } else {
+                        this.queue.add(notification);
+                      }
                     }
                     final long elapsed = System.currentTimeMillis() - startTime;
                     remaining = maxTimeout - elapsed;

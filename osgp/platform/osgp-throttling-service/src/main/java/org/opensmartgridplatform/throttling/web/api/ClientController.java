@@ -53,7 +53,9 @@ public class ClientController {
    */
   @PostMapping
   public ResponseEntity<Integer> registerClient() {
-    return ResponseEntity.ok(this.clientRepository.getNextClientId());
+    final Integer nextClientId = this.clientRepository.getNextClientId();
+    LOGGER.debug("Registering client with clientId {}", nextClientId);
+    return ResponseEntity.ok(nextClientId);
   }
 
   /**
@@ -69,6 +71,7 @@ public class ClientController {
   @Transactional
   @DeleteMapping(path = "/{clientId}")
   public ResponseEntity<Void> unregisterClient(@PathVariable final int clientId) {
+    LOGGER.debug("Unregistering client with clientId {}", clientId);
     final long numberOfPermits = this.permitRepository.countByClientId(clientId);
     if (numberOfPermits > 0) {
       LOGGER.warn("Client {} unregistered with {} remaining permits.", clientId, numberOfPermits);
