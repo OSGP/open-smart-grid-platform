@@ -1,0 +1,67 @@
+/*
+ * Copyright 2016 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
+package org.opensmartgridplatform.simulator.protocol.dlms.interceptor;
+
+import java.util.Random;
+import org.openmuc.jdlms.ServerConnectionInfo;
+import org.openmuc.jdlms.ServerConnectionInfo.Status;
+import org.openmuc.jdlms.ServerConnectionListener;
+import org.opensmartgridplatform.simulator.protocol.dlms.exception.SimulatorRuntimeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class OsgpServerConnectionListener implements ServerConnectionListener {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(OsgpServerConnectionListener.class);
+
+  private final int connectionSetupDelayMin;
+  private final int connectionSetupDelayMax;
+
+  public OsgpServerConnectionListener(
+      final int connectionSetupDelayMin, final int connectionSetupDelayMax) {
+    this.connectionSetupDelayMin = connectionSetupDelayMin;
+    this.connectionSetupDelayMax = connectionSetupDelayMax;
+  }
+
+  public OsgpServerConnectionListener(final int delay) {
+    this(delay, delay);
+  }
+
+  @Override
+  public void connectionChanged(final ServerConnectionInfo connectionInfo) {
+
+    LOGGER.debug("Connection changed to {}", connectionInfo.getConnectionStatus());
+    LOGGER.debug(
+        "Connection info client address is {}",
+        connectionInfo.getClientInetAddress().getHostAddress());
+
+    if (Status.OPEN.equals(connectionInfo.getConnectionStatus())) {
+      try {
+        final int randomSleep = this.getRandomSleep();
+        LOGGER.debug(
+            "Delaying connection setup for {} milisec. Logical device address: {}",
+            randomSleep,
+            connectionInfo.getLogicalDeviceAddress());
+        Thread.sleep(randomSleep);
+      } catch (final InterruptedException e) {
+        LOGGER.error("Sleep was interupted", e);
+        Thread.currentThread().interrupt();
+        throw new SimulatorRuntimeException(e);
+      }
+    }
+  }
+
+  private int getRandomSleep() {
+    if (this.connectionSetupDelayMin == this.connectionSetupDelayMax) {
+      return this.connectionSetupDelayMax;
+    }
+    return new Random().nextInt(this.connectionSetupDelayMax - this.connectionSetupDelayMin)
+        + this.connectionSetupDelayMin;
+  }
+}

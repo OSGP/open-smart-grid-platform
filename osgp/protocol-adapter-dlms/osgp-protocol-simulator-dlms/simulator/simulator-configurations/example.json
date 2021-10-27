@@ -1,0 +1,91 @@
+{
+  "simulators": [
+    {
+      "profiles": [
+        "default",
+        "minimumMemory"
+      ],
+      "configuration": {
+        "port": 4059,
+        "deviceidentification": {
+          "kemacode": "ESIM14",
+          "productionyear": "00",
+          "serialnumber": "00000000"
+        },
+        "logicalDeviceIds": "1..1000"
+      }
+    },
+    {
+      "profiles": [
+        "default",
+        "minimumMemory"
+      ],
+      "configuration": {
+        "port": 1024,
+        "deviceidentification": {
+          "kemacode": "TEST1024",
+          "productionyear": "00",
+          "serialnumber": "00000000"
+        },
+        "logicalDeviceIds": "1"
+      }
+    },
+    {
+      "profiles": [
+        "default",
+        "minimumMemory"
+      ],
+      "configuration": {
+        "port": 1025,
+        "deviceidentification": {
+          "kemacode": "TEST1025",
+          "productionyear": "00",
+          "serialnumber": "00000000"
+        },
+        "logicalDeviceIds": "1",
+        "security": {
+          "level": 0
+        }
+      }
+    },
+    {
+      "profiles": [
+        "e650"
+      ],
+      "configuration": {
+        "port": 1026,
+        "deviceidentification": {
+          "kemacode": "TEST1026",
+          "productionyear": "00",
+          "serialnumber": "00000000"
+        },
+        "logicalDeviceIds": "1",
+        "security": {
+          "level": 1
+        },
+        "referencing": {
+          "method": "short"
+        },
+        "use": {
+          "hdlc": true
+        }
+      }
+    },
+    {
+      "profiles": [
+        "default",
+        "minimumMemory",
+        "smr5"
+      ],
+      "configuration": {
+        "port": 1027,
+        "deviceidentification": {
+          "kemacode": "TEST1027",
+          "productionyear": "00",
+          "serialnumber": "00000000"
+        },
+        "logicalDeviceIds": "1"
+      }
+    }
+  ]
+}
