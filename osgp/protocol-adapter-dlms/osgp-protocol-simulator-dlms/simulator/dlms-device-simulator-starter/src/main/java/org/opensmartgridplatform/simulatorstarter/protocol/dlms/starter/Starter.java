@@ -24,7 +24,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.util.Assert;
 
 /** Utility for starting multiple device simulators using a single configuration file. */
-@SpringBootApplication
+@SpringBootApplication(
+    exclude = {org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration.class})
 public class Starter {
   private static final Logger LOGGER = LoggerFactory.getLogger(Starter.class);
 
