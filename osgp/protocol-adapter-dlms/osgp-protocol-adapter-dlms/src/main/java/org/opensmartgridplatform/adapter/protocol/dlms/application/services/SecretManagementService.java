@@ -293,13 +293,10 @@ public class SecretManagementService {
     this.secretManagementClient.activateSecretsRequest(messageMetadata, request);
   }
 
-  public boolean hasNewSecretOfType(
-      final MessageMetadata messageMetadata,
-      final String deviceIdentification,
-      final SecurityKeyType keyType) {
+  public boolean hasNewSecret(
+      final MessageMetadata messageMetadata, final String deviceIdentification) {
     final HasNewSecretRequest request = new HasNewSecretRequest();
     request.setDeviceId(deviceIdentification);
-    request.setSecretType(keyType.toSecretType());
     final HasNewSecretResponse response =
         this.secretManagementClient.hasNewSecretRequest(messageMetadata, request);
     return response.isHasNewSecret();

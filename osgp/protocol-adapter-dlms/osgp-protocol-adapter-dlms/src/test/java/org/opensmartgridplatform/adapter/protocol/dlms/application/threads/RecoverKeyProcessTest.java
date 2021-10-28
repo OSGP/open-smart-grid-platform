@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -44,17 +45,30 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 @ExtendWith(MockitoExtension.class)
 public class RecoverKeyProcessTest {
 
-  @InjectMocks RecoverKeyProcess recoverKeyProcess;
+  @InjectMocks
+  RecoverKeyProcess recoverKeyProcess;
 
-  @Mock DomainHelperService domainHelperService;
-  @Mock Hls5Connector hls5Connector;
-  @Mock SecretManagementService secretManagementService;
-  @Mock ThrottlingService throttlingService;
-  @Mock DlmsDeviceRepository dlmsDeviceRepository;
+  @Mock
+  DomainHelperService domainHelperService;
+
+  @Mock
+  Hls5Connector hls5Connector;
+
+  @Mock
+  SecretManagementService secretManagementService;
+
+  @Mock
+  ThrottlingService throttlingService;
+
+  @Mock
+  DlmsDeviceRepository dlmsDeviceRepository;
 
   private static final String DEVICE_IDENTIFICATION = "E000123456789";
+
   private static final String IP_ADDRESS = "1.1.1.1";
+
   private static final DlmsDevice DEVICE = mock(DlmsDevice.class);
+
   private static final MessageMetadata MESSAGE_METADATA = mock(MessageMetadata.class);
 
   @BeforeEach
@@ -85,8 +99,8 @@ public class RecoverKeyProcessTest {
   public void testWhenNoNewKeysThenNoActivate() throws OsgpException {
 
     // GIVEN
-    when(this.secretManagementService.hasNewSecretOfType(
-            MESSAGE_METADATA, DEVICE_IDENTIFICATION, E_METER_AUTHENTICATION))
+    lenient().when(
+            this.secretManagementService.hasNewSecret(MESSAGE_METADATA, DEVICE_IDENTIFICATION))
         .thenReturn(false);
 
     // WHEN
@@ -103,8 +117,8 @@ public class RecoverKeyProcessTest {
     // GIVEN
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
         .thenReturn(DEVICE);
-    when(this.secretManagementService.hasNewSecretOfType(
-            MESSAGE_METADATA, DEVICE_IDENTIFICATION, E_METER_AUTHENTICATION))
+    lenient().when(
+            this.secretManagementService.hasNewSecret(MESSAGE_METADATA, DEVICE_IDENTIFICATION))
         .thenReturn(true);
     when(this.hls5Connector.connectUnchecked(eq(MESSAGE_METADATA), eq(DEVICE), any(), any()))
         .thenReturn(mock(DlmsConnection.class));
@@ -135,8 +149,8 @@ public class RecoverKeyProcessTest {
     // GIVEN
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
         .thenReturn(DEVICE);
-    when(this.secretManagementService.hasNewSecretOfType(
-            MESSAGE_METADATA, DEVICE_IDENTIFICATION, E_METER_AUTHENTICATION))
+    lenient().when(
+            this.secretManagementService.hasNewSecret(MESSAGE_METADATA, DEVICE_IDENTIFICATION))
         .thenReturn(true);
     when(this.hls5Connector.connectUnchecked(any(), any(), any(), any())).thenReturn(null);
 

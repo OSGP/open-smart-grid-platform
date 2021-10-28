@@ -145,8 +145,7 @@ public class SecretManagementServiceTest {
     when(this.secretManagementClient.hasNewSecretRequest(same(messageMetadata), any()))
         .thenReturn(response);
     // EXECUTE
-    final boolean result =
-        this.testService.hasNewSecretOfType(messageMetadata, DEVICE_IDENTIFICATION, KEY_TYPE);
+    final boolean result = this.testService.hasNewSecret(messageMetadata, DEVICE_IDENTIFICATION);
     // ASSERT
     assertThat(result).isTrue();
   }
