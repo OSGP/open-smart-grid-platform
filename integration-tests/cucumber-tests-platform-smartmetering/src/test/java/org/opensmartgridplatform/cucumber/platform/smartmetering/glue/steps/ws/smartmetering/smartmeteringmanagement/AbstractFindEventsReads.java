@@ -13,7 +13,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.EventDetail;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.EventType;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.FindEventsAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.FindEventsAsyncResponse;
@@ -41,6 +43,7 @@ public abstract class AbstractFindEventsReads {
       smartMeteringManagementResponseClient;
 
   private static final String EXPECTED_NUMBER_OF_EVENTS = "ExpectedNumberOfEvents";
+  private static final String EXPECTED_EVENT_DETAILS = "ExpectedEventDetails";
 
   protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractFindEventsReads.class);
 
@@ -95,6 +98,16 @@ public abstract class AbstractFindEventsReads {
         }
       }
       assertThat(eventMatch).as("No match found for EventType").isNotNull();
+    }
+
+    if (settings.containsKey(EXPECTED_EVENT_DETAILS)) {
+      final String[] expectedEventDetails = settings.get(EXPECTED_EVENT_DETAILS).split(",");
+
+      for (final Event event : findEventsResponse.getEvents()) {
+        final List<String> eventDetails =
+            event.getEventDetails().stream().map(EventDetail::getName).collect(Collectors.toList());
+        assertThat(eventDetails).containsExactlyInAnyOrder(expectedEventDetails);
+      }
     }
   }
 
