@@ -12,7 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -93,14 +92,15 @@ public class RecoverKeyProcessTest {
   public void testWhenNoNewKeysThenNoActivate() throws OsgpException {
 
     // GIVEN
-    lenient()
-        .when(this.secretManagementService.hasNewSecret(MESSAGE_METADATA, DEVICE_IDENTIFICATION))
-        .thenReturn(false);
+    when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
+        .thenReturn(DEVICE);
 
     // WHEN
     this.recoverKeyProcess.run();
 
     // THEN
+    verify(this.secretManagementService, never())
+        .hasNewSecret(MESSAGE_METADATA, DEVICE_IDENTIFICATION);
     verify(this.domainHelperService).findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS);
     verify(this.secretManagementService, never()).activateNewKeys(any(), any(), any());
   }
@@ -111,9 +111,6 @@ public class RecoverKeyProcessTest {
     // GIVEN
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
         .thenReturn(DEVICE);
-    lenient()
-        .when(this.secretManagementService.hasNewSecret(MESSAGE_METADATA, DEVICE_IDENTIFICATION))
-        .thenReturn(true);
     when(this.hls5Connector.connectUnchecked(eq(MESSAGE_METADATA), eq(DEVICE), any(), any()))
         .thenReturn(mock(DlmsConnection.class));
 
@@ -143,9 +140,6 @@ public class RecoverKeyProcessTest {
     // GIVEN
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
         .thenReturn(DEVICE);
-    lenient()
-        .when(this.secretManagementService.hasNewSecret(MESSAGE_METADATA, DEVICE_IDENTIFICATION))
-        .thenReturn(true);
     when(this.hls5Connector.connectUnchecked(any(), any(), any(), any())).thenReturn(null);
 
     // WHEN
