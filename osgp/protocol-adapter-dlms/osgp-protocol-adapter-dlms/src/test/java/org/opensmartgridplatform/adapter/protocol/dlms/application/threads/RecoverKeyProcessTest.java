@@ -45,23 +45,17 @@ import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 @ExtendWith(MockitoExtension.class)
 public class RecoverKeyProcessTest {
 
-  @InjectMocks
-  RecoverKeyProcess recoverKeyProcess;
+  @InjectMocks RecoverKeyProcess recoverKeyProcess;
 
-  @Mock
-  DomainHelperService domainHelperService;
+  @Mock DomainHelperService domainHelperService;
 
-  @Mock
-  Hls5Connector hls5Connector;
+  @Mock Hls5Connector hls5Connector;
 
-  @Mock
-  SecretManagementService secretManagementService;
+  @Mock SecretManagementService secretManagementService;
 
-  @Mock
-  ThrottlingService throttlingService;
+  @Mock ThrottlingService throttlingService;
 
-  @Mock
-  DlmsDeviceRepository dlmsDeviceRepository;
+  @Mock DlmsDeviceRepository dlmsDeviceRepository;
 
   private static final String DEVICE_IDENTIFICATION = "E000123456789";
 
@@ -99,8 +93,8 @@ public class RecoverKeyProcessTest {
   public void testWhenNoNewKeysThenNoActivate() throws OsgpException {
 
     // GIVEN
-    lenient().when(
-            this.secretManagementService.hasNewSecret(MESSAGE_METADATA, DEVICE_IDENTIFICATION))
+    lenient()
+        .when(this.secretManagementService.hasNewSecret(MESSAGE_METADATA, DEVICE_IDENTIFICATION))
         .thenReturn(false);
 
     // WHEN
@@ -117,8 +111,8 @@ public class RecoverKeyProcessTest {
     // GIVEN
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
         .thenReturn(DEVICE);
-    lenient().when(
-            this.secretManagementService.hasNewSecret(MESSAGE_METADATA, DEVICE_IDENTIFICATION))
+    lenient()
+        .when(this.secretManagementService.hasNewSecret(MESSAGE_METADATA, DEVICE_IDENTIFICATION))
         .thenReturn(true);
     when(this.hls5Connector.connectUnchecked(eq(MESSAGE_METADATA), eq(DEVICE), any(), any()))
         .thenReturn(mock(DlmsConnection.class));
@@ -149,8 +143,8 @@ public class RecoverKeyProcessTest {
     // GIVEN
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
         .thenReturn(DEVICE);
-    lenient().when(
-            this.secretManagementService.hasNewSecret(MESSAGE_METADATA, DEVICE_IDENTIFICATION))
+    lenient()
+        .when(this.secretManagementService.hasNewSecret(MESSAGE_METADATA, DEVICE_IDENTIFICATION))
         .thenReturn(true);
     when(this.hls5Connector.connectUnchecked(any(), any(), any(), any())).thenReturn(null);
 
