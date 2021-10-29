@@ -351,6 +351,7 @@
       <xsd:enumeration value="M_BUS_EVENT_LOG"/>
       <xsd:enumeration value="POWER_QUALITY_EVENT_LOG"/>
       <xsd:enumeration value="AUXILIARY_EVENT_LOG"/>
+      <xsd:enumeration value="POWER_QUALITY_EXTENDED_EVENT_LOG"/>
     </xsd:restriction>
   </xsd:simpleType>
 
@@ -479,6 +480,18 @@
       <xsd:enumeration value="PHASE_RETURNED_L2"/>
       <!-- 92 - phase returned l3 -  -  -  -->
       <xsd:enumeration value="PHASE_RETURNED_L3"/>
+      <!-- 93 - voltage sag in phase l1 -  -  -  -->
+      <xsd:enumeration value="VOLTAGE_SAG_IN_PHASE_L1"/>
+      <!-- 94 - voltage sag in phase l2 -  -  -  -->
+      <xsd:enumeration value="VOLTAGE_SAG_IN_PHASE_L2"/>
+      <!-- 95 - voltage sag in phase l3 -  -  -  -->
+      <xsd:enumeration value="VOLTAGE_SAG_IN_PHASE_L3"/>
+      <!-- 96 - voltage swell in phase l1 -  -  -  -->
+      <xsd:enumeration value="VOLTAGE_SWELL_IN_PHASE_L1"/>
+      <!-- 97 - voltage swell in phase l2 -  -  -  -->
+      <xsd:enumeration value="VOLTAGE_SWELL_IN_PHASE_L2"/>
+      <!-- 98 - voltage swell in phase l3 -  -  -  -->
+      <xsd:enumeration value="VOLTAGE_SWELL_IN_PHASE_L3"/>
       <!-- 100 - communication error mbus channel1 -  -  -  -->
       <xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_1"/>
       <!-- 101 - communication ok mbus channel1 -  -  -  -->

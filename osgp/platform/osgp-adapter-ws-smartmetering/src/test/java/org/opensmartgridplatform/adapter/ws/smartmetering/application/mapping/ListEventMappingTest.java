@@ -22,7 +22,7 @@ import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventDet
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventLogCategory;
 import org.opensmartgridplatform.domain.core.valueobjects.smartmetering.EventType;
 
-public class ListEventMappingTest {
+class ListEventMappingTest {
 
   private static final String NUMBER_OF_EVENTS = "number of events";
   private static final String EVENT_CODE_WITH_MAPPING_OF = "eventCode with mapping of ";
@@ -31,1263 +31,1296 @@ public class ListEventMappingTest {
 
   private static final EventType EVENT_TYPE = EventType.ERROR_REGISTER_CLEARED;
   private static final Integer EVENT_COUNTER = 1;
-  private final List<Event> STANDARD_EVENTS =
+  private static final List<Event> STANDARD_EVENTS =
       Arrays.asList(
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.EVENTLOG_CLEARED,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(), EventType.POWER_FAILURE, null, EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(), EventType.POWER_RETURNED, null, EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(), EventType.CLOCK_UPDATE, null, EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.CLOCK_ADJUSTED_OLD_TIME,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.CLOCK_ADJUSTED_NEW_TIME,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(), EventType.CLOCK_INVALID, null, EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(), EventType.REPLACE_BATTERY, null, EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.BATTERY_VOLTAGE_LOW,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.TARIFF_ACTIVATED,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.ERROR_REGISTER_CLEARED,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.ALARM_REGISTER_CLEARED,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.HARDWARE_ERROR_PROGRAM_MEMORY,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.HARDWARE_ERROR_RAM,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.HARDWARE_ERROR_NV_MEMORY,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(), EventType.WATCHDOG_ERROR, null, EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.HARDWARE_ERROR_MEASUREMENT_SYSTEM,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.FIRMWARE_READY_FOR_ACTIVATION,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.FIRMWARE_ACTIVATED,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.PASSIVE_TARIFF_UPDATED,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.SUCCESSFUL_SELFCHECK_AFTER_FIRMWARE_UPDATE,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MANUFACTURER_SPECIFIC_231,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MANUFACTURER_SPECIFIC_232,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MANUFACTURER_SPECIFIC_233,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MANUFACTURER_SPECIFIC_234,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MANUFACTURER_SPECIFIC_235,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MANUFACTURER_SPECIFIC_236,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MANUFACTURER_SPECIFIC_237,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MANUFACTURER_SPECIFIC_238,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MANUFACTURER_SPECIFIC_239,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MANUFACTURER_SPECIFIC_240,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MANUFACTURER_SPECIFIC_241,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MANUFACTURER_SPECIFIC_242,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MANUFACTURER_SPECIFIC_243,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MANUFACTURER_SPECIFIC_244,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MANUFACTURER_SPECIFIC_245,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MANUFACTURER_SPECIFIC_246,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MANUFACTURER_SPECIFIC_247,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MANUFACTURER_SPECIFIC_248,
               null,
               EventLogCategory.STANDARD_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MANUFACTURER_SPECIFIC_249,
               null,
               EventLogCategory.STANDARD_EVENT_LOG));
 
-  private final List<Event> FRAUD_DETECTION_EVENTS =
+  private static final List<Event> FRAUD_DETECTION_EVENTS =
       Arrays.asList(
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.TERMINAL_COVER_REMOVED,
               null,
               EventLogCategory.FRAUD_DETECTION_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.TERMINAL_COVER_CLOSED,
               null,
               EventLogCategory.FRAUD_DETECTION_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.STRONG_DC_FIELD_DETECTED,
               null,
               EventLogCategory.FRAUD_DETECTION_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.NO_STRONG_DC_FIELD_ANYMORE,
               null,
               EventLogCategory.FRAUD_DETECTION_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.METER_COVER_REMOVED,
               null,
               EventLogCategory.FRAUD_DETECTION_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.METER_COVER_CLOSED,
               null,
               EventLogCategory.FRAUD_DETECTION_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.FAILED_LOGIN_ATTEMPT,
               null,
               EventLogCategory.FRAUD_DETECTION_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.CONFIGURATION_CHANGE,
               null,
               EventLogCategory.FRAUD_DETECTION_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MODULE_COVER_OPENED,
               null,
               EventLogCategory.FRAUD_DETECTION_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MODULE_COVER_CLOSED,
               null,
               EventLogCategory.FRAUD_DETECTION_LOG));
 
-  private final List<Event> COMMUNICATION_SESSIONS_EVENTS =
+  private static final List<Event> COMMUNICATION_SESSIONS_EVENTS =
       Arrays.asList(
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.METROLOGICAL_MAINTENANCE,
               0,
               EventLogCategory.COMMUNICATION_SESSION_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.TECHNICAL_MAINTENANCE,
               0,
               EventLogCategory.COMMUNICATION_SESSION_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.RETRIEVE_METER_READINGS_E,
               0,
               EventLogCategory.COMMUNICATION_SESSION_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.RETRIEVE_METER_READINGS_G,
               1,
               EventLogCategory.COMMUNICATION_SESSION_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.RETRIEVE_INTERVAL_DATA_E,
               3754,
               EventLogCategory.COMMUNICATION_SESSION_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.RETRIEVE_INTERVAL_DATA_G,
               65535,
               EventLogCategory.COMMUNICATION_SESSION_LOG));
 
-  private final List<Event> M_BUS_EVENTS =
+  private static final List<Event> M_BUS_EVENTS =
       Arrays.asList(
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.COMMUNICATION_ERROR_M_BUS_CHANNEL_1,
               null,
               EventLogCategory.M_BUS_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.COMMUNICATION_OK_M_BUS_CHANNEL_1,
               null,
               EventLogCategory.M_BUS_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.REPLACE_BATTERY_M_BUS_CHANNEL_1,
               null,
               EventLogCategory.M_BUS_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.FRAUD_ATTEMPT_M_BUS_CHANNEL_1,
               null,
               EventLogCategory.M_BUS_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.CLOCK_ADJUSTED_M_BUS_CHANNEL_1,
               null,
               EventLogCategory.M_BUS_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_1,
               null,
               EventLogCategory.M_BUS_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_1,
               null,
               EventLogCategory.M_BUS_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.COMMUNICATION_ERROR_M_BUS_CHANNEL_2,
               null,
               EventLogCategory.M_BUS_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.COMMUNICATION_OK_M_BUS_CHANNEL_2,
               null,
               EventLogCategory.M_BUS_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.REPLACE_BATTERY_M_BUS_CHANNEL_2,
               null,
               EventLogCategory.M_BUS_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.FRAUD_ATTEMPT_M_BUS_CHANNEL_2,
               null,
               EventLogCategory.M_BUS_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.CLOCK_ADJUSTED_M_BUS_CHANNEL_2,
               null,
               EventLogCategory.M_BUS_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_2,
               null,
               EventLogCategory.M_BUS_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_2,
               null,
               EventLogCategory.M_BUS_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.COMMUNICATION_ERROR_M_BUS_CHANNEL_3,
               null,
               EventLogCategory.M_BUS_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.COMMUNICATION_OK_M_BUS_CHANNEL_3,
               null,
               EventLogCategory.M_BUS_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.REPLACE_BATTERY_M_BUS_CHANNEL_3,
               null,
               EventLogCategory.M_BUS_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.FRAUD_ATTEMPT_M_BUS_CHANNEL_3,
               null,
               EventLogCategory.M_BUS_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.CLOCK_ADJUSTED_M_BUS_CHANNEL_3,
               null,
               EventLogCategory.M_BUS_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_3,
               null,
               EventLogCategory.M_BUS_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_3,
               null,
               EventLogCategory.M_BUS_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.COMMUNICATION_ERROR_M_BUS_CHANNEL_4,
               null,
               EventLogCategory.M_BUS_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.COMMUNICATION_OK_M_BUS_CHANNEL_4,
               null,
               EventLogCategory.M_BUS_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.REPLACE_BATTERY_M_BUS_CHANNEL_4,
               null,
               EventLogCategory.M_BUS_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.FRAUD_ATTEMPT_M_BUS_CHANNEL_4,
               null,
               EventLogCategory.M_BUS_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.CLOCK_ADJUSTED_M_BUS_CHANNEL_4,
               null,
               EventLogCategory.M_BUS_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4,
               null,
               EventLogCategory.M_BUS_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_4,
               null,
               EventLogCategory.M_BUS_EVENT_LOG));
 
-  private final List<Event> AUXILIARY_EVENTS =
+  private static final List<Event> POWER_QUALITY_EXTENDED_EVENTS =
       Arrays.asList(
-          this.newEvent(
+          newEvent(
+              DateTime.now(),
+              EventType.VOLTAGE_SAG_IN_PHASE_L1,
+              null,
+              EventLogCategory.POWER_QUALITY_EXTENDED_EVENT_LOG),
+          newEvent(
+              DateTime.now(),
+              EventType.VOLTAGE_SAG_IN_PHASE_L2,
+              null,
+              EventLogCategory.POWER_QUALITY_EXTENDED_EVENT_LOG),
+          newEvent(
+              DateTime.now(),
+              EventType.VOLTAGE_SAG_IN_PHASE_L3,
+              null,
+              EventLogCategory.POWER_QUALITY_EXTENDED_EVENT_LOG),
+          newEvent(
+              DateTime.now(),
+              EventType.VOLTAGE_SWELL_IN_PHASE_L1,
+              null,
+              EventLogCategory.POWER_QUALITY_EXTENDED_EVENT_LOG),
+          newEvent(
+              DateTime.now(),
+              EventType.VOLTAGE_SWELL_IN_PHASE_L2,
+              null,
+              EventLogCategory.POWER_QUALITY_EXTENDED_EVENT_LOG),
+          newEvent(
+              DateTime.now(),
+              EventType.VOLTAGE_SWELL_IN_PHASE_L3,
+              null,
+              EventLogCategory.POWER_QUALITY_EXTENDED_EVENT_LOG));
+
+  private static final List<Event> AUXILIARY_EVENTS =
+      Arrays.asList(
+          newEvent(
               DateTime.now(),
               EventType.AUXILIARY_EVENTLOG_CLEARED,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_SUCCESSFUL_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_BLOCK_SIZE_NOT_SUPPORTED_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_IMAGE_SIZE_TOO_BIG_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_INVALID_BLOCK_NUMBER_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_DATA_RECEIVE_ERROR_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_IMAGE_NOT_COMPLETE_ERROR_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_INVALID_SECURITY_ERROR_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_INVALID_FIRMWARE_FOR_THIS_DEVICE_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_SUCCESSFUL_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_BLOCK_SIZE_NOT_SUPPORTED_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_IMAGE_SIZE_TOO_BIG_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_INVALID_BLOCK_NUMBER_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_DATA_RECEIVE_ERROR_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_IMAGE_NOT_COMPLETE_ERROR_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_INVALID_SECURITY_ERROR_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_INVALID_FIRMWARE_FOR_THIS_DEVICE_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_SUCCESSFUL_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_BLOCK_SIZE_NOT_SUPPORTED_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_IMAGE_SIZE_TOO_BIG_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_INVALID_BLOCK_NUMBER_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_DATA_RECEIVE_ERROR_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_IMAGE_NOT_COMPLETE_ERROR_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_INVALID_SECURITY_ERROR_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_INVALID_FIRMWARE_FOR_THIS_DEVICE_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_SUCCESSFUL_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_BLOCK_SIZE_NOT_SUPPORTED_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_IMAGE_SIZE_TOO_BIG_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_INVALID_BLOCK_NUMBER_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_DATA_RECEIVE_ERROR_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_IMAGE_NOT_COMPLETE_ERROR_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_INVALID_SECURITY_ERROR_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_FW_UPGRADE_INVALID_FIRMWARE_FOR_THIS_DEVICE_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_0_BATTERY_LOW_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_1_BATTERY_CONSUMPTION_TOO_HIGH_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_2_REVERSE_FLOW_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_3_TAMPER_P2_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_4_TAMPER_P0_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_5_TAMPER_CASE_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_6_TAMPER_MAGNETIC_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_7_TEMP_OUT_OF_RANGE_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_8_CLOCK_SYNC_ERROR_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_9_SW_ERROR_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_10_WATCHDOG_ERROR_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_11_SYSTEM_HW_ERROR_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_12_CFG_CALIBRATION_ERROR_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_13_HIGH_FLOW_GREATER_THAN_QMAX_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_14_TEMP_SENSOR_ERROR_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_15_RESERVED_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_17_NEW_KEY_ACCEPTED_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_18_NEW_KEY_REJECTED_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_18_RESERVED_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_20_MANUFACTURER_SPECIFIC_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_21_MANUFACTURER_SPECIFIC_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_22_MANUFACTURER_SPECIFIC_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_23_MANUFACTURER_SPECIFIC_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_24_MANUFACTURER_SPECIFIC_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_25_MANUFACTURER_SPECIFIC_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_26_MANUFACTURER_SPECIFIC_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_27_MANUFACTURER_SPECIFIC_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_28_MANUFACTURER_SPECIFIC_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_29_MANUFACTURER_SPECIFIC_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_30_MANUFACTURER_SPECIFIC_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_31_MANUFACTURER_SPECIFIC_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.KEY_SENT_TO_MBUS_DEVICE_ON_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.KEY_ACKNOWLEDGED_BY_MBUS_DEVICE_ON_CHANNEL_1,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_0_BATTERY_LOW_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_1_BATTERY_CONSUMPTION_TOO_HIGH_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_2_REVERSE_FLOW_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_3_TAMPER_P2_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_4_TAMPER_P0_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_5_TAMPER_CASE_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_6_TAMPER_MAGNETIC_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_7_TEMP_OUT_OF_RANGE_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_8_CLOCK_SYNC_ERROR_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_9_SW_ERROR_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_10_WATCHDOG_ERROR_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_11_SYSTEM_HW_ERROR_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_12_CFG_CALIBRATION_ERROR_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_13_HIGH_FLOW_GREATER_THAN_QMAX_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_14_TEMP_SENSOR_ERROR_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_15_RESERVED_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_17_NEW_KEY_ACCEPTED_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_18_NEW_KEY_REJECTED_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_18_RESERVED_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_20_MANUFACTURER_SPECIFIC_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_21_MANUFACTURER_SPECIFIC_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_22_MANUFACTURER_SPECIFIC_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_23_MANUFACTURER_SPECIFIC_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_24_MANUFACTURER_SPECIFIC_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_25_MANUFACTURER_SPECIFIC_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_26_MANUFACTURER_SPECIFIC_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_27_MANUFACTURER_SPECIFIC_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_28_MANUFACTURER_SPECIFIC_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_29_MANUFACTURER_SPECIFIC_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_30_MANUFACTURER_SPECIFIC_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_31_MANUFACTURER_SPECIFIC_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.KEY_SENT_TO_MBUS_DEVICE_ON_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.KEY_ACKNOWLEDGED_BY_MBUS_DEVICE_ON_CHANNEL_2,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_0_BATTERY_LOW_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_1_BATTERY_CONSUMPTION_TOO_HIGH_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_2_REVERSE_FLOW_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_3_TAMPER_P2_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_4_TAMPER_P0_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_5_TAMPER_CASE_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_6_TAMPER_MAGNETIC_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_7_TEMP_OUT_OF_RANGE_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_8_CLOCK_SYNC_ERROR_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_9_SW_ERROR_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_10_WATCHDOG_ERROR_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_11_SYSTEM_HW_ERROR_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_12_CFG_CALIBRATION_ERROR_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_13_HIGH_FLOW_GREATER_THAN_QMAX_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_14_TEMP_SENSOR_ERROR_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_15_RESERVED_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_17_NEW_KEY_ACCEPTED_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_18_NEW_KEY_REJECTED_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_18_RESERVED_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_20_MANUFACTURER_SPECIFIC_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_21_MANUFACTURER_SPECIFIC_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_22_MANUFACTURER_SPECIFIC_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_23_MANUFACTURER_SPECIFIC_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_24_MANUFACTURER_SPECIFIC_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_25_MANUFACTURER_SPECIFIC_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_26_MANUFACTURER_SPECIFIC_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_27_MANUFACTURER_SPECIFIC_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_28_MANUFACTURER_SPECIFIC_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_29_MANUFACTURER_SPECIFIC_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_30_MANUFACTURER_SPECIFIC_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_31_MANUFACTURER_SPECIFIC_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.KEY_SENT_TO_MBUS_DEVICE_ON_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.KEY_ACKNOWLEDGED_BY_MBUS_DEVICE_ON_CHANNEL_3,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_0_BATTERY_LOW_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_1_BATTERY_CONSUMPTION_TOO_HIGH_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_2_REVERSE_FLOW_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_3_TAMPER_P2_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_4_TAMPER_P0_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_5_TAMPER_CASE_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_6_TAMPER_MAGNETIC_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_7_TEMP_OUT_OF_RANGE_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_8_CLOCK_SYNC_ERROR_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_9_SW_ERROR_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_10_WATCHDOG_ERROR_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_11_SYSTEM_HW_ERROR_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_12_CFG_CALIBRATION_ERROR_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_13_HIGH_FLOW_GREATER_THAN_QMAX_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_14_TEMP_SENSOR_ERROR_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_15_RESERVED_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_16_P0_ENABLED_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_17_NEW_KEY_ACCEPTED_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_18_NEW_KEY_REJECTED_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_18_RESERVED_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_20_MANUFACTURER_SPECIFIC_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_21_MANUFACTURER_SPECIFIC_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_22_MANUFACTURER_SPECIFIC_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_23_MANUFACTURER_SPECIFIC_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_24_MANUFACTURER_SPECIFIC_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_25_MANUFACTURER_SPECIFIC_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_26_MANUFACTURER_SPECIFIC_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_27_MANUFACTURER_SPECIFIC_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_28_MANUFACTURER_SPECIFIC_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_29_MANUFACTURER_SPECIFIC_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_30_MANUFACTURER_SPECIFIC_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.MBUS_STATUS_BIT_31_MANUFACTURER_SPECIFIC_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.KEY_SENT_TO_MBUS_DEVICE_ON_CHANNEL_4,
               null,
               EventLogCategory.AUXILIARY_EVENT_LOG),
-          this.newEvent(
+          newEvent(
               DateTime.now(),
               EventType.KEY_ACKNOWLEDGED_BY_MBUS_DEVICE_ON_CHANNEL_4,
               null,
@@ -1315,9 +1348,9 @@ public class ListEventMappingTest {
           .as(EVENT_COUNTER_WITH_MAPPING_OF + originalEvent.getEventType())
           .isEqualTo(originalEvent.getEventCounter());
 
-      assertThat(mappedEvent.getTimestamp().toString())
+      assertThat(mappedEvent.getTimestamp())
           .as(TIMESTAMP_WITH_MAPPING_OF + originalEvent.getEventType())
-          .isEqualTo(new DateTime(originalEvent.getTimestamp().toGregorianCalendar()).toString());
+          .isEqualByComparingTo(new DateTime(originalEvent.getTimestamp().toGregorianCalendar()));
     }
   }
 
@@ -1341,15 +1374,15 @@ public class ListEventMappingTest {
           .as(EVENT_COUNTER_WITH_MAPPING_OF + originalEvent)
           .isEqualTo(originalEvent.getEventCounter());
 
-      assertThat(new DateTime(mappedEvent.getTimestamp().toGregorianCalendar()).toString())
+      assertThat(new DateTime(mappedEvent.getTimestamp().toGregorianCalendar()))
           .as(TIMESTAMP_WITH_MAPPING_OF + originalEvent)
-          .isEqualTo(originalEvent.getTimestamp().toString());
+          .isEqualByComparingTo(originalEvent.getTimestamp());
     }
   }
 
   /** Tests if mapping a List, typed to Event, succeeds if the List is empty. */
   @Test
-  public void testEmptyListEventMapping() {
+  void testEmptyListEventMapping() {
 
     // build test data
     final List<Event> listOriginal = new ArrayList<>();
@@ -1368,7 +1401,7 @@ public class ListEventMappingTest {
 
   /** Tests if mapping a List, typed to Event, succeeds if the List is filled. */
   @Test
-  public void testFilledListEventMapping() {
+  void testFilledListEventMapping() {
 
     // build test data
     final DateTime timestamp = new DateTime();
@@ -1423,16 +1456,16 @@ public class ListEventMappingTest {
   }
 
   @Test
-  public void testMappingForListOfCommunicationSessionEvents() {
+  void testMappingForListOfCommunicationSessionEvents() {
 
     final List<org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event>
         mappedCommunicationSessionEvents =
             this.managementMapper.mapAsList(
-                this.COMMUNICATION_SESSIONS_EVENTS,
+                COMMUNICATION_SESSIONS_EVENTS,
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event.class);
 
     this.checkEventsMappedToWsSchema(
-        this.COMMUNICATION_SESSIONS_EVENTS, mappedCommunicationSessionEvents);
+        COMMUNICATION_SESSIONS_EVENTS, mappedCommunicationSessionEvents);
 
     final List<Event> communicationSessionEvents =
         this.managementMapper.mapAsList(mappedCommunicationSessionEvents, Event.class);
@@ -1442,15 +1475,15 @@ public class ListEventMappingTest {
   }
 
   @Test
-  public void testMappingForListOfFraudDetectionEvents() {
+  void testMappingForListOfFraudDetectionEvents() {
 
     final List<org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event>
         mappedFraudDetectionEvents =
             this.managementMapper.mapAsList(
-                this.FRAUD_DETECTION_EVENTS,
+                FRAUD_DETECTION_EVENTS,
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event.class);
 
-    this.checkEventsMappedToWsSchema(this.FRAUD_DETECTION_EVENTS, mappedFraudDetectionEvents);
+    this.checkEventsMappedToWsSchema(FRAUD_DETECTION_EVENTS, mappedFraudDetectionEvents);
 
     final List<Event> fraudDetectionEvents =
         this.managementMapper.mapAsList(mappedFraudDetectionEvents, Event.class);
@@ -1459,15 +1492,15 @@ public class ListEventMappingTest {
   }
 
   @Test
-  public void testMappingForListOfMBusEvents() {
+  void testMappingForListOfMBusEvents() {
 
     final List<org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event>
         mappedMBusEvents =
             this.managementMapper.mapAsList(
-                this.M_BUS_EVENTS,
+                M_BUS_EVENTS,
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event.class);
 
-    this.checkEventsMappedToWsSchema(this.M_BUS_EVENTS, mappedMBusEvents);
+    this.checkEventsMappedToWsSchema(M_BUS_EVENTS, mappedMBusEvents);
 
     final List<Event> mBusEvents = this.managementMapper.mapAsList(mappedMBusEvents, Event.class);
 
@@ -1475,15 +1508,34 @@ public class ListEventMappingTest {
   }
 
   @Test
-  public void testMappingForListOfStandardEvents() {
+  void testMappingForListOfPowerQualityExtendedEvents() {
+
+    final List<org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event>
+        mappedPowerQualityExtendedEvents =
+            this.managementMapper.mapAsList(
+                POWER_QUALITY_EXTENDED_EVENTS,
+                org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event.class);
+
+    this.checkEventsMappedToWsSchema(
+        POWER_QUALITY_EXTENDED_EVENTS, mappedPowerQualityExtendedEvents);
+
+    final List<Event> powerQualityExtendedEvents =
+        this.managementMapper.mapAsList(mappedPowerQualityExtendedEvents, Event.class);
+
+    this.checkEventsMappedFromWsSchema(
+        mappedPowerQualityExtendedEvents, powerQualityExtendedEvents);
+  }
+
+  @Test
+  void testMappingForListOfStandardEvents() {
 
     final List<org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event>
         mappedStandardEvents =
             this.managementMapper.mapAsList(
-                this.STANDARD_EVENTS,
+                STANDARD_EVENTS,
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event.class);
 
-    this.checkEventsMappedToWsSchema(this.STANDARD_EVENTS, mappedStandardEvents);
+    this.checkEventsMappedToWsSchema(STANDARD_EVENTS, mappedStandardEvents);
 
     final List<Event> standardEvents =
         this.managementMapper.mapAsList(mappedStandardEvents, Event.class);
@@ -1492,15 +1544,15 @@ public class ListEventMappingTest {
   }
 
   @Test
-  public void testMappingForListOfAuxiliaryEvents() {
+  void testMappingForListOfAuxiliaryEvents() {
 
     final List<org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event>
         mappedAuxiliaryEvents =
             this.managementMapper.mapAsList(
-                this.AUXILIARY_EVENTS,
+                AUXILIARY_EVENTS,
                 org.opensmartgridplatform.adapter.ws.schema.smartmetering.management.Event.class);
 
-    this.checkEventsMappedToWsSchema(this.AUXILIARY_EVENTS, mappedAuxiliaryEvents);
+    this.checkEventsMappedToWsSchema(AUXILIARY_EVENTS, mappedAuxiliaryEvents);
 
     final List<Event> auxiliaryEvents =
         this.managementMapper.mapAsList(mappedAuxiliaryEvents, Event.class);
@@ -1510,7 +1562,7 @@ public class ListEventMappingTest {
 
   /** Tests if mapping a List, typed to Event, succeeds if the List is null. */
   @Test
-  public void testNullListEventMapping() {
+  void testNullListEventMapping() {
     // build test data
     final List<Event> listOriginal = null;
 
@@ -1524,7 +1576,7 @@ public class ListEventMappingTest {
             });
   }
 
-  private Event newEvent(
+  private static Event newEvent(
       final DateTime timestamp,
       final EventType eventType,
       final Integer eventCounter,

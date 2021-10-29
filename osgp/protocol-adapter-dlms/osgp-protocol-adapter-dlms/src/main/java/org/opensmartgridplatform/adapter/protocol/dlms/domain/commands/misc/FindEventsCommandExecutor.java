@@ -66,6 +66,9 @@ public class FindEventsCommandExecutor
         EventLogCategoryDto.POWER_QUALITY_EVENT_LOG, DlmsObjectType.POWER_QUALITY_EVENT_LOG);
     EVENT_LOG_CATEGORY_OBISCODE_MAP.put(
         EventLogCategoryDto.AUXILIARY_EVENT_LOG, DlmsObjectType.AUXILIARY_EVENT_LOG);
+    EVENT_LOG_CATEGORY_OBISCODE_MAP.put(
+        EventLogCategoryDto.POWER_QUALITY_EXTENDED_EVENT_LOG,
+        DlmsObjectType.POWER_QUALITY_EXTENDED_EVENT_LOG);
   }
 
   private final DataObjectToEventListConverter dataObjectToEventListConverter;
