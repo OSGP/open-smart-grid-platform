@@ -295,11 +295,17 @@ public class SecretManagementService {
 
   public boolean hasNewSecret(
       final MessageMetadata messageMetadata, final String deviceIdentification) {
-    final HasNewSecretRequest request = new HasNewSecretRequest();
-    request.setDeviceId(deviceIdentification);
-    final HasNewSecretResponse response =
-        this.secretManagementClient.hasNewSecretRequest(messageMetadata, request);
-    return response.isHasNewSecret();
+    final HasNewSecretRequest requestAKey = new HasNewSecretRequest();
+    final HasNewSecretRequest requestEKey = new HasNewSecretRequest();
+    requestAKey.setDeviceId(deviceIdentification);
+    requestAKey.setSecretType(SecretType.E_METER_AUTHENTICATION_KEY);
+    final HasNewSecretResponse responseAKey =
+        this.secretManagementClient.hasNewSecretRequest(messageMetadata, requestAKey);
+    requestEKey.setDeviceId(deviceIdentification);
+    requestEKey.setSecretType(SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
+    final HasNewSecretResponse responseEKey =
+        this.secretManagementClient.hasNewSecretRequest(messageMetadata, requestEKey);
+    return responseAKey.isHasNewSecret() || responseEKey.isHasNewSecret();
   }
 
   public byte[] generate128BitsKeyAndStoreAsNewKey(
