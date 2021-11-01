@@ -36,6 +36,7 @@ import org.opensmartgridplatform.shared.security.EncryptionDelegate;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 import org.opensmartgridplatform.shared.security.RsaEncrypter;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -53,6 +54,10 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class SecretManagementService {
+
+  @Value("${max.minutes.for.new.key.to.be.activated}")
+  private Integer maxMinutesForNewKeyToBeActivated;
+
   // Internal datastructure to keep track of (intermediate) secret details
   private static class EncryptedTypedSecret {
     byte[] encryptedSecret;
@@ -249,7 +254,6 @@ public class SecretManagementService {
 
   public synchronized void storeSingleNewSecrets(
       final String deviceIdentification, final List<TypedSecret> secrets) {
-    final int maxMinutesOld = 10;
     final List<TypedSecret> typedSecretsToStore = new ArrayList<>();
     final List<TypedSecret> typedSecretsToReset = new ArrayList<>();
     for (final TypedSecret typedSecret : secrets) {
@@ -258,7 +262,8 @@ public class SecretManagementService {
               deviceIdentification, typedSecret.getSecretType(), SecretStatus.NEW);
       if (numberOfNewSecrets == 0) {
         typedSecretsToStore.add(typedSecret);
-      } else if (this.recentNewSecretsPresent(deviceIdentification, maxMinutesOld, typedSecret)) {
+      } else if (this.recentNewSecretsPresent(
+          deviceIdentification, this.maxMinutesForNewKeyToBeActivated, typedSecret)) {
         final String errorMsg =
             "There is/are secrets of type %s for device %s with status NEW "
                 + "created less than %d minutes old. No key with status NEW will be stored. Wait "
@@ -268,8 +273,8 @@ public class SecretManagementService {
                 errorMsg,
                 typedSecret.getSecretType().name(),
                 deviceIdentification,
-                maxMinutesOld,
-                maxMinutesOld));
+                this.maxMinutesForNewKeyToBeActivated,
+                this.maxMinutesForNewKeyToBeActivated));
       } else {
         typedSecretsToReset.add(typedSecret);
       }
@@ -298,18 +303,19 @@ public class SecretManagementService {
   }
 
   private boolean recentNewSecretsPresent(
-      final String deviceIdentification, final int maxMinutesOld, final TypedSecret typedSecret) {
+      final String deviceIdentification, final long maxMinutesOld, final TypedSecret typedSecret) {
     final List<DbEncryptedSecret> secrets =
         this.secretRepository.findSecrets(
             deviceIdentification, typedSecret.getSecretType(), SecretStatus.NEW);
     return secrets.stream()
             .filter(
-                s -> new Date().getTime() - s.getCreationTime().getTime() < (maxMinutesOld * 60))
+                s ->
+                    new Date().getTime() - s.getCreationTime().getTime() < (maxMinutesOld * 60000L))
             .count()
         > 0;
   }
 
-  public synchronized void storeSecrets(
+  private synchronized void storeSecrets(
       final String deviceIdentification, final List<TypedSecret> secrets) {
     secrets.forEach(s -> this.checkNrNewSecretsOfType(deviceIdentification, s.getSecretType(), 0));
     final List<EncryptedTypedSecret> aesSecrets =
