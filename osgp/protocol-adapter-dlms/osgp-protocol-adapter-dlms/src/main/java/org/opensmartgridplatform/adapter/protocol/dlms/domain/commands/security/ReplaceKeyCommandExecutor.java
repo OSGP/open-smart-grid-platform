@@ -130,17 +130,28 @@ public class ReplaceKeyCommandExecutor
       final MessageMetadata messageMetadata)
       throws OsgpException {
 
+    ReplaceKeyInput keyWrapper2 = keyWrapper;
     if (!keyWrapper.isGenerated()) {
       this.secretManagementService.storeNewKey(
           messageMetadata,
           device.getDeviceIdentification(),
           keyWrapper.getSecurityKeyType(),
           keyWrapper.getBytes());
+
+      final byte[] newKey =
+          this.secretManagementService.getNewKey(
+              messageMetadata, device.getDeviceIdentification(), keyWrapper.getSecurityKeyType());
+      keyWrapper2 =
+          ReplaceKeyInput.from(
+              newKey,
+              keyWrapper.getKeyId(),
+              keyWrapper.getSecurityKeyType(),
+              keyWrapper.isGenerated());
     }
 
-    this.sendToDevice(conn, device.getDeviceIdentification(), keyWrapper, messageMetadata);
+    this.sendToDevice(conn, device.getDeviceIdentification(), keyWrapper2, messageMetadata);
     this.secretManagementService.activateNewKey(
-        messageMetadata, device.getDeviceIdentification(), keyWrapper.getSecurityKeyType());
+        messageMetadata, device.getDeviceIdentification(), keyWrapper2.getSecurityKeyType());
     return device;
   }
 

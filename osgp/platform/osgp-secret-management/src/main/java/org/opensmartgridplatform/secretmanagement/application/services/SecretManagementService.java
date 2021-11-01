@@ -247,6 +247,68 @@ public class SecretManagementService {
     return Optional.of(secretsList.iterator().next());
   }
 
+  public synchronized void storeSingleNewSecrets(
+      final String deviceIdentification, final List<TypedSecret> secrets) {
+    final int maxMinutesOld = 10;
+    final List<TypedSecret> typedSecretsToStore = new ArrayList<>();
+    final List<TypedSecret> typedSecretsToReset = new ArrayList<>();
+    for (final TypedSecret typedSecret : secrets) {
+      final int numberOfNewSecrets =
+          this.secretRepository.getSecretCount(
+              deviceIdentification, typedSecret.getSecretType(), SecretStatus.NEW);
+      if (numberOfNewSecrets == 0) {
+        typedSecretsToStore.add(typedSecret);
+      } else if (this.recentNewSecretsPresent(deviceIdentification, maxMinutesOld, typedSecret)) {
+        final String errorMsg =
+            "There is/are secrets of type %s for device %s with status NEW "
+                + "created less than %d minutes old. No key with status NEW will be stored. Wait "
+                + "at least %d minutes before starting a request requiring NEW keys to be stored.";
+        throw new IllegalStateException(
+            String.format(
+                errorMsg,
+                typedSecret.getSecretType().name(),
+                deviceIdentification,
+                maxMinutesOld,
+                maxMinutesOld));
+      } else {
+        typedSecretsToReset.add(typedSecret);
+      }
+    }
+    this.storeSecrets(deviceIdentification, typedSecretsToStore);
+    typedSecretsToReset.forEach(
+        ts -> this.resetNewSecrets(deviceIdentification, ts.getSecretType()));
+  }
+
+  private void resetNewSecrets(final String deviceIdentification, final SecretType secretType) {
+    final List<DbEncryptedSecret> foundSecrets =
+        this.secretRepository.findSecrets(deviceIdentification, secretType, SecretStatus.NEW);
+    final Date mostRecentCreationTime =
+        foundSecrets.stream()
+            .max((s1, s2) -> s1.getCreationTime().compareTo(s2.getCreationTime()))
+            .get()
+            .getCreationTime();
+    foundSecrets.forEach(
+        s -> {
+          if (s.getCreationTime().equals(mostRecentCreationTime)) {
+            s.setCreationTime(new Date());
+          } else {
+            s.setSecretStatus(SecretStatus.EXPIRED);
+          }
+        });
+  }
+
+  private boolean recentNewSecretsPresent(
+      final String deviceIdentification, final int maxMinutesOld, final TypedSecret typedSecret) {
+    final List<DbEncryptedSecret> secrets =
+        this.secretRepository.findSecrets(
+            deviceIdentification, typedSecret.getSecretType(), SecretStatus.NEW);
+    return secrets.stream()
+            .filter(
+                s -> new Date().getTime() - s.getCreationTime().getTime() < (maxMinutesOld * 60))
+            .count()
+        > 0;
+  }
+
   public synchronized void storeSecrets(
       final String deviceIdentification, final List<TypedSecret> secrets) {
     secrets.forEach(s -> this.checkNrNewSecretsOfType(deviceIdentification, s.getSecretType(), 0));
