@@ -45,7 +45,7 @@ public class DlmsLogItemRequestMessageSender {
 
     private final DlmsLogItemRequestMessage dlmsLogItemRequestMessage;
 
-    @Value("${application.createJsonMessage:false}")
+    @Value("${application.createjsonmessage:false}")
     private boolean createJsonMessage;
 
     public DlmsLogItemRequestMessageCreator(
