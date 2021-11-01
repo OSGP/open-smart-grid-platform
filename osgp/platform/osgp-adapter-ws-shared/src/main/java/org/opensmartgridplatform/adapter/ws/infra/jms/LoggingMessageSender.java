@@ -67,7 +67,7 @@ public class LoggingMessageSender {
         });
   }
 
-  private TextMessage getJsonMessage(
+  public TextMessage getJsonMessage(
       final LoggingRequestMessage loggingMessage, final Session session) {
     TextMessage textMessage = null;
     try {
@@ -80,7 +80,7 @@ public class LoggingMessageSender {
     return textMessage;
   }
 
-  private ObjectMessage getObjectMessage(
+  public ObjectMessage getObjectMessage(
       final Session session, final LoggingRequestMessage loggingMessage) throws JMSException {
     final ObjectMessage objectMessage = session.createObjectMessage();
     objectMessage.setJMSCorrelationID(loggingMessage.getCorrelationUid());

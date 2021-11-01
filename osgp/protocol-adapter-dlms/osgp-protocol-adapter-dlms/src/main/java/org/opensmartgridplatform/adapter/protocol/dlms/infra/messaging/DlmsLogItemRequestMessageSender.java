@@ -41,7 +41,7 @@ public class DlmsLogItemRequestMessageSender {
     this.jmsTemplate.send(new DlmsLogItemRequestMessageCreator(dlmsLogItemRequestMessage));
   }
 
-  private static final class DlmsLogItemRequestMessageCreator implements MessageCreator {
+  protected static final class DlmsLogItemRequestMessageCreator implements MessageCreator {
 
     private final DlmsLogItemRequestMessage dlmsLogItemRequestMessage;
 
@@ -61,7 +61,7 @@ public class DlmsLogItemRequestMessageSender {
       return this.getObjectMessage(session);
     }
 
-    private TextMessage getJsonMessage(final Session session) {
+    public TextMessage getJsonMessage(final Session session) {
       TextMessage textMessage = null;
       try {
         final ObjectMapper mapper = new ObjectMapper();
@@ -73,7 +73,7 @@ public class DlmsLogItemRequestMessageSender {
       return textMessage;
     }
 
-    private ObjectMessage getObjectMessage(final Session session) throws JMSException {
+    public ObjectMessage getObjectMessage(final Session session) throws JMSException {
       final ObjectMessage objectMessage = session.createObjectMessage();
       objectMessage.setJMSType(Constants.DLMS_LOG_ITEM_REQUEST);
       objectMessage.setStringProperty(
