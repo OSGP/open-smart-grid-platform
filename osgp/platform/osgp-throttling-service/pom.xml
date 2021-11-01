@@ -15,7 +15,7 @@
   <artifactId>osgp-throttling-service</artifactId>
   <name>osgp-throttling-service</name>
   <description>Network throttling service for ensuring a maximum number of concurrent connections.</description>
-  <packaging>jar</packaging>
+  <packaging>war</packaging>
 
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
@@ -26,6 +26,7 @@
 
   <properties>
     <spring.boot.version>2.4.0</spring.boot.version>
+    <failOnMissingWebXml>false</failOnMissingWebXml>
   </properties>
 
   <build>
@@ -52,6 +53,14 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>${maven.war.plugin.version}</version>
+        <configuration>
+          <attachClasses>true</attachClasses>
+        </configuration>
       </plugin>
     </plugins>
   </build>
@@ -113,6 +122,20 @@
     <dependency>
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.zaxxer</groupId>
+      <artifactId>HikariCP</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.quartz-scheduler</groupId>
+      <artifactId>quartz</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>com.zaxxer</groupId>
+          <artifactId>HikariCP-java7</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>io.micrometer</groupId>
