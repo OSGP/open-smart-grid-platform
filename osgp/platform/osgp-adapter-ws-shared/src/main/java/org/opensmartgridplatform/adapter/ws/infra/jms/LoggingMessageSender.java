@@ -59,10 +59,10 @@ public class LoggingMessageSender {
 
           @Override
           public Message createMessage(final Session session) throws JMSException {
-            if (LoggingMessageSender.this.isCreateJsonMessage()) {
-              return LoggingMessageSender.this.getJsonMessage(loggingMessage, session);
+            if (isCreateJsonMessage()) {
+              return getJsonMessage(loggingMessage, session);
             }
-            return LoggingMessageSender.this.getObjectMessage(session, loggingMessage);
+            return getObjectMessage(session, loggingMessage);
           }
         });
   }
