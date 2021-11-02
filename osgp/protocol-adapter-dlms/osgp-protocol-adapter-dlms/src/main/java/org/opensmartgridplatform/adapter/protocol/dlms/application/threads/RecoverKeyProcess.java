@@ -126,7 +126,7 @@ public class RecoverKeyProcess implements Runnable {
     } catch (final Exception e) {
       log.warn(
           "Connection exception during key recovery process for device: {} {}",
-          /*device.getDeviceIdentification()*/ "TODO replace",
+          device.getDeviceIdentification(),
           e.getMessage(),
           e);
       return false;

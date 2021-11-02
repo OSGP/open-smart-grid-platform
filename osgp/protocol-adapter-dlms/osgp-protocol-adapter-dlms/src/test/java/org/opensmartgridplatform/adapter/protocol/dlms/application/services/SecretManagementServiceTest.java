@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -36,8 +37,10 @@ import org.opensmartgridplatform.ws.schema.core.secret.management.ActivateSecret
 import org.opensmartgridplatform.ws.schema.core.secret.management.GenerateAndStoreSecretsResponse;
 import org.opensmartgridplatform.ws.schema.core.secret.management.GetSecretsRequest;
 import org.opensmartgridplatform.ws.schema.core.secret.management.GetSecretsResponse;
+import org.opensmartgridplatform.ws.schema.core.secret.management.HasNewSecretRequest;
 import org.opensmartgridplatform.ws.schema.core.secret.management.HasNewSecretResponse;
 import org.opensmartgridplatform.ws.schema.core.secret.management.OsgpResultType;
+import org.opensmartgridplatform.ws.schema.core.secret.management.SecretType;
 import org.opensmartgridplatform.ws.schema.core.secret.management.StoreSecretsRequest;
 import org.opensmartgridplatform.ws.schema.core.secret.management.StoreSecretsResponse;
 import org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecret;
@@ -45,7 +48,7 @@ import org.opensmartgridplatform.ws.schema.core.secret.management.TypedSecrets;
 
 @ExtendWith(MockitoExtension.class)
 public class SecretManagementServiceTest {
-  @InjectMocks SecretManagementService testService;
+  @InjectMocks SecretManagementService secretManagementTestService;
 
   @Mock SecretManagementClient secretManagementClient;
   @Mock RsaEncrypter rsaEncrypter;
@@ -80,7 +83,7 @@ public class SecretManagementServiceTest {
     when(this.rsaEncrypter.decrypt(SOAP_SECRET)).thenReturn(UNENCRYPTED_SECRET);
     // EXECUTE
     final Map<SecurityKeyType, byte[]> result =
-        this.testService.getKeys(messageMetadata, DEVICE_IDENTIFICATION, keyTypes);
+        this.secretManagementTestService.getKeys(messageMetadata, DEVICE_IDENTIFICATION, keyTypes);
     // ASSERT
     assertThat(result).isNotNull();
     assertThat(result.size()).isEqualTo(1);
@@ -98,7 +101,7 @@ public class SecretManagementServiceTest {
     when(this.secretManagementClient.storeSecretsRequest(same(messageMetadata), any()))
         .thenReturn(response);
     // EXECUTE
-    this.testService.storeNewKeys(messageMetadata, DEVICE_IDENTIFICATION, keys);
+    this.secretManagementTestService.storeNewKeys(messageMetadata, DEVICE_IDENTIFICATION, keys);
     // ASSERT
     verify(this.secretManagementClient, times(1))
         .storeSecretsRequest(same(messageMetadata), any(StoreSecretsRequest.class));
@@ -110,7 +113,8 @@ public class SecretManagementServiceTest {
     final ArgumentCaptor<ActivateSecretsRequest> activateSecretsCaptor =
         ArgumentCaptor.forClass(ActivateSecretsRequest.class);
     // EXECUTE
-    this.testService.activateNewKeys(messageMetadata, DEVICE_IDENTIFICATION, keyTypes);
+    this.secretManagementTestService.activateNewKeys(
+        messageMetadata, DEVICE_IDENTIFICATION, keyTypes);
     // ASSERT
     verify(this.secretManagementClient)
         .activateSecretsRequest(same(messageMetadata), activateSecretsCaptor.capture());
@@ -132,7 +136,7 @@ public class SecretManagementServiceTest {
     when(this.rsaEncrypter.decrypt(SOAP_SECRET)).thenReturn(UNENCRYPTED_SECRET);
     // EXECUTE
     final Map<SecurityKeyType, byte[]> keys =
-        this.testService.generate128BitsKeysAndStoreAsNewKeys(
+        this.secretManagementTestService.generate128BitsKeysAndStoreAsNewKeys(
             messageMetadata, DEVICE_IDENTIFICATION, keyTypes);
     // ASSERT
     assertThat(keys.get(KEY_TYPE)).isEqualTo(UNENCRYPTED_SECRET);
@@ -142,10 +146,16 @@ public class SecretManagementServiceTest {
   public void testHasNewKey() {
     final HasNewSecretResponse response = new HasNewSecretResponse();
     response.setHasNewSecret(true);
-    when(this.secretManagementClient.hasNewSecretRequest(same(messageMetadata), any()))
+
+    final HasNewSecretRequest requestAKey = new HasNewSecretRequest();
+    requestAKey.setDeviceId(DEVICE_IDENTIFICATION);
+    requestAKey.setSecretType(SecretType.E_METER_AUTHENTICATION_KEY);
+
+    when(this.secretManagementClient.hasNewSecretRequest(same(messageMetadata), eq(requestAKey)))
         .thenReturn(response);
     // EXECUTE
-    final boolean result = this.testService.hasNewSecret(messageMetadata, DEVICE_IDENTIFICATION);
+    final boolean result =
+        this.secretManagementTestService.hasNewSecret(messageMetadata, DEVICE_IDENTIFICATION);
     // ASSERT
     assertThat(result).isTrue();
   }
