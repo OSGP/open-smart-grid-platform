@@ -10,7 +10,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -143,16 +142,50 @@ public class SecretManagementServiceTest {
   }
 
   @Test
-  public void testHasNewKey() {
-    final HasNewSecretResponse response = new HasNewSecretResponse();
-    response.setHasNewSecret(true);
+  public void testHasNewSecretAuthenticationKey() {
+    final HasNewSecretResponse responseTrue = new HasNewSecretResponse();
+    responseTrue.setHasNewSecret(true);
+    final HasNewSecretResponse responseFalse = new HasNewSecretResponse();
+    responseFalse.setHasNewSecret(false);
 
-    final HasNewSecretRequest requestAKey = new HasNewSecretRequest();
-    requestAKey.setDeviceId(DEVICE_IDENTIFICATION);
-    requestAKey.setSecretType(SecretType.E_METER_AUTHENTICATION_KEY);
+    when(this.secretManagementClient.hasNewSecretRequest(same(messageMetadata), any()))
+        .thenAnswer(
+            invocationOnMock -> {
+              if (((HasNewSecretRequest) invocationOnMock.getArgument(1))
+                  .getSecretType()
+                  .equals(SecretType.E_METER_AUTHENTICATION_KEY)) {
+                return responseTrue;
+              } else {
+                return responseFalse;
+              }
+            });
 
-    when(this.secretManagementClient.hasNewSecretRequest(same(messageMetadata), eq(requestAKey)))
-        .thenReturn(response);
+    // EXECUTE
+    final boolean result =
+        this.secretManagementTestService.hasNewSecret(messageMetadata, DEVICE_IDENTIFICATION);
+    // ASSERT
+    assertThat(result).isTrue();
+  }
+
+  @Test
+  public void testHasNewSecretEncryptionKey() {
+    final HasNewSecretResponse responseTrue = new HasNewSecretResponse();
+    responseTrue.setHasNewSecret(true);
+    final HasNewSecretResponse responseFalse = new HasNewSecretResponse();
+    responseFalse.setHasNewSecret(false);
+
+    when(this.secretManagementClient.hasNewSecretRequest(same(messageMetadata), any()))
+        .thenAnswer(
+            invocationOnMock -> {
+              if (((HasNewSecretRequest) invocationOnMock.getArgument(1))
+                  .getSecretType()
+                  .equals(SecretType.E_METER_ENCRYPTION_KEY_UNICAST)) {
+                return responseTrue;
+              } else {
+                return responseFalse;
+              }
+            });
+
     // EXECUTE
     final boolean result =
         this.secretManagementTestService.hasNewSecret(messageMetadata, DEVICE_IDENTIFICATION);
