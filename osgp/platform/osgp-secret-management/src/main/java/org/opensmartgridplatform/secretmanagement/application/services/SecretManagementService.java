@@ -98,7 +98,7 @@ public class SecretManagementService {
 
     private static EncryptedTypedSecret fromDbEncryptedSecret(
         final DbEncryptedSecret dbEncryptedSecret) throws FunctionalException {
-      byte[] aesEncrypted;
+      final byte[] aesEncrypted;
       try {
         aesEncrypted = HexUtils.fromHexString(dbEncryptedSecret.getEncodedSecret());
       } catch (final IllegalArgumentException iae) {
@@ -117,19 +117,24 @@ public class SecretManagementService {
   private final EncryptionProviderType encryptionProviderType;
   private final DbEncryptedSecretRepository secretRepository;
   private final DbEncryptionKeyRepository keyRepository;
-  private final RsaEncrypter rsaEncrypter;
+  private final RsaEncrypter encrypterWithProtocolAdapterPublicKey;
+  private final RsaEncrypter decrypterWithSecretManagementPrivateKey;
 
   public SecretManagementService(
       @Qualifier("DefaultEncryptionDelegate") final EncryptionDelegate defaultEncryptionDelegate,
       final EncryptionProviderType encryptionProviderType,
       final DbEncryptedSecretRepository secretRepository,
       final DbEncryptionKeyRepository keyRepository,
-      final RsaEncrypter rsaEncrypter) {
+      @Qualifier(value = "encrypterWithProtocolAdapterPublicKey")
+          final RsaEncrypter encrypterWithProtocolAdapterPublicKey,
+      @Qualifier(value = "decrypterWithSecretManagementPrivateKey")
+          final RsaEncrypter decrypterWithSecretManagementPrivateKey) {
     this.encryptionDelegate = defaultEncryptionDelegate;
     this.encryptionProviderType = encryptionProviderType;
     this.secretRepository = secretRepository;
     this.keyRepository = keyRepository;
-    this.rsaEncrypter = rsaEncrypter;
+    this.encrypterWithProtocolAdapterPublicKey = encrypterWithProtocolAdapterPublicKey;
+    this.decrypterWithSecretManagementPrivateKey = decrypterWithSecretManagementPrivateKey;
   }
 
   private DbEncryptionKeyReference getCurrentKey() {
@@ -369,11 +374,14 @@ public class SecretManagementService {
   private byte[] reencryptRsa2Aes(final byte[] rsa) {
     // Incoming new secret, so use current key
     final String keyReference = this.getCurrentKey().getReference();
-    byte[] aes;
+    final byte[] aes;
     try {
       aes =
           this.encryptionDelegate
-              .encrypt(this.encryptionProviderType, this.rsaEncrypter.decrypt(rsa), keyReference)
+              .encrypt(
+                  this.encryptionProviderType,
+                  this.decrypterWithSecretManagementPrivateKey.decrypt(rsa),
+                  keyReference)
               .getSecret();
     } catch (final EncrypterException ee) {
       throw new IllegalStateException(
@@ -387,7 +395,7 @@ public class SecretManagementService {
       final String keyReference,
       final EncryptionProviderType encryptionProviderType) {
     try {
-      return this.rsaEncrypter.encrypt(
+      return this.encrypterWithProtocolAdapterPublicKey.encrypt(
           this.encryptionDelegate.decrypt(
               new EncryptedSecret(encryptionProviderType, aes), keyReference));
     } catch (final EncrypterException ee) {

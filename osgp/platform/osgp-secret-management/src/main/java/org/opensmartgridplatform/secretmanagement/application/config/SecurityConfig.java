@@ -8,6 +8,7 @@
  */
 package org.opensmartgridplatform.secretmanagement.application.config;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,11 +28,11 @@ import org.springframework.core.io.Resource;
 @Configuration
 public class SecurityConfig {
 
-  @Value("${soap.public.key.resource:#{null}}")
-  private Optional<Resource> soapPublicKeyResource;
+  @Value("${encryption.rsa.public.key.protocol.adapter.resource:#{null}}")
+  private Resource rsaPublicKeyProtocolAdapterResource;
 
-  @Value("${soap.private.key.resource:#{null}}")
-  private Optional<Resource> soapPrivateKeyResource;
+  @Value("${encryption.rsa.private.key.secret.management.resource:#{null}}")
+  private Resource rsaPrivateKeySecretManagementResource;
 
   @Value("${jre.encryption.key.resource}")
   private Resource jreEncryptionKeyResource;
@@ -62,24 +63,35 @@ public class SecurityConfig {
       }
 
       return encryptionProviderList;
-    } catch (IOException | EncrypterException e) {
+    } catch (final IOException | EncrypterException e) {
       throw new IllegalStateException("Error creating default encryption providers", e);
     }
   }
 
-  @Bean
-  public RsaEncrypter getSoapEncrypter() {
+  @Bean(name = "encrypterWithProtocolAdapterPublicKey")
+  public RsaEncrypter encrypterWithProtocolAdapterPublicKey() {
     try {
-      final RsaEncrypter rsaEncryptionProvider = new RsaEncrypter();
-      if (this.soapPrivateKeyResource.isPresent()) {
-        rsaEncryptionProvider.setPrivateKeyStore(this.soapPrivateKeyResource.get().getFile());
-      }
-      if (this.soapPublicKeyResource.isPresent()) {
-        rsaEncryptionProvider.setPublicKeyStore(this.soapPublicKeyResource.get().getFile());
-      }
-      return rsaEncryptionProvider;
-    } catch (IOException | EncrypterException e) {
-      throw new IllegalStateException("Error creating default encryption providers", e);
+      final File publicKeyProtocolAdapterFile = this.rsaPublicKeyProtocolAdapterResource.getFile();
+      final RsaEncrypter rsaEncrypter = new RsaEncrypter();
+      rsaEncrypter.setPublicKeyStore(publicKeyProtocolAdapterFile);
+      return rsaEncrypter;
+    } catch (final IOException e) {
+      throw new IllegalStateException(
+          "Could not initialize encrypterWithProtocolAdapterPublicKey", e);
+    }
+  }
+
+  @Bean(name = "decrypterWithSecretManagementPrivateKey")
+  public RsaEncrypter decrypterWithSecretManagementPrivateKey() {
+    try {
+      final File privateKeySecretManagementFile =
+          this.rsaPrivateKeySecretManagementResource.getFile();
+      final RsaEncrypter rsaEncrypter = new RsaEncrypter();
+      rsaEncrypter.setPrivateKeyStore(privateKeySecretManagementFile);
+      return rsaEncrypter;
+    } catch (final IOException e) {
+      throw new IllegalStateException(
+          "Could not initialize decrypterWithSecretManagementPrivateKey", e);
     }
   }
 

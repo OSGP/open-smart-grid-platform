@@ -53,11 +53,11 @@ public class SoapClientConfig {
   @Value("${soapclient.ssl.key-password}")
   private String keyPassword;
 
-  @Value("${encryption.soap.rsa.private.key.resource}")
-  private Resource soapRsaPrivateKeyResource;
+  @Value("${encryption.rsa.private.key.protocol.adapter.resource}")
+  private Resource rsaPrivateKeyProtocolAdapterResource;
 
-  @Value("${encryption.soap.rsa.public.key.resource}")
-  private Resource soapRsaPublicKeyResource;
+  @Value("${encryption.rsa.public.key.secret.management.resource}")
+  private Resource rsaPublicKeySecretManagementResource;
 
   @Bean
   Jaxb2Marshaller soapClientJaxb2Marshaller() {
@@ -131,17 +131,31 @@ public class SoapClientConfig {
     return keyManagersFactoryBean;
   }
 
-  @Bean
-  public RsaEncrypter rsaEncrypter() {
+  @Bean(name = "encrypterWithSecretManagementPublicKey")
+  public RsaEncrypter encrypterWithSecretManagementPublicKey() {
     try {
-      final File privateRsaKeyFile = this.soapRsaPrivateKeyResource.getFile();
-      final File publicRsaKeyFile = this.soapRsaPublicKeyResource.getFile();
+      final File publicKeySecretManagementFile =
+          this.rsaPublicKeySecretManagementResource.getFile();
       final RsaEncrypter rsaEncrypter = new RsaEncrypter();
-      rsaEncrypter.setPrivateKeyStore(privateRsaKeyFile);
-      rsaEncrypter.setPublicKeyStore(publicRsaKeyFile);
+      rsaEncrypter.setPublicKeyStore(publicKeySecretManagementFile);
       return rsaEncrypter;
     } catch (final IOException e) {
-      throw new IllegalStateException("Could not initialize RsaEncrypter", e);
+      throw new IllegalStateException(
+          "Could not initialize encrypterWithSecretManagementPublicKey", e);
+    }
+  }
+
+  @Bean(name = "decrypterWithProtocolAdapterPrivateKey")
+  public RsaEncrypter decrypterWithProtocolAdapterPrivateKey() {
+    try {
+      final File privateKeyProtocolAdapterFile =
+          this.rsaPrivateKeyProtocolAdapterResource.getFile();
+      final RsaEncrypter rsaEncrypter = new RsaEncrypter();
+      rsaEncrypter.setPrivateKeyStore(privateKeyProtocolAdapterFile);
+      return rsaEncrypter;
+    } catch (final IOException e) {
+      throw new IllegalStateException(
+          "Could not initialize decrypterWithProtocolAdapterPrivateKey", e);
     }
   }
 }
