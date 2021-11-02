@@ -12,9 +12,6 @@
 <!-- The contents of this file will be loaded for each web application -->
 <Context useHttpOnly="true">
 
-  <!-- Default set of monitored resources -->
-  <WatchedResource>WEB-INF/web.xml</WatchedResource>
-
   <!-- App config files -->
   <Environment name="osgp/Global/config" value="/etc/osp/global.properties"
                type="java.lang.String" override="true"/>

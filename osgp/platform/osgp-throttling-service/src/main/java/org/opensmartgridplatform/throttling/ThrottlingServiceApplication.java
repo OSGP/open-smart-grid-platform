@@ -9,16 +9,12 @@
  */
 package org.opensmartgridplatform.throttling;
 
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.util.ContextInitializer;
-import ch.qos.logback.core.joran.spi.JoranException;
-import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Properties;
 import java.util.TimeZone;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import org.slf4j.impl.StaticLoggerBinder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,7 +22,6 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.util.ResourceUtils;
 
 @SpringBootApplication(
     exclude = {SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class})
@@ -47,34 +42,24 @@ public class ThrottlingServiceApplication extends SpringBootServletInitializer {
   @Override
   protected SpringApplicationBuilder configure(final SpringApplicationBuilder builder) {
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-    this.initializeLogging();
-    return builder;
+    this.initializeLogging(builder);
+    return builder.sources(ThrottlingServiceApplication.class);
   }
 
-  private void initializeLogging() {
+  private void initializeLogging(final SpringApplicationBuilder builder) {
     String logConfigLocation = null;
     try {
       logConfigLocation =
           (String) new InitialContext().lookup("java:comp/env/osgp/ThrottlingService/log-config");
       if (Files.exists(Paths.get(logConfigLocation))) {
-        final LoggerContext loggerContext =
-            (LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory();
-        loggerContext.reset();
-        new ContextInitializer(loggerContext)
-            .configureByResource(ResourceUtils.getURL(logConfigLocation));
+        final Properties props = new Properties();
+        props.setProperty("logging.config", logConfigLocation);
+        builder.application().setDefaultProperties(props);
       }
     } catch (final NamingException e) {
       this.logger.warn(
           "NamingException initializing logging, staying with config by logback-spring.xml on classpath.",
           e);
-    } catch (final FileNotFoundException e) {
-      this.logger.warn(
-          String.format(
-              "Configured log file (%s) not found, staying with config by logback-spring.xml on classpath.",
-              logConfigLocation));
-    } catch (final JoranException e) {
-      this.logger.error(
-          String.format("Exception initializing logger context from %s", logConfigLocation), e);
     }
   }
 }
