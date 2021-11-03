@@ -299,6 +299,7 @@ public class SecretManagementService {
           } else {
             s.setSecretStatus(SecretStatus.EXPIRED);
           }
+          this.secretRepository.saveAndFlush(s);
         });
   }
 
