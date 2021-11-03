@@ -41,6 +41,7 @@ import org.opensmartgridplatform.shared.security.EncryptedSecret;
 import org.opensmartgridplatform.shared.security.EncryptionDelegate;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 import org.opensmartgridplatform.shared.security.RsaEncrypter;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 public class SecretManagementServiceTest {
@@ -64,6 +65,7 @@ public class SecretManagementServiceTest {
             this.secretRepository,
             this.keyRepository,
             this.rsaEncrypter);
+    ReflectionTestUtils.setField(this.service, "maxMinutesForNewKeyToBeActivated", 5);
   }
 
   @Test

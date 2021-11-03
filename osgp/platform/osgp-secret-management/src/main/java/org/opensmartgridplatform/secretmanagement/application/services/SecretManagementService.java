@@ -55,7 +55,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class SecretManagementService {
 
-  @Value("${max.minutes.for.new.key.to.be.activated}")
+  @Value("${max.minutes.for.new.key.to.be.activated:5}")
   private Integer maxMinutesForNewKeyToBeActivated;
 
   // Internal datastructure to keep track of (intermediate) secret details
