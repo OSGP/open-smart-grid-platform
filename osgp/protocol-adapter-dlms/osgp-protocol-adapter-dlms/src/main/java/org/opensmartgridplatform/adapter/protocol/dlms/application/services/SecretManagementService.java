@@ -10,6 +10,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import static java.util.stream.Collectors.toList;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -128,12 +129,30 @@ public class SecretManagementService {
       final MessageMetadata messageMetadata,
       final String deviceIdentification,
       final List<SecurityKeyType> keyTypes) {
-    final GetNewSecretsRequest request =
+    final GetNewSecretsRequest getNewSecretsRequest =
         this.createGetNewSecretsRequest(deviceIdentification, keyTypes);
-    final GetNewSecretsResponse response =
-        this.secretManagementClient.getNewSecretsRequest(messageMetadata, request);
-    this.validateGetNewResponse(keyTypes, response);
-    return this.convertSoapSecretsToSecretMapByType(response.getTypedSecrets().getTypedSecret());
+    final GetNewSecretsResponse getNewSecretsResponse =
+        this.secretManagementClient.getNewSecretsRequest(messageMetadata, getNewSecretsRequest);
+    this.validateGetNewResponse(keyTypes, getNewSecretsResponse);
+
+    final List<SecurityKeyType> activeKeyType = new ArrayList<>();
+    final List<TypedSecret> newKeyPair = new ArrayList<>();
+    for (final TypedSecret secretType : getNewSecretsResponse.getTypedSecrets().getTypedSecret()) {
+      if (secretType.getSecret() != null && secretType.getSecret().length() > 0) {
+        newKeyPair.add(secretType);
+      } else {
+        activeKeyType.add(SecurityKeyType.fromSecretType(secretType.getType()));
+      }
+    }
+
+    final GetSecretsRequest getSecretsRequest =
+        this.createGetSecretsRequest(deviceIdentification, activeKeyType);
+    final GetSecretsResponse getSecretsResponse =
+        this.secretManagementClient.getSecretsRequest(messageMetadata, getSecretsRequest);
+    this.validateGetResponse(activeKeyType, getSecretsResponse);
+    newKeyPair.add(getSecretsResponse.getTypedSecrets().getTypedSecret().get(0));
+
+    return this.convertSoapSecretsToSecretMapByType(newKeyPair);
   }
 
   private void validateGetResponse(
