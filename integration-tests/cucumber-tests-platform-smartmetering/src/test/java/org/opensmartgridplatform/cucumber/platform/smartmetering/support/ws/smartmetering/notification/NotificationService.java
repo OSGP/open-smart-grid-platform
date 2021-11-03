@@ -11,7 +11,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.Notification;
@@ -26,6 +28,7 @@ public class NotificationService {
   private static final Logger LOGGER = LoggerFactory.getLogger(NotificationService.class);
 
   private final BlockingQueue<Notification> queue = new LinkedBlockingQueue<>();
+  private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
   public void handleNotification(
       final Notification notification, final String organisationIdentification) {
@@ -75,7 +78,7 @@ public class NotificationService {
                       if (correlationUid.equals(notification.getCorrelationUid())) {
                         return notification;
                       } else {
-                        this.queue.add(notification);
+                        this.putBackOnQueue(notification);
                       }
                     }
                     final long elapsed = System.currentTimeMillis() - startTime;
@@ -112,9 +115,12 @@ public class NotificationService {
                   try {
                     final Notification notification =
                         this.queue.poll(remaining, TimeUnit.MILLISECONDS);
-                    if (notification != null
-                        && notificationType == notification.getNotificationType()) {
-                      return notification;
+                    if (notification != null) {
+                      if (notificationType == notification.getNotificationType()) {
+                        return notification;
+                      } else {
+                        this.putBackOnQueue(notification);
+                      }
                     }
                     final long elapsed = System.currentTimeMillis() - startTime;
                     remaining = maxTimeout - elapsed;
@@ -138,5 +144,9 @@ public class NotificationService {
       LOGGER.trace("getNotification for notification type {} timed out", notificationType, e);
     }
     return null;
+  }
+
+  private void putBackOnQueue(final Notification notification) {
+    this.executor.schedule(() -> this.queue.add(notification), 1, TimeUnit.SECONDS);
   }
 }

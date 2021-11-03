@@ -48,4 +48,10 @@ public class SmartMeteringMonitoringResponseClient<T, V extends AsyncRequest>
     final Notification notification = this.waitForNotification(5000);
     return notification != null;
   }
+
+  public boolean hasMoreResponses(final NotificationType notificationType)
+      throws WebServiceSecurityException {
+    final Notification notification = this.waitForNotification(notificationType, 5000);
+    return notification != null;
+  }
 }
