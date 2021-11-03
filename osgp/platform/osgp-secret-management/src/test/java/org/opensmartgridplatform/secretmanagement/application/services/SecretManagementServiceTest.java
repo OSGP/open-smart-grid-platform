@@ -323,9 +323,6 @@ public class SecretManagementServiceTest {
     newSecret.setId(2L);
     newSecret.setSecretStatus(SecretStatus.ACTIVE);
     // WHEN
-    when(this.secretRepository.getSecretCount(
-            SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.NEW))
-        .thenReturn(1);
     when(this.secretRepository.findSecrets(
             SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.ACTIVE))
         .thenReturn(Arrays.asList(activeSecret));

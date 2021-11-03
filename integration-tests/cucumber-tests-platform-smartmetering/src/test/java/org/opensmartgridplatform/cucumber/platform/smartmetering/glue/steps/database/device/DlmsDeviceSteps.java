@@ -764,9 +764,11 @@ public class DlmsDeviceSteps {
     }
   }
 
-  @Then("after {int} seconds, the new keys are recovered")
+  @Then("after {int} seconds, the new {} key is recovered")
   public void newKeysAreRecovered(
-      final int maxSecondsToWait, final Map<String, String> inputSettings) {
+      final int maxSecondsToWait,
+      final SecretType keyType,
+      final Map<String, String> inputSettings) {
     if (!inputSettings.containsKey(PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION)) {
       throw new IllegalArgumentException("No device identification provided");
     }
@@ -776,8 +778,7 @@ public class DlmsDeviceSteps {
         && !inputSettings.containsKey(KEY_DEVICE_ENCRYPTIONKEY)) {
       throw new IllegalArgumentException("No authentication or encryption key provided");
     }
-    final List<SecretType> keyTypesToCheck =
-        Arrays.asList(E_METER_AUTHENTICATION_KEY, E_METER_ENCRYPTION_KEY_UNICAST);
+    final List<SecretType> keyTypesToCheck = Arrays.asList(keyType);
     final Map<SecretStatus, Integer> expectedNrOfKeysByStatus = new HashMap<>();
     expectedNrOfKeysByStatus.put(SecretStatus.NEW, 0);
     expectedNrOfKeysByStatus.put(SecretStatus.ACTIVE, 1);
