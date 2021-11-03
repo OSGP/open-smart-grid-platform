@@ -21,8 +21,7 @@ import org.springframework.context.ApplicationContext;
  * This is the main class to start a DeviceServer simulator. Defaults are defined in
  * application.properties, and can be overruled by spring-boot constructs.
  */
-@SpringBootApplication(
-    exclude = {org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration.class})
+@SpringBootApplication
 public class DeviceServer {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DeviceServer.class);
