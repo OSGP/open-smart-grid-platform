@@ -729,8 +729,20 @@ public class DlmsDeviceSteps {
     return null;
   }
 
+  @Given(
+      "new keys are registered in the secret management database with creationDate {int} minutes ago")
+  public void newKeysAreRegisteredInTheSecretManagementDatabaseWithCreationDateMinutesAgo(
+      final int minutesAgo, final Map<String, String> inputSettings) {
+    this.registerNewKeys(minutesAgo, inputSettings);
+  }
+
   @When("^new keys are registered in the secret management database")
-  public void registerNewKeys(final Map<String, String> inputSettings) {
+  public void newKeysAreRegisteredInTheSecretManagementDatabase(
+      final Map<String, String> inputSettings) {
+    this.registerNewKeys(0, inputSettings);
+  }
+
+  private void registerNewKeys(final long minutesAgo, final Map<String, String> inputSettings) {
     if (!inputSettings.containsKey(PlatformSmartmeteringKeys.DEVICE_IDENTIFICATION)) {
       throw new IllegalArgumentException("No device identification provided");
     }
@@ -758,9 +770,27 @@ public class DlmsDeviceSteps {
                 .withKey(inputSettings.get(keyTypeInputNames.get(i)))
                 .withSecretStatus(SecretStatus.NEW)
                 .withEncryptionKeyReference(encryptionKeyRef)
+                .withCreationTime(new Date(System.currentTimeMillis() - (minutesAgo * 60000L)))
                 .build();
         this.encryptedSecretRepository.save(secret);
       }
+    }
+  }
+
+  @Then(
+      "the encrypted_secret table in the secret management database should contain {string} keys for device {string}")
+  public void theEncryptedSecretTableInTheSecretManagementDatabaseShouldContainKeysForDevice(
+      final String secretStatus,
+      final String deviceIdentification,
+      final Map<String, String> inputSettings) {
+
+    for (final String secretTypeName : inputSettings.keySet()) {
+      final int expectedNrOfKeys = Integer.valueOf(inputSettings.get(secretTypeName));
+      final SecretType secretType = SecretType.valueOf(secretTypeName);
+      final int nrOfKeys =
+          this.encryptedSecretRepository.getSecretCount(
+              deviceIdentification, secretType, SecretStatus.valueOf(secretStatus));
+      assertThat(nrOfKeys).isEqualTo(expectedNrOfKeys);
     }
   }
 
