@@ -45,7 +45,7 @@ public class DlmsLogItemRequestMessageSender {
 
     private final DlmsLogItemRequestMessage dlmsLogItemRequestMessage;
 
-    @Value("${application.createjsonmessage:false}")
+    @Value("${auditlogging.message.create.json:false}")
     private boolean createJsonMessage;
 
     public DlmsLogItemRequestMessageCreator(

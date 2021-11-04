@@ -24,7 +24,7 @@ public class CoreLogItemRequestMessageSender {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(CoreLogItemRequestMessageSender.class);
 
-  @Value("${application.createjsonmessage:false}")
+  @Value("${auditlogging.message.create.json:false}")
   private boolean createJsonMessage;
 
   @Autowired private JmsTemplate coreLogItemRequestsJmsTemplate;

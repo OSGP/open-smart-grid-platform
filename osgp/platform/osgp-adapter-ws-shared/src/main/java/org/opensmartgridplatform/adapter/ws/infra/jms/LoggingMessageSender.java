@@ -29,7 +29,7 @@ public class LoggingMessageSender {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LoggingMessageSender.class);
 
-  @Value("${application.createjsonmessage:false}")
+  @Value("${auditlogging.message.create.json:false}")
   private boolean createJsonMessage;
 
   @Autowired
