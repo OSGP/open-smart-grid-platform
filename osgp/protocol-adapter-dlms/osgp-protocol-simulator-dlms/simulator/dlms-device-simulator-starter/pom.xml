@@ -8,11 +8,14 @@
 
     http://www.apache.org/licenses/LICENSE-2.0
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>dlms-device-simulator-starter</artifactId>
-  <description>DLMS device simulator starter, starts one or more simulators configured by single config file.</description>
+  <description>DLMS device simulator starter, starts one or more simulators configured by single
+    config file.
+  </description>
 
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
@@ -23,36 +26,12 @@
 
   <properties>
     <osgp.version>${project.version}</osgp.version>
+    <!--suppress UnresolvedMavenProperty -->
     <display.version>${project.version}-${BUILD_TAG}</display.version>
     <skipITs>true</skipITs>
   </properties>
 
   <dependencies>
-    <dependency>
-      <groupId>com.fasterxml.jackson.jaxrs</groupId>
-      <artifactId>jackson-jaxrs-json-provider</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.zaxxer</groupId>
-      <artifactId>HikariCP</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
-    </dependency>
-
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
@@ -60,70 +39,9 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-collections4</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-    </dependency>
-
-    <!-- Apache CXF RESTfull WS WebClient -->
-    <dependency>
-      <groupId>org.apache.cxf</groupId>
-      <artifactId>cxf-rt-rs-client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.cxf</groupId>
-      <artifactId>cxf-rt-rs-extension-providers</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.cxf</groupId>
-      <artifactId>cxf-rt-rs-extension-search</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.cxf</groupId>
-      <artifactId>cxf-rt-transports-http-hc</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.openmuc</groupId>
-      <artifactId>jdlms</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.openmuc</groupId>
-      <artifactId>jdlms-annotation-processor</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
       <groupId>org.opensmartgridplatform</groupId>
       <artifactId>dlms-device-simulator</artifactId>
       <version>${osgp.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-autoconfigure</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-jdbc</artifactId>
     </dependency>
   </dependencies>
 
@@ -142,7 +60,8 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
-          <mainClass>org.opensmartgridplatform.simulatorstarter.protocol.dlms.starter.Starter</mainClass>
+          <mainClass>org.opensmartgridplatform.simulatorstarter.protocol.dlms.starter.Starter
+          </mainClass>
           <executable>true</executable>
         </configuration>
         <executions>
