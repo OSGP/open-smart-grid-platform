@@ -271,17 +271,17 @@ public class SecretManagementService {
         .collect(collectingAndThen(toList(), this.secretRepository::saveAll));
   }
 
+  public boolean hasNewSecret(final String deviceIdentification, final SecretType secretType) {
+    return this.secretRepository.getSecretCount(deviceIdentification, secretType, SecretStatus.NEW)
+        > 0;
+  }
+
   public synchronized void activateNewSecrets(
       final String deviceIdentification, final List<SecretType> secretTypes) {
     secretTypes.stream()
         .map(t -> this.getUpdatedSecretsForActivation(deviceIdentification, t))
         .flatMap(Collection::stream)
         .collect(collectingAndThen(toList(), this.secretRepository::saveAll));
-  }
-
-  public boolean hasNewSecret(final String deviceIdentification, final SecretType secretType) {
-    return this.secretRepository.getSecretCount(deviceIdentification, secretType, SecretStatus.NEW)
-        > 0;
   }
 
   private List<DbEncryptedSecret> getUpdatedSecretsForActivation(
@@ -303,7 +303,7 @@ public class SecretManagementService {
         updatedSecrets.add(newSecret);
       }
     } else {
-      log.info("No new secret present for activation of type {}", secretType);
+      log.info("No new secret of secret type {} present for activation.", secretType);
     }
     return updatedSecrets;
   }
