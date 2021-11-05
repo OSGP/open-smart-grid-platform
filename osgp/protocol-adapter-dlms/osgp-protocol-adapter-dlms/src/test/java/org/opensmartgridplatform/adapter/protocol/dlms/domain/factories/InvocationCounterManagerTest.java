@@ -47,7 +47,7 @@ class InvocationCounterManagerTest {
   @Mock private DlmsHelper dlmsHelper;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     this.manager = new InvocationCounterManager(this.connectionFactory, this.dlmsHelper);
     this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
     this.device =
@@ -62,7 +62,7 @@ class InvocationCounterManagerTest {
 
     verify(this.connectionFactory, times(1))
         .createAndHandlePublicClientConnection(
-            any(MessageMetadata.class), eq(this.device), isNull(), any());
+            any(MessageMetadata.class), eq(this.device), isNull(), isNull(), any());
   }
 
   @Test

@@ -8,7 +8,7 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.factories;
 
-import static org.assertj.core.api.Fail.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
@@ -52,7 +52,7 @@ class DlmsConnectionHelperTest {
         new DlmsConnectionHelper(
             this.invocationCounterManager, this.connectionFactory, this.devicePingConfig, 0);
     this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
-    this.task = t -> {};
+    this.task = dlmsConnectionManager -> {};
   }
 
   @Test
@@ -108,7 +108,7 @@ class DlmsConnectionHelperTest {
 
     doNothing()
         .when(this.connectionFactory)
-        .createAndHandleConnection(this.messageMetadata, device, listener, this.task);
+        .createAndHandleConnection(this.messageMetadata, device, listener, null, this.task);
 
     this.helper.createAndHandleConnectionForDevice(
         this.messageMetadata, device, listener, this.task);
@@ -130,7 +130,7 @@ class DlmsConnectionHelperTest {
 
     doNothing()
         .when(this.connectionFactory)
-        .createAndHandleConnection(this.messageMetadata, device, listener, this.task);
+        .createAndHandleConnection(this.messageMetadata, device, listener, null, this.task);
 
     this.helper.createAndHandleConnectionForDevice(
         this.messageMetadata, device, listener, this.task);
@@ -147,7 +147,7 @@ class DlmsConnectionHelperTest {
 
     doNothing()
         .when(this.connectionFactory)
-        .createAndHandleConnection(this.messageMetadata, device, listener, this.task);
+        .createAndHandleConnection(this.messageMetadata, device, listener, null, this.task);
 
     this.helper.createAndHandleConnectionForDevice(
         this.messageMetadata, device, listener, this.task);
@@ -173,19 +173,17 @@ class DlmsConnectionHelperTest {
                 + " error message. Result name REJECTED_PERMANENT. Assumed fault: user.");
     doThrow(exception)
         .when(this.connectionFactory)
-        .createAndHandleConnection(this.messageMetadata, device, listener, this.task);
+        .createAndHandleConnection(this.messageMetadata, device, listener, null, this.task);
 
-    try {
-      this.helper.createAndHandleConnectionForDevice(
-          this.messageMetadata, device, listener, this.task);
-      fail("Expected ConnectionException");
-    } catch (final ConnectionException e) {
-      // expected
-    }
+    assertThrows(
+        ConnectionException.class,
+        () ->
+            this.helper.createAndHandleConnectionForDevice(
+                this.messageMetadata, device, listener, null, this.task));
 
     verify(this.invocationCounterManager).initializeInvocationCounter(this.messageMetadata, device);
     verify(this.connectionFactory, times(2))
-        .createAndHandleConnection(this.messageMetadata, device, listener, this.task);
+        .createAndHandleConnection(this.messageMetadata, device, listener, null, this.task);
   }
 
   @Test
@@ -205,19 +203,17 @@ class DlmsConnectionHelperTest {
                 + "UseHdlc:false UseSn:false Message:Socket was closed by remote host.");
     doThrow(exception)
         .when(this.connectionFactory)
-        .createAndHandleConnection(this.messageMetadata, device, listener, this.task);
+        .createAndHandleConnection(this.messageMetadata, device, listener, null, this.task);
 
-    try {
-      this.helper.createAndHandleConnectionForDevice(
-          this.messageMetadata, device, listener, this.task);
-      fail("Expected ConnectionException");
-    } catch (final ConnectionException e) {
-      // expected
-    }
+    assertThrows(
+        ConnectionException.class,
+        () ->
+            this.helper.createAndHandleConnectionForDevice(
+                this.messageMetadata, device, listener, null, this.task));
 
     verify(this.invocationCounterManager).initializeInvocationCounter(this.messageMetadata, device);
     verify(this.connectionFactory, times(2))
-        .createAndHandleConnection(this.messageMetadata, device, listener, this.task);
+        .createAndHandleConnection(this.messageMetadata, device, listener, null, this.task);
   }
 
   @Test
@@ -238,15 +234,13 @@ class DlmsConnectionHelperTest {
                 + "UseHdlc:false UseSn:false Message:Socket was closed by remote host.");
     doThrow(exception)
         .when(this.connectionFactory)
-        .createAndHandleConnection(this.messageMetadata, device, listener, this.task);
+        .createAndHandleConnection(this.messageMetadata, device, listener, null, this.task);
 
-    try {
-      this.helper.createAndHandleConnectionForDevice(
-          this.messageMetadata, device, listener, this.task);
-      fail("Expected ConnectionException");
-    } catch (final ConnectionException e) {
-      // expected
-    }
+    assertThrows(
+        ConnectionException.class,
+        () ->
+            this.helper.createAndHandleConnectionForDevice(
+                this.messageMetadata, device, listener, this.task));
 
     verifyNoMoreInteractions(this.invocationCounterManager);
   }

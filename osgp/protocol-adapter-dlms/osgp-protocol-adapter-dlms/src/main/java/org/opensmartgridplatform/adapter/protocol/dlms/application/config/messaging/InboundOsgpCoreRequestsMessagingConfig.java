@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 /** Configuration class for inbound requests from OSGP Core. */
@@ -68,5 +69,11 @@ public class InboundOsgpCoreRequestsMessagingConfig {
   @Bean("protocolDlmsInboundOsgpCoreRequestsMessageProcessorMap")
   public MessageProcessorMap messageProcessorMap() {
     return new BaseMessageProcessorMap("InboundOsgpCoreRequestsMessageProcessorMap");
+  }
+
+  @Bean(name = "protocolDlmsDeviceRequestMessageSenderJmsTemplate")
+  public JmsTemplate jmsTemplate() {
+    LOGGER.info("Initializing protocolDlmsDeviceRequestMessageSenderJmsTemplate bean.");
+    return this.jmsConfigurationFactory.initJmsTemplate();
   }
 }

@@ -64,14 +64,7 @@ public abstract class SmartMeteringBaseClient extends BaseClient {
 
   protected Notification waitForNotification(final NotificationType notificationType) {
     final int nextWait = this.getNextWait();
-    LOGGER.info(
-        "Waiting for a notification for notification type {} for at most {} milliseconds.",
-        notificationType,
-        nextWait);
-
-    final Notification notification =
-        this.notificationService.getNotification(notificationType, nextWait, TimeUnit.MILLISECONDS);
-
+    final Notification notification = this.waitForNotification(notificationType, nextWait);
     if (notification == null) {
       throw new AssertionError(
           "Did not receive a notification for notification type: "
@@ -80,6 +73,19 @@ public abstract class SmartMeteringBaseClient extends BaseClient {
               + nextWait
               + " milliseconds");
     }
+    return notification;
+  }
+
+  protected Notification waitForNotification(
+      final NotificationType notificationType, final int nextWait) {
+    LOGGER.info(
+        "Waiting for a notification for notification type {} for at most {} milliseconds.",
+        notificationType,
+        nextWait);
+
+    final Notification notification =
+        this.notificationService.getNotification(notificationType, nextWait, TimeUnit.MILLISECONDS);
+
     return notification;
   }
 

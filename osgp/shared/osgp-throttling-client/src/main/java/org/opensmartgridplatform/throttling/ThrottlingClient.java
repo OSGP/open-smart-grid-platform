@@ -1,0 +1,461 @@
+/*
+ * Copyright 2021 Alliander N.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
+package org.opensmartgridplatform.throttling;
+
+import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.opensmartgridplatform.throttling.api.Permit;
+import org.opensmartgridplatform.throttling.api.ThrottlingConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.web.client.DefaultResponseErrorHandler;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.DefaultUriBuilderFactory;
+
+/** Client for distributed segmented network max concurrency throttling. */
+public class ThrottlingClient {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(ThrottlingClient.class);
+
+  private Integer clientId;
+  private final AtomicInteger requestIdCounter = new AtomicInteger(0);
+  private final ThrottlingConfig throttlingConfig;
+  private final RestTemplate restTemplate;
+
+  public ThrottlingClient(
+      final ThrottlingConfig throttlingConfig,
+      final String throttlingServiceUrl,
+      final Duration timeout) {
+
+    this.throttlingConfig =
+        Objects.requireNonNull(throttlingConfig, "throttlingConfig must not be null");
+    this.restTemplate =
+        this.createAndConfigureRestTemplate(
+            Objects.requireNonNull(throttlingServiceUrl, "throttlingServiceUrl must not be null"),
+            Objects.requireNonNull(timeout, "timeout must not be null"));
+  }
+
+  private RestTemplate createAndConfigureRestTemplate(
+      final String throttlingServiceUrl, final Duration timeout) {
+
+    final HttpComponentsClientHttpRequestFactory clientHttpRequestFactory =
+        new HttpComponentsClientHttpRequestFactory();
+    clientHttpRequestFactory.setConnectTimeout((int) timeout.toMillis());
+    final RestTemplate template = new RestTemplate(clientHttpRequestFactory);
+
+    final DefaultUriBuilderFactory uriBuilderFactory =
+        new DefaultUriBuilderFactory(throttlingServiceUrl);
+    template.setUriTemplateHandler(uriBuilderFactory);
+
+    template.setErrorHandler(
+        new DefaultResponseErrorHandler() {
+          @Override
+          public void handleError(final ClientHttpResponse response, final HttpStatus statusCode)
+              throws IOException {
+            if (statusCode == HttpStatus.NOT_FOUND || statusCode == HttpStatus.CONFLICT) {
+              /*
+               * Do not treat HTTP status not found or conflict as an error. With the throttling API
+               * these are regular response statuses for a number of requests, for instance when
+               * discarding a permit that had not actually been granted, or when requesting a permit
+               * which is not available.
+               */
+              return;
+            }
+            super.handleError(response, statusCode);
+          }
+        });
+
+    return template;
+  }
+
+  /**
+   * Have this client register the configured throttling config with the Throttling REST service. It
+   * will also register itself and store the client-ID for subsequent calls.
+   */
+  public void register() {
+    this.registerThrottlingConfig();
+    this.registerClient();
+  }
+
+  private void registerThrottlingConfig() {
+    final Short throttlingConfigId =
+        this.restTemplate.postForObject("/throttling-configs", this.throttlingConfig, Short.class);
+
+    if (throttlingConfigId == null) {
+      throw new IllegalStateException(
+          "No throttling config ID available after registration of " + this.throttlingConfig);
+    }
+
+    this.throttlingConfig.setId(throttlingConfigId);
+
+    LOGGER.info("Registered {}", this.throttlingConfig);
+  }
+
+  private void registerClient() {
+
+    this.clientId = this.restTemplate.postForObject("/clients", null, Integer.class);
+
+    if (this.clientId == null) {
+      throw new IllegalStateException("No client ID available after registration of client");
+    }
+
+    LOGGER.info("Registered throttling client with ID: {}", this.clientId);
+  }
+
+  /** Lets the Throttling REST service know this client is going away. */
+  public void unregister() {
+    final ResponseEntity<Void> responseEntity =
+        this.restTemplate.exchange(
+            "/clients/{clientId}", HttpMethod.DELETE, null, Void.class, this.clientId);
+
+    if (!responseEntity.getStatusCode().is2xxSuccessful()) {
+      throw new IllegalStateException(
+          "No HTTP success response on unregistration of " + this.clientId);
+    }
+
+    LOGGER.info("Unregistered clientId {}", this.clientId);
+    this.clientId = null;
+  }
+
+  /**
+   * Requests a permit for a network segment identified by {@code baseTransceiverStationId} and
+   * {@code cellId} or for the entire network if any of the IDs is {@code null}.
+   *
+   * <p>The return value contains a request ID that is unique to this client. This permit, with at
+   * least the request ID is required to release the permit when finished.
+   *
+   * @param baseTransceiverStationId ID of the BTS
+   * @param cellId Cell ID within the BTS
+   * @return a permit granting access to a network or network segment
+   * @throws ThrottlingPermitDeniedException if a permit is not granted
+   */
+  public Permit requestPermitUsingNetworkSegmentIfIdsAreAvailable(
+      final Integer baseTransceiverStationId, final Integer cellId) {
+
+    if (baseTransceiverStationId != null && cellId != null) {
+      return this.requestPermit(baseTransceiverStationId, cellId)
+          .orElseThrow(
+              () ->
+                  new ThrottlingPermitDeniedException(
+                      this.throttlingConfig.getName(), baseTransceiverStationId, cellId));
+    }
+
+    return this.requestPermit()
+        .orElseThrow(() -> new ThrottlingPermitDeniedException(this.throttlingConfig.getName()));
+  }
+
+  /**
+   * Requests a permit for the entire network. All calls to this method share a single throttling
+   * limit.
+   *
+   * <p>The return value contains a request ID that is unique to this client. This permit, with the
+   * request ID is required to release the permit when finished.
+   *
+   * @return a permit granting access to the network, containing a locally (this client) unique
+   *     request ID, or an empty response if no permit was available.
+   */
+  public Optional<Permit> requestPermit() {
+    final int requestId = this.requestIdCounter.incrementAndGet();
+
+    LOGGER.debug(
+        "Requesting permit using requestId {} for clientId {} on {}",
+        requestId,
+        this.clientId,
+        this.throttlingConfig);
+
+    final Integer numberOfGrantedPermits = this.numberOfGrantedPermits(requestId);
+
+    if (numberOfGrantedPermits == null) {
+      this.discardPermitLogExceptionOnFailure(requestId);
+      return Optional.empty();
+    }
+
+    /*
+     * Set created at for new permits to now, which may be a slightly different instant than the one
+     * with the throttling service. This is just an indication, and should not be depended on to
+     * match the value when inspecting the permit at the throttling service.
+     */
+    return numberOfGrantedPermits > 0
+        ? Optional.of(
+            new Permit(
+                this.throttlingConfig.getId(), this.clientId, requestId, null, null, Instant.now()))
+        : Optional.empty();
+  }
+
+  /**
+   * Requests a permit for a network segment identified by {@code baseTransceiverStationId} and
+   * {@code cellId}
+   *
+   * <p>The return value contains a request ID that is unique to this client. This permit, with the
+   * request, BTS and cell ID is required to release the permit when finished.
+   *
+   * @param baseTransceiverStationId BTS for which a permit is requested
+   * @param cellId Cell of the BTS for which a permit is requested
+   * @return a permit granting access to the given network and network segment, containing a locally
+   *     (this client) unique request ID, or an empty response if no permit was available.
+   */
+  public Optional<Permit> requestPermit(final int baseTransceiverStationId, final int cellId) {
+    final int requestId = this.requestIdCounter.incrementAndGet();
+
+    LOGGER.debug(
+        "Requesting permit for network segment ({}, {}) using requestId {} for clientId {} on {}",
+        baseTransceiverStationId,
+        cellId,
+        requestId,
+        this.clientId,
+        this.throttlingConfig);
+
+    final Integer numberOfGrantedPermits =
+        this.numberOfGrantedPermits(requestId, baseTransceiverStationId, cellId);
+
+    if (numberOfGrantedPermits == null) {
+      this.discardPermitLogExceptionOnFailure(requestId);
+      return Optional.empty();
+    }
+
+    /*
+     * Set created at for new permits to now, which may be a slightly different instant than the one
+     * with the throttling service. This is just an indication, and should not be depended on to
+     * match the value when inspecting the permit at the throttling service.
+     */
+    return numberOfGrantedPermits > 0
+        ? Optional.of(
+            new Permit(
+                this.throttlingConfig.getId(),
+                this.clientId,
+                requestId,
+                baseTransceiverStationId,
+                cellId,
+                Instant.now()))
+        : Optional.empty();
+  }
+
+  private Integer numberOfGrantedPermits(final int requestId) {
+
+    try {
+      return this.restTemplate.postForObject(
+          "/permits/{throttlingConfigId}/{clientId}",
+          requestId,
+          Integer.class,
+          this.throttlingConfig.getId(),
+          this.clientId);
+    } catch (final Exception e) {
+      LOGGER.error(
+          "Unexpected exception requesting permit using requestId {} for {} on {}",
+          requestId,
+          this.clientId,
+          this.throttlingConfig);
+      return null;
+    }
+  }
+
+  private Integer numberOfGrantedPermits(
+      final int requestId, final int baseTransceiverStationId, final int cellId) {
+
+    try {
+      return this.restTemplate.postForObject(
+          "/permits/{throttlingConfigId}/{clientId}/{baseTransceiverStationId}/{cellId}",
+          requestId,
+          Integer.class,
+          this.throttlingConfig.getId(),
+          this.clientId,
+          baseTransceiverStationId,
+          cellId);
+    } catch (final Exception e) {
+      LOGGER.error(
+          "Unexpected exception requesting permit for network segment ({}, {}) using requestId {} for {} on {}",
+          baseTransceiverStationId,
+          cellId,
+          requestId,
+          this.clientId,
+          this.throttlingConfig,
+          e);
+      return null;
+    }
+  }
+
+  /**
+   * Releases the given permit, freeing up the network for the next request.
+   *
+   * @param permit the permit as it was returned by {@code requestPermit} (or variants thereof)
+   * @return true if it was successfully released, false otherwise
+   */
+  public boolean releasePermit(final Permit permit) {
+
+    final boolean released;
+    if (permit.getBaseTransceiverStationId() == null || permit.getCellId() == null) {
+      released = this.releasePermit(permit.getRequestId());
+    } else {
+      released =
+          this.releasePermit(
+              permit.getRequestId(), permit.getBaseTransceiverStationId(), permit.getCellId());
+    }
+    return released;
+  }
+
+  private boolean releasePermit(final Integer requestId) {
+
+    final ResponseEntity<Void> releaseResponse =
+        this.restTemplate.exchange(
+            "/permits/{throttlingConfigId}/{clientId}",
+            HttpMethod.DELETE,
+            new HttpEntity<>(requestId),
+            Void.class,
+            this.throttlingConfig.getId(),
+            this.clientId);
+
+    switch (releaseResponse.getStatusCode()) {
+      case NOT_FOUND:
+        LOGGER.warn(
+            "Unable to release permit with throttlingConfigId {}, clientId {}, requestId {}, because the permit has not been granted",
+            this.throttlingConfig.getId(),
+            this.clientId,
+            requestId);
+        return false;
+      case OK:
+        LOGGER.debug(
+            "Released permit with throttlingConfigId {}, clientId {}, requestId {}",
+            this.throttlingConfig.getId(),
+            this.clientId,
+            requestId);
+        return true;
+      default:
+        LOGGER.warn(
+            "Unable to release permit with throttlingConfigId {}, clientId {}, requestId {} - got unexpected response status {}",
+            this.throttlingConfig.getId(),
+            this.clientId,
+            requestId,
+            releaseResponse.getStatusCode());
+        return false;
+    }
+  }
+
+  private boolean releasePermit(
+      final Integer requestId, final int baseTransceiverStationId, final int cellId) {
+
+    final ResponseEntity<Void> releaseResponse =
+        this.restTemplate.exchange(
+            "/permits/{throttlingConfigId}/{clientId}/{baseTransceiverStationId}/{cellId}",
+            HttpMethod.DELETE,
+            new HttpEntity<>(requestId),
+            Void.class,
+            this.throttlingConfig.getId(),
+            this.clientId,
+            baseTransceiverStationId,
+            cellId);
+
+    switch (releaseResponse.getStatusCode()) {
+      case NOT_FOUND:
+        LOGGER.warn(
+            "Unable to release permit with throttlingConfigId {}, clientId {}, requestId {}, baseTransceiverStationId {}, cellId {}, because the permit has not been granted",
+            this.throttlingConfig.getId(),
+            this.clientId,
+            requestId,
+            baseTransceiverStationId,
+            cellId);
+        return false;
+      case OK:
+        LOGGER.debug(
+            "Released permit with throttlingConfigId {}, clientId {}, requestId {}, baseTransceiverStationId {}, cellId {}",
+            this.throttlingConfig.getId(),
+            this.clientId,
+            requestId,
+            baseTransceiverStationId,
+            cellId);
+        return true;
+      default:
+        LOGGER.error(
+            "Unable to release permit with throttlingConfigId {}, clientId {}, requestId {}, baseTransceiverStationId {}, cellId {} - got unexpected response status {}",
+            this.throttlingConfig.getId(),
+            this.clientId,
+            requestId,
+            baseTransceiverStationId,
+            cellId,
+            releaseResponse.getStatusCode());
+        return false;
+    }
+  }
+
+  private void discardPermitLogExceptionOnFailure(final int requestId) {
+    try {
+      this.discardPermit(requestId);
+    } catch (final Exception e) {
+      LOGGER.error("Failed to discard permit with requestId {}", requestId, e);
+    }
+  }
+
+  /**
+   * Discard the given request, freeing up the network for the next request. This can be used to
+   * free a possibly granted permit, which wasn't received by the client.
+   *
+   * @param requestId ID of the discarded request
+   */
+  public void discardPermit(final int requestId) {
+
+    final ResponseEntity<Void> discardResponse =
+        this.restTemplate.exchange(
+            "/permits/discard/{clientId}/{requestId}",
+            HttpMethod.DELETE,
+            null,
+            Void.class,
+            this.clientId,
+            requestId);
+
+    switch (discardResponse.getStatusCode()) {
+      case NOT_FOUND:
+        LOGGER.info(
+            "Discarded permit for {} with requestId {} - no permit had been granted",
+            this.clientId,
+            requestId);
+        break;
+      case OK:
+        LOGGER.info(
+            "Discarded permit for {} with requestId {} - granted permit has been released",
+            this.clientId,
+            requestId);
+        break;
+      default:
+        LOGGER.error(
+            "Discarded permit for {} with requestId {} - got unexpected response status {}",
+            this.clientId,
+            requestId,
+            discardResponse.getStatusCode());
+        break;
+    }
+  }
+
+  /**
+   * Gets the throttling configuration used by this client
+   *
+   * @return throttling configuration
+   */
+  public ThrottlingConfig getThrottlingConfig() {
+    return this.throttlingConfig;
+  }
+
+  /**
+   * Gets the client ID as returned by the Throttling REST service.
+   *
+   * @return Client ID
+   */
+  public Integer getClientId() {
+    return this.clientId;
+  }
+}

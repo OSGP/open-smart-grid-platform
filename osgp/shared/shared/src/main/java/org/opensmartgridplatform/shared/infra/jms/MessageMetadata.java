@@ -28,6 +28,8 @@ public class MessageMetadata implements Serializable {
   private String domain;
   private String domainVersion;
   private String ipAddress;
+  private Integer baseTransceiverStationId;
+  private Integer cellId;
   private int messagePriority;
   private boolean scheduled;
   private Long scheduleTime;
@@ -48,6 +50,8 @@ public class MessageMetadata implements Serializable {
     this.domain = builder.domain;
     this.domainVersion = builder.domainVersion;
     this.ipAddress = builder.ipAddress;
+    this.baseTransceiverStationId = builder.baseTransceiverStationId;
+    this.cellId = builder.cellId;
     this.messagePriority = builder.messagePriority;
     this.scheduled = builder.scheduled;
     this.scheduleTime = builder.scheduleTime;
@@ -76,6 +80,10 @@ public class MessageMetadata implements Serializable {
 
     metadata.ipAddress =
         metadata.getStringProperty(message, Constants.IP_ADDRESS, StringUtils.EMPTY);
+
+    metadata.baseTransceiverStationId =
+        metadata.getIntProperty(message, Constants.BASE_TRANSCEIVER_STATION_ID, null);
+    metadata.cellId = metadata.getIntProperty(message, Constants.CELL_ID, null);
 
     metadata.scheduleTime = metadata.getLongProperty(message, Constants.SCHEDULE_TIME, null);
     metadata.maxScheduleTime = metadata.getLongProperty(message, Constants.MAX_SCHEDULE_TIME, null);
@@ -111,6 +119,13 @@ public class MessageMetadata implements Serializable {
 
     if (StringUtils.isNotBlank(this.ipAddress)) {
       message.setStringProperty(Constants.IP_ADDRESS, this.ipAddress);
+    }
+
+    if (this.baseTransceiverStationId != null) {
+      message.setIntProperty(Constants.BASE_TRANSCEIVER_STATION_ID, this.baseTransceiverStationId);
+    }
+    if (this.cellId != null) {
+      message.setIntProperty(Constants.CELL_ID, this.cellId);
     }
 
     if (this.scheduleTime != null) {
@@ -149,9 +164,13 @@ public class MessageMetadata implements Serializable {
     }
   }
 
-  private int getIntProperty(final Message message, final String name, final int defaultValue)
-      throws JMSException {
-    return message.propertyExists(name) ? message.getIntProperty(name) : defaultValue;
+  private Integer getIntProperty(
+      final Message message, final String name, final Integer defaultValue) throws JMSException {
+    if (message.propertyExists(name)) {
+      return message.getIntProperty(name);
+    } else {
+      return defaultValue;
+    }
   }
 
   private boolean getBooleanProperty(
@@ -177,6 +196,8 @@ public class MessageMetadata implements Serializable {
     private String domain = StringUtils.EMPTY;
     private String domainVersion = StringUtils.EMPTY;
     private String ipAddress = StringUtils.EMPTY;
+    private Integer baseTransceiverStationId = null;
+    private Integer cellId = null;
     private int messagePriority = 0;
     private Long scheduleTime = null;
     private Long maxScheduleTime = null;
@@ -193,6 +214,8 @@ public class MessageMetadata implements Serializable {
       this.domain = otherMetadata.getDomain();
       this.domainVersion = otherMetadata.getDomainVersion();
       this.ipAddress = otherMetadata.getIpAddress();
+      this.baseTransceiverStationId = otherMetadata.getBaseTransceiverStationId();
+      this.cellId = otherMetadata.getCellId();
       this.messagePriority = otherMetadata.getMessagePriority();
       this.scheduled = otherMetadata.isScheduled();
       this.scheduleTime = otherMetadata.getScheduleTime();
@@ -247,6 +270,14 @@ public class MessageMetadata implements Serializable {
 
     public Builder withIpAddress(final String ipAddress) {
       this.ipAddress = ipAddress;
+      return this;
+    }
+
+    public Builder withNetworkSegmentIds(
+        final Integer baseTransceiverStationId, final Integer cellId) {
+
+      this.baseTransceiverStationId = baseTransceiverStationId;
+      this.cellId = cellId;
       return this;
     }
 

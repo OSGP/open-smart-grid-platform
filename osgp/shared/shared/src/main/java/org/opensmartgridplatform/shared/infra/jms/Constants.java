@@ -26,6 +26,11 @@ public class Constants {
   /** JMS constant for message field: IPAddress. */
   public static final String IP_ADDRESS = "IPAddress";
 
+  /** JMS constant for message field: BtsId. */
+  public static final String BASE_TRANSCEIVER_STATION_ID = "BtsId";
+  /** JMS constant for message field: CellId. */
+  public static final String CELL_ID = "CellId";
+
   /** JMS constant for message field: Domain. */
   public static final String DOMAIN = "Domain";
 

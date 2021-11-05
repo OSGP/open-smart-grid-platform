@@ -89,6 +89,7 @@
   <modules>
     <!-- Shared Libs -->
     <module>parent-platform</module>
+    <module>osgp-throttling-service</module>
 
     <!-- Domain -->
     <module>osgp-domain-core</module>
