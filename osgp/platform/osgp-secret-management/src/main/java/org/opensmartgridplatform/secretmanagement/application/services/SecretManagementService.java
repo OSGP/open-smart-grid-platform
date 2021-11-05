@@ -300,7 +300,6 @@ public class SecretManagementService {
             this.secretRepository.save(s);
           });
     }
-    ;
   }
 
   private boolean recentNewSecretsPresent(
