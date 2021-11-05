@@ -79,26 +79,26 @@ public class RecoverKeyProcess implements Runnable {
     final DlmsDevice device = this.findDevice();
 
     try {
-    if (!this.canConnectUsingNewKeys(device)) {
+      if (!this.canConnectUsingNewKeys(device)) {
+        log.warn(
+            "[{}] Could not recover keys: could not connect to device {} using New keys",
+            this.messageMetadata.getCorrelationUid(),
+            this.deviceIdentification);
+        return;
+      }
+    } catch (final ThrottlingPermitDeniedException e) {
       log.warn(
-          "[{}] Could not recover keys: could not connect to device {} using New keys",
-          this.messageMetadata.getCorrelationUid(),
-          this.deviceIdentification);
-      return;
-    }
-  } catch (final ThrottlingPermitDeniedException e) {
-    log.warn(
-        "RecoverKeyProcess could not connect to the device due to throttling constraints", e);
+          "RecoverKeyProcess could not connect to the device due to throttling constraints", e);
 
-    new Timer()
-        .schedule(
-            new TimerTask() {
-              @Override
-              public void run() {
-                RecoverKeyProcess.this.run();
-              }
-            },
-            this.throttlingClientConfig.delay().toMillis());
+      new Timer()
+          .schedule(
+              new TimerTask() {
+                @Override
+                public void run() {
+                  RecoverKeyProcess.this.run();
+                }
+              },
+              this.throttlingClientConfig.delay().toMillis());
       return;
     }
 
