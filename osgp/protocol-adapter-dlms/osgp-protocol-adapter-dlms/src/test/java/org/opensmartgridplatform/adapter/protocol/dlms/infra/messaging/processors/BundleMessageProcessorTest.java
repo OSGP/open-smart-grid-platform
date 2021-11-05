@@ -26,6 +26,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingClientConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.BundleService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
@@ -69,21 +70,24 @@ class BundleMessageProcessorTest {
 
   @Mock private DlmsMessageListener messageListener;
 
+  @Mock private ThrottlingClientConfig throttlingClientConfig;
+
   private DlmsDevice dlmsDevice;
   private MessageMetadata messageMetadata;
 
   @InjectMocks private BundleMessageProcessor messageProcessor;
 
   @BeforeEach
-  public void setUp() throws JMSException, OsgpException {
+  void setUp() throws OsgpException, JMSException {
     this.dlmsDevice = new DlmsDeviceBuilder().withHls5Active(true).build();
     this.messageMetadata = MessageMetadata.fromMessage(this.message);
     when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class)))
         .thenReturn(this.dlmsDevice);
+    when(this.throttlingClientConfig.clientEnabled()).thenReturn(false);
   }
 
   @Test
-  public void shouldSetEmptyHeaderOnSuccessfulOperation() throws OsgpException, JMSException {
+  void shouldSetEmptyHeaderOnSuccessfulOperation() throws OsgpException, JMSException {
     this.prepareBundleServiceMockWithRequestAndResponse(new ActionResponseDto());
     when(this.dlmsConnectionManager.getDlmsMessageListener()).thenReturn(this.messageListener);
 
@@ -94,7 +98,7 @@ class BundleMessageProcessorTest {
   }
 
   @Test
-  public void shouldSetRetryHeaderOnRuntimeException() throws OsgpException, JMSException {
+  void shouldSetRetryHeaderOnRuntimeException() throws OsgpException, JMSException {
     doThrow(new RuntimeException())
         .when(this.dlmsConnectionHelper)
         .createAndHandleConnectionForDevice(
@@ -109,7 +113,7 @@ class BundleMessageProcessorTest {
   }
 
   @Test
-  public void shouldSetRetryHeaderOnOsgpException() throws OsgpException, JMSException {
+  void shouldSetRetryHeaderOnOsgpException() throws OsgpException, JMSException {
     doThrow(new OsgpException(ComponentType.PROTOCOL_DLMS, ""))
         .when(this.dlmsConnectionHelper)
         .createAndHandleConnectionForDevice(
@@ -124,7 +128,7 @@ class BundleMessageProcessorTest {
   }
 
   @Test
-  public void shouldSetRetryHeaderOnSuccessfulOperationWithRetryableFaultResponse()
+  void shouldSetRetryHeaderOnSuccessfulOperationWithRetryableFaultResponse()
       throws OsgpException, JMSException {
     when(this.dlmsConnectionManager.getDlmsMessageListener()).thenReturn(this.messageListener);
 
@@ -138,7 +142,7 @@ class BundleMessageProcessorTest {
   }
 
   @Test
-  public void shouldSetEmptyHeaderOnSuccessfulOperationWithNonRetryableFaultResponse()
+  void shouldSetEmptyHeaderOnSuccessfulOperationWithNonRetryableFaultResponse()
       throws OsgpException, JMSException {
     when(this.dlmsConnectionManager.getDlmsMessageListener()).thenReturn(this.messageListener);
 

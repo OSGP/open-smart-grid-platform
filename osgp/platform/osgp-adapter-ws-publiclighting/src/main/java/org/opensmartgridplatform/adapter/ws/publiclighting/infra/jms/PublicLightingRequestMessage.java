@@ -30,6 +30,8 @@ public class PublicLightingRequestMessage extends RequestMessage {
         messageMetadata.getOrganisationIdentification(),
         messageMetadata.getDeviceIdentification(),
         ipAddress,
+        messageMetadata.getBaseTransceiverStationId(),
+        messageMetadata.getCellId(),
         request);
     this.messageType = MessageType.valueOf(messageMetadata.getMessageType());
     this.messagePriority = messageMetadata.getMessagePriority();

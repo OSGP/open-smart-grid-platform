@@ -111,6 +111,7 @@ public class ScheduledTaskExecutorService {
         .withDomain(scheduledTask.getDomain())
         .withDomainVersion(scheduledTask.getDomainVersion())
         .withIpAddress(getIpAddress(device))
+        .withNetworkSegmentIds(device.getBtsId(), device.getCellId())
         .withMessagePriority(scheduledTask.getMessagePriority())
         .withScheduled(true)
         .withMaxScheduleTime(

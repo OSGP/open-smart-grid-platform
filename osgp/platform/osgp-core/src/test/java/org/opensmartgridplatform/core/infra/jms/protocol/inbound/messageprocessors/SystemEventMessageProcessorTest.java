@@ -64,6 +64,8 @@ class SystemEventMessageProcessorTest {
             organisationIdentification,
             DEVICE_IDENTIFICATION,
             ipAddress,
+            null,
+            null,
             this.systemEventDto);
 
     this.message =

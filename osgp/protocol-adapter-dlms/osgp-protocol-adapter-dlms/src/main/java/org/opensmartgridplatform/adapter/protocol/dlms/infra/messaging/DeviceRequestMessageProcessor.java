@@ -28,6 +28,7 @@ import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.opensmartgridplatform.throttling.ThrottlingPermitDeniedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -51,6 +52,8 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
   protected MessageProcessorMap dlmsRequestMessageProcessorMap;
 
   @Autowired protected DomainHelperService domainHelperService;
+
+  @Autowired private DeviceRequestMessageSender deviceRequestMessageSender;
 
   protected final MessageType messageType;
 
@@ -92,8 +95,17 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
       } else {
         this.processMessageTasks(messageObject, messageMetadata, null);
       }
+    } catch (final ThrottlingPermitDeniedException exception) {
+
+      /*
+       * Throttling permit for network access not granted, send the request back to the queue to be
+       * picked up again a little later by the message listener for device requests.
+       */
+      this.deviceRequestMessageSender.send(
+          messageObject, messageMetadata, this.throttlingClientConfig.delay());
+
     } catch (final Exception exception) {
-      this.sendErrorResponse(messageMetadata, exception, message.getObject());
+      this.sendErrorResponse(messageMetadata, exception, messageObject);
     }
   }
 

@@ -88,7 +88,12 @@ public class ManagementService {
     final FindEventsRequestList requestDto =
         this.managementMapper.map(findEventsQueryMessageDataContainer, FindEventsRequestList.class);
     this.osgpCoreRequestMessageSender.send(
-        requestDto, messageMetadata.builder().withIpAddress(smartMeter.getIpAddress()).build());
+        requestDto,
+        messageMetadata
+            .builder()
+            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+            .build());
   }
 
   public void handleFindEventsResponse(
@@ -177,7 +182,12 @@ public class ManagementService {
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
     this.osgpCoreRequestMessageSender.send(
-        requestDto, messageMetadata.builder().withIpAddress(smartMeter.getIpAddress()).build());
+        requestDto,
+        messageMetadata
+            .builder()
+            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+            .build());
   }
 
   public void handleSetDeviceCommunicationSettingsResponse(
@@ -208,7 +218,12 @@ public class ManagementService {
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
     this.osgpCoreRequestMessageSender.send(
-        requestDto, messageMetadata.builder().withIpAddress(smartMeter.getIpAddress()).build());
+        requestDto,
+        messageMetadata
+            .builder()
+            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+            .build());
   }
 
   public void handleSetDeviceLifecycleStatusByChannelResponse(
@@ -262,7 +277,12 @@ public class ManagementService {
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
     this.osgpCoreRequestMessageSender.send(
-        requestDto, messageMetadata.builder().withIpAddress(smartMeter.getIpAddress()).build());
+        requestDto,
+        messageMetadata
+            .builder()
+            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+            .build());
   }
 
   public void handleGetGsmDiagnosticResponse(
@@ -302,7 +322,12 @@ public class ManagementService {
         this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
     this.osgpCoreRequestMessageSender.send(
-        requestDto, messageMetadata.builder().withIpAddress(smartMeter.getIpAddress()).build());
+        requestDto,
+        messageMetadata
+            .builder()
+            .withIpAddress(smartMeter.getIpAddress())
+            .withNetworkSegmentIds(smartMeter.getBtsId(), smartMeter.getCellId())
+            .build());
   }
 
   public void handleClearMBusStatusOnAllChannelsResponse(

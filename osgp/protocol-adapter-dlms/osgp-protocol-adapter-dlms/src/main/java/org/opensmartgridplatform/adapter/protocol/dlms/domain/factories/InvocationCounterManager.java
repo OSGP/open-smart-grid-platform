@@ -17,6 +17,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.throttling.api.Permit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,17 +49,30 @@ public class InvocationCounterManager {
    */
   public void initializeInvocationCounter(
       final MessageMetadata messageMetadata, final DlmsDevice device) throws OsgpException {
-    this.initializeWithInvocationCounterStoredOnDevice(messageMetadata, device);
+
+    this.initializeWithInvocationCounterStoredOnDevice(messageMetadata, device, null);
+  }
+
+  /**
+   * Updates the device instance with the invocation counter value on the actual device. Should only
+   * be called for a device that actually has an invocation counter stored on the device itself. If
+   * a permit for network access is passed, it is to be released upon closing the connection.
+   */
+  public void initializeInvocationCounter(
+      final MessageMetadata messageMetadata, final DlmsDevice device, final Permit permit)
+      throws OsgpException {
+    this.initializeWithInvocationCounterStoredOnDevice(messageMetadata, device, permit);
   }
 
   private void initializeWithInvocationCounterStoredOnDevice(
-      final MessageMetadata messageMetadata, final DlmsDevice device) throws OsgpException {
+      final MessageMetadata messageMetadata, final DlmsDevice device, final Permit permit)
+      throws OsgpException {
 
     final Consumer<DlmsConnectionManager> taskForConnectionManager =
         connectionManager ->
             this.initializeWithInvocationCounterStoredOnDeviceTask(device, connectionManager);
     this.connectionFactory.createAndHandlePublicClientConnection(
-        messageMetadata, device, null, taskForConnectionManager);
+        messageMetadata, device, null, permit, taskForConnectionManager);
   }
 
   void initializeWithInvocationCounterStoredOnDeviceTask(

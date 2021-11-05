@@ -86,6 +86,8 @@ public class PushNotificationAlarmMessageProcessorTest {
             organisationIdentification,
             DEVICE_IDENTIFICATION,
             ipAddress,
+            null,
+            null,
             this.pushNotificationAlarm);
 
     this.message =

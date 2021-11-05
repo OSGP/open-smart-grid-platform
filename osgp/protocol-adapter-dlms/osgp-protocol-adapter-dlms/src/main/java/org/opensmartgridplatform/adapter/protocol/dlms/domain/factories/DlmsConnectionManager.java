@@ -16,6 +16,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevic
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.throttling.api.Permit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +48,7 @@ public class DlmsConnectionManager implements AutoCloseable {
   private final DlmsDevice device;
   private final DlmsMessageListener dlmsMessageListener;
   private final DomainHelperService domainHelperService;
+  private final Permit permit;
 
   private DlmsConnection dlmsConnection;
 
@@ -56,6 +58,17 @@ public class DlmsConnectionManager implements AutoCloseable {
       final DlmsDevice device,
       final DlmsMessageListener dlmsMessageListener,
       final DomainHelperService domainHelperService) {
+
+    this(connector, messageMetadata, device, dlmsMessageListener, domainHelperService, null);
+  }
+
+  public DlmsConnectionManager(
+      final DlmsConnector connector,
+      final MessageMetadata messageMetadata,
+      final DlmsDevice device,
+      final DlmsMessageListener dlmsMessageListener,
+      final DomainHelperService domainHelperService,
+      final Permit permit) {
     this.connector = connector;
     this.messageMetadata = messageMetadata;
     this.device = device;
@@ -65,6 +78,7 @@ public class DlmsConnectionManager implements AutoCloseable {
       this.dlmsMessageListener = dlmsMessageListener;
     }
     this.domainHelperService = domainHelperService;
+    this.permit = permit;
   }
 
   /**
@@ -84,6 +98,10 @@ public class DlmsConnectionManager implements AutoCloseable {
 
   public DlmsMessageListener getDlmsMessageListener() {
     return this.dlmsMessageListener;
+  }
+
+  public Permit getPermit() {
+    return this.permit;
   }
 
   /**
