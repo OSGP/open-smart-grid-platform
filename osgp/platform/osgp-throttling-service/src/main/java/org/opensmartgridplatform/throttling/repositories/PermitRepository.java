@@ -15,7 +15,6 @@ import java.util.Optional;
 import org.opensmartgridplatform.throttling.api.NonUniqueRequestIdException;
 import org.opensmartgridplatform.throttling.entities.Permit;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -106,5 +105,5 @@ public interface PermitRepository extends JpaRepository<Permit, Long> {
 
   long countByClientId(int clientId);
 
-  Page<Permit> findByCreatedAtBefore(Instant minus, Pageable pageable);
+  List<Permit> findByCreatedAtBefore(Instant minus, Pageable pageable);
 }

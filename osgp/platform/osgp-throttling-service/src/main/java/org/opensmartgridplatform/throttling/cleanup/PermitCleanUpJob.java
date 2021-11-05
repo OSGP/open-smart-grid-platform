@@ -23,9 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -51,19 +49,15 @@ public class PermitCleanUpJob implements Job {
       return;
     }
     final Instant createdAtBefore = Instant.now().minus(this.timeToLive);
-    final PageRequest pageRequest = PageRequest.of(0, this.batchSize, Sort.by("id").ascending());
-    Page<Permit> expiredPermits =
-        this.permitRepository.findByCreatedAtBefore(createdAtBefore, pageRequest);
-    LOGGER.debug("Found {} permits to be cleaned", expiredPermits.getTotalElements());
-    boolean done = expiredPermits.isEmpty();
+    final PageRequest pageRequest = PageRequest.of(0, this.batchSize);
+    boolean done = false;
     while (!done) {
-      this.cleanUpPermits(expiredPermits.getContent());
-      if (expiredPermits.isLast()) {
-        done = true;
-      } else {
-        expiredPermits = this.permitRepository.findByCreatedAtBefore(createdAtBefore, pageRequest);
-        done = expiredPermits.isEmpty();
-      }
+      final List<Permit> expiredPermits =
+          this.permitRepository.findByCreatedAtBefore(createdAtBefore, pageRequest);
+      final int numberOfExpiredPermits = expiredPermits.size();
+      LOGGER.debug("Found {} permits to be cleaned", numberOfExpiredPermits);
+      this.cleanUpPermits(expiredPermits);
+      done = numberOfExpiredPermits < this.batchSize;
     }
   }
 
