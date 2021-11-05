@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -28,6 +29,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openmuc.jdlms.DlmsConnection;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingClientConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.SecretManagementService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
@@ -51,6 +53,7 @@ public class RecoverKeyProcessTest {
   @Mock SecretManagementService secretManagementService;
   @Mock ThrottlingService throttlingService;
   @Mock DlmsDeviceRepository dlmsDeviceRepository;
+  @Mock ThrottlingClientConfig throttlingClientConfig;
 
   private static final String DEVICE_IDENTIFICATION = "E000123456789";
   private static final String IP_ADDRESS = "1.1.1.1";
@@ -63,6 +66,7 @@ public class RecoverKeyProcessTest {
     this.recoverKeyProcess.setIpAddress(IP_ADDRESS);
     this.recoverKeyProcess.setMessageMetadata(MESSAGE_METADATA);
     when(DEVICE.needsInvocationCounter()).thenReturn(true);
+    lenient().when(this.throttlingClientConfig.clientEnabled()).thenReturn(false);
   }
 
   @Test

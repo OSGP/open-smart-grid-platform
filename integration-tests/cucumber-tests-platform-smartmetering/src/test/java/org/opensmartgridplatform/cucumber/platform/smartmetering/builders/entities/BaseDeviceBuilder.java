@@ -13,7 +13,9 @@ import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
+import org.opensmartgridplatform.cucumber.core.ReadSettingsHelper;
 import org.opensmartgridplatform.cucumber.platform.PlatformDefaults;
+import org.opensmartgridplatform.cucumber.platform.PlatformKeys;
 import org.opensmartgridplatform.cucumber.platform.inputparsers.DateInputParser;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringDefaults;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys;
@@ -37,6 +39,8 @@ public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
   Integer containerNumber = PlatformSmartmeteringDefaults.CONTAINER_NUMBER;
   String containerNumberAddition = PlatformSmartmeteringDefaults.DEFAULT_CONTAINER_NUMBER_ADDITION;
   ProtocolInfo protocolInfo = null;
+  Integer baseTransceiverStationId = null;
+  Integer cellId = null;
   InetAddress networkAddress = PlatformSmartmeteringDefaults.NETWORK_ADDRESS;
   String containerMunicipality = PlatformSmartmeteringDefaults.CONTAINER_MUNICIPALITY;
   String alias = PlatformSmartmeteringDefaults.ALIAS;
@@ -105,6 +109,16 @@ public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
 
   public T setProtocolInfo(final ProtocolInfo protocolInfo) {
     this.protocolInfo = protocolInfo;
+    return (T) this;
+  }
+
+  public T setBaseTransceiverStationId(final Integer baseTransceiverStationId) {
+    this.baseTransceiverStationId = baseTransceiverStationId;
+    return (T) this;
+  }
+
+  public T setCellId(final Integer cellId) {
+    this.cellId = cellId;
     return (T) this;
   }
 
@@ -201,15 +215,21 @@ public abstract class BaseDeviceBuilder<T extends BaseDeviceBuilder<T>> {
           DateInputParser.parse(
               inputSettings.get(PlatformSmartmeteringKeys.TECHNICAL_INSTALLATION_DATE)));
     }
-    if (inputSettings.containsKey(PlatformSmartmeteringKeys.KEY_DEVICE_LIFECYCLE_STATUS)) {
+    if (inputSettings.containsKey(PlatformKeys.KEY_DEVICE_LIFECYCLE_STATUS)) {
       this.setDeviceLifecycleStatus(
           DeviceLifecycleStatus.valueOf(
-              inputSettings.get(PlatformSmartmeteringKeys.KEY_DEVICE_LIFECYCLE_STATUS)));
+              inputSettings.get(PlatformKeys.KEY_DEVICE_LIFECYCLE_STATUS)));
     }
     if (inputSettings.containsKey(PlatformSmartmeteringKeys.GATEWAY_DEVICE_IDENTIFICATION)) {
       this.setGatewayDevice(
           inputSettings.get(PlatformSmartmeteringKeys.GATEWAY_DEVICE_IDENTIFICATION));
     }
+
+    this.setBaseTransceiverStationId(
+        ReadSettingsHelper.getInteger(
+            inputSettings, PlatformSmartmeteringKeys.KEY_BASE_TRANSCEIVER_STATION_ID, null));
+    this.setCellId(
+        ReadSettingsHelper.getInteger(inputSettings, PlatformSmartmeteringKeys.KEY_CELL_ID, null));
 
     if (inputSettings.containsKey(PlatformSmartmeteringKeys.NETWORK_ADDRESS)) {
       if (StringUtils.isBlank(inputSettings.get(PlatformSmartmeteringKeys.NETWORK_ADDRESS))) {

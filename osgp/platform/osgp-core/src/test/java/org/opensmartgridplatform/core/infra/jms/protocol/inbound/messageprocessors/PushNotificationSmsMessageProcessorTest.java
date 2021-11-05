@@ -64,6 +64,8 @@ public class PushNotificationSmsMessageProcessorTest {
             organisationIdentification,
             DEVICE_IDENTIFICATION,
             IP_ADDRESS,
+            null,
+            null,
             this.pushNotificationSms);
 
     this.message =

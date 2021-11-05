@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,6 +29,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingClientConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.FirmwareService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ThrottlingService;
@@ -52,7 +54,7 @@ import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 
 @ExtendWith(MockitoExtension.class)
-public class GetFirmwareFileResponseMessageProcessorTest {
+class GetFirmwareFileResponseMessageProcessorTest {
   @Mock protected DlmsConnectionHelper connectionHelper;
 
   @Mock protected DeviceResponseMessageSender responseMessageSender;
@@ -69,6 +71,8 @@ public class GetFirmwareFileResponseMessageProcessorTest {
 
   @Mock private ThrottlingService throttlingService;
 
+  @Mock private ThrottlingClientConfig throttlingClientConfig;
+
   @Mock private OsgpExceptionConverter osgpExceptionConverter;
 
   private DlmsDevice dlmsDevice;
@@ -77,8 +81,9 @@ public class GetFirmwareFileResponseMessageProcessorTest {
   private GetFirmwareFileResponseMessageProcessor getFirmwareFileResponseMessageProcessor;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     this.dlmsDevice = new DlmsDeviceBuilder().withHls5Active(true).build();
+    lenient().when(this.throttlingClientConfig.clientEnabled()).thenReturn(false);
   }
 
   @Test
@@ -99,11 +104,11 @@ public class GetFirmwareFileResponseMessageProcessorTest {
 
     verify(this.connectionHelper)
         .createAndHandleConnectionForDevice(
-            any(MessageMetadata.class), eq(this.dlmsDevice), isNull(), any());
+            any(MessageMetadata.class), eq(this.dlmsDevice), isNull(), isNull(), any());
   }
 
   @Test
-  public void processMessageShouldSendOkResponseMessageContainingFirmwareVersions()
+  void processMessageShouldSendOkResponseMessageContainingFirmwareVersions()
       throws OsgpException, JMSException {
     // arrange
     final FirmwareFileDto firmwareFileDto = this.setupFirmwareFileDto();
@@ -149,7 +154,7 @@ public class GetFirmwareFileResponseMessageProcessorTest {
   }
 
   @Test
-  public void createMessageShouldCallUpdateFirmware() throws OsgpException {
+  void createMessageShouldCallUpdateFirmware() throws OsgpException {
     // arrange
     final FirmwareFileDto firmwareFileDto = this.setupFirmwareFileDto();
     final ResponseMessage responseMessage = this.setupResponseMessage(firmwareFileDto);
@@ -168,7 +173,7 @@ public class GetFirmwareFileResponseMessageProcessorTest {
   }
 
   @Test
-  public void processMessageShouldSendNotOkResponseMessageContainingOriginalFirmwareUpdateRequest()
+  void processMessageShouldSendNotOkResponseMessageContainingOriginalFirmwareUpdateRequest()
       throws OsgpException, JMSException {
     // arrange
     final FirmwareFileDto firmwareFileDto = this.setupFirmwareFileDto();

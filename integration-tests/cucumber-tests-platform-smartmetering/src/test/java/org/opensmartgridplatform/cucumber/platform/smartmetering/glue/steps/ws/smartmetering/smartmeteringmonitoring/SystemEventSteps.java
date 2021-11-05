@@ -49,7 +49,8 @@ public class SystemEventSteps {
   @Then("^no system event should be returned$")
   public void noSystemEventShouldBeRetuned() throws Throwable {
 
-    final boolean hasMoreResponses = this.responseClient.hasMoreResponses();
+    final boolean hasMoreResponses =
+        this.responseClient.hasMoreResponses(NotificationType.SYSTEM_EVENT);
 
     assertThat(hasMoreResponses).as("No more responses expected").isFalse();
   }

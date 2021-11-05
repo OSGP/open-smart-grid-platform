@@ -96,6 +96,8 @@ public class PushNotificationAlarmMessageProcessor extends AbstractProtocolReque
               ownerIdentification,
               requestMessage.getDeviceIdentification(),
               requestMessage.getIpAddress(),
+              requestMessage.getBaseTransceiverStationId(),
+              requestMessage.getCellId(),
               pushNotificationAlarm);
 
       final Optional<DomainInfo> smartMeteringDomain = this.getDomainInfo();

@@ -90,7 +90,12 @@ public class MBusGatewayService {
     final MbusChannelElementsDto requestDto = this.makeMbusChannelElementsDto(mbusDevice);
 
     this.osgpCoreRequestMessageSender.send(
-        requestDto, messageMetadata.builder().withIpAddress(gatewayDevice.getIpAddress()).build());
+        requestDto,
+        messageMetadata
+            .builder()
+            .withIpAddress(gatewayDevice.getIpAddress())
+            .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
+            .build());
   }
 
   public void decoupleMbusDevice(
@@ -120,7 +125,11 @@ public class MBusGatewayService {
       final DecoupleMbusDeviceDto requestDto = new DecoupleMbusDeviceDto(mbusDevice.getChannel());
       this.osgpCoreRequestMessageSender.send(
           requestDto,
-          messageMetadata.builder().withIpAddress(gatewayDevice.getIpAddress()).build());
+          messageMetadata
+              .builder()
+              .withIpAddress(gatewayDevice.getIpAddress())
+              .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
+              .build());
     }
   }
 
@@ -140,7 +149,12 @@ public class MBusGatewayService {
 
     final DecoupleMbusDeviceDto requestDto = new DecoupleMbusDeviceDto(requestData.getChannel());
     this.osgpCoreRequestMessageSender.send(
-        requestDto, messageMetadata.builder().withIpAddress(gatewayDevice.getIpAddress()).build());
+        requestDto,
+        messageMetadata
+            .builder()
+            .withIpAddress(gatewayDevice.getIpAddress())
+            .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
+            .build());
   }
 
   private Optional<SmartMeter> findByMBusIdentificationNumber(
@@ -194,7 +208,12 @@ public class MBusGatewayService {
     final SmartMeter gatewayDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
     this.osgpCoreRequestMessageSender.send(
-        requestDto, messageMetadata.builder().withIpAddress(gatewayDevice.getIpAddress()).build());
+        requestDto,
+        messageMetadata
+            .builder()
+            .withIpAddress(gatewayDevice.getIpAddress())
+            .withNetworkSegmentIds(gatewayDevice.getBtsId(), gatewayDevice.getCellId())
+            .build());
   }
 
   public void handleCoupleMbusDeviceByChannelResponse(

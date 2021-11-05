@@ -17,6 +17,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionExce
 import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsMessageListener;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.throttling.api.Permit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +67,23 @@ public class DlmsConnectionHelper {
       final Consumer<DlmsConnectionManager> taskForConnectionManager)
       throws OsgpException {
 
+    this.createAndHandleConnectionForDevice(
+        messageMetadata, device, messageListener, null, taskForConnectionManager);
+  }
+
+  /**
+   * Passes a task for the connection to the device, taking care of details like initializing the
+   * invocation counter when required, along with a permit for access to the network, which is to be
+   * released upon closing the connection.
+   */
+  public void createAndHandleConnectionForDevice(
+      final MessageMetadata messageMetadata,
+      final DlmsDevice device,
+      final DlmsMessageListener messageListener,
+      final Permit permit,
+      final Consumer<DlmsConnectionManager> taskForConnectionManager)
+      throws OsgpException {
+
     final boolean pingDevice =
         this.devicePingConfig.pingingEnabled() && StringUtils.hasText(device.getIpAddress());
     final boolean initializeInvocationCounter =
@@ -77,19 +95,12 @@ public class DlmsConnectionHelper {
             pingDevice, initializeInvocationCounter, NO_DELAY, waitBeforeCreatingTheConnection);
 
     this.createAndHandleConnectionForDevice(
-        device, messageListener, connectionProperties, messageMetadata, taskForConnectionManager);
-  }
-
-  private void delay(final Duration duration) {
-    if (duration == NO_DELAY) {
-      return;
-    }
-    try {
-      Thread.sleep(duration.toMillis());
-    } catch (final InterruptedException e) {
-      LOGGER.warn("Sleeping to achieve a delay of {} was interrupted", duration, e);
-      Thread.currentThread().interrupt();
-    }
+        device,
+        messageListener,
+        connectionProperties,
+        messageMetadata,
+        permit,
+        taskForConnectionManager);
   }
 
   private void createAndHandleConnectionForDevice(
@@ -97,6 +108,7 @@ public class DlmsConnectionHelper {
       final DlmsMessageListener messageListener,
       final ConnectionProperties connectionProperties,
       final MessageMetadata messageMetadata,
+      final Permit permit,
       final Consumer<DlmsConnectionManager> taskForConnectionManager)
       throws OsgpException {
 
@@ -112,7 +124,7 @@ public class DlmsConnectionHelper {
     try {
       this.delay(connectionProperties.getWaitBeforeCreatingTheConnection());
       this.connectionFactory.createAndHandleConnection(
-          messageMetadata, device, messageListener, taskForConnectionManager);
+          messageMetadata, device, messageListener, permit, taskForConnectionManager);
     } catch (final ConnectionException e) {
       if ((device.needsInvocationCounter() && this.indicatesInvocationCounterOutOfSync(e))
           && !connectionProperties.isInitializeInvocationCounter()) {
@@ -135,6 +147,7 @@ public class DlmsConnectionHelper {
             messageListener,
             newConnectionProperties,
             messageMetadata,
+            permit,
             taskForConnectionManager);
       }
       /*
@@ -146,6 +159,18 @@ public class DlmsConnectionHelper {
        * retry will be scheduled.
        */
       throw e;
+    }
+  }
+
+  private void delay(final Duration duration) {
+    if (duration == NO_DELAY) {
+      return;
+    }
+    try {
+      Thread.sleep(duration.toMillis());
+    } catch (final InterruptedException e) {
+      LOGGER.warn("Sleeping to achieve a delay of {} was interrupted", duration, e);
+      Thread.currentThread().interrupt();
     }
   }
 

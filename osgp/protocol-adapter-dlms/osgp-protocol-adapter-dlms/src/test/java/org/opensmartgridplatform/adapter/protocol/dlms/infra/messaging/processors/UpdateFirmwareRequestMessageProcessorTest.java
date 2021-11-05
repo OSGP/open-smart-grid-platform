@@ -28,6 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.opensmartgridplatform.adapter.protocol.dlms.application.config.ThrottlingClientConfig;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.ConfigurationService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.opensmartgridplatform.adapter.protocol.dlms.application.services.FirmwareService;
@@ -48,7 +49,7 @@ import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class UpdateFirmwareRequestMessageProcessorTest {
+class UpdateFirmwareRequestMessageProcessorTest {
   @Mock protected DlmsConnectionHelper connectionHelper;
 
   @Mock protected DeviceResponseMessageSender responseMessageSender;
@@ -69,12 +70,14 @@ public class UpdateFirmwareRequestMessageProcessorTest {
 
   @Mock private ThrottlingService throttlingService;
 
+  @Mock private ThrottlingClientConfig throttlingClientConfig;
+
   private DlmsDevice device;
 
   @InjectMocks private UpdateFirmwareRequestMessageProcessor processor;
 
   @BeforeEach
-  public void setup() throws OsgpException {
+  void setup() throws OsgpException {
 
     this.device = new DlmsDeviceBuilder().withHls5Active(true).build();
 
@@ -82,6 +85,7 @@ public class UpdateFirmwareRequestMessageProcessorTest {
         .thenReturn(this.device);
     when(this.dlmsConnectionManagerMock.getDlmsMessageListener())
         .thenReturn(this.messageListenerMock);
+    when(this.throttlingClientConfig.clientEnabled()).thenReturn(false);
     doNothing()
         .when(this.connectionHelper)
         .createAndHandleConnectionForDevice(
@@ -92,7 +96,7 @@ public class UpdateFirmwareRequestMessageProcessorTest {
   }
 
   @Test
-  public void processMessageTaskShouldSendFirmwareFileRequestWhenFirmwareFileNotAvailable()
+  void processMessageTaskShouldSendFirmwareFileRequestWhenFirmwareFileNotAvailable()
       throws JMSException, OsgpException {
     // Arrange
     final String firmwareIdentification = "unavailable";
@@ -118,7 +122,7 @@ public class UpdateFirmwareRequestMessageProcessorTest {
   }
 
   @Test
-  public void processMessageTaskShouldNotSendFirmwareFileRequestWhenFirmwareFileAvailable()
+  void processMessageTaskShouldNotSendFirmwareFileRequestWhenFirmwareFileAvailable()
       throws JMSException, OsgpException {
     // Arrange
     final String firmwareIdentification = "unavailable";
@@ -143,7 +147,7 @@ public class UpdateFirmwareRequestMessageProcessorTest {
   }
 
   @Test
-  public void processMessageTaskShouldUpdateFirmwareWhenFirmwareFileAvailable()
+  void processMessageTaskShouldUpdateFirmwareWhenFirmwareFileAvailable()
       throws JMSException, OsgpException {
     // Arrange
     final String firmwareIdentification = "available";
@@ -172,7 +176,7 @@ public class UpdateFirmwareRequestMessageProcessorTest {
   }
 
   @Test
-  public void processMessageTaskShouldNotUpdateFirmwareWhenFirmwareFileNotAvailable()
+  void processMessageTaskShouldNotUpdateFirmwareWhenFirmwareFileNotAvailable()
       throws JMSException, OsgpException {
     // Arrange
     final String firmwareIdentification = "unavailable";

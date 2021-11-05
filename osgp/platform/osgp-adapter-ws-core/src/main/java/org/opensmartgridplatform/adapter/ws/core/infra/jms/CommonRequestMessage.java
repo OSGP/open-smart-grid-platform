@@ -23,21 +23,21 @@ public class CommonRequestMessage extends RequestMessage {
   private final Integer messagePriority;
 
   private CommonRequestMessage(
-      final MessageMetadata deviceMessageMetadata,
-      final String ipAddress,
-      final Serializable request) {
+      final MessageMetadata messageMetadata, final String ipAddress, final Serializable request) {
     super(
-        deviceMessageMetadata.getCorrelationUid(),
-        deviceMessageMetadata.getOrganisationIdentification(),
-        deviceMessageMetadata.getDeviceIdentification(),
+        messageMetadata.getCorrelationUid(),
+        messageMetadata.getOrganisationIdentification(),
+        messageMetadata.getDeviceIdentification(),
         ipAddress,
+        messageMetadata.getBaseTransceiverStationId(),
+        messageMetadata.getCellId(),
         request);
-    this.messageType = MessageType.valueOf(deviceMessageMetadata.getMessageType());
-    this.messagePriority = deviceMessageMetadata.getMessagePriority();
-    if (deviceMessageMetadata.getScheduleTime() == null) {
+    this.messageType = MessageType.valueOf(messageMetadata.getMessageType());
+    this.messagePriority = messageMetadata.getMessagePriority();
+    if (messageMetadata.getScheduleTime() == null) {
       this.scheduleTime = null;
     } else {
-      this.scheduleTime = new DateTime(deviceMessageMetadata.getScheduleTime());
+      this.scheduleTime = new DateTime(messageMetadata.getScheduleTime());
     }
   }
 

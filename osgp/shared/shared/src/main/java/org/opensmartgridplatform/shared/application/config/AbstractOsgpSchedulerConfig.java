@@ -11,6 +11,7 @@ package org.opensmartgridplatform.shared.application.config;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.opensmartgridplatform.shared.application.config.SchedulingConfigProperties.Builder;
 import org.opensmartgridplatform.shared.application.scheduling.OsgpScheduler;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -60,26 +61,30 @@ public class AbstractOsgpSchedulerConfig extends AbstractSchedulingConfig {
     this.testIfQuartzTablesExist();
 
     final SchedulingConfigProperties schedulingConfigProperties =
-        SchedulingConfigProperties.newBuilder()
-            .withSchedulerName(this.schedulerName)
-            .withThreadCountKey(KEY_QUARTZ_SCHEDULER_THREAD_COUNT)
-            .withJobStoreDbUrl(this.getDatabaseUrl())
-            .withJobStoreDbUsername(this.databaseUsername)
-            .withJobStoreDbPassword(this.databasePassword)
-            .withJobStoreDbDriver(this.databaseDriver)
-            .build();
+        this.getSchedulingConfigBuilder().build();
 
     final Scheduler quartzScheduler =
         this.constructAndStartQuartzScheduler(schedulingConfigProperties);
     return new OsgpScheduler(quartzScheduler);
   }
 
+  protected Builder getSchedulingConfigBuilder() {
+    return SchedulingConfigProperties.newBuilder()
+        .withSchedulerName(this.schedulerName)
+        .withThreadCountKey(KEY_QUARTZ_SCHEDULER_THREAD_COUNT)
+        .withJobStoreDbUrl(this.getDatabaseUrl())
+        .withJobStoreDbUsername(this.databaseUsername)
+        .withJobStoreDbPassword(this.databasePassword)
+        .withJobStoreDbDriver(this.databaseDriver);
+  }
+
   private void testIfQuartzTablesExist() {
+    final SchedulingConfigProperties props = this.getSchedulingConfigBuilder().build();
     final SingleConnectionDataSource singleConnectionDataSource = new SingleConnectionDataSource();
-    singleConnectionDataSource.setDriverClassName(this.databaseDriver);
-    singleConnectionDataSource.setUsername(this.databaseUsername);
-    singleConnectionDataSource.setPassword(this.databasePassword);
-    singleConnectionDataSource.setUrl(this.getDatabaseUrl());
+    singleConnectionDataSource.setDriverClassName(props.getJobStoreDbDriver());
+    singleConnectionDataSource.setUsername(props.getJobStoreDbUsername());
+    singleConnectionDataSource.setPassword(props.getJobStoreDbPassword());
+    singleConnectionDataSource.setUrl(props.getJobStoreDbUrl());
     singleConnectionDataSource.setSuppressClose(false);
 
     try (final Connection connection = singleConnectionDataSource.getConnection();
