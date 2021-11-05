@@ -28,11 +28,11 @@ import org.springframework.core.io.Resource;
 @Configuration
 public class SecurityConfig {
 
-  @Value("${encryption.rsa.public.key.protocol.adapter.resource:#{null}}")
-  private Resource rsaPublicKeyProtocolAdapterResource;
+  @Value("${encryption.rsa.public.key.protocol.adapter.dlms:#{null}}")
+  private Resource rsaPublicKeyProtocolAdapterDlms;
 
-  @Value("${encryption.rsa.private.key.secret.management.resource:#{null}}")
-  private Resource rsaPrivateKeySecretManagementResource;
+  @Value("${encryption.rsa.private.key.secret.management:#{null}}")
+  private Resource rsaPrivateKeySecretManagement;
 
   @Value("${jre.encryption.key.resource}")
   private Resource jreEncryptionKeyResource;
@@ -68,30 +68,29 @@ public class SecurityConfig {
     }
   }
 
-  @Bean(name = "encrypterWithProtocolAdapterPublicKey")
-  public RsaEncrypter encrypterWithProtocolAdapterPublicKey() {
+  // RsaEncrypter for encrypting secrets to be sent to the DLMS protocol adapter.
+  @Bean(name = "encrypterForProtocolAdapterDlms")
+  public RsaEncrypter encrypterForProtocolAdapterDlms() {
     try {
-      final File publicKeyProtocolAdapterFile = this.rsaPublicKeyProtocolAdapterResource.getFile();
+      final File publicKeyProtocolAdapterFile = this.rsaPublicKeyProtocolAdapterDlms.getFile();
       final RsaEncrypter rsaEncrypter = new RsaEncrypter();
       rsaEncrypter.setPublicKeyStore(publicKeyProtocolAdapterFile);
       return rsaEncrypter;
     } catch (final IOException e) {
-      throw new IllegalStateException(
-          "Could not initialize encrypterWithProtocolAdapterPublicKey", e);
+      throw new IllegalStateException("Could not initialize encrypterForProtocolAdapterDlms", e);
     }
   }
 
-  @Bean(name = "decrypterWithSecretManagementPrivateKey")
-  public RsaEncrypter decrypterWithSecretManagementPrivateKey() {
+  // RsaEncrypter for decrypting secrets received by Secret Management.
+  @Bean(name = "decrypterForSecretManagement")
+  public RsaEncrypter decrypterForSecretManagement() {
     try {
-      final File privateKeySecretManagementFile =
-          this.rsaPrivateKeySecretManagementResource.getFile();
+      final File privateKeySecretManagementFile = this.rsaPrivateKeySecretManagement.getFile();
       final RsaEncrypter rsaEncrypter = new RsaEncrypter();
       rsaEncrypter.setPrivateKeyStore(privateKeySecretManagementFile);
       return rsaEncrypter;
     } catch (final IOException e) {
-      throw new IllegalStateException(
-          "Could not initialize decrypterWithSecretManagementPrivateKey", e);
+      throw new IllegalStateException("Could not initialize decrypterForSecretManagement", e);
     }
   }
 

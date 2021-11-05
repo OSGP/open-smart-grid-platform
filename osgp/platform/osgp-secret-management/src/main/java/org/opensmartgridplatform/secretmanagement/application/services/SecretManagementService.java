@@ -125,16 +125,16 @@ public class SecretManagementService {
       final EncryptionProviderType encryptionProviderType,
       final DbEncryptedSecretRepository secretRepository,
       final DbEncryptionKeyRepository keyRepository,
-      @Qualifier(value = "encrypterWithProtocolAdapterPublicKey")
-          final RsaEncrypter encrypterWithProtocolAdapterPublicKey,
-      @Qualifier(value = "decrypterWithSecretManagementPrivateKey")
-          final RsaEncrypter decrypterWithSecretManagementPrivateKey) {
+      @Qualifier(value = "encrypterForProtocolAdapterDlms")
+          final RsaEncrypter encrypterForProtocolAdapterDlms,
+      @Qualifier(value = "decrypterForSecretManagement")
+          final RsaEncrypter decrypterForSecretManagement) {
     this.encryptionDelegate = defaultEncryptionDelegate;
     this.encryptionProviderType = encryptionProviderType;
     this.secretRepository = secretRepository;
     this.keyRepository = keyRepository;
-    this.encrypterWithProtocolAdapterPublicKey = encrypterWithProtocolAdapterPublicKey;
-    this.decrypterWithSecretManagementPrivateKey = decrypterWithSecretManagementPrivateKey;
+    this.encrypterWithProtocolAdapterPublicKey = encrypterForProtocolAdapterDlms;
+    this.decrypterWithSecretManagementPrivateKey = decrypterForSecretManagement;
   }
 
   private DbEncryptionKeyReference getCurrentKey() {

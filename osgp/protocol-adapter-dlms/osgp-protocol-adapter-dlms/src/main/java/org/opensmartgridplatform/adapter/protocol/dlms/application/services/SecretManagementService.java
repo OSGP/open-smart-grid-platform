@@ -51,18 +51,18 @@ import org.springframework.stereotype.Service;
 public class SecretManagementService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SecretManagementService.class);
-  private final RsaEncrypter encrypterWithSecretManagementPublicKey;
-  private final RsaEncrypter decrypterWithProtocolAdapterPrivateKey;
+  private final RsaEncrypter encrypterForSecretManagement;
+  private final RsaEncrypter decrypterForProtocolAdapterDlms;
   private final SecretManagementClient secretManagementClient;
 
   public SecretManagementService(
-      @Qualifier(value = "encrypterWithSecretManagementPublicKey")
-          final RsaEncrypter encrypterWithSecretManagementPublicKey,
-      @Qualifier(value = "decrypterWithProtocolAdapterPrivateKey")
-          final RsaEncrypter decrypterWithProtocolAdapterPrivateKey,
+      @Qualifier(value = "encrypterForSecretManagement")
+          final RsaEncrypter encrypterForSecretManagement,
+      @Qualifier(value = "decrypterForProtocolAdapterDlms")
+          final RsaEncrypter decrypterForProtocolAdapterDlms,
       final SecretManagementClient secretManagementClient) {
-    this.encrypterWithSecretManagementPublicKey = encrypterWithSecretManagementPublicKey;
-    this.decrypterWithProtocolAdapterPrivateKey = decrypterWithProtocolAdapterPrivateKey;
+    this.encrypterForSecretManagement = encrypterForSecretManagement;
+    this.decrypterForProtocolAdapterDlms = decrypterForProtocolAdapterDlms;
     this.secretManagementClient = secretManagementClient;
   }
 
@@ -404,7 +404,7 @@ public class SecretManagementService {
     }
     try {
       final byte[] encryptedDecodedSoapSecret = Hex.decodeHex(typedSecret.getSecret());
-      return this.decrypterWithProtocolAdapterPrivateKey.decrypt(encryptedDecodedSoapSecret);
+      return this.decrypterForProtocolAdapterDlms.decrypt(encryptedDecodedSoapSecret);
     } catch (final Exception e) {
       throw new IllegalStateException("Error decoding/decrypting SOAP key", e);
     }
@@ -418,7 +418,7 @@ public class SecretManagementService {
       return null;
     }
     try {
-      final byte[] encrypted = this.encrypterWithSecretManagementPublicKey.encrypt(secret);
+      final byte[] encrypted = this.encrypterForSecretManagement.encrypt(secret);
       return Hex.encodeHexString(encrypted);
     } catch (final Exception e) {
       throw new IllegalStateException("Error encoding/encrypting SOAP key", e);
