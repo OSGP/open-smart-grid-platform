@@ -287,20 +287,20 @@ public class SecretManagementService {
   private void resetNewSecrets(final String deviceIdentification, final SecretType secretType) {
     final List<DbEncryptedSecret> foundSecrets =
         this.secretRepository.findSecrets(deviceIdentification, secretType, SecretStatus.NEW);
-    final Date mostRecentCreationTime =
-        foundSecrets.stream()
-            .max((s1, s2) -> s1.getCreationTime().compareTo(s2.getCreationTime()))
-            .get()
-            .getCreationTime();
-    foundSecrets.forEach(
-        s -> {
-          if (s.getCreationTime().equals(mostRecentCreationTime)) {
-            s.setCreationTime(new Date());
-          } else {
-            s.setSecretStatus(SecretStatus.EXPIRED);
-          }
-          this.secretRepository.saveAndFlush(s);
-        });
+    final Optional<DbEncryptedSecret> mostRecentNewSecret =
+        foundSecrets.stream().max((s1, s2) -> s1.getCreationTime().compareTo(s2.getCreationTime()));
+    if (mostRecentNewSecret.isPresent()) {
+      foundSecrets.forEach(
+          s -> {
+            if (s.getCreationTime().equals(mostRecentNewSecret.get().getCreationTime())) {
+              s.setCreationTime(new Date());
+            } else {
+              s.setSecretStatus(SecretStatus.EXPIRED);
+            }
+            this.secretRepository.save(s);
+          });
+    }
+    ;
   }
 
   private boolean recentNewSecretsPresent(
