@@ -22,6 +22,7 @@ import static org.opensmartgridplatform.cucumber.platform.PlatformDefaults.SMART
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.KEY_DEVICE_AUTHENTICATIONKEY;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.KEY_DEVICE_ENCRYPTIONKEY;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.KEY_DEVICE_FIRMWARE_UPDATE_KEY;
+import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.KEY_DEVICE_MASTERKEY;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.MBUS_DEFAULT_KEY;
 import static org.opensmartgridplatform.cucumber.platform.smartmetering.PlatformSmartmeteringKeys.MBUS_USER_KEY;
 import static org.opensmartgridplatform.secretmanagement.application.domain.SecretType.E_METER_AUTHENTICATION_KEY;
@@ -784,9 +785,9 @@ public class DlmsDeviceSteps {
       final String deviceIdentification,
       final Map<String, String> inputSettings) {
 
-    for (final String secretTypeName : inputSettings.keySet()) {
-      final int expectedNrOfKeys = Integer.valueOf(inputSettings.get(secretTypeName));
-      final SecretType secretType = SecretType.valueOf(secretTypeName);
+    for (final String keyTypeInputName : inputSettings.keySet()) {
+      final int expectedNrOfKeys = Integer.valueOf(inputSettings.get(keyTypeInputName));
+      final SecretType secretType = this.getSecretTypeByKeyTypeInputName(keyTypeInputName);
       final int nrOfKeys =
           this.encryptedSecretRepository.getSecretCount(
               deviceIdentification, secretType, SecretStatus.valueOf(secretStatus));
@@ -844,6 +845,19 @@ public class DlmsDeviceSteps {
         return KEY_DEVICE_ENCRYPTIONKEY;
       default:
         throw new IllegalArgumentException("Unsupported secret type: " + secretType.toString());
+    }
+  }
+
+  public SecretType getSecretTypeByKeyTypeInputName(final String keyTypeInputName) {
+    switch (keyTypeInputName) {
+      case KEY_DEVICE_MASTERKEY:
+        return E_METER_MASTER_KEY;
+      case KEY_DEVICE_AUTHENTICATIONKEY:
+        return E_METER_AUTHENTICATION_KEY;
+      case KEY_DEVICE_ENCRYPTIONKEY:
+        return E_METER_ENCRYPTION_KEY_UNICAST;
+      default:
+        throw new IllegalArgumentException("Unsupported keyTypeInputName: " + keyTypeInputName);
     }
   }
 }
