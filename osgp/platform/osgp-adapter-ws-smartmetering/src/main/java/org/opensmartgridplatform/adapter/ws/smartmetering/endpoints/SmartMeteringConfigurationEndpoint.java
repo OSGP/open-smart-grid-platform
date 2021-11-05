@@ -161,8 +161,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
   @Autowired private ApplicationKeyConfigurationRepository applicationKeyConfigurationRepository;
 
   @Autowired
-  @Qualifier("gxfDecrypter")
-  private RsaEncrypter gxfRsaDecrypter;
+  @Qualifier("decrypterForGxfSmartMetering")
+  private RsaEncrypter decrypterForGxfSmartMetering;
 
   public SmartMeteringConfigurationEndpoint() {
     // Default constructor
@@ -1682,7 +1682,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
       final GetKeysResponseData data, final RsaEncrypter applicationRsaEncrypter) {
 
     if (data.getSecretValue() != null) {
-      final byte[] decryptedKey = this.gxfRsaDecrypter.decrypt(data.getSecretValue());
+      final byte[] decryptedKey = this.decrypterForGxfSmartMetering.decrypt(data.getSecretValue());
       data.setSecretValue(applicationRsaEncrypter.encrypt(decryptedKey));
     }
 

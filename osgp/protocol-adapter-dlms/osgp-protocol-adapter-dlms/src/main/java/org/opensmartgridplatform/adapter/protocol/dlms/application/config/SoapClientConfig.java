@@ -59,6 +59,12 @@ public class SoapClientConfig {
   @Value("${encryption.rsa.public.key.secret.management}")
   private Resource rsaPublicKeySecretManagement;
 
+  @Value("${encryption.rsa.private.key.gxf.smartmetering}")
+  private Resource rsaPrivateKeyGxfSmartMetering;
+
+  @Value("${encryption.rsa.public.key.gxf.smartmetering}")
+  private Resource rsaPublicKeyGxfSmartMetering;
+
   @Bean
   Jaxb2Marshaller soapClientJaxb2Marshaller() {
     final Jaxb2Marshaller jaxb2Marshaller = new Jaxb2Marshaller();
@@ -144,7 +150,8 @@ public class SoapClientConfig {
     }
   }
 
-  // RsaEncrypter for decrypting secrets received by the DLMS protocol adapter.
+  // RsaEncrypter for decrypting secrets from Secret Management received by the DLMS protocol
+  // adapter.
   @Bean(name = "decrypterForProtocolAdapterDlms")
   public RsaEncrypter decrypterForProtocolAdapterDlms() {
     try {
@@ -154,6 +161,32 @@ public class SoapClientConfig {
       return rsaEncrypter;
     } catch (final IOException e) {
       throw new IllegalStateException("Could not initialize decrypterForProtocolAdapterDlms", e);
+    }
+  }
+
+  // RsaEncrypter for encrypting secrets to be sent to other GXF components.
+  @Bean(name = "encrypterForGxfSmartMetering")
+  public RsaEncrypter encrypterForGxfSmartMetering() {
+    try {
+      final File publicKeyGxfSmartMeteringFile = this.rsaPublicKeyGxfSmartMetering.getFile();
+      final RsaEncrypter rsaEncrypter = new RsaEncrypter();
+      rsaEncrypter.setPublicKeyStore(publicKeyGxfSmartMeteringFile);
+      return rsaEncrypter;
+    } catch (final IOException e) {
+      throw new IllegalStateException("Could not initialize encrypterForGxfSmartMetering", e);
+    }
+  }
+
+  // RsaEncrypter for decrypting secrets from applications received by the DLMS protocol adapter.
+  @Bean(name = "decrypterForGxfSmartMetering")
+  public RsaEncrypter decrypterForGxfSmartMetering() {
+    try {
+      final File privateKeyGxfSmartMeteringFile = this.rsaPrivateKeyGxfSmartMetering.getFile();
+      final RsaEncrypter rsaEncrypter = new RsaEncrypter();
+      rsaEncrypter.setPrivateKeyStore(privateKeyGxfSmartMeteringFile);
+      return rsaEncrypter;
+    } catch (final IOException e) {
+      throw new IllegalStateException("Could not initialize decrypterForGxfSmartMetering", e);
     }
   }
 }

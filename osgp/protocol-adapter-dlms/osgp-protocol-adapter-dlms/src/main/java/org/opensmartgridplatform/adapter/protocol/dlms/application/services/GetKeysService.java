@@ -20,24 +20,26 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.GetKeysResponseD
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.KeyDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SecretTypeDto;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.opensmartgridplatform.shared.security.RsaEncryptionService;
+import org.opensmartgridplatform.shared.security.RsaEncrypter;
 import org.opensmartgridplatform.ws.schema.core.secret.management.SecretType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GetKeysService {
 
   private final SecretManagementService secretManagementService;
-  private final RsaEncryptionService keyEncrypter;
+  private final RsaEncrypter keyEncrypter;
 
   @Autowired
   public GetKeysService(
       final SecretManagementService secretManagementService,
-      final RsaEncryptionService keyEncrypter) {
+      @Qualifier(value = "encrypterForGxfSmartMetering")
+          final RsaEncrypter encrypterForGxfSmartMetering) {
 
     this.secretManagementService = secretManagementService;
-    this.keyEncrypter = keyEncrypter;
+    this.keyEncrypter = encrypterForGxfSmartMetering;
   }
 
   public GetKeysResponseDto getKeys(

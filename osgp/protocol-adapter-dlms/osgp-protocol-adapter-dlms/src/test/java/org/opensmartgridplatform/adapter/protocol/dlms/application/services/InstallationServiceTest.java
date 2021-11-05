@@ -26,6 +26,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsD
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
+import org.opensmartgridplatform.shared.security.RsaEncrypter;
 
 @ExtendWith(MockitoExtension.class)
 class InstallationServiceTest {
@@ -38,7 +39,7 @@ class InstallationServiceTest {
   @Mock SecretManagementService secretManagementService;
   @Mock DlmsDeviceRepository dlmsDeviceRepository;
   @Mock InstallationMapper installationMapper;
-  @Mock EncryptionHelperService encryptionHelperService;
+  @Mock RsaEncrypter rsaEncrypter;
 
   @Test
   void addEMeter() throws FunctionalException {
@@ -52,7 +53,7 @@ class InstallationServiceTest {
     final DlmsDevice dlmsDevice = new DlmsDevice();
     when(this.installationMapper.map(deviceDto, DlmsDevice.class)).thenReturn(dlmsDevice);
     when(this.dlmsDeviceRepository.save(dlmsDevice)).thenReturn(dlmsDevice);
-    when(this.encryptionHelperService.rsaDecrypt(any())).thenReturn(new byte[16]);
+    when(this.rsaEncrypter.decrypt(any())).thenReturn(new byte[16]);
     // WHEN
     this.testService.addMeter(this.messageMetadata, deviceDto);
     // THEN
@@ -74,7 +75,7 @@ class InstallationServiceTest {
     final DlmsDevice dlmsDevice = new DlmsDevice();
     when(this.installationMapper.map(deviceDto, DlmsDevice.class)).thenReturn(dlmsDevice);
     when(this.dlmsDeviceRepository.save(dlmsDevice)).thenReturn(dlmsDevice);
-    when(this.encryptionHelperService.rsaDecrypt(any())).thenReturn(new byte[16]);
+    when(this.rsaEncrypter.decrypt(any())).thenReturn(new byte[16]);
     // WHEN
     this.testService.addMeter(this.messageMetadata, deviceDto);
     // THEN
