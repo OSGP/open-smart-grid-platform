@@ -296,37 +296,25 @@ public class SecretManagementServiceTest {
     newSecret.setId(1L);
     newSecret.setSecretType(SecretType.E_METER_MASTER_KEY);
     newSecret.setSecretStatus(SecretStatus.NEW);
-
-    final DbEncryptedSecret activeSecret = new DbEncryptedSecret();
-    activeSecret.setId(1L);
-    newSecret.setSecretType(SecretType.E_METER_MASTER_KEY);
-    activeSecret.setSecretStatus(SecretStatus.ACTIVE);
     // WHEN
-    when(this.secretRepository.getSecretCount(
-            SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.NEW))
-        .thenReturn(1);
-    when(this.secretRepository.getSecretCount(
-            SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.ACTIVE))
-        .thenReturn(1);
-
-    when(this.secretRepository.findSecrets(
-            SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.ACTIVE))
-        .thenReturn(Arrays.asList(activeSecret));
     when(this.secretRepository.findSecrets(
             SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.NEW))
         .thenReturn(Arrays.asList(newSecret));
     when(this.secretRepository.saveAll(Arrays.asList(newSecret)))
         .thenReturn(Arrays.asList(newSecret));
-
-    when(this.secretRepository.findSecrets(
-            SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.ACTIVE))
-        .thenReturn(Arrays.asList(activeSecret));
-    when(this.secretRepository.saveAll(Arrays.asList(activeSecret)))
-        .thenReturn(Arrays.asList(activeSecret));
-
     this.service.activateNewSecrets("SOME_DEVICE", Arrays.asList(SecretType.E_METER_MASTER_KEY));
     // THEN
     assertThat(newSecret.getSecretStatus()).isEqualTo(SecretStatus.ACTIVE);
+
+    final ArgumentCaptor<List<DbEncryptedSecret>> secretListArgumentCaptor =
+        ArgumentCaptor.forClass(List.class);
+    verify(this.secretRepository).saveAll(secretListArgumentCaptor.capture());
+    final List<DbEncryptedSecret> savedSecrets = secretListArgumentCaptor.getValue();
+    assertThat(savedSecrets).isNotNull();
+    assertThat(savedSecrets.size()).isEqualTo(1);
+    final DbEncryptedSecret savedSecret = savedSecrets.get(0);
+    assertThat(savedSecret.getSecretType()).isEqualTo(newSecret.getSecretType());
+    assertThat(savedSecret.getSecretStatus()).isEqualTo(SecretStatus.ACTIVE);
   }
 
   @Test
@@ -361,10 +349,11 @@ public class SecretManagementServiceTest {
     // WHEN
     this.service.activateNewSecrets("SOME_DEVICE", Arrays.asList(SecretType.E_METER_MASTER_KEY));
     // THEN
-    assertThat(
-            this.secretRepository.getSecretCount(
-                SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.ACTIVE))
-        .isEqualTo(0);
+    final ArgumentCaptor<List<DbEncryptedSecret>> secretListArgumentCaptor =
+        ArgumentCaptor.forClass(List.class);
+    verify(this.secretRepository).saveAll(secretListArgumentCaptor.capture());
+    final List<DbEncryptedSecret> savedSecrets = secretListArgumentCaptor.getValue();
+    assertThat(savedSecrets.size()).isEqualTo(0);
   }
 
   @Test

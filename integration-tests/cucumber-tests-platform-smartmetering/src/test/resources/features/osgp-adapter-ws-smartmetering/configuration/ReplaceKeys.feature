@@ -1,4 +1,4 @@
-@SmartMetering @Platform @SmartMeteringConfiguration
+@SmartMetering @Platform @SmartMeteringConfiguration @NightlyBuildOnly
 Feature: SmartMetering Configuration - Replace Keys
   As a grid operator
   I want to be able to replace the keys on a device
@@ -31,7 +31,7 @@ Feature: SmartMetering Configuration - Replace Keys
       | Result               | OK                |
     And the new keys are stored in the secret management database encrypted_secret table
 
-  @RecoverKeys @test
+  @RecoverKeys
   Scenario: Recover keys after a (simulated) failed key change (incorrect E key)
     #Try to connect using incorrect E-key and then try to recover the correct new key
     Given a dlms device

@@ -297,11 +297,10 @@ public class SecretManagementService {
         final DbEncryptedSecret currentSecret = activeSecretOptional.get();
         currentSecret.setSecretStatus(SecretStatus.EXPIRED);
         updatedSecrets.add(currentSecret);
-
-        final DbEncryptedSecret newSecret = newSecretOptional.get();
-        newSecret.setSecretStatus(SecretStatus.ACTIVE);
-        updatedSecrets.add(newSecret);
       }
+      final DbEncryptedSecret newSecret = newSecretOptional.get();
+      newSecret.setSecretStatus(SecretStatus.ACTIVE);
+      updatedSecrets.add(newSecret);
     } else {
       log.info("No new secret of secret type {} present for activation.", secretType);
     }

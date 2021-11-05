@@ -83,8 +83,6 @@ public class RecoverKeyProcess implements Runnable {
           this.deviceIdentification,
           Arrays.asList(E_METER_ENCRYPTION, E_METER_AUTHENTICATION));
     } catch (final Exception e) {
-      //      throw new FunctionalException(
-      //          FunctionalExceptionType.DECRYPTION_EXCEPTION, ComponentType.PROTOCOL_DLMS, e);
       throw new RecoverKeyException(e);
     }
   }
