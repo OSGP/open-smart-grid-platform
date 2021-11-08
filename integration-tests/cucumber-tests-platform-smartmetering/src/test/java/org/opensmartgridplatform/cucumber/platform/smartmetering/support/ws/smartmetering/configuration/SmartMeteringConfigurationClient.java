@@ -40,6 +40,8 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.G
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusByChannelResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetMbusEncryptionKeyStatusResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetPushNotificationAlarmAsyncRequest;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.GetPushNotificationAlarmResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ReplaceKeysAsyncRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ReplaceKeysAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.ReplaceKeysRequest;
@@ -88,6 +90,8 @@ import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.U
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareAsyncResponse;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareRequest;
 import org.opensmartgridplatform.adapter.ws.schema.smartmetering.configuration.UpdateFirmwareResponse;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.Notification;
+import org.opensmartgridplatform.adapter.ws.schema.smartmetering.notification.NotificationType;
 import org.opensmartgridplatform.cucumber.platform.smartmetering.support.ws.smartmetering.SmartMeteringBaseClient;
 import org.opensmartgridplatform.shared.exceptionhandling.WebServiceSecurityException;
 import org.opensmartgridplatform.shared.infra.ws.DefaultWebServiceTemplateFactory;
@@ -454,5 +458,16 @@ public class SmartMeteringConfigurationClient extends SmartMeteringBaseClient {
     this.waitForNotification(correlationUid);
 
     return (GetKeysResponse) this.getTemplate().marshalSendAndReceive(asyncRequest);
+  }
+
+  public GetPushNotificationAlarmResponse getPushNotificationAlarm()
+      throws WebServiceSecurityException {
+
+    final Notification notification =
+        this.waitForNotification(NotificationType.PUSH_NOTIFICATION_ALARM);
+    final GetPushNotificationAlarmAsyncRequest request = new GetPushNotificationAlarmAsyncRequest();
+    request.setCorrelationUid(notification.getCorrelationUid());
+    request.setDeviceIdentification(notification.getDeviceIdentification());
+    return (GetPushNotificationAlarmResponse) this.getTemplate().marshalSendAndReceive(request);
   }
 }
