@@ -14,6 +14,7 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
@@ -35,12 +36,16 @@ public class InvocationCounterManager {
 
   private final DlmsConnectionFactory connectionFactory;
   private final DlmsHelper dlmsHelper;
+  private final DlmsDeviceRepository deviceRepository;
 
   @Autowired
   public InvocationCounterManager(
-      final DlmsConnectionFactory connectionFactory, final DlmsHelper dlmsHelper) {
+      final DlmsConnectionFactory connectionFactory,
+      final DlmsHelper dlmsHelper,
+      final DlmsDeviceRepository deviceRepository) {
     this.connectionFactory = connectionFactory;
     this.dlmsHelper = dlmsHelper;
+    this.deviceRepository = deviceRepository;
   }
 
   /**
@@ -87,6 +92,7 @@ public class InvocationCounterManager {
             previousKnownInvocationCounter);
       } else {
         device.setInvocationCounter(invocationCounterFromDevice);
+        this.deviceRepository.save(device);
         LOGGER.info(
             "Property invocationCounter of device {} initialized to the value of the invocation counter "
                 + "stored on the device: {}{}",
