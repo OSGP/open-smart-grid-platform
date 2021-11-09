@@ -342,7 +342,7 @@ public class SecretManagementServiceTest {
 
   @Test
   public void activateSecretsNoNewSecret() {
-    //     GIVEN
+    // GIVEN
     final DbEncryptedSecret newSecret = new DbEncryptedSecret();
     newSecret.setId(1L);
     newSecret.setSecretStatus(SecretStatus.ACTIVE);

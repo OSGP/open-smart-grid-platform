@@ -113,46 +113,52 @@ public class SecretManagementService {
     if (LOGGER.isInfoEnabled()) {
       LOGGER.info("Retrieving new {} for device {}", keyType.name(), deviceIdentification);
     }
-    return this.getNewKeys(messageMetadata, deviceIdentification, Arrays.asList(keyType))
+    return this.getNewKeyPairForConnection(
+            messageMetadata, deviceIdentification, Arrays.asList(keyType))
         .get(keyType);
   }
 
   /**
-   * Retrieves the new (not yet activated) keys of requested types for a specified device
+   * Requests the New key for a specific device identification. Depending on the New key type
+   * (Authentication or Encryption) that will be retrieved, the other Active key type
+   * (Authentication or Encryption) will be requested. Once both key types are retrieved, this new
+   * keypair can be returned for connection with this device.
    *
    * @param messageMetadata the metadata of the request message
    * @param deviceIdentification the device identification string of the device
    * @param keyTypes the requested key types
    * @return the requested keys in a map by key type, with value NULL if not present
    */
-  public Map<SecurityKeyType, byte[]> getNewKeys(
+  public Map<SecurityKeyType, byte[]> getNewKeyPairForConnection(
       final MessageMetadata messageMetadata,
       final String deviceIdentification,
       final List<SecurityKeyType> keyTypes) {
+    final List<TypedSecret> newKeyPairForConnection = new ArrayList<>();
+    final List<SecurityKeyType> keyTypeActiveKey = new ArrayList<>();
+
     final GetNewSecretsRequest getNewSecretsRequest =
         this.createGetNewSecretsRequest(deviceIdentification, keyTypes);
     final GetNewSecretsResponse getNewSecretsResponse =
         this.secretManagementClient.getNewSecretsRequest(messageMetadata, getNewSecretsRequest);
     this.validateGetNewResponse(keyTypes, getNewSecretsResponse);
 
-    final List<SecurityKeyType> activeKeyType = new ArrayList<>();
-    final List<TypedSecret> newKeyPair = new ArrayList<>();
-    for (final TypedSecret secretType : getNewSecretsResponse.getTypedSecrets().getTypedSecret()) {
-      if (secretType.getSecret() != null && secretType.getSecret().length() > 0) {
-        newKeyPair.add(secretType);
+    for (final TypedSecret secretTypeNewKey :
+        getNewSecretsResponse.getTypedSecrets().getTypedSecret()) {
+      if (secretTypeNewKey.getSecret() != null && secretTypeNewKey.getSecret().length() > 0) {
+        newKeyPairForConnection.add(secretTypeNewKey);
       } else {
-        activeKeyType.add(SecurityKeyType.fromSecretType(secretType.getType()));
+        keyTypeActiveKey.add(SecurityKeyType.fromSecretType(secretTypeNewKey.getType()));
       }
     }
 
     final GetSecretsRequest getSecretsRequest =
-        this.createGetSecretsRequest(deviceIdentification, activeKeyType);
+        this.createGetSecretsRequest(deviceIdentification, keyTypeActiveKey);
     final GetSecretsResponse getSecretsResponse =
         this.secretManagementClient.getSecretsRequest(messageMetadata, getSecretsRequest);
-    this.validateGetResponse(activeKeyType, getSecretsResponse);
-    newKeyPair.add(getSecretsResponse.getTypedSecrets().getTypedSecret().get(0));
+    this.validateGetResponse(keyTypeActiveKey, getSecretsResponse);
+    newKeyPairForConnection.add(getSecretsResponse.getTypedSecrets().getTypedSecret().get(0));
 
-    return this.convertSoapSecretsToSecretMapByType(newKeyPair);
+    return this.convertSoapSecretsToSecretMapByType(newKeyPairForConnection);
   }
 
   private void validateGetResponse(
