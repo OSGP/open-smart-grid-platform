@@ -44,16 +44,14 @@ class CoreLogItemJsonMessageCreatorTest {
     when(this.session.createTextMessage(any())).thenReturn(expectedTextMessage);
 
     final Message actualMessage =
-        this.jsonMessageCreator.getJsonMessage(
-            this.coreLogItemRequestMessage, this.session);
+        this.jsonMessageCreator.getJsonMessage(this.coreLogItemRequestMessage, this.session);
 
     assertThat(actualMessage).isSameAs(expectedTextMessage);
   }
 
   @Test
   void jsonMessageIsEmptyWhenThereIsNoInputMessage() {
-    final Message actualMessage =
-        this.jsonMessageCreator.getJsonMessage(null, this.session);
+    final Message actualMessage = this.jsonMessageCreator.getJsonMessage(null, this.session);
 
     assertThat(actualMessage).isNull();
   }
@@ -72,8 +70,7 @@ class CoreLogItemJsonMessageCreatorTest {
     when(this.session.createTextMessage(any())).thenThrow(new JMSException("test jsm exception"));
 
     final Message actualMessage =
-        this.jsonMessageCreator.getJsonMessage(
-            this.coreLogItemRequestMessage, this.session);
+        this.jsonMessageCreator.getJsonMessage(this.coreLogItemRequestMessage, this.session);
 
     assertThat(actualMessage).isNull();
   }
@@ -82,5 +79,4 @@ class CoreLogItemJsonMessageCreatorTest {
     return new CoreLogItemRequestMessage(
         "deviceIdentification", "organisationIdentification", "message");
   }
-
 }
