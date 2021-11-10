@@ -17,32 +17,26 @@ import static org.mockito.Mockito.when;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
-import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging.DlmsLogItemRequestMessageSender.DlmsLogItemRequestMessageCreator;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @ExtendWith(MockitoExtension.class)
-class DlmsLogItemRequestMessageSenderTest {
-
-  @Autowired private DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender;
+class DlmsLogItemRequestJsonMessageCreatorTest {
 
   private Session session;
 
   private DlmsLogItemRequestMessage dlmsLogItemRequestMessage;
-  private DlmsLogItemRequestMessageCreator dlmsLogItemRequestMessageCreator;
+  private DlmsLogItemRequestJsonMessageCreator dlmsLogItemRequestJsonMessageCreator;
 
   @BeforeEach
   public void setUp() {
-    this.dlmsLogItemRequestMessageSender = new DlmsLogItemRequestMessageSender();
     this.dlmsLogItemRequestMessage = this.getDlmsLogItemRequestMessage();
-    this.dlmsLogItemRequestMessageCreator =
-        new DlmsLogItemRequestMessageCreator(this.dlmsLogItemRequestMessage);
+    this.dlmsLogItemRequestJsonMessageCreator =
+        new DlmsLogItemRequestJsonMessageCreator(this.dlmsLogItemRequestMessage);
     this.session = mock(Session.class);
   }
 
@@ -52,7 +46,7 @@ class DlmsLogItemRequestMessageSenderTest {
     when(this.session.createTextMessage(any())).thenReturn(expectedTextMessage);
 
     final Message actualMessage =
-        this.dlmsLogItemRequestMessageCreator.getJsonMessage(this.session);
+        this.dlmsLogItemRequestJsonMessageCreator.getJsonMessage(this.session);
 
     assertThat(actualMessage).isSameAs(expectedTextMessage);
   }
@@ -60,30 +54,19 @@ class DlmsLogItemRequestMessageSenderTest {
   @Test
   void jsonMessageIsEmptyWhenThereIsNoInputMessage() {
     final Message actualMessage =
-        this.dlmsLogItemRequestMessageCreator.getJsonMessage(this.session);
+        this.dlmsLogItemRequestJsonMessageCreator.getJsonMessage(this.session);
 
     assertThat(actualMessage).isNull();
   }
 
   @Test
   void jsonMessageIsEmptyWhenExceptionIsThrown() throws JMSException {
-    when(this.session.createTextMessage(any())).thenThrow(new JMSException("test jsm exception"));
+    when(this.session.createTextMessage(any())).thenThrow(new JMSException("test jms exception"));
 
     final Message actualMessage =
-        this.dlmsLogItemRequestMessageCreator.getJsonMessage(this.session);
+        this.dlmsLogItemRequestJsonMessageCreator.getJsonMessage(this.session);
 
     assertThat(actualMessage).isNull();
-  }
-
-  @Test
-  void createSerializedMessage() throws JMSException {
-    final ObjectMessage expectedObjectMessage = mock(ObjectMessage.class);
-    when(this.session.createObjectMessage()).thenReturn(expectedObjectMessage);
-
-    final Message actualMessage =
-        this.dlmsLogItemRequestMessageCreator.getObjectMessage(this.session);
-
-    assertThat(actualMessage).isSameAs(expectedObjectMessage);
   }
 
   private DlmsLogItemRequestMessage getDlmsLogItemRequestMessage() {

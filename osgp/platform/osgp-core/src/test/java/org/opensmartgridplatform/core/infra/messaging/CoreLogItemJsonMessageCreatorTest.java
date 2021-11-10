@@ -17,27 +17,23 @@ import static org.mockito.Mockito.when;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
-import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @ExtendWith(MockitoExtension.class)
-class CoreLogItemRequestMessageSenderTest {
-
-  @Autowired private CoreLogItemRequestMessageSender coreLogItemRequestMessageSender;
-
+class CoreLogItemJsonMessageCreatorTest {
   private Session session;
 
   private CoreLogItemRequestMessage coreLogItemRequestMessage;
+  private CoreLogItemJsonMessageCreator jsonMessageCreator;
 
   @BeforeEach
   public void setUp() {
-    this.coreLogItemRequestMessageSender = new CoreLogItemRequestMessageSender();
+    this.jsonMessageCreator = new CoreLogItemJsonMessageCreator();
     this.coreLogItemRequestMessage = this.getCoreLogItemRequestMessage();
     this.session = mock(Session.class);
   }
@@ -48,7 +44,7 @@ class CoreLogItemRequestMessageSenderTest {
     when(this.session.createTextMessage(any())).thenReturn(expectedTextMessage);
 
     final Message actualMessage =
-        this.coreLogItemRequestMessageSender.getJsonMessage(
+        this.jsonMessageCreator.getJsonMessage(
             this.coreLogItemRequestMessage, this.session);
 
     assertThat(actualMessage).isSameAs(expectedTextMessage);
@@ -57,7 +53,7 @@ class CoreLogItemRequestMessageSenderTest {
   @Test
   void jsonMessageIsEmptyWhenThereIsNoInputMessage() {
     final Message actualMessage =
-        this.coreLogItemRequestMessageSender.getJsonMessage(null, this.session);
+        this.jsonMessageCreator.getJsonMessage(null, this.session);
 
     assertThat(actualMessage).isNull();
   }
@@ -65,7 +61,7 @@ class CoreLogItemRequestMessageSenderTest {
   @Test
   void jsonMessageIsEmptyWhenInputMessageHasNoValues() {
     final Message actualMessage =
-        this.coreLogItemRequestMessageSender.getJsonMessage(
+        this.jsonMessageCreator.getJsonMessage(
             new CoreLogItemRequestMessage(null, null, null), this.session);
 
     assertThat(actualMessage).isNull();
@@ -76,26 +72,15 @@ class CoreLogItemRequestMessageSenderTest {
     when(this.session.createTextMessage(any())).thenThrow(new JMSException("test jsm exception"));
 
     final Message actualMessage =
-        this.coreLogItemRequestMessageSender.getJsonMessage(
+        this.jsonMessageCreator.getJsonMessage(
             this.coreLogItemRequestMessage, this.session);
 
     assertThat(actualMessage).isNull();
-  }
-
-  @Test
-  void createSerializedMessage() throws JMSException {
-    final ObjectMessage expectedObjectMessage = mock(ObjectMessage.class);
-    when(this.session.createObjectMessage()).thenReturn(expectedObjectMessage);
-
-    final Message actualMessage =
-        this.coreLogItemRequestMessageSender.getObjectMessage(
-            this.coreLogItemRequestMessage, this.session);
-
-    assertThat(actualMessage).isSameAs(expectedObjectMessage);
   }
 
   private CoreLogItemRequestMessage getCoreLogItemRequestMessage() {
     return new CoreLogItemRequestMessage(
         "deviceIdentification", "organisationIdentification", "message");
   }
+
 }
