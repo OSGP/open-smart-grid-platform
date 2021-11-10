@@ -12,12 +12,8 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CoreLogItemObjectMessageCreator {
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(CoreLogItemObjectMessageCreator.class);
 
   public ObjectMessage getObjectMessage(
       final CoreLogItemRequestMessage coreLogItemRequestMessage, final Session session)

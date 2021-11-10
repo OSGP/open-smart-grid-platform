@@ -21,13 +21,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jms.core.MessageCreator;
 
 public class LoggingJsonMessageCreator implements MessageCreator {
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(LoggingJsonMessageCreator.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(LoggingJsonMessageCreator.class);
 
   private final LoggingRequestMessage loggingRequestMessage;
 
-  public LoggingJsonMessageCreator(
-      final LoggingRequestMessage loggingRequestMessage) {
+  public LoggingJsonMessageCreator(final LoggingRequestMessage loggingRequestMessage) {
     this.loggingRequestMessage = loggingRequestMessage;
   }
 

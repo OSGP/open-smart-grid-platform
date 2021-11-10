@@ -11,7 +11,6 @@
 package org.opensmartgridplatform.adapter.ws.infra.jms;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -19,7 +18,6 @@ import static org.mockito.Mockito.when;
 import java.util.Date;
 import javax.jms.JMSException;
 import javax.jms.Message;
-import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,11 +33,10 @@ class LoggingJsonMessageCreatorTest {
 
   private LoggingRequestMessage loggingMessage;
 
-
   @BeforeEach
   public void setUp() {
     this.loggingMessage = this.getLoggingMessage();
-    this.loggingJsonMessageCreator = new LoggingJsonMessageCreator(loggingMessage);
+    this.loggingJsonMessageCreator = new LoggingJsonMessageCreator(this.loggingMessage);
     this.session = mock(Session.class);
   }
 
@@ -48,8 +45,7 @@ class LoggingJsonMessageCreatorTest {
     final TextMessage expectedTextMessage = mock(TextMessage.class);
     when(this.session.createTextMessage(any())).thenReturn(expectedTextMessage);
 
-    final Message actualMessage =
-        this.loggingJsonMessageCreator.getJsonMessage(this.session);
+    final Message actualMessage = this.loggingJsonMessageCreator.getJsonMessage(this.session);
 
     assertThat(actualMessage).isSameAs(expectedTextMessage);
   }
@@ -58,8 +54,7 @@ class LoggingJsonMessageCreatorTest {
   void jsonMessageIsEmptyWhenExceptionIsThrown() throws JMSException {
     when(this.session.createTextMessage(any())).thenThrow(new JMSException("test jms exception"));
 
-    final Message actualMessage =
-        this.loggingJsonMessageCreator.getJsonMessage(this.session);
+    final Message actualMessage = this.loggingJsonMessageCreator.getJsonMessage(this.session);
 
     assertThat(actualMessage).isNull();
   }

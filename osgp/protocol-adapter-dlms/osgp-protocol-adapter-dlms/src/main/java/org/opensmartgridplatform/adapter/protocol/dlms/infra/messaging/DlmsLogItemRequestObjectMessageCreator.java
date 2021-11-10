@@ -15,13 +15,9 @@ import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.jms.core.MessageCreator;
 
 public class DlmsLogItemRequestObjectMessageCreator implements MessageCreator {
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(DlmsLogItemRequestObjectMessageCreator.class);
   private final DlmsLogItemRequestMessage dlmsLogItemRequestMessage;
 
   @Override
@@ -44,8 +40,7 @@ public class DlmsLogItemRequestObjectMessageCreator implements MessageCreator {
     objectMessage.setStringProperty(
         Constants.DECODED_MESSAGE, this.dlmsLogItemRequestMessage.getDecodedMessage());
     objectMessage.setStringProperty(
-        Constants.DEVICE_IDENTIFICATION,
-        this.dlmsLogItemRequestMessage.getDeviceIdentification());
+        Constants.DEVICE_IDENTIFICATION, this.dlmsLogItemRequestMessage.getDeviceIdentification());
     if (this.dlmsLogItemRequestMessage.hasOrganisationIdentification()) {
       objectMessage.setStringProperty(
           Constants.ORGANISATION_IDENTIFICATION,

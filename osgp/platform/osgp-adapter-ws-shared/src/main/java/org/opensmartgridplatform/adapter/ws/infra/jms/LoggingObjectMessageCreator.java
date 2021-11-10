@@ -15,13 +15,9 @@ import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.jms.core.MessageCreator;
 
 public class LoggingObjectMessageCreator implements MessageCreator {
-  private static final Logger LOGGER = LoggerFactory.getLogger(LoggingObjectMessageCreator.class);
-
   private final LoggingRequestMessage loggingRequestMessage;
 
   public LoggingObjectMessageCreator(final LoggingRequestMessage loggingRequestMessage) {
