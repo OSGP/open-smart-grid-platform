@@ -64,8 +64,6 @@ class DlmsConnectionManagerTest {
 
   @Test
   void closeWithoutConnectionShouldNotFail() throws OsgpException {
-    assertThat(this.manager.isConnected()).isFalse();
-
     this.manager.close();
 
     assertThat(this.manager.isConnected()).isFalse();
