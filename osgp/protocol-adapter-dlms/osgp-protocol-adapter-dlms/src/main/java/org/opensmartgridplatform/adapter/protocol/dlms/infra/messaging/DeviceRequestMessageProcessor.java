@@ -136,7 +136,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
       }
 
       log.info(
-          "{} called for device: {} for organisation: {}, correlationUID={}",
+          "{} called for device: {} for organisation: {}, correlationUID: {}",
           messageMetadata.getMessageType(),
           messageMetadata.getDeviceIdentification(),
           messageMetadata.getOrganisationIdentification(),
@@ -183,7 +183,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
     if (!(exception instanceof SilentException)) {
       final String errorMessage =
           String.format(
-              "Unexpected exception during %s, correlationUID=%s",
+              "Unexpected exception during %s, correlationUID: %s",
               this.messageType.name(), metadata.getCorrelationUid());
       log.error(errorMessage, exception);
     }
