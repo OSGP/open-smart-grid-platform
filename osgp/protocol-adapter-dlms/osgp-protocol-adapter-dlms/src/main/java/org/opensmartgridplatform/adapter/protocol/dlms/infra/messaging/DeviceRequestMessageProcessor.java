@@ -114,8 +114,8 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
       final MessageMetadata messageMetadata,
       final DlmsConnectionManager connectionManager)
       throws OsgpException {
+    DlmsDevice device = null;
     try {
-      DlmsDevice device = null;
       if (this.maxScheduleTimeExceeded(messageMetadata)) {
         log.info(
             "Processing message of type {} for correlation UID {} exceeded max schedule time: {} ({})",
@@ -147,7 +147,6 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
       this.sendResponse(messageMetadata, response);
 
     } finally {
-      final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
       this.doConnectionPostProcessing(device, connectionManager, messageMetadata);
     }
   }

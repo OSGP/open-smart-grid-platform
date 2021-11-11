@@ -73,7 +73,7 @@ public class RecoverKeyProcessTest {
   public void testWhenDeviceNotFoundThenException() throws OsgpException {
 
     // GIVEN
-    when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
+    when(this.domainHelperService.findDlmsDevice(MESSAGE_METADATA))
         .thenThrow(
             new FunctionalException(
                 FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.PROTOCOL_DLMS));
@@ -97,7 +97,7 @@ public class RecoverKeyProcessTest {
     this.recoverKeyProcess.run();
 
     // THEN
-    verify(this.domainHelperService).findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS);
+    verify(this.domainHelperService).findDlmsDevice(MESSAGE_METADATA);
     verify(this.secretManagementService, never()).activateNewKeys(any(), any(), any());
   }
 
@@ -105,8 +105,7 @@ public class RecoverKeyProcessTest {
   public void testThrottlingServiceCalledAndKeysActivated() throws Exception {
 
     // GIVEN
-    when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
-        .thenReturn(DEVICE);
+    when(this.domainHelperService.findDlmsDevice(MESSAGE_METADATA)).thenReturn(DEVICE);
     when(this.secretManagementService.hasNewSecretOfType(
             MESSAGE_METADATA, DEVICE_IDENTIFICATION, E_METER_AUTHENTICATION))
         .thenReturn(true);
@@ -137,8 +136,7 @@ public class RecoverKeyProcessTest {
   public void testWhenConnectionFailedThenConnectionClosedAtThrottlingService() throws Exception {
 
     // GIVEN
-    when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
-        .thenReturn(DEVICE);
+    when(this.domainHelperService.findDlmsDevice(MESSAGE_METADATA)).thenReturn(DEVICE);
     when(this.secretManagementService.hasNewSecretOfType(
             MESSAGE_METADATA, DEVICE_IDENTIFICATION, E_METER_AUTHENTICATION))
         .thenReturn(true);
