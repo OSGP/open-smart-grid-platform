@@ -89,8 +89,8 @@ public class DomainHelperService {
     } else {
       ipAddress = this.getDeviceIpAddressFromSessionProvider(dlmsDevice);
     }
+    /* Ip Address is a transient attribute for DlmsDevice, so save is not required */
     dlmsDevice.setIpAddress(ipAddress);
-    this.dlmsDeviceRepository.save(dlmsDevice);
     return dlmsDevice;
   }
 

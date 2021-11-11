@@ -11,9 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.services;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import lombok.extern.slf4j.Slf4j;
@@ -88,10 +86,8 @@ class DomainHelperServiceTest {
     when(this.dlmsDeviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION))
         .thenReturn(device);
 
-    when(this.dlmsDeviceRepository.save(device)).then(returnsFirstArg());
     final DlmsDevice foundDevice = this.domainHelperService.findDlmsDevice(messageMetadata);
 
-    verify(this.dlmsDeviceRepository).save(device);
     assertThat(foundDevice.getIpAddress()).isEqualTo(IP_ADDRESS);
   }
 
@@ -116,11 +112,8 @@ class DomainHelperServiceTest {
     final String ipAddressFromSession = "2.2.2.2";
     when(sessionProvider.getIpAddress(device.getIccId())).thenReturn(ipAddressFromSession);
 
-    when(this.dlmsDeviceRepository.save(device)).then(returnsFirstArg());
-
     final DlmsDevice foundDevice = this.domainHelperService.findDlmsDevice(messageMetadata);
 
-    verify(this.dlmsDeviceRepository).save(device);
     assertThat(foundDevice.getIpAddress()).isEqualTo(ipAddressFromSession);
   }
 }
