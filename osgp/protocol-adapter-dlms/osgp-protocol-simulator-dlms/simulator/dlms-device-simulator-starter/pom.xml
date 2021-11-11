@@ -20,7 +20,7 @@
   <parent>
     <groupId>org.opensmartgridplatform</groupId>
     <artifactId>osgp-protocol-simulator-dlms</artifactId>
-    <version>5.19.0-SNAPSHOT</version>
+    <version>5.20.0-SNAPSHOT</version>
     <relativePath>../../../osgp-protocol-simulator-dlms/pom.xml</relativePath>
   </parent>
 
