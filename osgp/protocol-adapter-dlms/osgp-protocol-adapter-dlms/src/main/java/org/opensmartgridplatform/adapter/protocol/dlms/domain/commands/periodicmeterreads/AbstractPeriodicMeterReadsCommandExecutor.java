@@ -118,7 +118,7 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R>
    * @return the derived date based on the previous meter read record, or null if it cannot be
    *     determined
    */
-  private Date calculateIntervalDate(
+  protected Date calculateIntervalDate(
       final PeriodTypeDto periodTypeDto,
       final Optional<Date> previousLogTime,
       final Optional<ProfileCaptureTime> intervalTime)

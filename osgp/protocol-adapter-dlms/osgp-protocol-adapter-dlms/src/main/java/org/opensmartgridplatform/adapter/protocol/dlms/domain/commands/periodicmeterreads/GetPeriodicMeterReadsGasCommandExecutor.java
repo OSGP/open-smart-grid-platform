@@ -203,8 +203,9 @@ public class GetPeriodicMeterReadsGasCommandExecutor
             ctx.attributeAddresses,
             ctx.attributeAddressForProfile,
             ctx.periodicMeterReadsQuery.getChannel().getChannelNumber());
-    final Date captureTime =
-        this.readCaptureTime(ctx.bufferedObjects, ctx.attributeAddressForProfile);
+
+    final Optional<Date> previousCaptureTime = this.getPreviousCaptureTime(periodicMeterReads);
+    final Date captureTime = this.readCaptureTime(ctx, previousCaptureTime);
 
     LOGGER.info("Converting bufferObject with value: {} ", ctx.bufferedObjects);
     LOGGER.info(
@@ -230,6 +231,16 @@ public class GetPeriodicMeterReadsGasCommandExecutor
     }
 
     return Optional.of(periodicMeterReads.get(periodicMeterReads.size() - 1).getLogTime());
+  }
+
+  private Optional<Date> getPreviousCaptureTime(
+      final List<PeriodicMeterReadsGasResponseItemDto> periodicMeterReads) {
+
+    if (periodicMeterReads.isEmpty()) {
+      return Optional.empty();
+    }
+
+    return Optional.of(periodicMeterReads.get(periodicMeterReads.size() - 1).getCaptureTime());
   }
 
   private DataObject readValue(
@@ -279,9 +290,11 @@ public class GetPeriodicMeterReadsGasCommandExecutor
   }
 
   private Date readCaptureTime(
-      final List<DataObject> bufferedObjects,
-      final AttributeAddressForProfile attributeAddressForProfile)
-      throws ProtocolAdapterException {
+      final ConversionContext ctx, final Optional<Date> previousCaptureTime)
+      throws ProtocolAdapterException, BufferedDateTimeValidationException {
+
+    final List<DataObject> bufferedObjects = ctx.bufferedObjects;
+    final AttributeAddressForProfile attributeAddressForProfile = ctx.attributeAddressForProfile;
 
     final Integer captureTimeIndex =
         attributeAddressForProfile.getIndex(DlmsObjectType.MBUS_MASTER_VALUE, 5);
@@ -292,10 +305,22 @@ public class GetPeriodicMeterReadsGasCommandExecutor
               bufferedObjects.get(captureTimeIndex), "Clock from mbus interval extended register");
 
       final Date captureTime;
-      if (cosemDateTime.isDateTimeSpecified()) {
-        captureTime = cosemDateTime.asDateTime().toDate();
+      final DateTime bufferedDateTime = cosemDateTime == null ? null : cosemDateTime.asDateTime();
+      if (bufferedDateTime != null) {
+        if (cosemDateTime.isDateTimeSpecified()) {
+          captureTime = bufferedDateTime.toDate();
+        } else {
+          throw new ProtocolAdapterException(UNEXPECTED_VALUE);
+        }
       } else {
-        throw new ProtocolAdapterException(UNEXPECTED_VALUE);
+        // no date was available, calculate date based on previous value
+        captureTime =
+            this.calculateIntervalDate(
+                ctx.periodicMeterReadsQuery.getPeriodType(), previousCaptureTime, ctx.intervalTime);
+      }
+
+      if (captureTime == null) {
+        throw new BufferedDateTimeValidationException("Unable to calculate captureTime");
       }
 
       return captureTime;
