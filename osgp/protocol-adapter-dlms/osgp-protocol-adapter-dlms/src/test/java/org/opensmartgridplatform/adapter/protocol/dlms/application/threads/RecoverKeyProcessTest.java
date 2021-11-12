@@ -44,7 +44,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
-public class RecoverKeyProcessTest {
+class RecoverKeyProcessTest {
 
   @InjectMocks RecoverKeyProcess recoverKeyProcess;
 
@@ -70,7 +70,7 @@ public class RecoverKeyProcessTest {
   }
 
   @Test
-  public void testWhenDeviceNotFoundThenException() throws OsgpException {
+  void testWhenDeviceNotFoundThenException() throws OsgpException {
 
     // GIVEN
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
@@ -86,7 +86,7 @@ public class RecoverKeyProcessTest {
   }
 
   @Test
-  public void testWhenNoNewKeysThenNoActivate() throws OsgpException {
+  void testWhenNoNewKeysThenNoActivate() throws OsgpException {
 
     // GIVEN
     when(this.secretManagementService.hasNewSecretOfType(
@@ -102,7 +102,7 @@ public class RecoverKeyProcessTest {
   }
 
   @Test
-  public void testThrottlingServiceCalledAndKeysActivated() throws Exception {
+  void testThrottlingServiceCalledAndKeysActivated() throws Exception {
 
     // GIVEN
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
@@ -134,7 +134,7 @@ public class RecoverKeyProcessTest {
   }
 
   @Test
-  public void testWhenConnectionFailedThenConnectionClosedAtThrottlingService() throws Exception {
+  void testWhenConnectionFailedThenConnectionClosedAtThrottlingService() throws Exception {
 
     // GIVEN
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
