@@ -13,6 +13,7 @@ package org.opensmartgridplatform.core.infra.messaging;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import javax.jms.JMSException;
@@ -23,6 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
 
 @ExtendWith(MockitoExtension.class)
 class CoreLogItemJsonMessageCreatorTest {
@@ -33,8 +35,8 @@ class CoreLogItemJsonMessageCreatorTest {
 
   @BeforeEach
   public void setUp() {
-    this.jsonMessageCreator = new CoreLogItemJsonMessageCreator();
     this.coreLogItemRequestMessage = this.getCoreLogItemRequestMessage();
+    this.jsonMessageCreator = new CoreLogItemJsonMessageCreator(this.coreLogItemRequestMessage);
     this.session = mock(Session.class);
   }
 
@@ -43,36 +45,10 @@ class CoreLogItemJsonMessageCreatorTest {
     final TextMessage expectedTextMessage = mock(TextMessage.class);
     when(this.session.createTextMessage(any())).thenReturn(expectedTextMessage);
 
-    final Message actualMessage =
-        this.jsonMessageCreator.getJsonMessage(this.coreLogItemRequestMessage, this.session);
+    final Message actualMessage = this.jsonMessageCreator.getJsonMessage(this.session);
 
     assertThat(actualMessage).isSameAs(expectedTextMessage);
-  }
-
-  @Test
-  void jsonMessageIsEmptyWhenThereIsNoInputMessage() {
-    final Message actualMessage = this.jsonMessageCreator.getJsonMessage(null, this.session);
-
-    assertThat(actualMessage).isNull();
-  }
-
-  @Test
-  void jsonMessageIsEmptyWhenInputMessageHasNoValues() {
-    final Message actualMessage =
-        this.jsonMessageCreator.getJsonMessage(
-            new CoreLogItemRequestMessage(null, null, null), this.session);
-
-    assertThat(actualMessage).isNull();
-  }
-
-  @Test
-  void jsonMessageIsEmptyWhenExceptionIsThrown() throws JMSException {
-    when(this.session.createTextMessage(any())).thenThrow(new JMSException("test jsm exception"));
-
-    final Message actualMessage =
-        this.jsonMessageCreator.getJsonMessage(this.coreLogItemRequestMessage, this.session);
-
-    assertThat(actualMessage).isNull();
+    verify(actualMessage).setJMSType(Constants.CORE_LOG_ITEM_REQUEST);
   }
 
   private CoreLogItemRequestMessage getCoreLogItemRequestMessage() {

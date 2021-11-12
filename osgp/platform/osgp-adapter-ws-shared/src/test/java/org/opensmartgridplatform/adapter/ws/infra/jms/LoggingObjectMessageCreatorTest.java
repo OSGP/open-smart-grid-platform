@@ -12,6 +12,7 @@ package org.opensmartgridplatform.adapter.ws.infra.jms;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Date;
@@ -23,6 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,6 +50,8 @@ class LoggingObjectMessageCreatorTest {
         this.loggingObjectMessageCreator.getObjectMessage(this.session, this.loggingMessage);
 
     assertThat(actualMessage).isSameAs(expectedObjectMessage);
+    verify(actualMessage).setJMSCorrelationID(this.loggingMessage.getCorrelationUid());
+    verify(actualMessage).setJMSType(Constants.LOG_ITEM_REQUEST);
   }
 
   private LoggingRequestMessage getLoggingMessage() {

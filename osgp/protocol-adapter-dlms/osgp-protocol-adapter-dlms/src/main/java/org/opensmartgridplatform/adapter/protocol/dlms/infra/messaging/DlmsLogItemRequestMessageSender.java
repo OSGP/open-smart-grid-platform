@@ -33,18 +33,18 @@ public class DlmsLogItemRequestMessageSender {
   public void send(final DlmsLogItemRequestMessage dlmsLogItemRequestMessage) {
     if (dlmsLogItemRequestMessage == null) {
       LOGGER.error("dlmsLogItemRequestMessage is null and will not be send");
-    } else {
-      final MessageCreator messageCreator;
-      if (this.isCreateJsonMessage()) {
-        messageCreator = new DlmsLogItemRequestJsonMessageCreator(dlmsLogItemRequestMessage);
-      } else {
-        messageCreator = new DlmsLogItemRequestObjectMessageCreator(dlmsLogItemRequestMessage);
-      }
-
-      LOGGER.debug("Sending DlmsLogItemRequestMessage");
-
-      this.jmsTemplate.send(messageCreator);
+      return;
     }
+    final MessageCreator messageCreator;
+    if (this.isCreateJsonMessage()) {
+      messageCreator = new DlmsLogItemRequestJsonMessageCreator(dlmsLogItemRequestMessage);
+    } else {
+      messageCreator = new DlmsLogItemRequestObjectMessageCreator(dlmsLogItemRequestMessage);
+    }
+
+    LOGGER.debug("Sending DlmsLogItemRequestMessage");
+
+    this.jmsTemplate.send(messageCreator);
   }
 
   private boolean isCreateJsonMessage() {

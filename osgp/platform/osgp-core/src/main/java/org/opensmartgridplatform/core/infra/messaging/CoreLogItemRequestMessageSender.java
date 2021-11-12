@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 
 public class CoreLogItemRequestMessageSender {
   private static final Logger LOGGER =
@@ -25,22 +26,18 @@ public class CoreLogItemRequestMessageSender {
 
   public void send(final CoreLogItemRequestMessage coreLogItemRequestMessage) {
     if (coreLogItemRequestMessage == null) {
-      LOGGER.error("coreLogItemRequestMessage is null and will not be send");
-    } else {
-      LOGGER.debug("Sending CoreLogItemRequestMessage");
-
-      this.coreLogItemRequestsJmsTemplate.send(
-          session -> {
-            if (this.isCreateJsonMessage()) {
-              final CoreLogItemJsonMessageCreator jsonMessageCreator =
-                  new CoreLogItemJsonMessageCreator();
-              return jsonMessageCreator.getJsonMessage(coreLogItemRequestMessage, session);
-            }
-            final CoreLogItemObjectMessageCreator objectMessageCreator =
-                new CoreLogItemObjectMessageCreator();
-            return objectMessageCreator.getObjectMessage(coreLogItemRequestMessage, session);
-          });
+      LOGGER.error("CoreLogItemRequestMessage is null and will not be send");
+      return;
     }
+    LOGGER.debug("Sending CoreLogItemRequestMessage");
+    final MessageCreator messageCreator;
+    if (this.isCreateJsonMessage()) {
+      messageCreator = new CoreLogItemJsonMessageCreator(coreLogItemRequestMessage);
+    } else {
+      messageCreator = new CoreLogItemJsonMessageCreator(coreLogItemRequestMessage);
+    }
+
+    this.coreLogItemRequestsJmsTemplate.send(messageCreator);
   }
 
   private boolean isCreateJsonMessage() {

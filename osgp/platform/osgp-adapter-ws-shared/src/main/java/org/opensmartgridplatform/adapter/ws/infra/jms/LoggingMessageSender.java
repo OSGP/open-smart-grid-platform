@@ -37,17 +37,17 @@ public class LoggingMessageSender {
   public void send(final LoggingRequestMessage loggingMessage) {
     if (loggingMessage == null) {
       LOGGER.error("LoggingMessage is null and will not be send");
-    } else {
-      LOGGER.debug("Sending logger message");
-      final MessageCreator messageCreator;
-      if (this.isCreateJsonMessage()) {
-        messageCreator = new LoggingJsonMessageCreator(loggingMessage);
-      } else {
-        messageCreator = new LoggingObjectMessageCreator(loggingMessage);
-      }
-
-      this.loggingJmsTemplate.send(messageCreator);
+      return;
     }
+    LOGGER.debug("Sending logger message");
+    final MessageCreator messageCreator;
+    if (this.isCreateJsonMessage()) {
+      messageCreator = new LoggingJsonMessageCreator(loggingMessage);
+    } else {
+      messageCreator = new LoggingObjectMessageCreator(loggingMessage);
+    }
+
+    this.loggingJmsTemplate.send(messageCreator);
   }
 
   private boolean isCreateJsonMessage() {

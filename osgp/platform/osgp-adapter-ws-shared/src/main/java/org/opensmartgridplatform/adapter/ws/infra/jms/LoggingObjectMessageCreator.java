@@ -33,6 +33,7 @@ public class LoggingObjectMessageCreator implements MessageCreator {
       final Session session, final LoggingRequestMessage loggingMessage) throws JMSException {
     final ObjectMessage objectMessage = session.createObjectMessage();
     objectMessage.setJMSCorrelationID(loggingMessage.getCorrelationUid());
+    objectMessage.setJMSType(Constants.LOG_ITEM_REQUEST);
     objectMessage.setLongProperty(Constants.TIME_STAMP, loggingMessage.getTimeStamp().getTime());
     objectMessage.setStringProperty(Constants.CLASS_NAME, loggingMessage.getClassName());
     objectMessage.setStringProperty(Constants.METHOD_NAME, loggingMessage.getMethodName());

@@ -10,6 +10,7 @@
 
 package org.opensmartgridplatform.adapter.ws.infra.jms;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -34,14 +35,15 @@ public class LoggingJsonMessageCreator implements MessageCreator {
     return this.getJsonMessage(session);
   }
 
-  public TextMessage getJsonMessage(final Session session) {
+  public TextMessage getJsonMessage(final Session session) throws JMSException {
     TextMessage textMessage = null;
     try {
       final ObjectMapper mapper = new ObjectMapper();
       final String jsonString = mapper.writeValueAsString(this.loggingRequestMessage);
       textMessage = session.createTextMessage(jsonString);
-      textMessage.setJMSType(Constants.DLMS_LOG_ITEM_REQUEST);
-    } catch (final Exception e) {
+      textMessage.setJMSType(Constants.LOG_ITEM_REQUEST);
+      textMessage.setJMSCorrelationID(this.loggingRequestMessage.getCorrelationUid());
+    } catch (final JsonProcessingException e) {
       LOGGER.error("Error creating json message : {}", e.getMessage());
     }
     return textMessage;

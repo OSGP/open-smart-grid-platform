@@ -13,6 +13,7 @@ package org.opensmartgridplatform.adapter.ws.infra.jms;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Date;
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.opensmartgridplatform.shared.infra.jms.CorrelationIds;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,15 +50,8 @@ class LoggingJsonMessageCreatorTest {
     final Message actualMessage = this.loggingJsonMessageCreator.getJsonMessage(this.session);
 
     assertThat(actualMessage).isSameAs(expectedTextMessage);
-  }
-
-  @Test
-  void jsonMessageIsEmptyWhenExceptionIsThrown() throws JMSException {
-    when(this.session.createTextMessage(any())).thenThrow(new JMSException("test jms exception"));
-
-    final Message actualMessage = this.loggingJsonMessageCreator.getJsonMessage(this.session);
-
-    assertThat(actualMessage).isNull();
+    verify(actualMessage).setJMSType(Constants.LOG_ITEM_REQUEST);
+    verify(actualMessage).setJMSCorrelationID(this.loggingMessage.getCorrelationUid());
   }
 
   private LoggingRequestMessage getLoggingMessage() {
