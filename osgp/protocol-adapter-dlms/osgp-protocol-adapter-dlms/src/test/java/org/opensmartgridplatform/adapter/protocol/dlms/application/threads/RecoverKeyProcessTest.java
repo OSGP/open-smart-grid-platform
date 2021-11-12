@@ -44,7 +44,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
-public class RecoverKeyProcessTest {
+class RecoverKeyProcessTest {
 
   @InjectMocks RecoverKeyProcess recoverKeyProcess;
 
@@ -70,10 +70,10 @@ public class RecoverKeyProcessTest {
   }
 
   @Test
-  public void testWhenDeviceNotFoundThenException() throws OsgpException {
+  void testWhenDeviceNotFoundThenException() throws OsgpException {
 
     // GIVEN
-    when(this.domainHelperService.findDlmsDevice(MESSAGE_METADATA))
+    when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
         .thenThrow(
             new FunctionalException(
                 FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.PROTOCOL_DLMS));
@@ -86,7 +86,7 @@ public class RecoverKeyProcessTest {
   }
 
   @Test
-  public void testWhenNoNewKeysThenNoActivate() throws OsgpException {
+  void testWhenNoNewKeysThenNoActivate() throws OsgpException {
 
     // GIVEN
     when(this.secretManagementService.hasNewSecretOfType(
@@ -97,15 +97,16 @@ public class RecoverKeyProcessTest {
     this.recoverKeyProcess.run();
 
     // THEN
-    verify(this.domainHelperService).findDlmsDevice(MESSAGE_METADATA);
+    verify(this.domainHelperService).findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS);
     verify(this.secretManagementService, never()).activateNewKeys(any(), any(), any());
   }
 
   @Test
-  public void testThrottlingServiceCalledAndKeysActivated() throws Exception {
+  void testThrottlingServiceCalledAndKeysActivated() throws Exception {
 
     // GIVEN
-    when(this.domainHelperService.findDlmsDevice(MESSAGE_METADATA)).thenReturn(DEVICE);
+    when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
+        .thenReturn(DEVICE);
     when(this.secretManagementService.hasNewSecretOfType(
             MESSAGE_METADATA, DEVICE_IDENTIFICATION, E_METER_AUTHENTICATION))
         .thenReturn(true);
@@ -133,10 +134,11 @@ public class RecoverKeyProcessTest {
   }
 
   @Test
-  public void testWhenConnectionFailedThenConnectionClosedAtThrottlingService() throws Exception {
+  void testWhenConnectionFailedThenConnectionClosedAtThrottlingService() throws Exception {
 
     // GIVEN
-    when(this.domainHelperService.findDlmsDevice(MESSAGE_METADATA)).thenReturn(DEVICE);
+    when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
+        .thenReturn(DEVICE);
     when(this.secretManagementService.hasNewSecretOfType(
             MESSAGE_METADATA, DEVICE_IDENTIFICATION, E_METER_AUTHENTICATION))
         .thenReturn(true);

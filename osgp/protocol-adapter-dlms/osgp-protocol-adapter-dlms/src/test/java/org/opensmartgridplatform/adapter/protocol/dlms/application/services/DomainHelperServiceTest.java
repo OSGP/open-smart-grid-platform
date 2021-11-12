@@ -59,7 +59,7 @@ class DomainHelperServiceTest {
   }
 
   @Test
-  void findDlmsDeviceNotFound() {
+  void findDlmsDeviceMetadataNotFound() {
     final MessageMetadata messageMetadata = mock(MessageMetadata.class);
     when(messageMetadata.getDeviceIdentification()).thenReturn(DEVICE_IDENTIFICATION);
 
@@ -77,7 +77,7 @@ class DomainHelperServiceTest {
   }
 
   @Test
-  void findDlmsDeviceIpAddressStatic() throws OsgpException {
+  void findDlmsDeviceMetadataIpAddressStatic() throws OsgpException {
     final MessageMetadata messageMetadata = mock(MessageMetadata.class);
     when(messageMetadata.getDeviceIdentification()).thenReturn(DEVICE_IDENTIFICATION);
     when(messageMetadata.getIpAddress()).thenReturn(IP_ADDRESS);
@@ -92,7 +92,7 @@ class DomainHelperServiceTest {
   }
 
   @Test
-  void findDlmsDeviceIpNotStatic() throws OsgpException {
+  void findDlmsDeviceMetadataIpNotStatic() throws OsgpException {
     final MessageMetadata messageMetadata = mock(MessageMetadata.class);
     when(messageMetadata.getDeviceIdentification()).thenReturn(DEVICE_IDENTIFICATION);
 
@@ -115,5 +115,32 @@ class DomainHelperServiceTest {
     final DlmsDevice foundDevice = this.domainHelperService.findDlmsDevice(messageMetadata);
 
     assertThat(foundDevice.getIpAddress()).isEqualTo(ipAddressFromSession);
+  }
+
+  @Test
+  void findDlmsDeviceNotFound() {
+    when(this.dlmsDeviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION))
+        .thenReturn(null);
+
+    final FunctionalException exception =
+        assertThrows(
+            FunctionalException.class,
+            () -> {
+              this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS);
+            });
+    assertThat(exception.getExceptionType()).isEqualTo(FunctionalExceptionType.UNKNOWN_DEVICE);
+    assertThat(exception.getComponentType()).isEqualTo(ComponentType.PROTOCOL_DLMS);
+  }
+
+  @Test
+  void findDlmsDeviceIpAddressStatic() throws OsgpException {
+    final DlmsDevice device = new DlmsDeviceBuilder().withIpAddressStatic(true).build();
+    when(this.dlmsDeviceRepository.findByDeviceIdentification(DEVICE_IDENTIFICATION))
+        .thenReturn(device);
+
+    final DlmsDevice foundDevice =
+        this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS);
+
+    assertThat(foundDevice.getIpAddress()).isEqualTo(IP_ADDRESS);
   }
 }

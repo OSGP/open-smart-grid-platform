@@ -122,7 +122,7 @@ public class RecoverKeyProcess implements Runnable {
 
   private DlmsDevice findDevice() {
     try {
-      return this.domainHelperService.findDlmsDevice(this.messageMetadata);
+      return this.domainHelperService.findDlmsDevice(this.deviceIdentification, this.ipAddress);
     } catch (final Exception e) {
       throw new RecoverKeyException(e);
     }

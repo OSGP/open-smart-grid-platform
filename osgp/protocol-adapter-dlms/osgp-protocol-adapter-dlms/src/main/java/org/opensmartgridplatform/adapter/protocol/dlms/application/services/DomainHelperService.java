@@ -72,7 +72,12 @@ public class DomainHelperService {
   }
 
   public DlmsDevice findDlmsDevice(final MessageMetadata messageMetadata) throws OsgpException {
-    final String deviceIdentification = messageMetadata.getDeviceIdentification();
+    return this.findDlmsDevice(
+        messageMetadata.getDeviceIdentification(), messageMetadata.getIpAddress());
+  }
+
+  public DlmsDevice findDlmsDevice(final String deviceIdentification, final String ipAddress)
+      throws OsgpException {
     final DlmsDevice dlmsDevice =
         this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
     if (dlmsDevice == null) {
@@ -83,14 +88,14 @@ public class DomainHelperService {
           FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.PROTOCOL_DLMS);
     }
 
-    final String ipAddress;
-    if (dlmsDevice.isIpAddressIsStatic()) {
-      ipAddress = messageMetadata.getIpAddress();
-    } else {
-      ipAddress = this.getDeviceIpAddressFromSessionProvider(dlmsDevice);
-    }
     /* Ip Address is a transient attribute for DlmsDevice, so save is not required */
-    dlmsDevice.setIpAddress(ipAddress);
+    if (dlmsDevice.isIpAddressIsStatic()) {
+      dlmsDevice.setIpAddress(ipAddress);
+    } else {
+      final String ipAddressFromSessionProvider =
+          this.getDeviceIpAddressFromSessionProvider(dlmsDevice);
+      dlmsDevice.setIpAddress(ipAddressFromSessionProvider);
+    }
     return dlmsDevice;
   }
 
