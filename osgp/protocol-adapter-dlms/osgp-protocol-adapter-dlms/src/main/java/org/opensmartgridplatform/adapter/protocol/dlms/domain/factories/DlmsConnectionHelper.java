@@ -149,6 +149,7 @@ public class DlmsConnectionHelper {
             messageMetadata,
             permit,
             taskForConnectionManager);
+        return;
       }
       /*
        * The connection exception is assumed not to be related to the invocation counter, or has

@@ -28,7 +28,7 @@ public class SystemEventSteps {
       responseClient;
 
   @Then("^a system event should be returned$")
-  public void aSystemEventShouldBeRetuned(final Map<String, String> settings) throws Throwable {
+  public void aSystemEventShouldBeReturned(final Map<String, String> settings) throws Throwable {
 
     final GetSystemEventAsyncRequest asyncRequest = SystemEventRequestFactory.fromScenarioContext();
     final GetSystemEventResponse response =
@@ -47,7 +47,7 @@ public class SystemEventSteps {
   }
 
   @Then("^no system event should be returned$")
-  public void noSystemEventShouldBeRetuned() throws Throwable {
+  public void noSystemEventShouldBeReturned() throws Throwable {
 
     final boolean hasMoreResponses =
         this.responseClient.hasMoreResponses(NotificationType.SYSTEM_EVENT);
