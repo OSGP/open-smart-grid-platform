@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -33,11 +34,20 @@ public class CommandExecutor {
 
     final String commandLine = this.commandLine(commands);
     final Process process = this.start(commands);
+
+    final ExecutorService executorService = Executors.newSingleThreadExecutor();
     final Future<List<String>> inputLines =
-        Executors.newSingleThreadExecutor().submit(() -> this.readLinesFromInput(process));
+        executorService.submit(() -> this.readLinesFromInput(process));
     try {
-      return inputLines.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
+      final List<String> results = inputLines.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
+
+      this.shutdownAndAwaitTermination(executorService);
+
+      return results;
     } catch (final InterruptedException e) {
+      // (Re-)Cancel if current thread also interrupted
+      executorService.shutdownNow();
+
       Thread.currentThread().interrupt();
       LOGGER.warn(
           "Reading input lines from executed process was interrupted: \"{}\"", commandLine, e);
@@ -51,6 +61,19 @@ public class CommandExecutor {
       }
     }
     return Collections.emptyList();
+  }
+
+  private void shutdownAndAwaitTermination(final ExecutorService executorService)
+      throws InterruptedException {
+    executorService.shutdown(); // Disable new tasks from being submitted
+    // Wait a while for existing tasks to terminate
+    if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+      executorService.shutdownNow(); // Cancel currently executing tasks
+      // Wait a while for tasks to respond to being cancelled
+      if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
+        LOGGER.warn("Pool did not terminate");
+      }
+    }
   }
 
   private String commandLine(final List<String> commands) {
