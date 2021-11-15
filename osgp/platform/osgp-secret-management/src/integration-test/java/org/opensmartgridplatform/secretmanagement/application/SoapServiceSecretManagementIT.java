@@ -207,7 +207,7 @@ public class SoapServiceSecretManagementIT {
     // Store secrets again, while previously stored secret still have status NEW
     final String errorMessage =
         "There is/are secrets of type E_METER_AUTHENTICATION_KEY for device E0000000000000000 with "
-            + "status NEW created less than 5 minutes old. No key with status NEW will be stored. Wait"
+            + "status NEW created less than 5 minutes ago. No key with status NEW will be stored. Wait"
             + " at least 5 minutes before starting a request requiring NEW keys to be stored.";
     this.mockWebServiceClient
         .sendRequest(withSoapEnvelope(storeRequest))
