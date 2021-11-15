@@ -171,7 +171,7 @@ public class SecretManagementServiceTest {
     when(this.keyRepository.findByTypeAndReference(ENCRYPTION_PROVIDER_TYPE, "1"))
         .thenReturn(keyReference);
     when(this.encryptionDelegate.encrypt(any(), any(), anyString())).thenReturn(encryptedSecret);
-    this.service.storeSingleNewSecrets(SOME_DEVICE, Arrays.asList(typedSecret));
+    this.service.storeOrResetNewSecrets(SOME_DEVICE, Arrays.asList(typedSecret));
     // THEN
     final ArgumentCaptor<List<DbEncryptedSecret>> secretListArgumentCaptor =
         ArgumentCaptor.forClass(List.class);
@@ -225,7 +225,7 @@ public class SecretManagementServiceTest {
     final TypedSecret typedSecret = new TypedSecret(new byte[16], SecretType.E_METER_MASTER_KEY);
     assertThatIllegalStateException()
         .isThrownBy(
-            () -> this.service.storeSingleNewSecrets(SOME_DEVICE, Arrays.asList(typedSecret)))
+            () -> this.service.storeOrResetNewSecrets(SOME_DEVICE, Arrays.asList(typedSecret)))
         .withMessageStartingWith(
             "There is/are secrets of type %s for device %s with status NEW created less than",
             typedSecret.getSecretType().name(), SOME_DEVICE);
@@ -244,7 +244,7 @@ public class SecretManagementServiceTest {
         .thenReturn(Arrays.asList(secret));
 
     final TypedSecret typedSecret = new TypedSecret(new byte[16], SecretType.E_METER_MASTER_KEY);
-    this.service.storeSingleNewSecrets(SOME_DEVICE, Arrays.asList(typedSecret));
+    this.service.storeOrResetNewSecrets(SOME_DEVICE, Arrays.asList(typedSecret));
 
     // THEN
     final List<DbEncryptedSecret> foundSecrets =
@@ -284,7 +284,7 @@ public class SecretManagementServiceTest {
         new TypedSecret(new byte[16], SecretType.E_METER_MASTER_KEY);
     final TypedSecret typedSecretAuthen =
         new TypedSecret(new byte[16], SecretType.E_METER_AUTHENTICATION_KEY);
-    this.service.storeSingleNewSecrets(
+    this.service.storeOrResetNewSecrets(
         SOME_DEVICE, Arrays.asList(typedSecretMaster, typedSecretAuthen));
 
     // THEN
@@ -314,7 +314,7 @@ public class SecretManagementServiceTest {
     // THEN
     assertThatExceptionOfType(NoSuchElementException.class)
         .isThrownBy(
-            () -> this.service.storeSingleNewSecrets(SOME_DEVICE, Arrays.asList(typedSecret)));
+            () -> this.service.storeOrResetNewSecrets(SOME_DEVICE, Arrays.asList(typedSecret)));
   }
 
   @Test
@@ -328,7 +328,7 @@ public class SecretManagementServiceTest {
     // THEN
     assertThatIllegalStateException()
         .isThrownBy(
-            () -> this.service.storeSingleNewSecrets(SOME_DEVICE, Arrays.asList(typedSecret)));
+            () -> this.service.storeOrResetNewSecrets(SOME_DEVICE, Arrays.asList(typedSecret)));
   }
 
   @Test
@@ -348,7 +348,7 @@ public class SecretManagementServiceTest {
     // THEN
     assertThatIllegalStateException()
         .isThrownBy(
-            () -> this.service.storeSingleNewSecrets(SOME_DEVICE, Arrays.asList(typedSecret)));
+            () -> this.service.storeOrResetNewSecrets(SOME_DEVICE, Arrays.asList(typedSecret)));
   }
 
   @Test
@@ -378,7 +378,7 @@ public class SecretManagementServiceTest {
         .thenReturn(keyReference);
     when(this.encryptionDelegate.encrypt(any(), any(), anyString()))
         .thenReturn(encryptedSecret); // encrypt new DB secret
-    this.service.storeSingleNewSecrets(SOME_DEVICE, Arrays.asList(typedSecret));
+    this.service.storeOrResetNewSecrets(SOME_DEVICE, Arrays.asList(typedSecret));
     // THEN
     final ArgumentCaptor<List<DbEncryptedSecret>> secretListArgumentCaptor =
         ArgumentCaptor.forClass(List.class);

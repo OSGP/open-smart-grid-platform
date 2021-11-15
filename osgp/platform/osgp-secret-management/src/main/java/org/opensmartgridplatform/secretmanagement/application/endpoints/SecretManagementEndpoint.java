@@ -139,7 +139,7 @@ public class SecretManagementEndpoint {
     final TypedSecrets soapTypedSecrets = request.getTypedSecrets();
     final List<TypedSecret> typedSecretList =
         this.converter.convertToTypedSecrets(soapTypedSecrets);
-    this.secretManagementService.storeSingleNewSecrets(request.getDeviceId(), typedSecretList);
+    this.secretManagementService.storeOrResetNewSecrets(request.getDeviceId(), typedSecretList);
     return new StoreSecretsResponse();
   }
 

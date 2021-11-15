@@ -130,8 +130,10 @@ public class ReplaceKeyCommandExecutor
       final MessageMetadata messageMetadata)
       throws OsgpException {
 
-    ReplaceKeyInput keyWrapper2 = keyWrapper;
-    if (!keyWrapper.isGenerated()) {
+    ReplaceKeyInput keyWrapper2;
+    if (keyWrapper.isGenerated()) {
+      keyWrapper2 = keyWrapper;
+    } else {
       this.secretManagementService.storeNewKey(
           messageMetadata,
           device.getDeviceIdentification(),

@@ -55,6 +55,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class SecretManagementService {
 
+  private static final long MILLISECONDS_IN_MINUTE = 60000L;
   @Value("${max.minutes.for.new.key.to.be.activated:5}")
   private Integer maxMinutesForNewKeyToBeActivated;
 
@@ -252,21 +253,21 @@ public class SecretManagementService {
     return Optional.of(secretsList.iterator().next());
   }
 
-  public synchronized void storeSingleNewSecrets(
+  public synchronized void storeOrResetNewSecrets(
       final String deviceIdentification, final List<TypedSecret> secrets) {
-    final List<TypedSecret> typedSecretsToStore = new ArrayList<>();
-    final List<TypedSecret> typedSecretsToReset = new ArrayList<>();
+    final List<TypedSecret> typedNewSecretsToStore = new ArrayList<>();
+    final List<TypedSecret> typedNewSecretsToReset = new ArrayList<>();
     for (final TypedSecret typedSecret : secrets) {
       final int numberOfNewSecrets =
           this.secretRepository.getSecretCount(
               deviceIdentification, typedSecret.getSecretType(), SecretStatus.NEW);
       if (numberOfNewSecrets == 0) {
-        typedSecretsToStore.add(typedSecret);
+        typedNewSecretsToStore.add(typedSecret);
       } else if (this.recentNewSecretsPresent(
           deviceIdentification, this.maxMinutesForNewKeyToBeActivated, typedSecret)) {
         final String errorMsg =
             "There is/are secrets of type %s for device %s with status NEW "
-                + "created less than %d minutes old. No key with status NEW will be stored. Wait "
+                + "created less than %d minutes ago. No key with status NEW will be stored. Wait "
                 + "at least %d minutes before starting a request requiring NEW keys to be stored.";
         throw new IllegalStateException(
             String.format(
@@ -276,11 +277,11 @@ public class SecretManagementService {
                 this.maxMinutesForNewKeyToBeActivated,
                 this.maxMinutesForNewKeyToBeActivated));
       } else {
-        typedSecretsToReset.add(typedSecret);
+        typedNewSecretsToReset.add(typedSecret);
       }
     }
-    this.storeSecrets(deviceIdentification, typedSecretsToStore);
-    typedSecretsToReset.forEach(
+    this.storeSecrets(deviceIdentification, typedNewSecretsToStore);
+    typedNewSecretsToReset.forEach(
         ts -> this.resetNewSecrets(deviceIdentification, ts.getSecretType()));
   }
 
@@ -310,7 +311,7 @@ public class SecretManagementService {
     return secrets.stream()
             .filter(
                 s ->
-                    new Date().getTime() - s.getCreationTime().getTime() < (maxMinutesOld * 60000L))
+                    new Date().getTime() - s.getCreationTime().getTime() < (maxMinutesOld * MILLISECONDS_IN_MINUTE))
             .count()
         > 0;
   }

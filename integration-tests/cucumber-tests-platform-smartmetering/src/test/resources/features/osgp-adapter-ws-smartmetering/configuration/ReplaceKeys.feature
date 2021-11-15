@@ -19,7 +19,7 @@ Feature: SmartMetering Configuration - Replace Keys
     And the new keys are stored in the secret management database encrypted_secret table
     And the stored keys are not equal to the received keys
 
-  Scenario: Replace keys on a device that has previously created keys with status NEW
+  Scenario: Replace keys on a device that has previously created keys with status NEW older than the specified max time in the properties.
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
