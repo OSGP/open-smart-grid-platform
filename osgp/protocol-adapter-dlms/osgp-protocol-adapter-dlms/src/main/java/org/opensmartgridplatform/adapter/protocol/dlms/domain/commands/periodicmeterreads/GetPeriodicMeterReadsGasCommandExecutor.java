@@ -304,26 +304,12 @@ public class GetPeriodicMeterReadsGasCommandExecutor
           this.dlmsHelper.readDateTime(
               bufferedObjects.get(captureTimeIndex), "Clock from mbus interval extended register");
 
-      final Date captureTime;
-      final DateTime bufferedDateTime = cosemDateTime == null ? null : cosemDateTime.asDateTime();
-      if (bufferedDateTime != null) {
-        if (cosemDateTime.isDateTimeSpecified()) {
-          captureTime = bufferedDateTime.toDate();
-        } else {
-          throw new ProtocolAdapterException(UNEXPECTED_VALUE);
-        }
+      if (cosemDateTime != null && cosemDateTime.isDateTimeSpecified()) {
+        return cosemDateTime.asDateTime().toDate();
       } else {
-        // no date was available, calculate date based on previous value
-        captureTime =
-            this.calculateIntervalDate(
-                ctx.periodicMeterReadsQuery.getPeriodType(), previousCaptureTime, ctx.intervalTime);
+        return this.calculateIntervalTimeBasedOnPreviousValue(
+            ctx.periodicMeterReadsQuery.getPeriodType(), previousCaptureTime, ctx.intervalTime);
       }
-
-      if (captureTime == null) {
-        throw new BufferedDateTimeValidationException("Unable to calculate captureTime");
-      }
-
-      return captureTime;
     }
 
     return null;
