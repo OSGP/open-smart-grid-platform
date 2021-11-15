@@ -36,22 +36,16 @@ public class CommandExecutor {
     final Process process = this.start(commands);
 
     final ExecutorService executorService = Executors.newSingleThreadExecutor();
-    final Future<List<String>> inputLines =
-        executorService.submit(() -> this.readLinesFromInput(process));
     try {
-      final List<String> results = inputLines.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
-
-      executorService.shutdownNow();
-
-      return results;
+      final Future<List<String>> inputLines =
+          executorService.submit(() -> this.readLinesFromInput(process));
+      return inputLines.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
     } catch (final InterruptedException e) {
-      // (Re-)Cancel if current thread also interrupted
-      executorService.shutdownNow();
-
       Thread.currentThread().interrupt();
       LOGGER.warn(
           "Reading input lines from executed process was interrupted: \"{}\"", commandLine, e);
     } finally {
+      executorService.shutdownNow();
       if (process.isAlive()) {
         LOGGER.debug("Destroy the process running \"{}\"", commandLine);
         process.destroyForcibly();

@@ -79,9 +79,7 @@ public class Pinger {
     } catch (final TimeoutException e) {
       LOGGER.info("Timeout executing ping command");
     } catch (final RejectedExecutionException e) {
-      LOGGER.error(
-          "RejectedExecutionException occurred while processing input from the executed ping command",
-          e);
+      LOGGER.error("Exception occurred preventing processing the output of the ping command", e);
     } catch (final ExecutionException e) {
       LOGGER.error("Exception occurred while processing input from the executed ping command", e);
     }
