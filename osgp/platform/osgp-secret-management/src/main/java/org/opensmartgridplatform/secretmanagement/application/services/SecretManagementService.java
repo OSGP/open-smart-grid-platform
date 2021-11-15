@@ -56,6 +56,7 @@ import org.springframework.stereotype.Service;
 public class SecretManagementService {
 
   private static final long MILLISECONDS_IN_MINUTE = 60000L;
+
   @Value("${max.minutes.for.new.key.to.be.activated:5}")
   private Integer maxMinutesForNewKeyToBeActivated;
 
@@ -311,7 +312,8 @@ public class SecretManagementService {
     return secrets.stream()
             .filter(
                 s ->
-                    new Date().getTime() - s.getCreationTime().getTime() < (maxMinutesOld * MILLISECONDS_IN_MINUTE))
+                    new Date().getTime() - s.getCreationTime().getTime()
+                        < (maxMinutesOld * MILLISECONDS_IN_MINUTE))
             .count()
         > 0;
   }
