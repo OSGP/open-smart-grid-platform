@@ -13,6 +13,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Predicate;
 import org.slf4j.Logger;
@@ -77,6 +78,10 @@ public class Pinger {
       LOGGER.error("Exception occurred while executing ping command", e);
     } catch (final TimeoutException e) {
       LOGGER.info("Timeout executing ping command");
+    } catch (final RejectedExecutionException e) {
+      LOGGER.error(
+          "RejectedExecutionException occurred while processing input from the executed ping command",
+          e);
     } catch (final ExecutionException e) {
       LOGGER.error("Exception occurred while processing input from the executed ping command", e);
     }

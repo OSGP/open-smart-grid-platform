@@ -41,7 +41,7 @@ public class CommandExecutor {
     try {
       final List<String> results = inputLines.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
 
-      this.shutdownAndAwaitTermination(executorService);
+      executorService.shutdownNow();
 
       return results;
     } catch (final InterruptedException e) {
@@ -61,19 +61,6 @@ public class CommandExecutor {
       }
     }
     return Collections.emptyList();
-  }
-
-  private void shutdownAndAwaitTermination(final ExecutorService executorService)
-      throws InterruptedException {
-    executorService.shutdown(); // Disable new tasks from being submitted
-    // Wait a while for existing tasks to terminate
-    if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
-      executorService.shutdownNow(); // Cancel currently executing tasks
-      // Wait a while for tasks to respond to being cancelled
-      if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
-        LOGGER.warn("Pool did not terminate");
-      }
-    }
   }
 
   private String commandLine(final List<String> commands) {
