@@ -44,6 +44,7 @@ public class LoggingMessageListener implements MessageListener {
       if (message instanceof TextMessage) {
         LOGGER.warn(
             "A TextMessage is received. TextMessages belong with configuration setting : auditlogging.message.create.json=true");
+        return;
       }
       final ObjectMessage objectMessage = (ObjectMessage) message;
 
@@ -64,7 +65,7 @@ public class LoggingMessageListener implements MessageListener {
       // Save the log item in the data base.
       this.webServiceMonitorLogRepository.save(webServiceMonitorLogItem);
 
-    } catch (final JMSException | ClassCastException e) {
+    } catch (final JMSException e) {
       LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
     }
   }

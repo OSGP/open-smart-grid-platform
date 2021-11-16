@@ -37,6 +37,7 @@ public class ProtocolLogItemRequestMessageListener implements MessageListener {
       if (message instanceof TextMessage) {
         LOGGER.warn(
             "A TextMessage is received. TextMessages belong with configuration setting : auditlogging.message.create.json=true");
+        return;
       }
       final ObjectMessage objectMessage = (ObjectMessage) message;
       final String messageType = objectMessage.getJMSType();
@@ -44,7 +45,7 @@ public class ProtocolLogItemRequestMessageListener implements MessageListener {
       LOGGER.info("Received protocol log item request message of type [{}]", messageType);
 
       this.handleDeviceLogMessage(objectMessage);
-    } catch (final JMSException | ClassCastException e) {
+    } catch (final JMSException e) {
       LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
     }
   }
