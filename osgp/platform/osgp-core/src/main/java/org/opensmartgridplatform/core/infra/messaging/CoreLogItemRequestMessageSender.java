@@ -34,7 +34,7 @@ public class CoreLogItemRequestMessageSender {
     if (this.isCreateJsonMessage()) {
       messageCreator = new CoreLogItemJsonMessageCreator(coreLogItemRequestMessage);
     } else {
-      messageCreator = new CoreLogItemJsonMessageCreator(coreLogItemRequestMessage);
+      messageCreator = new CoreLogItemObjectMessageCreator(coreLogItemRequestMessage);
     }
 
     this.coreLogItemRequestsJmsTemplate.send(messageCreator);

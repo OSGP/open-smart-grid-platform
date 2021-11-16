@@ -13,6 +13,7 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
+import javax.jms.TextMessage;
 import org.opensmartgridplatform.logging.domain.entities.MethodResult;
 import org.opensmartgridplatform.logging.domain.entities.WebServiceMonitorLogItem;
 import org.opensmartgridplatform.logging.domain.repositories.WebServiceMonitorLogRepository;
@@ -39,6 +40,11 @@ public class LoggingMessageListener implements MessageListener {
   public void onMessage(final Message message) {
     try {
       LOGGER.info("Received logging message");
+
+      if (message instanceof TextMessage) {
+        LOGGER.warn(
+            "A TextMessage is received. TextMessages belong with configuration setting : auditlogging.message.create.json=true");
+      }
       final ObjectMessage objectMessage = (ObjectMessage) message;
 
       // Create a log item.
@@ -58,7 +64,7 @@ public class LoggingMessageListener implements MessageListener {
       // Save the log item in the data base.
       this.webServiceMonitorLogRepository.save(webServiceMonitorLogItem);
 
-    } catch (final JMSException e) {
+    } catch (final JMSException | ClassCastException e) {
       LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
     }
   }

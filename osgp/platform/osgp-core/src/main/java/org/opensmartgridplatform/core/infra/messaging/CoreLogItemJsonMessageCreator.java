@@ -12,17 +12,15 @@ package org.opensmartgridplatform.core.infra.messaging;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.UncheckedIOException;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.jms.core.MessageCreator;
 
 public class CoreLogItemJsonMessageCreator implements MessageCreator {
-  private static final Logger LOGGER = LoggerFactory.getLogger(CoreLogItemJsonMessageCreator.class);
 
   private final CoreLogItemRequestMessage coreLogItemRequestMessage;
 
@@ -43,7 +41,7 @@ public class CoreLogItemJsonMessageCreator implements MessageCreator {
       textMessage = session.createTextMessage(jsonString);
       textMessage.setJMSType(Constants.CORE_LOG_ITEM_REQUEST);
     } catch (final JsonProcessingException e) {
-      LOGGER.error("Error creating json message : {}", e.getMessage());
+      throw new UncheckedIOException("Error processing log item as JSON text", e);
     }
     return textMessage;
   }

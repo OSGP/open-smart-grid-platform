@@ -12,6 +12,7 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
+import javax.jms.TextMessage;
 import org.opensmartgridplatform.logging.domain.entities.DeviceLogItem;
 import org.opensmartgridplatform.logging.domain.repositories.DeviceLogItemPagingRepository;
 import org.opensmartgridplatform.shared.infra.jms.Constants;
@@ -33,13 +34,17 @@ public class ProtocolLogItemRequestMessageListener implements MessageListener {
   public void onMessage(final Message message) {
 
     try {
+      if (message instanceof TextMessage) {
+        LOGGER.warn(
+            "A TextMessage is received. TextMessages belong with configuration setting : auditlogging.message.create.json=true");
+      }
       final ObjectMessage objectMessage = (ObjectMessage) message;
       final String messageType = objectMessage.getJMSType();
 
       LOGGER.info("Received protocol log item request message of type [{}]", messageType);
 
       this.handleDeviceLogMessage(objectMessage);
-    } catch (final JMSException e) {
+    } catch (final JMSException | ClassCastException e) {
       LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
     }
   }
