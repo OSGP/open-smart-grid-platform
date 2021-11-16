@@ -8,15 +8,11 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.infra.messaging;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.ObjectMessage;
-import javax.jms.Session;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Component;
@@ -31,46 +27,27 @@ public class DlmsLogItemRequestMessageSender {
   @Qualifier("protocolDlmsOutboundLogItemRequestsJmsTemplate")
   private JmsTemplate jmsTemplate;
 
+  @Value("${auditlogging.message.create.json:false}")
+  private boolean createJsonMessage;
+
   public void send(final DlmsLogItemRequestMessage dlmsLogItemRequestMessage) {
+    if (dlmsLogItemRequestMessage == null) {
+      LOGGER.error("dlmsLogItemRequestMessage is null and will not be send");
+      return;
+    }
+    final MessageCreator messageCreator;
+    if (this.isCreateJsonMessage()) {
+      messageCreator = new DlmsLogItemRequestJsonMessageCreator(dlmsLogItemRequestMessage);
+    } else {
+      messageCreator = new DlmsLogItemRequestObjectMessageCreator(dlmsLogItemRequestMessage);
+    }
 
     LOGGER.debug("Sending DlmsLogItemRequestMessage");
 
-    this.jmsTemplate.send(new DlmsLogItemRequestMessageCreator(dlmsLogItemRequestMessage));
+    this.jmsTemplate.send(messageCreator);
   }
 
-  private static final class DlmsLogItemRequestMessageCreator implements MessageCreator {
-
-    private final DlmsLogItemRequestMessage dlmsLogItemRequestMessage;
-
-    public DlmsLogItemRequestMessageCreator(
-        final DlmsLogItemRequestMessage dlmsLogItemRequestMessage) {
-      this.dlmsLogItemRequestMessage = dlmsLogItemRequestMessage;
-    }
-
-    @Override
-    public Message createMessage(final Session session) throws JMSException {
-      final ObjectMessage objectMessage = session.createObjectMessage();
-      objectMessage.setJMSType(Constants.DLMS_LOG_ITEM_REQUEST);
-      objectMessage.setStringProperty(
-          Constants.IS_INCOMING, this.dlmsLogItemRequestMessage.isIncoming().toString());
-      objectMessage.setStringProperty(
-          Constants.ENCODED_MESSAGE, this.dlmsLogItemRequestMessage.getEncodedMessage());
-      objectMessage.setStringProperty(
-          Constants.DECODED_MESSAGE, this.dlmsLogItemRequestMessage.getDecodedMessage());
-      objectMessage.setStringProperty(
-          Constants.DEVICE_IDENTIFICATION,
-          this.dlmsLogItemRequestMessage.getDeviceIdentification());
-      if (this.dlmsLogItemRequestMessage.hasOrganisationIdentification()) {
-        objectMessage.setStringProperty(
-            Constants.ORGANISATION_IDENTIFICATION,
-            this.dlmsLogItemRequestMessage.getOrganisationIdentification());
-      }
-      objectMessage.setStringProperty(
-          Constants.IS_VALID, this.dlmsLogItemRequestMessage.isValid().toString());
-      objectMessage.setIntProperty(
-          Constants.PAYLOAD_MESSAGE_SERIALIZED_SIZE,
-          this.dlmsLogItemRequestMessage.getPayloadMessageSerializedSize());
-      return objectMessage;
-    }
+  private boolean isCreateJsonMessage() {
+    return this.createJsonMessage;
   }
 }
