@@ -55,8 +55,6 @@ public class GetPeriodicMeterReadsGasCommandExecutor
 
   private static final String GAS_VALUE = "gasValue";
   private static final String PERIODIC_G_METER_READS = "Periodic G-Meter Reads";
-  private static final String UNEXPECTED_VALUE =
-      "Unexpected null/unspecified value for Gas Capture Time";
   private static final String FORMAT_DESCRIPTION =
       "GetPeriodicMeterReadsGas for channel %s, %s from %s until %s, " + "retrieve attribute: %s";
 
