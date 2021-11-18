@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 @Configuration
 public class ThrottlingClientConfig {
@@ -45,6 +46,7 @@ public class ThrottlingClientConfig {
     return this.configurationName;
   }
 
+  @Lazy
   @Bean(destroyMethod = "unregister")
   @Conditional(ThrottlingClientEnabledCondition.class)
   public ThrottlingClient throttlingClient() {
