@@ -94,9 +94,8 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R>
 
       logTime = bufferedDateTime.toDate();
     } else {
-      // no date was available, calculate date based on previous value
       logTime =
-          this.calculateIntervalDate(
+          this.calculateIntervalTimeBasedOnPreviousValue(
               ctx.periodicMeterReadsQuery.getPeriodType(), previousLogTime, ctx.intervalTime);
     }
 
@@ -108,7 +107,7 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R>
   }
 
   /**
-   * Calculates/derives the next interval date in case it was not present in the current meter read
+   * Calculates/derives the next interval time in case it was not present in the current meter read
    * record.
    *
    * @param periodTypeDto the time interval period.
@@ -118,7 +117,7 @@ public abstract class AbstractPeriodicMeterReadsCommandExecutor<T, R>
    * @return the derived date based on the previous meter read record, or null if it cannot be
    *     determined
    */
-  private Date calculateIntervalDate(
+  protected Date calculateIntervalTimeBasedOnPreviousValue(
       final PeriodTypeDto periodTypeDto,
       final Optional<Date> previousLogTime,
       final Optional<ProfileCaptureTime> intervalTime)

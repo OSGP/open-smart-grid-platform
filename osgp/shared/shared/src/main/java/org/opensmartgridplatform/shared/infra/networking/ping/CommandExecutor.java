@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -33,15 +34,18 @@ public class CommandExecutor {
 
     final String commandLine = this.commandLine(commands);
     final Process process = this.start(commands);
-    final Future<List<String>> inputLines =
-        Executors.newSingleThreadExecutor().submit(() -> this.readLinesFromInput(process));
+
+    final ExecutorService executorService = Executors.newSingleThreadExecutor();
     try {
+      final Future<List<String>> inputLines =
+          executorService.submit(() -> this.readLinesFromInput(process));
       return inputLines.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
     } catch (final InterruptedException e) {
       Thread.currentThread().interrupt();
       LOGGER.warn(
           "Reading input lines from executed process was interrupted: \"{}\"", commandLine, e);
     } finally {
+      executorService.shutdownNow();
       if (process.isAlive()) {
         LOGGER.debug("Destroy the process running \"{}\"", commandLine);
         process.destroyForcibly();

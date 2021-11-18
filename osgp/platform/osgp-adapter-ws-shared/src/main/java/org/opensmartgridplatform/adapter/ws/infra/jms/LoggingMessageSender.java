@@ -8,15 +8,11 @@
  */
 package org.opensmartgridplatform.adapter.ws.infra.jms;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.ObjectMessage;
-import javax.jms.Session;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Component;
@@ -25,6 +21,9 @@ import org.springframework.stereotype.Component;
 public class LoggingMessageSender {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LoggingMessageSender.class);
+
+  @Value("${auditlogging.message.create.json:false}")
+  private boolean createJsonMessage;
 
   @Autowired
   @Qualifier("loggingJmsTemplate")
@@ -36,42 +35,22 @@ public class LoggingMessageSender {
    * @param loggingMessage The LoggingRequestMessage request message to send.
    */
   public void send(final LoggingRequestMessage loggingMessage) {
+    if (loggingMessage == null) {
+      LOGGER.error("LoggingMessage is null and will not be send");
+      return;
+    }
     LOGGER.debug("Sending logger message");
-    this.sendMessage(loggingMessage);
+    final MessageCreator messageCreator;
+    if (this.isCreateJsonMessage()) {
+      messageCreator = new LoggingJsonMessageCreator(loggingMessage);
+    } else {
+      messageCreator = new LoggingObjectMessageCreator(loggingMessage);
+    }
+
+    this.loggingJmsTemplate.send(messageCreator);
   }
 
-  /**
-   * Method for sending a logging message to the logger queue.
-   *
-   * @param loggingMessage The LoggingRequestMessage request message to send.
-   */
-  private void sendMessage(final LoggingRequestMessage loggingMessage) {
-    LOGGER.info("Sending logger message to queue");
-
-    this.loggingJmsTemplate.send(
-        new MessageCreator() {
-          @Override
-          public Message createMessage(final Session session) throws JMSException {
-            final ObjectMessage objectMessage = session.createObjectMessage();
-            objectMessage.setJMSCorrelationID(loggingMessage.getCorrelationUid());
-            objectMessage.setLongProperty(
-                Constants.TIME_STAMP, loggingMessage.getTimeStamp().getTime());
-            objectMessage.setStringProperty(Constants.CLASS_NAME, loggingMessage.getClassName());
-            objectMessage.setStringProperty(Constants.METHOD_NAME, loggingMessage.getMethodName());
-            objectMessage.setStringProperty(
-                Constants.ORGANISATION_IDENTIFICATION,
-                loggingMessage.getOrganisationIdentification());
-            objectMessage.setStringProperty(Constants.USER_NAME, loggingMessage.getUserName());
-            objectMessage.setStringProperty(
-                Constants.APPLICATION_NAME, loggingMessage.getApplicationName());
-            objectMessage.setStringProperty(
-                Constants.DEVICE_IDENTIFICATION, loggingMessage.getDeviceIdentification());
-            objectMessage.setStringProperty(
-                Constants.RESPONSE_RESULT, loggingMessage.getResponseResult());
-            objectMessage.setIntProperty(
-                Constants.RESPONSE_DATA_SIZE, loggingMessage.getResponseDataSize());
-            return objectMessage;
-          }
-        });
+  private boolean isCreateJsonMessage() {
+    return this.createJsonMessage;
   }
 }
