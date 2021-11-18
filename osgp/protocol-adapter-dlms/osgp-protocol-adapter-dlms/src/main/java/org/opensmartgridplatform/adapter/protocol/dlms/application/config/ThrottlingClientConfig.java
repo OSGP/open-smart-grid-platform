@@ -10,15 +10,21 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.application.config;
 
 import java.time.Duration;
+import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.throttling.ThrottlingClient;
+import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.web.client.ResourceAccessException;
 
+@Slf4j
 @Configuration
 public class ThrottlingClientConfig {
+
+  private static final int REGISTER_RETRY_DELAY = 5000;
 
   @Value("${throttling.client.enabled:false}")
   private boolean clientEnabled;
@@ -56,8 +62,25 @@ public class ThrottlingClientConfig {
                 this.configurationName, this.configurationMaxConcurrency),
             this.throttlingServiceUrl,
             this.timeout);
-    throttlingClient.register();
+
+    this.registerThrottlingClient(throttlingClient);
     return throttlingClient;
+  }
+
+  protected void registerThrottlingClient(final ThrottlingClient throttlingClient) {
+    try {
+      log.info("Try to register the client to the throttling service");
+      throttlingClient.register();
+    } catch (final ResourceAccessException resourceAccessException) {
+      log.info("Throttling service was not reachable, retry in {} ms", REGISTER_RETRY_DELAY);
+      try {
+        Thread.sleep(REGISTER_RETRY_DELAY);
+      } catch (final InterruptedException e) {
+        Thread.currentThread().interrupt();
+        throw new BeanInitializationException("Interrupted connection to the throttling client", e);
+      }
+      this.registerThrottlingClient(throttlingClient);
+    }
   }
 
   /**
