@@ -166,7 +166,9 @@ public class DlmsConnectionManager implements AutoCloseable {
   @Override
   public void close() {
     try {
-      this.dlmsConnection.close();
+      if (this.dlmsConnection != null) {
+        this.dlmsConnection.close();
+      }
     } catch (final IOException e) {
       LOGGER.warn("Failure while trying to close a DLMS connection", e);
     }

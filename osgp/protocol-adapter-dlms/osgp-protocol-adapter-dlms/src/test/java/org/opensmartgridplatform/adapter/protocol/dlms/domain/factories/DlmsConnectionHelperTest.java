@@ -217,6 +217,35 @@ class DlmsConnectionHelperTest {
   }
 
   @Test
+  void invocationCounterUpdateSuccesfull() throws Exception {
+    final DlmsDevice device =
+        new DlmsDeviceBuilder()
+            .withHls5Active(true)
+            .withProtocol("SMR")
+            .withInvocationCounter(123L)
+            .build();
+    final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
+
+    final ConnectionException exception =
+        new ConnectionException(
+            "Error creating connection for device E0051004228715518 with Ip address:62.133.88.34 Port:null "
+                + "UseHdlc:false UseSn:false Message:Socket was closed by remote host.");
+
+    // First try throw exception, second time no exception
+    doThrow(exception)
+        .doNothing()
+        .when(this.connectionFactory)
+        .createAndHandleConnection(this.messageMetadata, device, listener, null, this.task);
+
+    this.helper.createAndHandleConnectionForDevice(
+        this.messageMetadata, device, listener, null, this.task);
+
+    verify(this.invocationCounterManager).initializeInvocationCounter(this.messageMetadata, device);
+    verify(this.connectionFactory, times(2))
+        .createAndHandleConnection(this.messageMetadata, device, listener, null, this.task);
+  }
+
+  @Test
   void
       doesNotResetInvocationCounterWhenInvocationCounterIsOutOfSyncForDeviceThatNeedsNoInvocationCounter()
           throws Exception {

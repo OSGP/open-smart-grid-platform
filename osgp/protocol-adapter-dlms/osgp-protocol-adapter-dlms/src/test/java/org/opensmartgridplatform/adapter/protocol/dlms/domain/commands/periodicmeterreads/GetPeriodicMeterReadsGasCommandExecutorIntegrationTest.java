@@ -371,14 +371,16 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
     // PERIOD 2
 
     final DataObject period2Clock;
+    final DataObject period2CaptureTime;
     if (useNullData) {
       period2Clock = DataObject.newNullData();
+      period2CaptureTime = DataObject.newNullData();
     } else {
       period2Clock = this.PERIOD_2_CLOCK;
+      period2CaptureTime = DataObject.newDateTimeData(this.PERIOD_2_CAPTURE_TIME);
     }
     final DataObject period2Status = DataObject.newUInteger8Data(AMR_STATUS_VALUE);
     final DataObject period2Value = DataObject.newUInteger32Data(this.PERIOD_2_LONG_VALUE);
-    final DataObject period2CaptureTime = DataObject.newDateTimeData(this.PERIOD_2_CAPTURE_TIME);
 
     final DataObject periodItem2;
     if (type == PeriodTypeDto.MONTHLY && protocol == Protocol.DSMR_4_2_2) {

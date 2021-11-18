@@ -8,42 +8,39 @@
  */
 package org.opensmartgridplatform.core.infra.messaging;
 
-import javax.jms.ObjectMessage;
-import org.opensmartgridplatform.shared.infra.jms.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 
 public class CoreLogItemRequestMessageSender {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(CoreLogItemRequestMessageSender.class);
 
+  @Value("${auditlogging.message.create.json:false}")
+  private boolean createJsonMessage;
+
   @Autowired private JmsTemplate coreLogItemRequestsJmsTemplate;
 
   public void send(final CoreLogItemRequestMessage coreLogItemRequestMessage) {
-
+    if (coreLogItemRequestMessage == null) {
+      LOGGER.error("CoreLogItemRequestMessage is null and will not be send");
+      return;
+    }
     LOGGER.debug("Sending CoreLogItemRequestMessage");
+    final MessageCreator messageCreator;
+    if (this.isCreateJsonMessage()) {
+      messageCreator = new CoreLogItemJsonMessageCreator(coreLogItemRequestMessage);
+    } else {
+      messageCreator = new CoreLogItemObjectMessageCreator(coreLogItemRequestMessage);
+    }
 
-    this.coreLogItemRequestsJmsTemplate.send(
-        session -> {
-          final ObjectMessage objectMessage = session.createObjectMessage();
-          objectMessage.setJMSType(Constants.CORE_LOG_ITEM_REQUEST);
-          objectMessage.setStringProperty(
-              Constants.DECODED_MESSAGE, coreLogItemRequestMessage.getDecodedMessage());
-          objectMessage.setStringProperty(
-              Constants.DEVICE_IDENTIFICATION, coreLogItemRequestMessage.getDeviceIdentification());
-          if (coreLogItemRequestMessage.hasOrganisationIdentification()) {
-            objectMessage.setStringProperty(
-                Constants.ORGANISATION_IDENTIFICATION,
-                coreLogItemRequestMessage.getOrganisationIdentification());
-          }
-          objectMessage.setStringProperty(
-              Constants.IS_VALID, coreLogItemRequestMessage.isValid().toString());
-          objectMessage.setIntProperty(
-              Constants.PAYLOAD_MESSAGE_SERIALIZED_SIZE,
-              coreLogItemRequestMessage.getPayloadMessageSerializedSize());
-          return objectMessage;
-        });
+    this.coreLogItemRequestsJmsTemplate.send(messageCreator);
+  }
+
+  private boolean isCreateJsonMessage() {
+    return this.createJsonMessage;
   }
 }

@@ -45,27 +45,20 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
-public class RecoverKeyProcessTest {
+class RecoverKeyProcessTest {
 
   @InjectMocks RecoverKeyProcess recoverKeyProcess;
 
   @Mock DomainHelperService domainHelperService;
-
   @Mock Hls5Connector hls5Connector;
-
   @Mock SecretManagementService secretManagementService;
-
   @Mock ThrottlingService throttlingService;
-
   @Mock DlmsDeviceRepository dlmsDeviceRepository;
   @Mock ThrottlingClientConfig throttlingClientConfig;
 
   private static final String DEVICE_IDENTIFICATION = "E000123456789";
-
   private static final String IP_ADDRESS = "1.1.1.1";
-
   private static final DlmsDevice DEVICE = mock(DlmsDevice.class);
-
   private static final MessageMetadata MESSAGE_METADATA = mock(MessageMetadata.class);
 
   @BeforeEach
@@ -78,7 +71,7 @@ public class RecoverKeyProcessTest {
   }
 
   @Test
-  public void testWhenDeviceNotFoundThenException() throws OsgpException {
+  void testWhenDeviceNotFoundThenException() throws OsgpException {
 
     // GIVEN
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
@@ -94,7 +87,7 @@ public class RecoverKeyProcessTest {
   }
 
   @Test
-  public void testWhenNotAbleToConnectWithNewKeys() throws OsgpException, IOException {
+  void testWhenNotAbleToConnectWithNewKeys() throws OsgpException, IOException {
 
     // GIVEN
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
@@ -113,7 +106,7 @@ public class RecoverKeyProcessTest {
   }
 
   @Test
-  public void testThrottlingServiceCalledAndKeysActivated() throws Exception {
+  void testThrottlingServiceCalledAndKeysActivated() throws Exception {
 
     // GIVEN
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
@@ -142,7 +135,7 @@ public class RecoverKeyProcessTest {
   }
 
   @Test
-  public void testWhenConnectionFailedThenConnectionClosedAtThrottlingService() throws Exception {
+  void testWhenConnectionFailedThenConnectionClosedAtThrottlingService() throws Exception {
 
     // GIVEN
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
