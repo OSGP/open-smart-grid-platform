@@ -52,6 +52,15 @@ public class ThrottlingClientConfig {
     return this.configurationName;
   }
 
+  /*
+   * This bean should be annotated with @Lazy, because on initialization
+   * the client will register itself at the throttling service.
+   * Registering is done by a http call, whenever the throttling service is
+   * not available yet, the application should start anyway.
+   * On the first call with the throttling client, the register call will be executed.
+   * The client will keep on trying to register itself with throttling service, after the
+   * successful register, the client can communicate with the throttling service
+   */
   @Lazy
   @Bean(destroyMethod = "unregister")
   @Conditional(ThrottlingClientEnabledCondition.class)
