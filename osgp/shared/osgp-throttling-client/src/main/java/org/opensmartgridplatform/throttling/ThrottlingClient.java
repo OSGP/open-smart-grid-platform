@@ -89,9 +89,19 @@ public class ThrottlingClient {
    * Have this client register the configured throttling config with the Throttling REST service. It
    * will also register itself and store the client-ID for subsequent calls.
    */
-  public void register() {
-    this.registerThrottlingConfig();
-    this.registerClient();
+  private boolean register() {
+    try {
+      if (this.throttlingConfig.getId() == null) {
+        this.registerThrottlingConfig();
+      }
+      if (this.clientId == null) {
+        this.registerClient();
+      }
+    } catch (final Exception e) {
+      LOGGER.error("Exception occurred while register client", e);
+      return false;
+    }
+    return true;
   }
 
   private void registerThrottlingConfig() {
@@ -121,6 +131,11 @@ public class ThrottlingClient {
 
   /** Lets the Throttling REST service know this client is going away. */
   public void unregister() {
+    if (this.clientId == null) {
+      LOGGER.info("Client was not registered yet, so skip unregistration");
+      return;
+    }
+
     final ResponseEntity<Void> responseEntity =
         this.restTemplate.exchange(
             "/clients/{clientId}", HttpMethod.DELETE, null, Void.class, this.clientId);
@@ -248,6 +263,11 @@ public class ThrottlingClient {
   }
 
   private Integer numberOfGrantedPermits(final int requestId) {
+    if (!this.register()) {
+      LOGGER.error(
+          "Client could not be registered before requesting permit using requestId {}", requestId);
+      return null;
+    }
 
     try {
       return this.restTemplate.postForObject(
@@ -268,6 +288,14 @@ public class ThrottlingClient {
 
   private Integer numberOfGrantedPermits(
       final int requestId, final int baseTransceiverStationId, final int cellId) {
+    if (!this.register()) {
+      LOGGER.error(
+          "Client could not be registered before requesting permit for network segment ({}, {}) using requestId {}",
+          baseTransceiverStationId,
+          cellId,
+          requestId);
+      return null;
+    }
 
     try {
       return this.restTemplate.postForObject(
@@ -311,6 +339,11 @@ public class ThrottlingClient {
   }
 
   private boolean releasePermit(final Integer requestId) {
+    if (!this.register()) {
+      LOGGER.error(
+          "Client could not be registered before releasing permit using requestId {}", requestId);
+      return false;
+    }
 
     final ResponseEntity<Void> releaseResponse =
         this.restTemplate.exchange(
@@ -349,6 +382,14 @@ public class ThrottlingClient {
 
   private boolean releasePermit(
       final Integer requestId, final int baseTransceiverStationId, final int cellId) {
+    if (!this.register()) {
+      LOGGER.error(
+          "Client could not be registered before releasing permit for network segment ({}, {}) using requestId {}",
+          baseTransceiverStationId,
+          cellId,
+          requestId);
+      return false;
+    }
 
     final ResponseEntity<Void> releaseResponse =
         this.restTemplate.exchange(
@@ -408,6 +449,11 @@ public class ThrottlingClient {
    * @param requestId ID of the discarded request
    */
   public void discardPermit(final int requestId) {
+    if (!this.register()) {
+      LOGGER.error(
+          "Client could not be registered before discarding permit using requestId {}", requestId);
+      return;
+    }
 
     final ResponseEntity<Void> discardResponse =
         this.restTemplate.exchange(

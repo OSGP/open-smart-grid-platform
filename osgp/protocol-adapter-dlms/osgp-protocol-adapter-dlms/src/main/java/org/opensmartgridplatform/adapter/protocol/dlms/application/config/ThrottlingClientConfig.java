@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 
 @Slf4j
 @Configuration
@@ -40,9 +39,6 @@ public class ThrottlingClientConfig {
   @Value("#{T(java.time.Duration).parse('${throttling.rejected.delay:PT10S}')}")
   private Duration permitRejectedDelay;
 
-  @Value("#{T(java.time.Duration).parse('${throttling.register.retry.delay:PT5S}')}")
-  private Duration registerRetryDelay;
-
   public boolean clientEnabled() {
     return this.clientEnabled;
   }
@@ -51,53 +47,14 @@ public class ThrottlingClientConfig {
     return this.configurationName;
   }
 
-  /*
-   * This bean should be annotated with @Lazy, because on initialization
-   * the client will register itself at the throttling service.
-   * Registering is done by a http call, whenever the throttling service is
-   * not available yet, the application should start anyway.
-   * On the first call with the throttling client, the register call will be executed.
-   * The client will keep on trying to register itself with throttling service, after the
-   * successful register, the client can communicate with the throttling service
-   */
-  @Lazy
   @Bean(destroyMethod = "unregister")
   @Conditional(ThrottlingClientEnabledCondition.class)
   public ThrottlingClient throttlingClient() {
-    final ThrottlingClient throttlingClient =
-        new ThrottlingClient(
-            new org.opensmartgridplatform.throttling.api.ThrottlingConfig(
-                this.configurationName, this.configurationMaxConcurrency),
-            this.throttlingServiceUrl,
-            this.timeout);
-
-    this.registerThrottlingClientUntilSuccess(throttlingClient);
-    return throttlingClient;
-  }
-
-  protected void registerThrottlingClientUntilSuccess(final ThrottlingClient throttlingClient) {
-    while (!this.registerThrottlingClient(throttlingClient)) {
-      try {
-        Thread.sleep(this.registerRetryDelay.toMillis());
-      } catch (final InterruptedException e) {
-        Thread.currentThread().interrupt();
-        log.error("InterruptedException while registering the throttling client", e);
-      }
-    }
-  }
-
-  private boolean registerThrottlingClient(final ThrottlingClient throttlingClient) {
-    try {
-      log.info("Try to register the client to the throttling service");
-      throttlingClient.register();
-      return true;
-    } catch (final Exception exception) {
-      log.warn(
-          "Registering the client at the throttling service was not successful, retry in {} ms",
-          this.registerRetryDelay,
-          exception);
-    }
-    return false;
+    return new ThrottlingClient(
+        new org.opensmartgridplatform.throttling.api.ThrottlingConfig(
+            this.configurationName, this.configurationMaxConcurrency),
+        this.throttlingServiceUrl,
+        this.timeout);
   }
 
   /**
