@@ -24,6 +24,7 @@ import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.Jdl
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemObjectDefinitionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.MessageTypeDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SendDestinationAndMethodDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.TransportServiceTypeDto;
@@ -31,6 +32,7 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.TransportService
 public abstract class SetPushSetupCommandExecutor<T, R> extends AbstractCommandExecutor<T, R> {
 
   protected static final int CLASS_ID = 40;
+  protected static final int ATTRIBUTE_ID_PUSH_OBJECT_LIST = 2;
   protected static final int ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD = 3;
 
   private static final Map<TransportServiceTypeDto, Integer> ENUM_VALUE_PER_TRANSPORT_SERVICE_TYPE =
@@ -75,7 +77,7 @@ public abstract class SetPushSetupCommandExecutor<T, R> extends AbstractCommandE
     super(clazz);
   }
 
-  protected AccessResultCode getAccessResultSetSendDestinationAndMethod(
+  protected AccessResultCode getAccessResult(
       final String pushSetup,
       final DlmsConnectionManager conn,
       final ObisCode obisCode,
@@ -84,7 +86,7 @@ public abstract class SetPushSetupCommandExecutor<T, R> extends AbstractCommandE
     conn.getDlmsMessageListener()
         .setDescription(
             pushSetup
-                + " configure send destination and method, set attribute: "
+                + ", set attribute: "
                 + JdlmsObjectToStringUtil.describeAttributes(
                     new AttributeAddress(
                         CLASS_ID, obisCode, ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD)));
@@ -134,5 +136,24 @@ public abstract class SetPushSetupCommandExecutor<T, R> extends AbstractCommandE
       throw new AssertionError("Unknown MessageType: " + messageType);
     }
     return enumValue;
+  }
+
+  protected DataObject buildPushObjectListObject(final List<CosemObjectDefinitionDto> pushObjects) {
+    final List<DataObject> pushObectListElements = new ArrayList<>();
+    pushObjects.forEach(pushObject -> pushObectListElements.add(this.buildPushObject(pushObject)));
+
+    return DataObject.newArrayData(pushObectListElements);
+  }
+
+  private DataObject buildPushObject(final CosemObjectDefinitionDto pushObject) {
+    final DataObject classIdElement = DataObject.newUInteger16Data(pushObject.getClassId());
+    final DataObject obisCodeElement =
+        DataObject.newOctetStringData(pushObject.getLogicalName().toByteArray());
+    final DataObject attributeIdElement =
+        DataObject.newInteger8Data((byte) pushObject.getAttributeIndex());
+    final DataObject accessElement = DataObject.newInteger16Data((short) 0);
+
+    return DataObject.newStructureData(
+        classIdElement, obisCodeElement, attributeIdElement, accessElement);
   }
 }
