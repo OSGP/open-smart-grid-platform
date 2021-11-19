@@ -12,7 +12,6 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.config;
 import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.throttling.ThrottlingClient;
-import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -23,8 +22,6 @@ import org.springframework.web.client.ResourceAccessException;
 @Slf4j
 @Configuration
 public class ThrottlingClientConfig {
-
-  private static final int REGISTER_RETRY_DELAY = 5000;
 
   @Value("${throttling.client.enabled:false}")
   private boolean clientEnabled;
@@ -42,7 +39,10 @@ public class ThrottlingClientConfig {
   private Duration timeout;
 
   @Value("#{T(java.time.Duration).parse('${throttling.rejected.delay:PT10S}')}")
-  private Duration delay;
+  private Duration permitRejectedDelay;
+
+  @Value("#{T(java.time.Duration).parse('${throttling.register.retry.delay:PT5S}')}")
+  private Duration registerRetryDelay;
 
   public boolean clientEnabled() {
     return this.clientEnabled;
@@ -81,14 +81,14 @@ public class ThrottlingClientConfig {
       log.info("Try to register the client to the throttling service");
       throttlingClient.register();
     } catch (final ResourceAccessException resourceAccessException) {
-      log.info("Throttling service was not reachable, retry in {} ms", REGISTER_RETRY_DELAY);
+      log.info("Throttling service was not reachable, retry in {} ms", this.registerRetryDelay);
       try {
-        Thread.sleep(REGISTER_RETRY_DELAY);
+        Thread.sleep(this.registerRetryDelay.toMillis());
+        this.registerThrottlingClient(throttlingClient);
       } catch (final InterruptedException e) {
         Thread.currentThread().interrupt();
-        throw new BeanInitializationException("Interrupted connection to the throttling client", e);
+        log.error("InterruptedException while registering the throttling client", e);
       }
-      this.registerThrottlingClient(throttlingClient);
     }
   }
 
@@ -97,7 +97,7 @@ public class ThrottlingClientConfig {
    *
    * @return delay
    */
-  public Duration delay() {
-    return this.delay;
+  public Duration permitRejectedDelay() {
+    return this.permitRejectedDelay;
   }
 }
