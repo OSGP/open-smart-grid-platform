@@ -17,7 +17,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.web.client.ResourceAccessException;
 
 @Slf4j
 @Configuration
@@ -72,24 +71,33 @@ public class ThrottlingClientConfig {
             this.throttlingServiceUrl,
             this.timeout);
 
-    this.registerThrottlingClient(throttlingClient);
+    this.registerThrottlingClientUntilSuccess(throttlingClient);
     return throttlingClient;
   }
 
-  protected void registerThrottlingClient(final ThrottlingClient throttlingClient) {
-    try {
-      log.info("Try to register the client to the throttling service");
-      throttlingClient.register();
-    } catch (final ResourceAccessException resourceAccessException) {
-      log.info("Throttling service was not reachable, retry in {} ms", this.registerRetryDelay);
+  protected void registerThrottlingClientUntilSuccess(final ThrottlingClient throttlingClient) {
+    while (!this.registerThrottlingClient(throttlingClient)) {
       try {
         Thread.sleep(this.registerRetryDelay.toMillis());
-        this.registerThrottlingClient(throttlingClient);
       } catch (final InterruptedException e) {
         Thread.currentThread().interrupt();
         log.error("InterruptedException while registering the throttling client", e);
       }
     }
+  }
+
+  private boolean registerThrottlingClient(final ThrottlingClient throttlingClient) {
+    try {
+      log.info("Try to register the client to the throttling service");
+      throttlingClient.register();
+      return true;
+    } catch (final Exception exception) {
+      log.warn(
+          "Registering the client at the throttling service was not successful, retry in {} ms",
+          this.registerRetryDelay,
+          exception);
+    }
+    return false;
   }
 
   /**

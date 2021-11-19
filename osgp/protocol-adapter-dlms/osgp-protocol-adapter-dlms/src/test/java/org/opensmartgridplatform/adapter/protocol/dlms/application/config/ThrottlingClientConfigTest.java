@@ -18,15 +18,29 @@ import static org.mockito.Mockito.verify;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opensmartgridplatform.throttling.ThrottlingClient;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.ResourceAccessException;
 
 class ThrottlingClientConfigTest {
   private final ThrottlingClientConfig throttlingClientConfig = new ThrottlingClientConfig();
+
+  @BeforeEach
+  void setUp() {
+    ReflectionTestUtils.setField(
+        this.throttlingClientConfig, "throttlingServiceUrl", "http://localhost:9090");
+    ReflectionTestUtils.setField(this.throttlingClientConfig, "timeout", Duration.ofMillis(1));
+    ReflectionTestUtils.setField(
+        this.throttlingClientConfig, "permitRejectedDelay", Duration.ofMillis(2));
+    ReflectionTestUtils.setField(
+        this.throttlingClientConfig, "registerRetryDelay", Duration.ofMillis(3));
+  }
 
   /*
    * This bean should be annotated with @Lazy, because on initialization
@@ -50,7 +64,7 @@ class ThrottlingClientConfigTest {
   void registerThrottlingClient() throws URISyntaxException {
     final ThrottlingClient throttlingClient = mock(ThrottlingClient.class);
 
-    this.throttlingClientConfig.registerThrottlingClient(throttlingClient);
+    this.throttlingClientConfig.registerThrottlingClientUntilSuccess(throttlingClient);
     verify(throttlingClient).register();
   }
 
@@ -65,7 +79,7 @@ class ThrottlingClientConfigTest {
 
     doThrow(new ResourceAccessException("")).doNothing().when(throttlingClient).register();
 
-    this.throttlingClientConfig.registerThrottlingClient(throttlingClient);
+    this.throttlingClientConfig.registerThrottlingClientUntilSuccess(throttlingClient);
     verify(throttlingClient, times(2)).register();
   }
 }
