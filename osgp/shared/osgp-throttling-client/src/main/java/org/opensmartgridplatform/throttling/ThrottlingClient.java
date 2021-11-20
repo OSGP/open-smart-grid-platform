@@ -104,7 +104,11 @@ public class ThrottlingClient {
     return true;
   }
 
-  private void registerThrottlingConfig() {
+  /*
+   * registerThrottlingConfig should be synchronized, to make sure there is only
+   * one thread registering the throttling config
+   */
+  private synchronized void registerThrottlingConfig() {
     final Short throttlingConfigId =
         this.restTemplate.postForObject("/throttling-configs", this.throttlingConfig, Short.class);
 
@@ -118,7 +122,11 @@ public class ThrottlingClient {
     LOGGER.info("Registered {}", this.throttlingConfig);
   }
 
-  private void registerClient() {
+  /*
+   * registerThrottlingConfig should be synchronized, to make sure there is only
+   * one thread registering the client
+   */
+  private synchronized void registerClient() {
 
     this.clientId = this.restTemplate.postForObject("/clients", null, Integer.class);
 
