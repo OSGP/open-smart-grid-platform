@@ -17,6 +17,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -57,7 +58,7 @@ public class SecretManagementServiceTest {
   @Mock private RsaEncrypter rsaEncrypter;
 
   @BeforeEach
-  public void setHsmEncryption() {
+  public void setUpSecretManagementService() {
     this.service =
         new SecretManagementService(
             this.encryptionDelegate,
@@ -65,7 +66,8 @@ public class SecretManagementServiceTest {
             this.secretRepository,
             this.keyRepository,
             this.rsaEncrypter);
-    ReflectionTestUtils.setField(this.service, "maxMinutesForNewKeyToBeActivated", 5);
+    ReflectionTestUtils.setField(
+        this.service, "maxDurationForNewKeyToBeActivated", Duration.ofMinutes(5));
   }
 
   @Test
@@ -188,11 +190,11 @@ public class SecretManagementServiceTest {
     assertThat(savedSecret.getCreationTime()).isNotNull();
   }
 
-  private DbEncryptedSecret getNewMasterSecret(final long minutesOld) {
+  private DbEncryptedSecret getNewEncryptionSecret(final long minutesOld) {
     final DbEncryptedSecret oldNewMasterSecret = this.getNewSecret();
     oldNewMasterSecret.setCreationTime(
         new Date(System.currentTimeMillis() - (minutesOld * 60000L)));
-    oldNewMasterSecret.setSecretType(SecretType.E_METER_MASTER_KEY);
+    oldNewMasterSecret.setSecretType(SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
     return oldNewMasterSecret;
   }
 
@@ -215,64 +217,69 @@ public class SecretManagementServiceTest {
   public void storeNewSecretWhenRecentNewSecretAlreadyExists() throws Exception {
     // WHEN
     when(this.secretRepository.getSecretCount(
-            SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.NEW))
+            SOME_DEVICE, SecretType.E_METER_ENCRYPTION_KEY_UNICAST, SecretStatus.NEW))
         .thenReturn(1);
     when(this.secretRepository.findSecrets(
-            SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.NEW))
-        .thenReturn(Arrays.asList(this.getNewMasterSecret(0)));
+            SOME_DEVICE, SecretType.E_METER_ENCRYPTION_KEY_UNICAST, SecretStatus.NEW))
+        .thenReturn(Arrays.asList(this.getNewEncryptionSecret(0)));
 
     // THEN
-    final TypedSecret typedSecret = new TypedSecret(new byte[16], SecretType.E_METER_MASTER_KEY);
+    final TypedSecret typedSecret =
+        new TypedSecret(new byte[16], SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
     assertThatIllegalStateException()
         .isThrownBy(
             () -> this.service.storeOrResetNewSecrets(SOME_DEVICE, Arrays.asList(typedSecret)))
         .withMessageStartingWith(
-            "There is/are secrets of type %s for device %s with status NEW created less than",
+            "There is a secret of type %s for device %s with status NEW "
+                + "created within less than a duration defined for a new key to be actived in. "
+                + "No key with status NEW will be stored. Wait at least the defined duration "
+                + "before starting a request requiring NEW keys to be stored:",
             typedSecret.getSecretType().name(), SOME_DEVICE);
   }
 
   @Test
   public void storeNewSecretWhenOlderNewSecretAlreadyExists() throws Exception {
     // GIVEN
-    final DbEncryptedSecret secret = this.getNewMasterSecret(100);
+    final DbEncryptedSecret secret = this.getNewEncryptionSecret(100);
     // WHEN
     when(this.secretRepository.getSecretCount(
-            SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.NEW))
+            SOME_DEVICE, SecretType.E_METER_ENCRYPTION_KEY_UNICAST, SecretStatus.NEW))
         .thenReturn(1);
     when(this.secretRepository.findSecrets(
-            SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.NEW))
+            SOME_DEVICE, SecretType.E_METER_ENCRYPTION_KEY_UNICAST, SecretStatus.NEW))
         .thenReturn(Arrays.asList(secret));
 
-    final TypedSecret typedSecret = new TypedSecret(new byte[16], SecretType.E_METER_MASTER_KEY);
+    final TypedSecret typedSecret =
+        new TypedSecret(new byte[16], SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
     this.service.storeOrResetNewSecrets(SOME_DEVICE, Arrays.asList(typedSecret));
 
     // THEN
     final List<DbEncryptedSecret> foundSecrets =
         this.secretRepository.findSecrets(
-            SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.NEW);
+            SOME_DEVICE, SecretType.E_METER_ENCRYPTION_KEY_UNICAST, SecretStatus.NEW);
     assertThat(foundSecrets).hasSize(1);
 
     verify(this.secretRepository, never()).saveAll(Arrays.asList(secret));
-    assertThat(secret.getCreationTime().getTime() - new Date().getTime()).isLessThan(10L);
+    assertThat(secret.getCreationTime()).isCloseTo(new Date(), 10);
     assertThat(secret.getSecretStatus()).isEqualTo(SecretStatus.NEW);
   }
 
   @Test
   public void storeNewSecretsWhenOneRecentAndOlderNewSecretAlreadyExists() throws Exception {
     // GIVEN
-    final DbEncryptedSecret secretOldMaster = this.getNewMasterSecret(100);
-    final DbEncryptedSecret secretOlderMaster = this.getNewMasterSecret(1000);
+    final DbEncryptedSecret secretOldEncryption = this.getNewEncryptionSecret(100);
+    final DbEncryptedSecret secretOlderEncryption = this.getNewEncryptionSecret(1000);
     final DbEncryptedSecret secretOldAuthen = this.getNewAuthenticationSecret(100);
     final DbEncryptedSecret secretOlderAuthen = this.getNewAuthenticationSecret(1000);
-    final Date olderCreationTime = secretOlderMaster.getCreationTime();
+    final Date olderCreationTime = secretOlderEncryption.getCreationTime();
 
     // WHEN
     when(this.secretRepository.getSecretCount(
-            SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.NEW))
+            SOME_DEVICE, SecretType.E_METER_ENCRYPTION_KEY_UNICAST, SecretStatus.NEW))
         .thenReturn(2);
     when(this.secretRepository.findSecrets(
-            SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.NEW))
-        .thenReturn(Arrays.asList(secretOldMaster, secretOlderMaster));
+            SOME_DEVICE, SecretType.E_METER_ENCRYPTION_KEY_UNICAST, SecretStatus.NEW))
+        .thenReturn(Arrays.asList(secretOldEncryption, secretOlderEncryption));
     when(this.secretRepository.getSecretCount(
             SOME_DEVICE, SecretType.E_METER_AUTHENTICATION_KEY, SecretStatus.NEW))
         .thenReturn(2);
@@ -280,27 +287,28 @@ public class SecretManagementServiceTest {
             SOME_DEVICE, SecretType.E_METER_AUTHENTICATION_KEY, SecretStatus.NEW))
         .thenReturn(Arrays.asList(secretOldAuthen, secretOlderAuthen));
 
-    final TypedSecret typedSecretMaster =
-        new TypedSecret(new byte[16], SecretType.E_METER_MASTER_KEY);
+    final TypedSecret typedSecretEncryption =
+        new TypedSecret(new byte[16], SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
     final TypedSecret typedSecretAuthen =
         new TypedSecret(new byte[16], SecretType.E_METER_AUTHENTICATION_KEY);
     this.service.storeOrResetNewSecrets(
-        SOME_DEVICE, Arrays.asList(typedSecretMaster, typedSecretAuthen));
+        SOME_DEVICE, Arrays.asList(typedSecretEncryption, typedSecretAuthen));
 
     // THEN
-    verify(this.secretRepository, never()).saveAll(Arrays.asList(secretOldMaster));
+    verify(this.secretRepository, never()).saveAll(Arrays.asList(secretOldEncryption));
     verify(this.secretRepository, never()).saveAll(Arrays.asList(secretOldAuthen));
-    verify(this.secretRepository, never()).saveAll(Arrays.asList(secretOldMaster, secretOldAuthen));
+    verify(this.secretRepository, never())
+        .saveAll(Arrays.asList(secretOldEncryption, secretOldAuthen));
 
-    assertThat(secretOldMaster.getCreationTime().getTime() - new Date().getTime()).isLessThan(10L);
-    assertThat(secretOldAuthen.getCreationTime().getTime() - new Date().getTime()).isLessThan(10L);
-    assertThat(secretOldMaster.getSecretStatus()).isEqualTo(SecretStatus.NEW);
+    assertThat(secretOldEncryption.getCreationTime()).isCloseTo(new Date(), 10);
+    assertThat(secretOldAuthen.getCreationTime()).isCloseTo(new Date(), 10);
+    assertThat(secretOldEncryption.getSecretStatus()).isEqualTo(SecretStatus.NEW);
     assertThat(secretOldAuthen.getSecretStatus()).isEqualTo(SecretStatus.NEW);
-    assertThat(secretOlderMaster.getCreationTime().getTime())
+    assertThat(secretOlderEncryption.getCreationTime().getTime())
         .isEqualTo(olderCreationTime.getTime());
     assertThat(secretOlderAuthen.getCreationTime().getTime())
         .isEqualTo(olderCreationTime.getTime());
-    assertThat(secretOlderMaster.getSecretStatus()).isEqualTo(SecretStatus.EXPIRED);
+    assertThat(secretOlderEncryption.getSecretStatus()).isEqualTo(SecretStatus.EXPIRED);
     assertThat(secretOlderAuthen.getSecretStatus()).isEqualTo(SecretStatus.EXPIRED);
   }
 

@@ -730,9 +730,8 @@ public class DlmsDeviceSteps {
     return null;
   }
 
-  @Given(
-      "new keys are registered in the secret management database with creationDate {int} minutes ago")
-  public void newKeysAreRegisteredInTheSecretManagementDatabaseWithCreationDateMinutesAgo(
+  @Given("new keys are registered in the secret management database {int} minutes ago")
+  public void newKeysAreRegisteredInTheSecretManagementDatabaseMinutesAgo(
       final int minutesAgo, final Map<String, String> inputSettings) {
     this.registerNewKeys(minutesAgo, inputSettings);
   }

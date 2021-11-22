@@ -15,7 +15,6 @@ Feature: SmartMetering functional exceptions regarding encryption keys
       | MbusUserKey                    | 17ec0e5f6a3314df6239cf9f1b902cbfc9f39e82c57a40ffd8a3e552cc720c92 |
     When the replace keys request is received
       | DeviceIdentification | TEST1024000000001 |
-      | Master_key           | abcdef0123456789  |
       | Authentication_key   | def0123456789abc  |
       | Encryption_key       | abc0123456789def  |
     Then the replace keys response generating an error is received

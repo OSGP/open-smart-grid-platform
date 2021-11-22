@@ -11,12 +11,15 @@ package org.opensmartgridplatform.secretmanagement.application.services;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.apache.tomcat.util.buf.HexUtils;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptedSecret;
@@ -55,10 +58,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class SecretManagementService {
 
-  private static final long MILLISECONDS_IN_MINUTE = 60000L;
-
-  @Value("${max.minutes.for.new.key.to.be.activated:5}")
-  private Integer maxMinutesForNewKeyToBeActivated;
+  @Value("#{T(java.time.Duration).parse('${max.duration.for.new.key.to.be.activated:PT5M}')}")
+  private Duration maxDurationForNewKeyToBeActivated;
 
   // Internal datastructure to keep track of (intermediate) secret details
   private static class EncryptedTypedSecret {
@@ -264,26 +265,31 @@ public class SecretManagementService {
               deviceIdentification, typedSecret.getSecretType(), SecretStatus.NEW);
       if (numberOfNewSecrets == 0) {
         typedNewSecretsToStore.add(typedSecret);
-      } else if (this.recentNewSecretsPresent(
-          deviceIdentification, this.maxMinutesForNewKeyToBeActivated, typedSecret)) {
-        final String errorMsg =
-            "There is/are secrets of type %s for device %s with status NEW "
-                + "created less than %d minutes ago. No key with status NEW will be stored. Wait "
-                + "at least %d minutes before starting a request requiring NEW keys to be stored.";
-        throw new IllegalStateException(
-            String.format(
-                errorMsg,
-                typedSecret.getSecretType().name(),
-                deviceIdentification,
-                this.maxMinutesForNewKeyToBeActivated,
-                this.maxMinutesForNewKeyToBeActivated));
       } else {
+        this.verifyNoRecentKeyReplacementIsRunning(deviceIdentification, typedSecret);
         typedNewSecretsToReset.add(typedSecret);
       }
     }
     this.storeSecrets(deviceIdentification, typedNewSecretsToStore);
     typedNewSecretsToReset.forEach(
         ts -> this.resetNewSecrets(deviceIdentification, ts.getSecretType()));
+  }
+
+  private void verifyNoRecentKeyReplacementIsRunning(
+      final String deviceIdentification, final TypedSecret typedSecret) {
+    if (this.recentNewSecretsPresent(deviceIdentification, typedSecret)) {
+      final String errorMsg =
+          "There is a secret of type %s for device %s with status NEW "
+              + "created within less than a duration defined for a new key to be actived in. "
+              + "No key with status NEW will be stored. Wait at least the defined duration "
+              + "before starting a request requiring NEW keys to be stored: %s";
+      throw new IllegalStateException(
+          String.format(
+              errorMsg,
+              typedSecret.getSecretType().name(),
+              deviceIdentification,
+              this.maxDurationForNewKeyToBeActivated.toString()));
+    }
   }
 
   private void resetNewSecrets(final String deviceIdentification, final SecretType secretType) {
@@ -305,17 +311,19 @@ public class SecretManagementService {
   }
 
   private boolean recentNewSecretsPresent(
-      final String deviceIdentification, final long maxMinutesOld, final TypedSecret typedSecret) {
+      final String deviceIdentification, final TypedSecret typedSecret) {
     final List<DbEncryptedSecret> secrets =
         this.secretRepository.findSecrets(
             deviceIdentification, typedSecret.getSecretType(), SecretStatus.NEW);
-    return secrets.stream()
-            .filter(
-                s ->
-                    new Date().getTime() - s.getCreationTime().getTime()
-                        < (maxMinutesOld * MILLISECONDS_IN_MINUTE))
-            .count()
-        > 0;
+    return secrets.stream().anyMatch(this.isRecentSecret());
+  }
+
+  private Predicate<DbEncryptedSecret> isRecentSecret() {
+    return s -> {
+      final Duration durationSinceCreationOfKey =
+          Duration.between(s.getCreationTime().toInstant(), Instant.now());
+      return durationSinceCreationOfKey.compareTo(this.maxDurationForNewKeyToBeActivated) != 1;
+    };
   }
 
   private synchronized void storeSecrets(

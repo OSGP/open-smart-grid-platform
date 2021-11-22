@@ -49,7 +49,7 @@ import org.springframework.ws.test.server.ResponseMatchers;
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
 @Transactional
-@TestPropertySource(properties = {"max.minutes.for.new.key.to.be.activated=5"})
+@TestPropertySource(properties = {"max.duration.for.new.key.to.be.activated=PT5M"})
 public class SoapServiceSecretManagementIT {
 
   /**
@@ -206,9 +206,10 @@ public class SoapServiceSecretManagementIT {
         .andExpect(ResponseMatchers.payload(expectedStoreResponse));
     // Store secrets again, while previously stored secret still have status NEW
     final String errorMessage =
-        "There is/are secrets of type E_METER_AUTHENTICATION_KEY for device E0000000000000000 with "
-            + "status NEW created less than 5 minutes ago. No key with status NEW will be stored. Wait"
-            + " at least 5 minutes before starting a request requiring NEW keys to be stored.";
+        "There is a secret of type E_METER_AUTHENTICATION_KEY for device E0000000000000000 with status NEW "
+            + "created within less than a duration defined for a new key to be actived in. "
+            + "No key with status NEW will be stored. Wait at least the defined duration "
+            + "before starting a request requiring NEW keys to be stored: PT5M";
     this.mockWebServiceClient
         .sendRequest(withSoapEnvelope(storeRequest))
         .andExpect(ResponseMatchers.serverOrReceiverFault(errorMessage));
