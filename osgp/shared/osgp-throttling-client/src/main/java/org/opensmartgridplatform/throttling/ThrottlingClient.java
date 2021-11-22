@@ -90,13 +90,12 @@ public class ThrottlingClient {
    * will also register itself and store the client-ID for subsequent calls.
    */
   private boolean register() {
+    if (this.isRegistered()) {
+      return true;
+    }
     try {
-      if (this.throttlingConfig.getId() == null) {
-        this.registerThrottlingConfig();
-      }
-      if (this.clientId == null) {
-        this.registerClient();
-      }
+      this.registerThrottlingConfig();
+      this.registerClient();
     } catch (final Exception e) {
       LOGGER.error("Exception occurred while register client", e);
       return false;
@@ -104,11 +103,18 @@ public class ThrottlingClient {
     return true;
   }
 
+  private boolean isRegistered() {
+    return this.clientId != null && this.throttlingConfig.getId() != null;
+  }
+
   /*
    * registerThrottlingConfig should be synchronized, to make sure there is only
    * one thread registering the throttling config
    */
   private synchronized void registerThrottlingConfig() {
+    if (this.throttlingConfig.getId() != null) {
+      return;
+    }
     final Short throttlingConfigId =
         this.restTemplate.postForObject("/throttling-configs", this.throttlingConfig, Short.class);
 
@@ -127,6 +133,9 @@ public class ThrottlingClient {
    * one thread registering the client
    */
   private synchronized void registerClient() {
+    if (this.clientId != null) {
+      return;
+    }
 
     this.clientId = this.restTemplate.postForObject("/clients", null, Integer.class);
 
