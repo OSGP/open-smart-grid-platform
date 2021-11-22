@@ -102,7 +102,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
        * picked up again a little later by the message listener for device requests.
        */
       this.deviceRequestMessageSender.send(
-          messageObject, messageMetadata, this.throttlingClientConfig.delay());
+          messageObject, messageMetadata, this.throttlingClientConfig.permitRejectedDelay());
 
     } catch (final Exception exception) {
       this.sendErrorResponse(messageMetadata, exception, messageObject);
