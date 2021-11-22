@@ -8,18 +8,22 @@
  */
 package org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.pushsetup;
 
+import java.util.List;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.factories.DlmsConnectionManager;
 import org.opensmartgridplatform.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
+import org.opensmartgridplatform.dto.valueobjects.smartmetering.CosemObjectDefinitionDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetPushSetupAlarmRequestDto;
+import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,8 +37,11 @@ public class SetPushSetupAlarmCommandExecutor
       LoggerFactory.getLogger(SetPushSetupAlarmCommandExecutor.class);
   private static final ObisCode OBIS_CODE = new ObisCode("0.1.25.9.0.255");
 
-  public SetPushSetupAlarmCommandExecutor() {
+  private final DlmsHelper dlmsHelper;
+
+  public SetPushSetupAlarmCommandExecutor(final DlmsHelper dlmsHelper) {
     super(SetPushSetupAlarmRequestDto.class);
+    this.dlmsHelper = dlmsHelper;
   }
 
   @Override
@@ -67,17 +74,28 @@ public class SetPushSetupAlarmCommandExecutor
 
     this.checkPushSetupAlarm(pushSetupAlarm);
 
-    AccessResultCode resultCode = this.setSendDestinationAndMethod(conn, pushSetupAlarm);
+    AccessResultCode resultCode = null;
 
-    if (resultCode != AccessResultCode.SUCCESS) {
-      return resultCode;
+    if (pushSetupAlarm.hasSendDestinationAndMethod()) {
+      resultCode = this.setSendDestinationAndMethod(conn, pushSetupAlarm);
+
+      if (resultCode != AccessResultCode.SUCCESS) {
+        return resultCode;
+      }
     }
 
     if (pushSetupAlarm.hasPushObjectList()) {
       resultCode = this.setPushObjectList(conn, pushSetupAlarm);
+
+      return resultCode;
     }
 
-    return resultCode;
+    if (resultCode == null) {
+      throw new ProtocolAdapterException(
+          "SetPushSetupAlarmCommandExecutor called without any valid option set in request.");
+    } else {
+      return resultCode;
+    }
   }
 
   private AccessResultCode setSendDestinationAndMethod(
@@ -85,9 +103,12 @@ public class SetPushSetupAlarmCommandExecutor
       throws ProtocolAdapterException {
     final SetParameter setParameterSendDestinationAndMethod =
         this.getSetParameterSendDestinationAndMethod(pushSetupAlarm);
+    LOGGER.info(
+        "Setting Send destination and method of Push Setup Alarm: {}",
+        pushSetupAlarm.getPushObjectList());
 
     final AccessResultCode resultCode =
-        this.getAccessResult(
+        this.doSetRequest(
             "PushSetupAlarm, Send destination and method",
             conn,
             OBIS_CODE,
@@ -115,17 +136,59 @@ public class SetPushSetupAlarmCommandExecutor
   private AccessResultCode setPushObjectList(
       final DlmsConnectionManager conn, final PushSetupAlarmDto pushSetupAlarm)
       throws ProtocolAdapterException {
+    LOGGER.info(
+        "Setting Push Object List of Push Setup Alarm: {}", pushSetupAlarm.getPushObjectList());
+
+    // Before setting the push object list, verify if the objects in the list are really present in
+    // the meter
+    this.verifyPushObjects(pushSetupAlarm.getPushObjectList(), conn);
+
     final SetParameter setParameterPushObjectList =
         this.getSetParameterPushObjectList(pushSetupAlarm);
 
     final AccessResultCode resultCode =
-        this.getAccessResult(
+        this.doSetRequest(
             "PushSetupAlarm, push object list", conn, OBIS_CODE, setParameterPushObjectList);
 
     if (resultCode != null) {
       return resultCode;
     } else {
       throw new ProtocolAdapterException("Error setting Alarm push setup data (push object list).");
+    }
+  }
+
+  private void verifyPushObjects(
+      final List<CosemObjectDefinitionDto> pushObjects, final DlmsConnectionManager conn)
+      throws ProtocolAdapterException {
+    for (final CosemObjectDefinitionDto pushObject : pushObjects) {
+      this.verifyPushObject(pushObject, conn);
+    }
+  }
+
+  private void verifyPushObject(
+      final CosemObjectDefinitionDto pushObject, final DlmsConnectionManager conn)
+      throws ProtocolAdapterException {
+    final int dataIndex = pushObject.getDataIndex();
+    if (dataIndex != 0) {
+      throw new ProtocolAdapterException(
+          "PushObject contains non-zero data index: "
+              + dataIndex
+              + ". Using data index is not implemented.");
+    }
+
+    final ObisCode obisCode = new ObisCode(pushObject.getLogicalName().toByteArray());
+
+    final AttributeAddress attributeAddress =
+        new AttributeAddress(pushObject.getClassId(), obisCode, pushObject.getAttributeIndex());
+
+    try {
+      this.dlmsHelper.getAttributeValue(conn, attributeAddress);
+    } catch (final FunctionalException e) {
+      throw new ProtocolAdapterException(
+          "Verification of push object failed. Object "
+              + obisCode.asHexCodeString()
+              + " could not be retrieved using a get request.",
+          e);
     }
   }
 
@@ -138,19 +201,7 @@ public class SetPushSetupAlarmCommandExecutor
     return new SetParameter(pushObjectListAddress, value);
   }
 
-  private void checkPushSetupAlarm(final PushSetupAlarmDto pushSetupAlarm)
-      throws ProtocolAdapterException {
-    if (!pushSetupAlarm.hasSendDestinationAndMethod()) {
-      LOGGER.error("Send Destination and Method of the Push Setup Alarm is expected to be set.");
-      throw new ProtocolAdapterException(
-          "Error setting Alarm push setup data. No destination and method data");
-    }
-
-    if (pushSetupAlarm.hasPushObjectList()) {
-      LOGGER.info(
-          "Setting Push Object List of Push Setup Alarm: {}", pushSetupAlarm.getPushObjectList());
-    }
-
+  private void checkPushSetupAlarm(final PushSetupAlarmDto pushSetupAlarm) {
     if (pushSetupAlarm.hasCommunicationWindow()) {
       LOGGER.warn(
           "Setting Communication Window of Push Setup Alarm not implemented: {}",

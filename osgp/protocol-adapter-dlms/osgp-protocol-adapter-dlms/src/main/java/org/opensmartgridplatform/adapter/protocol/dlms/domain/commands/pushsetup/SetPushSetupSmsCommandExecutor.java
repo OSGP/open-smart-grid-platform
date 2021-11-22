@@ -68,7 +68,7 @@ public class SetPushSetupSmsCommandExecutor
     final SetParameter setParameterSendDestinationAndMethod = this.getSetParameter(pushSetupSms);
 
     final AccessResultCode resultCode =
-        this.getAccessResult(
+        this.doSetRequest(
             "PushSetupSms, Send destination and method",
             conn,
             OBIS_CODE,

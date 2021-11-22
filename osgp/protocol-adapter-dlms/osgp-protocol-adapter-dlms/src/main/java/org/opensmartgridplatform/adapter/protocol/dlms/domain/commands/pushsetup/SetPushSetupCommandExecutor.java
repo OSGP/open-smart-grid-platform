@@ -77,7 +77,7 @@ public abstract class SetPushSetupCommandExecutor<T, R> extends AbstractCommandE
     super(clazz);
   }
 
-  protected AccessResultCode getAccessResult(
+  protected AccessResultCode doSetRequest(
       final String pushSetup,
       final DlmsConnectionManager conn,
       final ObisCode obisCode,
@@ -151,9 +151,9 @@ public abstract class SetPushSetupCommandExecutor<T, R> extends AbstractCommandE
         DataObject.newOctetStringData(pushObject.getLogicalName().toByteArray());
     final DataObject attributeIdElement =
         DataObject.newInteger8Data((byte) pushObject.getAttributeIndex());
-    final DataObject accessElement = DataObject.newInteger16Data((short) 0);
+    final DataObject dataIndexElement = DataObject.newUInteger16Data(pushObject.getDataIndex());
 
     return DataObject.newStructureData(
-        classIdElement, obisCodeElement, attributeIdElement, accessElement);
+        classIdElement, obisCodeElement, attributeIdElement, dataIndexElement);
   }
 }
