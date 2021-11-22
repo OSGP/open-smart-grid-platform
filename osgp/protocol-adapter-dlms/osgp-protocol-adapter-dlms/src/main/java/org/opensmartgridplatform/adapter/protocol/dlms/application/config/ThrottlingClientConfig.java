@@ -10,14 +10,13 @@
 package org.opensmartgridplatform.adapter.protocol.dlms.application.config;
 
 import java.time.Duration;
-import lombok.extern.slf4j.Slf4j;
 import org.opensmartgridplatform.throttling.ThrottlingClient;
+import org.opensmartgridplatform.throttling.api.ThrottlingConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
-@Slf4j
 @Configuration
 public class ThrottlingClientConfig {
 
@@ -51,8 +50,7 @@ public class ThrottlingClientConfig {
   @Conditional(ThrottlingClientEnabledCondition.class)
   public ThrottlingClient throttlingClient() {
     return new ThrottlingClient(
-        new org.opensmartgridplatform.throttling.api.ThrottlingConfig(
-            this.configurationName, this.configurationMaxConcurrency),
+        new ThrottlingConfig(this.configurationName, this.configurationMaxConcurrency),
         this.throttlingServiceUrl,
         this.timeout);
   }

@@ -65,25 +65,6 @@ class ThrottlingClientTest {
     return new MockResponse().setResponseCode(HttpStatus.NOT_FOUND.value());
   }
 
-  private void whenTheThrottlingServiceReturnsIdsOnRegistration(
-      final short throttlingConfigId, final int clientId) {
-
-    this.mockWebServer.setDispatcher(
-        new Dispatcher() {
-          @Override
-          public MockResponse dispatch(final RecordedRequest request) {
-            if (ThrottlingClientTest.this.isThrottlingConfigRegister(request)) {
-              return ThrottlingClientTest.this.okWithIdResponse(throttlingConfigId);
-            }
-            if (ThrottlingClientTest.this.isClientRegister(request)) {
-              return ThrottlingClientTest.this.okWithIdResponse(clientId);
-            }
-
-            return ThrottlingClientTest.this.requestReceivedAtUnexpectedEndpointResponse();
-          }
-        });
-  }
-
   private void whenTheThrottlingServiceReturnsFailureOnRegistration() {
     this.mockWebServer.setDispatcher(
         new Dispatcher() {
@@ -210,15 +191,9 @@ class ThrottlingClientTest {
 
   @Test
   void registerFailureClientRequestsPermitByNetworkSegment() {
-    final short throttlingConfigId = 37;
-    final int clientId = 347198;
     final int baseTransceiverStationId = 983745;
     final int cellId = 2;
-    final int requestId = 894;
     this.whenTheThrottlingServiceReturnsFailureOnRegistration();
-
-    final Permit expectedPermit =
-        new Permit(throttlingConfigId, clientId, requestId, baseTransceiverStationId, cellId, null);
 
     final Optional<Permit> requestedPermit =
         this.throttlingClient.requestPermit(baseTransceiverStationId, cellId);

@@ -129,7 +129,7 @@ public class ThrottlingClient {
   }
 
   /*
-   * registerThrottlingConfig should be synchronized, to make sure there is only
+   * registerClient should be synchronized, to make sure there is only
    * one thread registering the client
    */
   private synchronized void registerClient() {
@@ -149,7 +149,7 @@ public class ThrottlingClient {
   /** Lets the Throttling REST service know this client is going away. */
   public void unregister() {
     if (this.clientId == null) {
-      LOGGER.info("Client was not registered yet, so skip unregistration");
+      LOGGER.info("ThrottlingClient does not have a registered clientId, so skip unregistration");
       return;
     }
 
@@ -281,8 +281,7 @@ public class ThrottlingClient {
 
   private Integer numberOfGrantedPermits(final int requestId) {
     if (!this.register()) {
-      LOGGER.error(
-          "Client could not be registered before requesting permit using requestId {}", requestId);
+      LOGGER.error("Client is not registered when requesting permit using requestId {}", requestId);
       return null;
     }
 
@@ -307,7 +306,7 @@ public class ThrottlingClient {
       final int requestId, final int baseTransceiverStationId, final int cellId) {
     if (!this.register()) {
       LOGGER.error(
-          "Client could not be registered before requesting permit for network segment ({}, {}) using requestId {}",
+          "Client is not registered when requesting permit for network segment ({}, {}) using requestId {}",
           baseTransceiverStationId,
           cellId,
           requestId);
@@ -357,8 +356,7 @@ public class ThrottlingClient {
 
   private boolean releasePermit(final Integer requestId) {
     if (!this.register()) {
-      LOGGER.error(
-          "Client could not be registered before releasing permit using requestId {}", requestId);
+      LOGGER.error("Client is not registered when releasing permit using requestId {}", requestId);
       return false;
     }
 
