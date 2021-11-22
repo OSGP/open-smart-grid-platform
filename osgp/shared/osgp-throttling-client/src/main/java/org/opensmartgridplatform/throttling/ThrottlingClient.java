@@ -399,7 +399,7 @@ public class ThrottlingClient {
       final Integer requestId, final int baseTransceiverStationId, final int cellId) {
     if (!this.register()) {
       LOGGER.error(
-          "Client could not be registered before releasing permit for network segment ({}, {}) using requestId {}",
+          "Client is not registered when releasing permit for network segment ({}, {}) using requestId {}",
           baseTransceiverStationId,
           cellId,
           requestId);
@@ -465,8 +465,7 @@ public class ThrottlingClient {
    */
   public void discardPermit(final int requestId) {
     if (!this.register()) {
-      LOGGER.error(
-          "Client could not be registered before discarding permit using requestId {}", requestId);
+      LOGGER.error("Client is not registered when discarding permit using requestId {}", requestId);
       return;
     }
 
