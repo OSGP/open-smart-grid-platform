@@ -342,10 +342,6 @@ public class SecretManagementServiceTest {
 
   @Test
   public void activateSecretsNoNewSecret() {
-    // GIVEN
-    final DbEncryptedSecret newSecret = new DbEncryptedSecret();
-    newSecret.setId(1L);
-    newSecret.setSecretStatus(SecretStatus.ACTIVE);
     // WHEN
     this.service.activateNewSecrets("SOME_DEVICE", Arrays.asList(SecretType.E_METER_MASTER_KEY));
     // THEN
