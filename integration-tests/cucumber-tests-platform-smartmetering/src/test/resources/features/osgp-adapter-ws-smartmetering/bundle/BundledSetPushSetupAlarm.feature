@@ -12,8 +12,12 @@ Feature: SmartMetering Bundle - SetPushSetupAlarm
     Given a bundle request
       | DeviceIdentification | TEST1024000000001 |
     And the bundle request contains a set push setup alarm action with parameters
-      | Host | localhost |
-      | Port |      9598 |
+      | Host                   | localhost                                     |
+      | Port                   | 9598                                          |
+      | PushObjectClassIds     | 1,40,1                                        |
+      | PushObjectObisCodes    | 0.0.96.1.1.255,0.1.25.9.0.255,0.0.97.98.0.255 |
+      | PushObjectAttributeIds | 2,1,2                                         |
+      | PushObjectDataIndexes  | 0,0,0                                         |
     When the bundle request is received
     Then the bundle response should contain a set push setup alarm response with values
       | Result | OK |

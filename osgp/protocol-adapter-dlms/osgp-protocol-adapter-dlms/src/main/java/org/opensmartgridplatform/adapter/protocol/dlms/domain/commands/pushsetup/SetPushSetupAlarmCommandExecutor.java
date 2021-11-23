@@ -101,12 +101,12 @@ public class SetPushSetupAlarmCommandExecutor
   private AccessResultCode setSendDestinationAndMethod(
       final DlmsConnectionManager conn, final PushSetupAlarmDto pushSetupAlarm)
       throws ProtocolAdapterException {
-    final SetParameter setParameterSendDestinationAndMethod =
-        this.getSetParameterSendDestinationAndMethod(pushSetupAlarm);
     LOGGER.info(
         "Setting Send destination and method of Push Setup Alarm: {}",
         pushSetupAlarm.getPushObjectList());
 
+    final SetParameter setParameterSendDestinationAndMethod =
+        this.getSetParameterSendDestinationAndMethod(pushSetupAlarm);
     final AccessResultCode resultCode =
         this.doSetRequest(
             "PushSetupAlarm, Send destination and method",
