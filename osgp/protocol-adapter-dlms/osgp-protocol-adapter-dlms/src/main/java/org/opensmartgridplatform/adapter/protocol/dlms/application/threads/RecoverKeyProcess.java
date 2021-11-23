@@ -78,19 +78,12 @@ public class RecoverKeyProcess implements Runnable {
 
     final DlmsDevice device = this.findDevice();
 
-    if (!this.secretManagementService.hasNewSecretOfType(
-        this.messageMetadata, this.deviceIdentification, E_METER_AUTHENTICATION)) {
-      log.warn(
-          "[{}] Could not recover keys: device has no new authorisation key registered in secret-mgmt module",
-          this.messageMetadata.getCorrelationUid());
-      return;
-    }
-
     try {
       if (!this.canConnectUsingNewKeys(device)) {
         log.warn(
-            "[{}] Could not recover keys: could not connect to device using new keys",
-            this.messageMetadata.getCorrelationUid());
+            "[{}] Could not recover keys: could not connect to device {} using New keys",
+            this.messageMetadata.getCorrelationUid(),
+            this.deviceIdentification);
         return;
       }
     } catch (final ThrottlingPermitDeniedException e) {
@@ -162,12 +155,16 @@ public class RecoverKeyProcess implements Runnable {
               this.messageMetadata,
               device,
               dlmsMessageListener,
-              this.secretManagementService::getNewKeys);
+              this.secretManagementService::getNewKeyPairForConnection);
       return connection != null;
     } catch (final ThrottlingPermitDeniedException e) {
       throw e;
     } catch (final Exception e) {
-      log.warn("Connection exception: {}", e.getMessage(), e);
+      log.warn(
+          "Connection exception during key recovery process for device: {} {}",
+          device.getDeviceIdentification(),
+          e.getMessage(),
+          e);
       return false;
     } finally {
       if (connection != null) {
