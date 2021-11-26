@@ -20,6 +20,7 @@ import static org.mockito.Mockito.when;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_AUTHENTICATION;
 import static org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.SecurityKeyType.E_METER_ENCRYPTION;
 
+import java.io.IOException;
 import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -86,17 +87,20 @@ class RecoverKeyProcessTest {
   }
 
   @Test
-  void testWhenNoNewKeysThenNoActivate() throws OsgpException {
+  void testWhenNotAbleToConnectWithNewKeys() throws OsgpException, IOException {
 
     // GIVEN
-    when(this.secretManagementService.hasNewSecretOfType(
-            MESSAGE_METADATA, DEVICE_IDENTIFICATION, E_METER_AUTHENTICATION))
-        .thenReturn(false);
+    when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
+        .thenReturn(DEVICE);
+    when(this.hls5Connector.connectUnchecked(eq(MESSAGE_METADATA), eq(DEVICE), any(), any()))
+        .thenReturn(null);
 
     // WHEN
     this.recoverKeyProcess.run();
 
     // THEN
+    verify(this.secretManagementService, never())
+        .hasNewSecret(MESSAGE_METADATA, DEVICE_IDENTIFICATION);
     verify(this.domainHelperService).findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS);
     verify(this.secretManagementService, never()).activateNewKeys(any(), any(), any());
   }
@@ -107,9 +111,6 @@ class RecoverKeyProcessTest {
     // GIVEN
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
         .thenReturn(DEVICE);
-    when(this.secretManagementService.hasNewSecretOfType(
-            MESSAGE_METADATA, DEVICE_IDENTIFICATION, E_METER_AUTHENTICATION))
-        .thenReturn(true);
     when(this.hls5Connector.connectUnchecked(eq(MESSAGE_METADATA), eq(DEVICE), any(), any()))
         .thenReturn(mock(DlmsConnection.class));
 
@@ -139,17 +140,13 @@ class RecoverKeyProcessTest {
     // GIVEN
     when(this.domainHelperService.findDlmsDevice(DEVICE_IDENTIFICATION, IP_ADDRESS))
         .thenReturn(DEVICE);
-    when(this.secretManagementService.hasNewSecretOfType(
-            MESSAGE_METADATA, DEVICE_IDENTIFICATION, E_METER_AUTHENTICATION))
-        .thenReturn(true);
     when(this.hls5Connector.connectUnchecked(any(), any(), any(), any())).thenReturn(null);
 
     // WHEN
     this.recoverKeyProcess.run();
 
     // THEN
-    final InOrder inOrder =
-        inOrder(this.throttlingService, this.hls5Connector, this.secretManagementService);
+    final InOrder inOrder = inOrder(this.throttlingService, this.hls5Connector);
 
     inOrder.verify(this.throttlingService).openConnection();
     inOrder.verify(this.hls5Connector).connectUnchecked(any(), any(), any(), any());

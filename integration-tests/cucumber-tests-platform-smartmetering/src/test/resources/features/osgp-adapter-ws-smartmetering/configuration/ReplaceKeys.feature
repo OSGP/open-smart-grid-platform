@@ -32,20 +32,18 @@ Feature: SmartMetering Configuration - Replace Keys
     And the new keys are stored in the secret management database encrypted_secret table
 
   @RecoverKeys
-  Scenario: Recover keys after a (simulated) failed key change
-    #Try to connect using incorrect (swapped) keys and then try to recover the correct new keys
+  Scenario: Recover keys after a (simulated) failed key change (incorrect E key)
+    #Try to connect using incorrect E-key and then try to recover the correct new key
     Given a dlms device
       | DeviceIdentification | TEST1024000000001 |
       | DeviceType           | SMART_METER_E     |
-      | Authentication_key   | 867424ac75b6d53c89276d304608321f0a1f6e401f453f84adf3477c7ee1623c |
+      | Authentication_key   | c19fe80a22a0f6c5cdaad0826c4d204f23694ded08d811b66e9b845d9f2157d2 |
       | Encryption_key       | c19fe80a22a0f6c5cdaad0826c4d204f23694ded08d811b66e9b845d9f2157d2 |
     And new keys are registered in the secret management database
       | DeviceIdentification | TEST1024000000001 |
-      | Authentication_key   | c19fe80a22a0f6c5cdaad0826c4d204f23694ded08d811b66e9b845d9f2157d2 |
       | Encryption_key       | 867424ac75b6d53c89276d304608321f0a1f6e401f453f84adf3477c7ee1623c |
     When the get actual meter reads request is received
       | DeviceIdentification | TEST1024000000001 |
-    Then after 15 seconds, the new keys are recovered
+    Then after 15 seconds, the new E_METER_ENCRYPTION_KEY_UNICAST key is recovered
       | DeviceIdentification | TEST1024000000001 |
-      | Authentication_key   | c19fe80a22a0f6c5cdaad0826c4d204f23694ded08d811b66e9b845d9f2157d2 |
       | Encryption_key       | 867424ac75b6d53c89276d304608321f0a1f6e401f453f84adf3477c7ee1623c |
