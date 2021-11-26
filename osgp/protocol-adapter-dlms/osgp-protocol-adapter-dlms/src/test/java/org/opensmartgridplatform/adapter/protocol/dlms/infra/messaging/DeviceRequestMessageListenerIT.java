@@ -57,8 +57,6 @@ class DeviceRequestMessageListenerIT {
     dlmsDevice.setIpAddress("127.0.0.1");
     dlmsDevice.setHls5Active(true);
 
-    when(this.domainHelperService.findDlmsDevice(any(String.class), any(String.class)))
-        .thenReturn(dlmsDevice);
     when(this.domainHelperService.findDlmsDevice(any(MessageMetadata.class)))
         .thenReturn(dlmsDevice);
     doNothing()

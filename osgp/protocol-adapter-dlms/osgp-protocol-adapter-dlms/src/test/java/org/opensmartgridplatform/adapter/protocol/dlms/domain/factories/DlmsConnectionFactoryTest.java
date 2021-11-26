@@ -33,7 +33,7 @@ import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
 @ExtendWith(MockitoExtension.class)
-public class DlmsConnectionFactoryTest {
+class DlmsConnectionFactoryTest {
   private DlmsConnectionFactory factory;
   private MessageMetadata messageMetadata;
   private Consumer<DlmsConnectionManager> task;
@@ -52,7 +52,7 @@ public class DlmsConnectionFactoryTest {
   @Mock private DlmsConnection connection;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     this.factory =
         new DlmsConnectionFactory(
             this.hls5Connector, this.lls1Connector, this.lls0Connector, this.domainHelperService);
@@ -81,7 +81,7 @@ public class DlmsConnectionFactoryTest {
   }
 
   @Test
-  public void createAndHandleConnection_throwsForHls4Device() {
+  void createAndHandleConnectionThrowsForHls4Device() {
     final DlmsDevice device = new DlmsDeviceBuilder().withHls4Active(true).build();
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
@@ -93,7 +93,7 @@ public class DlmsConnectionFactoryTest {
   }
 
   @Test
-  public void createAndHandleConnection_throwsForHls3Device() {
+  void createAndHandleConnectionThrowsForHls3Device() {
     final DlmsDevice device = new DlmsDeviceBuilder().withHls3Active(true).build();
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
 
@@ -105,7 +105,7 @@ public class DlmsConnectionFactoryTest {
   }
 
   @Test
-  public void createsConnectionManagerForLls1Device() throws Exception {
+  void createsConnectionManagerForLls1Device() throws Exception {
     final DlmsDevice device = new DlmsDeviceBuilder().withLls1Active(true).build();
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
     when(this.lls1Connector.connect(this.messageMetadata, device, listener))
@@ -119,7 +119,7 @@ public class DlmsConnectionFactoryTest {
   }
 
   @Test
-  public void createsConnectionManagerForLls0Device() throws Exception {
+  void createsConnectionManagerForLls0Device() throws Exception {
     final DlmsDevice device = new DlmsDeviceBuilder().withLls1Active(false).build();
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
     when(this.lls0Connector.connect(this.messageMetadata, device, listener))
@@ -133,7 +133,7 @@ public class DlmsConnectionFactoryTest {
   }
 
   @Test
-  public void createsPublicClientConnectionManagerForDevice() throws Exception {
+  void createsPublicClientConnectionManagerForDevice() throws Exception {
     final DlmsDevice device = new DlmsDeviceBuilder().withHls5Active(true).build();
     final DlmsMessageListener listener = new InvocationCountingDlmsMessageListener();
     when(this.lls0Connector.connect(this.messageMetadata, device, listener))
@@ -167,7 +167,7 @@ public class DlmsConnectionFactoryTest {
       throws OsgpException {
     final DlmsConnectionManager connectionManager =
         new DlmsConnectionManager(
-            connector, this.messageMetadata, device, listener, this.domainHelperService);
+            connector, this.messageMetadata, device, listener, this.domainHelperService, null);
     connectionManager.connect();
     return connectionManager;
   }

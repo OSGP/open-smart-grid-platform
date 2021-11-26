@@ -79,8 +79,8 @@ public class Hls5Connector extends SecureDlmsConnector {
       throw new TechnicalException(
           ComponentType.PROTOCOL_DLMS, "The IP address is not found: " + device.getIpAddress());
     } catch (final IOException e) { // Queue key recovery process
-      if (this.secretManagementService.hasNewSecretOfType(
-          messageMetadata, device.getDeviceIdentification(), E_METER_ENCRYPTION)) {
+      if (this.secretManagementService.hasNewSecret(
+          messageMetadata, device.getDeviceIdentification())) {
         this.recoverKeyProcessInitiator.initiate(
             messageMetadata, device.getDeviceIdentification(), device.getIpAddress());
       }

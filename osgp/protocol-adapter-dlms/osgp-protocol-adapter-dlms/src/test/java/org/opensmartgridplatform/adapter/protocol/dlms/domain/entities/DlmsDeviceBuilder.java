@@ -24,6 +24,10 @@ public class DlmsDeviceBuilder {
   private DefaultValue<Boolean> hls5Active = notSet();
   private DefaultValue<String> protocol = notSet();
   private DefaultValue<Long> invocationCounter = notSet();
+  private DefaultValue<String> ipAddress = notSet();
+  private DefaultValue<Boolean> ipAddressStatic = notSet();
+  private DefaultValue<String> iccId = notSet();
+  private DefaultValue<String> communicationMethod = notSet();
 
   public DlmsDevice build() {
     counter += 1;
@@ -35,6 +39,10 @@ public class DlmsDeviceBuilder {
     device.setHls5Active(this.hls5Active.orElse(false));
     device.setProtocol(this.protocol.orElse("protocol" + counter), "protocolVersion" + counter);
     device.setInvocationCounter(this.invocationCounter.orElse(100L + counter));
+    device.setIpAddress(this.ipAddress.orElse(null));
+    device.setIpAddressIsStatic(this.ipAddressStatic.orElse(true));
+    device.setIccId(this.iccId.orElse(null));
+    device.setCommunicationMethod(this.communicationMethod.orElse(null));
     return device;
   }
 
@@ -70,6 +78,26 @@ public class DlmsDeviceBuilder {
 
   public DlmsDeviceBuilder withInvocationCounter(final Long invocationCounter) {
     this.invocationCounter = setTo(invocationCounter);
+    return this;
+  }
+
+  public DlmsDeviceBuilder withIpAddress(final String ipAddress) {
+    this.ipAddress = setTo(ipAddress);
+    return this;
+  }
+
+  public DlmsDeviceBuilder withIpAddressStatic(final boolean ipAddressStatic) {
+    this.ipAddressStatic = setTo(ipAddressStatic);
+    return this;
+  }
+
+  public DlmsDeviceBuilder setIccId(final String iccId) {
+    this.iccId = setTo(iccId);
+    return this;
+  }
+
+  public DlmsDeviceBuilder withCommunicationMethod(final String communicationMethod) {
+    this.communicationMethod = setTo(communicationMethod);
     return this;
   }
 }

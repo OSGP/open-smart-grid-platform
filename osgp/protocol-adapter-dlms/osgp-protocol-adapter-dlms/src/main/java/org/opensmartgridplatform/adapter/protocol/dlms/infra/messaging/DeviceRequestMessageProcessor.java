@@ -28,6 +28,7 @@ import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
+import org.opensmartgridplatform.throttling.ThrottlingPermitDeniedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -51,6 +52,8 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
   protected MessageProcessorMap dlmsRequestMessageProcessorMap;
 
   @Autowired protected DomainHelperService domainHelperService;
+
+  @Autowired private DeviceRequestMessageSender deviceRequestMessageSender;
 
   protected final MessageType messageType;
 
@@ -92,8 +95,17 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
       } else {
         this.processMessageTasks(messageObject, messageMetadata, null);
       }
+    } catch (final ThrottlingPermitDeniedException exception) {
+
+      /*
+       * Throttling permit for network access not granted, send the request back to the queue to be
+       * picked up again a little later by the message listener for device requests.
+       */
+      this.deviceRequestMessageSender.send(
+          messageObject, messageMetadata, this.throttlingClientConfig.permitRejectedDelay());
+
     } catch (final Exception exception) {
-      this.sendErrorResponse(messageMetadata, exception, message.getObject());
+      this.sendErrorResponse(messageMetadata, exception, messageObject);
     }
   }
 
@@ -102,8 +114,8 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
       final MessageMetadata messageMetadata,
       final DlmsConnectionManager connectionManager)
       throws OsgpException {
+    DlmsDevice device = null;
     try {
-      DlmsDevice device = null;
       if (this.maxScheduleTimeExceeded(messageMetadata)) {
         log.info(
             "Processing message of type {} for correlation UID {} exceeded max schedule time: {} ({})",
@@ -124,7 +136,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
       }
 
       log.info(
-          "{} called for device: {} for organisation: {}, correlationUID={}",
+          "{} called for device: {} for organisation: {}, correlationUID: {}",
           messageMetadata.getMessageType(),
           messageMetadata.getDeviceIdentification(),
           messageMetadata.getOrganisationIdentification(),
@@ -135,7 +147,6 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
       this.sendResponse(messageMetadata, response);
 
     } finally {
-      final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
       this.doConnectionPostProcessing(device, connectionManager, messageMetadata);
     }
   }
@@ -171,7 +182,7 @@ public abstract class DeviceRequestMessageProcessor extends DlmsConnectionMessag
     if (!(exception instanceof SilentException)) {
       final String errorMessage =
           String.format(
-              "Unexpected exception during %s, correlationUID=%s",
+              "Unexpected exception during %s, correlationUID: %s",
               this.messageType.name(), metadata.getCorrelationUid());
       log.error(errorMessage, exception);
     }

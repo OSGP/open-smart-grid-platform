@@ -288,6 +288,7 @@ public class DeviceResponseMessageService {
                 .messageMetadata()
                 .builder()
                 .withIpAddress(getIpAddress(device))
+                .withNetworkSegmentIds(device.getBtsId(), device.getCellId())
                 .withRetryCount(message.getRetryCount() + 1)
                 .build())
         .request(messageData)

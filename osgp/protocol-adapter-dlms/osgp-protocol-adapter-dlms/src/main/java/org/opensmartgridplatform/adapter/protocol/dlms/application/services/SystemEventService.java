@@ -81,13 +81,7 @@ public class SystemEventService {
             .withDomainVersion(sourceMessageMetadata.getDomainVersion())
             .build();
 
-    final RequestMessage requestMessage =
-        new RequestMessage(
-            messageMetadata.getCorrelationUid(),
-            messageMetadata.getOrganisationIdentification(),
-            messageMetadata.getDeviceIdentification(),
-            messageMetadata.getIpAddress(),
-            systemEventDto);
+    final RequestMessage requestMessage = new RequestMessage(messageMetadata, systemEventDto);
 
     log.info("Sending system event to GXF with correlation ID: {}", correlationId);
     this.osgpRequestMessageSender.send(

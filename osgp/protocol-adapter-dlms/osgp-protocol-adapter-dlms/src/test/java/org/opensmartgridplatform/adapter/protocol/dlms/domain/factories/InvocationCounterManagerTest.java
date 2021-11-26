@@ -29,6 +29,7 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.commands.utils.DlmsHelper;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.opensmartgridplatform.adapter.protocol.dlms.domain.entities.DlmsDeviceBuilder;
+import org.opensmartgridplatform.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 
@@ -45,10 +46,13 @@ class InvocationCounterManagerTest {
   @Mock private DlmsConnectionFactory connectionFactory;
 
   @Mock private DlmsHelper dlmsHelper;
+  @Mock private DlmsDeviceRepository deviceRepository;
 
   @BeforeEach
-  public void setUp() {
-    this.manager = new InvocationCounterManager(this.connectionFactory, this.dlmsHelper);
+  void setUp() {
+    this.manager =
+        new InvocationCounterManager(
+            this.connectionFactory, this.dlmsHelper, this.deviceRepository);
     this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
     this.device =
         new DlmsDeviceBuilder()
@@ -62,7 +66,7 @@ class InvocationCounterManagerTest {
 
     verify(this.connectionFactory, times(1))
         .createAndHandlePublicClientConnection(
-            any(MessageMetadata.class), eq(this.device), isNull(), any());
+            any(MessageMetadata.class), eq(this.device), isNull(), isNull(), any());
   }
 
   @Test
@@ -77,6 +81,7 @@ class InvocationCounterManagerTest {
         .thenReturn(dataObject);
 
     this.manager.initializeWithInvocationCounterStoredOnDeviceTask(this.device, connectionManager);
+    verify(this.deviceRepository).save(this.device);
 
     assertThat(this.device.getInvocationCounter()).isEqualTo(invocationCounterValueOnDevice);
   }

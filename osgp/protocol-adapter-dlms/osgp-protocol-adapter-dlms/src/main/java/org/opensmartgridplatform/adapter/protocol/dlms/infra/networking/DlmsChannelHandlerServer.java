@@ -76,6 +76,8 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
             "no-organisation",
             deviceIdentification,
             ipAddress,
+            null,
+            null,
             pushNotificationAlarm);
 
     final MessageMetadata messageMetadata =
@@ -98,7 +100,13 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
 
     final RequestMessage requestMessage =
         new RequestMessage(
-            correlationId, "no-organisation", deviceIdentification, ipAddress, pushNotificationSms);
+            correlationId,
+            "no-organisation",
+            deviceIdentification,
+            ipAddress,
+            null,
+            null,
+            pushNotificationSms);
 
     log.info("Sending push notification sms wakeup to GXF with correlation ID: {}", correlationId);
     this.osgpRequestMessageSender.send(

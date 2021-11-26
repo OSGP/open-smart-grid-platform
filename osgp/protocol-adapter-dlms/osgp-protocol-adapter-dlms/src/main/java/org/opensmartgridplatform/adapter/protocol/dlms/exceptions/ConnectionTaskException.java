@@ -18,6 +18,7 @@ public class ConnectionTaskException extends RuntimeException {
   private final OsgpException osgpException;
 
   public ConnectionTaskException(final OsgpException osgpException) {
+    super(osgpException);
     this.osgpException = osgpException;
   }
 

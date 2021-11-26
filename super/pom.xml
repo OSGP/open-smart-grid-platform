@@ -14,7 +14,7 @@
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>super-osgp</artifactId>
-  <version>5.19.0-SNAPSHOT</version>
+  <version>5.20.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>super-osgp</name>
   <!-- Description, Organization, Licences, URL and Distribution Management
@@ -46,18 +46,20 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
-    <osgp.version>5.19.0-SNAPSHOT</osgp.version>
-    <osgp.dlms.version>5.19.0-SNAPSHOT</osgp.dlms.version>
-    <osgp.shared.version>5.19.0-SNAPSHOT</osgp.shared.version>
-    <osgp.jasper-interface.version>5.19.0-SNAPSHOT</osgp.jasper-interface.version>
+    <osgp.version>5.20.0-SNAPSHOT</osgp.version>
+    <osgp.dlms.version>5.20.0-SNAPSHOT</osgp.dlms.version>
+    <osgp.shared.version>5.20.0-SNAPSHOT</osgp.shared.version>
+    <osgp.jasper-interface.version>5.20.0-SNAPSHOT</osgp.jasper-interface.version>
     <spring.version>5.3.2</spring.version>
     <spring.data.version>2.2.3.RELEASE</spring.data.version>
     <spring.data.commons.version>2.2.4.RELEASE</spring.data.commons.version>
     <spring.security.version>5.4.2</spring.security.version>
     <spring.ws.version>3.0.10.RELEASE</spring.ws.version>
+    <projectreactor.netty.version>1.0.11</projectreactor.netty.version>
     <assertj.version>3.16.1</assertj.version>
     <xmlunit.version>1.6</xmlunit.version>
     <mockito.core.version>3.6.0</mockito.core.version>
+    <okhttp3.mockwebserver.version>4.9.1</okhttp3.mockwebserver.version>
     <apache.wss4j.version>1.6.19</apache.wss4j.version>
     <servlet.version>4.0.1</servlet.version>
     <servlet.jstl.version>1.2</servlet.jstl.version>
@@ -124,6 +126,7 @@
     <ant.junit.version>1.10.8</ant.junit.version>
     <args4j.version>2.33</args4j.version>
     <cucumber.version>5.6.0</cucumber.version>
+    <testcontainers.version>1.16.0</testcontainers.version>
     <sun.httpserver.version>20070405</sun.httpserver.version>
     <postgresql.version>42.2.12</postgresql.version>
     <javax.xml.soap-api.version>1.4.0</javax.xml.soap-api.version>
@@ -161,6 +164,21 @@
         <artifactId>shared</artifactId>
         <version>${osgp.shared.version}</version>
         <type>test-jar</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-throttling-api</artifactId>
+        <version>${osgp.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-throttling-client</artifactId>
+        <version>${osgp.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensmartgridplatform</groupId>
+        <artifactId>osgp-throttling-service</artifactId>
+        <version>${osgp.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opensmartgridplatform</groupId>
@@ -392,6 +410,16 @@
         <groupId>org.springframework</groupId>
         <artifactId>spring-webmvc</artifactId>
         <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-webflux</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.projectreactor.netty</groupId>
+        <artifactId>reactor-netty-http</artifactId>
+        <version>${projectreactor.netty.version}</version>
       </dependency>
 
       <!-- Spring JMS -->
@@ -836,6 +864,12 @@
         <scope>test</scope>
       </dependency>
       <dependency>
+        <groupId>com.squareup.okhttp3</groupId>
+        <artifactId>mockwebserver</artifactId>
+        <version>${okhttp3.mockwebserver.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
         <groupId>org.seleniumhq.selenium</groupId>
         <artifactId>selenium-java</artifactId>
         <version>${selenium.java.version}</version>
@@ -925,6 +959,26 @@
         <groupId>org.scala-lang</groupId>
         <artifactId>scala-reflect</artifactId>
         <version>${scala.lang.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <!-- Testcontainers -->
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>testcontainers</artifactId>
+        <version>${testcontainers.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <version>${testcontainers.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>${testcontainers.version}</version>
         <scope>test</scope>
       </dependency>
 

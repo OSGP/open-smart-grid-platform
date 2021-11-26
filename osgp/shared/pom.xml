@@ -14,7 +14,7 @@
 
   <groupId>org.opensmartgridplatform</groupId>
   <artifactId>shared-components</artifactId>
-  <version>5.19.0-SNAPSHOT</version>
+  <version>5.20.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>shared</name>
   <properties>
@@ -96,6 +96,8 @@
     <module>osgp-dto</module>
     <module>osgp-ws-core</module>
     <module>osgp-ws-admin</module>
+    <module>osgp-throttling-api</module>
+    <module>osgp-throttling-client</module>
   </modules>
 
   <profiles>

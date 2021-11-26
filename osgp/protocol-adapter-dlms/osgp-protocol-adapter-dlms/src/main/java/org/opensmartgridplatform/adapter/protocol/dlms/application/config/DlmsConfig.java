@@ -37,6 +37,7 @@ import org.opensmartgridplatform.shared.application.config.AbstractConfig;
 import org.opensmartgridplatform.shared.infra.networking.DisposableNioEventLoopGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -80,7 +81,7 @@ public class DlmsConfig extends AbstractConfig {
     bootstrap.childHandler(
         new ChannelInitializer<SocketChannel>() {
           @Override
-          protected void initChannel(final SocketChannel ch) throws Exception {
+          protected void initChannel(final SocketChannel ch) {
             DlmsConfig.this.createChannelPipeline(ch, DlmsConfig.this.dlmsChannelHandlerServer());
             LOGGER.info("Created new DLMS handler pipeline for server");
           }
@@ -163,13 +164,15 @@ public class DlmsConfig extends AbstractConfig {
       final DomainHelperService domainHelperService,
       final Hls5Connector hls5Connector,
       final SecretManagementService secretManagementService,
-      final ThrottlingService throttlingService,
+      @Autowired(required = false) final ThrottlingService throttlingService,
+      final ThrottlingClientConfig throttlingClientConfig,
       final DlmsDeviceRepository deviceRepository) {
     return new RecoverKeyProcess(
         domainHelperService,
         hls5Connector,
         secretManagementService,
         throttlingService,
+        throttlingClientConfig,
         deviceRepository);
   }
 

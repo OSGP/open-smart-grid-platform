@@ -99,6 +99,8 @@ public class Iec61850ChannelHandlerServer extends Iec61850ChannelHandler {
             NO_ORGANISATION,
             deviceIdentification,
             ipAddress,
+            null,
+            null,
             deviceRegistrationData);
 
     LOGGER.info("Sending register device request to OSGP with correlation ID: {}", correlationId);
