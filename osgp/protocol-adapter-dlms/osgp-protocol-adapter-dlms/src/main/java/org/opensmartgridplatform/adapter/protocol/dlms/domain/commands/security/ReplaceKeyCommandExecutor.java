@@ -25,7 +25,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionRequestDto
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.ActionResponseDto;
 import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetKeysRequestDto;
 import org.opensmartgridplatform.shared.exceptionhandling.EncrypterException;
-import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
 import org.opensmartgridplatform.shared.security.RsaEncrypter;
@@ -115,8 +114,7 @@ public class ReplaceKeyCommandExecutor
     return new ActionResponseDto(REPLACE_KEYS + device.getDeviceIdentification() + WAS_SUCCESFULL);
   }
 
-  private SetKeysRequestDto decryptRsaKeys(final SetKeysRequestDto setKeysRequestDto)
-      throws FunctionalException {
+  private SetKeysRequestDto decryptRsaKeys(final SetKeysRequestDto setKeysRequestDto) {
     final byte[] authenticationKey =
         this.rsaEncrypter.decrypt(setKeysRequestDto.getAuthenticationKey());
     final byte[] encryptionKey = this.rsaEncrypter.decrypt(setKeysRequestDto.getEncryptionKey());
