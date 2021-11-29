@@ -23,7 +23,6 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -284,8 +283,8 @@ public class SecretManagementServiceTest {
     verify(this.secretRepository, never())
         .saveAll(Arrays.asList(secretOldEncryption, secretOldAuthen));
 
-    assertThat(secretOldEncryption.getCreationTime()).isCloseTo(new Date(), 10);
-    assertThat(secretOldAuthen.getCreationTime()).isCloseTo(new Date(), 10);
+    assertThat(secretOldEncryption.getCreationTime()).isCloseTo(new Date(), 100);
+    assertThat(secretOldAuthen.getCreationTime()).isCloseTo(new Date(), 100);
     assertThat(secretOldEncryption.getSecretStatus()).isEqualTo(SecretStatus.NEW);
     assertThat(secretOldAuthen.getSecretStatus()).isEqualTo(SecretStatus.NEW);
     assertThat(secretOlderEncryption.getCreationTime().getTime())
@@ -393,14 +392,9 @@ public class SecretManagementServiceTest {
     // GIVEN
     final DbEncryptedSecret newSecret = new DbEncryptedSecret();
     newSecret.setId(1L);
+    newSecret.setSecretType(SecretType.E_METER_MASTER_KEY);
     newSecret.setSecretStatus(SecretStatus.NEW);
     // WHEN
-    when(this.secretRepository.getSecretCount(
-            SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.NEW))
-        .thenReturn(1);
-    when(this.secretRepository.findSecrets(
-            SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.ACTIVE))
-        .thenReturn(new ArrayList<>());
     when(this.secretRepository.findSecrets(
             SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.NEW))
         .thenReturn(Arrays.asList(newSecret));
@@ -409,6 +403,16 @@ public class SecretManagementServiceTest {
     this.service.activateNewSecrets(SOME_DEVICE, Arrays.asList(SecretType.E_METER_MASTER_KEY));
     // THEN
     assertThat(newSecret.getSecretStatus()).isEqualTo(SecretStatus.ACTIVE);
+
+    final ArgumentCaptor<List<DbEncryptedSecret>> secretListArgumentCaptor =
+        ArgumentCaptor.forClass(List.class);
+    verify(this.secretRepository).saveAll(secretListArgumentCaptor.capture());
+    final List<DbEncryptedSecret> savedSecrets = secretListArgumentCaptor.getValue();
+    assertThat(savedSecrets).isNotNull();
+    assertThat(savedSecrets.size()).isEqualTo(1);
+    final DbEncryptedSecret savedSecret = savedSecrets.get(0);
+    assertThat(savedSecret.getSecretType()).isEqualTo(newSecret.getSecretType());
+    assertThat(savedSecret.getSecretStatus()).isEqualTo(SecretStatus.ACTIVE);
   }
 
   @Test
@@ -421,9 +425,6 @@ public class SecretManagementServiceTest {
     newSecret.setId(2L);
     newSecret.setSecretStatus(SecretStatus.ACTIVE);
     // WHEN
-    when(this.secretRepository.getSecretCount(
-            SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.NEW))
-        .thenReturn(1);
     when(this.secretRepository.findSecrets(
             SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.ACTIVE))
         .thenReturn(Arrays.asList(activeSecret));
@@ -439,32 +440,48 @@ public class SecretManagementServiceTest {
 
   @Test
   public void activateSecretsNoNewSecret() {
-    // GIVEN
-    final DbEncryptedSecret newSecret = new DbEncryptedSecret();
-    newSecret.setId(1L);
-    newSecret.setSecretStatus(SecretStatus.NEW);
     // WHEN
-    when(this.secretRepository.getSecretCount(
-            SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.NEW))
-        .thenReturn(0);
-    assertThatIllegalStateException()
-        .isThrownBy(
-            () ->
-                this.service.activateNewSecrets(
-                    SOME_DEVICE, Arrays.asList(SecretType.E_METER_MASTER_KEY)));
+    // <<<<<<< HEAD
+    //    when(this.secretRepository.getSecretCount(
+    //            SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.NEW))
+    //        .thenReturn(0);
+    //    assertThatIllegalStateException()
+    //        .isThrownBy(
+    //            () ->
+    //                this.service.activateNewSecrets(
+    //                    SOME_DEVICE, Arrays.asList(SecretType.E_METER_MASTER_KEY)));
+    // =======
+    this.service.activateNewSecrets("SOME_DEVICE", Arrays.asList(SecretType.E_METER_MASTER_KEY));
+    // THEN
+    final ArgumentCaptor<List<DbEncryptedSecret>> secretListArgumentCaptor =
+        ArgumentCaptor.forClass(List.class);
+    verify(this.secretRepository).saveAll(secretListArgumentCaptor.capture());
+    final List<DbEncryptedSecret> savedSecrets = secretListArgumentCaptor.getValue();
+    assertThat(savedSecrets.size()).isEqualTo(0);
+    // >>>>>>> development
   }
 
   @Test
   public void hasNewSecret() {
+    // GIVEN
     when(this.secretRepository.getSecretCount(
             SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.NEW))
         .thenReturn(1);
-    boolean result = this.service.hasNewSecret(SOME_DEVICE, SecretType.E_METER_MASTER_KEY);
+    // WHEN
+    final boolean result = this.service.hasNewSecret(SOME_DEVICE, SecretType.E_METER_MASTER_KEY);
+    // THEN
     assertThat(result).isTrue();
+  }
+
+  @Test
+  public void hasNoNewSecret() {
+    // GIVEN
     when(this.secretRepository.getSecretCount(
             SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.NEW))
         .thenReturn(0);
-    result = this.service.hasNewSecret(SOME_DEVICE, SecretType.E_METER_MASTER_KEY);
+    // WHEN
+    final boolean result = this.service.hasNewSecret(SOME_DEVICE, SecretType.E_METER_MASTER_KEY);
+    // THEN
     assertThat(result).isFalse();
   }
 

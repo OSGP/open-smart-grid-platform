@@ -251,9 +251,7 @@ public class SoapServiceSecretManagementIT {
     // Store secrets
     this.mockWebServiceClient
         .sendRequest(withSoapEnvelope(activateRequest))
-        .andExpect(
-            ResponseMatchers.serverOrReceiverFault(
-                "Expected 1 new secrets of type E_METER_AUTHENTICATION_KEY for device E0000000000000000, but 0 new secret(s) present"));
+        .andExpect(ResponseMatchers.noFault());
   }
 
   @Test

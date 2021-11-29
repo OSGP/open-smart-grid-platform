@@ -101,7 +101,7 @@ public class SecretManagementService {
 
     private static EncryptedTypedSecret fromDbEncryptedSecret(
         final DbEncryptedSecret dbEncryptedSecret) throws FunctionalException {
-      byte[] aesEncrypted;
+      final byte[] aesEncrypted;
       try {
         aesEncrypted = HexUtils.fromHexString(dbEncryptedSecret.getEncodedSecret());
       } catch (final IllegalArgumentException iae) {
@@ -327,40 +327,40 @@ public class SecretManagementService {
         .collect(collectingAndThen(toList(), this.secretRepository::saveAll));
   }
 
+  public boolean hasNewSecret(final String deviceIdentification, final SecretType secretType) {
+    return this.secretRepository.getSecretCount(deviceIdentification, secretType, SecretStatus.NEW)
+        > 0;
+  }
+
   public synchronized void activateNewSecrets(
       final String deviceIdentification, final List<SecretType> secretTypes) {
-    secretTypes.stream().forEach(t -> this.checkNrNewSecretsOfType(deviceIdentification, t, 1));
     secretTypes.stream()
         .map(t -> this.getUpdatedSecretsForActivation(deviceIdentification, t))
         .flatMap(Collection::stream)
         .collect(collectingAndThen(toList(), this.secretRepository::saveAll));
   }
 
-  public boolean hasNewSecret(final String deviceIdentification, final SecretType secretType) {
-    return this.secretRepository.getSecretCount(deviceIdentification, secretType, SecretStatus.NEW)
-        > 0;
-  }
-
   private List<DbEncryptedSecret> getUpdatedSecretsForActivation(
       final String deviceIdentification, final SecretType secretType) {
     final List<DbEncryptedSecret> updatedSecrets = new ArrayList<>();
-    final Optional<DbEncryptedSecret> activeSecretOptional =
-        this.getSingleDbEncryptedSecret(deviceIdentification, secretType, SecretStatus.ACTIVE);
-    if (activeSecretOptional.isPresent()) {
-      final DbEncryptedSecret currentSecret = activeSecretOptional.get();
-      currentSecret.setSecretStatus(SecretStatus.EXPIRED);
-      updatedSecrets.add(currentSecret);
-    }
+
     final Optional<DbEncryptedSecret> newSecretOptional =
         this.getSingleDbEncryptedSecret(deviceIdentification, secretType, SecretStatus.NEW);
     if (newSecretOptional.isPresent()) {
+      final Optional<DbEncryptedSecret> activeSecretOptional =
+          this.getSingleDbEncryptedSecret(deviceIdentification, secretType, SecretStatus.ACTIVE);
+      if (activeSecretOptional.isPresent()) {
+        final DbEncryptedSecret currentSecret = activeSecretOptional.get();
+        currentSecret.setSecretStatus(SecretStatus.EXPIRED);
+        updatedSecrets.add(currentSecret);
+      }
       final DbEncryptedSecret newSecret = newSecretOptional.get();
       newSecret.setSecretStatus(SecretStatus.ACTIVE);
       updatedSecrets.add(newSecret);
-      return updatedSecrets;
     } else {
-      throw new IllegalStateException("Cannot activate new secret: no new secret present");
+      log.info("No new secret of secret type {} present for activation.", secretType);
     }
+    return updatedSecrets;
   }
 
   private void checkNrNewSecretsOfType(
@@ -455,7 +455,7 @@ public class SecretManagementService {
   private byte[] reencryptRsa2Aes(final byte[] rsa) {
     // Incoming new secret, so use current key
     final String keyReference = this.getCurrentKey().getReference();
-    byte[] aes;
+    final byte[] aes;
     try {
       aes =
           this.encryptionDelegate

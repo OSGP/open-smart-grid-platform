@@ -11,6 +11,7 @@ package org.opensmartgridplatform.adapter.protocol.dlms.application.config;
 
 import java.time.Duration;
 import org.opensmartgridplatform.throttling.ThrottlingClient;
+import org.opensmartgridplatform.throttling.api.ThrottlingConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -35,7 +36,7 @@ public class ThrottlingClientConfig {
   private Duration timeout;
 
   @Value("#{T(java.time.Duration).parse('${throttling.rejected.delay:PT10S}')}")
-  private Duration delay;
+  private Duration permitRejectedDelay;
 
   public boolean clientEnabled() {
     return this.clientEnabled;
@@ -48,14 +49,10 @@ public class ThrottlingClientConfig {
   @Bean(destroyMethod = "unregister")
   @Conditional(ThrottlingClientEnabledCondition.class)
   public ThrottlingClient throttlingClient() {
-    final ThrottlingClient throttlingClient =
-        new ThrottlingClient(
-            new org.opensmartgridplatform.throttling.api.ThrottlingConfig(
-                this.configurationName, this.configurationMaxConcurrency),
-            this.throttlingServiceUrl,
-            this.timeout);
-    throttlingClient.register();
-    return throttlingClient;
+    return new ThrottlingClient(
+        new ThrottlingConfig(this.configurationName, this.configurationMaxConcurrency),
+        this.throttlingServiceUrl,
+        this.timeout);
   }
 
   /**
@@ -63,7 +60,7 @@ public class ThrottlingClientConfig {
    *
    * @return delay
    */
-  public Duration delay() {
-    return this.delay;
+  public Duration permitRejectedDelay() {
+    return this.permitRejectedDelay;
   }
 }
