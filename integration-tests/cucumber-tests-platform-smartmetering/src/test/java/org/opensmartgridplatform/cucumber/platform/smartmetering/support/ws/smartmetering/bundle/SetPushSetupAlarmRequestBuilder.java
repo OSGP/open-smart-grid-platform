@@ -28,6 +28,10 @@ public class SetPushSetupAlarmRequestBuilder {
 
   private static final String DEFAULT_HOST = "localhost";
   private static final int DEFAULT_PORT = 9598;
+  private static final String DEFAULT_CLASS_IDS = "1,40,1";
+  private static final String DEFAULT_OBIS_CODES = "0.0.96.1.1.255,0.1.25.9.0.255,0.0.97.98.0.255";
+  private static final String DEFAULT_ATTRIBUTE_IDS = "2,1,2";
+  private static final String DEFAULT_DATA_INDEXES = "0,0,0";
 
   private String host;
   private BigInteger port;
@@ -65,13 +69,15 @@ public class SetPushSetupAlarmRequestBuilder {
 
   private List<PushObject> getPushObjectList(final Map<String, String> parameters) {
     final List<String> pushObjectClassIds =
-        Arrays.asList(getString(parameters, "PushObjectClassIds").split(","));
+        Arrays.asList(getString(parameters, "PushObjectClassIds", DEFAULT_CLASS_IDS).split(","));
     final List<String> pushObjectObisCodes =
-        Arrays.asList(getString(parameters, "PushObjectObisCodes").split(","));
+        Arrays.asList(getString(parameters, "PushObjectObisCodes", DEFAULT_OBIS_CODES).split(","));
     final List<String> pushObjectAttributeIds =
-        Arrays.asList(getString(parameters, "PushObjectAttributeIds").split(","));
+        Arrays.asList(
+            getString(parameters, "PushObjectAttributeIds", DEFAULT_ATTRIBUTE_IDS).split(","));
     final List<String> pushObjectDataIndexes =
-        Arrays.asList(getString(parameters, "PushObjectDataIndexes").split(","));
+        Arrays.asList(
+            getString(parameters, "PushObjectDataIndexes", DEFAULT_DATA_INDEXES).split(","));
 
     return IntStream.range(0, pushObjectClassIds.size())
         .mapToObj(
