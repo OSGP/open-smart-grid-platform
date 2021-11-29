@@ -186,7 +186,7 @@ public class SetPushSetupAlarmCommandExecutor
     } catch (final FunctionalException e) {
       throw new ProtocolAdapterException(
           "Verification of push object failed. Object "
-              + obisCode.asHexCodeString()
+              + obisCode.asDecimalString()
               + " could not be retrieved using a get request.",
           e);
     }
