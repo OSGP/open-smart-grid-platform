@@ -13,11 +13,16 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.time.Duration;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.Appender;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -42,7 +47,7 @@ import org.opensmartgridplatform.shared.security.EncryptedSecret;
 import org.opensmartgridplatform.shared.security.EncryptionDelegate;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 import org.opensmartgridplatform.shared.security.RsaEncrypter;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.slf4j.LoggerFactory;
 
 @ExtendWith(MockitoExtension.class)
 public class SecretManagementServiceTest {
@@ -52,6 +57,7 @@ public class SecretManagementServiceTest {
 
   private SecretManagementService service;
 
+  @Mock private Appender<ILoggingEvent> mockAppender;
   @Mock private EncryptionDelegate encryptionDelegate;
   @Mock private DbEncryptedSecretRepository secretRepository;
   @Mock private DbEncryptionKeyRepository keyRepository;
@@ -66,8 +72,8 @@ public class SecretManagementServiceTest {
             this.secretRepository,
             this.keyRepository,
             this.rsaEncrypter);
-    ReflectionTestUtils.setField(
-        this.service, "maxDurationForNewKeyToBeActivated", Duration.ofMinutes(5));
+    final Logger logger = (Logger) LoggerFactory.getLogger(SecretManagementService.class.getName());
+    logger.addAppender(this.mockAppender);
   }
 
   @Test
@@ -173,7 +179,9 @@ public class SecretManagementServiceTest {
     when(this.keyRepository.findByTypeAndReference(ENCRYPTION_PROVIDER_TYPE, "1"))
         .thenReturn(keyReference);
     when(this.encryptionDelegate.encrypt(any(), any(), anyString())).thenReturn(encryptedSecret);
+
     this.service.storeOrResetNewSecrets(SOME_DEVICE, Arrays.asList(typedSecret));
+
     // THEN
     final ArgumentCaptor<List<DbEncryptedSecret>> secretListArgumentCaptor =
         ArgumentCaptor.forClass(List.class);
@@ -211,30 +219,6 @@ public class SecretManagementServiceTest {
     recentNewMasterSecret.setDeviceIdentification(SOME_DEVICE);
     recentNewMasterSecret.setSecretStatus(SecretStatus.NEW);
     return recentNewMasterSecret;
-  }
-
-  @Test
-  public void storeNewSecretWhenRecentNewSecretAlreadyExists() throws Exception {
-    // WHEN
-    when(this.secretRepository.getSecretCount(
-            SOME_DEVICE, SecretType.E_METER_ENCRYPTION_KEY_UNICAST, SecretStatus.NEW))
-        .thenReturn(1);
-    when(this.secretRepository.findSecrets(
-            SOME_DEVICE, SecretType.E_METER_ENCRYPTION_KEY_UNICAST, SecretStatus.NEW))
-        .thenReturn(Arrays.asList(this.getNewEncryptionSecret(0)));
-
-    // THEN
-    final TypedSecret typedSecret =
-        new TypedSecret(new byte[16], SecretType.E_METER_ENCRYPTION_KEY_UNICAST);
-    assertThatIllegalStateException()
-        .isThrownBy(
-            () -> this.service.storeOrResetNewSecrets(SOME_DEVICE, Arrays.asList(typedSecret)))
-        .withMessageStartingWith(
-            "There is a secret of type %s for device %s with status NEW "
-                + "created within less than a duration defined for a new key to be actived in. "
-                + "No key with status NEW will be stored. Wait at least the defined duration "
-                + "before starting a request requiring NEW keys to be stored:",
-            typedSecret.getSecretType().name(), SOME_DEVICE);
   }
 
   @Test
@@ -502,11 +486,96 @@ public class SecretManagementServiceTest {
     when(this.encryptionDelegate.decrypt(any(), any())).thenReturn(secret);
     when(this.rsaEncrypter.encrypt(any())).thenReturn(rsaSecret);
     final List<TypedSecret> secrets =
-        this.service.generateAndStoreSecrets(
+        this.service.generateAndStoreOrResetNewSecrets(
             SOME_DEVICE, Arrays.asList(SecretType.E_METER_AUTHENTICATION_KEY));
     assertThat(secrets.size()).isEqualTo(1);
     final TypedSecret typedSecret = secrets.get(0);
     assertThat(typedSecret.getSecretType()).isEqualTo(SecretType.E_METER_AUTHENTICATION_KEY);
     assertThat(typedSecret.getSecret()).isEqualTo(rsaSecret);
+  }
+
+  @Test
+  public void generateAndStoreNewSecretWhenOlderNewSecretAlreadyExists() throws Exception {
+    // GIVEN
+    final DbEncryptedSecret secret = this.getNewEncryptionSecret(100);
+    // WHEN
+    when(this.secretRepository.getSecretCount(
+            SOME_DEVICE, SecretType.E_METER_ENCRYPTION_KEY_UNICAST, SecretStatus.NEW))
+        .thenReturn(1);
+    when(this.secretRepository.findSecrets(
+            SOME_DEVICE, SecretType.E_METER_ENCRYPTION_KEY_UNICAST, SecretStatus.NEW))
+        .thenReturn(Arrays.asList(secret));
+
+    final SecretType secretType = SecretType.E_METER_ENCRYPTION_KEY_UNICAST;
+    this.service.generateAndStoreOrResetNewSecrets(SOME_DEVICE, Arrays.asList(secretType));
+
+    // THEN
+    final List<DbEncryptedSecret> foundSecrets =
+        this.secretRepository.findSecrets(
+            SOME_DEVICE, SecretType.E_METER_ENCRYPTION_KEY_UNICAST, SecretStatus.NEW);
+    assertThat(foundSecrets).hasSize(1);
+
+    verify(this.secretRepository, never()).saveAll(Arrays.asList(secret));
+    assertThat(secret.getCreationTime()).isCloseTo(new Date(), 10);
+    assertThat(secret.getSecretStatus()).isEqualTo(SecretStatus.NEW);
+  }
+
+  @Test
+  public void generateAndStoreNewSecretsWhenOneRecentAndOlderNewSecretAlreadyExists()
+      throws Exception {
+    // GIVEN
+    final DbEncryptedSecret secretOldEncryption = this.getNewEncryptionSecret(100);
+    final DbEncryptedSecret secretOlderEncryption = this.getNewEncryptionSecret(1000);
+    final DbEncryptedSecret secretOldAuthen = this.getNewAuthenticationSecret(100);
+    final DbEncryptedSecret secretOlderAuthen = this.getNewAuthenticationSecret(1000);
+    final Date olderCreationTime = secretOlderEncryption.getCreationTime();
+
+    // WHEN
+    when(this.secretRepository.getSecretCount(
+            SOME_DEVICE, SecretType.E_METER_ENCRYPTION_KEY_UNICAST, SecretStatus.NEW))
+        .thenReturn(2);
+    when(this.secretRepository.findSecrets(
+            SOME_DEVICE, SecretType.E_METER_ENCRYPTION_KEY_UNICAST, SecretStatus.NEW))
+        .thenReturn(Arrays.asList(secretOldEncryption, secretOlderEncryption));
+    when(this.secretRepository.getSecretCount(
+            SOME_DEVICE, SecretType.E_METER_AUTHENTICATION_KEY, SecretStatus.NEW))
+        .thenReturn(2);
+    when(this.secretRepository.findSecrets(
+            SOME_DEVICE, SecretType.E_METER_AUTHENTICATION_KEY, SecretStatus.NEW))
+        .thenReturn(Arrays.asList(secretOldAuthen, secretOlderAuthen));
+
+    final SecretType encryptionSecretType = SecretType.E_METER_ENCRYPTION_KEY_UNICAST;
+    final SecretType authenSecretType = SecretType.E_METER_AUTHENTICATION_KEY;
+
+    this.service.generateAndStoreOrResetNewSecrets(
+        SOME_DEVICE, Arrays.asList(encryptionSecretType, authenSecretType));
+
+    // THEN
+    final String logMessage =
+        "During (GenerateOr)Replace Key Process multiple keys with status NEW";
+    verify(this.mockAppender, times(2))
+        .doAppend(
+            argThat(
+                argument -> {
+                  assertThat(argument.getMessage()).startsWith(logMessage);
+                  assertThat(argument.getLevel()).isEqualTo(Level.WARN);
+                  return true;
+                }));
+
+    verify(this.secretRepository, never()).saveAll(Arrays.asList(secretOldEncryption));
+    verify(this.secretRepository, never()).saveAll(Arrays.asList(secretOldAuthen));
+    verify(this.secretRepository, never())
+        .saveAll(Arrays.asList(secretOldEncryption, secretOldAuthen));
+
+    assertThat(secretOldEncryption.getCreationTime()).isCloseTo(new Date(), 10);
+    assertThat(secretOldAuthen.getCreationTime()).isCloseTo(new Date(), 10);
+    assertThat(secretOldEncryption.getSecretStatus()).isEqualTo(SecretStatus.NEW);
+    assertThat(secretOldAuthen.getSecretStatus()).isEqualTo(SecretStatus.NEW);
+    assertThat(secretOlderEncryption.getCreationTime().getTime())
+        .isEqualTo(olderCreationTime.getTime());
+    assertThat(secretOlderAuthen.getCreationTime().getTime())
+        .isEqualTo(olderCreationTime.getTime());
+    assertThat(secretOlderEncryption.getSecretStatus()).isEqualTo(SecretStatus.EXPIRED);
+    assertThat(secretOlderAuthen.getSecretStatus()).isEqualTo(SecretStatus.EXPIRED);
   }
 }

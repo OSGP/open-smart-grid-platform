@@ -11,16 +11,14 @@ package org.opensmartgridplatform.secretmanagement.application.services;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.buf.HexUtils;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptedSecret;
 import org.opensmartgridplatform.secretmanagement.application.domain.DbEncryptionKeyReference;
@@ -39,7 +37,6 @@ import org.opensmartgridplatform.shared.security.EncryptionDelegate;
 import org.opensmartgridplatform.shared.security.EncryptionProviderType;
 import org.opensmartgridplatform.shared.security.RsaEncrypter;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -55,11 +52,9 @@ import org.springframework.stereotype.Service;
  * Likewise, any public method will return RSA-encrypted secrets by reencrypting the AES-encrypted
  * secrets to RSA.
  */
+@Slf4j
 @Service
 public class SecretManagementService {
-
-  @Value("#{T(java.time.Duration).parse('${max.duration.for.new.key.to.be.activated:PT5M}')}")
-  private Duration maxDurationForNewKeyToBeActivated;
 
   // Internal datastructure to keep track of (intermediate) secret details
   private static class EncryptedTypedSecret {
@@ -256,74 +251,58 @@ public class SecretManagementService {
   }
 
   public synchronized void storeOrResetNewSecrets(
-      final String deviceIdentification, final List<TypedSecret> secrets) {
+      final String deviceIdentification, final List<TypedSecret> typedSecrets) {
     final List<TypedSecret> typedNewSecretsToStore = new ArrayList<>();
     final List<TypedSecret> typedNewSecretsToReset = new ArrayList<>();
-    for (final TypedSecret typedSecret : secrets) {
-      final int numberOfNewSecrets =
-          this.secretRepository.getSecretCount(
-              deviceIdentification, typedSecret.getSecretType(), SecretStatus.NEW);
-      if (numberOfNewSecrets == 0) {
+    for (final TypedSecret typedSecret : typedSecrets) {
+      final boolean thereAreNoKeysWithStatusNew =
+          this.thereAreNoKeysWithStatusNew(deviceIdentification, typedSecret.getSecretType());
+      if (thereAreNoKeysWithStatusNew) {
         typedNewSecretsToStore.add(typedSecret);
       } else {
-        this.verifyNoRecentKeyReplacementIsRunning(deviceIdentification, typedSecret);
         typedNewSecretsToReset.add(typedSecret);
       }
     }
     this.storeSecrets(deviceIdentification, typedNewSecretsToStore);
     typedNewSecretsToReset.forEach(
-        ts -> this.resetNewSecrets(deviceIdentification, ts.getSecretType()));
+        ts -> this.resetNewSecret(deviceIdentification, ts.getSecretType()));
   }
 
-  private void verifyNoRecentKeyReplacementIsRunning(
-      final String deviceIdentification, final TypedSecret typedSecret) {
-    if (this.recentNewSecretsPresent(deviceIdentification, typedSecret)) {
-      final String errorMsg =
-          "There is a secret of type %s for device %s with status NEW "
-              + "created within less than a duration defined for a new key to be actived in. "
-              + "No key with status NEW will be stored. Wait at least the defined duration "
-              + "before starting a request requiring NEW keys to be stored: %s";
-      throw new IllegalStateException(
-          String.format(
-              errorMsg,
-              typedSecret.getSecretType().name(),
-              deviceIdentification,
-              this.maxDurationForNewKeyToBeActivated.toString()));
-    }
+  private boolean thereAreNoKeysWithStatusNew(
+      final String deviceIdentification, final SecretType secretType) {
+    final int numberOfNewSecrets =
+        this.secretRepository.getSecretCount(deviceIdentification, secretType, SecretStatus.NEW);
+    return numberOfNewSecrets == 0;
   }
 
-  private void resetNewSecrets(final String deviceIdentification, final SecretType secretType) {
+  private TypedSecret resetNewSecret(
+      final String deviceIdentification, final SecretType secretType) {
+    // the most recent key of all NEW keys of the device and type gets a new creation date
+    // all other NEW keys of the device and type are set to status EXPIRED.
+    DbEncryptedSecret mostRecentFoundSecret = null;
     final List<DbEncryptedSecret> foundSecrets =
         this.secretRepository.findSecrets(deviceIdentification, secretType, SecretStatus.NEW);
-    final Optional<DbEncryptedSecret> mostRecentNewSecret =
-        foundSecrets.stream().max((s1, s2) -> s1.getCreationTime().compareTo(s2.getCreationTime()));
-    if (mostRecentNewSecret.isPresent()) {
-      foundSecrets.forEach(
-          s -> {
-            if (s.getCreationTime().equals(mostRecentNewSecret.get().getCreationTime())) {
-              s.setCreationTime(new Date());
-            } else {
-              s.setSecretStatus(SecretStatus.EXPIRED);
-            }
-            this.secretRepository.save(s);
-          });
+
+    boolean firstInListAndMostRecent = true;
+    for (final DbEncryptedSecret foundSecret : foundSecrets) {
+      if (firstInListAndMostRecent) {
+        foundSecret.setCreationTime(new Date());
+        mostRecentFoundSecret = foundSecret;
+        firstInListAndMostRecent = false;
+      } else {
+        foundSecret.setSecretStatus(SecretStatus.EXPIRED);
+        log.warn(
+            String.format(
+                "During (GenerateOr)Replace Key Process multiple keys with status NEW of type %s for "
+                    + "device %s have been found. The most recent has been reused. All others have "
+                    + "been expired (status EXPIRED)",
+                secretType.name(), deviceIdentification));
+      }
+      this.secretRepository.save(foundSecret);
     }
-  }
-
-  private boolean recentNewSecretsPresent(
-      final String deviceIdentification, final TypedSecret typedSecret) {
-    final List<DbEncryptedSecret> secrets =
-        this.secretRepository.findSecrets(
-            deviceIdentification, typedSecret.getSecretType(), SecretStatus.NEW);
-    return secrets.stream().anyMatch(this.isRecentSecret());
-  }
-
-  private Predicate<DbEncryptedSecret> isRecentSecret() {
-    return s -> {
-      final Duration durationSinceCreationOfKey =
-          Duration.between(s.getCreationTime().toInstant(), Instant.now());
-      return durationSinceCreationOfKey.compareTo(this.maxDurationForNewKeyToBeActivated) != 1;
-    };
+    return new TypedSecret(
+        HexUtils.fromHexString(mostRecentFoundSecret.getEncodedSecret()),
+        mostRecentFoundSecret.getSecretType());
   }
 
   private synchronized void storeSecrets(
@@ -396,12 +375,40 @@ public class SecretManagementService {
     }
   }
 
-  public synchronized List<TypedSecret> generateAndStoreSecrets(
+  public synchronized List<TypedSecret> generateAndStoreOrResetNewSecrets(
       final String deviceIdentification, final List<SecretType> secretTypes) {
-    secretTypes.forEach(st -> this.checkNrNewSecretsOfType(deviceIdentification, st, 0));
+
+    final List<SecretType> typedNewSecretsToGenerateAndStore = new ArrayList<>();
+    final List<SecretType> typedNewSecretsToReset = new ArrayList<>();
+    for (final SecretType secretType : secretTypes) {
+      final boolean thereAreNoKeysWithStatusNew =
+          this.thereAreNoKeysWithStatusNew(deviceIdentification, secretType);
+      if (thereAreNoKeysWithStatusNew) {
+        typedNewSecretsToGenerateAndStore.add(secretType);
+      } else {
+        //        this.verifyNoRecentKeyReplacementIsRunning(deviceIdentification, secretType);
+        typedNewSecretsToReset.add(secretType);
+      }
+    }
+    final List<TypedSecret> generatedSecrets =
+        this.generateAndStoreSecrets(deviceIdentification, typedNewSecretsToGenerateAndStore);
+    final List<TypedSecret> resetNewSecrets =
+        typedNewSecretsToReset.stream()
+            .map(ts -> this.resetNewSecret(deviceIdentification, ts))
+            .collect(Collectors.toList());
+
+    generatedSecrets.addAll(resetNewSecrets);
+    return generatedSecrets;
+  }
+
+  private synchronized List<TypedSecret> generateAndStoreSecrets(
+      final String deviceIdentification, final List<SecretType> secretTypes) {
+
     final List<EncryptedTypedSecret> encryptedTypedSecrets =
         secretTypes.stream().map(this::generateAes128BitsSecret).collect(Collectors.toList());
+
     this.storeAesSecrets(deviceIdentification, encryptedTypedSecrets);
+
     return encryptedTypedSecrets.stream()
         .map(this::reencryptAes2Rsa)
         .map(EncryptedTypedSecret::toTypedSecret)
