@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
 public class GetKeysService {
 
   private final SecretManagementService secretManagementService;
-  private final RsaEncrypter keyEncrypter;
+  private final RsaEncrypter encrypterForGxfSmartMetering;
 
   @Autowired
   public GetKeysService(
@@ -39,7 +39,7 @@ public class GetKeysService {
           final RsaEncrypter encrypterForGxfSmartMetering) {
 
     this.secretManagementService = secretManagementService;
-    this.keyEncrypter = encrypterForGxfSmartMetering;
+    this.encrypterForGxfSmartMetering = encrypterForGxfSmartMetering;
   }
 
   public GetKeysResponseDto getKeys(
@@ -72,7 +72,7 @@ public class GetKeysService {
       final SecurityKeyType securityKeyType, final byte[] unencryptedKey) {
 
     if (unencryptedKey != null) {
-      final byte[] encryptedKey = this.keyEncrypter.encrypt(unencryptedKey);
+      final byte[] encryptedKey = this.encrypterForGxfSmartMetering.encrypt(unencryptedKey);
       return new KeyDto(this.convertToSecretTypeDto(securityKeyType), encryptedKey);
     } else {
       return new KeyDto(this.convertToSecretTypeDto(securityKeyType), null);

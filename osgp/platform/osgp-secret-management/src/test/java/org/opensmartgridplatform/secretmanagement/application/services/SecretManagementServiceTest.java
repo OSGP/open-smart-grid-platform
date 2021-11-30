@@ -51,7 +51,7 @@ public class SecretManagementServiceTest {
   @Mock private EncryptionDelegate encryptionDelegate;
   @Mock private DbEncryptedSecretRepository secretRepository;
   @Mock private DbEncryptionKeyRepository keyRepository;
-  @Mock private RsaEncrypter encrypterForProtocolAdapterDlms;
+  @Mock private RsaEncrypter encrypterForSecretManagementClient;
   @Mock private RsaEncrypter decrypterForSecretManagement;
 
   @BeforeEach
@@ -62,7 +62,7 @@ public class SecretManagementServiceTest {
             ENCRYPTION_PROVIDER_TYPE,
             this.secretRepository,
             this.keyRepository,
-            this.encrypterForProtocolAdapterDlms,
+            this.encrypterForSecretManagementClient,
             this.decrypterForSecretManagement);
   }
 
@@ -85,7 +85,7 @@ public class SecretManagementServiceTest {
             SOME_DEVICE, SecretType.E_METER_MASTER_KEY, SecretStatus.ACTIVE))
         .thenReturn(secretList);
     when(this.encryptionDelegate.decrypt(any(), any())).thenReturn(decryptedSecret);
-    when(this.encrypterForProtocolAdapterDlms.encrypt(any())).thenReturn(rsaSecret);
+    when(this.encrypterForSecretManagementClient.encrypt(any())).thenReturn(rsaSecret);
     final List<TypedSecret> typedSecrets =
         this.service.retrieveSecrets(SOME_DEVICE, Arrays.asList(SecretType.E_METER_MASTER_KEY));
 
@@ -394,7 +394,7 @@ public class SecretManagementServiceTest {
     when(this.encryptionDelegate.generateAes128BitsSecret(ENCRYPTION_PROVIDER_TYPE, reference))
         .thenReturn(aesSecret);
     when(this.encryptionDelegate.decrypt(any(), any())).thenReturn(secret);
-    when(this.encrypterForProtocolAdapterDlms.encrypt(any())).thenReturn(rsaSecret);
+    when(this.encrypterForSecretManagementClient.encrypt(any())).thenReturn(rsaSecret);
     final List<TypedSecret> secrets =
         this.service.generateAndStoreSecrets(
             SOME_DEVICE, Arrays.asList(SecretType.E_METER_AUTHENTICATION_KEY));

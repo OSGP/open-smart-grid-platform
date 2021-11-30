@@ -28,10 +28,10 @@ import org.springframework.core.io.Resource;
 @Configuration
 public class SecurityConfig {
 
-  @Value("${encryption.rsa.public.key.protocol.adapter.dlms:#{null}}")
-  private Resource rsaPublicKeyProtocolAdapterDlms;
+  @Value("${encryption.rsa.public.key.secret.management.client}")
+  private Resource rsaPublicKeySecretManagementClient;
 
-  @Value("${encryption.rsa.private.key.secret.management:#{null}}")
+  @Value("${encryption.rsa.private.key.secret.management}")
   private Resource rsaPrivateKeySecretManagement;
 
   @Value("${jre.encryption.key.resource}")
@@ -43,7 +43,7 @@ public class SecurityConfig {
   @Value("${encryption.provider.type}")
   private String encryptionProviderTypeName;
 
-  @Bean("DefaultEncryptionDelegate")
+  @Bean("DefaultEncryptionDelegateForKeyStorage")
   public DefaultEncryptionDelegate getEncryptionDelegate() {
     return new DefaultEncryptionDelegate(this.getDefaultEncryptionProviders());
   }
@@ -68,16 +68,16 @@ public class SecurityConfig {
     }
   }
 
-  // RsaEncrypter for encrypting secrets to be sent to the DLMS protocol adapter.
-  @Bean(name = "encrypterForProtocolAdapterDlms")
-  public RsaEncrypter encrypterForProtocolAdapterDlms() {
+  // RsaEncrypter for encrypting secrets to be sent to the client of Secret Management.
+  @Bean(name = "encrypterForSecretManagementClient")
+  public RsaEncrypter encrypterForSecretManagementClient() {
     try {
-      final File publicKeyProtocolAdapterFile = this.rsaPublicKeyProtocolAdapterDlms.getFile();
+      final File publicKeySecretManagementFile = this.rsaPublicKeySecretManagementClient.getFile();
       final RsaEncrypter rsaEncrypter = new RsaEncrypter();
-      rsaEncrypter.setPublicKeyStore(publicKeyProtocolAdapterFile);
+      rsaEncrypter.setPublicKeyStore(publicKeySecretManagementFile);
       return rsaEncrypter;
     } catch (final IOException e) {
-      throw new IllegalStateException("Could not initialize encrypterForProtocolAdapterDlms", e);
+      throw new IllegalStateException("Could not initialize encrypterForSecretManagementClient", e);
     }
   }
 

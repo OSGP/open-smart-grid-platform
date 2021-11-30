@@ -115,28 +115,29 @@ public class SecretManagementService {
     }
   }
 
-  private final EncryptionDelegate encryptionDelegate;
+  private final EncryptionDelegate encryptionDelegateForKeyStorage;
   private final EncryptionProviderType encryptionProviderType;
   private final DbEncryptedSecretRepository secretRepository;
   private final DbEncryptionKeyRepository keyRepository;
-  private final RsaEncrypter encrypterWithProtocolAdapterPublicKey;
-  private final RsaEncrypter decrypterWithSecretManagementPrivateKey;
+  private final RsaEncrypter encrypterForSecretManagementClient;
+  private final RsaEncrypter decrypterForSecretManagement;
 
   public SecretManagementService(
-      @Qualifier("DefaultEncryptionDelegate") final EncryptionDelegate defaultEncryptionDelegate,
+      @Qualifier("DefaultEncryptionDelegateForKeyStorage")
+          final EncryptionDelegate defaultEncryptionDelegateForKeyStorage,
       final EncryptionProviderType encryptionProviderType,
       final DbEncryptedSecretRepository secretRepository,
       final DbEncryptionKeyRepository keyRepository,
-      @Qualifier(value = "encrypterForProtocolAdapterDlms")
-          final RsaEncrypter encrypterForProtocolAdapterDlms,
+      @Qualifier(value = "encrypterForSecretManagementClient")
+          final RsaEncrypter encrypterForSecretManagementClient,
       @Qualifier(value = "decrypterForSecretManagement")
           final RsaEncrypter decrypterForSecretManagement) {
-    this.encryptionDelegate = defaultEncryptionDelegate;
+    this.encryptionDelegateForKeyStorage = defaultEncryptionDelegateForKeyStorage;
     this.encryptionProviderType = encryptionProviderType;
     this.secretRepository = secretRepository;
     this.keyRepository = keyRepository;
-    this.encrypterWithProtocolAdapterPublicKey = encrypterForProtocolAdapterDlms;
-    this.decrypterWithSecretManagementPrivateKey = decrypterForSecretManagement;
+    this.encrypterForSecretManagementClient = encrypterForSecretManagementClient;
+    this.decrypterForSecretManagement = decrypterForSecretManagement;
   }
 
   private DbEncryptionKeyReference getCurrentKey() {
@@ -340,7 +341,7 @@ public class SecretManagementService {
     try {
       final DbEncryptionKeyReference currentKey = this.getCurrentKey();
       final byte[] aesEncrypted =
-          this.encryptionDelegate.generateAes128BitsSecret(
+          this.encryptionDelegateForKeyStorage.generateAes128BitsSecret(
               this.encryptionProviderType, currentKey.getReference());
       return new EncryptedTypedSecret(
           aesEncrypted,
@@ -379,10 +380,10 @@ public class SecretManagementService {
     final byte[] aes;
     try {
       aes =
-          this.encryptionDelegate
+          this.encryptionDelegateForKeyStorage
               .encrypt(
                   this.encryptionProviderType,
-                  this.decrypterWithSecretManagementPrivateKey.decrypt(rsa),
+                  this.decrypterForSecretManagement.decrypt(rsa),
                   keyReference)
               .getSecret();
     } catch (final EncrypterException ee) {
@@ -397,8 +398,8 @@ public class SecretManagementService {
       final String keyReference,
       final EncryptionProviderType encryptionProviderType) {
     try {
-      return this.encrypterWithProtocolAdapterPublicKey.encrypt(
-          this.encryptionDelegate.decrypt(
+      return this.encrypterForSecretManagementClient.encrypt(
+          this.encryptionDelegateForKeyStorage.decrypt(
               new EncryptedSecret(encryptionProviderType, aes), keyReference));
     } catch (final EncrypterException ee) {
       throw new IllegalStateException(

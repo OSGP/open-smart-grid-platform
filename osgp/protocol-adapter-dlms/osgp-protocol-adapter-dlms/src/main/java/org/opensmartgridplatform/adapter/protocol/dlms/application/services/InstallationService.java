@@ -53,7 +53,7 @@ public class InstallationService {
 
   @Autowired
   @Qualifier("decrypterForGxfSmartMetering")
-  private RsaEncrypter rsaEncrypter;
+  private RsaEncrypter decrypterForGxfSmartMetering;
 
   @Autowired private SecretManagementService secretManagementService;
 
@@ -87,7 +87,7 @@ public class InstallationService {
     for (final SecurityKeyType keyType : keyTypesToStore) {
       final byte[] key = this.getKeyFromDeviceDto(deviceDto, keyType);
       if (ArrayUtils.isNotEmpty(key)) {
-        keysByType.put(keyType, this.rsaEncrypter.decrypt(key));
+        keysByType.put(keyType, this.decrypterForGxfSmartMetering.decrypt(key));
       } else {
         final Exception rootCause = new NoSuchElementException(keyType.name());
         throw new FunctionalException(

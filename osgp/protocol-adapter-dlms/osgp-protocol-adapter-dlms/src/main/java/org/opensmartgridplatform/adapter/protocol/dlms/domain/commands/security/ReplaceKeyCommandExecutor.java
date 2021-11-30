@@ -57,7 +57,7 @@ public class ReplaceKeyCommandExecutor
 
   @Autowired
   @Qualifier("decrypterForGxfSmartMetering")
-  private RsaEncrypter rsaEncrypter;
+  private RsaEncrypter decrypterForGxfSmartMetering;
 
   public ReplaceKeyCommandExecutor() {
     super(SetKeysRequestDto.class);
@@ -116,8 +116,9 @@ public class ReplaceKeyCommandExecutor
 
   private SetKeysRequestDto decryptRsaKeys(final SetKeysRequestDto setKeysRequestDto) {
     final byte[] authenticationKey =
-        this.rsaEncrypter.decrypt(setKeysRequestDto.getAuthenticationKey());
-    final byte[] encryptionKey = this.rsaEncrypter.decrypt(setKeysRequestDto.getEncryptionKey());
+        this.decrypterForGxfSmartMetering.decrypt(setKeysRequestDto.getAuthenticationKey());
+    final byte[] encryptionKey =
+        this.decrypterForGxfSmartMetering.decrypt(setKeysRequestDto.getEncryptionKey());
 
     return new SetKeysRequestDto(authenticationKey, encryptionKey);
   }
