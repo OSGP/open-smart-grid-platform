@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -277,8 +278,8 @@ public class SecretManagementService {
 
   private TypedSecret resetNewSecret(
       final String deviceIdentification, final SecretType secretType) {
-    // the most recent key of all NEW keys of the device and type gets a new creation date
-    // all other NEW keys of the device and type are set to status EXPIRED.
+    // the most recent key of all NEW keys of the device and type gets a new creation date and is
+    // returned. All other NEW keys of the device and type are set to status EXPIRED.
     DbEncryptedSecret mostRecentFoundSecret = null;
     final List<DbEncryptedSecret> foundSecrets =
         this.secretRepository.findSecrets(deviceIdentification, secretType, SecretStatus.NEW);
@@ -300,9 +301,14 @@ public class SecretManagementService {
       }
       this.secretRepository.save(foundSecret);
     }
-    return new TypedSecret(
-        HexUtils.fromHexString(mostRecentFoundSecret.getEncodedSecret()),
-        mostRecentFoundSecret.getSecretType());
+    TypedSecret resetNewSecret = null;
+    if (mostRecentFoundSecret != null) {
+      resetNewSecret =
+          new TypedSecret(
+              HexUtils.fromHexString(mostRecentFoundSecret.getEncodedSecret()),
+              mostRecentFoundSecret.getSecretType());
+    }
+    return resetNewSecret;
   }
 
   private synchronized void storeSecrets(
@@ -386,7 +392,6 @@ public class SecretManagementService {
       if (thereAreNoKeysWithStatusNew) {
         typedNewSecretsToGenerateAndStore.add(secretType);
       } else {
-        //        this.verifyNoRecentKeyReplacementIsRunning(deviceIdentification, secretType);
         typedNewSecretsToReset.add(secretType);
       }
     }
@@ -395,6 +400,7 @@ public class SecretManagementService {
     final List<TypedSecret> resetNewSecrets =
         typedNewSecretsToReset.stream()
             .map(ts -> this.resetNewSecret(deviceIdentification, ts))
+            .filter(Objects::nonNull)
             .collect(Collectors.toList());
 
     generatedSecrets.addAll(resetNewSecrets);
