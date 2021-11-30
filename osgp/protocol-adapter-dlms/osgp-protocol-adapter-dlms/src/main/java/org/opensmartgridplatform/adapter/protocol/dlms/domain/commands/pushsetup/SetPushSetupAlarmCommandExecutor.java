@@ -72,12 +72,10 @@ public class SetPushSetupAlarmCommandExecutor
       final MessageMetadata messageMetadata)
       throws ProtocolAdapterException {
 
-    this.checkPushSetupAlarm(pushSetupAlarm);
-
-    AccessResultCode resultCode = null;
+    this.checkPushSetupAlarmForUnsupportedItems(pushSetupAlarm);
 
     if (pushSetupAlarm.hasSendDestinationAndMethod()) {
-      resultCode = this.setSendDestinationAndMethod(conn, pushSetupAlarm);
+      final AccessResultCode resultCode = this.setSendDestinationAndMethod(conn, pushSetupAlarm);
 
       if (resultCode != AccessResultCode.SUCCESS) {
         return resultCode;
@@ -85,17 +83,11 @@ public class SetPushSetupAlarmCommandExecutor
     }
 
     if (pushSetupAlarm.hasPushObjectList()) {
-      resultCode = this.setPushObjectList(conn, pushSetupAlarm);
-
-      return resultCode;
+      return this.setPushObjectList(conn, pushSetupAlarm);
     }
 
-    if (resultCode == null) {
-      throw new ProtocolAdapterException(
-          "SetPushSetupAlarmCommandExecutor called without any valid option set in request.");
-    } else {
-      return resultCode;
-    }
+    throw new ProtocolAdapterException(
+        "SetPushSetupAlarmCommandExecutor called without any valid option set in request.");
   }
 
   private AccessResultCode setSendDestinationAndMethod(
@@ -201,7 +193,7 @@ public class SetPushSetupAlarmCommandExecutor
     return new SetParameter(pushObjectListAddress, value);
   }
 
-  private void checkPushSetupAlarm(final PushSetupAlarmDto pushSetupAlarm) {
+  private void checkPushSetupAlarmForUnsupportedItems(final PushSetupAlarmDto pushSetupAlarm) {
     if (pushSetupAlarm.hasCommunicationWindow()) {
       LOGGER.warn(
           "Setting Communication Window of Push Setup Alarm not implemented: {}",
