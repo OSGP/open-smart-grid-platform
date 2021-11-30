@@ -33,4 +33,16 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
+
+  <xsd:element name="ClearServiceLocationRequest">
+    <xsd:complexType/>
+  </xsd:element>
+
+  <xsd:element name="ClearServiceLocationResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="result" type="xsd:string" minOccurs="1"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
 </xsd:schema>
