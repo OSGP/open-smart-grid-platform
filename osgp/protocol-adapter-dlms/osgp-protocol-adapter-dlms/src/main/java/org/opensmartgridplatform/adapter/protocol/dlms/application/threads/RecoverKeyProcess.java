@@ -155,7 +155,7 @@ public class RecoverKeyProcess implements Runnable {
               this.messageMetadata,
               device,
               dlmsMessageListener,
-              this.secretManagementService::getNewKeyPairForConnection);
+              this.secretManagementService::getNewOrActiveKeyPerSecretType);
       return connection != null;
     } catch (final ThrottlingPermitDeniedException e) {
       throw e;
