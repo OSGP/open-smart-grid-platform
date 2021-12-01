@@ -243,7 +243,7 @@ public class SecretManagementServiceTest {
     assertThat(foundSecrets).hasSize(1);
 
     verify(this.secretRepository, never()).saveAll(Arrays.asList(secret));
-    assertThat(secret.getCreationTime()).isCloseTo(new Date(), 10);
+    assertThat(secret.getCreationTime()).isCloseTo(new Date(), 100);
     assertThat(secret.getSecretStatus()).isEqualTo(SecretStatus.NEW);
   }
 
@@ -533,7 +533,7 @@ public class SecretManagementServiceTest {
     assertThat(foundSecrets).hasSize(1);
 
     verify(this.secretRepository, never()).saveAll(Arrays.asList(secret));
-    assertThat(secret.getCreationTime()).isCloseTo(new Date(), 10);
+    assertThat(secret.getCreationTime()).isCloseTo(new Date(), 100);
     assertThat(secret.getSecretStatus()).isEqualTo(SecretStatus.NEW);
   }
 
@@ -584,8 +584,8 @@ public class SecretManagementServiceTest {
     verify(this.secretRepository, never())
         .saveAll(Arrays.asList(secretOldEncryption, secretOldAuthen));
 
-    assertThat(secretOldEncryption.getCreationTime()).isCloseTo(new Date(), 10);
-    assertThat(secretOldAuthen.getCreationTime()).isCloseTo(new Date(), 10);
+    assertThat(secretOldEncryption.getCreationTime()).isCloseTo(new Date(), 100);
+    assertThat(secretOldAuthen.getCreationTime()).isCloseTo(new Date(), 100);
     assertThat(secretOldEncryption.getSecretStatus()).isEqualTo(SecretStatus.NEW);
     assertThat(secretOldAuthen.getSecretStatus()).isEqualTo(SecretStatus.NEW);
     assertThat(secretOlderEncryption.getCreationTime().getTime())
