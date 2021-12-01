@@ -2,7 +2,7 @@
 Feature: SmartMetering Configuration - SetRandomisationSettings
   As a grid operator
   I want to be able to set randomisation settings on a device
-
+  @testNewPipeline
   Scenario: Set direct attach on a SMR5 device
     Given a dlms device
       | DeviceIdentification | TEST1027000000001 |
@@ -17,7 +17,7 @@ Feature: SmartMetering Configuration - SetRandomisationSettings
       | multiplicationFactor     | 1                 |
       | numberOfRetries          | 1                 |
     Then the randomisation settings should be set on the device
-
+@testNewPipeline
   Scenario: Set randomisation settings on a SMR5 device
     Given a dlms device
       | DeviceIdentification | TEST1027000000001 |
