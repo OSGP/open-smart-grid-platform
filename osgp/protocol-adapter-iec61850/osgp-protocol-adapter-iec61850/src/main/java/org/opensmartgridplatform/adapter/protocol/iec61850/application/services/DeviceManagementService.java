@@ -31,7 +31,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -153,25 +152,22 @@ public class DeviceManagementService {
 
   public void sendMeasurements(
       final String deviceIdentification, final GetDataResponseDto response) {
-    // Correlation ID is generated @ WS adapter, domain+version is
-    // hard-coded
-    // for now
+    // Correlation ID is generated @ WS adapter, domain+version is hard-coded for now
     final ProtocolResponseMessage responseMessage =
-        new ProtocolResponseMessage.Builder()
-            .dataObject(response)
+        ProtocolResponseMessage.newBuilder()
             .messageMetadata(
-                new MessageMetadata.Builder()
+                MessageMetadata.newBuilder()
                     .withDeviceIdentification(deviceIdentification)
                     .withOrganisationIdentification(NO_ORGANISATION)
                     .withCorrelationUid(NO_CORRELATION_UID)
                     .withMessageType(MessageType.GET_DATA.name())
+                    .withDomain("MICROGRIDS")
+                    .withDomainVersion("1.0")
                     .withMessagePriority(0)
+                    .withScheduled(false)
                     .build())
             .result(ResponseMessageResultType.OK)
-            .domain("MICROGRIDS")
-            .domainVersion("1.0")
-            .retryHeader(new RetryHeader())
-            .scheduled(false)
+            .dataObject(response)
             .build();
     this.responseSender.send(responseMessage);
   }
@@ -184,21 +180,20 @@ public class DeviceManagementService {
         this.deviceReportGroupRepository.findByDeviceIdentificationAndReportDataSet(
             deviceIdentification, reportDataSet);
     final ProtocolResponseMessage responseMessage =
-        new ProtocolResponseMessage.Builder()
-            .dataObject(response)
+        ProtocolResponseMessage.newBuilder()
             .messageMetadata(
-                new MessageMetadata.Builder()
+                MessageMetadata.newBuilder()
                     .withDeviceIdentification(deviceIdentification)
                     .withOrganisationIdentification(NO_ORGANISATION)
                     .withCorrelationUid(NO_CORRELATION_UID)
                     .withMessageType(MessageType.GET_POWER_QUALITY_VALUES.name())
+                    .withDomain(deviceReportGroup.getDomain())
+                    .withDomainVersion(deviceReportGroup.getDomainVersion())
                     .withMessagePriority(0)
+                    .withScheduled(false)
                     .build())
             .result(ResponseMessageResultType.OK)
-            .domain(deviceReportGroup.getDomain())
-            .domainVersion(deviceReportGroup.getDomainVersion())
-            .retryHeader(new RetryHeader())
-            .scheduled(false)
+            .dataObject(response)
             .build();
     this.responseSender.send(responseMessage);
   }

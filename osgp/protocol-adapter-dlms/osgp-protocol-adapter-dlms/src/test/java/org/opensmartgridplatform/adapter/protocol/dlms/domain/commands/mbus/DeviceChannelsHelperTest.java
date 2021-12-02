@@ -1,8 +1,9 @@
 /*
- * Copyright 2019 Smart Society Services B.V.
+ * Copyright 2021 Alliander N.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -18,6 +19,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -211,5 +213,32 @@ public class DeviceChannelsHelperTest {
         this.deviceChannelsHelper.makeChannelElementValues((short) 1, resultList);
 
     assertThat(values.getIdentificationNumber()).isEqualTo(null);
+  }
+
+  @Test
+  public void testFindEmptyChannelWhenNoEmptyChannel() {
+
+    final ChannelElementValuesDto result1 =
+        this.deviceChannelsHelper.findEmptyChannel(Collections.emptyList());
+    assertThat(result1).isNull();
+
+    final ChannelElementValuesDto nonEmptyChannel =
+        new ChannelElementValuesDto((short) 1, (short) 0, null, "id", (short) 0, (short) 0);
+    final ChannelElementValuesDto result2 =
+        this.deviceChannelsHelper.findEmptyChannel(Collections.singletonList(nonEmptyChannel));
+    assertThat(result2).isNull();
+  }
+
+  @Test
+  public void testFindEmptyChannel() {
+
+    final ChannelElementValuesDto emptyChannel =
+        new ChannelElementValuesDto((short) 1, (short) 0, "0", null, (short) 0, (short) 0);
+    final ChannelElementValuesDto nonEmptyChannel =
+        new ChannelElementValuesDto((short) 2, (short) 0, "12345678", null, (short) 0, (short) 0);
+
+    final ChannelElementValuesDto result =
+        this.deviceChannelsHelper.findEmptyChannel(Arrays.asList(nonEmptyChannel, emptyChannel));
+    assertThat(result).isEqualTo(emptyChannel);
   }
 }

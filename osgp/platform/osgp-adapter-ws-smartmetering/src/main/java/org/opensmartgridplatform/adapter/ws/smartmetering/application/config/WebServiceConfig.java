@@ -14,12 +14,15 @@ import java.util.Properties;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.BypassRetry;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.CertificateAndSoapHeaderAuthorizationEndpointInterceptor;
+import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MaxScheduleTime;
+import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessageMetadata;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.MessagePriority;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.ResponseUrl;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.ScheduleTime;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.SoapHeaderInterceptor;
+import org.opensmartgridplatform.adapter.ws.endpointinterceptors.SoapHeaderMessageMetadataInterceptor;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.WebServiceMonitorInterceptor;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.WebServiceMonitorInterceptorCapabilities;
 import org.opensmartgridplatform.adapter.ws.endpointinterceptors.X509CertificateRdnAttributeValueEndpointInterceptor;
@@ -33,6 +36,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.ws.server.EndpointInterceptor;
 import org.springframework.ws.server.endpoint.adapter.DefaultMethodEndpointAdapter;
 import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
 import org.springframework.ws.server.endpoint.adapter.method.MethodArgumentResolver;
@@ -81,11 +85,14 @@ public class WebServiceConfig extends AbstractConfig {
 
   private static final String MESSAGE_PRIORITY_HEADER = "MessagePriority";
   private static final String MESSAGE_SCHEDULETIME_HEADER = "ScheduleTime";
+  public static final String MESSAGE_MAXSCHEDULETIME_HEADER = "MaxScheduleTime";
   private static final String MESSAGE_RESPONSE_URL_HEADER = "ResponseUrl";
   private static final String BYPASS_RETRY_HEADER = "BypassRetry";
 
   private static final String X509_RDN_ATTRIBUTE_ID = "cn";
   private static final String X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME = "CommonNameSet";
+
+  private static final String MESSAGE_METADATA_CONTEXT_PROPERTY_NAME = "MessageMetadata";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceConfig.class);
 
@@ -299,9 +306,15 @@ public class WebServiceConfig extends AbstractConfig {
     methodArgumentResolvers.add(
         new AnnotationMethodArgumentResolver(MESSAGE_SCHEDULETIME_HEADER, ScheduleTime.class));
     methodArgumentResolvers.add(
+        new AnnotationMethodArgumentResolver(
+            MESSAGE_MAXSCHEDULETIME_HEADER, MaxScheduleTime.class, true));
+    methodArgumentResolvers.add(
         new AnnotationMethodArgumentResolver(MESSAGE_RESPONSE_URL_HEADER, ResponseUrl.class));
     methodArgumentResolvers.add(
         new AnnotationMethodArgumentResolver(BYPASS_RETRY_HEADER, BypassRetry.class));
+    methodArgumentResolvers.add(
+        new AnnotationMethodArgumentResolver(
+            MESSAGE_METADATA_CONTEXT_PROPERTY_NAME, MessageMetadata.class));
     defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
 
     final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<>();
@@ -367,6 +380,12 @@ public class WebServiceConfig extends AbstractConfig {
   }
 
   @Bean
+  public SoapHeaderInterceptor maxScheduleTimeInterceptor() {
+    return new SoapHeaderInterceptor(
+        MESSAGE_MAXSCHEDULETIME_HEADER, MESSAGE_MAXSCHEDULETIME_HEADER);
+  }
+
+  @Bean
   public SoapHeaderInterceptor responseUrlInterceptor() {
     return new SoapHeaderInterceptor(MESSAGE_RESPONSE_URL_HEADER, MESSAGE_RESPONSE_URL_HEADER);
   }
@@ -374,6 +393,11 @@ public class WebServiceConfig extends AbstractConfig {
   @Bean
   public SoapHeaderInterceptor bypassRetryInterceptor() {
     return new SoapHeaderInterceptor(BYPASS_RETRY_HEADER, BYPASS_RETRY_HEADER);
+  }
+
+  @Bean
+  public EndpointInterceptor messageMetadataInterceptor() {
+    return new SoapHeaderMessageMetadataInterceptor(MESSAGE_METADATA_CONTEXT_PROPERTY_NAME);
   }
 
   @Bean

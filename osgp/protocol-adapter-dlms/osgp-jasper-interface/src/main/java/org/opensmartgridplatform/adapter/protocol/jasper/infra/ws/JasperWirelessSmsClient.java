@@ -38,6 +38,8 @@ public class JasperWirelessSmsClient {
 
   @Autowired private JasperWirelessAccess jasperWirelessAccess;
 
+  @Autowired private short jasperGetValidityPeriod;
+
   public SendSMSResponse sendWakeUpSMS(final String iccId) {
 
     final SendSMSRequest sendSMSRequest = WS_CLIENT_FACTORY.createSendSMSRequest();
@@ -48,6 +50,7 @@ public class JasperWirelessSmsClient {
     sendSMSRequest.setMessageTextEncoding("");
     sendSMSRequest.setSentToIccid(iccId);
     sendSMSRequest.setVersion(this.jasperWirelessAccess.getApiVersion());
+    sendSMSRequest.setTpvp(this.jasperGetValidityPeriod);
 
     this.setInterceptorUsernameTokens();
 

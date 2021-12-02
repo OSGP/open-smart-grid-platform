@@ -51,6 +51,7 @@ class JasperWirelessSmsClientTest {
   private static final String JWCC_STATUS = "Delivered";
   private static final String MODEM_STATUS = "DeliverAckReceivedStatusSuccessful";
   private static final String API_VERSION = "1234";
+  private static final String VALIDITY_PERIOD = "6";
 
   static class PropertyMockingApplicationContextInitializer
       implements ApplicationContextInitializer<ConfigurableApplicationContext> {
@@ -63,6 +64,7 @@ class JasperWirelessSmsClientTest {
       mockEnvironment.setProperty("jwcc.api_version", API_VERSION);
       mockEnvironment.setProperty("jwcc.username", "JohnDoe");
       mockEnvironment.setProperty("jwcc.password", "Whatever");
+      mockEnvironment.setProperty("jwcc.validity_period", VALIDITY_PERIOD);
 
       applicationContext.setEnvironment(mockEnvironment);
     }
@@ -101,6 +103,9 @@ class JasperWirelessSmsClientTest {
                 + "<ns2:sentToIccid>"
                 + ICC_ID
                 + "</ns2:sentToIccid>"
+                + "<ns2:tpvp>"
+                + VALIDITY_PERIOD
+                + "</ns2:tpvp>"
                 + "<ns2:messageText/>"
                 + "</ns2:SendSMSRequest>");
 

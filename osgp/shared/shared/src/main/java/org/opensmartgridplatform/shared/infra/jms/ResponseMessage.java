@@ -9,9 +9,11 @@
 package org.opensmartgridplatform.shared.infra.jms;
 
 import java.io.Serializable;
+import lombok.Getter;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
+@Getter
 public class ResponseMessage implements Serializable {
 
   /** Serial Version UID. */
@@ -19,30 +21,34 @@ public class ResponseMessage implements Serializable {
 
   protected static final boolean DEFAULT_BYPASS_RETRY = false;
 
-  private final String messageType;
-  private final String correlationUid;
-  private final String organisationIdentification;
   private final String deviceIdentification;
+  private final String organisationIdentification;
+  private final String correlationUid;
+  private final String messageType;
+  private final int messagePriority;
+  private final boolean scheduled;
+  private final Long maxScheduleTime;
+  private final boolean bypassRetry;
+
+  private final RetryHeader retryHeader;
+
   private final ResponseMessageResultType result;
   private final OsgpException osgpException;
   private final Serializable dataObject;
-  private final int messagePriority;
-  private final boolean scheduled;
-  private final boolean bypassRetry;
-  private final RetryHeader retryHeader;
 
   protected ResponseMessage(final Builder builder) {
-    this.messageType = builder.messageType;
-    this.correlationUid = builder.correlationUid;
-    this.organisationIdentification = builder.organisationIdentification;
     this.deviceIdentification = builder.deviceIdentification;
+    this.organisationIdentification = builder.organisationIdentification;
+    this.correlationUid = builder.correlationUid;
+    this.messageType = builder.messageType;
+    this.messagePriority = builder.messagePriority;
+    this.scheduled = builder.scheduled;
+    this.maxScheduleTime = builder.maxScheduleTime;
+    this.bypassRetry = builder.bypassRetry;
+    this.retryHeader = builder.retryHeader;
     this.result = builder.result;
     this.osgpException = builder.osgpException;
     this.dataObject = builder.dataObject;
-    this.messagePriority = builder.messagePriority;
-    this.scheduled = builder.scheduled;
-    this.bypassRetry = builder.bypassRetry;
-    this.retryHeader = builder.retryHeader;
   }
 
   @Override
@@ -67,6 +73,27 @@ public class ResponseMessage implements Serializable {
     }
   }
 
+  public boolean bypassRetry() {
+    return this.bypassRetry;
+  }
+
+  public MessageMetadata messageMetadata() {
+    return MessageMetadata.newBuilder()
+        .withDeviceIdentification(this.deviceIdentification)
+        .withOrganisationIdentification(this.organisationIdentification)
+        .withCorrelationUid(this.correlationUid)
+        .withMessageType(this.messageType)
+        .withMessagePriority(this.messagePriority)
+        .withScheduled(this.scheduled)
+        .withMaxScheduleTime(this.maxScheduleTime)
+        .withBypassRetry(this.bypassRetry)
+        .build();
+  }
+
+  public static Builder newResponseMessageBuilder() {
+    return new Builder();
+  }
+
   public static class Builder {
 
     private String messageType = null;
@@ -78,6 +105,7 @@ public class ResponseMessage implements Serializable {
     private Serializable dataObject = null;
     private int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
     private boolean scheduled = false;
+    private Long maxScheduleTime = null;
     private boolean bypassRetry = DEFAULT_BYPASS_RETRY;
     private RetryHeader retryHeader;
 
@@ -138,19 +166,25 @@ public class ResponseMessage implements Serializable {
       return this;
     }
 
+    public Builder withMaxScheduleTime(final Long maxScheduleTime) {
+      this.maxScheduleTime = maxScheduleTime;
+      return this;
+    }
+
     public Builder withRetryHeader(final RetryHeader retryHeader) {
       this.retryHeader = retryHeader;
       return this;
     }
 
     public Builder withMessageMetadata(final MessageMetadata messageMetadata) {
-      this.messageType = messageMetadata.getMessageType();
-      this.correlationUid = messageMetadata.getCorrelationUid();
-      this.organisationIdentification = messageMetadata.getOrganisationIdentification();
       this.deviceIdentification = messageMetadata.getDeviceIdentification();
+      this.organisationIdentification = messageMetadata.getOrganisationIdentification();
+      this.correlationUid = messageMetadata.getCorrelationUid();
+      this.messageType = messageMetadata.getMessageType();
       this.messagePriority = messageMetadata.getMessagePriority();
-      this.bypassRetry = messageMetadata.isBypassRetry();
       this.scheduled = messageMetadata.isScheduled();
+      this.maxScheduleTime = messageMetadata.getMaxScheduleTime();
+      this.bypassRetry = messageMetadata.isBypassRetry();
       this.retryHeader = new RetryHeader();
       return this;
     }
@@ -158,53 +192,5 @@ public class ResponseMessage implements Serializable {
     public ResponseMessage build() {
       return new ResponseMessage(this);
     }
-  }
-
-  public static Builder newResponseMessageBuilder() {
-    return new Builder();
-  }
-
-  public String getMessageType() {
-    return this.messageType;
-  }
-
-  public String getCorrelationUid() {
-    return this.correlationUid;
-  }
-
-  public String getOrganisationIdentification() {
-    return this.organisationIdentification;
-  }
-
-  public String getDeviceIdentification() {
-    return this.deviceIdentification;
-  }
-
-  public ResponseMessageResultType getResult() {
-    return this.result;
-  }
-
-  public OsgpException getOsgpException() {
-    return this.osgpException;
-  }
-
-  public Serializable getDataObject() {
-    return this.dataObject;
-  }
-
-  public int getMessagePriority() {
-    return this.messagePriority;
-  }
-
-  public boolean bypassRetry() {
-    return this.bypassRetry;
-  }
-
-  public boolean isScheduled() {
-    return this.scheduled;
-  }
-
-  public RetryHeader getRetryHeader() {
-    return this.retryHeader;
   }
 }

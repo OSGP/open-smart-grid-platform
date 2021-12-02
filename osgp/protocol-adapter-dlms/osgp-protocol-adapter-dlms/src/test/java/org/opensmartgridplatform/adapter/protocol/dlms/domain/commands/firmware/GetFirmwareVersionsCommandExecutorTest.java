@@ -61,8 +61,7 @@ public class GetFirmwareVersionsCommandExecutorTest {
   public void setUp() {
     this.executor = new GetFirmwareVersionsCommandExecutor(this.helperService);
     this.connectionHolder = new DlmsConnectionManager(null, null, null, this.listener, null);
-    this.messageMetadata =
-        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+    this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
   }
 
   @Test

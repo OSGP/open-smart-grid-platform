@@ -216,7 +216,7 @@ public class GetPeriodicMeterReadsGasCommandExecutorIntegrationTest {
 
     // SETUP
     final MessageMetadata messageMetadata =
-        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+        MessageMetadata.newBuilder().withCorrelationUid("123456").build();
 
     // Reset stub
     this.connectionStub.clearRequestedAttributeAddresses();

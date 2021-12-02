@@ -26,6 +26,7 @@ public class RequestMessageMetadata {
   private final DeviceFunction deviceFunction;
   private final int messagePriority;
   private final Long scheduleTime;
+  private final Long maxScheduleTime;
   private final boolean bypassRetry;
 
   private RequestMessageMetadata(final Builder builder) {
@@ -35,18 +36,20 @@ public class RequestMessageMetadata {
     this.deviceFunction = builder.deviceFunction;
     this.messagePriority = builder.messagePriority;
     this.scheduleTime = builder.scheduleTime;
+    this.maxScheduleTime = builder.maxScheduleTime;
     this.bypassRetry = builder.bypassRetry;
   }
 
   public MessageMetadata newMessageMetadata(final String correlationUid) {
-    return new MessageMetadata.Builder(
-            correlationUid,
-            this.getOrganisationIdentification(),
-            this.getDeviceIdentification(),
-            this.getMessageType().name())
-        .withMessagePriority(this.getMessagePriority())
-        .withScheduleTime(this.getScheduleTime())
-        .withBypassRetry(this.isBypassRetry())
+    return MessageMetadata.newBuilder()
+        .withDeviceIdentification(this.deviceIdentification)
+        .withOrganisationIdentification(this.organisationIdentification)
+        .withCorrelationUid(correlationUid)
+        .withMessageType(this.messageType.name())
+        .withMessagePriority(this.messagePriority)
+        .withScheduleTime(this.scheduleTime)
+        .withMaxScheduleTime(this.maxScheduleTime)
+        .withBypassRetry(this.bypassRetry)
         .build();
   }
 
@@ -62,6 +65,7 @@ public class RequestMessageMetadata {
     private DeviceFunction deviceFunction = null;
     private int messagePriority = 0;
     private Long scheduleTime = null;
+    private Long maxScheduleTime = null;
     private boolean bypassRetry = false;
 
     public RequestMessageMetadata build() {
@@ -96,6 +100,13 @@ public class RequestMessageMetadata {
     public Builder withScheduleTime(final String scheduleTime) {
       if (StringUtils.isNotEmpty(scheduleTime)) {
         this.scheduleTime = Long.parseLong(scheduleTime);
+      }
+      return this;
+    }
+
+    public Builder withMaxScheduleTime(final String maxScheduleTime) {
+      if (StringUtils.isNotEmpty(maxScheduleTime)) {
+        this.maxScheduleTime = Long.parseLong(maxScheduleTime);
       }
       return this;
     }

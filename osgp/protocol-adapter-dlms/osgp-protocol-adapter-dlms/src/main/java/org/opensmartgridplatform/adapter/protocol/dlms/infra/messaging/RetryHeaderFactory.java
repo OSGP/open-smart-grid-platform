@@ -44,7 +44,7 @@ public class RetryHeaderFactory {
     return new RetryHeader(retry, this.maximumRetries, retryTime.getTime());
   }
 
-  public RetryHeader createEmtpyRetryHeader() {
+  public RetryHeader createEmptyRetryHeader() {
     return new RetryHeader();
   }
 

@@ -24,18 +24,36 @@ public class ScheduledTask extends AbstractScheduledTask {
   @Type(type = "java.io.Serializable")
   private Serializable messageData;
 
-  ScheduledTask() {
+  public ScheduledTask() {
     // Default empty constructor for Hibernate.
   }
 
   public ScheduledTask(
-      final MessageMetadata deviceMessageMetadata,
+      final MessageMetadata messageMetadata,
       final String domain,
       final String domainVersion,
       final Serializable messageData,
       final Timestamp scheduledTime) {
+    this(
+        messageMetadata,
+        domain,
+        domainVersion,
+        messageData,
+        scheduledTime,
+        messageMetadata.getMaxScheduleTime() == null
+            ? null
+            : new Timestamp(messageMetadata.getMaxScheduleTime()));
+  }
 
-    super(deviceMessageMetadata, domain, domainVersion, scheduledTime);
+  public ScheduledTask(
+      final MessageMetadata messageMetadata,
+      final String domain,
+      final String domainVersion,
+      final Serializable messageData,
+      final Timestamp scheduledTime,
+      final Timestamp maxScheduleTime) {
+
+    super(messageMetadata, domain, domainVersion, scheduledTime, maxScheduleTime);
     this.messageData = messageData;
   }
 

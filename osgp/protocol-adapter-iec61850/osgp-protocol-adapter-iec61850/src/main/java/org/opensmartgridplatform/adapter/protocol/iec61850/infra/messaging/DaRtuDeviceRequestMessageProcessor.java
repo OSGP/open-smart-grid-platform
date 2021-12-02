@@ -29,7 +29,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageType;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageSender;
-import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,24 +124,23 @@ public abstract class DaRtuDeviceRequestMessageProcessor extends BaseMessageProc
       ex = e;
     }
 
-    final MessageMetadata deviceMessageMetadata =
-        new MessageMetadata.Builder()
+    final MessageMetadata messageMetadata =
+        MessageMetadata.newBuilder()
             .withDeviceIdentification(deviceResponse.getDeviceIdentification())
             .withOrganisationIdentification(deviceResponse.getOrganisationIdentification())
             .withCorrelationUid(deviceResponse.getCorrelationUid())
             .withMessageType(messageType)
+            .withDomain(domainInformation.getDomain())
+            .withDomainVersion(domainInformation.getDomainVersion())
+            .withScheduled(isScheduled)
+            .withRetryCount(retryCount)
             .build();
     final ProtocolResponseMessage protocolResponseMessage =
-        new ProtocolResponseMessage.Builder()
-            .domain(domainInformation.getDomain())
-            .domainVersion(domainInformation.getDomainVersion())
-            .messageMetadata(deviceMessageMetadata)
+        ProtocolResponseMessage.newBuilder()
+            .messageMetadata(messageMetadata)
             .result(result)
             .osgpException(ex)
             .dataObject(dataObject)
-            .retryCount(retryCount)
-            .retryHeader(new RetryHeader())
-            .scheduled(isScheduled)
             .build();
     responseMessageSender.send(protocolResponseMessage);
   }

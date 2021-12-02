@@ -18,7 +18,7 @@ import org.opensmartgridplatform.dlms.interfaceclass.attribute.MbusClientAttribu
  * <p>The IdentificationNumber in its textual form consists of the last 8 digits of the
  * identification number.<br>
  * The long value is the base-10 value calculated from the textual representation interpreted as
- * hexadecimal (base-16). This value is the one that is used for the indentification_number
+ * hexadecimal (base-16). This value is the one that is used for the identification_number
  * (attribute 6) of the DLMS M-Bus client (class ID 72).
  *
  * @see MbusClientAttribute#IDENTIFICATION_NUMBER

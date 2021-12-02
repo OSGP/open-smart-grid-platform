@@ -47,8 +47,7 @@ public class DlmsConnectionFactoryTest {
     this.factory =
         new DlmsConnectionFactory(
             this.hls5Connector, this.lls1Connector, this.lls0Connector, this.domainHelperService);
-    this.messageMetadata =
-        MessageMetadata.newMessageMetadataBuilder().withCorrelationUid("123456").build();
+    this.messageMetadata = MessageMetadata.newBuilder().withCorrelationUid("123456").build();
   }
 
   @Test

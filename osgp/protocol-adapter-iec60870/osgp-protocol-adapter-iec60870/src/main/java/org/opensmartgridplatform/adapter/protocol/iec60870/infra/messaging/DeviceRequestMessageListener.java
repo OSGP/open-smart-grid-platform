@@ -22,7 +22,6 @@ import org.opensmartgridplatform.shared.infra.jms.MessageProcessor;
 import org.opensmartgridplatform.shared.infra.jms.MessageProcessorMap;
 import org.opensmartgridplatform.shared.infra.jms.ProtocolResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
-import org.opensmartgridplatform.shared.infra.jms.RetryHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,15 +95,11 @@ public class DeviceRequestMessageListener implements MessageListener {
               exception);
 
       final ProtocolResponseMessage protocolResponseMessage =
-          new ProtocolResponseMessage.Builder()
-              .messageMetadata(messageMetadata)
-              .domain(messageMetadata.getDomain())
-              .domainVersion(messageMetadata.getDomainVersion())
+          ProtocolResponseMessage.newBuilder()
+              .messageMetadata(messageMetadata.builder().withScheduled(false).build())
               .result(ResponseMessageResultType.NOT_OK)
               .osgpException(osgpException)
               .dataObject(objectMessage.getObject())
-              .retryHeader(new RetryHeader())
-              .scheduled(false)
               .build();
 
       this.deviceResponseMessageSender.send(protocolResponseMessage);

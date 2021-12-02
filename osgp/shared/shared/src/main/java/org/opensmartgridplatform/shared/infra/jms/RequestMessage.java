@@ -15,11 +15,20 @@ public class RequestMessage implements Serializable {
   /** Serial Version UID. */
   private static final long serialVersionUID = 8377090502244471258L;
 
-  protected String correlationUid;
-  protected String organisationIdentification;
-  protected String deviceIdentification;
-  protected String ipAddress;
-  protected Serializable request;
+  protected final String deviceIdentification;
+  protected final String organisationIdentification;
+  protected final String correlationUid;
+  protected final String ipAddress;
+  protected final Serializable request;
+
+  public RequestMessage(final MessageMetadata messageMetadata, final Serializable request) {
+    this(
+        messageMetadata.getCorrelationUid(),
+        messageMetadata.getOrganisationIdentification(),
+        messageMetadata.getDeviceIdentification(),
+        messageMetadata.getIpAddress(),
+        request);
+  }
 
   public RequestMessage(final CorrelationIds ids, final Serializable request) {
     this(
@@ -58,16 +67,16 @@ public class RequestMessage implements Serializable {
     this.request = request;
   }
 
-  public String getCorrelationUid() {
-    return this.correlationUid;
+  public String getDeviceIdentification() {
+    return this.deviceIdentification;
   }
 
   public String getOrganisationIdentification() {
     return this.organisationIdentification;
   }
 
-  public String getDeviceIdentification() {
-    return this.deviceIdentification;
+  public String getCorrelationUid() {
+    return this.correlationUid;
   }
 
   public String getIpAddress() {
@@ -76,5 +85,14 @@ public class RequestMessage implements Serializable {
 
   public Serializable getRequest() {
     return this.request;
+  }
+
+  public MessageMetadata messageMetadata() {
+    return MessageMetadata.newBuilder()
+        .withDeviceIdentification(this.deviceIdentification)
+        .withOrganisationIdentification(this.organisationIdentification)
+        .withCorrelationUid(this.correlationUid)
+        .withIpAddress(this.ipAddress)
+        .build();
   }
 }

@@ -11,7 +11,7 @@ package org.opensmartgridplatform.adapter.domain.smartmetering.application.servi
 import java.util.Arrays;
 import java.util.List;
 import org.opensmartgridplatform.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
-import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
+import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.core.JmsMessageSender;
 import org.opensmartgridplatform.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import org.opensmartgridplatform.domain.core.entities.SmartMeter;
 import org.opensmartgridplatform.domain.core.valueobjects.FirmwareVersion;
@@ -28,7 +28,6 @@ import org.opensmartgridplatform.dto.valueobjects.smartmetering.SetDeviceLifecyc
 import org.opensmartgridplatform.shared.exceptionhandling.FunctionalException;
 import org.opensmartgridplatform.shared.exceptionhandling.OsgpException;
 import org.opensmartgridplatform.shared.infra.jms.MessageMetadata;
-import org.opensmartgridplatform.shared.infra.jms.RequestMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessage;
 import org.opensmartgridplatform.shared.infra.jms.ResponseMessageResultType;
 import org.slf4j.Logger;
@@ -46,7 +45,7 @@ public class BundleService {
 
   @Autowired
   @Qualifier(value = "domainSmartMeteringOutboundOsgpCoreRequestsMessageSender")
-  private OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
+  private JmsMessageSender osgpCoreRequestMessageSender;
 
   @Autowired
   @Qualifier(value = "domainSmartMeteringOutboundWebServiceResponsesMessageSender")
@@ -75,101 +74,83 @@ public class BundleService {
 
   @Transactional(value = "transactionManager")
   public void handleBundle(
-      final MessageMetadata deviceMessageMetadata,
-      final BundleMessageRequest bundleMessageDataContainer)
+      final MessageMetadata messageMetadata, final BundleMessageRequest bundleMessageRequest)
       throws FunctionalException {
 
     LOGGER.info(
         "handleBundle request for organisationIdentification: {} for deviceIdentification: {}",
-        deviceMessageMetadata.getOrganisationIdentification(),
-        deviceMessageMetadata.getDeviceIdentification());
+        messageMetadata.getOrganisationIdentification(),
+        messageMetadata.getDeviceIdentification());
 
     final SmartMeter smartMeter =
-        this.domainHelperService.findSmartMeter(deviceMessageMetadata.getDeviceIdentification());
+        this.domainHelperService.findSmartMeter(messageMetadata.getDeviceIdentification());
 
-    final BundleMessagesRequestDto bundleMessageDataContainerDto =
-        this.actionMapperService.mapAllActions(bundleMessageDataContainer, smartMeter);
+    final BundleMessagesRequestDto requestDto =
+        this.actionMapperService.mapAllActions(bundleMessageRequest, smartMeter);
 
     LOGGER.info("Sending request message to core.");
-    final RequestMessage requestMessage =
-        new RequestMessage(
-            deviceMessageMetadata.getCorrelationUid(),
-            deviceMessageMetadata.getOrganisationIdentification(),
-            deviceMessageMetadata.getDeviceIdentification(),
-            smartMeter.getIpAddress(),
-            bundleMessageDataContainerDto);
+
     this.osgpCoreRequestMessageSender.send(
-        requestMessage,
-        deviceMessageMetadata.getMessageType(),
-        deviceMessageMetadata.getMessagePriority(),
-        deviceMessageMetadata.getScheduleTime(),
-        deviceMessageMetadata.isBypassRetry());
+        requestDto, messageMetadata.builder().withIpAddress(smartMeter.getIpAddress()).build());
   }
 
   @Transactional(value = "transactionManager")
   public void handleBundleResponse(
-      final MessageMetadata deviceMessageMetadata,
+      final MessageMetadata messageMetadata,
       final ResponseMessageResultType responseMessageResultType,
       final OsgpException osgpException,
-      final BundleMessagesRequestDto bundleResponseMessageDataContainerDto)
+      final BundleMessagesRequestDto bundleMessagesRequestDto)
       throws FunctionalException {
 
     LOGGER.info(
         "handleBundle response for organisationIdentification: {} for deviceIdentification: {}",
-        deviceMessageMetadata.getOrganisationIdentification(),
-        deviceMessageMetadata.getDeviceIdentification());
+        messageMetadata.getOrganisationIdentification(),
+        messageMetadata.getDeviceIdentification());
 
-    this.checkIfAdditionalActionIsNeeded(
-        deviceMessageMetadata, bundleResponseMessageDataContainerDto);
+    this.checkIfAdditionalActionIsNeeded(messageMetadata, bundleMessagesRequestDto);
 
-    // convert bundleResponseMessageDataContainerDto back to core object
-    final BundleMessagesResponse bundleResponseMessageDataContainer =
-        this.actionMapperResponseService.mapAllActions(bundleResponseMessageDataContainerDto);
-
-    // Send the response final containing the events final to the
-    // webservice-adapter
+    // Convert bundleMessagesRequestDto (containing the list of actions from the request, along with
+    // their respective responses) back to core object.
+    final BundleMessagesResponse bundleMessagesResponse =
+        this.actionMapperResponseService.mapAllActions(bundleMessagesRequestDto);
 
     final ResponseMessage responseMessage =
         ResponseMessage.newResponseMessageBuilder()
-            .withCorrelationUid(deviceMessageMetadata.getCorrelationUid())
-            .withOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification())
-            .withDeviceIdentification(deviceMessageMetadata.getDeviceIdentification())
+            .withMessageMetadata(messageMetadata)
             .withResult(responseMessageResultType)
             .withOsgpException(osgpException)
-            .withDataObject(bundleResponseMessageDataContainer)
-            .withMessagePriority(deviceMessageMetadata.getMessagePriority())
+            .withDataObject(bundleMessagesResponse)
             .build();
 
-    LOGGER.info("Send response for CorrelationUID: {}", deviceMessageMetadata.getCorrelationUid());
-    this.webServiceResponseMessageSender.send(
-        responseMessage, deviceMessageMetadata.getMessageType());
-    LOGGER.info("Response sent for CorrelationUID: {}", deviceMessageMetadata.getCorrelationUid());
+    LOGGER.info("Send response for CorrelationUID: {}", messageMetadata.getCorrelationUid());
+    this.webServiceResponseMessageSender.send(responseMessage, messageMetadata.getMessageType());
+    LOGGER.info("Response sent for CorrelationUID: {}", messageMetadata.getCorrelationUid());
   }
 
   private void checkIfAdditionalActionIsNeeded(
-      final MessageMetadata deviceMessageMetadata,
-      final BundleMessagesRequestDto bundleResponseMessageDataContainerDto)
+      final MessageMetadata messageMetadata,
+      final BundleMessagesRequestDto bundleMessagesRequestDto)
       throws FunctionalException {
 
-    for (final ActionResponseDto action : bundleResponseMessageDataContainerDto.getAllResponses()) {
+    for (final ActionResponseDto action : bundleMessagesRequestDto.getAllResponses()) {
       if (action instanceof CoupleMbusDeviceByChannelResponseDto) {
         this.mBusGatewayService.handleCoupleMbusDeviceByChannelResponse(
-            deviceMessageMetadata, (CoupleMbusDeviceByChannelResponseDto) action);
+            messageMetadata, (CoupleMbusDeviceByChannelResponseDto) action);
       } else if (action instanceof DecoupleMbusDeviceResponseDto) {
         this.mBusGatewayService.handleDecoupleMbusDeviceResponse(
-            deviceMessageMetadata, (DecoupleMbusDeviceResponseDto) action);
+            messageMetadata, (DecoupleMbusDeviceResponseDto) action);
       } else if (action instanceof SetDeviceLifecycleStatusByChannelResponseDto) {
         this.managementService.setDeviceLifecycleStatusByChannel(
             (SetDeviceLifecycleStatusByChannelResponseDto) action);
       } else if (action instanceof EventMessageDataResponseDto) {
         this.eventService.addEventTypeToEvents(
-            deviceMessageMetadata, (EventMessageDataResponseDto) action);
+            messageMetadata, (EventMessageDataResponseDto) action);
       } else if (action instanceof FirmwareVersionResponseDto) {
         final List<FirmwareVersion> firmwareVersions =
             this.configurationMapper.mapAsList(
                 ((FirmwareVersionResponseDto) action).getFirmwareVersions(), FirmwareVersion.class);
         this.firmwareService.saveFirmwareVersionsReturnedFromDevice(
-            deviceMessageMetadata.getDeviceIdentification(), firmwareVersions);
+            messageMetadata.getDeviceIdentification(), firmwareVersions);
       } else if (action instanceof FirmwareVersionGasResponseDto) {
         final FirmwareVersionGasResponseDto firmwareVersionGasResponseDto =
             (FirmwareVersionGasResponseDto) action;
